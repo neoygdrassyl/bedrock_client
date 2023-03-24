@@ -1,0 +1,361 @@
+{
+    "Expedido por la Alcaldía": {
+        "src": false
+    },
+    "Perfil Licencia": {
+        "src": false
+    },
+    "PERFIL - 64.00 m - Tipo A": {
+        "src": "perfil_64.00_m_tipo_a.png",
+        "elements": {
+            "F.A": 0,
+            "F.C": 0,
+            "Cr": 0,
+            "Sep. Central": 0,
+            "Sep. Lateral": 0,
+            "Costados: Oriente - Occidente": 0,
+            "Costados: Norte - Sur": 0,
+            "Carril SITM": 0,
+            "Antejardin": 0
+        }
+    },
+    "PERFIL - 64.00 m - Tipo B": {
+        "src": "perfil_64.00_m_tipo_b.png",
+        "elements": {
+            "F.A": 0,
+            "F.C": 0,
+            "Cr": 0,
+            "Costados: Oriente - Occidente": 0,
+            "Costados: Norte - Sur": 0,
+            "Carril SITM": 0,
+            "Antejardin": 0
+        }
+    },
+    "PERFIL - 43.00 m - Tipo A": {
+        "src": "perfil_43.00_m_tipo_a.png"
+    },
+    "PERFIL - 33.00 m - Tipo A": {
+        "src": "perfil_33.00_m_tipo_a.png"
+    },
+    "PERFIL - 33.00 m - Tipo B": {
+        "src": "perfil_33.00_m_tipo_b.png"
+    },
+    "PERFIL - 32.00 m - Tipo A": {
+        "src": "perfil_32.00_m_tipo_a.png"
+    },
+    "PERFIL - 32.00 m - Tipo B": {
+        "src": "perfil_32.00_m_tipo_b"
+    },
+    "PERFIL - 32.00 m - Tipo C": {
+        "src": "perfil_32.00_m_tipo_c.png"
+    },
+    "PERFIL - 32.00 m - Tipo D": {
+        "src": "perfil_32.00_m_tipo_d."
+    },
+    "PERFIL - 30.00 m - Tipo A": {
+        "src": "perfil_30.00_m_tipo_a.png"
+    },
+    "PERFIL - 29.00 m - Tipo A": {
+        "src": "perfil_29.00_m_tipo_a.png"
+    },
+    "PERFIL - 28.00 m - Tipo A": {
+        "src": "perfil_28.00_m_tipo_a.png"
+    },
+    "PERFIL - 27.20 m - Tipo A": {
+        "src": "perfil_27.20_m_tipo_a.png"
+    },
+    "PERFIL - 27.00 m - Tipo A": {
+        "src": "perfil_27.00_m_tipo_a.png"
+    },
+    "PERFIL - 27.00 m - Tipo B": {
+        "src": "perfil_27.00_m_tipo_b.png"
+    },
+    "PERFIL - 26.00 m - Tipo A": {
+        "src": "perfil_26.00_m_tipo_a.png"
+    },
+    "PERFIL - 25.00 m - Tipo A": {
+        "src": "perfil_25.00_m_tipo_a"
+    },
+    "PERFIL - 24.50 m - Tipo A": {
+        "src": "perfil_24.50_m_tipo_a.png"
+    },
+    "PERFIL - 24.00 m - Tipo A": {
+        "src": "perfil_24.00_m_tipo_a.png"
+    },
+    "PERFIL - 24.00 m - Tipo B": {
+        "src": "perfil_24.00_m_tipo_b.png"
+    },
+    "PERFIL - 24.00 m - Tipo C": {
+        "src": "perfil_24.00_m_tipo_c.png"
+    },
+    "PERFIL - 24.00 m - Tipo D": {
+        "src": "perfil_24.00_m_tipo_d.png"
+    },
+    "PERFIL - 24.00 m - Tipo E": {
+        "src": "perfil_24.00_m_tipo_e.png"
+    },
+    "PERFIL - 23.00 m - Tipo A": {
+        "src": "perfil_23.00_m_tipo_a.png"
+    },
+    "PERFIL - 22.00 m - Tipo A": {
+        "src": "perfil_22.00_m_tipo_a.png"
+    },
+    "PERFIL - 21.50 m - Tipo A": {
+        "src": "perfil_21.50_m_tipo_a.png"
+    },
+    "PERFIL - 21.40 m - Tipo A": {
+        "src": "perfil_21.40_m_tipo_a.png"
+    },
+    "PERFIL - 21.00 m - Tipo A": {
+        "src": "perfil_21.00_m_tipo_a.png"
+    },
+    "PERFIL - 21.00 m - Tipo B": {
+        "src": "perfil_21.00_m_tipo_b.png"
+    },
+    "PERFIL - 21.00 m - Tipo C": {
+        "src": "perfil_21.00_m_tipo_c.png"
+    },
+    "PERFIL - 20.50 m - Tipo A": {
+        "src": "perfil_20.50_m_tipo_a.png"
+    },
+    "PERFIL - 20.40 m - Tipo A": {
+        "src": "perfil_20.40_m_tipo_a.png"
+    },
+    "PERFIL - 20.00 m - Tipo A": {
+        "src": "perfil_20.00_m_tipo_a.png"
+    },
+    "PERFIL - 20.00 m - Tipo B": {
+        "src": "perfil_20.00_m_tipo_b.png"
+    },
+    "PERFIL - 20.00 m - Tipo C": {
+        "src": "perfil_20.00_m_tipo_c.png"
+    },
+    "PERFIL - 20.00 m - Tipo D": {
+        "src": "perfil_20.00_m_tipo_d.png"
+    },
+    "PERFIL - 19.00 m - Tipo A": {
+        "src": "perfil_19.00_m_tipo_a.png"
+    },
+    "PERFIL - 19.00 m - Tipo B": {
+        "src": "perfil_19.00_m_tipo_b.png"
+    },
+    "PERFIL - 19.00 m - Tipo C": {
+        "src": "perfil_19.00_m_tipo_c.png"
+    },
+    "PERFIL - 18.20 m - Tipo A": {
+        "src": "perfil_18.20_m_tipo_a.png"
+    },
+    "PERFIL - 18.00 m - Tipo A": {
+        "src": "perfil_18.00_m_tipo_a.png"
+    },
+    "PERFIL - 17.60 m - Tipo A": {
+        "src": "perfil_17.60_m_tipo_a.png"
+    },
+    "PERFIL - 17.00 m - Tipo A": {
+        "src": "perfil_17.00_m_tipo_a.png"
+    },
+    "PERFIL - 17.00 m - Tipo B": {
+        "src": "perfil_17.00_m_tipo_b.png"
+    },
+    "PERFIL - 17.00 m - Tipo C": {
+        "src": "perfil_17.00_m_tipo_c.png"
+    },
+    "PERFIL - 17.00 m - Tipo D": {
+        "src": "perfil_17.00_m_tipo_d.png"
+    },
+    "PERFIL - 16.50 m - Tipo A": {
+        "src": "perfil_16.50_m_tipo_a.png"
+    },
+    "PERFIL - 16.00 m - Tipo A": {
+        "src": "perfil_16.00_m_tipo_a.png"
+    },
+    "PERFIL - 16.00 m - Tipo B": {
+        "src": "perfil_16.00_m_tipo_b.png"
+    },
+    "PERFIL - 16.00 m - Tipo C": {
+        "src": "perfil_16.00_m_tipo_c.png"
+    },
+    "PERFIL - 16.00 m - Tipo D": {
+        "src": "perfil_16.00_m_tipo_d.png"
+    },
+    "PERFIL - 16.00 m - Tipo E": {
+        "src": "perfil_16.00_m_tipo_e.png"
+    },
+    "PERFIL - 16.00 m - Tipo F": {
+        "src": "perfil_16.00_m_tipo_f.png"
+    },
+    "PERFIL - 16.00 m - Tipo G": {
+        "src": "perfil_16.00_m_tipo_g.png"
+    },
+    "PERFIL - 16.00 m - Tipo P": {
+        "src": "perfil_16.00_m_tipo_p.png"
+    },
+    "PERFIL - 15.50 m - Tipo A": {
+        "src": "perfil_15.50_m_tipo_a.png"
+    },
+    "PERFIL - 15.50 m - Tipo B": {
+        "src": "perfil_15.50_m_tipo_b.png"
+    },
+    "PERFIL - 15.00 m - Tipo A": {
+        "src": "perfil_15.00_m_tipo_a.png"
+    },
+    "PERFIL - 15.00 m - Tipo B": {
+        "src": "perfil_15.00_m_tipo_b.png"
+    },
+    "PERFIL - 15.00 m - Tipo C": {
+        "src": "perfil_15.00_m_tipo_c.png"
+    },
+    "PERFIL - 15.00 m - Tipo D": {
+        "src": "perfil_15.00_m_tipo_d.png"
+    },
+    "PERFIL - 15.00 m - Tipo E": {
+        "src": "perfil_15.00_m_tipo_e.png"
+    },
+    "PERFIL - 15.00 m - Tipo F": {
+        "src": "perfil_15.00_m_tipo_f.png"
+    },
+    "PERFIL - 15.00 m - Tipo G": {
+        "src": "perfil_15.00_m_tipo_g.png"
+    },
+    "PERFIL - 15.00 m - Tipo H": {
+        "src": "perfil_15.00_m_tipo_h.png"
+    },
+    "PERFIL - 15.00 m - Tipo I": {
+        "src": "perfil_15.00_m_tipo_i.png"
+    },
+    "PERFIL - 15.00 m - Tipo J": {
+        "src": "perfil_15.00_m_tipo_j.png"
+    },
+    "PERFIL - 15.00 m - Tipo P": {
+        "src": "perfil_15.00_m_tipo_p.png"
+    },
+    "PERFIL - 14.50 m - Tipo A": {
+        "src": "perfil_14.50_m_tipo_a.png"
+    },
+    "PERFIL - 14.00 m - Tipo A": {
+        "src": "perfil_14.00_m_tipo_a.png"
+    },
+    "PERFIL - 14.00 m - Tipo B": {
+        "src": "perfil_14.00_m_tipo_b.png"
+    },
+    "PERFIL - 14.00 m - Tipo C": {
+        "src": "perfil_14.00_m_tipo_c.png"
+    },
+    "PERFIL - 14.00 m - Tipo D": {
+        "src": "perfil_14.00_m_tipo_d.png"
+    },
+    "PERFIL - 14.00 m - Tipo E": {
+        "src": "perfil_14.00_m_tipo_e.png"
+    },
+    "PERFIL - 14.00 m - Tipo F": {
+        "src": "perfil_14.00_m_tipo_f.png"
+    },
+    "PERFIL - 14.00 m - Tipo G": {
+        "src": "perfil_14.00_m_tipo_g.png"
+    },
+    "PERFIL - 14.00 m - Tipo H": {
+        "src": "perfil_14.00_m_tipo_h.png"
+    },
+    "PERFIL - 13.50 m - Tipo A": {
+        "src": "perfil_13.50_m_tipo_a.png"
+    },
+    "PERFIL - 13.00 m - Tipo A": {
+        "src": "perfil_13.00_m_tipo_a.png"
+    },
+    "PERFIL - 13.00 m - Tipo B": {
+        "src": "perfil_13.00_m_tipo_b.png"
+    },
+    "PERFIL - 13.00 m - Tipo C": {
+        "src": "perfil_13.00_m_tipo_c.png"
+    },
+    "PERFIL - 13.00 m - Tipo D": {
+        "src": "perfil_13.00_m_tipo_d.png"
+    },
+    "PERFIL - 13.00 m - Tipo E": {
+        "src": "perfil_13.00_m_tipo_e.png"
+    },
+    "PERFIL - 12.00 m - Tipo A": {
+        "src": "perfil_12.00_m_tipo_a."
+    },
+    "PERFIL - 12.00 m - Tipo B": {
+        "src": "perfil_12.00_m_tipo_b.png"
+    },
+    "PERFIL - 12.00 m - Tipo C": {
+        "src": "perfil_12.00_m_tipo_c.png"
+    },
+    "PERFIL - 11.00 m - Tipo A": {
+        "src": "perfil_11.00_m_tipo_a.png"
+    },
+    "PERFIL - 11.00 m - Tipo B": {
+        "src": "perfil_11.00_m_tipo_b.png"
+    },
+    "PERFIL - 11.00 m - Tipo C": {
+        "src": "perfil_11.00_m_tipo_c.png"
+    },
+    "PERFIL - 11.00 m - Tipo D": {
+        "src": "perfil_11.00_m_tipo_d.png"
+    },
+    "PERFIL - 11.00 m - Tipo E": {
+        "src": "perfil_11.00_m_tipo_e.png"
+    },
+    "PERFIL - 10.00 m - Tipo A": {
+        "src": "perfil_10.00_m_tipo_a.png"
+    },
+    "PERFIL - 9.00 m - Tipo A": {
+        "src": "perfil_9.00_m_tipo_a.p"
+    },
+    "PERFIL - 9.60 m - Tipo A": {
+        "src": "perfil_9.60_m_tipo_a.png"
+    },
+    "PERFIL - 9.50 m - Tipo A": {
+        "src": "perfil_9.50_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 12.00 m - Tipo A": {
+        "src": "perfil_peatonal_12.00_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 12.00 m - Tipo B": {
+        "src": "perfil_peatonal_12.00_m_tipo_b.png"
+    },
+    "PERFIL PEATONAL - 12.00 m - Tipo C": {
+        "src": "perfil_peatonal_12.00_m_tipo_c.png"
+    },
+    "PERFIL PEATONAL - 10.00 m - Tipo A": {
+        "src": "perfil_peatonal_10.00_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 9.00 m - Tipo A": {
+        "src": "perfil_peatonal_9.00_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 8.60 m - Tipo A": {
+        "src": "perfil_peatonal_8.60_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 8.00 m - Tipo A": {
+        "src": "perfil_peatonal_8.00_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 6.50 m - Tipo A": {
+        "src": "perfil_peatonal_6.50_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 6.20 m - Tipo A": {
+        "src": "perfil_peatonal_6.20_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 6.00 m - Tipo A": {
+        "src": "perfil_peatonal_6.00_m_tipo_b.png"
+    },
+    "PERFIL PEATONAL - 6.00 m - Tipo B": {
+        "src": "perfil_peatonal_6.00_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 5.50 m - Tipo A": {
+        "src": "perfil_peatonal_5.50_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 5.00 m - Tipo A": {
+        "src": "perfil_peatonal_5.00_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 4.50 m - Tipo A": {
+        "src": "perfil_peatonal_4.50_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 3.00 m - Tipo A": {
+        "src": "perfil_peatonal_3.00_m_tipo_a.png"
+    },
+    "PERFIL PEATONAL - 2.00 m - Tipo A": {
+        "src": "perfil_peatonal_2.00_m_tipo_a.png"
+    }
+}
