@@ -1,0 +1,37 @@
+import { PQRS_TYPE_ARRAY_EN, PQRS_TYPE_PERSON_ARRAY_EN, PQRS_TYPE_ID_ARRAY_EN, PQRS_TYPE_CHANNEL_ARRAY_EN , PQRS_MASTER_TYPE_ARRAY_EN} from '../../../components/vars.global'
+
+const PQRS_T = {
+    form_type_request: PQRS_TYPE_ARRAY_EN,
+    form_category_request: PQRS_MASTER_TYPE_ARRAY_EN,
+    form_type_request_0: "Request Type (Required)",
+    form_type_solicitor: PQRS_TYPE_PERSON_ARRAY_EN,
+    form_type_solicitor_0: "Applicant Type (Required)",
+    form_name:  "Name (required)",
+    form_surname: "Surname (required)",
+    form_name_legal: "Name of Legal Person (Required)",
+    form_type_id: PQRS_TYPE_ID_ARRAY_EN,
+    form_type_id_0: "Identification Type (Required)",
+    form_id_number: "Identification Number (Required)",
+    form_motive: "Bussiness Reason",
+    form_nit: "NIT",
+    form_country: "Country",
+    form_state: "State",
+    form_county: "County",
+    form_address: "Address",
+    form_email: "Email",
+    form_number_phone: "Telephone Number",
+    form_number_mobile: "Mobile Number",
+    form_content: "Content of the Request (required)",
+    form_file_title: "Attach a support file (Optional) (Image, Word or PDF) ",
+    form_file_lang: "en",
+    form_email_allow_text_1: "Do you allow the Curatorship No. 1 of Bucaramanga to respond to your request by email? ",
+    form_email_allow_text_2: "The Curatorship No. 1 of Bucaramanga will use the email given in this form to respond, in case that email is not valid, the Curaduría No. 1 of Bucaramanga will publish all your responses on its publications page. ",
+    form_radication_chanel: PQRS_TYPE_CHANNEL_ARRAY_EN,
+    form_radication_chanel_0: "Original Filing Medium",
+    form_btn: "Send",
+    form_btn_g: "Generate",
+    form_btn_c: "Close",
+    form_title_g: "Generate New PQRS: ",
+}
+
+export default PQRS_T;

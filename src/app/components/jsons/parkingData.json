@@ -1,0 +1,695 @@
+{
+    "Vivienda": {
+        "Residentes (R)": {
+            "relacion_str": ["1x7 viv", "1x5 viv", "1x3 viv", "1x1 viv", "1.5x1 viv", "2x1 viv"],
+            "relacion": [7,5,3,1,0.66,0.5],
+            "u_units": [0]
+        },
+        "Visitantes (V)": {
+            "relacion_str": ["1x12 viv", "1x12 viv", "1x8 viv", "1x6 viv", "1x5 viv", "1x4 viv"],
+            "relacion": [12,12,8,6,5,4],
+            "u_units":[0]
+        },
+        "Motocicletas (M)": {
+            "relacion_str": ["3x7 R", "3x5 R", "3x3 R", "3x3 V", "1x5 V", "1x4 V"],
+            "relacion": [0.43,0.6,1,1,5,4],
+            "u_units": [0]
+        },
+        "Bicicletas (B)": {
+            "relacion_str": ["1x12 viv", "1x12 viv", "1x8 viv", "1x6 viv", "1x5 viv", "1x4 viv"],
+            "relacion": [12,12,8,6,5,4],
+            "u_units": [0]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        }
+    },
+    "Uso domestico": {
+        "P.P - V": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x70 m2", "1x70 m2", "1x70 m2"],
+            "relacion": [100,100,100,70,70,700],
+            "u_units": [1,2]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Comercio general": {
+        "P.P - V": {
+            "relacion_str": ["1x90 m2", "1x90 m2", "1x90 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [90,90,90,50,50,50],
+            "u_units": [3,4,5]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Comercio y servicios a los vehiculos": {
+        "P.P - V": {
+            "relacion_str": ["1x90 m2", "1x90 m2", "1x90 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [90,90,90,50,50,50],
+            "u_units": [6,7,8]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Comercio de licores": {
+        "P.P - V": {
+            "relacion_str": ["1x90 m2", "1x90 m2", "1x90 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [90,90,90,50,50,50],
+            "u_units": [9]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Al por mayor": {
+        "P.P - V": {
+            "relacion_str": ["1x80 m2", "1x80 m2", "1x80 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [80,80,80,50,50,50],
+            "u_units": [10, 11]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Uso y consumo personal": {
+        "P.P - V": {
+            "relacion_str": ["1x80 m2", "1x80 m2", "1x80 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [80,80,80,50,50,50],
+            "u_units": [12]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Grandes Superficies": {
+        "P.P - V": {
+            "relacion_str": ["1x80 m2", "1x80 m2", "1x80 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [80,80,80,50,50,50],
+            "u_units": [13]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Cafeterias, restaurantes": {
+        "P.P - V (Uso 15-18)": {
+            "relacion_str": ["1x90 m2", "1x90 m2", "1x90 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [90,90,90,50,50,50],
+            "u_units": [15, 16, 17, 18]
+        },
+        "P.P - V (Uso 19)": {
+            "relacion_str": ["1x90 m2", "1x90 m2", "1x90 m2", "1x40 m2", "1x40 m2", "1x40 m2"],
+            "relacion": [90,90,90,40,40,40],
+            "u_units": [19]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Otras actividades de serviios": {
+        "P.P - V": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [100,100,100,50,50,50],
+            "u_units": [20, 21, 22, 23, 24]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Servicios veterinarios": {
+        "P.P - V": {
+            "relacion_str": ["1x80 m2", "1x80 m2", "1x80 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [80,80,80,50,50,50],
+            "u_units": [25, 26]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Actividades de agenias de viajes": {
+        "P.P - V": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [100,100,100,50,50,50],
+            "u_units": [27]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Alojamiento y Hoteles (NTSG 006)**": {
+        "P.P - V (Uso 30)": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x70 m2", "1x70 m2", "1x70 m2"],
+            "relacion": [100,100,100,70,70,70],
+            "u_units": [28, 29, 30]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Entretenimiento": {
+        "P.P - V": {
+            "relacion_str": ["1x90 m2", "1x90 m2", "1x90 m2", "1x70 m2", "1x70 m2", "1x70 m2"],
+            "relacion": [90,90,90,70,70,70],
+            "u_units": [31, 32, 33, 34, 35]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Correo y Telecomunicaciones": {
+        "P.P - V (Uso 36 - 39)": {
+            "relacion_str": ["1x90 m2", "1x90 m2", "1x90 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [90,90,90,50,50,50],
+            "u_units": [36, 37, 38, 39, 40]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Mantenimiento y reparacion de vehiculos partes piezas y maquinaria y equipo pesado": {
+        "P.P - V": {
+            "relacion_str": ["1x90 m2", "1x90 m2", "1x90 m2", "1x50 m2", "1x50 m2", "1x50 m2"],
+            "relacion": [90,90,90,50,50,50],
+            "u_units": [41, 42]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Especializados, profesionales tecnicos (Oficinas)": {
+        "P.P - V": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x70 m2", "1x70 m2", "1x70 m2"],
+            "relacion": [100,100,100,70,70,70],
+            "u_units": [43, 44, 45, 46, 47]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Intermediacion financiera": {
+        "P.P - V": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x60 m2", "1x60 m2", "1x60 m2"],
+            "relacion": [100,100,100,60,60,60],
+            "u_units": [48, 49]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Actividades de esparcimiento": {
+        "P.P - V": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x60 m2", "1x60 m2", "1x60 m2"],
+            "relacion": [100,100,100,60,60,60],
+            "u_units": [50, 51]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Servicios de impacto urbano": {
+        "P.P - V": {
+            "relacion_str": ["1x70 m2", "1x70 m2", "1x70 m2", "1x60 m2", "1x60 m2", "1x60 m2"],
+            "relacion": [70,70,70,60,60,60],
+            "u_units": [52]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Educacion": {
+        "P.P - V": {
+            "relacion_str": ["1x170 m2", "1x170 m2", "1x170 m2", "1x110 m2", "1x110 m2", "1x110 m2"],
+            "relacion": [170,170,170,110,110,110],
+            "u_units": [53, 54, 55, 56, 57]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Servicios de salud": {
+        "P.P - V": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x90 m2", "1x90 m2", "1x90 m2"],
+            "relacion": [100,100,100,90,90,90],
+            "u_units": [58, 59, 60]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Servicios sociales": {
+        "P.P - V": {
+            "relacion_str": ["1x180 m2", "1x180 m2", "1x180 m2", "1x140 m2", "1x140 m2", "1x140 m2"],
+            "relacion": [180,180,180,140,140,140],
+            "u_units": [61, 62, 63, 64]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Actividades de esparcimiento, actividades culturales": {
+        "P.P - V": {
+            "relacion_str": ["1x200 m2", "1x200 m2", "1x200 m2", "1x150 m2", "1x150 m2", "1x150 m2"],
+            "relacion": [200,200,200,150,150,150],
+            "u_units": [65, 66, 67]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Centros de culto": {
+        "P.P - V": {
+            "relacion_str": ["1x130 m2", "1x130 m2", "1x130 m2", "1x100 m2", "1x100 m2", "1x100 m2"],
+            "relacion": [130,130,130,100,100,100],
+            "u_units": [68, 69, 70]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Actividades deportivas": {
+        "P.P - V": {
+            "relacion_str": ["1x130 m2", "1x130 m2", "1x130 m2", "1x100 m2", "1x100 m2", "1x100 m2"],
+            "relacion": [130,130,130,100,100,100],
+            "u_units": [71, 72, 73, 74]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Servicios a la comunidad": {
+        "P.P - V": {
+            "relacion_str": ["1x140 m2", "1x140 m2", "1x140 m2", "1x100 m2", "1x100 m2", "1x100 m2"],
+            "relacion": [140,140,140,100,100,100],
+            "u_units": [75, 76, 77, 78, 79, 80, 81, 82]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Abastecimients de alimentos": {
+        "P.P - V": {
+            "relacion_str": ["1x140 m2", "1x140 m2", "1x140 m2", "1x100 m2", "1x100 m2", "1x100 m2"],
+            "relacion": [140,140,140,100,100,100],
+            "u_units": [83, 84]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Actividades funerarios y pompas funebres": {
+        "P.P - V (Uso 85, 87)": {
+            "relacion_str": ["1x160 m2", "1x160 m2", "1x160 m2", "1x130 m2", "1x130 m2", "1x130 m2"],
+            "relacion": [160,160,160,130,130,130],
+            "u_units": [85, 86, 87]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Transporte": {
+        "P.P - V": {
+            "relacion_str": ["1x140 m2", "1x140 m2", "1x140 m2", "1x100 m2", "1x100 m2", "1x100 m2"],
+            "relacion": [140,140,140,100,100,100],
+            "u_units": [88, 89]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Eliminacion de desperdicios y aguas residuales, saneamiento y actividades similares": {
+        "P.P - V": {
+            "relacion_str": ["1x190 m2", "1x190 m2", "1x190 m2", "1x140 m2", "1x140 m2", "1x140 m2"],
+            "relacion": [190,190,190,140,140,140],
+            "u_units": [90]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Suministro de electricidad, gas, agua, comunicaciones y demas servicios publicos o de particularess": {
+        "P.P - V": {
+            "relacion_str": ["1x180 m2", "1x180 m2", "1x180 m2", "1x140 m2", "1x140 m2", "1x140 m2"],
+            "relacion": [180,180,180,140,140,140],
+            "u_units": [91, 92, 93]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Otras actividades empresariales": {
+        "P.P - V": {
+            "relacion_str": ["1x90 m2", "1x90 m2", "1x90 m2", "1x70 m2", "1x70 m2", "1x70 m2"],
+            "relacion": [90,90,90,70,70,70],
+            "u_units": [94, 95]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Industria transformadora": {
+        "Local A (P.P)": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x100 m2", "1x100 m2", "1x100 m2"],
+            "relacion": [100,100,100,100,100,100],
+            "u_units": [0]
+        },
+        "Local (P.P)": {
+            "relacion_str": ["1x100 m2", "1x100 m2", "1x100 m2", "1x100 m2", "1x100 m2", "1x100 m2"],
+            "relacion": [100,100,100,100,100,100],
+            "u_units": [0]
+        },
+        "Local (V)": {
+            "relacion_str": ["1x250 m2", "1x250 m2", "1x250 m2", "1x250 m2", "1x250 m2", "1x250 m2"],
+            "relacion": [250,250,250,250,250,250],
+            "u_units": [0]
+        },
+        "Zonal (P.P)": {
+            "relacion_str": ["1x150 m2", "1x150 m2", "1x150 m2", "1x150 m2", "1x150 m2", "1x150 m2"],
+            "relacion": [150,150,150,150,150,150],
+            "u_units": [0]
+        },
+        "Zonal (V)": {
+            "relacion_str": ["1x300 m2", "1x300 m2", "1x300 m2", "1x300 m2", "1x300 m2", "1x300 m2"],
+            "relacion": [300,300,300,300,300,300],
+            "u_units": [0]
+        },
+        "Metropolitana (P.P)": {
+            "relacion_str": ["1x300 m2", "1x300 m2", "1x300 m2", "1x300 m2", "1x300 m2", "1x300 m2"],
+            "relacion": [300,300,300,300,300,300],
+            "u_units": [0]
+        },
+        "Metropolitana (V)": {
+            "relacion_str": ["1x500 m2", "1x500 m2", "1x500 m2", "1x500 m2", "1x500 m2", "1x500 m2"],
+            "relacion": [500,500,500,500,500,500],
+            "u_units": [0]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Hoteles, apartahoteles (Apartamentos con servicios hoteleros)": {
+        "P.P - V": {
+            "relacion_str": ["1x225 m2", "1x225 m2", "1x150 m2", "1x113 m2", "1x90 m2", "1x90 m2"],
+            "relacion": [225,225,150,113,90,90],
+            "u_units": [0]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Hostales (Renta de camas con servicios compartidos mayor a 1 dia)": {
+        "Estrato": {
+            "relacion_str": ["1x225 m2", "1x225 m2", "1x225 m2", "1x150 m2", "1x150 m2", "1x150 m2"],
+            "relacion": [225,225,225,150,150,150],
+            "u_units": [0]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Residencias, hoteles, amoblados (Servicios por horas)": {
+        "Estrato": {
+            "relacion_str": ["1x225 m2", "1x225 m2", "1x225 m2", "1x150 m2", "1x150 m2", "1x150 m2"],
+            "relacion": [225,225,225,150,150,150],
+            "u_units": [0]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    },
+    "Salas de velacion": {
+        "Estrato (Numero de Cupos por caa sala de velacion)": {
+            "relacion_str": ["1", "2", "3", "6", "8", "10"],
+            "relacion": [1,2,3,6,8,10],
+            "u_units": [0]
+        },
+        "M. Reducida": {
+            "relacion_str": ["2%", "2%", "2%", "2%", "2%", "2%"],
+            "relacion": [50,50,50,50,50,50],
+            "u_units": [0]
+        },
+        "Carga": {
+            "relacion_str": ["1x400", "1x400", "1x400", "1x400", "1x400", "1x400"],
+            "relacion": [400,400,400,400,400,400],
+            "u_units": [0]
+        }
+    }
+  
+    
+ }

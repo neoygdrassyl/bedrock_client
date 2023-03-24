@@ -1,0 +1,37 @@
+import { PQRS_TYPE_ARRAY, PQRS_TYPE_PERSON_ARRAY, PQRS_TYPE_ID_ARRAY, PQRS_TYPE_CHANNEL_ARRAY, PQRS_MASTER_TYPE_ARRAY } from '../../../components/vars.global'
+
+const PQRS_T = {
+    form_type_request: PQRS_TYPE_ARRAY,
+    form_category_request: PQRS_MASTER_TYPE_ARRAY,
+    form_type_request_0: "Tipo de Solicitud (Obligatorio)",
+    form_type_solicitor: PQRS_TYPE_PERSON_ARRAY,
+    form_type_solicitor_0: "Tipo de solicitante (Obligatorio)",
+    form_name:  "Nombre (Obligatorio)",
+    form_surname: "Apellido (Obligatorio)",
+    form_name_legal: "Nombre Persona Jurídica (Obligatorio)",
+    form_type_id: PQRS_TYPE_ID_ARRAY,
+    form_type_id_0: "Tipo de Identificación (Obligatorio)",
+    form_id_number: "Número de Identificación (Obligatorio)",
+    form_motive: "Razón Social",
+    form_nit: "NIT",
+    form_country: "Pais",
+    form_state: "Departamento",
+    form_county: "Municipio",
+    form_address: "Dirección",
+    form_email: "Correo Electrónico",
+    form_number_phone: "Teléfono fijo",
+    form_number_mobile: "Celular",
+    form_content: "Contenido de la Solicitud (Obligatorio)",
+    form_file_title: "Adjuntar un archivo de soporte (Opcional) (Imagen, Word o PDF)",
+    form_file_lang: "es",
+    form_email_allow_text_1: "¿Permite a la Curaduría N.º 1 de Bucaramanga dar respuesta a su solicitud mediante correo electrónico?",
+    form_email_allow_text_2: "La Curaduría N.º 1 de Bucaramanga empleará el correo dado en este formulario para dar respuesta, en caso de que ese correo no sea válido, la Curaduría N.º 1 de Bucaramanga publicara todas sus respuestas en su página de publicaciones.",
+    form_radication_chanel: PQRS_TYPE_CHANNEL_ARRAY,
+    form_radication_chanel_0: "Medio de Radicación Original",
+    form_btn: "Enviar",
+    form_btn_g: "Generar",
+    form_btn_c: "Cerrar",
+    form_title_g: "Generar Nuevo PQRS: ",
+}
+
+export default PQRS_T;
