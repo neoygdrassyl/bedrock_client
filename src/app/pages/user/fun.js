@@ -572,6 +572,7 @@ class FUN extends Component {
             if (state == '-103') return <label className="fw-bold text-danger">NO CUMPLE ACTA DE CORRECIONES</label>
             if (state == '-104') return <label className="fw-bold text-danger">NO PAGO EXPENSAS VARIABLES</label>
             if (state == '-105') return <label className="fw-bold text-danger">VOLUNTARIO</label>
+            if (state == '-106') return <label className="fw-bold text-danger">NEGADA</label>
         }
         let _GET_MISSING_DATE = (row) => {
             if (row.state == '-1') return false
@@ -579,6 +580,8 @@ class FUN extends Component {
             if (row.state == '-102') return row.clock_close_2
             if (row.state == '-103') return row.clock_close_3
             if (row.state == '-104') return row.clock_close_4
+            if (row.state == '-105') return row.clock_close_5
+            if (row.state == '-106') return row.clock_close_6
         }
         let _GET_STATE_STR = (state) => {
             if (state < '-1') return <label className='text-danger text-center'>DESISTIDO (Ejecución)</label>
@@ -594,6 +597,7 @@ class FUN extends Component {
             if (state == '203') return <label className='text-danger text-center'>DESISTIDO (No subsanó Acta)</label>
             if (state == '204') return <label className='text-danger text-center'>DESISTIDO (No radicó pagos)</label>
             if (state == '205') return <label className='text-danger text-center'>DESISTIDO (Voluntario)</label>
+            if (state == '206') return <label className='text-danger text-center'>DESISTIDO (Negada)</label>
             return ''
         }
         const _fun_0_type = { '0': 'NC', 'i': 'I', 'ii': "II", 'iii': "III", 'iv': "IV", 'oa': "OA" }

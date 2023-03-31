@@ -104,11 +104,11 @@ export const SERIES_MODULES_RELATION = {
 
     '1100-200': ['1:G,2:C'],
 
-    '1100-250': ['1:G,2:B'],
+    '1100-250': ['1:G,2:D', '1:G,2:PRORROGA'],
 
     '1100-260': ['1:D,1:F', '1:F'],
 
-    '1100-270': ['1:G,2:D'],
+    '1100-270': ['1:G,2:B'],
 }
 export const SUBSERIES_MODULES_RELATION = {
     '1100-40.01': ['1:G', '2:OA', '2:COTAS'],
@@ -118,6 +118,7 @@ export const SUBSERIES_MODULES_RELATION = {
     '1100-40.05': ['1:G', '2:OA', '2:PLANOS'],
     '1100-40.06': ['1:G', '2:OA', '2:BIENES'],
     '1100-40.07': ['1:G', '2:OA', '2:ESTRUCTURAL'],
+   
 
     //'1100-70.01': [''],
     //'1100-70.02': [''],
@@ -165,6 +166,7 @@ export const SUBSERIES_MODULES_RELATION = {
 
     '1100-250.01': ['1:G', '2:B'],
     '1100-250.02': ['1:G', '2:D'],
+    '1100-250.01': ['1:G', '2:PRORROGA'],
 
     '1100-260.00': ['1:F'],
     '1100-260.01': ['1:D', '1:F', '5:D'],
@@ -485,6 +487,11 @@ function REGEX_MATCH_1100_40_07(input) {
     let regex = /revision.*independiente.*estructural/i;
     return regex.test(input);
 }
+
+function REGEX_MATCH_1100_250(input) {
+    let regex = /prorroga/i;
+    return regex.test(input);
+}
 ///
 
 // RECIEVES A DATE FORMAT YYYY-MM-DD AND RETURNS A MORE CONTEXTUALIZED FORMAT, IE: X OF JUNE OF 20XX
@@ -595,13 +602,17 @@ export function _IDENTIFY_SERIES(_CHILD_1, select = [1, 1, 1, 1, 1], isOA) {
         if (_CHILD.item_2 == 'B') _CONDITONS.push('2:B');
         if (_CHILD.item_2 == 'C') _CONDITONS.push('2:C');
         if (_CHILD.item_2 == 'D') _CONDITONS.push('2:D');
-        if (REGEX_MATCH_1100_40_01(_CHILD.item_2) ||
-            REGEX_MATCH_1100_40_02(_CHILD.item_2) ||
-            REGEX_MATCH_1100_40_03(_CHILD.item_2) ||
-            REGEX_MATCH_1100_40_04(_CHILD.item_2) ||
-            REGEX_MATCH_1100_40_05(_CHILD.item_2) ||
-            REGEX_MATCH_1100_40_06(_CHILD.item_2) ||
-            REGEX_MATCH_1100_40_07(_CHILD.item_2)) _CONDITONS.push('2:OA');
+
+        if (REGEX_MATCH_1100_40_01(_CHILD.item_2) 
+            || REGEX_MATCH_1100_40_02(_CHILD.item_2) 
+            || REGEX_MATCH_1100_40_03(_CHILD.item_2) 
+            || REGEX_MATCH_1100_40_04(_CHILD.item_2) 
+            || REGEX_MATCH_1100_40_05(_CHILD.item_2) 
+            || REGEX_MATCH_1100_40_06(_CHILD.item_2) 
+            || REGEX_MATCH_1100_40_07(_CHILD.item_2)
+           //|| REGEX_MATCH_1100_250(_CHILD.item_2) 
+        ) _CONDITONS.push('2:OA');
+
         if (REGEX_MATCH_1100_40_01(_CHILD.item_2) && isOA) _CONDITONS.push('2:COTAS');
         if (REGEX_MATCH_1100_40_02(_CHILD.item_2) && isOA) _CONDITONS.push('2:PH');
         if (REGEX_MATCH_1100_40_03(_CHILD.item_2) && isOA) _CONDITONS.push('2:TIERRA');
@@ -609,6 +620,7 @@ export function _IDENTIFY_SERIES(_CHILD_1, select = [1, 1, 1, 1, 1], isOA) {
         if (REGEX_MATCH_1100_40_05(_CHILD.item_2) && isOA) _CONDITONS.push('2:PLANOS');
         if (REGEX_MATCH_1100_40_06(_CHILD.item_2) && isOA) _CONDITONS.push('2:BIENES');
         if (REGEX_MATCH_1100_40_07(_CHILD.item_2) && isOA) _CONDITONS.push('2:ESTRUCTURAL');
+        if (REGEX_MATCH_1100_250(_CHILD.item_2)) _CONDITONS.push('2:PRORROGA');
     }
     if (select[2]) {
         if (_CHILD.item_3 == 'A') _CONDITONS.push('3:A');
@@ -637,7 +649,8 @@ export function _IDENTIFY_SERIES(_CHILD_1, select = [1, 1, 1, 1, 1], isOA) {
 }
 
 export function _GET_SERIE_COD(_CHILD) {
-    let _CONDITONS = _IDENTIFY_SERIES(_CHILD, [1, 0, 0, 0, 0]);
+    let isOA = regexChecker_isOA(_CHILD)
+    let _CONDITONS = _IDENTIFY_SERIES(_CHILD, [1, isOA, 0, 0, 0]);
     let _SERIES = [];
     for (var ITEM in SERIES_MODULES_RELATION) {
         let isFounded = false;
@@ -656,7 +669,8 @@ export function _GET_SERIE_STR(_CHILD) {
     return _SERIES_STR;
 }
 export function _GET_SUBSERIE_COD(_CHILD) {
-    let _CONDITONS = _IDENTIFY_SERIES(_CHILD, [1, 0, 1, 1, 1], true);
+    let isOA = regexChecker_isOA(_CHILD)
+    let _CONDITONS = _IDENTIFY_SERIES(_CHILD, [1, isOA, 1, 1, 1], true);
     let _SUBSERIES = [];
     for (var ITEM in SUBSERIES_MODULES_RELATION) {
         let isFounded = false;

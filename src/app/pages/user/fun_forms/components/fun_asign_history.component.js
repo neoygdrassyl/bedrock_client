@@ -98,6 +98,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
         if (state == '203') return string ? "DESISTIDO (No subsanó Acta)" : <label className='text-danger text-center'>DESISTIDO (No subsanó Acta)</label>
         if (state == '204') return string ? "DESISTIDO (No radicó pagos)" : <label className='text-danger text-center'>DESISTIDO (No radicó pagos)</label>
         if (state == '205') return string ? "DESISTIDO (Voluntario)" : <label className='text-danger text-center'>DESISTIDO (Voluntario)</label>
+        if (state == '206') return string ? "DESISTIDO (Negada)" : <label className='text-danger text-center'>DESISTIDO (Negada)</label>
         return ''
     }
     let _GET_REVIEW = (_REVIEW) => {

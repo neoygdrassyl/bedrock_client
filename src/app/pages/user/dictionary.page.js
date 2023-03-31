@@ -76,6 +76,7 @@ export default function DICTIONARY(props) {
         if (state == '203') return <label className='text-danger fw-bold'>DESISTIDO (No subsanó Acta)</label>
         if (state == '204') return <label className='text-danger fw-bold'>DESISTIDO (No radicó pagos)</label>
         if (state == '205') return <label className='text-danger fw-boldr'>DESISTIDO (Voluntario)</label>
+        if (state == '206') return <label className='text-danger fw-boldr'>DESISTIDO (Negada)</label>
         return ''
     }
     function _FILTER_H(row) {

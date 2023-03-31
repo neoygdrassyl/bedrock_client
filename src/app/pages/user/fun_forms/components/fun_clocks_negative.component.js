@@ -114,6 +114,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             '-3': 'NO CUMPLE ACTA CORRECCIONES',
             '-4': 'NO PAGA EXPENSAS',
             '-5': 'VOLUNTARIO',
+            '-6': 'NEGADA',
         }
         const resolveStatusIcon = {
             '-1': <i class="far fa-dot-circle text-muted" style={{ fontSize: '150%' }}></i>,
@@ -285,6 +286,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                                 <option value="-3">NO CUMPLE CORRECCIONES DEL ACTA</option>
                                 <option value="-4">NO PAGO EXPENSAS VARIABLES</option>
                                 <option value="-5">DESISTIMIENTO VOLUNTARIO</option>
+                                <option value="-6">NEGADA</option>
                             </select>
                         </div>
                         <div className="col">
@@ -1005,6 +1007,11 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                             <label className="upper-case">VOLUNTARIO</label>
                         </MDBTabsLink>
                     </MDBTabsItem>
+                    <MDBTabsItem>
+                    <MDBTabsLink onClick={() => handleFillClick('-106')} active={this.state.fillActive == '-106'}>
+                        <label className="upper-case">NEGADA</label>
+                    </MDBTabsLink>
+                </MDBTabsItem>
                 </MDBTabs>
 
                 <MDBTabsContent>
@@ -1023,6 +1030,9 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                     <MDBTabsPane show={this.state.fillActive == '-105'}>
                         {_MANAGE_NEGATIVE_PROCESS('-5')}
                     </MDBTabsPane>
+                    <MDBTabsPane show={this.state.fillActive == '-106'}>
+                    {_MANAGE_NEGATIVE_PROCESS('-6')}
+                </MDBTabsPane>
                 </MDBTabsContent>
 
                 {currentItem.state < -100 ? <>
