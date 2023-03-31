@@ -90,6 +90,7 @@ let _fun_0_state = (state, simple, row) => {
     if (state == '203' && !simple) return <label className='text-danger text-center'>DESISTIDO (No subsanó Acta)</label>
     if (state == '204' && !simple) return <label className='text-danger text-center'>DESISTIDO (No radicó pagos)</label>
     if (state == '205' && !simple) return <label className='text-danger text-center'>DESISTIDO (Voluntario)</label>
+    if (state == '206' && !simple) return <label className='text-danger text-center'>DESISTIDO (Negada)</label>
 
     if (state == '100' && simple) return 'CERRADO'
     if (state == '101' && simple) return 'ARCHIVADO'
@@ -99,6 +100,7 @@ let _fun_0_state = (state, simple, row) => {
     if (state == '203' && simple) return 'DESISTIDO (No subsanó Acta)'
     if (state == '204' && simple) return 'DESISTIDO (No radicó pagos)'
     if (state == '205' && simple) return 'DESISTIDO (Voluntario)'
+    if (state == '206' && simple) return 'DESISTIDO (Negada)'
     return state;
 }
 const _fun_0_type_days_matrix = {
@@ -1775,6 +1777,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             {
                 name: <label>INFO</label>,
                 button: true,
+                ignoreCSV: true,
                 cell: row => <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
                     {_MODULE_BTN_POP({ ...row, id: row.id_sistem })}
                 </MDBPopover>
@@ -1785,6 +1788,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 sortable: true,
                 filterable: true,
                 minWidth: '300px',
+                cvsCB: row => formsParser1(row, true),
                 cell: row => <label>{row.usos == 'A' ? <u>{_PARSE_FUN_1(row)}</u> : _PARSE_FUN_1(row)}</label>
             },
             {
@@ -1830,6 +1834,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             {
                 name: <label>SUJETO</label>,
                 minWidth: '150px',
+                cvsCB: row => _GET_SUBJECT(row, true),
                 cell: row => <label>{_GET_SUBJECT(row)}</label>
             },
             {
@@ -2054,6 +2059,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             if (state == '-3') return "NO CUMPLE ACTA DE CORRECCIONES"
             if (state == '-4') return "NO PAGO EXPENSAS"
             if (state == '-5') return "VOLUNTARIO"
+            if (state == '-6') return "NEGADA"
             return "SIN DEFINIR"
         }
         let _GET_CURRENT_STEP = (row) => {
@@ -2156,10 +2162,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
             return dateParser_finalDate(date, time)
         }
-        let _GET_SUBJECT = (row) => {
+        let _GET_SUBJECT = (row, isString) => {
             let _state = -5;
             let _SUBJECT_0 = <label className="text-danger fw-bold">CURADURIA</label>
             let _SUBJECT_1 = <label className="text-success fw-bold">SOLICITANTE</label>
+            if (isString) {
+                _SUBJECT_0 = "CURADURIA"
+                _SUBJECT_1 = "SOLICITANTE"
+            }
             for (var i = 0; i < statesToCheck.length; i++) {
                 if (row[statesToCheck[i]]) _state = stepsToCheck[i]
             }
@@ -2411,7 +2421,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             else return oldestDate;
 
         }
-        let generateCVS = (_data) => {
+        let generateCVS = (_data, _name) => {
             var rows = [];
             let extraColumns = [
                 {
@@ -2689,7 +2699,35 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
             var link = document.createElement("a");
             link.setAttribute("href", fixedEncodedURI);
-            link.setAttribute("download", `${'LICENCIAS URBANISTICAS'}.csv`);
+            link.setAttribute("download", `${_name ?? 'LICENCIAS URBANISTICAS'}.csv`);
+            document.body.appendChild(link); // Required for FF
+
+            link.click();
+        }
+        let generateCVSNegative = (_data, _name) => {
+            var rows = [];
+            let _columns = [...columns_negative]
+            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name.props.children })
+            rows = _data.map(d =>
+                _columns.filter(c => c.ignoreCSV == undefined).map(c => {
+                    if (c.cvsCB) return (String(c.cvsCB(d) ?? '')).replace(/[\n\r]+ */g, ' ')
+                    else return (String(c.cell(d).props.children ?? '')).replace(/[\n\r]+ */g, ' ')
+                }
+                )
+            );
+
+            rows.unshift(headRows);
+
+            let csvContent = "data:text/csv;charset=utf-8,"
+                + rows.map(e => e.join(";")).join("\n");
+
+
+            var encodedUri = encodeURI(csvContent);
+            const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
+
+            var link = document.createElement("a");
+            link.setAttribute("href", fixedEncodedURI);
+            link.setAttribute("download", `${_name ?? 'LICENCIAS URBANISTICAS'}.csv`);
             document.body.appendChild(link); // Required for FF
 
             link.click();
@@ -2779,9 +2817,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 paginationRowsPerPageOptions={[30, 60, 120]}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                 className="data-table-component"
-                                noHeader
                                 dense
-
+                                title={
+                                    <div class="d-flex justify-content-between">
+                                        <div><h5>OTRAS ACTUACIONES</h5></div>
+                                        <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(this.state.data_oa, "OTRAS ACTUACIONES") }}
+                                        ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                    </div>
+                                }
                                 progressPending={!load}
                                 progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
 
@@ -2827,7 +2870,13 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                     paginationRowsPerPageOptions={[50, 100, 200]}
                                     paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                     className="data-table-component"
-                                    noHeader
+                                    title={
+                                        <div class="d-flex justify-content-between">
+                                            <div><h5>DESISTIDOS / DESISTENDO</h5></div>
+                                            <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVSNegative(this.state.data_negative, "DESISTIDOS") }}
+                                            ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                        </div>
+                                    }
                                     dense
                                     onRowClicked={(e) => this.props.setSelectedRow(e.id_sistem)}
                                 />
