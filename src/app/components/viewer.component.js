@@ -129,7 +129,7 @@ export default function VIEWER(props) {
                 <div className="my-2 d-flex justify-content-between ">
                     <div className='row'>
                         <div class="input-group">
-                            <label className=''><i class="fas fa-hard-hat"></i> DOCUMENTOS PROFESIONALES</label>
+                            <label className=''><i class="fas fa-hard-hat"></i> DOCUMENTO</label>
                         </div>
                     </div>
 
