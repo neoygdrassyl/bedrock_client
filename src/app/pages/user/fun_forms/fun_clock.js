@@ -9,6 +9,7 @@ import FUN_CLOCK_CHART from './components/func_clock_chart';
 import CLOCKS_CONTROL from './components/clocks_control.component';
 import FUN_CLOCK_EVENTS from './components/fun_clocks_events.component';
 import { dateParser_timePassed } from '../../../components/customClasses/typeParse';
+import EMAILS_COMPONENT from '../../../components/emails.component';
 
 var momentB = require('moment-business-days');
 const MySwal = withReactContent(Swal);
@@ -18,9 +19,11 @@ class FUNCLOCK extends Component {
         super(props);
         this.retrieveItem = this.retrieveItem.bind(this);
         this.requestRefresh = this.requestRefresh.bind(this);
+        this.setEmailUsers = this.setEmailUsers.bind(this);
         this.state = {
             calendar_Data: [],
             pqrsxfun: false,
+            email_users: false,
         };
     }
     componentDidMount() {
@@ -33,6 +36,7 @@ class FUNCLOCK extends Component {
                     currentItem: response.data,
                     load: true
                 })
+                this.setEmailUsers(response.data)
                 this.retrievePQRSxFUN(response.data.id_public);
             })
             .catch(e => {
@@ -59,9 +63,40 @@ class FUNCLOCK extends Component {
     requestRefresh() {
         this.props.requesRefresh();
     }
+    setEmailUsers(_currentItem){
+        let users = {
+            f52_names: null, f52_surnames: null, f52_emails: null,
+            f53_name: null, f53_surname: null, f53_email: null,
+        };
+
+        let fn = []
+        let fs = []
+        let fe = []
+
+        _currentItem.fun_52s.map(item => {
+            if(!fe.includes(item.email)){
+                fn.push(item.name)
+                fs.push(item.surname)
+                fe.push(item.email)
+            }
+        })
+
+        users.f52_names = fn.join(';');
+        users.f52_surnames = fs.join(';');
+        users.f52_emails = fe.join(';');
+
+        if(_currentItem.fun_53s[0] && _currentItem.fun_53s[0].email){
+            users.f53_name =_currentItem.fun_53s[0].name;
+            users.f53_surname = _currentItem.fun_53s[0].surname;
+            users.f53_email = _currentItem.fun_53s[0].email;
+        }
+
+        this.setState({email_users: users})
+       
+    }
     render() {
         const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { currentItem, calendar_Data } = this.state;
+        const { currentItem, calendar_Data, email_users } = this.state;
         return (
             <div>
                 {currentItem != null ? <>
@@ -103,6 +138,14 @@ class FUNCLOCK extends Component {
                             requestRefresh={this.requestRefresh}
                         />
                     </fieldset>
+
+                    <EMAILS_COMPONENT  
+                    translation={translation} 
+                    swaMsg={swaMsg}
+                    id_public={currentItem.id_public} 
+                    process="lic" 
+                    users={email_users}
+                    />
 
                     <FUN_MODULE_NAV
                         translation={translation}

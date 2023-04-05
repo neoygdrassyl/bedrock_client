@@ -90,6 +90,43 @@ const info = {
             art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
         }
     },
+    'fl2': {
+        name: 'CURADURIA URBANA 2',
+        dir: 'LAURA MARCELA GARCIA ARBOLEDA',
+        title: 'ABPGADA',
+        job: 'CURADORA URBANA DOS DE FLORIDABLANCA',
+        titles: 'ABG.',
+        city: 'Floridablanca',
+        state: 'SANTANDER',
+        nomen: '68547-2-',
+        nomens: '2',
+        address: 'TV 154 No 150-26 Torre 1 LOCAL 5 -Edificio Torres del Bosque',
+        web: 'www.curaduria1piedecuesta.com',
+        number1: ' ',
+        number2: '(+57)301 6123671',
+        email1: ' ',
+        email2: '',
+        nit: '',
+        schedule: 'Lunes a Viernes: 08:00 - 12:00pm y 2:00pm - 6:00pm',
+        icon: Logo2,
+        m: 0.713,
+        axisVar: ["Zona Floridablanca"],
+        axisTable: [3000],
+        zonesVar: ["N/A",],
+        zonesTable : [0.1,],
+        pot: '11/2003',
+        sign: {
+            text: 'Esta valla advierte a terceros sobre la iniciación del trámite administrativo correspondiente. Toda persona interesada en formular objeciones a la expedición de una licencia urbanística podrá hacerse parte del trámite administrativo desde la fecha de la radicación de la solicitud hasta antes de la expedición del acto administrativo que resuelve la solicitud. Dicho acto sólo podrá ser expedido una vez haya transcurrido un término mínimo de cinco (5) días hábiles, contados a partir del día siguiente a la fecha de la citación a los vecinos colindantes o de la publicación cuando este fuere necesaria y, en el caso de los demás terceros, a partir del día siguiente a la fecha en que se radique la fotografía donde conste la instalación de la valla o aviso (Artículo 2.2.6.1.2.2.2 Decreto 1077 de 2015).'
+        },
+        serials: {
+            start:'VR',
+            end: 'OE',
+        },
+        exp_rules : ['Exp. Variables', 'Imp. Delineacion', 'Ambos', 'Ignorar'],
+        res_extras : {
+            art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
+        }
+    },
 }
 
 
