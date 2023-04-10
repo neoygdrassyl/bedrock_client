@@ -256,7 +256,7 @@ export default function EMAILS_COMPONENT(props) {
             </div>
             <div className='row'>
                 <div className='col border border-dark'>
-                    <label style={{ color: 'darkgrey' }}>Sujeto: </label>  <label className=''>{data.subject}</label>
+                    <label style={{ color: 'darkgrey' }}>Asunto: </label>  <label className=''>{data.subject}</label>
                 </div>
             </div>
             <div className='row'>
