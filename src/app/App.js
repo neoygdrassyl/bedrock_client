@@ -78,6 +78,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import { Nav, Navbar } from 'rsuite';
 import PROFESIONALS from './pages/user/profesionals/profesionals.page';
 import GUIDE_USER from './pages/user/guide_user/guide_user.page';
+import { infoCud } from './components/jsons/vars';
 
 
 const MySwal = withReactContent(Swal);
@@ -484,9 +485,7 @@ function LoginPage() {
     <div className="Login">
       <div className="row my-4 d-flex justify-content-center">
         <div className="col-lg-8 col-md-12">
-          <h2 className="text-center my-4">{t('login.str_title')}</h2>
-          <br />
-          <p className="text-center">You must log in to view the page at this page</p>
+          <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.nomens} DE {infoCud.city.toUpperCase()}</h2>
           <div className="d-flex justify-content-center">
             <div className="bg-card w-50">
               <div class="card-body">

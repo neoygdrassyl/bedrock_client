@@ -33,6 +33,9 @@ class UserslDataService {
   getFun6(id) {
     return http.get(`/${route}/fun6/${id}`);
   }
+  getFun6Doc(path, name) {
+    return http.get(`/files/${path}/${name}`);
+  }
   get_fun1(id_public) {
     return http.get(`/${route}/get/fun1/${id_public}`);
   }

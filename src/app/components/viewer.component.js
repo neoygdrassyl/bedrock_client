@@ -36,7 +36,7 @@ const customStylesForModal = {
 };
 
 export default function VIEWER(props) {
-    const { API, params } = props;
+    const { API, params, Button } = props;
 
     const [loadData, setLoaddata] = useState(0);
     const [scale, setScale] = useState(1);
@@ -116,9 +116,9 @@ export default function VIEWER(props) {
 
     return (
         <>
-            <MDBBtn className="btn btn-sm btn-info px-2 ms-2" onClick={() => setModalV(!modalViwewer)} >
-                <i class="fas fa-search"></i>
-            </MDBBtn>
+        <MDBBtn className="btn btn-sm btn-info px-2 ms-2" onClick={() => setModalV(!modalViwewer)} >
+            <i class="fas fa-search"></i>
+        </MDBBtn>
 
             <Modal
                 contentLabel="MANAGE PROF"
