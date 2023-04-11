@@ -29,6 +29,7 @@ class RECORD_ENG_43 extends Component {
             var STEP = LOAD_STEP(_id_public);
             if (!STEP.id) return null;
             var value = STEP[_type]
+            if (!value) return [];
             value = value.split(';');
             return value[_index]
         }

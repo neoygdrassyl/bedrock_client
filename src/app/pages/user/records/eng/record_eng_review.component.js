@@ -10,6 +10,7 @@ import { cities, domains_number } from '../../../../components/jsons/vars';
 import { handleEnghCheck } from '../../../../components/customClasses/pdfCheckHandler';
 import { VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
+import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 
 const MySwal = withReactContent(Swal);
 
@@ -272,7 +273,7 @@ class RECORD_ENG_REVIEW extends Component {
         };
         // DATA CONVERTERS
         let _FIND_IN_VRDOCS = (code) => {
-            if(!code) return false;
+            if (!code) return false;
             let FOUND_CODE = VRDocs.find(vr => code.includes(vr.code));
             return FOUND_CODE;
         }
@@ -549,7 +550,7 @@ class RECORD_ENG_REVIEW extends Component {
 
             const ALLOW_REVIEW = _ALLOW_REVIEW();
             return <>
-            {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
+                {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 4.1.1 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
                 </MDBTypography> : ''}
@@ -616,6 +617,18 @@ class RECORD_ENG_REVIEW extends Component {
                                         ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
                                             onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
                                         : ""
+                                    }
+                                    {(ireview != null) && allowReview ?
+                                        //false ?
+                                        <RECORD_DOCUMENT_VERSION
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            requestUpdate={this.props.requestUpdate}
+                                            swaMsg={swaMsg}
+                                            id6={"eng" + i} />
+                                        : ''
                                     }
                                 </div>
                             </div>
@@ -728,7 +741,7 @@ class RECORD_ENG_REVIEW extends Component {
         }
         let _COMPOENT_PDF = () => {
             let _CHILD = _GET_REVIEW();
-            let _WORKER_NAME =  currentRecord.worker_name;
+            let _WORKER_NAME = currentRecord.worker_name;
             let _RR = _GET_RECORD_REVIEW();
 
             let _REVIEWS = _GET_CLOCK_STATE_VERSION(12, 200).resolver_context ? _GET_CLOCK_STATE_VERSION(12, 200).resolver_context.split(';') : [];

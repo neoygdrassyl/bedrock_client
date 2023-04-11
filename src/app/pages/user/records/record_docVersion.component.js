@@ -6,6 +6,7 @@ import Modal from 'react-modal';
 import moment from 'moment';
 import FUNService from '../../../services/fun.service';
 import { PDFDocument } from 'pdf-lib';
+import VIEWER from '../../../components/viewer.component';
 
 const MySwal = withReactContent(Swal);
 const customStylesForModal = {
@@ -55,9 +56,9 @@ export default function RECORD_DOCUMENT_VERSION(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, id6 } = props;
 
     const [modal, setModal] = useState(false)
+    const [idDoc, setIdDoc] = useState(false)
 
     useEffect(() => {
-       
     }, [currentItem]);
     // ******************* DATA GETERS ********************* //
     let _GET_CHILD_6 = () => {
@@ -81,6 +82,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         let _LIST = _GET_CHILD_6();
         for (var i = 0; i < _LIST.length; i++) {
             if (_LIST[i].id_replace == _ID) {
+                console.log(_LIST[i])
                 return _LIST[i];
             }
         }
@@ -104,7 +106,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
                 <div className="col-12">
                     <div class="input-group">
                         <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                        <input type="file" class="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])}/>
+                        <input type="file" class="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])} />
                     </div>
                     <div class="input-group">
                         <input id={'fun6_description'} class="form-control" value={VERSION_DESC[id6] || 'Documento de Evaluación'} hidden />
@@ -119,7 +121,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
                 </div>
                 <div className="col-3">
                     <div class="input-group">
-                        <input type="number" class="form-control" step="1" min="0" id={'fun6_page'} hidden/>
+                        <input type="number" class="form-control" step="1" min="0" id={'fun6_page'} hidden />
                     </div>
                 </div>
                 <div className="col">
@@ -135,7 +137,8 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         </form>
     }
 
-
+    let BTN_DOWN = <MDBBtn floating tag='a' size='sm' color='primary' className='ms-1'><i class="fas fa-download"></i></MDBBtn>
+    let BTN_VIEW = (API, params) => <VIEWER API={API} params={params} ></VIEWER>
     // ******************* APIS ******************* //
     let addDocument = (e) => {
         e.preventDefault();
@@ -154,10 +157,10 @@ export default function RECORD_DOCUMENT_VERSION(props) {
             }
         }
 
-        let desc =  document.getElementById("fun6_description").value;
-        let code =  document.getElementById("fun6_code").value;
-        let page =  document.getElementById("fun6_page").value || 0;
-        let date =  document.getElementById("fun6_date").value;
+        let desc = document.getElementById("fun6_description").value;
+        let code = document.getElementById("fun6_code").value;
+        let page = document.getElementById("fun6_page").value || 0;
+        let date = document.getElementById("fun6_date").value;
         formData.set('descriptions', desc);
         formData.set('codes', "");
         formData.set('codes2', code);
@@ -202,10 +205,19 @@ export default function RECORD_DOCUMENT_VERSION(props) {
             });
 
     }
+
+    function getF6Document(f6DocInfo) {
+        return FUNService.getFun6Doc(f6DocInfo.path, f6DocInfo.filename)
+        .then(response => {
+            return response
+        }).catch(e => {
+            console.log(e);
+        });
+    }
     return (
         <>
-            {!_FIND_6_ID_REPLACE(id6) ? <MDBBtn floating tag='a' size='sm' color='danger' className='ms-1' onClick={() => setModal(true)}><i class="fas fa-upload"></i></MDBBtn> : null }
-            {_FIND_6_ID_REPLACE(id6) ? <MDBBtn floating tag='a' size='sm' color='primary' className='ms-1'><i class="fas fa-download"></i></MDBBtn> : null}
+            {!_FIND_6_ID_REPLACE(id6) ? <MDBBtn floating tag='a' size='sm' color='danger' className='ms-1' onClick={() => setModal(true)}><i class="fas fa-upload"></i></MDBBtn> : null}
+            {_FIND_6_ID_REPLACE(id6) ? BTN_VIEW(getF6Document, [_FIND_6_ID_REPLACE(id6)]) : null}
 
             <Modal contentLabel="UPLOAD RECORD DOC"
                 isOpen={modal}

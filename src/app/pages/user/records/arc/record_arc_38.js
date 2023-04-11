@@ -12,6 +12,7 @@ import { handleArchCheck } from '../../../../components/customClasses/pdfCheckHa
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import { VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
+import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -613,6 +614,18 @@ class RECORD_ARC_38 extends Component {
                                     ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
                                         onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
                                     : ""
+                                }
+                                {(ireview != null) && allowReview ?
+                                //false ?
+                                    <RECORD_DOCUMENT_VERSION
+                                        currentItem={currentItem}
+                                        currentVersion={currentVersion}
+                                        currentRecord={currentRecord}
+                                        currentVersionR={currentVersionR}
+                                        requestUpdate={this.props.requestUpdate}
+                                        swaMsg={swaMsg}
+                                        id6={"arc" + i} />
+                                    : ''
                                 }
                             </div>
                         </div>
