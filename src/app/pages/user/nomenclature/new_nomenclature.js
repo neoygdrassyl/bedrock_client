@@ -57,7 +57,7 @@ class NOMENCLATURE_NEW extends Component {
                 _CHILD_VARS.surname = _CHILD.surname;
                 _CHILD_VARS.number_id = _CHILD.number_id;
                 _CHILD_VARS.address = _CHILD.address;
-                _CHILD_VARS.neighbour = _CHILD.neighbour;
+                _CHILD_VARS.neighbour = _CHILD.neighbour ? _CHILD.neighbour.split(";") : ["", ""];
                 _CHILD_VARS.predial = _CHILD.predial;
                 _CHILD_VARS.matricula = _CHILD.matricula;
                 _CHILD_VARS.date_start = _CHILD.date_start;
@@ -65,7 +65,7 @@ class NOMENCLATURE_NEW extends Component {
                 _CHILD_VARS.details = _CHILD.details;
                 _CHILD_VARS.number = _CHILD.number;
                 _CHILD_VARS.note = _CHILD.note;
-                _CHILD_VARS.use = _CHILD.use;
+                _CHILD_VARS.use = _CHILD.use ?? '';
                 _CHILD_VARS.recipe_office_id = _CHILD.recipe_office_id;
                 _CHILD_VARS.recipe_office_date = _CHILD.recipe_office_date;
                 _CHILD_VARS.recipe_county_id = _CHILD.recipe_county_id;
@@ -121,7 +121,7 @@ class NOMENCLATURE_NEW extends Component {
                             </span>
                             <input type="text" class="form-control" id="nomen_1" required
                                 defaultValue={_CHILD.id_public} />
-                                 <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                         </div>
                     </div>
                     <div className="col-4">
@@ -183,7 +183,7 @@ class NOMENCLATURE_NEW extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-6">
+                    <div className="col-4">
                         <label >6. Dirección Predio</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
@@ -193,20 +193,34 @@ class NOMENCLATURE_NEW extends Component {
                                 defaultValue={_CHILD.address} />
                         </div>
                     </div>
-                    <div className="col-6">
-                        <label >7. Barrio</label>
+                    <div className="col-4">
+                        <label >7.1 Tipo localizacion</label>
+                        <div class="input-group mb-1">
+                            <span class="input-group-text bg-info text-white">
+                                <i class="fas fa-home"></i>
+                            </span>
+                            <select class="form-select" required id="nomen_16_1"
+                            defaultValue={_CHILD.neighbour[1]}>
+                            <option>BARRIO</option>
+                            <option>URBANIZACIÓN</option>
+                            <option>VEREDA</option>
+                        </select>
+                        </div>
+                    </div>
+                    <div className="col-4">
+                        <label >7.2 Barrio</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-home"></i>
                             </span>
                             <input type="text" class="form-control" id="nomen_16"
-                                defaultValue={_CHILD.neighbour} />
+                                defaultValue={_CHILD.neighbour[0]} />
                         </div>
                     </div>
                 </div>
 
                 <div className="row">
-                    <div className="col-4">
+                    <div className="col-6">
                         <label >8. Número Predial/Catastral</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
@@ -216,7 +230,7 @@ class NOMENCLATURE_NEW extends Component {
                                 defaultValue={_CHILD.predial} />
                         </div>
                     </div>
-                    <div className="col-4">
+                    <div className="col-6">
                         <label >9. Número de Matrícula</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
@@ -226,21 +240,48 @@ class NOMENCLATURE_NEW extends Component {
                                 defaultValue={_CHILD.matricula} />
                         </div>
                     </div>
-                    <div className="col-4">
-                        <label >10. Destino</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
-                            </span>
-                            <select class="form-select" required id="nomen_18"
-                                defaultValue={_CHILD.use}>
-                                <option>VIVIENDA</option>
-                                <option>COMERCIO</option>
-                                <option>VIVIENDA Y COMERCIO</option>
-                            </select>
+                </div>
+                <div className="row">
+                    <label >10. Destino</label>
+                    <div className='row p-3'>
+                        <div className="col">
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" name={"use"}
+                                    value={"VIVIENDA"} defaultChecked={_CHILD.use.includes("VIVIENDA")} />
+                                <label class="form-check-label" >VIVIENDA</label>
+                            </div>
+                        </div>
+                        <div className="col">
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" name={"use"}
+                                    value={"COMERCIO"} defaultChecked={_CHILD.use.includes("COMERCIO")} />
+                                <label class="form-check-label" >COMERCIO</label>
+                            </div>
+                        </div>
+                        <div className="col">
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" name={"use"}
+                                    value={"INDUSTRIAL"} defaultChecked={_CHILD.use.includes("INDUSTRIAL")} />
+                                <label class="form-check-label" >INDUSTRIAL</label>
+                            </div>
+                        </div>
+                        <div className="col">
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" name={"use"}
+                                    value={"DOTACIONAL"} defaultChecked={_CHILD.use.includes("DOTACIONAL")} />
+                                <label class="form-check-label" >DOTACIONAL</label>
+                            </div>
+                        </div>
+                        <div className="col">
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" name={"use"}
+                                    value={"INSTITUCIONAL"} defaultChecked={_CHILD.use.includes("INSTITUCIONAL")} />
+                                <label class="form-check-label" >INSTITUCIONAL</label>
+                            </div>
                         </div>
                     </div>
                 </div>
+
                 <div className="row">
                     <div className="col-4">
                         <label >11.1. Fecha Radicación</label>
@@ -354,12 +395,22 @@ class NOMENCLATURE_NEW extends Component {
             if (details) formData.set('details', details);
             let number = document.getElementById("nomen_11").value;
             if (number) formData.set('number', number);
-            let neighbour = document.getElementById("nomen_16").value;
-            if (neighbour) formData.set('neighbour', neighbour);
+            let neighbour = [] 
+            neighbour.push(document.getElementById("nomen_16").value || '')
+            neighbour.push(document.getElementById("nomen_16_1").value || '');
+            if (neighbour.length) formData.set('neighbour', neighbour.join(";"));
+
             let note = document.getElementById("nomen_17").value;
             if (note) formData.set('note', note);
-            let use = document.getElementById("nomen_18").value;
-            if (use) formData.set('use', use);
+
+            let use = [];
+            let uses = document.getElementsByName('use')
+            for (let i = 0; i < uses.length; i++) {
+                const use_value = uses[i].value;
+                const use_checked = uses[i].checked;
+                if (use_checked) use.push(use_value)
+            }
+            if (use.length) formData.set('use', use.join(', '));
 
             let recipe_office_id = document.getElementById("nomen_12").value;
             if (recipe_office_id) formData.set('recipe_office_id', recipe_office_id);
@@ -469,7 +520,7 @@ class NOMENCLATURE_NEW extends Component {
             <div className="Nomenclature_new container">
                 <fieldset className="p-3">
                     <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                        <label className="app-p lead fw-normal text-uppercase text-light">{currentItem ? "ACTUALIZAR": "NUEVA"} NOMENCLATURA</label>
+                        <label className="app-p lead fw-normal text-uppercase text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} NOMENCLATURA</label>
                     </legend>
                     <form id="form_new_nomen" onSubmit={save_nomenclature}>
                         {COMPONENT_NEW()}
@@ -483,18 +534,18 @@ class NOMENCLATURE_NEW extends Component {
                         </div>
                     </form>
                 </fieldset>
-                {currentItem 
-                ? <fieldset className="p-3">
-                    <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                        <label className="app-p lead fw-normal text-uppercase text-light">DOCUMENTO</label>
-                    </legend>
-                    <NOMENCLATURE_ANEX 
-                        translation={translation} swaMsg={swaMsg} globals={globals} 
-                        currentItem={currentItem}
-                        refreshItem={this.refreshList}
-                    />
-                </fieldset>
-                : ""}
+                {currentItem
+                    ? <fieldset className="p-3">
+                        <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
+                            <label className="app-p lead fw-normal text-uppercase text-light">DOCUMENTO</label>
+                        </legend>
+                        <NOMENCLATURE_ANEX
+                            translation={translation} swaMsg={swaMsg} globals={globals}
+                            currentItem={currentItem}
+                            refreshItem={this.refreshList}
+                        />
+                    </fieldset>
+                    : ""}
             </div >
         );
     }

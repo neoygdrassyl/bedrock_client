@@ -1,6 +1,7 @@
 import Logo1 from '../../img/logo.png'
 import Logo2 from '../../img/logo2.png'
 import Logo3 from '../../img/logogov.png'
+import LogoFl from '../../img/logo3.png'
 import IMG1 from '../../img/slider/img1.jpg'
 import IMG2 from '../../img/slider/img2.jpg'
 import IMG3 from '../../img/slider/img3.jpg'
@@ -93,23 +94,23 @@ const info = {
     'fl2': {
         name: 'CURADURIA URBANA 2',
         dir: 'LAURA MARCELA GARCIA ARBOLEDA',
-        title: 'ABPGADA',
+        title: 'ABOGADA',
         job: 'CURADORA URBANA DOS DE FLORIDABLANCA',
         titles: 'ABG.',
         city: 'Floridablanca',
         state: 'SANTANDER',
-        nomen: '68547-2-',
+        nomen: '68276-2-',
         nomens: '2',
-        address: 'TV 154 No 150-26 Torre 1 LOCAL 5 -Edificio Torres del Bosque',
-        web: 'www.curaduria1piedecuesta.com',
-        number1: ' ',
-        number2: '(+57)301 6123671',
-        email1: ' ',
+        address: 'TV 154 No 150-44 LOCAL 5 -Edificio Torres del Bosque',
+        web: ' - ',
+        number1: '67 78 293',
+        number2: '(+57)305 216 6699',
+        email1: 'curaduria2f.informacion@gmail.com',
         email2: '',
-        nit: '',
+        nit: '25289814-0',
         schedule: 'Lunes a Viernes: 08:00 - 12:00pm y 2:00pm - 6:00pm',
-        icon: Logo2,
-        m: 0.713,
+        icon: LogoFl,
+        m: 0.675,
         axisVar: ["Zona Floridablanca"],
         axisTable: [3000],
         zonesVar: ["N/A",],

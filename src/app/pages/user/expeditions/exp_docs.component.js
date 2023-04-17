@@ -5,9 +5,7 @@ import { addDecimalPoints, formsParser1, getJSONFull, regexChecker_isOA_2, _ADDR
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoCud, nomens } from '../../../components/jsons/vars';
-import FUN_SERVICE from '../../../services/fun.service';
 import { MDBBtn, MDBCollapse } from 'mdb-react-ui-kit';
-import { MDBAccordion, MDBAccordionItem } from 'mdbreact';
 import Collapsible from 'react-collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import moment from 'moment';

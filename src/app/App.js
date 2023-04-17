@@ -485,7 +485,7 @@ function LoginPage() {
     <div className="Login">
       <div className="row my-4 d-flex justify-content-center">
         <div className="col-lg-8 col-md-12">
-          <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.nomens} DE {infoCud.city.toUpperCase()}</h2>
+          <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
           <div className="d-flex justify-content-center">
             <div className="bg-card w-50">
               <div class="card-body">
