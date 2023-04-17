@@ -162,11 +162,16 @@ class NOMENCLATURE_ANEX extends Component {
             if (type == "RECTIFICACION") type = "RECTIFICACIÓN DE NOMENCLATURA"
             formData.set('type', type);
             formData.set('predial', currentItem.predial);
+            formData.set('matricula', currentItem.matricula);
             formData.set('neighbour', currentItem.neighbour);
             formData.set('name', currentItem.name);
             formData.set('surname', currentItem.surname);
+            formData.set('number_id', currentItem.number_id);
             formData.set('details', currentItem.details);
             formData.set('note', currentItem.note);
+            formData.set('use', currentItem.use);
+            formData.set('date_start', currentItem.date_start);
+            formData.set('date_end', currentItem.date_end);
 
             MySwal.fire({
                 title: swaMsg.title_wait,

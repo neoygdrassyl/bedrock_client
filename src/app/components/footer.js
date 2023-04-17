@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { infoCud } from './jsons/vars';
 
 class Footer extends Component {
   render() {
@@ -7,7 +8,7 @@ class Footer extends Component {
       <div className="Footer" style={{ backgroundColor: '#7A7A7A', color: '#e5e5e5' }}>
         <footer class="">
           <div class="container pt-3">
-            <h2 class="text-uppercase text-center pb-2">CURADOR UNO DE BUCARAMANGA - LUIS CARLOS PARRA SALAZAR</h2>
+            <h2 class="text-uppercase text-center pb-2">  {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
           </div>
 
           <div class="text-center p-1">

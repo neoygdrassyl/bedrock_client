@@ -255,7 +255,7 @@ export default function EXP_RES(props) {
                 if (concecutive < 1000) concecutive = "0" + concecutive
                 if (concecutive < 100) concecutive = "0" + concecutive
                 if (concecutive < 10) concecutive = "0" + concecutive
-                document.getElementById(_id).value = pre+concecutive;
+                document.getElementById(_id).value = pre + concecutive;
             })
             .catch(e => {
                 console.log(e);
@@ -403,6 +403,8 @@ export default function EXP_RES(props) {
 
         const art_4_1_dv = _GET_STEP_TYPE('s33', 'value')[0] || '';
         const art_4_2_dv = (_GET_STEP_TYPE('s33', 'value')[1] + (_GET_CHILD_ENG_REW().desc ? '\n' + _GET_CHILD_ENG_REW().desc : '')) || '';
+        const art_4_p_dv = reso.art_4_p ?? '';
+
 
         //  GET DATA FROM ARCS AND ENGS DOCUMENTS GIVEN
         const BP_CHECK_ARRAY = _GET_STEP_TYPE('blue_prints', 'check');
@@ -464,21 +466,21 @@ export default function EXP_RES(props) {
             let f2 = _GET_CHILD_2();
             let max_rows = 0;
             let max = f2.item_23.split('/').length;
-            if(max > max_rows) max_rows = max;
+            if (max > max_rows) max_rows = max;
             max = f2.item_232.split('/').length;
-            if(max > max_rows) max_rows = max;
+            if (max > max_rows) max_rows = max;
             max = f2.item_22.split('/').length;
-            if(max > max_rows) max_rows = max;
+            if (max > max_rows) max_rows = max;
             max = f2.item_211.split('/').length;
-            if(max > max_rows) max_rows = max;
+            if (max > max_rows) max_rows = max;
 
             for (let i = 0; i < max; i++) {
                 let cat = f2.item_23.split('/')[i] || '';
                 let cat2 = f2.item_232.split('/')[i] || '';
                 let mat = f2.item_22.split('/')[i] || '';
                 let dir = f2.item_211.split('/')[i] || '';
-                
-                text += `${i+1} | ${cat || cat2} | ${mat} | ${dir} | ${f2.item_261} | XXX m2\n`;
+
+                text += `${i + 1} | ${cat || cat2} | ${mat} | ${dir} | ${f2.item_261} | XXX m2\n`;
             }
 
             return text;
@@ -1272,7 +1274,7 @@ export default function EXP_RES(props) {
 
         let _ART_1 = () => {
             return <>
-            <div className="row mb-1">
+                <div className="row mb-1">
                     <div className="col-2">
                         <label className="mt-4 fw-bold">ARTICULO 1</label>
                     </div>
@@ -1339,7 +1341,20 @@ export default function EXP_RES(props) {
                     </div>
 
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_res_art_4_2_dv" rows={'4'} defaultValue={art_4_2_dv}></textarea>
+                        <textarea class="form-control" id="expedition_doc_res_art_4_2" rows={'4'} defaultValue={art_4_2_dv}></textarea>
+                    </div>
+                </div>
+
+                <div className="row my-2">
+                    <div className="col-2"></div>
+                    <div className="col-2">
+                        <div class="form-check form-check-inline">
+                            <label> Cuadro Areas Paragrafo</label>
+                        </div>
+                    </div>
+
+                    <div className="col">
+                    <input class="form-control" id="expedition_doc_res_art_4_p" defaultValue={art_4_p_dv} />
                     </div>
                 </div>
             </>
@@ -3023,6 +3038,7 @@ export default function EXP_RES(props) {
                     </div>
                 </div>
             </div>
+
             <hr />
             {getModel(model)}
             {canSave ?
@@ -3040,6 +3056,7 @@ export default function EXP_RES(props) {
     let _COMPONENT_DOC_RES_PDF = () => {
         var reso = _GET_EXPEDITION_JSON('reso');
         let canGenPDF = true; // window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5;
+        const reso_header_text = reso.header_text ?? '';
 
         if (canGenPDF) return <>
             <hr />
@@ -3088,8 +3105,13 @@ export default function EXP_RES(props) {
                     </div>
                 </div>
             </div>
-            <div className="row mb-2">
-
+            <div className="row">
+                <div className="col-4">
+                    <label className="mt-2">Texto de cabezera</label>
+                    <input class="form-control" id="expedition_doc_header_text" defaultValue={reso_header_text} />
+                </div>
+            </div>
+            <div className="row m-3">
                 <div className="col d-flex justify-content-center">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="record_rew_simple" />
@@ -3270,6 +3292,7 @@ export default function EXP_RES(props) {
         formData.set('r_pagesn', document.getElementById("record_rew_pagesn").checked);
         formData.set('logo', document.getElementById('exp_pdf_reso_logo').value);
         formData.set('model', document.getElementById('expedition_doc_res_model').value);
+        formData.set('header_text', document.getElementById('expedition_doc_header_text').value);
 
         formData.set('m_top', document.getElementById("record_maring_top").value ? document.getElementById("record_maring_top").value : 2.5);
         formData.set('m_bot', document.getElementById("record_maring_bot").value ? document.getElementById("record_maring_bot").value : 2.5);
@@ -3323,11 +3346,13 @@ export default function EXP_RES(props) {
 
         if (document.getElementById('expedition_doc_res_art_1p')) formData.set('art_1p', document.getElementById('expedition_doc_res_art_1p').value);
         if (document.getElementById('expedition_doc_res_art_1_text')) formData.set('art_1_txt', document.getElementById('expedition_doc_res_art_1_text').value);
-        if (document.getElementById('expedition_doc_res_art_1_cb_tb')) formData.set('art_1_cb_tb', document.getElementById('expedition_doc_res_art_1_cb_tb').checked ? true: false);
+        if (document.getElementById('expedition_doc_res_art_1_cb_tb')) formData.set('art_1_cb_tb', document.getElementById('expedition_doc_res_art_1_cb_tb').checked ? true : false);
         if (document.getElementById('expedition_doc_res_art_1_text_tb')) formData.set('art_1_txt_tb', document.getElementById('expedition_doc_res_art_1_text_tb').value);
-       
+
         if (document.getElementById('expedition_doc_res_art_4_1_dv')) formData.set('art_4_1', document.getElementById('expedition_doc_res_art_4_1_dv').value);
         if (document.getElementById('expedition_doc_res_art_4_2_dv')) formData.set('art_4_2', document.getElementById('expedition_doc_res_art_4_2_dv').value);
+        if (document.getElementById('expedition_doc_res_art_4_p')) formData.set('art_4_p', document.getElementById('expedition_doc_res_art_4_p').value);
+        
         if (document.getElementById('expedition_doc_res_art_5')) formData.set('art_5', document.getElementById('expedition_doc_res_art_5').value);
         if (document.getElementById('expedition_doc_res_art_7')) formData.set('art_7', document.getElementById('expedition_doc_res_art_7').value);
         if (document.getElementById('expedition_doc_res_art_8')) formData.set('art_8', document.getElementById('expedition_doc_res_art_8').value);
@@ -3491,6 +3516,7 @@ export default function EXP_RES(props) {
         reso.state = document.getElementById("expedition_doc_res_state").value;
         reso.pot = document.getElementById("expedition_doc_res_pot").value;
         reso.eje = document.getElementById('exp_pdf_reso_record_version').value;
+        reso.header_text = document.getElementById('expedition_doc_header_text').value;
 
         reso.primero = document.getElementById("expedition_doc_res_primero") ? document.getElementById("expedition_doc_res_primero").value : '';
         reso.primero_1 = document.getElementById("expedition_doc_res_primero_1") ? document.getElementById("expedition_doc_res_primero_1").value : '';
@@ -3634,6 +3660,8 @@ export default function EXP_RES(props) {
 
         reso.art_4_1 = document.getElementById("expedition_doc_res_art_4_1_dv") ? document.getElementById("expedition_doc_res_art_4_1_dv").value : '';
         reso.art_4_2 = document.getElementById("expedition_doc_res_art_4_2_dv") ? document.getElementById("expedition_doc_res_art_4_2_dv").value : '';
+        reso.art_4_p = document.getElementById('expedition_doc_res_art_4_p') ? document.getElementById('expedition_doc_res_art_4_p').value : '';
+        
         reso.art_1p = document.getElementById("expedition_doc_res_art_1p") ? document.getElementById("expedition_doc_res_art_1p").value : '';
         reso.art_5 = document.getElementById("expedition_doc_res_art_5") ? document.getElementById("expedition_doc_res_art_5").value : '';
         reso.art_7 = document.getElementById("expedition_doc_res_art_7") ? document.getElementById("expedition_doc_res_art_7").value : '';

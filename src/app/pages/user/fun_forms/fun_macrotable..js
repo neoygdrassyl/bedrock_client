@@ -948,7 +948,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 }
 
                 //TABLE
-                if (sFILTER == 'table'){
+                if (sFILTER == 'table') {
                     let arc_tb = getJSONFull(_FULL_LIST[i].arc_cat).tb_ok
                     if (arc_tb) meetCondition = true;
                 }
@@ -1030,15 +1030,15 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         const { load } = this.state;
         //  WORIKING CONSTS
         const ExpandedComponent = ({ data }) => <>
-            <div style={{width: '95vw'}} className="m-3">
-            <TABLE_COMPONENT_EXPANDED currentItem={data}
-                requestUpdate={() => this.retrieveMacro()}
-                translation={translation} swaMsg={swaMsg} globals={globals}
-                worker_list={this.state.worker_list}
-                lenghtL={this.state.data_macro_filter.length}
-                dataL={this.state.data_macro_filter}
-                date_start={this.props.date_start}
-                date_end={this.props.date_end} />
+            <div style={{ width: '95vw' }} className="m-3">
+                <TABLE_COMPONENT_EXPANDED currentItem={data}
+                    requestUpdate={() => this.retrieveMacro()}
+                    translation={translation} swaMsg={swaMsg} globals={globals}
+                    worker_list={this.state.worker_list}
+                    lenghtL={this.state.data_macro_filter.length}
+                    dataL={this.state.data_macro_filter}
+                    date_start={this.props.date_start}
+                    date_end={this.props.date_end} />
             </div>
         </>;
 
@@ -1121,7 +1121,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center">ESTADO</label>,
-                selector:  row => _fun_0_state(row.state, true, row),
+                selector: row => _fun_0_state(row.state, true, row),
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -2674,6 +2674,42 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     cvsCB: row => {
                         let date = row.clock_review_eng ? row.clock_review_eng.split(';')[3] : false
                         return date || '';
+                    },
+                },
+                {
+                    name: <label>DIRECCION PREDIO</label>,
+                    cvsCB: row => {
+                        return row.direccion ?? ''
+                    },
+                },
+                {
+                    name: <label>MATRICULA PREDIO</label>,
+                    cvsCB: row => {
+                        return row.matricula ?? ''
+                    },
+                },
+                {
+                    name: <label>PREDIAL PREDIO</label>,
+                    cvsCB: row => {
+                        return row.catastral ?? row.catastral_2 ?? ''
+                    },
+                },
+                {
+                    name: <label>RESPONSABLE NOMBRE</label>,
+                    cvsCB: row => {
+                        return (row.fun_53s_name ?? '') + (row.fun_53s_surname ?? '')
+                    },
+                },
+                {
+                    name: <label>RESPONSABLE IDENTIFICACIÓN</label>,
+                    cvsCB: row => {
+                        return (row.fun_53s_id_number ?? '')
+                    },
+                },
+                {
+                    name: <label>RESPONSABLE CALIDAD</label>,
+                    cvsCB: row => {
+                        return (row.fun_53s_role ?? '')
                     },
                 },
             ]
