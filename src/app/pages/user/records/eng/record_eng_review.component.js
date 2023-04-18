@@ -511,9 +511,9 @@ class RECORD_ENG_REVIEW extends Component {
                             <label>Observaciones</label>
                         </div>
                     </div>
-                    <textarea className="input-group" maxLength="4000" id="record_eng_detail_2" rows="4"
+                    <textarea className="input-group" maxLength="8000" id="record_eng_detail_2" rows="4"
                         defaultValue={_CHILD.detail_2} onBlur={() => save_item()}></textarea>
-                    <label> (máximo 4000 caracteres)</label>
+                    <label> (máximo 8000 caracteres)</label>
                 </div>
             </div>
         }

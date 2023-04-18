@@ -1341,7 +1341,7 @@ export default function EXP_RES(props) {
                     </div>
 
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_res_art_4_2" rows={'4'} defaultValue={art_4_2_dv}></textarea>
+                        <textarea class="form-control" id="expedition_doc_res_art_4_2_dv" rows={'4'} defaultValue={art_4_2_dv}></textarea>
                     </div>
                 </div>
 

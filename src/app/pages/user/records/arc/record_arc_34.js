@@ -469,10 +469,10 @@ class RECORD_ARC_34 extends Component {
         let _COMPONENT_A = () => {
             let _CHILD_2 = _SET_CHILD_2();
             let loc = currentItem.expedition ? currentItem.expedition : null;
-            if(loc) loc = loc.tmp ? loc.tmp : null;
-            if(loc) loc = getJSONFull(loc);
-            if(loc) loc = loc.zone;
-           
+            if (loc) loc = loc.tmp ? loc.tmp : null;
+            if (loc) loc = getJSONFull(loc);
+            if (loc) loc = loc.zone;
+
             return <>
                 <div className="row">
                     <div className="col-3 p-1 text-start">
@@ -729,12 +729,13 @@ class RECORD_ARC_34 extends Component {
 
                     <div className="col-6 p-1">
                         <div class="input-group">
-                            <select className="form-select" name="s_34_values" defaultValue={value34[5]} onChange={() => manage_ra_34('a41')}>
+                            <input className="form-select" list="escala" name="s_34_values" defaultValue={value34[5]} onBlur={() => manage_ra_34('a41')} />
+                            <datalist id="escala">
                                 <option>Local (A)</option>
                                 <option>Local</option>
                                 <option>Zonal</option>
                                 <option>Metropolitana</option>
-                            </select>
+                            </datalist>
                         </div>
                     </div>
                     <div className="col-3 p-1">
@@ -1214,7 +1215,7 @@ class RECORD_ARC_34 extends Component {
                 'Bien de Interest Culural',
                 'Plan especial de manejor de patrimonio',
                 'Indice licencia previa',
-                'Hitorico',
+                'Historico',
                 'Bonificación',
                 'Orden judicial',
                 'Art. 305° Prgf. 1',
