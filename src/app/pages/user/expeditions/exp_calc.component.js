@@ -137,7 +137,7 @@ const rules_matrix = _GLOBAL_ID == 'cb1' ? [] : [
             { name: 'Residencial estrato 5 y otras modalidades', mult: 9754.76, preFix: '2005', },
             { name: 'Residencial estrato 6 y otras modalidades', mult: 12723.60, preFix: '2006', },
             { name: 'Construcción obra nueva uso comercio o servicios en sector urbano y otras modalidades', mult: 9754.56, preFix: '2007', },
-            { name: 'Construcción  obra nueva uso comercio o servicios en suelo rural, suburbano y expansión urbana; y otras modalidades', mult: 19085.40, preFix: '2007', },
+            { name: 'Construcción obra nueva uso comercio o servicios en suelo rural, suburbano y expansion urbana, y otras modalidades', mult: 19085.40, preFix: '2007', },
             { name: 'Construcción obra nueva uso institucional o dotacional y otras modalidades', mult: 7634.16, preFix: '2007', },
             { name: 'Construcción obra nueva uso industrial y otras modalidades', mult: 16964.8, preFix: '2007', },
             { name: 'Licencia de cerramiento por metro lineal', mult: 4241.2, preFix: '2015', },

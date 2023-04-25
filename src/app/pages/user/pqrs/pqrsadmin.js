@@ -150,7 +150,7 @@ class PQRSADMIN extends Component {
             if (_LIST[i].pqrs_workers) {
                 for (var j = 0; j < _LIST[i].pqrs_workers.length; j++) {
                     let worker = _LIST[i].pqrs_workers[j]
-                    if ((!worker.reply && worker.worker_id == window.user.id) || (!worker.reply && (window.user.roleId == 1 || window.user.roleId == 5))) {
+                    if ((!worker.reply && worker.worker_id == window.user.id) || (!worker.reply && (window.user.roleId == 1 || window.user.roleId == 5|| window.user.roleId == 3 ))) {
                         worker.id_master = _LIST[i].id;
                         worker.id_public = _LIST[i].id_publico;
                         worker.time = _LIST[i].pqrs_time.time;
@@ -173,7 +173,7 @@ class PQRSADMIN extends Component {
             if (_LIST[i].pqrs_workers) {
                 for (var j = 0; j < _LIST[i].pqrs_workers.length; j++) {
                     let worker = _LIST[i].pqrs_workers[j]
-                    if (worker.worker_id == window.user.id || (window.user.roleId == 1 || window.user.roleId == 5)) {
+                    if (worker.worker_id == window.user.id || (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 )) {
                         listNotReplyTo.push(_LIST[i])
                         break;
                     }
@@ -608,7 +608,7 @@ class PQRSADMIN extends Component {
                     <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                         <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye"></i></button>
                     </MDBTooltip>
-                    {window.user.roleId == 1 || window.user.roleId == 5 
+                    {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 
                         ? <>
                             <MDBTooltip title='Gestionar peticion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                                 <button className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => this.toggleManage(row)}><i class="fas fa-cog"></i></button>
@@ -674,7 +674,7 @@ class PQRSADMIN extends Component {
                     <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                         <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye"></i></button>
                     </MDBTooltip>
-                    {window.user.roleId == 1 || window.user.roleId == 5
+                    {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 
                         ? <>
                             {dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal) > (row.pqrs_law.extension == false ? (row.pqrs_time.time * 1) : (row.pqrs_time.time * 2))
                                 ? <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
