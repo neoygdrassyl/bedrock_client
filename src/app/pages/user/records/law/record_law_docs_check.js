@@ -193,7 +193,9 @@ class RECORD_LAW_DOCSCHECK extends Component {
         //  DATA CONVERTES
         let _FIND_IN_VRDOCS = (code) => {
             if(!code) return false;
-            let FOUND_CODE = VRDocs.find(vr => code.includes(vr.code));
+            let FOUND_CODE = VRDocs.find(vr =>{ 
+                if (!vr.code) return false
+                else return vr.code.includes(code)});
             return FOUND_CODE;
         }
         let _GET_EDIT_POWERS = (row) => {
@@ -227,6 +229,7 @@ class RECORD_LAW_DOCSCHECK extends Component {
             if (row.value == -1 || row.value == null) bg = { color: 'dark', text: 'SIN DEFINIR', value: 1 }
             if (row.value == 0) {
                 let VR = _FIND_IN_VRDOCS(row.code);
+                console.log(row.code, " - ", VR)
                 if (VR) bg = { color: 'success', text: 'APORTO', value: 2 }
                 else bg = { color: 'danger', text: 'NO APORTO', value: 1 }
             }

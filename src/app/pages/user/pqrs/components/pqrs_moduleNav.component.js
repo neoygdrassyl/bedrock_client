@@ -23,7 +23,7 @@ class PQRS_MODULE_NAV extends Component {
         }
 
         let _GET_LOCK_FOR_WORKER = () => {
-            if (window.user.roleId == 1 || window.user.roleId == 5) return true;
+            if (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 ) return true;
             for (var i = 0; i < currentItem.pqrs_workers.length; i++) {
                 if (currentItem.pqrs_workers[i].worker_id == window.user.id) return true
             }

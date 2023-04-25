@@ -187,7 +187,7 @@ class SUBMIT_LIST extends Component {
         }
         let _GET_DATA_FOR_TITLE = () => {
             let _LIST = this.state.list_new ? [this.state.list_new] : [Lists.list_61];
-            return <label className="fw-bold" className="submit_list_title" id="new_list_title">
+            return <label className="fw-bold submit_list_title" id="new_list_title">
                 {Object.keys(_LIST[0])}</label>
         }
         let _GET_DATA_FOR_LIST = () => {
