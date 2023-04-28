@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AppointmentService from '../../services/appointments.service'
+import UserslDataService from '../../services/users.service'
 import {
     MDBRow, MDBCol, MDBCard, MDBCardBody,
     MDBBtn,
@@ -28,6 +29,7 @@ class Appointments extends Component {
         super(props);
         this.retrievePublish = this.retrievePublish.bind(this);
         this.refreshList = this.refreshList.bind(this);
+        this.loadUsers = this.loadUsers.bind(this);
         this.state = {
             error: null,
             isLoaded: false,
@@ -38,10 +40,13 @@ class Appointments extends Component {
             items: [],
             items_2: [],
             items_3: [],
+            users: [],
         };
     }
     componentDidMount() {
         this.retrievePublish();
+        this.loadUsers();
+
     }
     retrievePublish() {
         AppointmentService.getAll()
@@ -79,6 +84,14 @@ class Appointments extends Component {
             currentIndex: -1,
         });
     }
+    loadUsers() {
+        UserslDataService.getAllWorkers()
+        .then(response => {
+            if(response.data) this.setState({users: response.data.filter(user => user.active == 1)})
+        })
+        .catch(console.log);
+
+    }
     toggle = () => {
         this.setState({
             modal: !this.state.modal
@@ -109,7 +122,7 @@ class Appointments extends Component {
     }
     render() {
         const { translation, globals, breadCrums, swaMsg } = this.props;
-        const { currentItem, isLoaded, items, items_2, items_3 } = this.state;
+        const { currentItem, isLoaded, items, items_2, items_3, users } = this.state;
         const columns = [
             {
                 name: <h4>CONSECUTIVO</h4>,
@@ -255,6 +268,7 @@ class Appointments extends Component {
                 });
 
         }
+      
         return (
 
             <div className="Publish container">
@@ -501,12 +515,7 @@ class Appointments extends Component {
                                                 <td><label>Nombre Profesional</label></td>
                                                 <td>
                                                     <select class="form-select" id="app_worker" defaultValue={currentItem.appointment_type ? 1 : 0}>
-                                                        <option>LUIS PARRA</option>
-                                                        <option>CARLOS ULLOA</option>
-                                                        <option>MARIA MARGARITA</option>
-                                                        <option>JOSE TRIANA</option>
-                                                        <option>LINDA PAEZ</option>
-                                                        <option>LINA ROCHA</option>
+                                                        {users.map(user => <option>{user.name.toUpperCase()} {user.surname.toUpperCase()}</option>)}
                                                     </select>
                                                 </td>
                                             </tr>

@@ -562,7 +562,7 @@ export default function EXP_RES(props) {
                         </div>
                     </div>
                     <div className="col text-start">
-                        <p>El titular de la solicitud urbanística ostenta la calidad de propietario de los inmuebles sujetos a este procedimiento, por tanto, se ajusta al requerimiento establecido en el
+                        <p>El titular de la solicitud urbanística ostenta la calidad de propietario, poseedor, fideicomiso o de fideicomitente de los inmuebles sujetos a este procedimiento, por tanto, se ajusta al requerimiento establecido en el
                             artículo 2.2.6.1.2.1.5 del Decreto 1077 de 2015.</p>
                     </div>
                 </div>
