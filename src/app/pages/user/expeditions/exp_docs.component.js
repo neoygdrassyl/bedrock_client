@@ -2452,7 +2452,7 @@ class EXP_DOCS extends Component {
                     : ''}
 
 
-                {!conOA() && _GLOBAL_ID === 'cb1' ? <>
+                {!conOA() && _GLOBAL_ID === 'cb1' || _GLOBAL_ID === 'fl2' ? <>
                     <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_22"
                         onClick={() => this.setState({ showCollapse_expedition_22: !this.state.showCollapse_expedition_22 })}>
                         <label className="app-p lead fw-normal text-info">Liquidacion de Expensas</label>
@@ -2469,7 +2469,9 @@ class EXP_DOCS extends Component {
                             </form>
                         </fieldset>
                     </MDBCollapse>
+                </> : null}
 
+                {!conOA() && _GLOBAL_ID === 'cb1' ? <>
                     <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
                         onClick={() => this.setState({ showCollapse_expedition_23: !this.state.showCollapse_expedition_23 })}>
                         <label className="app-p lead fw-normal text-info">Impuestos Municipales</label>
@@ -2487,7 +2489,7 @@ class EXP_DOCS extends Component {
                             </form>
                         </fieldset>
                     </MDBCollapse>
-                </> : ''}
+                </> : null}
 
 
                 <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_24"

@@ -300,7 +300,9 @@ export default function EXP_CALC(props) {
             if (domArea) document.getElementById(domArea).value = area;
             if (domTipe) document.getElementById(domTipe).value = type;
             if (domUse) document.getElementById(domUse).value = CUR_USES[use];
-            if (domM2) document.getElementById(domM2).value = (str_mv / area).toFixed(4);
+            if (domM2 && _GLOBAL_ID == "cp1") document.getElementById(domM2).value = (str_mv / area).toFixed(4);
+            if (domM2 && _GLOBAL_ID == "cb1") document.getElementById(domM2).value = (str_mv / area).toFixed(4);
+            if (domM2 && _GLOBAL_ID == "fl2") document.getElementById(domM2).value = str_mv
             if (domMt) document.getElementById(domMt).value = str_mt;
         }
 

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import LOGO_LIGHT_THEME from '../../img/beckrock/Grises_logo.png'
 import LOGO_DARK_THEME from '../../img/beckrock/Claros_logo.png'
 var pjson = require('../../../../package.json')
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 class Dashboard extends Component {
 
@@ -166,8 +167,28 @@ class Dashboard extends Component {
                             </MDBCol>
                         </div>
 
-                        <div className="d-flex justify-content-around">
+                        <div className="d-flex justify-content-around my-3">
+                            <MDBCol md="4" className="px-3">
+                            </MDBCol>
+                            <MDBCol md="4" className="px-3">
+                                {_GLOBAL_ID == "cb1" ?
+                                    <MDBCard className="bg-card">
+                                        <MDBCardBody>
+                                            <div className="text-center">
+                                                <i class="fas fa-home fa-4x" style={{ "color": "darkcyan" }}></i>
+                                            </div>
+                                            <div className="text-center">
+                                                <Link to={'/norms'}>
+                                                    <button className="btn-info btn my-3"><h3> NORMAS URBANAS</h3></button>
+                                                </Link>
+                                            </div>
+                                        </MDBCardBody>
+                                    </MDBCard>
+                                    : null}
 
+                            </MDBCol>
+                            <MDBCol md="4" className="px-3">
+                            </MDBCol>
                         </div>
 
                         <hr />
