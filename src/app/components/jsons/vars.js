@@ -123,7 +123,7 @@ const info = {
             start:'VR',
             end: 'OE',
         },
-        exp_rules : ['Exp. Variables', 'Imp. Delineacion', 'Ambos', 'Ignorar'],
+        exp_rules : ['Exp. Variables'],
         res_extras : {
             art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
         }

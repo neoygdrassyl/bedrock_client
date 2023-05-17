@@ -79,6 +79,7 @@ import { Nav, Navbar } from 'rsuite';
 import PROFESIONALS from './pages/user/profesionals/profesionals.page';
 import GUIDE_USER from './pages/user/guide_user/guide_user.page';
 import { infoCud } from './components/jsons/vars';
+import NORMS from './pages/user/norms/norms.page';
 
 
 const MySwal = withReactContent(Swal);
@@ -138,7 +139,7 @@ export default function App() {
                           )}
                         />
 
-                        
+
 
                         <Route path='/login'
                           render={(props) => (
@@ -149,7 +150,7 @@ export default function App() {
                             />
                           )}
                         />
-                       
+
 
                         <PrivateRoute path='/dashboard'>
                           <Dashboard translation={t("title", { returnObjects: true })}
@@ -281,10 +282,20 @@ export default function App() {
                         <Route exact path='/'
                           render={(props) => (
                             <LoginPage {...props}
-                            translation={t("login", { returnObjects: true })}
-                            swaMsg={t("swa_messages", { returnObjects: true })}
-                            breadCrums={t("breadCrums", { returnObjects: true })}
-                          />
+                              translation={t("login", { returnObjects: true })}
+                              swaMsg={t("swa_messages", { returnObjects: true })}
+                              breadCrums={t("breadCrums", { returnObjects: true })}
+                            />
+                          )}
+                        />
+
+                        <Route exact path='/norms'
+                          render={(props) => (
+                            <NORMS {...props}
+                              translation={t("login", { returnObjects: true })}
+                              swaMsg={t("swa_messages", { returnObjects: true })}
+                              breadCrums={t("breadCrums", { returnObjects: true })}
+                            />
                           )}
                         />
                         <Route path='*' exact={true} component={LoginPage} />

@@ -23,7 +23,7 @@ class EXP_AREAS extends Component {
             currentVersionRArc: null,
         };
     }
-    componentDidMount(){
+    componentDidMount() {
         this.setItem_RecordArc(this.props.currentItem.id)
     }
 
@@ -89,7 +89,7 @@ class EXP_AREAS extends Component {
             let _LIST = _GET_CHILD_AREAS();
             const columns = [
                 {
-                    name: <label className="text-center">AREA O UNIDADES</label>,
+                    name: <label className="text-center">AREA</label>,
                     selector: row => row.area,
                     sortable: true,
                     filterable: true,
@@ -113,6 +113,7 @@ class EXP_AREAS extends Component {
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
+                    omit: _GLOBAL_ID != 'cp1',
                     cell: row => <label>{row.charge}</label>
                 },
                 {
@@ -122,7 +123,7 @@ class EXP_AREAS extends Component {
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
-                    cell: row => <label>{_GLOBAL_ID == 'cb1' ? row.charge : Math.round(row.charge * row.area)}</label>
+                    cell: row => <label>{_GLOBAL_ID == 'cp1' ? Math.round(row.charge * row.area) : row.charge}</label>
                 },
                 {
                     name: <label className="text-center">USO</label>,
@@ -182,25 +183,29 @@ class EXP_AREAS extends Component {
                     <div className="col">
                         <label>Área</label>
                         <div class="input-group my-1">
-                            <input type="number" min="0" step="0.01" class="form-control" id={"expedition_area_1" + edit} required/>
+                            <input type="number" min="0" step="0.01" class="form-control" id={"expedition_area_1" + edit} required />
                         </div>
                     </div>
                     <div className="col">
                         <label>Unidades</label>
                         <div class="input-group my-1">
-                            <input type="number" min="0" step="1" class="form-control" id={"expedition_area_6" + edit} required/>
+                            <input type="number" min="0" step="1" class="form-control" id={"expedition_area_6" + edit} required />
                         </div>
                     </div>
                     <div className="col-2">
-                        <label>Cobro (COP) x m2</label>
+                        {_GLOBAL_ID == 'cp1' ?
+                            <label>Cobro (COP) x m2</label>
+                            : <label>Cobro (COP) Total</label>
+                        }
+
                         <div class="input-group my-1">
-                            <input type="number" min="0" step="0.0001" class="form-control" id={"expedition_area_2" + edit} required/>
+                            <input type="number" min="0" step="0.0001" class="form-control" id={"expedition_area_2" + edit} required />
                         </div>
                     </div>
                     <div className="col">
                         <label>Uso</label>
                         <div class="input-group my-1">
-                            <input list="exp_uses_datalist" className="form-select" id={"expedition_area_3" + edit} required/>
+                            <input list="exp_uses_datalist" className="form-select" id={"expedition_area_3" + edit} required />
 
                             <datalist id="exp_uses_datalist">
                                 <option value="Residencial (NO VIS)" />
@@ -221,7 +226,7 @@ class EXP_AREAS extends Component {
                         </div>
                     </div>
                     <div className="col">
-                        <label>Regla</label>
+                        <label>Destino</label>
                         <div class="input-group my-1">
                             <select className="form-select" id={"expedition_area_5" + edit} required >
                                 {rules_opt}
@@ -406,16 +411,16 @@ class EXP_AREAS extends Component {
                     <label className="app-p lead fw-normal">Áreas Y Unidades</label>
                 </legend>
                 {currentRecordArc ?
-                <>
-                   <label className='fw-bold'>RESUMEN DE AREAS</label>
-                  <RECORD_ARC_AREAS_RESUME
-                        currentItem={currentItem}
-                        currentVersion={currentVersion}
-                        currentRecord={currentRecordArc}
-                        currentVersionR={currentVersionRArc}
-                    />
-                </>
-                  
+                    <>
+                        <label className='fw-bold'>RESUMEN DE AREAS</label>
+                        <RECORD_ARC_AREAS_RESUME
+                            currentItem={currentItem}
+                            currentVersion={currentVersion}
+                            currentRecord={currentRecordArc}
+                            currentVersionR={currentVersionRArc}
+                        />
+                    </>
+
                     : null}
 
 
