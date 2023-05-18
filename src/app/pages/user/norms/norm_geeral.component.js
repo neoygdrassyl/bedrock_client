@@ -2,6 +2,7 @@ import React, { Suspense, useEffect, useState, } from 'react';
 import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { NORM_GEN_DATA } from './norm.vars'
 
 const MySwal = withReactContent(Swal);
 const default_Item = {
@@ -23,9 +24,37 @@ export default function NORM_GENERAL(props) {
     const [load, setLoad] = useState(0);
     const [item, setItem] = useState(default_Item);
 
+    const [selectFicha, setFicha] = useState(item.ficha);
+    const [selectSector, setSector] = useState(item.sector);
+    const [selectSubsector, setSubsector] = useState(item.subsector);
+
+    const [fichas, setFichas] = useState(NORM_GEN_DATA);
+    const [sectors, setSectors] = useState(NORM_GEN_DATA[0].sectors);
+    const [subsectors, setSubsectors] = useState(NORM_GEN_DATA[0].sectors[0].subsectors);
+
     useEffect(() => {
         if (load == 0 || !id) loadData();
     }, [load, id]);
+
+    useEffect(() => {
+        if (selectFicha) {
+            set_Sectors();
+            document.getElementById('norm_ficha').value = selectFicha
+        }
+    }, [selectFicha]);
+
+    useEffect(() => {
+        if (selectSector) {
+            set_Subsectors();
+            document.getElementById('norm_sector').value = selectSector
+        }
+    }, [selectSector]);
+
+    useEffect(() => {
+        if (selectSubsector) {
+            document.getElementById('norm_subsector').value = selectSubsector
+        }
+    }, [selectSubsector]);
 
     // ************************** APIS ************************ //
     function loadData() {
@@ -34,6 +63,9 @@ export default function NORM_GENERAL(props) {
             .then(response => {
                 setItem(response.data)
                 setLoad(1)
+                setFicha(response.data.ficha)
+                setSector(response.data.sector)
+                setSubsector(response.data.subsector)
             })
             .catch(e => {
                 console.error(e);
@@ -106,108 +138,121 @@ export default function NORM_GENERAL(props) {
     };
 
     // ***************************  DATA GETTER *********************** //
+    function set_Sectors() {
+        let findFicha = fichas.find(ficha => ficha.ficha == selectFicha)
+        if (findFicha) setSectors(findFicha.sectors)
+    }
 
+    function set_Subsectors() {
+        let findSector = sectors.find(sector => sector.sector == selectSector)
+        if (findSector) setSubsectors(findSector.subsectors)
+    }
 
     // ***************************  JXS *********************** //
     const FORM_GENERAL = <>
-     <form onSubmit={updateForm} id="update-norm-form">
-        <div className="row">
-            <div className="col-4">
-                <label >1.1 Nr. Radicación</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-hashtag"></i>
-                    </span>
-                    <input type="text" class="form-control" id="norm_id_in" required disabled defaultValue={item.id_in} />
+        <form onSubmit={updateForm} id="update-norm-form">
+            <div className="row">
+                <div className="col-4">
+                    <label >1.1 Nr. Radicación</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-hashtag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_id_in" required disabled defaultValue={item.id_in} />
+                    </div>
+                </div>
+                <div className="col-4">
+                    <label >1.2 Nr. Expedición</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-hashtag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_id_out" defaultValue={item.id_out} />
+                    </div>
+                </div>
+                <div className="col-4">
+                    <label >1.3 Solicitante</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_solicitor" defaultValue={item.solicitor} />
+                    </div>
                 </div>
             </div>
-            <div className="col-4">
-                <label >1.2 Nr. Expedición</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-hashtag"></i>
-                    </span>
-                    <input type="text" class="form-control" id="norm_id_out" defaultValue={item.id_out} />
-                </div>
-            </div>
-            <div className="col-4">
-                <label >1.3 Solicitante</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-user"></i>
-                    </span>
-                    <input type="text" class="form-control" id="norm_solicitor" defaultValue={item.solicitor} />
-                </div>
-            </div>
-        </div>
 
-        <div className="row">
-            <div className="col-4">
-                <label >1.4 Deberes Urbanos</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-file-alt"></i>
-                    </span>
-                    <select class="form-select" id="norm_urban_duties"
-                        defaultValue={item.urban_duties}>
-                        <option value={0}>NO APLICA</option>
-                        <option value={1}>APLICA</option>
-                    </select>
+            <div className="row">
+                <div className="col-4">
+                    <label >1.4 Deberes Urbanos</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-file-alt"></i>
+                        </span>
+                        <select class="form-select" id="norm_urban_duties" defaultValue={item.urban_duties}>
+                            <option value={0}>NO APLICA</option>
+                            <option value={1}>APLICA</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="col">
+                    <label >1.5 Utilidad Publica</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-home"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_public_utility" defaultValue={item.public_utility} />
+                    </div>
                 </div>
             </div>
-            <div className="col">
-                <label >1.5 Utilidad Publica</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-home"></i>
-                    </span>
-                    <input type="text" class="form-control" id="norm_public_utility" defaultValue={item.public_utility} />
-                </div>
-            </div>
-        </div>
 
-        <div className="row">
-            <div className="col">
-                <label >1.6 Ficha</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-star-of-life"></i>
-                    </span>
-                    <input type="text" class="form-control" id="norm_ficha" required defaultValue={item.ficha} />
+            <div className="row">
+                <div className="col">
+                    <label >1.6 Ficha</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <select class="form-select" id="norm_ficha" defaultValue={item.ficha} onChange={(e) => setFicha(e.target.value)}>
+                            {fichas.map(ficha => <option>{ficha.ficha}</option>)}
+                        </select>
+                    </div>
+                </div>
+                <div className="col">
+                    <label >1.7 Sector</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <select class="form-select" id="norm_sector" defaultValue={item.sector} onChange={(e) => setSector(e.target.value)}>
+                            {sectors.map(sector => <option>{sector.sector}</option>)}
+                        </select>
+                    </div>
+                </div>
+                <div className="col">
+                    <label >1.8 Subsector</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <select class="form-select" id="norm_subsector" defaultValue={item.subsector} onChange={(e) => setSubsector(e.target.value)}>
+                            {subsectors.map(subsector => <option>{subsector.subsector}</option>)}
+                        </select>
+                    </div>
+                </div>
+                <div className="col">
+                    <label >1.9 Frente Normativo</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_front" defaultValue={item.front} />
+                    </div>
                 </div>
             </div>
-            <div className="col">
-                <label >1.7 Sector</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-star-of-life"></i>
-                    </span>
-                    <input type="text" class="form-control" id="norm_sector" defaultValue={item.sector} />
-                </div>
-            </div>
-            <div className="col">
-                <label >1.8 Subsector</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-star-of-life"></i>
-                    </span>
-                    <input type="text" class="form-control" id="norm_subsector" defaultValue={item.subsector} />
-                </div>
-            </div>
-            <div className="col">
-                <label >1.9 Frente Normativo</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-star-of-life"></i>
-                    </span>
-                    <input type="text" class="form-control" id="norm_front" defaultValue={item.front} />
-                </div>
-            </div>
-        </div>
 
-        <div className="text-center my-2">
-                    <button className="btn btn-sm btn-success my-1" type='submit'><i class="fas fa-edit"></i> ACTUALIZAR </button>
-                </div>
+            <div className="text-center my-2">
+                <button className="btn btn-sm btn-success my-1" type='submit'><i class="fas fa-edit"></i> ACTUALIZAR </button>
+            </div>
 
         </form>
     </>
@@ -215,7 +260,7 @@ export default function NORM_GENERAL(props) {
     return (
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                <h3 class="text-uppercase pb-2">1. INFORACIÓN GENERAL:</h3>
+                <h3 class="text-uppercase pb-2">1. INFORMACIÓN GENERAL:</h3>
                 {FORM_GENERAL}
                 <hr />
             </Suspense>

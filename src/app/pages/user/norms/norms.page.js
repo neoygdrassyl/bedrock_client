@@ -7,6 +7,9 @@ import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import NORM_GENERAL from './norm_geeral.component';
+import NORM_PREDIOS from './norm_predio.component';
+import NORM_NEIGHBORS from './norm_neighbors.component';
+import NORM_PERFIL from './norm_perfil.component';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -258,7 +261,7 @@ export default function NORMS(props) {
                         setSelectedId(row.id);
                         setSelectedIdPublic(row.id_in);
                         setModal(!modal);
-                        }}><i class="far fa-edit"></i></MDBBtn>
+                    }}><i class="far fa-edit"></i></MDBBtn>
                 </MDBTooltip>
                 {window.user.id == 1 || window.user.roleId == 3 ?
                     <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
@@ -322,13 +325,33 @@ export default function NORMS(props) {
                 style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <h2 class="text-uppercase text-center pb-2">NORMA URBANA: {selectedIdPublic}</h2>
+                <div className="my-2 d-flex justify-content-between">
+                    <h2 class="text-uppercase text-center">NORMA URBANA: {selectedIdPublic}</h2>
+                    <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_alert()}></MDBBtn>
+                </div>
+
                 <hr />
-                <NORM_GENERAL 
-                translation={translation} swaMsg={swaMsg} globals={globals}
-                id={selectedId}
+
+                <NORM_GENERAL
+                    translation={translation} swaMsg={swaMsg} globals={globals}
+                    id={selectedId}
                 />
-               
+
+                <NORM_PREDIOS
+                    translation={translation} swaMsg={swaMsg} globals={globals}
+                    id={selectedId}
+                />
+
+                <NORM_NEIGHBORS
+                    translation={translation} swaMsg={swaMsg} globals={globals}
+                    id={selectedId}
+                />
+
+                <NORM_PERFIL
+                    translation={translation} swaMsg={swaMsg} globals={globals}
+                    id={selectedId}
+                />
+
                 <div className="text-end py-2">
                     <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
                 </div>
