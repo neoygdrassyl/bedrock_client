@@ -327,7 +327,7 @@ export default function NORMS(props) {
             >
                 <div className="my-2 d-flex justify-content-between">
                     <h2 class="text-uppercase text-center">NORMA URBANA: {selectedIdPublic}</h2>
-                    <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_alert()}></MDBBtn>
+                    <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
                 </div>
 
                 <hr />
@@ -345,6 +345,7 @@ export default function NORMS(props) {
                 <NORM_NEIGHBORS
                     translation={translation} swaMsg={swaMsg} globals={globals}
                     id={selectedId}
+                    id_in={selectedIdPublic}
                 />
 
                 <NORM_PERFIL

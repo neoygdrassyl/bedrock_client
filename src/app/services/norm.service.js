@@ -6,6 +6,7 @@ class Norms_Service {
     // NORM SERVICE
     getAll_norm() { return http.get(`/${route}/norm/`) }
     get_norm(id) { return http.get(`/${route}/norm/${id}`) }
+    get_norm_img(url) { return http.get(`/${route}/norm/img/${url}`) }
     create_norm(data) { return http.post(`/${route}/norm/`, data) }
     update_norm(id, data) { return http.put(`/${route}/norm/${id}`, data) }
     delete_norm(id) { return http.delete(`/${route}/norm/${id}`) }
