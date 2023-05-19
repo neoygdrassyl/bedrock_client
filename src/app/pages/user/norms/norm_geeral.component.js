@@ -3,6 +3,8 @@ import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { NORM_GEN_DATA } from './norm.vars'
+import moment from 'moment';
+import VIEWER from '../../../components/viewer.component';
 
 const MySwal = withReactContent(Swal);
 const default_Item = {
@@ -82,7 +84,7 @@ export default function NORM_GENERAL(props) {
 
         let formData = new FormData();
         let id_out = document.getElementById("norm_id_out").value;
-        formData.set('id_out', id_out);
+        if(id_out) formData.set('id_out', id_out);
         let solicitor = document.getElementById("norm_solicitor").value;
         formData.set('solicitor', solicitor);
         let urban_duties = document.getElementById("norm_urban_duties").value;
@@ -97,6 +99,14 @@ export default function NORM_GENERAL(props) {
         formData.set('subsector', subsector);
         let front = document.getElementById("norm_front").value;
         formData.set('front', front);
+
+        let _creationYear = moment(item.createdAt).format('YY');
+        let _folder = item.id_in;
+        let file = document.getElementById("norm_fun6id");
+        if (file.files[0]) {
+            formData.set('fun6id', item.fun6id);
+            formData.append('file', file.files[0], "norm_" + _creationYear + "_" + _folder + "_" + file.files[0].name)
+        }
 
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -115,6 +125,14 @@ export default function NORM_GENERAL(props) {
                         confirmButtonText: swaMsg.text_btn,
                     });
                     loadData()
+                }
+                else{
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
                 }
             })
             .catch(e => {
@@ -136,6 +154,23 @@ export default function NORM_GENERAL(props) {
                 }
             });
     };
+
+    function getImage(PATH){
+        const URL = PATH.substring(PATH.lastIndexOf('/') +1, PATH.length);
+        return Norms_Service.get_norm_img(URL)
+            .then(response => {
+               return response
+            })
+            .catch(e => {
+                console.error(e);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+    }
 
     // ***************************  DATA GETTER *********************** //
     function set_Sectors() {
@@ -203,11 +238,21 @@ export default function NORM_GENERAL(props) {
                         <input type="text" class="form-control" id="norm_public_utility" defaultValue={item.public_utility} />
                     </div>
                 </div>
+                <div className="col">
+                    <label >1.6 Imagen </label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-home"></i>
+                        </span>
+                        <input type="file" class="form-control" id="norm_fun6id" accept="image/png, image/jpeg" />
+                        {item.fun6id ? <div><VIEWER API={getImage} params={[item.fun6id]} /></div> : null}
+                    </div>
+                </div>
             </div>
 
             <div className="row">
                 <div className="col">
-                    <label >1.6 Ficha</label>
+                    <label >1.7 Ficha</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -218,7 +263,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label >1.7 Sector</label>
+                    <label >1.8 Sector</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -229,7 +274,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label >1.8 Subsector</label>
+                    <label >1.9 Subsector</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -240,7 +285,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label >1.9 Frente Normativo</label>
+                    <label >1.10 Frente Normativo</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>

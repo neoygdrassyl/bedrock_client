@@ -4,10 +4,12 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import DataTable from 'react-data-table-component';
+import VIEWER from '../../../components/viewer.component';
+import moment from 'moment';
 
 const MySwal = withReactContent(Swal);
 export default function NORM_NEIGHBORS(props) {
-    const { translation, swaMsg, globals, id } = props;
+    const { translation, swaMsg, globals, id, id_in } = props;
 
     const [load, setLoad] = useState(0);
     const [data, setData] = useState([]);
@@ -54,8 +56,13 @@ export default function NORM_NEIGHBORS(props) {
         formData.set('voladizo', voladizo);
         let material = document.getElementById("predio_material").value;
         formData.set('material', material);
-        let fun6id = document.getElementById("predio_fun6id").value;
-        formData.set('fun6id', fun6id);
+
+        let _creationYear = moment().format('YY');
+        let _folder = id_in;
+        let file = document.getElementById("predio_fun6id");
+        if (file.files[0]) {
+            formData.append('file', file.files[0], "norm_" + _creationYear + "_" + _folder + "_" + file.files[0].name)
+        }
 
         formData.set('normId', id);
 
@@ -110,8 +117,16 @@ export default function NORM_NEIGHBORS(props) {
         formData.set('voladizo', voladizo);
         let material = document.getElementById("predio_material_edit").value;
         formData.set('material', material);
-        let fun6id = document.getElementById("predio_fun6id_edit").value;
-        formData.set('fun6id', fun6id);
+
+        
+        let _creationYear = moment(editItem.createdAt).format('YY');
+        let _folder = id_in;
+        let file = document.getElementById("predio_fun6id_edit");
+        if (file.files[0]) {
+            formData.set('fun6id', editItem.fun6id);
+            formData.append('file', file.files[0], "norm_" + _creationYear + "_" + _folder + "_" + file.files[0].name)
+        }
+
 
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -193,6 +208,23 @@ export default function NORM_NEIGHBORS(props) {
             }
         });
     }
+
+    function getImage(PATH) {
+        const URL = PATH.substring(PATH.lastIndexOf('/') + 1, PATH.length);
+        return Norms_Service.get_norm_img(URL)
+            .then(response => {
+                return response
+            })
+            .catch(e => {
+                console.error(e);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+    }
     // ***************************  DATA GETTER *********************** //
 
 
@@ -221,7 +253,7 @@ export default function NORM_NEIGHBORS(props) {
         {
             name: <label className="text-center">IMAGE</label>,
             center: true,
-            cell: row => row.fun6id
+            cell: row => row.fun6id ? <VIEWER API={getImage} params={[row.fun6id]} /> : null
         },
         {
             name: <label className="text-center">ACCIÓN</label>,
@@ -274,19 +306,19 @@ export default function NORM_NEIGHBORS(props) {
                 <div className="col">
                     <label>Voladizo</label>
                     <div class="input-group my-1">
-                        <input  type="text" defaultValue={editItem ? editItem.voladizo : ""} class="form-control" id={"predio_voladizo" + edit} />
+                        <input type="text" defaultValue={editItem ? editItem.voladizo : ""} class="form-control" id={"predio_voladizo" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Material</label>
                     <div class="input-group my-1">
-                        <input  type="text" defaultValue={editItem ? editItem.material : ""} class="form-control" id={"predio_material" + edit} />
+                        <input type="text" defaultValue={editItem ? editItem.material : ""} class="form-control" id={"predio_material" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Imagen</label>
                     <div class="input-group my-1">
-                        <input  type="text" defaultValue={editItem ? editItem.fun6id : ""} class="form-control" id={"predio_fun6id" + edit} />
+                        <input type="file" class="form-control" id={"predio_fun6id" + edit} accept="image/png, image/jpeg" />
                     </div>
                 </div>
             </div>
