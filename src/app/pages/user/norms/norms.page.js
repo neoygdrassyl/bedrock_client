@@ -10,6 +10,7 @@ import NORM_GENERAL from './norm_geeral.component';
 import NORM_PREDIOS from './norm_predio.component';
 import NORM_NEIGHBORS from './norm_neighbors.component';
 import NORM_PERFIL from './norm_perfil.component';
+import NORM_RESUME from './norm_resume.component';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -352,6 +353,13 @@ export default function NORMS(props) {
                     translation={translation} swaMsg={swaMsg} globals={globals}
                     id={selectedId}
                 />
+
+                <NORM_RESUME
+                    translation={translation} swaMsg={swaMsg} globals={globals}
+                    id={selectedId}
+                    id_in={selectedIdPublic}
+                />
+
 
                 <div className="text-end py-2">
                     <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
