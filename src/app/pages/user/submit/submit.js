@@ -277,6 +277,8 @@ class SUBMIT extends Component {
                 'Tipo',
                 'Tipo de Radicación',
                 'Fecha y hora de ingreso',
+                'Propietario',
+                'Persona que entrega',
             ];
 
             rows.push(headRows);
@@ -290,6 +292,8 @@ class SUBMIT extends Component {
                     row.push(d.type);
                     row.push(state[d.list_type] ?? '');
                     row.push(`${d.date} - ${d.time ?? ''}`);
+                    row.push(d.owner);
+                    row.push(d.name_retriever);
 
                     rows.push(row)
                 }
