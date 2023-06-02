@@ -257,21 +257,24 @@ class PQRS_MACROTABLE extends Component {
                 'ASUNTO'];
 
             rows.push(headRows);
-            for (var i = 0; i < _data.length; i++) {
+            _data.map(_d => {
                 let row = [];
-                row.push(_data[i].id_global || ''); // id_global CONSECUTIVO VENTANILLA ÚNICA
-                row.push(_data[i].id_publico || ''); // id_publico CONSECUTIVO ENTRADA
-                row.push(_data[i].id_correspondency || ''); // id_correspondency CONSECUTIVO GUIÁ
-                row.push(_data[i].pqrs_info ? _data[i].pqrs_info.radication_channel: ''); // radication_channel MEDIO RADICACIÓN ORIGINAL
-                row.push(_data[i].pqrs_time ? _data[i].pqrs_time.legal: ''); // legal FECHA RADICACIÓN
-                row.push(_data[i].pqrs_time ? _data[i].pqrs_time.creation ? _data[i].pqrs_time.creation.split(' ')[1] : '' : ''); // legal HORA DE RESPUESTA
-                row.push(_data[i].pqrs_time ? dateParser_finalDate(_data[i].pqrs_time.legal, _data[i].pqrs_time.time) : ''); // final date
-                row.push(_data[i].id_reply); // id_reply
-                row.push(_data[i].pqrs_time ? _data[i].pqrs_time.reply_formal : ''); // reply_date
-                row.push(_GET_REPLY_TIME_TIME(_data[i]) ? _GET_REPLY_TIME_TIME(_data[i]) + " dia(s)" : ""); // reply_time
-                row.push(_data[i].content ? _data[i].content.replace(/[\n\r]+ */g, ' ') : ''); // ASUNTO
+                row.push(_d.id_global || ''); // id_global CONSECUTIVO VENTANILLA ÚNICA
+                row.push(_d.id_publico || ''); // id_publico CONSECUTIVO ENTRADA
+                row.push(_d.id_correspondency || ''); // id_correspondency CONSECUTIVO GUIÁ
+                row.push(_d.pqrs_info ? _d.pqrs_info.radication_channel: ''); // radication_channel MEDIO RADICACIÓN ORIGINAL
+                row.push(_d.pqrs_time ? _d.pqrs_time.legal: ''); // legal FECHA RADICACIÓN
+                row.push(_d.pqrs_time ? _d.pqrs_time.creation ? _d.pqrs_time.creation.split(' ')[1] : '' : ''); // legal HORA DE RESPUESTA
+                row.push(_d.pqrs_time ? dateParser_finalDate(_d.pqrs_time.legal, _d.pqrs_time.time) : ''); // final date
+                row.push(_d.id_reply); // id_reply
+                row.push(_d.pqrs_time ? _d.pqrs_time.reply_formal : ''); // reply_date
+                row.push(_GET_REPLY_TIME_TIME(_d) ? _GET_REPLY_TIME_TIME(_d) + " dia(s)" : ""); // reply_time
+                let new_conent = _d.content ? _d.content.replace(/[\n\r]+ */g, ' ') : '';
+                new_conent = new_conent.replace(/\;/g, ':');
+                new_conent = new_conent.replaceAll('#', '%23').replaceAll('°', 'r');
+                row.push(new_conent) // ASUNTO
                 rows.push(row)
-            }
+            }) 
 
             let csvContent = "data:text/csv;charset=utf-8,"
                 + rows.map(e => e.join(";")).join("\n");

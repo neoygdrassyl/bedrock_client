@@ -583,21 +583,30 @@ class FUN extends Component {
             if (row.state == '-105') return row.clock_close_5
             if (row.state == '-106') return row.clock_close_6
         }
-        let _GET_STATE_STR = (state) => {
-            if (state < '-1') return <label className='text-danger text-center'>DESISTIDO (Ejecución)</label>
+        let _GET_STATE_STR = (state, isString, row) => {
+            if (state < '-1') return isString ? 'DESISTIDO (Ejecución)' : <label className='text-danger text-center'>DESISTIDO (Ejecución)</label>
             if (state == '-1') return 'INCOMPLETO'
             if (state == '1') return 'INCOMPLETO'
             if (state == '5') return 'LYDF'
             if (state == '50') return 'EXPEDICIÓN'
-            if (state == '100') return <label className='fw-bold'>CERRADO</label>
-            if (state == '101') return <label className='fw-bold text-primary'>ARCHIVADO</label>
-            if (state == '200') return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
-            if (state == '201') return <label className='text-danger text-center'>DESISTIDO (Incompleto)</label>
-            if (state == '202') return <label className='text-danger text-center'>DESISTIDO (No radicó valla)</label>
-            if (state == '203') return <label className='text-danger text-center'>DESISTIDO (No subsanó Acta)</label>
-            if (state == '204') return <label className='text-danger text-center'>DESISTIDO (No radicó pagos)</label>
-            if (state == '205') return <label className='text-danger text-center'>DESISTIDO (Voluntario)</label>
-            if (state == '206') return <label className='text-danger text-center'>DESISTIDO (Negada)</label>
+            if (state == '100') return isString ? 'ARCHIVADO' : <label className='fw-bold'>CERRADO</label>
+            if (state == '101') return isString ? 'ARCHIVADO' : <label className='fw-bold text-primary'>ARCHIVADO</label>
+            if (state == '200') {
+                if(isString){
+                    if(row.clock_close_6) return 'NEGADA'
+                    if(row.clock_close_5) return 'DESISTIDO (Voluntario)'
+                    if(row.clock_close_4) return 'DESISTIDO (No radicó pagos'
+                    if(row.clock_close_3) return 'DESISTIDO (No subsanó Acta)'
+                    if(row.clock_close_2) return 'DESISTIDO (No radicó valla)'
+                    if(row.clock_close_1) return 'DESISTIDO (Incompleto)'
+                }else return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
+            }
+            if (state == '201') return isString ? 'DESISTIDO (Incompleto)' : <label className='text-danger text-center'>DESISTIDO (Incompleto)</label>
+            if (state == '202') return isString ? 'DESISTIDO (No radicó valla)' : <label className='text-danger text-center'>DESISTIDO (No radicó valla)</label>
+            if (state == '203') return isString ? 'DESISTIDO (No subsanó Acta)' : <label className='text-danger text-center'>DESISTIDO (No subsanó Acta)</label>
+            if (state == '204') return isString ? 'DESISTIDO (No radicó pagos)' : <label className='text-danger text-center'>DESISTIDO (No radicó pagos)</label>
+            if (state == '205') return isString ? 'DESISTIDO (Voluntario)' : <label className='text-danger text-center'>DESISTIDO (Voluntario)</label>
+            if (state == '206') return isString ? 'DESISTIDO (Negada)' : <label className='text-danger text-center'>DESISTIDO (Negada)</label>
             return ''
         }
         const _fun_0_type = { '0': 'NC', 'i': 'I', 'ii': "II", 'iii': "III", 'iv': "IV", 'oa': "OA" }
@@ -902,12 +911,12 @@ class FUN extends Component {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => row.id_public
             },
             {
                 name: <label className="text-center">TIPO</label>,
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => formsParser1(row, true),
             },
             {
                 name: <label className="text-center">CAT.</label>,
@@ -916,15 +925,17 @@ class FUN extends Component {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => _fun_0_type[row.type]
+                
             },
             {
                 name: <label>ESTADO</label>,
-                selector: row => row.state,
+                selector: row => _GET_STATE_STR(row.state, true, row),
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => _GET_STATE_STR(row.state)
+                cell: row => _GET_STATE_STR(row.state),
+                cvsCB: row =>  _GET_STATE_STR(row.state, true, row)
             },
             {
                 name: <label className="text-center">FECHA ARCHIVACIÓN</label>,
@@ -932,18 +943,20 @@ class FUN extends Component {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_archive)}</label>
+                cell: row => row.clock_archive
             },
             {
                 name: <label className="text-center">PROGRESION</label>,
                 center: true,
                 minWidth: '330px',
+                ignoreCSV: true,
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
                 name: <label>ACCION</label>,
                 button: true,
                 minWidth: '100px',
+                ignoreCSV: true,
                 cell: row => <>
                     <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
                         {_MODULE_BTN_POP(row)}
@@ -1209,6 +1222,43 @@ class FUN extends Component {
             }
             this.setState({ fillActive: state });
         };
+
+        let generateCVS = (_data, _name) => {
+            var rows = [];
+            
+            let extraColumns = [
+                {
+                    name: <label className="text-center">FECHA DE LICENCIA</label>,
+                    cell: row => row.clock_license
+                }
+            ]
+
+            let _columns = [...columns_archive, ...extraColumns]
+            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name.props.children })
+            rows = _data.map(d =>
+                _columns.filter(c => c.ignoreCSV == undefined).map(c => {
+                    if (c.cvsCB) return (String(c.cvsCB(d) ?? '')).replace(/[\n\r]+ */g, ' ')
+                    else return (String(c.cell(d) ?? '')).replace(/[\n\r]+ */g, ' ')
+                }
+                )
+            );
+
+            rows.unshift(headRows);
+
+            let csvContent = "data:text/csv;charset=utf-8,"
+                + rows.map(e => e.join(";")).join("\n");
+
+
+            var encodedUri = encodeURI(csvContent);
+            const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
+
+            var link = document.createElement("a");
+            link.setAttribute("href", fixedEncodedURI);
+            link.setAttribute("download", `${_name ?? 'LICENCIAS URBANISTICAS'}.csv`);
+            document.body.appendChild(link); // Required for FF
+
+            link.click();
+        }
 
         return (
             <div className="Publish container">
@@ -1492,6 +1542,10 @@ class FUN extends Component {
 
                         </MDBTabsPane>
                         <MDBTabsPane show={this.state.fillActive === '100'}>
+                            
+                        <div className='my-2'><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(this.state.list_archive, "LICENCIAS ARCHIVADAS") }}
+                                        ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                            
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}

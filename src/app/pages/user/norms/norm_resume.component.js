@@ -110,6 +110,11 @@ export default function NORM_RESUME(props) {
         }
 
     }
+
+    function gen_pdf(){
+
+    }
+
     // ***************************  JXS *********************** //
     const R_HEADER = <>
         <div className='bg-dark p-2 m-1 row text-light'>
@@ -355,6 +360,10 @@ export default function NORM_RESUME(props) {
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
                 <h3 class="text-uppercase pb-2">5. RESUMEN DE INFORMACIÓN:</h3>
                 {RESUME}
+                <hr />
+                <div className='row text-center'>
+                    <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-success my-1" type='submit'><i class="far fa-file-pdf"></i> GENERAR PDF </button></div>
+                </div>
                 <hr />
             </Suspense>
 
