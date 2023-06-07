@@ -90,11 +90,13 @@
 
     "700" : "Factura",
     "701" : "Pago de expensas asociadas a la solicitud",
-    "702" : "Pago de impuestos de Delineación y Urbanismo y Ipuesto de uso Excavación  Subsuelo",
+    "702" : "Pago de impuestos de Delineación y Urbanismo e Ipuesto de uso Excavación Subsuelo",
     "703" : "pago de Impuesto Departamnto PRO-UIS",
     "704" : "Pago de Impuesto Departamnto PRO-UIS",
     "705" : "Pago compensatorio de Deberes Urbanisticos", 
     "706" : "Pago Compensatorio de Parqueaderos",
+    "707" : "Pago de impuestos de Delineación y Urbanismo",
+    "708" : "Comprobante de pago",
     "720" : "Notificación recordación de pago",
 
     "800": "Lista de Checkeo/ Formato de Revision",

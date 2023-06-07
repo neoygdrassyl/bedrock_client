@@ -33,7 +33,7 @@ const list_68 = {
 
 
 const list_Z = {
-    "DOCUMENTOS EXPENSAS / IMPUESTOS": [ 701, 702, 703, 705, 706, 707]
+    "DOCUMENTOS EXPENSAS / IMPUESTOS": [ 701, 708, 702, 707, 703, 705, 706, 707]
 }
 
 export var Lists = {
