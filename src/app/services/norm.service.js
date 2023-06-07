@@ -40,7 +40,7 @@ class Norms_Service {
     delete_element(id) { return http.delete(`/${route}/element/${id}`) }
 
     // PDF GENERATION
-    create_element(data) { return http.post(`/${route}/pdf/norm`, data) }
+    gen_pdf(data) { return http.post(`/${route}/pdf/norm`, data) }
 }
 
 export default new Norms_Service();

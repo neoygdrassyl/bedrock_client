@@ -75,7 +75,7 @@ export default function FUN_REPORT_GEN(props) {
         "Total Pro-Uis",
         "Cédula Catastral",
     ];
-    
+
     let report_data_1 = (v) => {
         let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
         let isPH = regexChecker_isPh(_CHILD_1, true);
@@ -90,7 +90,7 @@ export default function FUN_REPORT_GEN(props) {
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, //  Solicitud No
             { value: v.clock_payment },  //  Fecha Solicitud
-            { value:  formsParser1(_CHILD_1, true) }, //  Tipo Solicitud
+            { value: formsParser1(_CHILD_1, true) }, //  Tipo Solicitud
             { value: _JOIN_FIELDS(v, ['names51',], true) }, // Nombre Propietario
             { value: _JOIN_FIELDS(v, ['surnames51',], true) }, // "Apellidos Propietario
             { value: v.matricula }, // Matricula No
@@ -141,7 +141,7 @@ export default function FUN_REPORT_GEN(props) {
 
 
         return [
-            { value: v.clock_license }, //  Fecha de Expedición
+            { value: isPH ? v.clock_license_ph : v.clock_license }, //  Fecha de Expedición
             { value: isPH ? v.id_public_ph : v.id_public },  //  No. Solicitud
             { value: formsParser1(_CHILD_1) }, //  Tipo de Licencia
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // Nombre Propietario
@@ -254,7 +254,7 @@ export default function FUN_REPORT_GEN(props) {
 
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
         return [
-            { value: moment(v.clock_license).format('MM-YYYY') }, //  Mes y Año De Aprobacion
+            { value: isPH ? moment(v.clock_license_ph).format('MM-YYYY') : moment(v.clock_license).format('MM-YYYY') }, //  Mes y Año De Aprobacion
             { value: isPH ? v.id_public_ph : v.id_public },  //  Numero De Licencia de Cnstruccion
             { value: formsParser1(v, true) },  //  Tipo De Licencia
             { value: _FUN_2_PARSER(v.tramite, true) },  //  Objeto De Tramite
@@ -428,9 +428,9 @@ export default function FUN_REPORT_GEN(props) {
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, //  Propietario
             { value: infoCud.pot }, //  Pot (Norma Aplicable)
             { value: v.clock_payment }, //  Fecha de Radicación
-            { value: v.clock_license }, //  Fecha De Licencia
+            { value: isPH ? v.clock_license_ph : v.clock_license }, //  Fecha De Licencia
             { value: exp_steps.n_lic }, //  N° Folios de Licencia
-            { value:  v.exp_id ? v.exp_id.includes('-') ? v.exp_id.split('-')[1] : v.exp_id : ''  }, //  Resolucion
+            { value: v.exp_id ? v.exp_id.includes('-') ? v.exp_id.split('-')[1] : v.exp_id : '' }, //  Resolucion
             { value: v.clock_res_date }, //  Fecha De Resolucion
             { value: exp_steps.n_res }, //  N° Folios de Resolucion
             { value: exp_steps.norm }, //  Norma
@@ -601,7 +601,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: _FUN_24_PARSER(v.suelo, true) }, //  Clase de Suelo
             { value: v.catastral_2 || v.catastral }, //  Código Catastral
             { value: v.matricula }, //  Matricula Inmobiliaria
-            { value: v.clock_license }, //  Fecha Ejecutoria
+            { value: isPH ? v.clock_license_ph : v.clock_license }, //  Fecha Ejecutoria
             { value: v.clock_res_c == 'DESISTE' ? 'X' : '' }, //  Desisitmiento
             { value: v.clock_res_c == 'NIEGA' ? 'X' : '' }, //  Negación
             { value: "" }, //  Renuncia
@@ -767,7 +767,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.matricula }, // N° Matricula Inmobiliaria
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // Propietario
             { value: v.clock_payment }, // Fecha de Radicación
-            { value: v.clock_license }, // Fecha de Licencia
+            { value: isPH ? v.clock_license_ph : v.clock_license }, // Fecha de Licencia
             { value: coords.join(', ') }, // Coordenadas
             { value: v.estrato }, // Estrato
         ]
@@ -940,7 +940,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // Propietario
             { value: infoCud.pot }, // POT
             { value: v.clock_payment }, // POTFecApli // Radicacion
-            { value: v.clock_license }, // FechaLicencia
+            { value: isPH ? v.clock_license_ph : v.clock_license }, // FechaLicencia
             { value: exp_steps.n_lic }, // FoliosLicencia
             { value: v.exp_id ? v.exp_id.includes('-') ? v.exp_id.split('-')[1] : v.exp_id : '' }, // Resolucion ID
             { value: v.clock_res_date }, // FechaRes
@@ -985,9 +985,19 @@ export default function FUN_REPORT_GEN(props) {
     let _GET_DATA = () => {
         FUNService.reportsData(date_1, date_2)
             .then(response => {
-                if (response.data.length > 0) _SET_DATA_CONTRALORIA(response.data)
+                let curatedData = []
+                response.data.map(v => {
+                    let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
+                    let isPH = regexChecker_isPh(_CHILD_1, true);
+                    if (isPH) {
+                        if (date_1 <= v.clock_license_ph && v.clock_license_ph <= date_2) curatedData.push(v)
+                    }
+                    else curatedData.push(v)
+                })
+
+                setDataLocal(curatedData)
+                if (response.data.length > 0) _SET_DATA_CONTRALORIA(curatedData)
                 setLoad(1)
-                setDataLocal(response.data)
             })
             .catch(e => {
                 console.log(e);
@@ -1158,7 +1168,7 @@ export default function FUN_REPORT_GEN(props) {
         var list = []
         var _data = Array.from(localData);
         _data.sort((a, b) => new Date(b.clock_license || b.clock_archive) - new Date(a.clock_license || a.clock_archive));
-       
+
         _data.map(value => {
             var condition = moment(value.clock_license).isBetween(date_i, date_f);
             var condition2 = moment(value.clock_archive).isBetween(date_i, date_f);
@@ -1169,10 +1179,15 @@ export default function FUN_REPORT_GEN(props) {
         return <>
             <h4 className='fw-bold'>SOLICITUDES EXPEDIDAS : {list.length}</h4>
             <div class="d-flex flex-wrap">
-                {list.map(value => <div class="input-group-prepend border border-success">
-                    <div class="input-group-text">
-                        <label>{(value.id_public ?? '').slice(-7)}</label></div>
-                </div>
+                {list.map(value => {
+                    let _CHILD_1 = { tipo: value.tipo, tramite: value.tramite, m_urb: value.m_urb, m_sub: value.m_sub, m_lic: value.m_lic };
+                    let isPH = regexChecker_isPh(_CHILD_1, true);
+
+                    return <div class="input-group-prepend border border-success">
+                        <div class="input-group-text">
+                            <label>{isPH ? value.id_public_ph : (value.id_public ?? '').slice(-7)}</label></div>
+                    </div>
+                }
                 )} </div></>
     }
     // ******************************* APIS **************************** // 

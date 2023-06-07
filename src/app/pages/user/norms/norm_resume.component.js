@@ -112,7 +112,39 @@ export default function NORM_RESUME(props) {
     }
 
     function gen_pdf(){
+        let formData = new FormData();
 
+        formData.set('id', item_general.id_out ?? '');
+
+        MySwal.fire({
+            title: swaMsg.title_wait,
+            text: swaMsg.text_wait,
+            icon: 'info',
+            showConfirmButton: false,
+        });
+        Norms_Service.gen_pdf(formData)
+            .then(response => {
+                if (response.data === 'OK') {
+                    MySwal.close();
+                    window.open(process.env.REACT_APP_API_URL + "/pdf/norm/" + "NORMA URBANA " + (item_general.id_out ?? '') + ".pdf");
+                } else {
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
     }
 
     // ***************************  JXS *********************** //
@@ -360,9 +392,8 @@ export default function NORM_RESUME(props) {
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
                 <h3 class="text-uppercase pb-2">5. RESUMEN DE INFORMACIÓN:</h3>
                 {RESUME}
-                <hr />
                 <div className='row text-center'>
-                    <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-success my-1" type='submit'><i class="far fa-file-pdf"></i> GENERAR PDF </button></div>
+                    <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-danger my-1" type='submit'><i class="far fa-file-pdf"></i> GENERAR PDF </button></div>
                 </div>
                 <hr />
             </Suspense>
