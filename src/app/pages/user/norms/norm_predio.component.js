@@ -265,7 +265,7 @@ export default function NORM_PREDIOS(props) {
                 <div className="col">
                     <label>Dirección</label>
                     <div class="input-group my-1">
-                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.dir : ""} class="form-control" id={"predio_dir" + edit} />
+                        <input type="text" defaultValue={editItem ? editItem.dir : ""} class="form-control" id={"predio_dir" + edit} />
                     </div>
                 </div>
                 <div className="col">
