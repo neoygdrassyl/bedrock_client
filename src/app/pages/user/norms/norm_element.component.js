@@ -4,8 +4,11 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import DataTable from 'react-data-table-component';
+import PERFILES from "./PERFILES.json"
+import { ELEMENTS } from './norm.vars'
 
 const MySwal = withReactContent(Swal);
+
 export default function NORM_ELEMENT(props) {
     const { translation, swaMsg, globals, perfil } = props;
 
@@ -39,9 +42,6 @@ export default function NORM_ELEMENT(props) {
                 });
             });
     }
-
-
-
     function create_item(event) {
         event.preventDefault();
 
@@ -188,7 +188,23 @@ export default function NORM_ELEMENT(props) {
         });
     }
     // ***************************  DATA GETTER *********************** //
+    function get_element_norm_data(ele, edit) {
+        const CARD = perfil.card;
+        const NAME = perfil.perfil;
+        let norm_value = 0
 
+        let find_perfil = PERFILES.find(p => p.name == NAME)
+        if (find_perfil) {
+            if (CARD == "sn") {
+                norm_value = find_perfil[ele + '_2'] ?? find_perfil[ele]
+            }
+            else {
+                norm_value = find_perfil[ele]
+            }
+        }
+
+        document.getElementById("elelment_dimension_n" + edit).value = norm_value
+    }
 
     // ***************************  JXS *********************** //
     const columns = [
@@ -198,7 +214,7 @@ export default function NORM_ELEMENT(props) {
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => row.element
+            cell: row => ELEMENTS.find(ele => ele.value == row.element) ? ELEMENTS.find(ele => ele.value == row.element).name : 'OTRO ELEMENTO'
         },
         {
             name: <label className="text-center">DIMENSION NORMA</label>,
@@ -249,7 +265,10 @@ export default function NORM_ELEMENT(props) {
                 <div className="col">
                     <label>Elemento</label>
                     <div class="input-group input-group-sm my-1">
-                        <input type="text" class="form-control" defaultValue={editItem ? editItem.element : ""} id={"elelment_element" + edit} />
+                        <select class="form-select" defaultValue={editItem ? editItem.element : ""} id={"elelment_element" + edit}
+                            onChange={(e) => get_element_norm_data(e.target.value, edit)}>
+                            {ELEMENTS.map(ele => <option value={ele.value}>{ele.name}</option>)}
+                        </select>
                     </div>
                 </div>
                 <div className="col">
@@ -306,7 +325,7 @@ export default function NORM_ELEMENT(props) {
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
                 <div className='border p-2'>
-                    <h4 class="text-uppercase pb-2">ELEMENTOS - PERFIL: {perfil.codigo}</h4>
+                    <h4 class="text-uppercase pb-2">ELEMENTOS: {perfil.perfil}</h4>
                     {NEW_ITEM}
                     {TABLE}
                     {EDIT_ITEM}

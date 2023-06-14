@@ -5,6 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { NORM_GEN_DATA } from './norm.vars'
 import moment from 'moment';
 import VIEWER from '../../../components/viewer.component';
+import FICHA_NORM from "./FICHA_NORM_1.json"
 
 const MySwal = withReactContent(Swal);
 const default_Item = {
@@ -19,6 +20,8 @@ const default_Item = {
     sector: null,
     subsector: null,
     front: null,
+    front_type: null,
+    front_n: null,
 }
 export default function NORM_GENERAL(props) {
     const { translation, swaMsg, globals, id } = props;
@@ -29,10 +32,12 @@ export default function NORM_GENERAL(props) {
     const [selectFicha, setFicha] = useState(item.ficha);
     const [selectSector, setSector] = useState(item.sector);
     const [selectSubsector, setSubsector] = useState(item.subsector);
+    const [selectFront, setFront] = useState(item.front);
 
     const [fichas, setFichas] = useState(NORM_GEN_DATA);
     const [sectors, setSectors] = useState(NORM_GEN_DATA[0].sectors);
     const [subsectors, setSubsectors] = useState(NORM_GEN_DATA[0].sectors[0].subsectors);
+    const [fronts, setFronts] = useState(FICHA_NORM[0].front);
 
     useEffect(() => {
         if (load == 0 || !id) loadData();
@@ -41,6 +46,8 @@ export default function NORM_GENERAL(props) {
     useEffect(() => {
         if (selectFicha) {
             set_Sectors();
+            set_Subsectors();
+            set_Fronts();
             document.getElementById('norm_ficha').value = selectFicha
         }
     }, [selectFicha]);
@@ -48,15 +55,23 @@ export default function NORM_GENERAL(props) {
     useEffect(() => {
         if (selectSector) {
             set_Subsectors();
+            set_Fronts();
             document.getElementById('norm_sector').value = selectSector
         }
     }, [selectSector]);
 
     useEffect(() => {
         if (selectSubsector) {
+            set_Fronts();
             document.getElementById('norm_subsector').value = selectSubsector
         }
     }, [selectSubsector]);
+
+    useEffect(() => {
+        if (selectFront) {
+            document.getElementById('norm_front').value = selectFront
+        }
+    }, [selectFront]);
 
     // ************************** APIS ************************ //
     function loadData() {
@@ -68,6 +83,7 @@ export default function NORM_GENERAL(props) {
                 setFicha(response.data.ficha)
                 setSector(response.data.sector)
                 setSubsector(response.data.subsector)
+                setFront(response.data.front)
             })
             .catch(e => {
                 console.error(e);
@@ -99,6 +115,10 @@ export default function NORM_GENERAL(props) {
         formData.set('subsector', subsector);
         let front = document.getElementById("norm_front").value;
         formData.set('front', front);
+        let front_type = document.getElementById("norm_front_type").value;
+        formData.set('front_type', front_type);
+        let front_n = document.getElementById("norm_front_n").value;
+        formData.set('front_n', front_n);
 
         let _creationYear = moment(item.createdAt).format('YY');
         let _folder = item.id_in;
@@ -181,6 +201,14 @@ export default function NORM_GENERAL(props) {
     function set_Subsectors() {
         let findSector = sectors.find(sector => sector.sector == selectSector)
         if (findSector) setSubsectors(findSector.subsectors)
+    }
+
+    function set_Fronts() {
+        let findFront = FICHA_NORM.find(ficha => 
+            ficha.ficha == selectFicha &&
+            ficha.sector == selectSector &&
+            ficha.subsector == selectSubsector)
+        if (findFront) setFronts(findFront.front)
     }
 
     // ***************************  JXS *********************** //
@@ -290,7 +318,30 @@ export default function NORM_GENERAL(props) {
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_front" defaultValue={item.front} />
+                        <select class="form-select" id="norm_front" defaultValue={item.front}>
+                        <option>{fronts}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-3">
+                    <label >1.11 Tipo de frente</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_front_type" defaultValue={item.front_type} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.12 Numero de frentes</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="number" step="1" class="form-control" id="norm_front_n" defaultValue={item.front_n} required />
                     </div>
                 </div>
             </div>

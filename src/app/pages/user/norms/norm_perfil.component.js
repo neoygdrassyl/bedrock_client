@@ -5,8 +5,13 @@ import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import DataTable from 'react-data-table-component';
 import NORM_ELEMENT from './norm_element.component';
+import PERFILES from "./PERFILES.json"
 
 const MySwal = withReactContent(Swal);
+const CARDS = [
+    { value: 'ns', name: "NORTE - SUR" },
+    { value: 'sn', name: "SUR - NORTE" },
+]
 export default function NORM_PERFIL(props) {
     const { translation, swaMsg, globals, id } = props;
 
@@ -222,7 +227,7 @@ export default function NORM_PERFIL(props) {
         {
             name: <label className="text-center">CARDINALIDAD</label>,
             center: true,
-            cell: row => row.card
+            cell: row => CARDS.find(card => card.value == row.card) ? CARDS.find(card => card.value == row.card).name : 'SIN CARDINALIDAD'
         },
         {
             name: <label className="text-center">ANTEJARDIN NORMA</label>,
@@ -281,13 +286,17 @@ export default function NORM_PERFIL(props) {
                 <div className="col">
                     <label>Perfil</label>
                     <div class="input-group my-1">
-                        <input type="text" defaultValue={editItem ? editItem.perfil : ""} class="form-control" id={"perfil_perfil" + edit} />
+                        <select class="form-select" id={"perfil_perfil" + edit} defaultValue={editItem ? editItem.perfil : ""}>
+                            {PERFILES.map(perfil => <option>{perfil.name}</option>)}
+                        </select>
                     </div>
                 </div>
                 <div className="col">
                     <label>Cardinalidad</label>
                     <div class="input-group my-1">
-                        <input type="text" defaultValue={editItem ? editItem.card : ""} class="form-control" id={"perfil_card" + edit} />
+                        <select class="form-select" id={"perfil_card" + edit} defaultValue={editItem ? editItem.card : ""}>
+                            {CARDS.map(card => <option value={card.value}>{card.name}</option>)}
+                        </select>
                     </div>
                 </div>
                 <div className="col">

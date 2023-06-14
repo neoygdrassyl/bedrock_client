@@ -810,3 +810,16 @@ export const NORM_GEN_DATA = [
         ]
     },
 ]
+
+export const ELEMENTS = [
+    { value: "fc", name: "FC" },
+    { value: "fa", name: "FA" },
+    { value: "peatonal", name: "Peatonal" },
+    { value: "bike", name: "Cicloruta" },
+    { value: "bay", name: "Bahia" },
+    { value: "parking", name: "Bolsa de Parqueadero" },
+    { value: "parallel", name: "Paralela" },
+    { value: "s_lat", name: "S. Lateral" },
+    { value: "road", name: "Calzada" },
+    { value: "s_central", name: "S. Central" },
+];

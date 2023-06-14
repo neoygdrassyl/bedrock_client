@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState, } from 'react';
 import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { NORM_GEN_DATA } from './norm.vars'
+import { NORM_GEN_DATA, ELEMENTS } from './norm.vars'
 import moment from 'moment';
 import VIEWER from '../../../components/viewer.component';
 import FICHA_NORM_JSON from './FICHA_NORM_1.json'
@@ -21,6 +21,9 @@ const default_Item = {
     subsector: null,
     front: null,
 }
+const URL_ROOT = "http://bmg1.dovela-services.com/" || window.location.hostname
+const URL_PATH = "/public_docs/OTHERS/PERFILES_NORMA/";
+
 export default function NORM_RESUME(props) {
     const { translation, swaMsg, globals, id } = props;
 
@@ -183,6 +186,12 @@ export default function NORM_RESUME(props) {
             <div className='col border'>{item_general.subsector}</div>
             <div className='col border'>FRENTE NORM.</div>
             <div className='col border'>{item_general.front}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>TIPO DE FRENTE</div>
+            <div className='col border'>{item_general.front_type}</div>
+            <div className='col border'>NUMERO DE FRENTES</div>
+            <div className='col border'>{item_general.front_n}</div>
         </div>
     </>
 
@@ -351,8 +360,8 @@ export default function NORM_RESUME(props) {
                 <div className='col border'>TIPO DE PERFIL</div>
                 <div className='col border'>{perfil.perfil}</div>
             </div>
-            <div className='row m-1'>
-                PERFIL IMG
+            <div className='row m-2 p-2'>
+                <img src={URL_ROOT + URL_PATH + perfil.perfil+ ".png"} alt="IMAGEN DE PERFIL NO ENCONTRADA" width="80%"/>
             </div>
             <div className='row m-1 fw-bold text-center'>
                 <div className='col border border-dark'>ELEMENTO</div>
@@ -429,7 +438,7 @@ function ELEMENTS_LIST(props) {
     const LIST = <>
         {data.map(element => <>
             <div className='row m-1'>
-                <div className='col border'>{element.element}</div>
+                <div className='col border'>{ ELEMENTS.find(ele => ele.value == element.element) ? ELEMENTS.find(ele => ele.value == element.element).name : 'OTRO ELEMENTO'}</div>
                 <div className='col border text-center'>{element.dimension_n}</div>
                 <div className='col border text-center'>{element.dimension_p}</div>
             </div>
