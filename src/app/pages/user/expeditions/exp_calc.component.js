@@ -2,6 +2,7 @@ import { MDBBtn } from 'mdb-react-ui-kit';
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { infoCud } from '../../../components/jsons/vars';
+import { _CALCULATE_EXPENSES } from '../../../components/customClasses/typeParse';
 
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 const customStylesForModal = {
@@ -125,34 +126,62 @@ const old_2022 = [
 
 ]
 
+const UVT = 42412;
+const rules_matrix = () => {
 
-const rules_matrix = _GLOBAL_ID == 'cb1' ? [] : [
-    {
-        name: 'Construcción obra nueva',
-        subrules: [
-            { name: 'Residencial estrato 1 y otras modalidades', mult: 2120.60, preFix: '2002', },
-            { name: 'Residencial estrato 2 y otras modalidades', mult: 2968.84, preFix: '2002', },
-            { name: 'Residencial estrato 3 y otras modalidades', mult: 3817.08, preFix: '2003', },
-            { name: 'Residencial estrato 4 y otras modalidades', mult: 5937.68, preFix: '2004', },
-            { name: 'Residencial estrato 5 y otras modalidades', mult: 9754.76, preFix: '2005', },
-            { name: 'Residencial estrato 6 y otras modalidades', mult: 12723.60, preFix: '2006', },
-            { name: 'Construcción obra nueva uso comercio o servicios en sector urbano y otras modalidades', mult: 9754.56, preFix: '2007', },
-            { name: 'Construcción obra nueva uso comercio o servicios en suelo rural, suburbano y expansion urbana, y otras modalidades', mult: 19085.40, preFix: '2007', },
-            { name: 'Construcción obra nueva uso institucional o dotacional y otras modalidades', mult: 7634.16, preFix: '2007', },
-            { name: 'Construcción obra nueva uso industrial y otras modalidades', mult: 16964.8, preFix: '2007', },
-            { name: 'Licencia de cerramiento por metro lineal', mult: 4241.2, preFix: '2015', },
+    if (_GLOBAL_ID == 'cb1') return []
+    if (_GLOBAL_ID == 'cp1') return [
+        {
+            name: 'Construcción obra nueva',
+            subrules: [
+                { name: 'Residencial estrato 1 y otras modalidades', mult: 2120.60, preFix: '2002', },
+                { name: 'Residencial estrato 2 y otras modalidades', mult: 2968.84, preFix: '2002', },
+                { name: 'Residencial estrato 3 y otras modalidades', mult: 3817.08, preFix: '2003', },
+                { name: 'Residencial estrato 4 y otras modalidades', mult: 5937.68, preFix: '2004', },
+                { name: 'Residencial estrato 5 y otras modalidades', mult: 9754.76, preFix: '2005', },
+                { name: 'Residencial estrato 6 y otras modalidades', mult: 12723.60, preFix: '2006', },
+                { name: 'Construcción obra nueva uso comercio o servicios en sector urbano y otras modalidades', mult: 9754.56, preFix: '2007', },
+                { name: 'Construcción obra nueva uso comercio o servicios en suelo rural, suburbano y expansion urbana, y otras modalidades', mult: 19085.40, preFix: '2007', },
+                { name: 'Construcción obra nueva uso institucional o dotacional y otras modalidades', mult: 7634.16, preFix: '2007', },
+                { name: 'Construcción obra nueva uso industrial y otras modalidades', mult: 16964.8, preFix: '2007', },
+                { name: 'Licencia de cerramiento por metro lineal', mult: 4241.2, preFix: '2015', },
 
-        ]
-    },
-    {
-        name: 'Estampilla PRO-UIS',
-        subrules: [
-            { name: 'Estrao 3 y 4', mult: 1160, round: true, },
-            { name: 'Estrao 5 y 6', mult: 2320, round: true, },
-        ]
-    },
-
-]
+            ]
+        },
+        {
+            name: 'Estampilla PRO-UIS',
+            subrules: [
+                { name: 'Estrao 3 y 4', mult: 1160, round: true, },
+                { name: 'Estrao 5 y 6', mult: 2320, round: true, },
+            ]
+        },
+    ]
+    if (_GLOBAL_ID == 'fl2') return [
+        {
+            name: 'Impuesto delineacion',
+            subrules: [
+                { name: 'Residencial estrato 1', mult: UVT * 0.04, preFix: '', },
+                { name: 'Residencial estrato 2', mult: UVT * 0.06, preFix: '', },
+                { name: 'Residencial estrato 3', mult: UVT * 0.09, preFix: '', },
+                { name: 'Residencial estrato 4', mult: UVT * 0.13, preFix: '', },
+                { name: 'Residencial estrato 5', mult: UVT * 0.23, preFix: '', },
+                { name: 'Residencial estrato 6', mult: UVT * 0.37, preFix: '', },
+                { name: 'Industrial', mult: UVT * 0.09, preFix: '', },
+                { name: 'Comercial y de servicios', mult: UVT * 0.18, preFix: '', },
+                { name: 'Institucional o dotacional', mult: UVT * 0.18, preFix: '', },
+                { name: 'Suelo suburbano', mult: UVT * 0.09, preFix: '', },
+                { name: 'Suelo rural', mult: UVT * 0.04, preFix: '', },
+            ]
+        },
+        {
+            name: 'Estampilla PRO-UIS',
+            subrules: [
+                { name: 'Estrao 3 y 4', mult: 1160, round: true, },
+                { name: 'Estrao 5 y 6', mult: 2320, round: true, },
+            ]
+        },
+    ]
+}
 
 const CUR_USES = [
     'Residencial (NO VIS)',
@@ -177,7 +206,7 @@ export default function EXP_CALC(props) {
 
     function UPDATE_SUBRULE_SELECT(_selected) {
         var subrule_elm = document.getElementById("exp_calc_subrule");
-        var matrix = mode == 'cur' ? cur_matrix : rules_matrix;
+        var matrix = mode == 'cur' ? cur_matrix : rules_matrix();
         var options = matrix.find(rule => rule.name == _selected).subrules;
         subrule_elm.innerHTML = '';
 
@@ -194,12 +223,12 @@ export default function EXP_CALC(props) {
         })
     }
 
-    function CALCULATE_VALUE_CUR() {
-        var rule = document.getElementById("exp_calc_rule").value;
-        var subrule = document.getElementById("exp_calc_subrule").value;
-        var use = document.getElementById("exp_calc_use").value;
-        var st = document.getElementById("exp_calc_strata").value;
-        var Q = document.getElementById("exp_calc_area").value;
+    function GET_EXP_DATA() {
+        var rule = document.getElementById("exp_calc_rule") ? document.getElementById("exp_calc_rule").value : false;
+        var subrule = document.getElementById("exp_calc_subrule") ? document.getElementById("exp_calc_subrule").value : false;;
+        var use = document.getElementById("exp_calc_use") ? document.getElementById("exp_calc_use").value : false;;
+        var st = document.getElementById("exp_calc_strata") ? document.getElementById("exp_calc_strata").value : false;;
+        var Q = document.getElementById("exp_calc_area") ? document.getElementById("exp_calc_area").value : false;;
 
         if (!rule) return;
         if (!subrule) return;
@@ -207,55 +236,18 @@ export default function EXP_CALC(props) {
         if (st.includes('Seleccione')) st = 0;;
         if (!Q) return;
 
+        var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q)
+        return expenses
+    }
 
+    function CALCULATE_VALUE_CUR() {
+        var expenses = GET_EXP_DATA()
 
-        const m = infoCud.m; // Factor m
-        const iva = 0.16;
-        var i;
-        var j;
-        var q_strata = [0.5, 0.5, 1, 1.5, 2, 2.5]; // base on strata
-        var q_use = [2.9, 3.2, 4]; // base on use
-        var UVT = 42412;
-        var cfi = 10.01;
-        var cvi = 20.02;
-        var cf = UVT * cfi;
-        var cv = UVT * cvi;
+        if (!expenses) return;
 
-        let h = use == 1 ? 2 : 1;
-        let r1 = subrule == 'Modificacion' || subrule == 'Reforzamiento' || subrule == 'Restauracion' ? 0.3 : 1;
-        let r2 = subrule == 'Adecuacion (Sin Obras)' ? 0.5 : 1;
-        let r21 = subrule == 'Adecuacion (Sin Obras)' ? 0 : 1;
-
-
-        /*    
-            e = (cf * i x m) + (cv * i * j * m)
-            Q is the area express in m2
-            Q < 100                   -> j = 0.45
-            100 < Q < 11.000          -> j = (3.8/(0.12+(800/Q))) 
-            Q > 11.000                -> j = (2.2/(0.018+(800/Q))) 
-            Uranismo and Parcelacion  -> j = (4/(0.025+(2000/Q)))
-        */
-
-        // i
-        if (use >= 3) {
-            if (Q <= 300) i = 2.9;
-            if (Q > 300 && Q <= 1000) i = 3.2;
-            if (Q > 1000) i = 4;
-        }
-        else i = q_strata[st];
-
-        // j
-        if (rule == 'Urbanismo' || rule == 'Parcelación') j = 4 / (0.025 + (2000 / Q));
-        else if (Q <= 100) j = 0.45;
-        else if (Q > 100 && Q < 11000) j = j = (3.8 / (0.12 + (800 / Q)))
-        else if (Q >= 11000) j = j = (2.2 / (0.018 + (800 / Q)))
-
-        let _subtotal_cf = Math.round((cf * r1 * r2) * i * m);
-        let _subtotal_cv = Math.round(((cv * r1 * r21) / h * i * j * m));
-
-        setMf(_subtotal_cf);
-        setMv(_subtotal_cv);
-        setMt(_subtotal_cf + _subtotal_cv);
+        setMf(expenses.cf);
+        setMv(expenses.cv);
+        setMt(expenses.ct);
     }
     function CALCULATE_VALUE_OTHER() {
         let value = document.getElementById("exp_calc_area").value;
@@ -264,7 +256,7 @@ export default function EXP_CALC(props) {
         let subrule_elm = document.getElementById("exp_calc_subrule").value;
         let perc = document.getElementById('exp_calc_perc').value;
 
-        let rule = rules_matrix.find(_rule => _rule.name == rule_elm);
+        let rule = rules_matrix().find(_rule => _rule.name == rule_elm);
         if (!rule) return;
         let subrule = rule.subrules.find(_subrule => _subrule.name == subrule_elm);
         if (!subrule) return;
@@ -281,15 +273,33 @@ export default function EXP_CALC(props) {
             let rule = document.getElementById("exp_calc_rule").value;
             let subrule = document.getElementById("exp_calc_subrule").value;
 
-            let preFix_1 = rules_matrix.find(r => r.name == rule).subrules.find(r => r.name == subrule).preFix;
+            let preFix_1 = rules_matrix().find(r => r.name == rule).subrules.find(r => r.name == subrule).preFix;
 
             if (domArea) document.getElementById(domArea).value = area;
             if (domTipe && rule) document.getElementById(domTipe).value = (preFix_1 + ' ' ?? '') + rule;
             if (domUse && subrule) document.getElementById(domUse).value = subrule;
-            if (domM2) document.getElementById(domM2).value = str_m2;
+            if (domM2 && _GLOBAL_ID == "cp1") document.getElementById(domM2).value = str_m2
+            if (domM2 && _GLOBAL_ID == "cb1") document.getElementById(domM2).value = str_m2
+            if (domM2 && _GLOBAL_ID == "fl2") document.getElementById(domM2).value = (str_m2 * area).toFixed(0)
             if (domMt) document.getElementById(domMt).value = str_mt;
         }
-        if (type == 'cur') {
+        if (type == 'cur_fix') {
+            let area = document.getElementById("exp_calc_area").value;
+            let rule = document.getElementById("exp_calc_rule").value;
+            let subrule = document.getElementById("exp_calc_subrule").value;
+            let use = document.getElementById("exp_calc_use").value;
+
+            let type = rule + ' modalidad ' + subrule
+
+            if (domArea) document.getElementById(domArea).value = area;
+            if (domTipe) document.getElementById(domTipe).value = type;
+            if (domUse) document.getElementById(domUse).value = CUR_USES[use];
+            if (domM2 && _GLOBAL_ID == "cp1") document.getElementById(domM2).value = (str_mf / area).toFixed(4);
+            if (domM2 && _GLOBAL_ID == "cb1") document.getElementById(domM2).value = str_mf
+            if (domM2 && _GLOBAL_ID == "fl2") document.getElementById(domM2).value = str_mf
+            if (domMt) document.getElementById(domMt).value = str_mf;
+        }
+        if (type == 'cur_var') {
             let area = document.getElementById("exp_calc_area").value;
             let rule = document.getElementById("exp_calc_rule").value;
             let subrule = document.getElementById("exp_calc_subrule").value;
@@ -301,9 +311,9 @@ export default function EXP_CALC(props) {
             if (domTipe) document.getElementById(domTipe).value = type;
             if (domUse) document.getElementById(domUse).value = CUR_USES[use];
             if (domM2 && _GLOBAL_ID == "cp1") document.getElementById(domM2).value = (str_mv / area).toFixed(4);
-            if (domM2 && _GLOBAL_ID == "cb1") document.getElementById(domM2).value = (str_mv / area).toFixed(4);
+            if (domM2 && _GLOBAL_ID == "cb1") document.getElementById(domM2).value = str_mv
             if (domM2 && _GLOBAL_ID == "fl2") document.getElementById(domM2).value = str_mv
-            if (domMt) document.getElementById(domMt).value = str_mt;
+            if (domMt) document.getElementById(domMt).value = str_mv;
         }
 
         setModal(!modal);
@@ -351,7 +361,21 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <MDBBtn size='sm' outline onClick={() => COPY_TO_DOM('cur')}><i class="far fa-copy"></i> COPIAR</MDBBtn>
+                    <MDBBtn size='sm' className='my-1' outline onClick={() => COPY_TO_DOM('cur_fix')}><i class="far fa-copy"></i> COPIAR CARGO FIJO</MDBBtn>
+                    <MDBBtn size='sm' outline onClick={() => COPY_TO_DOM('cur_var')}><i class="far fa-copy"></i> COPIAR CARGO VARIABLE</MDBBtn>
+                </div>
+            </div>
+            <hr />
+            <div className='row'>
+                <label className='fw-bold'>Calculo de expensas : e = (cf * i x m) + (cv * i * j * m)</label>
+                <div className='col-6'>
+                    <label className='row mx-5'>cf = {GET_EXP_DATA() ? GET_EXP_DATA().cfi.toFixed(2) : ''}</label>
+                    <label className='row mx-5'>cv = {GET_EXP_DATA() ? GET_EXP_DATA().cvi.toFixed(2) : ''}</label>
+                </div>
+                <div className='col-6'>
+                    <label className='row mx-5'>m = {infoCud.m}</label>
+                    <label className='row mx-5'>i = {GET_EXP_DATA() ? GET_EXP_DATA().i.toFixed(2) : ''}</label>
+                    <label className='row mx-5'>j = {GET_EXP_DATA() ? GET_EXP_DATA().j.toFixed(2) : ''}</label>
                 </div>
             </div>
         </>
@@ -365,7 +389,7 @@ export default function EXP_CALC(props) {
                     <select className="form-select form-select-sm my-1" id="exp_calc_rule"
                         onChange={(e) => UPDATE_SUBRULE_SELECT(e.target.value)}>
                         <option disabled selected>Seleccione tipo de actuación...</option>
-                        {rules_matrix.map(rule => <option>{rule.name}</option>)}
+                        {rules_matrix().map(rule => <option>{rule.name}</option>)}
                     </select>
                     <select className="form-select form-select-sm my-1" id="exp_calc_subrule" onChange={e => CALCULATE_VALUE_OTHER()}>
                         <option disabled selected>Seleccione uso...</option>

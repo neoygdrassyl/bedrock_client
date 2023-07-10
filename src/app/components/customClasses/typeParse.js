@@ -118,7 +118,7 @@ export const SUBSERIES_MODULES_RELATION = {
     '1100-40.05': ['1:G', '2:OA', '2:PLANOS'],
     '1100-40.06': ['1:G', '2:OA', '2:BIENES'],
     '1100-40.07': ['1:G', '2:OA', '2:ESTRUCTURAL'],
-   
+
 
     //'1100-70.01': [''],
     //'1100-70.02': [''],
@@ -206,7 +206,7 @@ export const VR_DOCUMENTS_OF_INTEREST = {
         '651', '652', '653',
         '671', '672',
         '680', '681', '682', '683', '685', '685', '686', '6862', '688', '689',
-        '6609', '6610', '6611', '6612', '6613', '6617', 
+        '6609', '6610', '6611', '6612', '6613', '6617',
     ],
     'law2': ',511,512,513,514,516,517,518,519,520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,601,602,621,622,623,624,625,626,627,630,631,632,633,634,635,636,641,642,643,651,652,653,671,672,680,681,682,683,685,685,686,6862,688,689,6609,6610,6611,6612,6613,6617,',
     'arc': ['687', '907', '909', '916', '917', '6603', '6614',],
@@ -603,14 +603,14 @@ export function _IDENTIFY_SERIES(_CHILD_1, select = [1, 1, 1, 1, 1], isOA) {
         if (_CHILD.item_2 == 'C') _CONDITONS.push('2:C');
         if (_CHILD.item_2 == 'D') _CONDITONS.push('2:D');
 
-        if (REGEX_MATCH_1100_40_01(_CHILD.item_2) 
-            || REGEX_MATCH_1100_40_02(_CHILD.item_2) 
-            || REGEX_MATCH_1100_40_03(_CHILD.item_2) 
-            || REGEX_MATCH_1100_40_04(_CHILD.item_2) 
-            || REGEX_MATCH_1100_40_05(_CHILD.item_2) 
-            || REGEX_MATCH_1100_40_06(_CHILD.item_2) 
+        if (REGEX_MATCH_1100_40_01(_CHILD.item_2)
+            || REGEX_MATCH_1100_40_02(_CHILD.item_2)
+            || REGEX_MATCH_1100_40_03(_CHILD.item_2)
+            || REGEX_MATCH_1100_40_04(_CHILD.item_2)
+            || REGEX_MATCH_1100_40_05(_CHILD.item_2)
+            || REGEX_MATCH_1100_40_06(_CHILD.item_2)
             || REGEX_MATCH_1100_40_07(_CHILD.item_2)
-           //|| REGEX_MATCH_1100_250(_CHILD.item_2) 
+            //|| REGEX_MATCH_1100_250(_CHILD.item_2) 
         ) _CONDITONS.push('2:OA');
 
         if (REGEX_MATCH_1100_40_01(_CHILD.item_2) && isOA) _CONDITONS.push('2:COTAS');
@@ -945,4 +945,73 @@ export function _MANAGE_IDS(_data, _type) {
     }
 
     return new_id;
+}
+
+export function _GET_EXPENSES_DATA (year) {
+    const values = {
+        '2020': { value: 877803, units: 'SMLV', name: 'SALARIO MINIMO MENSUAL VIGENTE', cfi: 0.4, cvi: 0.8 },
+        '2021': { value: 908526, units: 'SMLV', name: 'SALARIO MINIMO MENSUAL VIGENTE', cfi: 0.4, cvi: 0.8 },
+        '2022': { value: 38004, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
+        '2023': { value: 42412, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
+    }
+
+    if(!values[year]) return values[Object.keys(values)[Object.keys(values).length - 1]] // return last entry of values
+    else return values[year]
+}
+
+export function _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year) {
+    const EMTPY_RESPONSE = { cf: 0, cv: 0, ct: 0, i: 0, j:0, cvi: 0, cfi: 0};
+    if (!rule) return EMTPY_RESPONSE;
+    if (!subrule) return EMTPY_RESPONSE;
+    if (!use) return EMTPY_RESPONSE;
+    if (!st) return EMTPY_RESPONSE;
+    if (!Q) return EMTPY_RESPONSE;
+
+    const m = infoCud.m; // Factor m
+    const iva = 0.16;
+    const base_data = _GET_EXPENSES_DATA(year)
+    var i;
+    var j;
+    var q_strata = [0.5, 0.5, 1, 1.5, 2, 2.5]; // base on strata
+    var q_use = [2.9, 3.2, 4]; // base on use
+
+    var UVT = base_data.value;
+    var cfi = base_data.cfi
+    var cvi = base_data.cvi
+    var cf = UVT * cfi;
+    var cv = UVT * cvi;
+
+    let h = use == 1 ? 2 : 1;
+    let r1 = subrule == 'Modificacion' || subrule == 'Reforzamiento' || subrule == 'Restauracion' ? 0.3 : 1;
+    let r2 = subrule == 'Adecuacion (Sin Obras)' ? 0.5 : 1;
+    let r21 = subrule == 'Adecuacion (Sin Obras)' ? 0 : 1;
+
+
+    /*    
+        e = (cf * i x m) + (cv * i * j * m)
+        Q is the area express in m2
+        Q < 100                   -> j = 0.45
+        100 < Q < 11.000          -> j = (3.8/(0.12+(800/Q))) 
+        Q > 11.000                -> j = (2.2/(0.018+(800/Q))) 
+        Uranismo and Parcelacion  -> j = (4/(0.025+(2000/Q)))
+    */
+
+    // i
+    if (use >= 3) {
+        if (Q <= 300) i = 2.9;
+        if (Q > 300 && Q <= 1000) i = 3.2;
+        if (Q > 1000) i = 4;
+    }
+    else i = q_strata[st];
+
+    // j
+    if (rule == 'Urbanismo' || rule == 'Parcelación') j = 4 / (0.025 + (2000 / Q));
+    else if (Q <= 100) j = 0.45;
+    else if (Q > 100 && Q < 11000) j = j = (3.8 / (0.12 + (800 / Q)))
+    else if (Q >= 11000) j = j = (2.2 / (0.018 + (800 / Q)))
+
+    let _subtotal_cf = Math.round((cf * r1 * r2) * i * m);
+    let _subtotal_cv = Math.round(((cv * r1 * r21) / h * i * j * m));
+
+     return { cf: _subtotal_cf, cv: _subtotal_cv, ct: _subtotal_cf + _subtotal_cv, i: i, j: j, cvi: (cv * r1 * r21) / h , cfi: (cf * r1 * r2)}
 }

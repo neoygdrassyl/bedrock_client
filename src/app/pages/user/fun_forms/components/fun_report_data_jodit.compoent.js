@@ -108,7 +108,14 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
         }
         return _CHILD_VARS;
     }
-
+  
+    let LOAD_STEP = (_id_public) => {
+        var _CHILD = currentItem.record_arc_steps || [];
+        for (var i = 0; i < _CHILD.length; i++) {
+            if (_CHILD[i].version == 1 && _CHILD[i].id_public == _id_public) return _CHILD[i]
+        }
+        return []
+    }
     // ****************
     let _GET_CHILD_51_BYROLE = (role) => {
         let _CHILDREN = _SET_CHILD_51();
@@ -138,6 +145,16 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
         }
         return [];
     }
+    let _GET_STEP_TYPE = (_id_public, _type) => {
+        var STEP = LOAD_STEP(_id_public);
+        if (!STEP.id) return [];
+        var value = STEP[_type] ? STEP[_type] : []
+        if (!value) return [];
+        value = value.split(';');
+        return value
+    }
+
+    let ARC_DESC = _GET_STEP_TYPE('s33', 'value');
     var default_content = `
 |       <br />
         <br />
@@ -160,7 +177,7 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
         <p style="text-align: left; margin-left: 100px;">Cordial Saludo,</p>
 
         <p style="text-align: left; margin-left: 100px;">Por medio del presente escrito me permito poner ajo s conocimiento la solicitud de reconocimiento 
-        de edificación "<strong>${formsParser1(_GET_CHILD_1())}</strong>" realizada ante nuestro despacho y que corresponde a la siguiente información</p>
+        de edificación "<strong>${ARC_DESC[1] || formsParser1(_GET_CHILD_1())}</strong>" realizada ante nuestro despacho y que corresponde a la siguiente información</p>
 
         <table style="width: 78.2413%; margin-left: 11.0485%;"><tbody>
             <tr>
@@ -171,7 +188,7 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
                 <td style="width: 20%; border-color: rgb(0, 0, 0); background-color: rgb(183, 183, 183); text-align: center;">Nr. Predial</td></tr>
             <tr>
                 <td style="width: 20%; border-color: rgb(0, 0, 0); text-align: center;">${currentItem.id_public}</td>
-                <td style="width: 20%; border-color: rgb(0, 0, 0); text-align: center;">${_FUN_1_PARSER(_GET_CHILD_1().tipo, true)}</td>
+                <td style="width: 20%; border-color: rgb(0, 0, 0); text-align: center;">${formsParser1(_GET_CHILD_1())}</td>
                 <td style="width: 20%; border-color: rgb(0, 0, 0); text-align: center;">${_GET_CHILD_51_BYROLE('PROPIETARIO') ?? ''}</td>
                 <td style="width: 20%; border-color: rgb(0, 0, 0); text-align: center;">${_GET_FULL_2_ADDRESS(_GET_CHILD_2())}</td>
                 <td style="width: 20%; border-color: rgb(0, 0, 0); text-align: center;">${_GET_CHILD_2().item_23}</td></tr></tbody></table>
