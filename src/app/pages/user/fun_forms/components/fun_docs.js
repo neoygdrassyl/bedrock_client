@@ -33,6 +33,7 @@ import fs from 'fs'
 import FUN_D_ABDICATE from './fun_doc_abdicate.component';
 
 const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 class FUN_DOCS extends Component {
     constructor(props) {
         super(props);
@@ -427,19 +428,22 @@ class FUN_DOCS extends Component {
                         </>
                         : ""}
 
-                    <div id="fund_seal">
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">Sello</label>}>
-                            <div className='text-start'>
-                                <FUN_SEAL
-                                    translation={translation}
-                                    swaMsg={swaMsg}
-                                    globals={globals}
-                                    currentItem={currentItem}
-                                    currentVersion={currentVersion}
-                                />
-                            </div>
-                        </Collapsible>
-                    </div>
+                    {_GLOBAL_ID == "cb1" ?
+                        <div id="fund_seal">
+                            <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">Sello</label>}>
+                                <div className='text-start'>
+                                    <FUN_SEAL
+                                        translation={translation}
+                                        swaMsg={swaMsg}
+                                        globals={globals}
+                                        currentItem={currentItem}
+                                        currentVersion={currentVersion}
+                                    />
+                                </div>
+                            </Collapsible>
+                        </div>
+                        : null}
+
 
                     {rules[0] != 1 || conOA() ?
                         <div id="fund_22">

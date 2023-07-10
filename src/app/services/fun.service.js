@@ -87,6 +87,9 @@ class UserslDataService {
   reportsData(date_start, date_end) {
     return http.get(`/${route}/reports/${date_start}&${date_end}`);
   }
+  reportsFinance(date_start, date_end) {
+    return http.get(`/${route}/reports_finance/${date_start}&${date_end}`);
+  }
   reportsPublicData(id_start, id_end) {
     return http.get(`/${route}/reports_public/${id_start}&${id_end}`);
   }

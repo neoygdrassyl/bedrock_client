@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 import Spreadsheet from "react-spreadsheet";
 import FUNService from '../../../../services/fun.service';
 import { _FUN_1_PARSER, _FUN_24_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_8_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { formsParser1, getJSON, getJSONFull, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
+import { _CALCULATE_EXPENSES, formsParser1, getJSON, getJSONFull, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../components/jsons/vars';
 import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
 
@@ -658,80 +658,86 @@ export default function FUN_REPORT_GEN(props) {
     // EXPENSAS
     const header_6 = [
         "Número de Solicitud",
+        "Tipo de tramite",
+        "Estado",
+
         "Cargo Fijo",
+        "Cargo Fijo Pagado",
+        "Cargo Fijo Diferencia",
+        "Factura Nr Cargo Fijo",
+        "Factura Fecha Cargo Fijo",
+        "Area Liquidada Cargo Fijo",
+
         "Cargo Variable",
-        "Valor Total (1)",
-        "Area Liquidada",
-        "Impuesto Delineación",
-        "Impuesto de Uso",
-        "Fondo de Embelicimiento",
-        "Estampilla PRO UIS",
-        "Valor Total Licencia",
-        "Impuestos y Tasas",
-        "Compensaciones",
-        "Deberes Urbanisticos",
-        "Parqueaderos",
-        "Valor Total (3)",
+        "Cargo Variable Pagado",
+        "Cargo Variable Diferencia",
+        "Factura Nr Cargo Variable",
+        "Factura Fecha Cargo Variable",
+        "Area Liquidada Cargo Variable",
+
+        "Valor Total",
+
+        //"Impuesto Delineación",
+        // "Impuesto de Uso",
+        // "Fondo de Embelicimiento",
+        // "Estampilla PRO UIS",
+        //"Valor Total Licencia",
+        //"Impuestos y Tasas",
+        //"Compensaciones",
+        //"Deberes Urbanisticos",
+        //"Parqueaderos",
+        //"Valor Total (3)",
+        "Estrato",
     ];
     let report_data_6 = (v) => {
-        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
+        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic, usos: v.usos };
         let isPH = regexChecker_isPh(_CHILD_1, true);
-
-        const values = {
-            '2020': { value: 877803, units: 'SMLV', name: 'SALARIO MINIMO MENSUAL VIGENTE', cfi: 0.4, cvi: 0.8 },
-            '2021': { value: 908526, units: 'SMLV', name: 'SALARIO MINIMO MENSUAL VIGENTE', cfi: 0.4, cvi: 0.8 },
-            '2022': { value: 38004, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
-            '2023': { value: 42412, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
-        }
-        var yearExp = moment(v.clock_payment).format('YYYY');
-        if (!values[yearExp]) yearExp = moment(date_f).format('YYYY');
-
-        let aint;
-        if (_GLOBAL_ID == 'cb1') {
-            aint = _FIELDS_ADD(v.r33a_build, ',', undefined, 2);
-        } else {
-            let EXP_A = v.exp_a_obj ? v.exp_a_obj.split('&&') : [];
-            EXP_A = EXP_A.map(ea => getJSONFull(ea));
-
-            aint = _ADD(EXP_A, 'area');
-        }
-
-        let cargoVble = _GLOBAL_ID == 'cb1' ? _FIELDS_ADD(v.expc_0, ';') : _FIELDS_MULTIPLY(v.expa_0, v.expc_0, ';', ';');
-        let strata = v.estrato || 1;
-        let use = _FUN_6_PARSER(v.usos, true);
-        // Cf * i * m
-        let Cf = values[yearExp].value * values[yearExp].cfi
-        let m = infoCud.m;
-        let i;
-        var q_strata = [0.5, 0.5, 1, 1.5, 2, 2.5];
-        if (use != 'VIVIENDA') {
-            if (aint <= 300) i = 2.9;
-            if (aint > 300 && aint <= 1000) i = 3.2;
-            if (aint > 1000) i = 4;
-        }
-        else i = q_strata[strata - 1];
-        let cargoFijo = Cf * i * m;
-
-        let delineamiento = _GLOBAL_ID == 'cb1' ? _FIELDS_ADD(v.expc_1, ';') : _FIELDS_MULTIPLY(v.expa_1, v.expc_1, ';', ';');
         let taxes = getJSONFull(v.taxes);
-        let tmp = getJSONFull(v.tmp);
-        let axisTable = infoCud.axisTable
+
+        var rule = formsParser1(_CHILD_1);
+        var subrule = formsParser1(_CHILD_1);
+        var use = _FUN_6_PARSER(_CHILD_1.usos, true);
+        var st = v.estrato - 1
+        var Q = taxes.id_payment_0_area || false;
+        var year = moment(v.pay_date).format('YYYY')
+
+        var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
+
+        var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0): 0;
+        var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0): 0;
+      
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, //  Número de Licecia
-            { value: (cargoFijo).toFixed(0) }, // Cargo Fijo
-            { value: cargoVble }, // Cargo Variable
-            { value: (Number(cargoFijo) + Number(cargoVble)).toFixed(0) }, // Valor Total (1)
-            { value: aint }, // Area Liquidada
-            { value: delineamiento }, // Impuesto Delineación
-            { value: delineamiento * 0.1 }, // Impuesto de Uso
-            { value: aint > axisTable[tmp.axis ?? 5] ? delineamiento * 0.6 : 0 }, // Fondo de Embelicimiento
-            { value: taxes.uis ?? 0 }, // Estampilla PRO UIS
-            { value: (Number(delineamiento) + Number(delineamiento * 0.1) + Number(aint > axisTable[tmp.axis ?? 5] ? delineamiento * 0.6 : 0) + Number(taxes.uis ?? 0) + Number(cargoVble)).toFixed(0) }, // Valor Total (2)
-            { value: '' }, // Impuestos y Tasas
-            { value: '' }, // Compensaciones
-            { value: '' }, // Deberes Urbanisticos
-            { value: '' }, // Parqueaderos
-            { value: '' }, // Valor Total (3)
+            { value: formsParser1(_CHILD_1) }, //  Tipo de tramite
+            { value: _GET_STATE_STR(v.state, true, false) }, // Estado
+
+            { value: (expenses.cf).toFixed(0) }, // Cargo Fijo
+            { value: taxes.id_payment_0_real || 0 }, // Cargo Fijo Pagado
+            { value: Number(expenses.cf - (taxes.id_payment_0_real || 0)).toFixed(0) }, // Cargo Fijo Diferencia
+            { value: v.pay_id }, // Factura Nr  Cargo Fijo
+            { value: v.pay_date }, // Factura Fecha Cargo Fijo
+            { value: Number(taxes.id_payment_0_area || 0).toFixed(2) }, // Area Liquidada Cargo Fijo
+
+            { value: Number(cv_charge).toFixed(0) }, // Cargo Variable
+            { value: taxes.id_payment_1_real || 0 }, // Cargo Variable Pägado
+            { value: Number(cv_charge - (taxes.id_payment_1_real || 0)).toFixed(0)}, // Cargo Variable Diferencia
+            { value: taxes.id_payment_1 }, // Factura Nr Cargo Variable
+            { value: taxes.id_payment_1_date }, // Factura Fecha Cargo Variable
+            { value: Number(cv_area).toFixed(2) }, // Area Liquidada Cargo Variable
+
+            { value: (Number(expenses.cf) + Number(cv_charge)).toFixed(0) }, // Valor Total
+
+            //{ value: delineamiento }, // Impuesto Delineación
+            //{ value: delineamiento * 0.1 }, // Impuesto de Uso
+            //{ value: aint > axisTable[tmp.axis ?? 5] ? delineamiento * 0.6 : 0 }, // Fondo de Embelicimiento
+            //{ value: taxes.uis ?? 0 }, // Estampilla PRO UIS
+            //{ value: (Number(delineamiento) + Number(delineamiento * 0.1) + Number(aint > axisTable[tmp.axis ?? 5] ? delineamiento * 0.6 : 0) + Number(taxes.uis ?? 0) + Number(cargoVble)).toFixed(0) }, // Valor Total (2)
+            // { value: '' }, // Impuestos y Tasas
+            // { value: '' }, // Compensaciones
+            // { value: '' }, // Deberes Urbanisticos
+            // { value: '' }, // Parqueaderos
+            //{ value: '' }, // Valor Total (3)
+            { value: v.estrato }, // Estrato
         ]
     }
 
@@ -979,6 +985,7 @@ export default function FUN_REPORT_GEN(props) {
 
     useEffect(() => {
         if (load == 0) _GET_DATA();
+        if (load == 0) _GET_DATA_MONEY();
     }, [load]);
 
     // ***************************  DATA GETTERS *********************** //
@@ -1003,6 +1010,32 @@ export default function FUN_REPORT_GEN(props) {
                 console.log(e);
             });
     }
+    let _GET_DATA_MONEY = () => {
+        FUNService.reportsFinance(date_1, date_2)
+            .then(response => {
+                let curatedData = []
+                response.data.map(v => {
+                    let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
+                    let isPH = regexChecker_isPh(_CHILD_1, true);
+                    if (isPH) {
+                        if (date_1 <= v.clock_license_ph && v.clock_license_ph <= date_2) curatedData.push(v)
+                    }
+                    else curatedData.push(v)
+                })
+
+                if (response.data.length > 0) _SET_DATA_MONEY(curatedData)
+                setLoad(1)
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
+    let _SET_DATA_MONEY = (_data) => {
+        var dataMon = [];
+        _data.map(v => dataMon.push(report_data_6(v)))
+        setDataMoney(dataMon);
+
+    }
     let _SET_DATA_CONTRALORIA = (_data) => {
         var dataCon = [];
         var dataCam = [];
@@ -1018,7 +1051,7 @@ export default function FUN_REPORT_GEN(props) {
             dataDan.push(report_data_3(v));
             dataPlan.push(report_data_4(v));
             dataMin.push(report_data_5(v));
-            dataMon.push(report_data_6(v));
+            //dataMon.push(report_data_6(v));
             if (cons_7(v)) dataCmdb.push(report_data_7(v));
             dataPlan2.push(report_data_8(v));
 
@@ -1029,7 +1062,7 @@ export default function FUN_REPORT_GEN(props) {
         setDataDan(dataDan);
         setDataPlan(dataPlan);
         setDataMin(dataMin);
-        setDataMoney(dataMon);
+        //setDataMoney(dataMon);
         setDataCMDB(dataCmdb);
         setDataPlan2(dataPlan2);
     }
@@ -1049,6 +1082,32 @@ export default function FUN_REPORT_GEN(props) {
             })
         }
         return strName.join(', ').trim()
+    }
+    let _GET_STATE_STR = (state, isString, row) => {
+        if (state < '-1') return isString ? 'DESISTIDO (Ejecución)' : <label className='text-danger text-center'>DESISTIDO (Ejecución)</label>
+        if (state == '-1') return 'INCOMPLETO'
+        if (state == '1') return 'INCOMPLETO'
+        if (state == '5') return 'LYDF'
+        if (state == '50') return 'EXPEDICIÓN'
+        if (state == '100') return isString ? 'ARCHIVADO' : <label className='fw-bold'>CERRADO</label>
+        if (state == '101') return isString ? 'ARCHIVADO' : <label className='fw-bold text-primary'>ARCHIVADO</label>
+        if (state == '200') {
+            if(isString){
+                if(row.clock_close_6) return 'NEGADA'
+                if(row.clock_close_5) return 'DESISTIDO (Voluntario)'
+                if(row.clock_close_4) return 'DESISTIDO (No radicó pagos'
+                if(row.clock_close_3) return 'DESISTIDO (No subsanó Acta)'
+                if(row.clock_close_2) return 'DESISTIDO (No radicó valla)'
+                if(row.clock_close_1) return 'DESISTIDO (Incompleto)'
+            }else return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
+        }
+        if (state == '201') return isString ? 'DESISTIDO (Incompleto)' : <label className='text-danger text-center'>DESISTIDO (Incompleto)</label>
+        if (state == '202') return isString ? 'DESISTIDO (No radicó valla)' : <label className='text-danger text-center'>DESISTIDO (No radicó valla)</label>
+        if (state == '203') return isString ? 'DESISTIDO (No subsanó Acta)' : <label className='text-danger text-center'>DESISTIDO (No subsanó Acta)</label>
+        if (state == '204') return isString ? 'DESISTIDO (No radicó pagos)' : <label className='text-danger text-center'>DESISTIDO (No radicó pagos)</label>
+        if (state == '205') return isString ? 'DESISTIDO (Voluntario)' : <label className='text-danger text-center'>DESISTIDO (Voluntario)</label>
+        if (state == '206') return isString ? 'DESISTIDO (Negada)' : <label className='text-danger text-center'>DESISTIDO (Negada)</label>
+        return ''
     }
     // (DATA, STRING SEPARATOS, INDEX  (OPTIONAL), TO FIXED NUMBER (OPTIONAL))
     function _FIELDS_ADD(field, ss, ind, dec) {

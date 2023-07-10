@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { find } from 'rsuite/esm/utils/ReactChildren';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 class FUN_ICON_PROGRESS extends Component {
     constructor(props) {
         super(props);
@@ -81,10 +82,13 @@ class FUN_ICON_PROGRESS extends Component {
                 }
             }
 
-            if (row.seal) _COMPONENT.push(<MDBTooltip title='SELLO CREADO' tag='a' >
-                <i class={`fab fa-wpforms ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
-            else _COMPONENT.push(<MDBTooltip title='SELLO NO CREADO' tag='a' >
-                <i class={`fab fa-wpforms ${size}`} style={{ color: 'Black', fontSize: fontSize }}></i></MDBTooltip>)
+            if (_GLOBAL_ID == "cb1") {
+                if (row.seal) _COMPONENT.push(<MDBTooltip title='SELLO CREADO' tag='a' >
+                    <i class={`fab fa-wpforms ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
+                else _COMPONENT.push(<MDBTooltip title='SELLO NO CREADO' tag='a' >
+                    <i class={`fab fa-wpforms ${size}`} style={{ color: 'Black', fontSize: fontSize }}></i></MDBTooltip>)
+            }
+
 
             if (regexChecker_isPh(row, true)) {
                 if (row.ph_review == null) _COMPONENT.push(<MDBTooltip title='FALTA REVISION' tag='a' >

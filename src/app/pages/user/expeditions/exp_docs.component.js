@@ -511,6 +511,16 @@ class EXP_DOCS extends Component {
                 if (_totalArea() > axisTable[_GET_EXPEDITION_JSON('tmp').axis]) return 0.6
                 return 0
             };
+
+            let muni_deli = _GET_EXPEDITION_JSON('taxes').muni_deli;
+            let muni_uso = _GET_EXPEDITION_JSON('taxes').muni_uso;
+            let muni_enb = _GET_EXPEDITION_JSON('taxes').muni_enb;
+
+            let value_deli = (Number(muni_deli || taxCharge).toFixed(0));
+            let value_uso = (Number(muni_uso) || Number(Math.ceil((taxCharge) * tax1 / 50) * 50).toFixed(0))
+            let value_emb = (Number(muni_enb) || Number(Math.ceil(taxCharge * tax2() / 50) * 50).toFixed(0))
+            let value_total = (Number(value_deli) + Number(value_uso) + Number(value_emb)).toFixed(0)
+
             for (var i = 0; i < _areas.length; i++) {
                 if (_areas[i].payment == 1 || _areas[i].payment == 2) {
                     taxCharge += _areas[i].charge;
@@ -546,6 +556,10 @@ class EXP_DOCS extends Component {
 
                 let new_value = addDecimalPoints(Number(value_1.replaceAll('.', '')) + Number(value_2.replaceAll('.', '')) + Number(value_3.replaceAll('.', '')));
                 document.getElementById('expedition_doc_3_20').value = new_value;
+
+                document.getElementById('expedition_doc_3_16').value = addDecimalPoints(value_1);
+                document.getElementById('expedition_doc_3_13').value = addDecimalPoints(value_2);
+                document.getElementById('expedition_doc_3_19').value = addDecimalPoints(value_3);
             }
 
             return <>
@@ -602,7 +616,6 @@ class EXP_DOCS extends Component {
                         <label className="mt-1">Cedula(s) / NIT(s) </label>
                     </div>
                 </div>
-
                 <div className="row">
                     <div className="col">
                         <textarea class="form-control" id="expedition_doc_3_7" disabled readOnly >
@@ -679,8 +692,8 @@ class EXP_DOCS extends Component {
                     </div>
                     <div className="col-3">
                         <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_3_13" disabled
-                                value={addDecimalPoints((taxCharge).toFixed(0))} readOnly />
+                            <input type="text" class="form-control" id="expedition_doc_3_13" onBlur={(e) => _ADD_TOTAL(e.target.value)}
+                                defaultValue={addDecimalPoints(value_deli)}  />
                         </div>
                     </div>
                 </div>
@@ -696,7 +709,7 @@ class EXP_DOCS extends Component {
                     <div className="col-3">
                         <div class="input-group">
                             <input type="text" class="form-control" id="expedition_doc_3_16" onBlur={(e) => _ADD_TOTAL(e.target.value)}
-                                defaultValue={addDecimalPoints((Math.ceil(taxCharge * tax1 / 50) * 50).toFixed(0))} />
+                                defaultValue={addDecimalPoints(value_uso)} />
                         </div>
                     </div>
                 </div>
@@ -712,7 +725,7 @@ class EXP_DOCS extends Component {
                     <div className="col-3">
                         <div class="input-group">
                             <input type="text" class="form-control" id="expedition_doc_3_19" onBlur={(e) => _ADD_TOTAL(e.target.value)}
-                                defaultValue={addDecimalPoints((Math.ceil(taxCharge * tax2() / 50) * 50).toFixed(0))} />
+                                defaultValue={addDecimalPoints(value_emb)} />
                         </div>
                     </div>
                 </div>
@@ -724,7 +737,7 @@ class EXP_DOCS extends Component {
                     <div className="col-3">
                         <div class="input-group">
                             <input type="text" class="form-control" id="expedition_doc_3_20"
-                                defaultValue={addDecimalPoints((Math.ceil((taxCharge + taxCharge * tax1 + taxCharge * tax2()) / 50) * 50).toFixed(0))} />
+                                defaultValue={addDecimalPoints(value_total)} />
                         </div>
                     </div>
                 </div>
@@ -1062,7 +1075,10 @@ class EXP_DOCS extends Component {
                 for (let i = 0; i < _areas.length; i++) {
                     const area = _areas[i];
                     if (_areas[i].payment == 1 || _areas[i].payment == 2) {
-                        sum += Number(area.area * area.charge);
+                        if (_GLOBAL_ID == "cp1") sum += Number(area.charge);
+                        if (_GLOBAL_ID == "cb1") sum += Number(area.area * area.charge);
+                        if (_GLOBAL_ID == "fl2") sum += Number(area.charge);
+
                     }
 
                 }
@@ -1070,12 +1086,23 @@ class EXP_DOCS extends Component {
             }
             for (var i = 0; i < _areas.length; i++) {
                 if (_areas[i].payment == 1 || _areas[i].payment == 2) {
-                    let axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
+
+                    let axc = 0
+                    if (_GLOBAL_ID == "cp1") axc = Math.round((Number(_areas[i].charge) ?? 0))
+                    if (_GLOBAL_ID == "cb1") axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
+                    if (_GLOBAL_ID == "fl2") axc = Math.round((Number(_areas[i].charge) ?? 0))
+
                     _COMPONENT.push(<>
                         <div className="row mb-1">
                             <div className="col">
                                 <input type="text" class="form-control" name="expedition_doc_6_descs" disabled
                                     value={_areas[i].desc} readOnly />
+                            </div>
+                            <div className="col">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="expedition_doc_6_uses" disabled
+                                        value={_areas[i].use} readOnly />
+                                </div>
                             </div>
                             <div className="col">
                                 <div class="input-group">
@@ -1176,6 +1203,9 @@ class EXP_DOCS extends Component {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Tipo de Actuación</label>
+                    </div>
+                    <div className="col">
+                        <label className="mt-2">Uso</label>
                     </div>
                     <div className="col">
                         <label className="mt-1">Valor m2</label>
@@ -2054,6 +2084,10 @@ class EXP_DOCS extends Component {
             let _areas = document.getElementsByName('expedition_doc_6_areas');
             let areas = [];
             for (var i = 0; i < _areas.length; i++) { areas.push(_areas[i].value) }
+            // USES
+            let _uses = document.getElementsByName('expedition_doc_6_uses');
+            let uses = [];
+            for (var i = 0; i < _uses.length; i++) { uses.push(_uses[i].value) }
             // CHARGES
             let _chages = document.getElementsByName('expedition_doc_6_charges');
             let charges = [];
@@ -2069,6 +2103,7 @@ class EXP_DOCS extends Component {
 
             formData.set('areas', areas.join(';'));
             formData.set('sum', sum.join(';'));
+            formData.set('uses', uses.join(';'));
             formData.set('descs', descs.join(';'));
             formData.set('charges', charges.join(';'));
 
@@ -2533,7 +2568,7 @@ class EXP_DOCS extends Component {
                     </>
                     : ""}
 
-                {_GLOBAL_ID === 'cp1' ?
+                {_GLOBAL_ID === 'cp1' || _GLOBAL_ID === 'fl2' ?
                     <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_26"
                             onClick={() => this.setState({ showCollapse_expedition_26: !this.state.showCollapse_expedition_26 })}>

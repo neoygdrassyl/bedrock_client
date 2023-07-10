@@ -60,6 +60,7 @@ export default function EXP_RES(props) {
             item_212: '',
             item_22: '',
             item_23: '',
+            item_232: '',
             item_24: '',// PARSER
             item_25: '',// PARSER
 

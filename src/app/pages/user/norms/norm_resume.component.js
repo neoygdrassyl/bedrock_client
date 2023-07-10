@@ -117,8 +117,11 @@ export default function NORM_RESUME(props) {
     function gen_pdf(){
         let formData = new FormData();
 
-        formData.set('id', item_general.id_out ?? '');
+        formData.set('id', id);
+        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.sector == item_general.sector && ficha.subsector == item_general.subsector)
+        if (!FICHA) FICHA = {}
 
+        formData.set('ficha', FICHA);
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -129,7 +132,7 @@ export default function NORM_RESUME(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/norm/" + "NORMA URBANA " + (item_general.id_out ?? '') + ".pdf");
+                    window.open(process.env.REACT_APP_API_URL + "/pdf/norm/" + "NORMA URBANA " + (item_general.id_out ?? item_general.id_in ?? '') + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,
@@ -319,7 +322,7 @@ export default function NORM_RESUME(props) {
             </div>
             <div className='row m-1'>
                 <div className='col border'>ALTURA MÁXIMA PERMITIDA</div>
-                <div className='col border'>{FICHA.height}</div>
+                <div className='col border'>{Number(FICHA.height).toFixed(2)}</div>
             </div>
             <div className='row m-1'>
                 <div className='col border'>TIPOLOGÍA EDIFICADORA</div>
@@ -342,7 +345,7 @@ export default function NORM_RESUME(props) {
                 <div className='col border'>AISL. LATERAL</div>
             </div>
             <div className='row m-1 text-center'>
-                <div className='col border'>{FICHA.height}</div>
+                <div className='col border'>{Number(FICHA.height).toFixed(2)}</div>
                 <div className='col border'>{FICHA.ais_pos}</div>
                 <div className='col border'>{FICHA.ais_lat}</div>
             </div>

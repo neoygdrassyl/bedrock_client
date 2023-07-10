@@ -455,7 +455,7 @@ class RECORD_ARC_38 extends Component {
         const value36_detail = _GET_STEP_TYPE('s36', 'value');
         // COMPONENTS JSX
         let _COMPONENT_0 = () => {
-            let _RESUME = `-Observaciones (Descripcion de la Actuacion Urbanistica): \n${value33_detail[2] ?? ''}\n\n-Observaciones (Analisis de las determinantes urbanas del predio): \n${value34_detail[14] ?? ''}\n\n-Observaciones (Parqueaderos): \n${value35_detail[1] ?? ''}\n\n-Observaciones (Espacio Publico): \n${value36_detail[8] ?? ''}`;
+            let _RESUME = `-Observaciones (Descripcion de la Actuacion Urbanistica): \n${value33_detail[2] ?? ''}\n\n-Observaciones (Analisis de las determinantes urbanas del predio): \n${value34_detail[10] ?? ''}\n\n-Observaciones (Parqueaderos): \n${value35_detail[1] ?? ''}\n\n-Observaciones (Espacio Publico): \n${value36_detail[8] ?? ''}`;
 
             return <>
                 <div className="row py-3">

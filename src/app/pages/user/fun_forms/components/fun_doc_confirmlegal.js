@@ -609,16 +609,16 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             cub_ldf_json.predial = predial;
             cub_ldf_json.type = type;
 
-            let formDataLaw = new FormData();
-            formDataLaw.set('cub_ldf_json', JSON.stringify(cub_ldf_json));
+            //let formDataLaw = new FormData();
+            formData.set('cub_ldf_json', JSON.stringify(cub_ldf_json));
 
             let fun_c_control = [];
             fun_c_control.push(document.getElementById("control_func_1").checked ? 1 : 0);
             fun_c_control.push(document.getElementById("control_func_2").checked ? 1 : 0);
             fun_c_control.push(document.getElementById("control_func_3").checked ? 1 : 0);
-            formDataLaw.set('fun_c_control', fun_c_control.join(';'));
+            formData.set('fun_c_control', fun_c_control.join(';'));
 
-            manage_law(true, formDataLaw);
+            manage_law(true, formData);
             if (document.getElementById('control_func_3').checked) createEvent(false)
 
         }

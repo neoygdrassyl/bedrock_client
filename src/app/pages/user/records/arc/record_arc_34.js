@@ -1594,7 +1594,7 @@ class RECORD_ARC_34 extends Component {
                     </div>
                 </div>
                 <textarea className="input-group" maxLength="2000" name="s_34_values" rows="4"
-                    defaultValue={value34[14]} onBlur={() => manage_ra_34()}></textarea>
+                    defaultValue={value34[10]} onBlur={() => manage_ra_34()}></textarea>
                 <label> (maximo 2000 caracteres)</label>
             </div>
         }

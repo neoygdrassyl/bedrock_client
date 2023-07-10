@@ -49,7 +49,7 @@ const info = {
             start:'VR',
             end: 'CUB',
         },
-        exp_rules : ['Exp. Variables', 'Imp. Minicipal', 'Ambos', 'Ignorar'],
+        exp_rules : ['Exp. Variables', 'Imp. Minicipal'],
         res_extras : {
             art1p : ""
         }
@@ -86,7 +86,7 @@ const info = {
             start:'VR',
             end: 'OE',
         },
-        exp_rules : ['Exp. Variables', 'Imp. Delineacion', 'Ambos', 'Ignorar'],
+        exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
         res_extras : {
             art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
         }
@@ -123,7 +123,7 @@ const info = {
             start:'VR',
             end: 'OE',
         },
-        exp_rules : ['Exp. Variables'],
+        exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
         res_extras : {
             art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
         }
