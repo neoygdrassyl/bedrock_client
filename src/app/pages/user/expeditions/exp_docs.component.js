@@ -693,7 +693,7 @@ class EXP_DOCS extends Component {
                     <div className="col-3">
                         <div class="input-group">
                             <input type="text" class="form-control" id="expedition_doc_3_13" onBlur={(e) => _ADD_TOTAL(e.target.value)}
-                                defaultValue={addDecimalPoints(value_deli)}  />
+                                defaultValue={addDecimalPoints(value_deli)} />
                         </div>
                     </div>
                 </div>
@@ -1075,8 +1075,8 @@ class EXP_DOCS extends Component {
                 for (let i = 0; i < _areas.length; i++) {
                     const area = _areas[i];
                     if (_areas[i].payment == 1 || _areas[i].payment == 2) {
-                        if (_GLOBAL_ID == "cp1") sum += Number(area.charge);
-                        if (_GLOBAL_ID == "cb1") sum += Number(area.area * area.charge);
+                        if (_GLOBAL_ID == "cb1") sum += Number(area.charge);
+                        if (_GLOBAL_ID == "cp1") sum += Number(area.area * area.charge);
                         if (_GLOBAL_ID == "fl2") sum += Number(area.charge);
 
                     }
@@ -1088,8 +1088,8 @@ class EXP_DOCS extends Component {
                 if (_areas[i].payment == 1 || _areas[i].payment == 2) {
 
                     let axc = 0
-                    if (_GLOBAL_ID == "cp1") axc = Math.round((Number(_areas[i].charge) ?? 0))
-                    if (_GLOBAL_ID == "cb1") axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
+                    if (_GLOBAL_ID == "cb1") axc = Math.round((Number(_areas[i].charge) ?? 0))
+                    if (_GLOBAL_ID == "cp1") axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
                     if (_GLOBAL_ID == "fl2") axc = Math.round((Number(_areas[i].charge) ?? 0))
 
                     _COMPONENT.push(<>
@@ -1151,14 +1151,8 @@ class EXP_DOCS extends Component {
                         <input type="text" class="form-control" id="expedition_doc_6_3" disabled
                             value={_FUN_6_PARSER(_GET_CHILD_1().item_6, true)} readOnly />
                     </div>
-                    <div className="col">
-                        <label className="mt-1"># Predial / Catastral</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_6_4" disabled
-                                value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
-                        </div>
-                    </div>
-                    <div className="col">
+
+                    <div className="col-6">
                         <label className="mt-1">Dirección Predio</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="expedition_doc_6_5"
@@ -1174,7 +1168,23 @@ class EXP_DOCS extends Component {
                         </div>
                     </div>
                 </div>
+                <div className="row">
+                    <div className="col">
+                        <label className="mt-1"># Predial / Catastral</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="expedition_doc_6_4" disabled
+                                value={(_GET_CHILD_2().item_23).replaceAll('-', '')} readOnly />
+                        </div>
+                    </div>
 
+                    <div className="col">
+                        <label className="mt-1">Matricula</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="expedition_doc_6_mat" value={_GET_CHILD_2().item_22} readOnly />
+                        </div>
+                    </div>
+
+                </div>
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Titular(es)</label>
@@ -1200,6 +1210,19 @@ class EXP_DOCS extends Component {
                 </div>
 
                 <label className="my-2 fw-bold">Áreas</label>
+
+                {_GLOBAL_ID === 'fl2' ?
+                    <div className="row">
+                        <div className="col-4">
+                            <label className="mt-1">Área del predio</label>
+                            <div class="input-group">
+                                <input type="number" step={0.01} class="form-control" id="expedition_doc_6_area" defaultValue="0.00" />
+                            </div>
+                        </div>
+
+                    </div>
+                    : null}
+
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Tipo de Actuación</label>
@@ -2074,11 +2097,14 @@ class EXP_DOCS extends Component {
 
             formData.set('destination', document.getElementById('expedition_doc_6_3').value);
             formData.set('catastral', document.getElementById('expedition_doc_6_4').value);
+            formData.set('matricula', document.getElementById('expedition_doc_6_mat').value);
             formData.set('address', document.getElementById('expedition_doc_6_5').value);
             formData.set('strata', document.getElementById('expedition_doc_6_6').value);
 
             formData.set('name', document.getElementById('expedition_doc_6_7').value);
             formData.set('nameid', document.getElementById('expedition_doc_6_8').value);
+
+            if(document.getElementById('expedition_doc_6_area')) formData.set('area', document.getElementById('expedition_doc_6_area').value);
 
             // AREAS
             let _areas = document.getElementsByName('expedition_doc_6_areas');
