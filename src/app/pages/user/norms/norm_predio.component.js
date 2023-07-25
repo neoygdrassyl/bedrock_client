@@ -11,12 +11,17 @@ export default function NORM_PREDIOS(props) {
 
     const [load, setLoad] = useState(0);
     const [data, setData] = useState([]);
+    const [dataExtra, setDataExtra] = useState([]);
     const [newItem, setNewItem] = useState(false);
     const [editItem, setEditItem] = useState(false);
 
     useEffect(() => {
         if (load == 0 || !id) loadData();
     }, [load, id]);
+
+    useEffect(() => {
+        transform_data()
+    }, [data]);
 
     // ************************** APIS ************************ //
     function loadData() {
@@ -40,8 +45,6 @@ export default function NORM_PREDIOS(props) {
             });
     }
 
-
-
     function create_item(event) {
         event.preventDefault();
 
@@ -54,6 +57,13 @@ export default function NORM_PREDIOS(props) {
         formData.set('area', area);
         let front = document.getElementById("predio_front").value;
         formData.set('front', front);
+
+        let bic_pred = document.getElementById("norm_bic_pred").value;
+        formData.set('bic_pred', bic_pred);
+        let bic_area = document.getElementById("predio_bic_area").value;
+        formData.set('bic_area', bic_area);
+        let art_192 = document.getElementById("norm_art_192").value;
+        formData.set('art_192', art_192);
 
         formData.set('normId', id);
 
@@ -108,6 +118,13 @@ export default function NORM_PREDIOS(props) {
         formData.set('area', area);
         let front = document.getElementById("predio_front_edit").value;
         formData.set('front', front);
+
+        let bic_pred = document.getElementById("norm_bic_pred_edit").value;
+        formData.set('bic_pred', bic_pred);
+        let bic_area = document.getElementById("predio_bic_area_edit").value;
+        formData.set('bic_area', bic_area);
+        let art_192 = document.getElementById("norm_art_192_edit").value;
+        formData.set('art_192', art_192);
 
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -189,8 +206,17 @@ export default function NORM_PREDIOS(props) {
             }
         });
     }
-    // ***************************  DATA GETTER *********************** //
+    // ***************************  DATA CONVERTERS *********************** //
 
+    function transform_data() {
+        let max_area = data.reduce((sum, next) => sum += Number(next.area), 0);
+        let max_front = data.reduce((sum, next) => sum += Number(next.front), 0);
+        let max_bic_area = data.reduce((sum, next) => sum += Number(next.bic_area), 0);
+
+        let max_row = { predial: 'TOTAL', dir: '', area: max_area, front: max_front, bic_pred: -1, art_192: -1, bic_area: max_bic_area }
+
+        setDataExtra([...data, max_row])
+    }
 
     // ***************************  JXS *********************** //
     const columns = [
@@ -221,6 +247,29 @@ export default function NORM_PREDIOS(props) {
             cell: row => row.front
         },
         {
+            name: <label className="text-center">BIC</label>,
+            center: true,
+            cell: row => {
+                if(row.bic_pred === 1) return 'APLICA'
+                if(row.bic_pred === 0) return 'MO APLICA'
+                return ''
+            } 
+        },
+        {
+            name: <label className="text-center">BIC AREA</label>,
+            center: true,
+            cell: row => row.bic_area
+        },
+        {
+            name: <label className="text-center">COMP. ESP. PUB.</label>,
+            center: true,
+            cell: row => {
+                if(row.art_192 === 1) return 'APLICA'
+                if(row.art_192 === 0) return 'MO APLICA'
+                return ''
+            } 
+        },
+        {
             name: <label className="text-center">ACCIÓN</label>,
             button: true,
             center: true,
@@ -241,7 +290,7 @@ export default function NORM_PREDIOS(props) {
         noDataComponent="NO HAY PREDIOS"
         striped="true"
         columns={columns}
-        data={data}
+        data={dataExtra}
         highlightOnHover
         pagination={false}
         paginationPerPage={20}
@@ -281,7 +330,32 @@ export default function NORM_PREDIOS(props) {
                     </div>
                 </div>
             </div>
-
+            <div className="row">
+                <div className="col-3">
+                    <label>BIC</label>
+                    <div class="input-group my-1">
+                        <select class="form-select" defaultValue={editItem ? editItem.bic_pred : ""} id={"norm_bic_pred" + edit}>
+                            <option value={0}>NO APLICA</option>
+                            <option value={1}>APLICA</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label>Área BIC</label>
+                    <div class="input-group my-1">
+                    <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.bic_area : ""} class="form-control" id={"predio_bic_area" + edit} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label>Sujeto a Copm. Esp. Publico</label>
+                    <div class="input-group my-1">
+                    <select class="form-select" defaultValue={editItem ? editItem.art_192 : ""} id={"norm_art_192" + edit}>
+                            <option value={0}>NO APLICA</option>
+                            <option value={1}>APLICA</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </>
     }
 

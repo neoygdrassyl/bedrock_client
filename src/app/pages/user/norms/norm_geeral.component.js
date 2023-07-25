@@ -100,7 +100,7 @@ export default function NORM_GENERAL(props) {
 
         let formData = new FormData();
         let id_out = document.getElementById("norm_id_out").value;
-        if(id_out) formData.set('id_out', id_out);
+        if (id_out) formData.set('id_out', id_out);
         let solicitor = document.getElementById("norm_solicitor").value;
         formData.set('solicitor', solicitor);
         let urban_duties = document.getElementById("norm_urban_duties").value;
@@ -119,6 +119,28 @@ export default function NORM_GENERAL(props) {
         formData.set('front_type', front_type);
         let front_n = document.getElementById("norm_front_n").value;
         formData.set('front_n', front_n);
+        let geo_n = document.getElementById("norm_geo_n").value;
+        formData.set('geo_n', geo_n);
+        let geo_e = document.getElementById("norm_geo_e").value;
+        formData.set('geo_e', geo_e);
+
+
+        let comuna = document.getElementById("norm_comuna").value;
+        formData.set('comuna', comuna);
+        let barrio = document.getElementById("norm_barrio").value;
+        formData.set('barrio', barrio);
+        let estrato = document.getElementById("norm_estrato").value;
+        formData.set('estrato', estrato);
+        let cla_suelo = document.getElementById("norm_cla_suelo").value;
+        formData.set('cla_suelo', cla_suelo);
+        let area_act = document.getElementById("norm_area_act").value;
+        formData.set('area_act', area_act);
+        let trat_urb = document.getElementById("norm_trat_urb").value;
+        formData.set('trat_urb', trat_urb);
+        let zon_rest = document.getElementById("norm_zon_rest").value;
+        formData.set('zon_rest', zon_rest);
+        let amenaza = document.getElementById("norm_amenaza").value;
+        formData.set('amenaza', amenaza);
 
         let _creationYear = moment(item.createdAt).format('YY');
         let _folder = item.id_in;
@@ -146,7 +168,7 @@ export default function NORM_GENERAL(props) {
                     });
                     loadData()
                 }
-                else{
+                else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,
                         text: swaMsg.generic_error_text,
@@ -175,11 +197,11 @@ export default function NORM_GENERAL(props) {
             });
     };
 
-    function getImage(PATH){
-        const URL = PATH.substring(PATH.lastIndexOf('/') +1, PATH.length);
+    function getImage(PATH) {
+        const URL = PATH.substring(PATH.lastIndexOf('/') + 1, PATH.length);
         return Norms_Service.get_norm_img(URL)
             .then(response => {
-               return response
+                return response
             })
             .catch(e => {
                 console.error(e);
@@ -204,7 +226,7 @@ export default function NORM_GENERAL(props) {
     }
 
     function set_Fronts() {
-        let findFront = FICHA_NORM.find(ficha => 
+        let findFront = FICHA_NORM.find(ficha =>
             ficha.ficha == selectFicha &&
             ficha.sector == selectSector &&
             ficha.subsector == selectSubsector)
@@ -319,7 +341,7 @@ export default function NORM_GENERAL(props) {
                             <i class="fas fa-star-of-life"></i>
                         </span>
                         <select class="form-select" id="norm_front" defaultValue={item.front}>
-                        <option>{fronts}</option>
+                            <option>{fronts}</option>
                         </select>
                     </div>
                 </div>
@@ -332,7 +354,11 @@ export default function NORM_GENERAL(props) {
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_front_type" defaultValue={item.front_type} />
+                        <select class="form-select" id="norm_front_type" defaultValue={item.front_type} required>
+                            <option>Esquinero</option>
+                            <option>Medianero</option>
+                            <option>Manzana</option>
+                        </select>
                     </div>
                 </div>
                 <div className="col-3">
@@ -341,7 +367,107 @@ export default function NORM_GENERAL(props) {
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="number" step="1" class="form-control" id="norm_front_n" defaultValue={item.front_n} required />
+                        <select class="form-select" id="norm_front_n" defaultValue={item.front_n} required>
+                            <option value={1}>1 frente</option>
+                            <option value={4}>4 frentes</option>
+                            <option value={-1}>Frente de manzana</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="col-6">
+                    <label >1.13 Georegerenciación</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_geo_n" defaultValue={item.geo_n} placeholder='Norte' />
+                        <input type="text" class="form-control" id="norm_geo_e" defaultValue={item.geo_e} placeholder='Este' />
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-3">
+                    <label >1.14 Comuna</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_comuna" defaultValue={item.comuna} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.15 Barrio</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_barrio" defaultValue={item.barrio} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.16 Estrato</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <select class="form-select" id="norm_estrato" defaultValue={item.estrato} required>
+                            <option value={1}>Estrato 1</option>
+                            <option value={2}>Estrato 2</option>
+                            <option value={3}>Estrato 3</option>
+                            <option value={4}>Estrato 4</option>
+                            <option value={5}>Estrato 5</option>
+                            <option value={6}>Estrato 6</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.17 Clasificación Suelo</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_cla_suelo" defaultValue={item.cla_suelo} />
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-3">
+                    <label >1.18 Área de actividad</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_area_act" defaultValue={item.area_act} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.19 Tratamiento Urbanístico</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_trat_urb" defaultValue={item.trat_urb} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.20 Zonif. Restricción Ocupación</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_zon_rest" defaultValue={item.zon_rest} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.21 Amenaza y Riesgo</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_amenaza" defaultValue={item.amenaza} />
                     </div>
                 </div>
             </div>
