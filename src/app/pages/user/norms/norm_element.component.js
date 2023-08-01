@@ -227,6 +227,11 @@ export default function NORM_ELEMENT(props) {
             cell: row => row.dimension_p
         },
         {
+            name: <label className="text-center">RETROCESO EXIGIDO</label>,
+            center: true,
+            cell: row => (Number(row.dimension_n)- Number(row.dimension_p)).toFixed(2)
+        },
+        {
             name: <label className="text-center">ACCIÓN</label>,
             button: true,
             center: true,

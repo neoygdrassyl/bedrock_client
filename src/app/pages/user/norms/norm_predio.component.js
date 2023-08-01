@@ -251,7 +251,7 @@ export default function NORM_PREDIOS(props) {
             center: true,
             cell: row => {
                 if(row.bic_pred === 1) return 'APLICA'
-                if(row.bic_pred === 0) return 'MO APLICA'
+                if(row.bic_pred === 0) return 'NO APLICA'
                 return ''
             } 
         },
@@ -265,7 +265,7 @@ export default function NORM_PREDIOS(props) {
             center: true,
             cell: row => {
                 if(row.art_192 === 1) return 'APLICA'
-                if(row.art_192 === 0) return 'MO APLICA'
+                if(row.art_192 === 0) return 'NO APLICA'
                 return ''
             } 
         },
