@@ -26,10 +26,10 @@
         "subsector": "B",
         "trata": "TCoA-1",
         "front": "Todos los Predios",
-        "ind_ocu": "Pparque",
-        "ind_con": "Pparque",
-        "height": "Pparque",
-        "tipology": "Pparque",
+        "ind_ocu": "Parque",
+        "ind_con": "Parque",
+        "height": "Parque",
+        "tipology": "Parque",
         "note_1": null,
         "note_2": "02",
         "note_3": null,
@@ -38,8 +38,8 @@
         "note_6": "06",
         "note_7": null,
         "note_8": null,
-        "ais_pos": "Pparque",
-        "ais_lat": "Pparque"
+        "ais_pos": "Parque",
+        "ais_lat": "Parque"
     },
     {
         "ficha": "F-01",

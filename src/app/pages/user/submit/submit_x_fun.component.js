@@ -2,26 +2,39 @@ import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTool
 import { MDBCollapse } from "mdbreact";
 import moment from 'moment';
 import React, { Component } from 'react';
-import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
+import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
 import FunService from '../../../services/fun.service';
 import PqrsMainDataService from '../../../services/pqrs_main.service';
 import Codes from '../../../components/jsons/fun6DocsList.json';
 import DataTable from 'react-data-table-component';
-import { nomens } from '../../../components/jsons/vars';
+import Modal from 'react-modal';
+import TABLE_COMPONENT_EXPANDED from '../fun_forms/components/table_components/table.component_expanded';
+import USER_SERVICE from '../../../services/users.service';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal);
 
 var momentB = require('moment-business-days');
 class SUBMIT_X_FUN extends Component {
     constructor(props) {
         super(props);
+        this.retrieveWorker = this.retrieveWorker.bind(this);
+        this.retrieveMacro = this.retrieveMacro.bind(this);
         this.state = {
             currentItems: [],
             collapseID: false,
             load: false,
             incomplete: [],
+            modal: false,
+            selectedItem: null,
+            worker_list: [],
+            dataAsign: []
         };
     }
     componentDidMount() {
         this.loadSubmit();
+        this.retrieveWorker();
         if (this.props.type == "LIC") this.loadIcoplete();
 
     }
@@ -95,10 +108,65 @@ class SUBMIT_X_FUN extends Component {
         })
         return diff;
     }
+    retrieveWorker() {
+        USER_SERVICE.getAll()
+            .then(response => {
+                this.setState({ worker_list: response.data })
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: "ERROR AL CARGAR",
+                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
+                    icon: 'error',
+                    confirmButtonText: this.props.swaMsg.text_btn,
+                });
+            });
+    }
+    retrieveMacro(id1, id2) {
+        FunService.loadMacroAsigns(id1, id2)
+            .then(response => {
+                this.setState({ dataAsign: response.data });
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: "ERROR AL CARGAR",
+                    text: "No ha sido posible cargar este item, inténtelo nuevamente.",
+                    icon: 'error',
+                    confirmButtonText: this.props.swaMsg.text_btn,
+                });
+            });
+    }
     render() {
-        const { translation, globals, type, simple, hide } = this.props;
-        const { currentItems, load, incomplete } = this.state;
+        const { translation, globals, swaMsg, type, simple, hide } = this.props;
+        const { currentItems, load, incomplete, selectedItem } = this.state;
+        const customStylesForModal = {
+            overlay: {
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                zIndex: 2,
+            },
+            content: {
+                position: 'absolute',
+                top: '10px',
+                left: '20%',
+                right: '15%',
+                bottom: '10px',
+                border: '1px solid #ccc',
+                overflow: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                borderRadius: '4px',
+                outline: 'none',
+                padding: '20px',
+                marginRight: 'auto',
 
+            }
+        };
         const docs6ToCheck = ['672', '6601', '6602', '6604', '6605', '6606', '6607', '6608', '681', '682', '685', '686', '687', '689', '916', '917', '918']
         const _fun_0_state = {
             '1': 'RADICACIÓN',
@@ -424,6 +492,13 @@ class SUBMIT_X_FUN extends Component {
                             > <i class="far fa-folder-open" ></i>
                             </button>
                         </MDBTooltip>
+                        <MDBTooltip title='Asignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
+                            <button
+                                onClick={() => this.setState({ modal: true, selectedItem: row})}
+                                className="px-1 btn-sm btn-warning btn"
+                            > <i class="fas fa-user-clock"></i>
+                            </button>
+                        </MDBTooltip>
                     </>,
                 },
             ]
@@ -491,6 +566,36 @@ class SUBMIT_X_FUN extends Component {
                     {this.props.type == "LIC" ? _COMPONENT_LIST_DOCS_CHECK() : ''}
                     {_COMPONENT_SUBMIT_LIST()}
                 </div>
+
+
+                <Modal contentLabel="ASIGN PROFS"
+                    isOpen={this.state.modal}
+                    style={customStylesForModal}
+                    ariaHideApp={false}
+                >
+                    <div className="my-4 d-flex justify-content-between">
+                        <label><i class="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {selectedItem ? selectedItem.id_public : ''} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => this.setState({ modal: false })}></MDBBtn>
+                    </div>
+
+                    {selectedItem ?
+                        <TABLE_COMPONENT_EXPANDED currentItem={{ ...selectedItem, rec_review: selectedItem.rec_review, rec_review_2: selectedItem.rec_rev_2 }}
+                            requestUpdate={() => this.retrieveMacro()}
+                            translation={translation} swaMsg={swaMsg} globals={globals}
+                            worker_list={this.state.worker_list}
+                            lenghtL={this.state.dataAsign.lenght}
+                            dataL={this.state.dataAsign}
+                        />
+                        : null}
+
+
+                    <div className="text-end py-4 mt-3">
+                        <MDBBtn color='info' onClick={() => this.setState({ modal: false })}>
+                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                        </MDBBtn>
+                    </div>
+                </Modal>
+
             </div >
     }
 }

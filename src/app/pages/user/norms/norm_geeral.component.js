@@ -141,6 +141,8 @@ export default function NORM_GENERAL(props) {
         formData.set('zon_rest', zon_rest);
         let amenaza = document.getElementById("norm_amenaza").value;
         formData.set('amenaza', amenaza);
+        let zon_norm = document.getElementById("norm_zon_norm").value;
+        formData.set('zon_norm', zon_norm);
 
         let _creationYear = moment(item.createdAt).format('YY');
         let _folder = item.id_in;
@@ -468,6 +470,15 @@ export default function NORM_GENERAL(props) {
                             <i class="fas fa-star-of-life"></i>
                         </span>
                         <input type="text" class="form-control" id="norm_amenaza" defaultValue={item.amenaza} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.22 Zona Normativa</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-star-of-life"></i>
+                        </span>
+                        <input type="text" class="form-control" id="norm_zon_norm" defaultValue={item.zon_norm} />
                     </div>
                 </div>
             </div>

@@ -114,14 +114,14 @@ export default function NORM_RESUME(props) {
 
     }
 
-    function gen_pdf(){
+    function gen_pdf() {
         let formData = new FormData();
 
         formData.set('id', id);
         let FICHA = FICHA_NORM_JSON.find(ficha => ficha.sector == item_general.sector && ficha.subsector == item_general.subsector)
         if (!FICHA) FICHA = {}
 
-        formData.set('ficha', FICHA);
+        formData.set('ficha', JSON.stringify(FICHA));
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -171,31 +171,38 @@ export default function NORM_RESUME(props) {
             <div className='col border'>{item_general.solicitor}</div>
         </div>
         <div className='row m-1'>
-            <div className='col border'>DEBERES URBANOS</div>
-            <div className='col border'>{item_general.urban_duties ? 'APLICA' : 'NO APLICA'}</div>
+            <div className='col border'>NUMERO CATASTRAL</div>
+            <div className='col border'>{items_predios.length ? items_predios[0].predial : ''}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>DIRECCIÓN</div>
+            <div className='col border'>{items_predios.length ? items_predios[0].dir : ''}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>COMUNA</div>
+            <div className='col border'>{item_general.comuna}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>BARRIO</div>
+            <div className='col border'>{item_general.barrio}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>ESTRATO</div>
+            <div className='col border'>{item_general.estrato}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>AREA LOTE</div>
+            <div className='col border'>{items_predios.reduce((sum, next) => sum += Number(next.area), 0)} m2</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>FRENTE LOTE</div>
+            <div className='col border'>{items_predios.reduce((sum, next) => sum += Number(next.front), 0)} m</div>
         </div>
         <div className='row m-1'>
             <div className='col border'>UTLIDAD PUBLICA</div>
             <div className='col border'>{item_general.public_utility}</div>
         </div>
-        <div className='row m-1'>
-            <div className='col border'>FICHA</div>
-            <div className='col border'>{item_general.ficha}</div>
-            <div className='col border'>SECTOR</div>
-            <div className='col border'>{item_general.sector}</div>
-        </div>
-        <div className='row m-1'>
-            <div className='col border'>SUBSECTOR</div>
-            <div className='col border'>{item_general.subsector}</div>
-            <div className='col border'>FRENTE NORM.</div>
-            <div className='col border'>{item_general.front}</div>
-        </div>
-        <div className='row m-1'>
-            <div className='col border'>TIPO DE FRENTE</div>
-            <div className='col border'>{item_general.front_type}</div>
-            <div className='col border'>NUMERO DE FRENTES</div>
-            <div className='col border'>{item_general.front_n}</div>
-        </div>
+
     </>
 
     const R_1_1_IMG = <>
@@ -205,91 +212,107 @@ export default function NORM_RESUME(props) {
         <div className='row m-1'>
             <img src={item_img} width={"100%"} alt="IMAGEN NO DISPONIBLE" />
         </div>
+        <div className='row m-1'>
+            <div className='col border'>Coordenada X: {item_general.geo_n}</div>
+            <div className='col border'>Coordenada Y: {item_general.geo_e}</div>
+        </div>
+
     </>
 
     const R_2_PREDIOS = <>
         <div className='bg-dark p-2 m-1 row text-light'>
             <div className='col'>2. ATRIBUTOS DEL PREDIO:</div>
         </div>
-        {items_predios.map((predio, i) => <>
-            <div className='row m-1'>
-                <div className='col border fw-bold'>PREDIO {i + 1}: {predio.predial}</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>DIRECCIÓN</div>
-                <div className='col border'>{predio.dir}</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>COMUNA</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>BARRIO</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>ESTRATO</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>ÁREA DEL PREDIO (m2)</div>
-                <div className='col border'>{predio.area}</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>FRENTE DEL PREDIO (m)</div>
-                <div className='col border'>{predio.front}</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>CLASIFICACIÓN DEL SUELO</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>ZONA NORMATIVA</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>ÁREA DE ACTIVIDAD</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>TRATAMIENTO URBANÍSTICO</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>SUJETO A COMPENSACIÓN POR ESP PUB ART 192</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>ZONA ECONÓMICA URBANA (ZGU)</div>
-                <div className='col'>
-                    <div className='row'>
-                        <div className='col border'>cod: XXXX</div>
-                        <div className='col border'>$m2: XXXX</div>
-                    </div>
-                </div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>ZONIFICACIÓN RESTRICCIONES A LA OCUPACIÓN</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>AMENAZA Y RIESGO</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>BIEN DE INTERÉS CULTURAL (BIC)</div>
-                <div className='col border'>XXXX</div>
-            </div>
-            <div className='row m-1'>
-                <div className='col border'>ÁREA DE INFLUENCIA DE BIC</div>
-                <div className='col border'>XXXX</div>
-            </div>
-        </>)}
+
+        <div className='row m-1'>
+            <div className='col border'>CLASIFICACIÓN DEL SUELO</div>
+            <div className='col border'>{item_general.cla_suelo}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>ÁREA DE ACTIVIDAD</div>
+            <div className='col border'>{item_general.area_act}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>TRATAMIENTO URBANÍSTICO</div>
+            <div className='col border'>{item_general.trat_urb}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>ZONIFICACIÓN RESTRICCIONES A LA OCUPACIÓN</div>
+            <div className='col border'>{item_general.zon_rest}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>AMENAZA Y RIESGO</div>
+            <div className='col border'>{item_general.amenaza}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>BIEN DE INTERÉS CULTURAL (BIC)</div>
+            <div className='col border'>{items_predios.some((predio) => predio.bic_pred) ? 'APLICA' : 'NO APLICA'}</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>ÁREA DE INFLUENCIA DE BIC</div>
+            <div className='col border'>{items_predios.reduce((sum, next) => sum += Number(next.bic_area), 0)} m2</div>
+        </div>
+        <div className='row m-1'>
+            <div className='col border'>SUJETO A COMPENSACIÓN POR ESP PUB ART 192</div>
+            <div className='col border'>{items_predios.some((predio) => predio.art_192) ? 'APLICA' : 'NO APLICA'}</div>
+        </div>
     </>
 
     const R_3_USES = <>
-        <div className='bg-dark p-2 m-1 row text-light'>
-            <div className='col'>3. CATEGORÍAS DE USOS Y UNIDADES DE USO PERMITIDAS:</div>
+        <div className='bg-dark p-2 mx-1 row text-light'>
+            <div className='col'>4. CATEGORÍAS DE USOS Y UNIDADES DE USO PERMITIDAS:</div>
+        </div>
+        <div className='row text-center px-2 mx-1'>
+            <div className='col-3 border'>COMERCIO</div>
+            <div className='col-3'>
+                <div className='row col border'>Principal</div>
+                <div className='row col border'>Complementario</div>
+                <div className='row col border'>Restringido</div>
+            </div>
+            <div className='col-6'>
+                <div className='row col border'></div>
+                <div className='row col border'></div>
+                <div className='row col border'></div>
+            </div>
+        </div>
+        <div className='row text-center px-2 mx-1'>
+            <div className='col-3 border'>SERVICIO</div>
+            <div className='col-3'>
+                <div className='row col border'>Principal</div>
+                <div className='row col border'>Complementario</div>
+                <div className='row col border'>Restringido</div>
+            </div>
+            <div className='col-6'>
+                <div className='row col border'></div>
+                <div className='row col border'></div>
+                <div className='row col border'></div>
+            </div>
+        </div>
+        <div className='row text-center px-2 mx-1'>
+            <div className='col-3 border'>DOTACIONAL</div>
+            <div className='col-3'>
+                <div className='row col border'>Principal</div>
+                <div className='row col border'>Complementario</div>
+                <div className='row col border'>Restringido</div>
+            </div>
+            <div className='col-6'>
+                <div className='row col border'></div>
+                <div className='row col border'></div>
+                <div className='row col border'></div>
+            </div>
+        </div>
+        <div className='row text-center px-2 mx-1'>
+            <div className='col-3 border'>INDUSTRIAL</div>
+            <div className='col-3'>
+                <div className='row col border'>Principal</div>
+                <div className='row col border'>Complementario</div>
+                <div className='row col border'>Restringido</div>
+            </div>
+            <div className='col-6'>
+                <div className='row col border'></div>
+                <div className='row col border'></div>
+                <div className='row col border'></div>
+            </div>
         </div>
     </>
 
@@ -298,7 +321,11 @@ export default function NORM_RESUME(props) {
         if (!FICHA) FICHA = {}
         return <>
             <div className='bg-dark p-2 m-1 row text-light'>
-                <div className='col'>4. EDIFICABILIDAD:</div>
+                <div className='col'>3. EDIFICABILIDAD:</div>
+            </div>
+            <div className='row m-1'>
+                <div className='col border'>ZONA NORMATIVA</div>
+                <div className='col border'>{item_general.zon_norm}</div>
             </div>
             <div className='row m-1'>
                 <div className='col border'>SECTOR</div>
@@ -328,6 +355,14 @@ export default function NORM_RESUME(props) {
                 <div className='col border'>TIPOLOGÍA EDIFICADORA</div>
                 <div className='col border'>{FICHA.tipology}</div>
             </div>
+            <div className='row m-1'>
+                <div className='col border'>AISLAMIENTO. POSTERIOR</div>
+                <div className='col border'>{FICHA.ais_pos}</div>
+            </div>
+            <div className='row m-1'>
+                <div className='col border'>AISLAMIENTO. LATERAL</div>
+                <div className='col border'>{FICHA.ais_lat}</div>
+            </div>
         </>
     }
 
@@ -354,7 +389,7 @@ export default function NORM_RESUME(props) {
 
     const R_6_PERFIL_VIAL = <>
         <div className='bg-dark p-2 m-1 row text-light'>
-            <div className='col'>6. PERFIL VIAL</div>
+            <div className='col'>5. PERFIL VIAL</div>
         </div>
         {items_perfils.map(perfil => <>
             <div className='row m-1'>
@@ -364,18 +399,20 @@ export default function NORM_RESUME(props) {
                 <div className='col border'>{perfil.perfil}</div>
             </div>
             <div className='row m-2 p-2'>
-                <img src={URL_ROOT + URL_PATH + perfil.perfil+ ".png"} alt="IMAGEN DE PERFIL NO ENCONTRADA" width="80%"/>
+                <img src={URL_ROOT + URL_PATH + perfil.perfil + ".png"} alt="IMAGEN DE PERFIL NO ENCONTRADA" width="80%" />
             </div>
             <div className='row m-1 fw-bold text-center'>
                 <div className='col border border-dark'>ELEMENTO</div>
                 <div className='col border border-dark'>NORMA</div>
                 <div className='col border border-dark'>EN SITIO</div>
+                <div className='col border border-dark'>RETROCESO EXIGIDO</div>
             </div>
             <ELEMENTS_LIST id={perfil.id} swaMsg={swaMsg} />
             <div className='row m-1'>
                 <div className='col border'>Antejardin</div>
                 <div className='col border text-center'>{perfil.antejardin_n}</div>
                 <div className='col border text-center'>{perfil.antejardin_p}</div>
+                <div className='col border text-center'>{(Number(perfil.antejardin_n) - Number(perfil.antejardin_p)).toFixed(2)}</div>
             </div>
         </>)}
     </>
@@ -385,17 +422,14 @@ export default function NORM_RESUME(props) {
     const RESUME = <>
         {R_HEADER}
         <dvi className="row">
-            <div className='col'>
-                {R_1_GENDATA}
-                {R_2_PREDIOS}
-            </div>
+            <div className='col'>{R_1_GENDATA}</div>
             <div className='col'>{R_1_1_IMG}</div>
         </dvi>
-        {R_3_USES}
         <dvi className="row">
+            <div className='col'> {R_2_PREDIOS}</div>
             <div className='col'>{R_4_EDIF()}</div>
-            <div className='col'>{R_5_AISLAMIENTOS()}</div>
         </dvi>
+        {R_3_USES}
         {R_6_PERFIL_VIAL}
     </>
 
@@ -441,9 +475,10 @@ function ELEMENTS_LIST(props) {
     const LIST = <>
         {data.map(element => <>
             <div className='row m-1'>
-                <div className='col border'>{ ELEMENTS.find(ele => ele.value == element.element) ? ELEMENTS.find(ele => ele.value == element.element).name : 'OTRO ELEMENTO'}</div>
+                <div className='col border'>{ELEMENTS.find(ele => ele.value == element.element) ? ELEMENTS.find(ele => ele.value == element.element).name : 'OTRO ELEMENTO'}</div>
                 <div className='col border text-center'>{element.dimension_n}</div>
                 <div className='col border text-center'>{element.dimension_p}</div>
+                <div className='col border text-center'>{(Number(element.dimension_n) - Number(element.dimension_p)).toFixed(2)}</div>
             </div>
         </>)}
     </>
