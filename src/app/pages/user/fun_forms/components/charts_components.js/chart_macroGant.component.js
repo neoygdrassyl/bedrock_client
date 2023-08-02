@@ -15,7 +15,7 @@ import {
     MarkSeries
 } from 'react-vis';
 import 'react-vis/dist/style.css';
-import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed } from '../../../../../components/customClasses/typeParse';
+import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2 } from '../../../../../components/customClasses/typeParse';
 
 var _emptyData = {
     rad: [],
@@ -132,7 +132,8 @@ class FUN_CHART_MACRO_GRANTT extends Component {
                 if (row.type == 'i' && row.state > -100) _y += 3;
 
                 if (row.state == -1 || row.state == 1) {
-                    let days_rad = 30 - dateParser_timePassed(row.clock_payment);
+                    let conOA = regexChecker_isOA_2(row)
+                    let days_rad =  conOA ? dateParser_dateDiff(dateParser_finalDate(row.clock_prorroga, -30), moment().format('YYYY-MM-DD'), true ) : 30 - dateParser_timePassed(row.clock_payment);
                     if (days_rad >= 0) _ADD_MARK('rad', {
                         x: _x,
                         y: _y + 0.2,

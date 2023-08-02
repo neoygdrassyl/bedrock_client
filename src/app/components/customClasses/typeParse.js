@@ -426,7 +426,7 @@ export function regexChecker_isOA_2(input) {
     if (!input) return false;
     let modalidad = input.tramite;
     if (!modalidad) return false;
-    let isPro = modalidad.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") == 'prorroga';
+    let isPro = modalidad.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes('prorroga');
     let tipo = input.tipo;
     if (!tipo) tipo = "";
     if (modalidad == 'B' || isPro) return true;

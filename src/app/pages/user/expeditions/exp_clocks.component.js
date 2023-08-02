@@ -345,7 +345,10 @@ export default function EXP_CLOCKS(props) {
         if (time < 1) time = 1;
         return time;
     }
-    const clocks = [
+
+let extraClocks = () => {
+    if(conOA()) return []
+    else return [
         { title: 'ACTA DE VIABILIDAD' },
         { state: 61, name: 'Acto de Tramite de Licencia (Viabilidad)', desc: "Tramite de viabilidad Licencia", limit: [[49, 35], viaTime()], },
         { state: 55, name: 'Citación (Viabilidad)', desc: "Citación para el tramite de viabilidad de Licencia", limit: [61, 5], info: ['MEDIO EFICAZ', 'CERTIFICADO', 'ELECTRÓNICO'] },
@@ -357,6 +360,11 @@ export default function EXP_CLOCKS(props) {
         { state: 64, name: 'Estampilla PRO-UIS', desc: "Pago de Estampilla PRO-UIS", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'] },
         { state: 65, name: 'Deberes Urbanísticos', desc: "Pago de Deberes Urbanísticos", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: !conGI },
         { state: 69, name: 'Radicación Pagos', desc: "Radicación de todos los pagos requeridos", limit: [[56, 57], 30] },
+    ]
+}
+
+    const clocks = [
+        ...extraClocks(),
         { title: 'RESOLUCIÓN' },
         { state: 70, name: "Acto Administrativo / Resolución ", desc: "Expedición Acto Administrativo ", limit: [69, 5], info: ['OTORGA', 'NIEGA', 'DESISTE', 'RECURSO', 'INTERNO', 'OTRO'] },
         { state: 71, name: "Citación (Resolución)", desc: "Citación para notificar al solicitante de Acto Administrativo", info: ['MEDIO EFICAZ', 'CERTIFICADO', 'ELECTRÓNICO'] },
