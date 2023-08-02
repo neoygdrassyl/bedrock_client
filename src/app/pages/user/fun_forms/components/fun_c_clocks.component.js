@@ -1,18 +1,16 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import DATATABLE from 'react-data-table-component';
+
+import React from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { dateParser_finalDate } from '../../../../components/customClasses/typeParse';
+import { dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../../services/fun.service';
-import USER_SERVICE from '../../../../services/users.service'
 
 const MySwal = withReactContent(Swal);
 export default function FUN_C_CLOCKS(props) {
     const { swaMsg, translation, globals, currentItem, currentVersion } = props;
 
+    const PRO_CLOCK = { state: 4, limit: 30, limit_id: null, name: 'Vencimiento Licencia Inicial', types: null, desc: 'Vencimiento Licencia Inicial' }
     const record_clocks = [
         { state: 6, limit: 5, limit_id: [5], name: 'Citación (LyDF)', types: ['PERSONAL', 'CERTIFICADO', 'ELECTRÓNICO'], desc: 'Citación del LyDF' },
         { state: 7, limit: 5, limit_id: [6], name: 'Notificación (LyDF)', types: ['PERSONAL', 'CERTIFICADO', 'ELECTRÓNICO'], desc: 'Notificación al solicitante, ya sea personal, electrónico o por correo certificado' },
@@ -28,6 +26,36 @@ export default function FUN_C_CLOCKS(props) {
         }
         return _LIST;
     }
+
+    let _GET_CHILD_1 = () => {
+        var _CHILD = currentItem.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
+        var _CHILD_VARS = {
+            item_0: "",
+            tramite: "",
+            tipo: "",
+            m_urb: "",
+            m_sub: "",
+            m_lic: "",
+            area: "",
+            description: "",
+        }
+        if (_CHILD) {
+            if (_CHILD[_CURRENT_VERSION] != null) {
+                _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id;
+                _CHILD_VARS.tramite = _CHILD[_CURRENT_VERSION].tramite;
+                _CHILD_VARS.description = _CHILD[_CURRENT_VERSION].description ? _CHILD[_CURRENT_VERSION].description : "";
+                _CHILD_VARS.tipo = _CHILD[_CURRENT_VERSION].tipo ? _CHILD[_CURRENT_VERSION].tipo : "";
+                _CHILD_VARS.m_urb = _CHILD[_CURRENT_VERSION].m_urb ? _CHILD[_CURRENT_VERSION].m_urb : "";
+                _CHILD_VARS.m_sub = _CHILD[_CURRENT_VERSION].m_sub ? _CHILD[_CURRENT_VERSION].m_sub : "";
+                _CHILD_VARS.m_lic = _CHILD[_CURRENT_VERSION].m_lic ? _CHILD[_CURRENT_VERSION].m_lic : "";
+                _CHILD_VARS.usos = _CHILD[_CURRENT_VERSION].usos ? _CHILD[_CURRENT_VERSION].usos : "";
+                _CHILD_VARS.area = _CHILD[_CURRENT_VERSION].area ? _CHILD[_CURRENT_VERSION].area : "";
+            }
+        }
+        return _CHILD_VARS;
+    }
+
     let _GET_CHILD_6 = () => {
         var _CHILD = currentItem.fun_6s;
         var _LIST = [];
@@ -60,6 +88,15 @@ export default function FUN_C_CLOCKS(props) {
         if (_CHILD) return <i class="far fa-check-circle text-success"></i>
         return <i class="far fa-dot-circle"></i>
     }
+
+    let get_map_clock = (_array) => {
+        let clock = false;
+        for (let i = 0; i < _array.length; i++) {
+            const element = _GET_CLOCK_STATE(_array[i]);
+            if (element.date_start) clock = element
+        }
+        return clock
+    }
     // ******************************* JSX ***************************** // 
     let _CHILD_6_SELECT = () => {
         let _LIST = _GET_CHILD_6();
@@ -69,65 +106,8 @@ export default function FUN_C_CLOCKS(props) {
         }
         return <>{_COMPONENT}</>
     }
-    let _BODY_COMPONENT = () => {
-        return <>
-            <div className="row mx-2 bg-info text-white">
-                <div className="col-3 text-center">
-                    <label className="fw-bold mt-1">EVENTO</label>
-                </div>
-                <div className="col text-center">
-                    <label className="fw-bold mt-1">FECHA EVENTO</label>
-                </div>
-                <div className="col text-center">
-                    <label className="fw-bold mt-1">FECHA LIMITE</label>
-                </div>
-                <div className="col text-center">
-                    <label className="fw-bold mt-1">FORMA</label>
-                </div>
-                <div className="col text-center">
-                    <label className="fw-bold mt-1">ANEXO</label>
-                </div>
-                <div className="col-1 text-center">
-                </div>
-            </div>
 
-            <div className="row mx-2 my-0">
-                <div className="col-3 border">
-                    <label className="fw-bold mt-2 ">{get_clockExistIcon(5)} LyDF</label>
-                </div>
-                <div className="col border py-1 text-center">
-                    <label className="fw-bold mt-2 ">{_GET_CLOCK_STATE(5).date_start ?? <label className='text-danger'>NO ESTA EN LyDF</label>}</label>
-                </div>
-                <div className="col text-center border py-1">
-                </div>
-                <div className="col border py-1">
-                </div>
-
-                <div className="col border py-1">
-                </div>
-
-                <div className="col-1 border py-1">
-                    {(_GET_CLOCK_STATE(5).resolver_id6 ?? 0) > 0
-                        ?
-                        <VIZUALIZER url={_FIND_6(_GET_CLOCK_STATE(5).resolver_id6).path + "/" + _FIND_6(_GET_CLOCK_STATE(5).resolver_id6).filename} apipath={'/files/'}
-                        />
-                        : ""}
-                </div>
-            </div>
-
-            {_COMPONENT_CLOCK_LIST()}
-        </>
-    }
     let _COMPONENT_CLOCK_LIST = () => {
-        let get_map_clock = (_array) => {
-            let clock = false;
-            for (let i = 0; i < _array.length; i++) {
-                const element = _GET_CLOCK_STATE(_array[i]);
-                if (element.date_start) clock = element
-            }
-            return clock
-        }
-
         return record_clocks.map((value, i) => <>
             {value.alert ? <div className="row mx-2 my-0 text-center">
                 <div className="col border border-danger">
@@ -180,6 +160,96 @@ export default function FUN_C_CLOCKS(props) {
 
         </>)
     }
+
+    let _COMPONENT_CLOCK_PRO = () => {
+        return <div className="row mx-2 my-0">
+        <div className="col-3 border">
+            <label className="fw-bold mt-2">{get_clockExistIcon(4)} Vencimiento Licencia Inicial</label>
+        </div>
+        <div className="col border py-1">
+        <input type="date" class="form-control" id={'clock_acta_date_' + 'pro'} max="2100-01-01"
+                    defaultValue={_GET_CLOCK_STATE(4).date_start ?? ''} onBlur={(e) => save_clock2(PRO_CLOCK, 'pro')} />
+        </div>
+        <div className="col text-center border py-1">
+          {dateParser_finalDate(get_map_clock(5).date_start, 30)}
+        </div>
+        <div className="col border py-1">
+           
+        </div>
+
+        <div className="col border py-1">
+            <select className='form-select' id={'clock_acta_id6_' + 'pro'} defaultValue={_GET_CLOCK_STATE(4).resolver_id6 ?? 0}
+                onChange={(e) => save_clock2(PRO_CLOCK, 'pro')}>
+                <option value="-1">APORTADO FISICAMENTE</option>
+                <option value="0">SIN DOCUMENTO</option>
+                {_CHILD_6_SELECT()}
+            </select>
+        </div>
+
+        <div className="col-1 border py-1">
+            {(_GET_CLOCK_STATE(4).resolver_id6 ?? 0) > 0
+                ?
+                <VIZUALIZER url={_FIND_6(_GET_CLOCK_STATE(4).resolver_id6).path + "/" + _FIND_6(_GET_CLOCK_STATE(4).resolver_id6).filename} apipath={'/files/'}
+                />
+                : ""}
+        </div>
+    </div>
+    }
+
+    let _BODY_COMPONENT = () => {
+        return <>
+            <div className="row mx-2 bg-info text-white">
+                <div className="col-3 text-center">
+                    <label className="fw-bold mt-1">EVENTO</label>
+                </div>
+                <div className="col text-center">
+                    <label className="fw-bold mt-1">FECHA EVENTO</label>
+                </div>
+                <div className="col text-center">
+                    <label className="fw-bold mt-1">FECHA LIMITE</label>
+                </div>
+                <div className="col text-center">
+                    <label className="fw-bold mt-1">FORMA</label>
+                </div>
+                <div className="col text-center">
+                    <label className="fw-bold mt-1">ANEXO</label>
+                </div>
+                <div className="col-1 text-center">
+                </div>
+            </div>
+
+       
+        {regexChecker_isOA_2(_GET_CHILD_1()) ? _COMPONENT_CLOCK_PRO(): null}
+
+            <div className="row mx-2 my-0">
+                <div className="col-3 border">
+                    <label className="fw-bold mt-2 ">{get_clockExistIcon(5)} LyDF</label>
+                </div>
+                <div className="col border py-1 text-center">
+                    <label className="fw-bold mt-2 ">{_GET_CLOCK_STATE(5).date_start ?? <label className='text-danger'>NO ESTA EN LyDF</label>}</label>
+                </div>
+                <div className="col text-center border py-1">
+                {regexChecker_isOA_2(_GET_CHILD_1()) ? dateParser_finalDate(_GET_CLOCK_STATE(4).date_start, -30) : null}
+                </div>
+                <div className="col border py-1">
+                </div>
+
+                <div className="col border py-1">
+                </div>
+
+                <div className="col-1 border py-1">
+                    {(_GET_CLOCK_STATE(5).resolver_id6 ?? 0) > 0
+                        ?
+                        <VIZUALIZER url={_FIND_6(_GET_CLOCK_STATE(5).resolver_id6).path + "/" + _FIND_6(_GET_CLOCK_STATE(5).resolver_id6).filename} apipath={'/files/'}
+                        />
+                        : ""}
+                </div>
+            </div>
+
+            {_COMPONENT_CLOCK_LIST()}
+        </>
+    }
+   
 
     // ******************************* APIS **************************** // 
     let save_clock2 = (value, i) => {
