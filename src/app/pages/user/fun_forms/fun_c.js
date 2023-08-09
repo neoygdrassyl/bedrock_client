@@ -587,7 +587,7 @@ class FUNC extends Component {
             }
             const ALLOW_REVIEW = _ALLOW_REVIEW();
             const LAST_VR_DATE = _FIND_LAST_VRDOCS();
-            const LYDF_DATE = _CHILD_VARS.item_c9 || LAST_VR_DATE;
+            const LYDF_DATE = _CHILD_VARS.item_c9 || null;
 
             return <> <input type="hidden" id="f_c0" defaultValue={_CHILD_VARS.item_c0} />
                 <fieldset className="p-3">

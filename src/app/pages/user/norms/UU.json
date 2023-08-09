@@ -1,0 +1,324 @@
+{
+    "Residencial - R1 - Residencial meta": {
+        "name": "Residencial - R1 - Residencial meta ",
+        "comercio": {
+            "principal": "Vivienda",
+            "complementario": "1",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "",
+            "complementario": "14,20",
+            "restringido": ""
+        },
+        "dotacional": {
+            "principal": "",
+            "complementario": "77,81",
+            "restringido": ""
+        },
+        "industrial": {
+            "principal": "",
+            "complementario": "",
+            "restringido": ""
+        }
+    },
+    "Residencial - R2 - Residencial con comercio y servicio localizado": {
+        "name": "Residencial - R2 - Residencial con comercio y servicio localizado",
+        "comercio": {
+            "principal": "Vivienda",
+            "complementario": "1,2,3",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "",
+            "complementario": "14,15,16,17,18,20,21,25,27,31,37,43,48",
+            "restringido": ""
+        },
+        "dotacional": {
+            "principal": "",
+            "complementario": "58,61,62,65,66,72,77,81",
+            "restringido": "53,54,57,64"
+        },
+        "industrial": {
+            "principal": "",
+            "complementario": "107",
+            "restringido": ""
+        }
+    },
+    "Residencial - R2 - Sin eje comercial": {
+        "name": "Residencial - R2 - Sin eje comercial",
+        "comercio": {
+            "principal": "Vivienda",
+            "complementario": "1 (Condición 29 solo escala local A)",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "",
+            "complementario": "14,17 ( Decreto 007 de 2015) y 20 (Condición 29 solo escala local A)",
+            "restringido": ""
+        },
+        "dotacional": {
+            "principal": "",
+            "complementario": "77",
+            "restringido": ""
+        },
+        "industrial": {
+            "principal": "",
+            "complementario": "",
+            "restringido": ""
+        }
+    },
+    "Residencial - R3 - Residencial mixta - vivienda, comercio y servicio": {
+        "name": "Residencial - R3 - Residencial mixta - vivienda, comercio y servicio",
+        "comercio": {
+            "principal": "Vivienda",
+            "complementario": "1,2,3",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "43",
+            "complementario": "14,15,16,17,18,20,21,24,25,27,31,36,37,48,49",
+            "restringido": ""
+        },
+        "dotacional": {
+            "principal": "",
+            "complementario": "58,62,63,65,66,77,81",
+            "restringido": "53,54,55,56,57,68,69,72"
+        },
+        "industrial": {
+            "principal": "",
+            "complementario": "107",
+            "restringido": ""
+        }
+    },
+    "Residencial - R4 - Residencial con actividad económica": {
+        "name": "Residencial - R4 - Residencial con actividad económica",
+        "comercio": {
+            "principal": "Vivienda",
+            "complementario": "1,2,3,4,5",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "14,15,16,22,25,28,43",
+            "complementario": "15,16,17,18,20,21,24,27,31,33,36,37,48,49",
+            "restringido": ""
+        },
+        "dotacional": {
+            "principal": "79",
+            "complementario": "53,54,55,56,57,58,61,62,63,64,65,66,68,69,70,71,72,73,77,78,80,81,84,92",
+            "restringido": "53,54,55,56,57,68,69,72"
+        },
+        "industrial": {
+            "principal": "96,97,98,102,107,110,118,122",
+            "complementario": "99,103,112,115,117,119",
+            "restringido": ""
+        }
+    },
+    "Comercial y de Servicios - C1 - Comercial y de servicios empresariales": {
+        "name": "Comercial y de Servicios - C1 - Comercial y de servicios empresariales",
+        "comercio": {
+            "principal": "3",
+            "complementario": "1,2 y vivienda",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "14,17,20,23,27,28,43,48",
+            "complementario": "15,20,31,37",
+            "restringido": ""
+        },
+        "dotacional": {
+            "principal": "58,65,66",
+            "complementario": "77,81",
+            "restringido": ""
+        },
+        "industrial": {
+            "principal": "",
+            "complementario": "",
+            "restringido": ""
+        }
+    },
+    "Comercial y de Servicios - C2 - Comercial y de servicios livianos o al por mayor": {
+        "name": "Comercial y de Servicios - C2 - Comercial y de servicios livianos o al por mayor",
+        "comercio": {
+            "principal": "3,4,5,6,12,13",
+            "complementario": "1,2,7,8,9 y vivienda",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "14,21,32,45",
+            "complementario": "15,16,17,18,19,20,22,23,24,25,26,27,28,31,33,34,35,36,37,38,39,43, 44, 46,48,49",
+            "restringido": "40"
+        },
+        "dotacional": {
+            "principal": "61,62,64,86",
+            "complementario": "53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,71,72,75,77,78,79,80,81,82,86,90,94",
+            "restringido": "70"
+        },
+        "industrial": {
+            "principal": "",
+            "complementario": "96,97,98,99,103,107,110,115",
+            "restringido": "102,118"
+        }
+    },
+    "Comercial y de Servicios - C3 - Comercial y de servicios pesados": {
+        "name": "Comercial y de Servicios - C3 - Comercial y de servicios pesados",
+        "comercio": {
+            "principal": "6,8,10,11,12,13",
+            "complementario": "1,2,3,4,5,7,9, Vivienda",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "14,21,29,32,41,42,45,47,51",
+            "complementario": "15,16,17,18,19,20,22,23,24,25,26,27,28,31,33,34,35,36,37,38,39, 43,44, 46,48,49,50",
+            "restringido": "40"
+        },
+        "dotacional": {
+            "principal": "61,64,84,86,89",
+            "complementario": "53,54,55,56,57,58,59,60,62,63,65,66,67,68,69,70,71,72,74,75,77,78,79,80,81,82,90,94",
+            "restringido": "70"
+        },
+        "industrial": {
+            "principal": "96,97,98,99,100,102,105,109,110,111,112,113,115,118,119,122,123",
+            "complementario": "101,103,104,106,107,116,117,120,122",
+            "restringido": ""
+        }
+    },
+    "Comercial y de Servicios - CE - Comercial de eje en Area de Actividades R-2": {
+        "name": "Comercial y de Servicios - CE - Comercial de eje en Area de Actividades R-2",
+        "comercio": {
+            "principal": "",
+            "complementario": "",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "",
+            "complementario": "",
+            "restringido": ""
+        },
+        "dotacional": {
+            "principal": "",
+            "complementario": "",
+            "restringido": ""
+        },
+        "industrial": {
+            "principal": "",
+            "complementario": "",
+            "restringido": ""
+        }
+    },
+    "Dotacional - D - Dotacional": {
+        "name": "Dotacional - D - Dotacional",
+        "comercio": {
+            "principal": "",
+            "complementario": "1,2",
+            "restringido": "3"
+        },
+        "servicios": {
+            "principal": "14",
+            "complementario": "",
+            "restringido": "15,16,31,48"
+        },
+        "dotacional": {
+            "principal": "53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95",
+            "complementario": "",
+            "restringido": ""
+        },
+        "industrial": {
+            "principal": "",
+            "complementario": "",
+            "restringido": ""
+        }
+    },
+    "Dotacional - D - Dotacional Recreativo": {
+        "name": "Dotacional - D - Dotacional Recreativo",
+        "comercio": {
+            "principal": "",
+            "complementario": "1,2",
+            "restringido": "3"
+        },
+        "servicios": {
+            "principal": "14",
+            "complementario": "",
+            "restringido": "15,16,31,48"
+        },
+        "dotacional": {
+            "principal": "53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95",
+            "complementario": "",
+            "restringido": ""
+        },
+        "industrial": {
+            "principal": "",
+            "complementario": "",
+            "restringido": ""
+        }
+    },
+    "Industrial - I - Industria": {
+        "name": "Industrial - I - Industria",
+        "comercio": {
+            "principal": "6,7,8,10,11,13",
+            "complementario": "1,2,3,4,5,9,12,13",
+            "restringido": "3"
+        },
+        "servicios": {
+            "principal": "14,28,29,30,37,38,39,41,42,47",
+            "complementario": "15,16,17,18,19,20,21,22,23,24,25,26,27,28,31,32,33,34,35,36,37,43,44,45,46,48,49,50,51",
+            "restringido": "40"
+        },
+        "dotacional": {
+            "principal": "74,83,84,85,86,87,88,89,90,91,92",
+            "complementario": "53,54,56,57,58,63,66,68,69,70,71,72,73,75,76,77,78,79,80,81,82,84,86,94,95",
+            "restringido": "70"
+        },
+        "industrial": {
+            "principal": "96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123",
+            "complementario": "96,97,98,99,100,101,102,105,106,107,110,111,112,115,117,120,122,123",
+            "restringido": ""
+        }
+    },
+    "Multiple - M1 - Multiple centralidad": {
+        "name": "Multiple - M1 - Multiple centralidad",
+        "comercio": {
+            "principal": "1,2,3,6,9,12,13",
+            "complementario": "2,4,5,7,8,10,11,13 y Vivienda",
+            "restringido": ""
+        },
+        "servicios": {
+            "principal": "14,15,16,17,18,19,20,22,23,27,28,32,33,34,35,37,49,50,51",
+            "complementario": "15,16,20,21,24,25,26,28,31,36,37,38,39,41,43,44,45,46,47,48,49",
+            "restringido": "40"
+        },
+        "dotacional": {
+            "principal": "58,59,75,78,82,86,94",
+            "complementario": "58,60,65,66,67,68,69,71,72,73,74,77,79,80,81,84,90",
+            "restringido": "70"
+        },
+        "industrial": {
+            "principal": "107,115",
+            "complementario": "96,97,98,99,102,103,110,118,119,122",
+            "restringido": ""
+        }
+    },
+    "Multiple - M2 - Multiple grandes establecimientos": {
+        "name": "Multiple - M2 - Multiple grandes establecimientos",
+        "comercio": {
+            "principal": "6,7,8,10,11,13",
+            "complementario": "1,2,3,4,5,9,12,13, Vivienda",
+            "restringido": "VIP - VIS"
+        },
+        "servicios": {
+            "principal": "14,21,22,28,29,30,32,35,38,39,41,42,47,48,49,52",
+            "complementario": "15,16,17,18,19,20,23,24,25,26,27,28,31,33,34,36,37,43,44,45,46,50,51",
+            "restringido": "40"
+        },
+        "dotacional": {
+            "principal": "71,72,73,74,83,84,85,86,87,88,89,90,91,93,94,95",
+            "complementario": "58,59,60,63,65,66,67,68,69,75,76,77,78,79,80,81,82,84,94",
+            "restringido": "70"
+        },
+        "industrial": {
+            "principal": "96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123",
+            "complementario": "96,97,98,99,100,101,102,103,106,107,110,111,112,115,117,120,123",
+            "restringido": ""
+        }
+    }
+}

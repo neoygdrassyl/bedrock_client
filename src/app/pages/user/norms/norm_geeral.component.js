@@ -6,6 +6,7 @@ import { NORM_GEN_DATA } from './norm.vars'
 import moment from 'moment';
 import VIEWER from '../../../components/viewer.component';
 import FICHA_NORM from "./FICHA_NORM_1.json"
+import { SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
 
 const MySwal = withReactContent(Swal);
 const default_Item = {
@@ -49,6 +50,7 @@ export default function NORM_GENERAL(props) {
             set_Subsectors();
             set_Fronts();
             document.getElementById('norm_ficha').value = selectFicha
+            document.getElementById('norm_zon_norm').value = selectFicha.slice(0, 4)
         }
     }, [selectFicha]);
 
@@ -236,7 +238,7 @@ export default function NORM_GENERAL(props) {
     }
 
     // ***************************  JXS *********************** //
-    const FORM_GENERAL = <>
+    const FORM_GENERAL = () => <>
         <form onSubmit={updateForm} id="update-norm-form">
             <div className="row">
                 <div className="col-4">
@@ -430,7 +432,11 @@ export default function NORM_GENERAL(props) {
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_cla_suelo" defaultValue={item.cla_suelo} />
+                        <select className="form-select" id="norm_cla_suelo" defaultValue={item.cla_suelo}>
+                            <option>Urbano</option>
+                            <option>Rural</option>
+                            <option>Expansión</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -442,7 +448,9 @@ export default function NORM_GENERAL(props) {
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_area_act" defaultValue={item.area_act} />
+                        <select className="form-select" id="norm_area_act" defaultValue={item.area_act} >
+                            {SUBMIT_ARC_AREA_ACTIVIDAD.map(op => <option>{op}</option>)}
+                        </select>
                     </div>
                 </div>
                 <div className="col-3">
@@ -451,7 +459,9 @@ export default function NORM_GENERAL(props) {
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_trat_urb" defaultValue={item.trat_urb} />
+                        <select className="form-select" id="norm_trat_urb" defaultValue={item.trat_urb} >
+                            {SUBMIT_ARC_TRATAMIENTO_URBANISTICO.map(op => <option>{op}</option>)}
+                        </select>
                     </div>
                 </div>
                 <div className="col-3">
@@ -460,7 +470,9 @@ export default function NORM_GENERAL(props) {
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_zon_rest" defaultValue={item.zon_rest} />
+                        <select className="form-select" id="norm_zon_rest" defaultValue={item.zon_rest} >
+                            {SUBMIT_ARC_ZONS_RESTRICCION.map(op => <option>{op}</option>)}
+                        </select>
                     </div>
                 </div>
                 <div className="col-3">
@@ -469,7 +481,9 @@ export default function NORM_GENERAL(props) {
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_amenaza" defaultValue={item.amenaza} />
+                        <select className="form-select" id="norm_amenaza" defaultValue={item.amenaza} >
+                            {SUBMIT_ARC_AMENAZA.map(op => <option>{op}</option>)}
+                        </select>
                     </div>
                 </div>
                 <div className="col-3">
@@ -478,7 +492,7 @@ export default function NORM_GENERAL(props) {
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_zon_norm" defaultValue={item.zon_norm} />
+                        <input type="text" class="form-control" id="norm_zon_norm" defaultValue={item.zon_norm} disabled/>
                     </div>
                 </div>
             </div>
@@ -494,7 +508,7 @@ export default function NORM_GENERAL(props) {
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
                 <h3 class="text-uppercase pb-2">1. INFORMACIÓN GENERAL:</h3>
-                {FORM_GENERAL}
+                {load ? FORM_GENERAL() : null}
                 <hr />
             </Suspense>
 
