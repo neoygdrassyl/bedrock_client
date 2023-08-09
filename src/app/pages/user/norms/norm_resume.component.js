@@ -2,9 +2,8 @@ import React, { Suspense, useEffect, useState, } from 'react';
 import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { NORM_GEN_DATA, ELEMENTS } from './norm.vars'
-import moment from 'moment';
-import VIEWER from '../../../components/viewer.component';
+import { ELEMENTS } from './norm.vars'
+import UU from "./UU.json"
 import FICHA_NORM_JSON from './FICHA_NORM_1.json'
 
 const MySwal = withReactContent(Swal);
@@ -262,56 +261,75 @@ export default function NORM_RESUME(props) {
         <div className='bg-dark p-2 mx-1 row text-light'>
             <div className='col'>4. CATEGORÍAS DE USOS Y UNIDADES DE USO PERMITIDAS:</div>
         </div>
-        <div className='row text-center px-2 mx-1'>
+        <div className='row text-center px-2 mx-1' >
             <div className='col-3 border'>COMERCIO</div>
-            <div className='col-3'>
-                <div className='row col border'>Principal</div>
-                <div className='row col border'>Complementario</div>
-                <div className='row col border'>Restringido</div>
-            </div>
-            <div className='col-6'>
-                <div className='row col border'></div>
-                <div className='row col border'></div>
-                <div className='row col border'></div>
+            <div className='col-9'>
+                <div className='row'>
+                    <div className='col-3 border'>Principal</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}} >{UU[item_general.area_act] ? UU[item_general.area_act].comercio.principal : ' '}</div>
+                </div>
+                <div className='row'>
+                    <div className='col-3 border'>Complementario</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].comercio.complementario : ' '}</div>
+                </div>
+                <div className='row'>
+                    <div className='col-3 border'>Restringido</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].comercio.restringido : ' '}</div>
+                </div>
             </div>
         </div>
-        <div className='row text-center px-2 mx-1'>
+
+        <div className='row text-center px-2 mx-1' >
             <div className='col-3 border'>SERVICIO</div>
-            <div className='col-3'>
-                <div className='row col border'>Principal</div>
-                <div className='row col border'>Complementario</div>
-                <div className='row col border'>Restringido</div>
-            </div>
-            <div className='col-6'>
-                <div className='row col border'></div>
-                <div className='row col border'></div>
-                <div className='row col border'></div>
+            <div className='col-9'>
+                <div className='row'>
+                    <div className='col-3 border'>Principal</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].servicios.principal : ' '}</div>
+                </div>
+                <div className='row'>
+                    <div className='col-3 border'>Complementario</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].servicios.complementario : ' '}</div>
+                </div>
+                <div className='row'>
+                    <div className='col-3 border'>Restringido</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].servicios.restringido : ' '}</div>
+                </div>
             </div>
         </div>
-        <div className='row text-center px-2 mx-1'>
+
+        <div className='row text-center px-2 mx-1' >
             <div className='col-3 border'>DOTACIONAL</div>
-            <div className='col-3'>
-                <div className='row col border'>Principal</div>
-                <div className='row col border'>Complementario</div>
-                <div className='row col border'>Restringido</div>
-            </div>
-            <div className='col-6'>
-                <div className='row col border'></div>
-                <div className='row col border'></div>
-                <div className='row col border'></div>
+            <div className='col-9'>
+                <div className='row'>
+                    <div className='col-3 border'>Principal</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].dotacional.principal : ' '}</div>
+                </div>
+                <div className='row'>
+                    <div className='col-3 border'>Complementario</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].dotacional.complementario : ' '}</div>
+                </div>
+                <div className='row'>
+                    <div className='col-3 border'>Restringido</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].dotacional.restringido : ' '}</div>
+                </div>
             </div>
         </div>
-        <div className='row text-center px-2 mx-1'>
+
+        <div className='row text-center px-2 mx-1' >
             <div className='col-3 border'>INDUSTRIAL</div>
-            <div className='col-3'>
-                <div className='row col border'>Principal</div>
-                <div className='row col border'>Complementario</div>
-                <div className='row col border'>Restringido</div>
-            </div>
-            <div className='col-6'>
-                <div className='row col border'></div>
-                <div className='row col border'></div>
-                <div className='row col border'></div>
+            <div className='col-9'>
+                <div className='row'>
+                    <div className='col-3 border'>Principal</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].industrial.principal : ' '}</div>
+                </div>
+                <div className='row'>
+                    <div className='col-3 border'>Complementario</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].industrial.complementario : ' '}</div>
+                </div>
+                <div className='row'>
+                    <div className='col-3 border'>Restringido</div>
+                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].industrial.restringido : ' '}</div>
+                </div>
             </div>
         </div>
     </>
@@ -349,7 +367,7 @@ export default function NORM_RESUME(props) {
             </div>
             <div className='row m-1'>
                 <div className='col border'>ALTURA MÁXIMA PERMITIDA</div>
-                <div className='col border'>{Number(FICHA.height).toFixed(2)}</div>
+                <div className='col border'>{isNaN(FICHA.height) ? FICHA.height : Number(FICHA.height).toFixed(2)}</div>
             </div>
             <div className='row m-1'>
                 <div className='col border'>TIPOLOGÍA EDIFICADORA</div>
@@ -392,27 +410,33 @@ export default function NORM_RESUME(props) {
             <div className='col'>5. PERFIL VIAL</div>
         </div>
         {items_perfils.map(perfil => <>
-            <div className='row m-1'>
-                <div className='col border'>CODIGO</div>
-                <div className='col border'>{perfil.code}</div>
-                <div className='col border'>TIPO DE PERFIL</div>
-                <div className='col border'>{perfil.perfil}</div>
-            </div>
-            <div className='row m-2 p-2'>
-                <img src={URL_ROOT + URL_PATH + perfil.perfil + ".png"} alt="IMAGEN DE PERFIL NO ENCONTRADA" width="80%" />
-            </div>
-            <div className='row m-1 fw-bold text-center'>
-                <div className='col border border-dark'>ELEMENTO</div>
-                <div className='col border border-dark'>NORMA</div>
-                <div className='col border border-dark'>EN SITIO</div>
-                <div className='col border border-dark'>RETROCESO EXIGIDO</div>
-            </div>
-            <ELEMENTS_LIST id={perfil.id} swaMsg={swaMsg} />
-            <div className='row m-1'>
-                <div className='col border'>Antejardin</div>
-                <div className='col border text-center'>{perfil.antejardin_n}</div>
-                <div className='col border text-center'>{perfil.antejardin_p}</div>
-                <div className='col border text-center'>{(Number(perfil.antejardin_n) - Number(perfil.antejardin_p)).toFixed(2)}</div>
+            <div className='row'>
+                <div className='col m-1'>
+                    <div className='row m-1'>
+                        <div className='col border'>CODIGO</div>
+                        <div className='col border'>{perfil.code}</div>
+                        <div className='col border'>TIPO DE PERFIL</div>
+                        <div className='col border'>{perfil.perfil}</div>
+                    </div>
+
+                    <div className='row m-1 fw-bold text-center'>
+                        <div className='col border border-dark'>ELEMENTO</div>
+                        <div className='col border border-dark'>NORMA</div>
+                        <div className='col border border-dark'>EN SITIO</div>
+                        <div className='col border border-dark'>RETROCESO EXIGIDO</div>
+                    </div>
+                    <ELEMENTS_LIST id={perfil.id} swaMsg={swaMsg} />
+                    <div className='row m-1'>
+                        <div className='col border'>Antejardin</div>
+                        <div className='col border text-center'>{perfil.antejardin_n}</div>
+                        <div className='col border text-center'>{perfil.antejardin_p}</div>
+                        <div className='col border text-center'>{(Number(perfil.antejardin_n) - Number(perfil.antejardin_p)).toFixed(2)}</div>
+                    </div>
+                </div>
+                <div className='col m-1'>
+                    <img src={URL_ROOT + URL_PATH + perfil.perfil + ".png"} alt="IMAGEN DE PERFIL NO ENCONTRADA" width="100%" />
+                    <a className='fw-bold' target='_blank' href={URL_ROOT + URL_PATH + perfil.perfil + ".png"}>Ver imagen completa</a>
+                </div>
             </div>
         </>)}
     </>

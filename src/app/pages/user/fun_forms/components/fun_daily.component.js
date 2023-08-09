@@ -704,11 +704,11 @@ export default function FUN_DAILY_COMPONENT(props) {
 
                 if (row.state == 1 || row.state == -1) {
                     let days_rad = conOA ? dateParser_dateDiff(dateParser_finalDate(row.clock_prorroga, -30), moment().format('YYYY-MM-DD'), true ) : (30 - dateParser_timePassed(row.clock_payment));
-                    console.log(days_rad)
                     /** inc */
                     let color = !row.clock_payment ? 'danger' : days_rad < 0 ? 'danger' : days_rad < 10 ? 'warning' : 'primary';
+                    if (conOA) color = !row.clock_prorroga ? 'danger' :  days_rad < 0 ? 'danger' : days_rad < 10 ? 'warning' : 'primary';
                     let inc_text = ""
-                    if (conOA) inc_text += 'PRORROGA\n';
+                    if (conOA) inc_text += 'PROG\n';
                     if (row.clock_payment) inc_text += days_rad;
 
                     if (days_rad >= 0) {

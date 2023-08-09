@@ -9,6 +9,7 @@ import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import { dateParser, getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 import parkingData from '../../../../components/jsons/parkingData.json'
+import { SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../../components/vars.global';
 
 const MySwal = withReactContent(Swal);
 class RECORD_ARC_34 extends Component {
@@ -626,18 +627,7 @@ class RECORD_ARC_34 extends Component {
                     <div className="col-6 p-1">
                         <div class="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[2]} onChange={() => manage_ra_34('a41')}>
-                                <option>Desarrollo - TD - Desarrollo</option>
-                                <option>Consolidación - TC-1 - Consolidación Urbana</option>
-                                <option>Consolidación- TC-2 - Consolidación con generación de espacio publico</option>
-                                <option>Consolidación- TRD - Redesarrollo</option>
-                                <option>Renovación - TRA-1 - Reactivación</option>
-                                <option>Renovación - TRA-2 - Reactivación</option>
-                                <option>Renovación - TRA-3 - Reactivación de sector urbano especial</option>
-                                <option>Mejoramiento Integral - TMI-1 - Complementario</option>
-                                <option>Mejoramiento Integral - TMI-2 - Reordenamiento</option>
-                                <option>Conservación - TCoU - Para inmuebles de interes cultural del grupo urbano</option>
-                                <option>Conservación - TCoA-1 - Para inmuebles de interés cultural del grupo arquitectónico agrupación</option>
-                                <option>Conservación - TCoA-2 - Para inmuebles de interés cultural del grupo arquitectónico individual</option>
+                                {SUBMIT_ARC_TRATAMIENTO_URBANISTICO.map(op => <option>{op}</option>)}
                             </select>
                         </div>
                     </div>
@@ -693,20 +683,7 @@ class RECORD_ARC_34 extends Component {
                     <div className="col-6 p-1">
                         <div class="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[4]} onChange={() => manage_ra_34('a41')}>
-                                <option>Residencial - R1 - Residencial meta</option>
-                                <option>Residencial - R2 - Residencial con comercio y servicio localizado</option>
-                                <option>Residencial - R2 - Sin eje comercial</option>
-                                <option>Residencial - R3 - Residencial mixta - vivienda, comercio y servicio</option>
-                                <option>Residencial - R4 - Residencial con actividad económica</option>
-                                <option>Comercial y de Servicios - C1 - Comercial y de servicios empresariales</option>
-                                <option>Comercial y de Servicios - C2 - Comercial y de servicios livianos o al por mayor</option>
-                                <option>Comercial y de Servicios - C3 - Comercial y de servicios pesados</option>
-                                <option>Comercial y de Servicios - CE - Comercial de eje en Area de Actividades R-2</option>
-                                <option>Dotacional - D - Dotacional</option>
-                                <option>Dotacional - D - Dotacional Recreativo</option>
-                                <option>Industrial - I - Industria</option>
-                                <option>Multiple - M1 - Multiple centralidad</option>
-                                <option>Multiple - M2 - Multiple grandes establecimientos</option>
+                                {SUBMIT_ARC_AREA_ACTIVIDAD.map(op => <option>{op}</option>)}
                             </select>
                         </div>
                     </div>
@@ -755,19 +732,7 @@ class RECORD_ARC_34 extends Component {
                     <div className="col-6 p-1">
                         <div class="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[6]} onChange={() => manage_ra_34('a41')}>
-                                <option>1. Occidente, escarpe de Malpaso y otros escarpes</option>
-                                <option>2. Norte la Esperanza</option>
-                                <option>3. Morrorico</option>
-                                <option>4. Oriental</option>
-                                <option>5. Rio de Oro, Suratá  Quebrada la Iglesia</option>
-                                <option>6. Áreas de drenaje</option>
-                                <option>7. Área de amortiguación 1 de los Escarpes</option>
-                                <option>8. Zona norte occidental</option>
-                                <option>9. El Pablón</option>
-                                <option>10. Zona via Palenque - Café Madrid y algunas terrazas</option>
-                                <option>11. Zona llenos</option>
-                                <option>12. Meseta de Bucaramanga</option>
-                                <option>13. Área de amortiguación 2 de los Escarpes</option>
+                                {SUBMIT_ARC_ZONS_RESTRICCION.map(op => <option>{op}</option>)}
                             </select>
                         </div>
                     </div>
@@ -806,13 +771,7 @@ class RECORD_ARC_34 extends Component {
                     <div className="col-6 p-1">
                         <div class="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[8]} onChange={() => manage_ra_34('a41')}>
-                                <option>Zona I</option>
-                                <option>Zona II</option>
-                                <option>Zona III</option>
-                                <option>Zona IV</option>
-                                <option>Zona V</option>
-                                <option>Zona de Inundacion</option>
-                                <option>Zona Sismica</option>
+                                {SUBMIT_ARC_AMENAZA.map(op => <option>{op}</option>)}
                             </select>
                         </div>
                     </div>
@@ -844,51 +803,6 @@ class RECORD_ARC_34 extends Component {
                             <option value="0" className="text-danger">CON RESTRICCIÓN</option>
                             <option value="1" className="text-success">SIN RESTRICCIÓN</option>
                         </select>
-                    </div>
-                </div>
-            </>
-        }
-        let _COMPONENT_K = (edit = "") => {
-            return <>
-                <div className="row">
-                    <div className="col-5 p-1">
-                        <label>Elemento</label>
-                        <div class="input-group">
-                            <select class="form-select" id={"r_a_34_k_1" + edit} >
-                                <option>Indice de Ocupacion</option>
-                                <option>Indice de Construccion</option>
-                                <option>Altura Máxima</option>
-                                <option>Sotanos</option>
-                                <option>Aislamiento Posterior</option>
-                                <option>Aislamiento Lateral</option>
-                                <option>Aislamiento Antejardin</option>
-                                <option>Aislamiento Frontal</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col p-1">
-                        <label>Índice</label>
-                        <div class="input-group">
-                            <input type="number" step="0.01" class="form-control me-1" id={"r_a_34_k_2" + edit} />
-                        </div>
-                    </div>
-                    <div className="col p-1">
-                        <label>Proyecto</label>
-                        <div class="input-group">
-                            <input type="number" step="0.01" class="form-control me-1" id={"r_a_34_k_4" + edit} />
-                        </div>
-                    </div>
-                    <div className="col p-1">
-                        <label>Unidades</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id={"r_a_34_k_5" + edit} />
-                        </div>
-                    </div>
-                    <div className="col p-1">
-                        <label>Excepción</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id={"r_a_34_k_6" + edit} />
-                        </div>
                     </div>
                 </div>
             </>
