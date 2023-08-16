@@ -80,6 +80,7 @@ import PROFESIONALS from './pages/user/profesionals/profesionals.page';
 import GUIDE_USER from './pages/user/guide_user/guide_user.page';
 import { infoCud } from './components/jsons/vars';
 import NORMS from './pages/user/norms/norms.page';
+import CERTIFICATE_WORKER from './pages/user/certifications/certification.page';
 
 
 const MySwal = withReactContent(Swal);
@@ -279,15 +280,6 @@ export default function App() {
                           />
                         </PrivateRoute>
 
-                        <Route exact path='/'
-                          render={(props) => (
-                            <LoginPage {...props}
-                              translation={t("login", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          )}
-                        />
 
                         <Route exact path='/norms'
                           render={(props) => (
@@ -298,6 +290,28 @@ export default function App() {
                             />
                           )}
                         />
+
+
+                        <Route exact path='/certs'
+                          render={(props) => (
+                            <CERTIFICATE_WORKER {...props}
+                              translation={t("login", { returnObjects: true })}
+                              swaMsg={t("swa_messages", { returnObjects: true })}
+                              breadCrums={t("breadCrums", { returnObjects: true })}
+                            />
+                          )}
+                        />
+
+                        <Route exact path='/'
+                          render={(props) => (
+                            <LoginPage {...props}
+                              translation={t("login", { returnObjects: true })}
+                              swaMsg={t("swa_messages", { returnObjects: true })}
+                              breadCrums={t("breadCrums", { returnObjects: true })}
+                            />
+                          )}
+                        />
+
                         <Route path='*' exact={true} component={LoginPage} />
                       </Switch>
                       <Footer translation={t("footer", { returnObjects: true })} />
@@ -389,6 +403,7 @@ function AuthButton() {
           <hr className='bg-info'></hr>
           <Nav.Item eventKey="9" as={MyLink} href="/publish"><i class="fas fa-newspaper" style={{ "color": "LightSalmon" }}></i> Publicaciones</Nav.Item>
           <Nav.Item eventKey="10" as={MyLink} href="/fun"><i class="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Solicitudes y Licencias</Nav.Item>
+          <Nav.Item eventKey="10" as={MyLink} href="/funmanage"><i class="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Gestion Soli. y Lic.</Nav.Item>
           <Nav.Item eventKey="11" as={MyLink} href="/nomenclature"><i class="fas fa-file-signature" style={{ "color": "Plum" }}></i> Nomenclaturas</Nav.Item>
           <Nav.Item eventKey="12" as={MyLink} href="/pqrsadmin"><i class="fas fa-file-invoice" style={{ "color": "MediumPurple" }}></i>  Peticiones PQRS</Nav.Item>
           <hr className='bg-info'></hr>

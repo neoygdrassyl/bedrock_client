@@ -267,6 +267,20 @@ class Dashboard extends Component {
                                     </MDBCardBody>
                                 </MDBCard>
                             </MDBCol>
+                            <MDBCol md="4" className="px-3">
+                                <MDBCard className="bg-card">
+                                    <MDBCardBody>
+                                        <div className="text-center">
+                                            <i class="fas fa-address-book fa-4x" style={{ "color": "MediumSeaGreen" }}></i>
+                                        </div>
+                                        <div className="text-center">
+                                            <Link to={'/certs'}>
+                                                <button className="btn-info btn my-3"><h3>HISTORIAL PROFESIONALES</h3></button>
+                                            </Link>
+                                        </div>
+                                    </MDBCardBody>
+                                </MDBCard>
+                            </MDBCol>
                         </div>
                     </div>
                 </div>

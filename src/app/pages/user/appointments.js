@@ -175,6 +175,7 @@ class Appointments extends Component {
                 name: <h4>ACCIÓN</h4>,
                 button: true,
                 minWidth: '120px',
+                ignoreCSV: true,
                 cell: row => <>
                     {moment().diff(row.date, 'days') <= 0
                         ? <button className="btn btn-secondary btn-sm me-1" onClick={() => this.setItem_edit(row)}><i class="far fa-edit fa-2x"></i></button>
@@ -269,6 +270,35 @@ class Appointments extends Component {
 
         }
       
+        let generateCVS = (_data, _name) => {
+            var rows = [];
+            let _columns = [...columns]
+            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name.props.children })
+            rows = _data.map(d =>
+                _columns.filter(c => c.ignoreCSV == undefined).map(c => {
+                    if (c.cvsCB) return (String(c.cvsCB(d) ?? '')).replace(/[\n\r]+ */g, ' ')
+                    else return (String(c.cell(d).props.children ?? '')).replace(/[\n\r]+ */g, ' ')
+                }
+                )
+            );
+
+            rows.unshift(headRows);
+
+            let csvContent = "data:text/csv;charset=utf-8,"
+                + rows.map(e => e.join(";")).join("\n");
+
+
+            var encodedUri = encodeURI(csvContent);
+            const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
+
+            var link = document.createElement("a");
+            link.setAttribute("href", fixedEncodedURI);
+            link.setAttribute("download", `${_name ?? 'LICENCIAS URBANISTICAS'}.csv`);
+            document.body.appendChild(link); // Required for FF
+
+            link.click();
+        }
+
         return (
 
             <div className="Publish container">
@@ -301,6 +331,7 @@ class Appointments extends Component {
                                     paginationRowsPerPageOptions={[20, 50, 100]}
                                     className="data-table-component"
                                     noHeader
+                                   
                                 />
                             ) : (
                                 <div>
@@ -335,6 +366,7 @@ class Appointments extends Component {
                             <Collapsible trigger={<><label className="m-2"> </label>
                                 <button className="btn btn-warning btn-sm my-2"><i class="fas fa-plus"></i> Ver Lista</button></>}>
                                 {isLoaded ? (
+                                    <>
                                     <DataTable
                                         paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                         noDataComponent="No hay citas pasadas"
@@ -346,8 +378,17 @@ class Appointments extends Component {
                                         paginationPerPage={20}
                                         paginationRowsPerPageOptions={[20, 50, 100]}
                                         className="data-table-component"
-                                        noHeader
+                                        defaultSortFieldId={1}
+                                        defaultSortAsc={false}
+                                        title={
+                                            <div class="d-flex justify-content-between">
+                                                <div><h5>CITAS PASADAS</h5></div>
+                                                <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(items_3, 'CITAS') }}
+                                                ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                            </div>
+                                        }
                                     />
+                                    </>
                                 ) : (
                                     <div>
                                         <h4>No Data Retrieved</h4>
