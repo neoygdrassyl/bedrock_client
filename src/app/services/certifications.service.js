@@ -34,6 +34,7 @@ class SERVICE_CERTIFICATIONS {
   gendoc_cert_fun(data) {
     return http.post(`/${route}/gendoc_cert_fun/`, data);
   }
+  
 
 }
 
