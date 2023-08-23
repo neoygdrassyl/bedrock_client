@@ -64,8 +64,8 @@ export default function CERTIFICATE_WORKER(props) {
                 var indexOf = state.indexOf('5');
                 date_start = date[indexOf];
             }
-            if (state.includes('100')) {
-                var indexOf = state.indexOf('100');
+            if (state.includes('99')) {
+                var indexOf = state.indexOf('99');
                 date_end = date[indexOf]
             }
         }
@@ -272,7 +272,7 @@ export default function CERTIFICATE_WORKER(props) {
                                 <label>{getDates(value)[0]}</label>
                             </div>
                             <div className='col-2'>
-                                <label>{getDates(value)[1]}</label>
+                                <label>{getDates(value)[1] || 'ACTIVO'}</label>
                             </div>
                             <div className='col' >
                                 <label >{value.roles}</label>
