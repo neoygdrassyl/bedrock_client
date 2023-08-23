@@ -105,8 +105,8 @@ export default function NORM_GENERAL(props) {
         if (id_out) formData.set('id_out', id_out);
         let solicitor = document.getElementById("norm_solicitor").value;
         formData.set('solicitor', solicitor);
-        let urban_duties = document.getElementById("norm_urban_duties").value;
-        formData.set('urban_duties', urban_duties);
+        //let urban_duties = document.getElementById("norm_urban_duties").value;
+        //formData.set('urban_duties', urban_duties);
         let public_utility = document.getElementById("norm_public_utility").value;
         formData.set('public_utility', public_utility);
         let ficha = document.getElementById("norm_ficha").value;
@@ -241,7 +241,7 @@ export default function NORM_GENERAL(props) {
     const FORM_GENERAL = () => <>
         <form onSubmit={updateForm} id="update-norm-form">
             <div className="row">
-                <div className="col-4">
+                <div className="col-6">
                     <label >1.1 Nr. Radicación</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
@@ -250,7 +250,7 @@ export default function NORM_GENERAL(props) {
                         <input type="text" class="form-control" id="norm_id_in" required disabled defaultValue={item.id_in} />
                     </div>
                 </div>
-                <div className="col-4">
+                <div className="col-6">
                     <label >1.2 Nr. Expedición</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
@@ -259,6 +259,9 @@ export default function NORM_GENERAL(props) {
                         <input type="text" class="form-control" id="norm_id_out" defaultValue={item.id_out} />
                     </div>
                 </div>
+            </div>
+
+            <div className="row">
                 <div className="col-4">
                     <label >1.3 Solicitante</label>
                     <div class="input-group mb-1">
@@ -268,32 +271,20 @@ export default function NORM_GENERAL(props) {
                         <input type="text" class="form-control" id="norm_solicitor" defaultValue={item.solicitor} />
                     </div>
                 </div>
-            </div>
-
-            <div className="row">
                 <div className="col-4">
-                    <label >1.4 Deberes Urbanos</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-file-alt"></i>
-                        </span>
-                        <select class="form-select" id="norm_urban_duties" defaultValue={item.urban_duties}>
-                            <option value={0}>NO APLICA</option>
-                            <option value={1}>APLICA</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="col">
-                    <label >1.5 Utilidad Publica</label>
+                    <label >1.4 Utilidad Publica</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-home"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_public_utility" defaultValue={item.public_utility} />
+                        <select class="form-select" id="norm_public_utility" defaultValue={item.public_utility}>
+                            <option>SI</option>
+                            <option>NO</option>
+                        </select>
                     </div>
                 </div>
-                <div className="col">
-                    <label >1.6 Imagen </label>
+                <div className="col-4">
+                    <label >1.5 Imagen </label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-home"></i>
@@ -306,7 +297,7 @@ export default function NORM_GENERAL(props) {
 
             <div className="row">
                 <div className="col">
-                    <label >1.7 Ficha</label>
+                    <label >1.6 Ficha</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -317,7 +308,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label >1.8 Sector</label>
+                    <label >1.7 Sector</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -328,7 +319,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label >1.9 Subsector</label>
+                    <label >1.8 Subsector</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -339,7 +330,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label >1.10 Frente Normativo</label>
+                    <label >1.9 Frente Normativo</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -353,7 +344,7 @@ export default function NORM_GENERAL(props) {
 
             <div className="row">
                 <div className="col-3">
-                    <label >1.11 Tipo de frente</label>
+                    <label >1.10 Tipo de frente</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -366,7 +357,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.12 Numero de frentes</label>
+                    <label >1.11 Numero de frentes</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -380,7 +371,7 @@ export default function NORM_GENERAL(props) {
                 </div>
 
                 <div className="col-6">
-                    <label >1.13 Georegerenciación</label>
+                    <label >1.12 Georegerenciación</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-map-marker-alt"></i>
@@ -393,7 +384,7 @@ export default function NORM_GENERAL(props) {
 
             <div className="row">
                 <div className="col-3">
-                    <label >1.14 Comuna</label>
+                    <label >1.13 Comuna</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -402,7 +393,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.15 Barrio</label>
+                    <label >1.14 Barrio</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -411,7 +402,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.16 Estrato</label>
+                    <label >1.15 Estrato</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -427,7 +418,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.17 Clasificación Suelo</label>
+                    <label >1.16 Clasificación Suelo</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -443,7 +434,7 @@ export default function NORM_GENERAL(props) {
 
             <div className="row">
                 <div className="col-3">
-                    <label >1.18 Área de actividad</label>
+                    <label >1.17 Área de actividad</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -454,7 +445,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.19 Tratamiento Urbanístico</label>
+                    <label >1.18 Tratamiento Urbanístico</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -465,7 +456,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.20 Zonif. Restricción Ocupación</label>
+                    <label >1.19 Zonif. Restricción Ocupación</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -476,7 +467,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.21 Amenaza y Riesgo</label>
+                    <label >1.20 Amenaza y Riesgo</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -487,12 +478,12 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.22 Zona Normativa</label>
+                    <label >1.21 Zona Normativa</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
-                        <input type="text" class="form-control" id="norm_zon_norm" defaultValue={item.zon_norm} disabled/>
+                        <input type="text" class="form-control" id="norm_zon_norm" defaultValue={item.zon_norm} disabled />
                     </div>
                 </div>
             </div>

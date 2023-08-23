@@ -211,9 +211,9 @@ export default function NORM_PREDIOS(props) {
     function transform_data() {
         let max_area = data.reduce((sum, next) => sum += Number(next.area), 0);
         let max_front = data.reduce((sum, next) => sum += Number(next.front), 0);
-        let max_bic_area = data.reduce((sum, next) => sum += Number(next.bic_area), 0);
+        //let max_bic_area = data.reduce((sum, next) => sum += Number(next.bic_area), 0);
 
-        let max_row = { predial: 'TOTAL', dir: '', area: max_area, front: max_front, bic_pred: -1, art_192: -1, bic_area: max_bic_area }
+        let max_row = { predial: 'TOTAL', dir: '', area: max_area, front: max_front, bic_pred: -1, art_192: -1, bic_area: '', noactions: true }
 
         setDataExtra([...data, max_row])
     }
@@ -250,15 +250,19 @@ export default function NORM_PREDIOS(props) {
             name: <label className="text-center">BIC</label>,
             center: true,
             cell: row => {
-                if(row.bic_pred === 1) return 'APLICA'
-                if(row.bic_pred === 0) return 'NO APLICA'
+                if(row.bic_pred === 1) return 'SI'
+                if(row.bic_pred === 0) return 'NO'
                 return ''
             } 
         },
         {
             name: <label className="text-center">BIC AREA</label>,
             center: true,
-            cell: row => row.bic_area
+            cell: row => {
+                if(row.bic_area === '1') return 'APLICA'
+                if(row.bic_area === '0') return 'NO APLICA'
+                return ''
+            } 
         },
         {
             name: <label className="text-center">COMP. ESP. PUB.</label>,
@@ -274,7 +278,7 @@ export default function NORM_PREDIOS(props) {
             button: true,
             center: true,
             minWidth: '80px',
-            cell: row => <>
+            cell: row => row.noactions ? null : <>
                 <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
                     <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i class="far fa-edit"></i></MDBBtn>
                 </MDBTooltip>
@@ -335,15 +339,18 @@ export default function NORM_PREDIOS(props) {
                     <label>BIC</label>
                     <div class="input-group my-1">
                         <select class="form-select" defaultValue={editItem ? editItem.bic_pred : ""} id={"norm_bic_pred" + edit}>
-                            <option value={0}>NO APLICA</option>
-                            <option value={1}>APLICA</option>
+                            <option value={0}>NO</option>
+                            <option value={1}>SI</option>
                         </select>
                     </div>
                 </div>
                 <div className="col-3">
                     <label>Área BIC</label>
                     <div class="input-group my-1">
-                    <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.bic_area : ""} class="form-control" id={"predio_bic_area" + edit} />
+                    <select class="form-select" defaultValue={editItem ? editItem.bic_area : ""} id={"predio_bic_area" + edit}>
+                            <option value={0}>NO APLICA</option>
+                            <option value={1}>APLICA</option>
+                        </select>
                     </div>
                 </div>
                 <div className="col-3">
