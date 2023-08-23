@@ -7,14 +7,11 @@ import moment from 'moment';
 import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from 'mdb-react-ui-kit';
 import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 
-const recaptchaRef = React.createRef();
-let esLocale = require('moment/locale/es');
 export default function CERTIFICATE_WORKER(props) {
     const translation = props.translation
     const swaMsg = props.swaMsg
     const MySwal = withReactContent(Swal);
     var formData = new FormData();
-    var [method, setMethod] = useState(1);
     var [loadTable, setLoadTable] = useState(false)
     var [data, setData] = useState([]);
     var [title, setTitle] = useState('')
@@ -94,7 +91,7 @@ export default function CERTIFICATE_WORKER(props) {
             },
             {
                 name: 'FECHA EXPEDICIÓN',
-                cell: row =>getDates(row)[1],
+                cell: row => getDates(row)[1],
             },
             {
                 name: 'EN CALIDAD DE',
@@ -104,7 +101,7 @@ export default function CERTIFICATE_WORKER(props) {
         const headRows = columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name })
         rows = _data.map(d =>
             columns.filter(c => c.ignoreCSV == undefined).map(c => {
-               return (String(c.cell(d) ?? '')).replace(/[\n\r]+ */g, ' ')
+                return (String(c.cell(d) ?? '')).replace(/[\n\r]+ */g, ' ')
             }
             )
         );
@@ -163,6 +160,44 @@ export default function CERTIFICATE_WORKER(props) {
             });
     }
 
+    let generatePDF = () => {
+        console.log(subjectNumer)
+        let id_number = String(subjectNumer);
+        id_number = id_number.replaceAll(',', '.')
+        if (!id_number.includes('.')) id_number = addDecimalPoints(id_number)
+
+        MySwal.fire({
+            title: swaMsg.title_wait,
+            text: swaMsg.text_wait,
+            icon: 'info',
+            showConfirmButton: false,
+        });
+        UsersService.getCertificateDataPDF(id_number)
+            .then(response => {
+                if (response.data === 'OK') {
+                    MySwal.close();
+                    window.open(process.env.REACT_APP_API_URL + "/pdf/certificate_data/" + "Historial Progesional " + title + ".pdf");
+                } else {
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+
+    }
+
     return (
         <div>
             <div className="row my-4 d-flex justify-content-center">
@@ -184,7 +219,7 @@ export default function CERTIFICATE_WORKER(props) {
                                 <form onSubmit={handleSubmit}>
                                     <div class="mb-3">
                                         <label class="form-label">{translation.str_id}</label>
-                                        <input type="text" class="form-control" id="id_number" />
+                                        <input type="text" class="form-control" id="id_number" onChange={(e) => setNumber(e.target.value)}/>
                                     </div>
                                     <div className="text-center mb-2">
                                         <button type="submit" class="btn btn-info ">{translation.str_btn3}</button>
@@ -203,10 +238,12 @@ export default function CERTIFICATE_WORKER(props) {
                         </div>
 
                         <div className='my-2'>
-                        <MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(data, 'HISTORIAL DEL PRFESIONAL '+title) }}>
-                            <i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn>
+                            <MDBBtn outline className='mx-1' color='danger' size="sm" onClick={() => generatePDF()}>
+                                <i class="far fa-file-pdf"></i> GENERAR PDF</MDBBtn>
+                            <MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(data, 'HISTORIAL DEL PRFESIONAL ' + title) }}>
+                                <i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn>
                         </div>
-                        
+
                         <div className='row text-center border border-black py-2' style={{ backgroundColor: 'lightgray' }}>
                             <div className='col-2'>
                                 <label className='fw-bol'>SOLICITUD</label>
