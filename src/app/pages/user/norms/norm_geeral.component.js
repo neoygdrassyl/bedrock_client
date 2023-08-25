@@ -6,7 +6,7 @@ import { NORM_GEN_DATA } from './norm.vars'
 import moment from 'moment';
 import VIEWER from '../../../components/viewer.component';
 import FICHA_NORM from "./FICHA_NORM_1.json"
-import { SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
+import { EJES, SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
 
 const MySwal = withReactContent(Swal);
 const default_Item = {
@@ -25,7 +25,7 @@ const default_Item = {
     front_n: null,
 }
 export default function NORM_GENERAL(props) {
-    const { translation, swaMsg, globals, id } = props;
+    const { translation, swaMsg, globals, id, setrRfresh } = props;
 
     const [load, setLoad] = useState(0);
     const [item, setItem] = useState(default_Item);
@@ -146,6 +146,18 @@ export default function NORM_GENERAL(props) {
         let zon_norm = document.getElementById("norm_zon_norm").value;
         formData.set('zon_norm', zon_norm);
 
+        let usosArray = document.getElementsByName('norm_usos');
+        let usos = []
+        for (let index = 0; index < usosArray.length; index++) {
+            const uso = usosArray[index];
+            usos.push(uso.checked ? uso.value : '')
+        }
+        usos = usos.join(',')
+        formData.set('usos', usos);
+
+        let eje = document.getElementById("norm_eje").value;
+        formData.set('eje', eje);
+
         let _creationYear = moment(item.createdAt).format('YY');
         let _folder = item.id_in;
         let file = document.getElementById("norm_fun6id");
@@ -171,6 +183,7 @@ export default function NORM_GENERAL(props) {
                         confirmButtonText: swaMsg.text_btn,
                     });
                     loadData()
+                    setrRfresh(1)
                 }
                 else {
                     MySwal.fire({
@@ -262,7 +275,7 @@ export default function NORM_GENERAL(props) {
             </div>
 
             <div className="row">
-                <div className="col-4">
+                <div className="col-3">
                     <label >1.3 Solicitante</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
@@ -271,7 +284,7 @@ export default function NORM_GENERAL(props) {
                         <input type="text" class="form-control" id="norm_solicitor" defaultValue={item.solicitor} />
                     </div>
                 </div>
-                <div className="col-4">
+                <div className="col-3">
                     <label >1.4 Utilidad Publica</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
@@ -283,8 +296,19 @@ export default function NORM_GENERAL(props) {
                         </select>
                     </div>
                 </div>
-                <div className="col-4">
-                    <label >1.5 Imagen </label>
+                <div className="col-3">
+                    <label >1.5 Eje</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-home"></i>
+                        </span>
+                        <select class="form-select" id="norm_eje" defaultValue={item.eje}>
+                            {EJES.map(eje => <option>{eje}</option>)}
+                        </select>
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.6 Imagen </label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-home"></i>
@@ -297,7 +321,7 @@ export default function NORM_GENERAL(props) {
 
             <div className="row">
                 <div className="col">
-                    <label >1.6 Ficha</label>
+                    <label >1.7 Ficha</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -308,7 +332,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label >1.7 Sector</label>
+                    <label >1.8 Sector</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -319,7 +343,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label >1.8 Subsector</label>
+                    <label >1.9 Subsector</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -330,7 +354,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label >1.9 Frente Normativo</label>
+                    <label >1.10 Frente Normativo</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -344,7 +368,7 @@ export default function NORM_GENERAL(props) {
 
             <div className="row">
                 <div className="col-3">
-                    <label >1.10 Tipo de frente</label>
+                    <label >1.11 Tipo de frente</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -357,7 +381,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.11 Numero de frentes</label>
+                    <label >1.12 Numero de frentes</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -371,7 +395,7 @@ export default function NORM_GENERAL(props) {
                 </div>
 
                 <div className="col-6">
-                    <label >1.12 Georegerenciación</label>
+                    <label >1.13 Georegerenciación</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-map-marker-alt"></i>
@@ -384,7 +408,7 @@ export default function NORM_GENERAL(props) {
 
             <div className="row">
                 <div className="col-3">
-                    <label >1.13 Comuna</label>
+                    <label >1.14 Comuna</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -393,7 +417,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.14 Barrio</label>
+                    <label >1.15 Barrio</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -402,7 +426,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.15 Estrato</label>
+                    <label >1.16 Estrato</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -418,7 +442,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.16 Clasificación Suelo</label>
+                    <label >1.17 Clasificación Suelo</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -434,7 +458,7 @@ export default function NORM_GENERAL(props) {
 
             <div className="row">
                 <div className="col-3">
-                    <label >1.17 Área de actividad</label>
+                    <label >1.18 Área de actividad</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -445,7 +469,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.18 Tratamiento Urbanístico</label>
+                    <label >1.19 Tratamiento Urbanístico</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -456,7 +480,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.19 Zonif. Restricción Ocupación</label>
+                    <label >1.20 Zonif. Restricción Ocupación</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -467,7 +491,7 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.20 Amenaza y Riesgo</label>
+                    <label >1.21 Amenaza y Riesgo</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -478,12 +502,47 @@ export default function NORM_GENERAL(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.21 Zona Normativa</label>
+                    <label >1.22 Zona Normativa</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
                         </span>
                         <input type="text" class="form-control" id="norm_zon_norm" defaultValue={item.zon_norm} disabled />
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
+                <label >1.23 Usos</label>
+
+                <div className="col mx-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="norm_usos" value="VIVIENDA" defaultChecked={item.usos?.includes('VIVIENDA')} />
+                        <label class="form-check-label" for="inlineCheckbox1">VIVIENDA</label>
+                    </div>
+                </div>
+                <div className="col mx-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="norm_usos" value="COMERCIO" defaultChecked={item.usos?.includes('COMERCIO')} />
+                        <label class="form-check-label" for="inlineCheckbox1">COMERCIO</label>
+                    </div>
+                </div>
+                <div className="col mx-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="norm_usos" value="SERIVCIO" defaultChecked={item.usos?.includes('SERIVCIO')} />
+                        <label class="form-check-label" for="inlineCheckbox1">SERIVCIO</label>
+                    </div>
+                </div>
+                <div className="col mx-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="norm_usos" value="DOTACIONAL" defaultChecked={item.usos?.includes('DOTACIONAL')} />
+                        <label class="form-check-label" for="inlineCheckbox1">DOTACIONAL</label>
+                    </div>
+                </div>
+                <div className="col mx-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="norm_usos" value="INDUSTRIAL" defaultChecked={item.usos?.includes('INDUSTRIAL')} />
+                        <label class="form-check-label" for="inlineCheckbox1">INDUSTRIAL</label>
                     </div>
                 </div>
             </div>

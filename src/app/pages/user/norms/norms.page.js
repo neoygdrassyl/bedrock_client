@@ -44,6 +44,7 @@ export default function NORMS(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
     const [modal, setModal] = useState(false);
     const [load, setLoad] = useState(0);
+    const [refresh, setrRfresh] = useState(0);
     const [data, setData] = useState([]);
     const [dataOg, setDataOg] = useState([]);
     const [selectedId, setSelectedId] = useState(false);
@@ -55,7 +56,6 @@ export default function NORMS(props) {
 
     // ************************** APIS ************************ //
     function loadData() {
-        setLoad(0)
         Norms_Service.getAll_norm()
             .then(response => {
                 setData(response.data)
@@ -336,28 +336,34 @@ export default function NORMS(props) {
                 <NORM_GENERAL
                     translation={translation} swaMsg={swaMsg} globals={globals}
                     id={selectedId}
+                    setrRfresh={setrRfresh}
                 />
 
                 <NORM_PREDIOS
                     translation={translation} swaMsg={swaMsg} globals={globals}
                     id={selectedId}
+                    setrRfresh={setrRfresh}
                 />
 
                 <NORM_NEIGHBORS
                     translation={translation} swaMsg={swaMsg} globals={globals}
                     id={selectedId}
                     id_in={selectedIdPublic}
+                    setrRfresh={setrRfresh}
                 />
 
                 <NORM_PERFIL
                     translation={translation} swaMsg={swaMsg} globals={globals}
                     id={selectedId}
+                    setrRfresh={setrRfresh}
                 />
 
                 <NORM_RESUME
                     translation={translation} swaMsg={swaMsg} globals={globals}
                     id={selectedId}
                     id_in={selectedIdPublic}
+                    refresh={refresh}
+                    setrRfresh={setrRfresh}
                 />
 
 
