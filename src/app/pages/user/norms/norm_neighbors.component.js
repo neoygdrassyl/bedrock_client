@@ -9,7 +9,7 @@ import moment from 'moment';
 
 const MySwal = withReactContent(Swal);
 export default function NORM_NEIGHBORS(props) {
-    const { translation, swaMsg, globals, id, id_in } = props;
+    const { translation, swaMsg, globals, id, id_in, setrRfresh } = props;
 
     const [load, setLoad] = useState(0);
     const [data, setData] = useState([]);
@@ -27,6 +27,7 @@ export default function NORM_NEIGHBORS(props) {
             .then(response => {
                 setData(response.data)
                 setLoad(1)
+                setrRfresh(1)
                 setNewItem(false)
                 document.getElementById("cb_new_neighbor").checked = false
                 setEditItem(false)

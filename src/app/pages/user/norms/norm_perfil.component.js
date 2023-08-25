@@ -13,7 +13,7 @@ const CARDS = [
     { value: 'sn', name: "SUR - NORTE" },
 ]
 export default function NORM_PERFIL(props) {
-    const { translation, swaMsg, globals, id } = props;
+    const { translation, swaMsg, globals, id, setrRfresh } = props;
 
     const [load, setLoad] = useState(0);
     const [data, setData] = useState([]);
@@ -31,6 +31,7 @@ export default function NORM_PERFIL(props) {
             .then(response => {
                 setData(response.data)
                 setLoad(1)
+                setrRfresh(1)
                 setNewItem(false)
                 document.getElementById("cb_new_perfil").checked = false
                 setEditItem(false)

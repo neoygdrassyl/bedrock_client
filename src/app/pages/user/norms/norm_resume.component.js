@@ -24,7 +24,7 @@ const URL_ROOT = "http://bmg1.dovela-services.com/" || window.location.hostname
 const URL_PATH = "/public_docs/OTHERS/PERFILES_NORMA/";
 
 export default function NORM_RESUME(props) {
-    const { translation, swaMsg, globals, id } = props;
+    const { translation, swaMsg, globals, id, refresh, setrRfresh } = props;
 
     const [load, setLoad] = useState(0);
     const [item_general, setItem] = useState(default_Item);
@@ -34,14 +34,14 @@ export default function NORM_RESUME(props) {
     const [items_perfils, setPerfils] = useState([]);
 
     useEffect(() => {
-        if (load == 0) {
-            setLoad(0);
+        if (load == 0 || refresh == 1) {
             loadData();
             loadData_predios();
             loadData_perfiles();
             setLoad(1);
+            setrRfresh(0);
         }
-    }, [load, id]);
+    }, [load, id, refresh]);
 
     // ************************** APIS ************************ //
     function loadData() {
@@ -266,15 +266,15 @@ export default function NORM_RESUME(props) {
             <div className='col-9'>
                 <div className='row'>
                     <div className='col-3 border'>Principal</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}} >{UU[item_general.area_act] ? UU[item_general.area_act].comercio.principal : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }} >{UU[item_general.area_act] ? UU[item_general.area_act].comercio.principal : ' '}</div>
                 </div>
                 <div className='row'>
                     <div className='col-3 border'>Complementario</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].comercio.complementario : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].comercio.complementario : ' '}</div>
                 </div>
                 <div className='row'>
                     <div className='col-3 border'>Restringido</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].comercio.restringido : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].comercio.restringido : ' '}</div>
                 </div>
             </div>
         </div>
@@ -284,15 +284,15 @@ export default function NORM_RESUME(props) {
             <div className='col-9'>
                 <div className='row'>
                     <div className='col-3 border'>Principal</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].servicios.principal : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].servicios.principal : ' '}</div>
                 </div>
                 <div className='row'>
                     <div className='col-3 border'>Complementario</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].servicios.complementario : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].servicios.complementario : ' '}</div>
                 </div>
                 <div className='row'>
                     <div className='col-3 border'>Restringido</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].servicios.restringido : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].servicios.restringido : ' '}</div>
                 </div>
             </div>
         </div>
@@ -302,15 +302,15 @@ export default function NORM_RESUME(props) {
             <div className='col-9'>
                 <div className='row'>
                     <div className='col-3 border'>Principal</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].dotacional.principal : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].dotacional.principal : ' '}</div>
                 </div>
                 <div className='row'>
                     <div className='col-3 border'>Complementario</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].dotacional.complementario : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].dotacional.complementario : ' '}</div>
                 </div>
                 <div className='row'>
                     <div className='col-3 border'>Restringido</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].dotacional.restringido : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].dotacional.restringido : ' '}</div>
                 </div>
             </div>
         </div>
@@ -320,15 +320,15 @@ export default function NORM_RESUME(props) {
             <div className='col-9'>
                 <div className='row'>
                     <div className='col-3 border'>Principal</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].industrial.principal : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].industrial.principal : ' '}</div>
                 </div>
                 <div className='row'>
                     <div className='col-3 border'>Complementario</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].industrial.complementario : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].industrial.complementario : ' '}</div>
                 </div>
                 <div className='row'>
                     <div className='col-3 border'>Restringido</div>
-                    <div className='col-9 border' style={{wordBreak: 'break-all'}}>{UU[item_general.area_act] ? UU[item_general.area_act].industrial.restringido : ' '}</div>
+                    <div className='col-9 border' style={{ wordBreak: 'break-all' }}>{UU[item_general.area_act] ? UU[item_general.area_act].industrial.restringido : ' '}</div>
                 </div>
             </div>
         </div>
@@ -425,7 +425,7 @@ export default function NORM_RESUME(props) {
                         <div className='col border border-dark'>EN SITIO</div>
                         <div className='col border border-dark'>RETROCESO EXIGIDO</div>
                     </div>
-                    <ELEMENTS_LIST id={perfil.id} swaMsg={swaMsg} />
+                    <ELEMENTS_LIST id={perfil.id} swaMsg={swaMsg} antejardin_n={perfil.antejardin_n} antejardin_p={perfil.antejardin_p} />
                     <div className='row m-1'>
                         <div className='col border'>Antejardin</div>
                         <div className='col border text-center'>{perfil.antejardin_n}</div>
@@ -473,7 +473,7 @@ export default function NORM_RESUME(props) {
 }
 
 function ELEMENTS_LIST(props) {
-    const { swaMsg, id } = props;
+    const { swaMsg, id, antejardin_n, antejardin_p } = props;
 
     const [load, setLoad] = useState(0);
     const [data, setData] = useState([]);
@@ -507,7 +507,42 @@ function ELEMENTS_LIST(props) {
         </>)}
     </>
 
+    const VOLADIZO = (ele) => {
+        let vol = data.find(element => (element.element == ele))
+
+        if (vol) return <div className='row m-1'>
+            <div className='col border'>Voladizo {ELEMENTS.find(element => element.value == ele) ? ELEMENTS.find(element => element.value == ele).name : 'OTRO ELEMENTO'}</div>
+            <div className='col border text-center'>{GET_VOLADIZO(ele, vol.dimension_n, antejardin_n)}</div>
+            <div className='col border text-center'>{GET_VOLADIZO(ele, vol.dimension_p, antejardin_p)}</div>
+            <div className='col border text-center'></div>
+        </div>
+    }
+
     return <>
         {LIST}
+        {VOLADIZO('peatonal')}
+        {VOLADIZO('road')}
     </>
+}
+
+function GET_VOLADIZO(ele, value, antejardin) {
+    if (ele == 'peatonal' && value <= 9 && antejardin > 0) return 'No';
+    if (ele == 'peatonal' && value <= 9 && antejardin == 0) return 'No';
+
+    if (ele == 'peatonal' && value > 9 && antejardin > 0) return '0.6';
+    if (ele == 'peatonal' && value > 9 && antejardin == 0) return 'No';
+
+    if (ele == 'road' && value <= 9.6 && antejardin > 0) return '0.6';
+    if (ele == 'road' && value <= 9.6 && antejardin == 0) return 'No';
+
+    if (ele == 'road' && value > 9.6 && value < 16 && antejardin > 0) return '1';
+    if (ele == 'road' && value > 9.6 && value < 16 && antejardin == 0) return '0.6';
+
+    if (ele == 'road' && value >= 16 && value < 21 && antejardin > 0) return '1.2';
+    if (ele == 'road' && value >= 16 && value < 21 && antejardin == 0) return '0.8';
+
+    if (ele == 'road' && value >= 21 && antejardin > 0) return '1.5';
+    if (ele == 'road' && value >= 21 && antejardin == 0) return '1';
+
+    return ''
 }

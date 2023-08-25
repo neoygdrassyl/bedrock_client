@@ -207,3 +207,13 @@ export const SUBMIT_ARC_AMENAZA = [
   'Zona de Inundacion',
   'Zona Sismica',
 ]
+
+export const EJES = [
+  'Eje Cra. 33',
+  'Eje Cra. 27',
+  'Eje Cra./Dig. 15',
+  'Eje la Rosita',
+  'Boul Bolivar/Sder',
+  'Demas Zona',
+  'Autop Florida',
+]
