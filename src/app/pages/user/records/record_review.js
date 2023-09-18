@@ -1000,6 +1000,16 @@ class RECORD_REVIEW extends Component {
                         </div>
                     </div>
                 </div>
+
+                <div className="row my-3">
+                    <div className="col d-flex justify-content-center">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="record_eng_diagnostic" />
+                            <label class="form-check-label" for="exampleCheck1">Diagnostico NSR-10</label>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="row my-3 text-center">
                     <div className="col">
                         <button className="btn btn-danger me-1 btn-sm" onClick={() => creae_pdf()}> <i class="far fa-file-pdf"></i> DESCARGAR ACTA</button>
@@ -1557,6 +1567,9 @@ class RECORD_REVIEW extends Component {
             formData.set('r_check_c_eng', r_check_c_eng);
             let r_check_2_c_eng = document.getElementById("record_pdf_check_2_c_eng").value;
             formData.set('r_check_2_c_eng', r_check_2_c_eng);
+
+            let r_eng_diagnostic = document.getElementById("record_eng_diagnostic").checked;
+            formData.set('r_eng_diagnostic', r_eng_diagnostic);
 
             MySwal.fire({
                 title: swaMsg.title_wait,

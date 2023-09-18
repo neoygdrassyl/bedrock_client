@@ -303,6 +303,7 @@ export default function NORM_GENERAL(props) {
                             <i class="fas fa-home"></i>
                         </span>
                         <select class="form-select" id="norm_eje" defaultValue={item.eje}>
+                        <option>NO APLICA</option>
                             {EJES.map(eje => <option>{eje}</option>)}
                         </select>
                     </div>
