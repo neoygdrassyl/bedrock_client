@@ -281,7 +281,7 @@ export default function NORM_PERFIL(props) {
                 <div className="col">
                     <label>Codigo</label>
                     <div class="input-group my-1">
-                        <input type="text" class="form-control" defaultValue={editItem ? editItem.code : ""} id={"perfil_code" + edit} />
+                        <input type="number" min={1} max={200} step={1} class="form-control" defaultValue={editItem ? editItem.code : ""} id={"perfil_code" + edit} />
                     </div>
                 </div>
                 <div className="col">

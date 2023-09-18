@@ -117,7 +117,7 @@ export default function NORM_RESUME(props) {
         let formData = new FormData();
 
         formData.set('id', id);
-        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.sector == item_general.sector && ficha.subsector == item_general.subsector)
+        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.ficha == item_general.zon_norm && ficha.sector == item_general.sector && ficha.subsector == item_general.subsector)
         if (!FICHA) FICHA = {}
 
         formData.set('ficha', JSON.stringify(FICHA));
@@ -255,6 +255,10 @@ export default function NORM_RESUME(props) {
             <div className='col border'>SUJETO A COMPENSACIÓN POR ESP PUB ART 192</div>
             <div className='col border'>{items_predios.some((predio) => predio.art_192) ? 'APLICA' : 'NO APLICA'}</div>
         </div>
+        <div className='row m-1'>
+            <div className='col border'>EJE DEL PREDIO</div>
+            <div className='col border'>{item_general.eje}</div>
+        </div>
     </>
 
     const R_3_USES = <>
@@ -335,7 +339,7 @@ export default function NORM_RESUME(props) {
     </>
 
     const R_4_EDIF = () => {
-        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.sector == item_general.sector && ficha.subsector == item_general.subsector)
+        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.ficha == item_general.zon_norm && ficha.sector == item_general.sector && ficha.subsector == item_general.subsector)
         if (!FICHA) FICHA = {}
         return <>
             <div className='bg-dark p-2 m-1 row text-light'>
@@ -370,7 +374,7 @@ export default function NORM_RESUME(props) {
                 <div className='col border'>{isNaN(FICHA.height) ? FICHA.height : Number(FICHA.height).toFixed(2)}</div>
             </div>
             <div className='row m-1'>
-                <div className='col border'>TIPOLOGÍA EDIFICADORA</div>
+                <div className='col border'>TIPOLOGÍA EDIFICATORIA</div>
                 <div className='col border'>{FICHA.tipology}</div>
             </div>
             <div className='row m-1'>
