@@ -245,11 +245,11 @@ export default function NORM_RESUME(props) {
         </div>
         <div className='row m-1'>
             <div className='col border'>BIEN DE INTERÉS CULTURAL (BIC)</div>
-            <div className='col border'>{items_predios.some((predio) => predio.bic_pred) ? 'APLICA' : 'NO APLICA'}</div>
+            <div className='col border'>{items_predios.filter(pred => pred.bic_pred != "NO").map(pred => pred.bic_pred).join(', ') || 'NO'}</div>
         </div>
         <div className='row m-1'>
             <div className='col border'>ÁREA DE INFLUENCIA DE BIC</div>
-            <div className='col border'>{items_predios.reduce((sum, next) => sum += Number(next.bic_area), 0)} m2</div>
+            <div className='col border'>{items_predios.some((predio) => predio.bic_area) ? 'APLICA' : 'NO APLICA'}</div>
         </div>
         <div className='row m-1'>
             <div className='col border'>SUJETO A COMPENSACIÓN POR ESP PUB ART 192</div>
