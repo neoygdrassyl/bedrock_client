@@ -4,6 +4,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import DataTable from 'react-data-table-component';
+import BICS from "./BICS.json"
 
 const MySwal = withReactContent(Swal);
 export default function NORM_PREDIOS(props) {
@@ -340,8 +341,8 @@ export default function NORM_PREDIOS(props) {
                     <label>BIC</label>
                     <div class="input-group my-1">
                         <select class="form-select" defaultValue={editItem ? editItem.bic_pred : ""} id={"norm_bic_pred" + edit}>
-                            <option value={0}>NO</option>
-                            <option value={1}>SI</option>
+                            <option>NO</option>
+                            {BICS.map( bic => <option>{bic.name}</option>)}
                         </select>
                     </div>
                 </div>
