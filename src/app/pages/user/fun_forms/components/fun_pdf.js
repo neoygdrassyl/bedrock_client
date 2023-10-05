@@ -168,9 +168,9 @@ class FUN_PDF extends Component {
             icon: 'info',
             showConfirmButton: false,
         });
-        var formUrl
-        if (model == '2021') formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
-        if (model >= '2022') formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
+        var formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
+        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
+        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
         //if (model == '2023') formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);

@@ -199,11 +199,11 @@ class EXP_1 extends Component {
 
         let _GET_EXP_VAR_AREA = () => {
             let _areas = _GET_EXP_AREAS();
-            let sum = 0;
+            let sum = 0.0;
             _areas.map(area => {
                 if (area.payment == 0) sum += Number(area.area)
-            })
-            return Math.round(sum).toFixed(2)
+            }) 
+            return (sum).toFixed(2)
         }
         let _GET_EXPENSES = (area) => {
             var rule = formsParser1(_GET_CHILD_1());

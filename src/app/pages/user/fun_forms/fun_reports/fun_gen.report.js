@@ -37,6 +37,7 @@ export default function FUN_REPORT_GEN(props) {
 
     var [localData, setDataLocal] = useState([]);
     var [dataContraloria, setDataCon] = useState([]);
+    var [dataContraloria2, setDataCon2] = useState([]);
     var [dataCamacol, setDataCam] = useState([]);
     var [dataDane, setDataDan] = useState([]);
     var [dataPlaneacion, setDataPlan] = useState([]);
@@ -92,7 +93,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.clock_payment },  //  Fecha Solicitud
             { value: formsParser1(_CHILD_1, true) }, //  Tipo Solicitud
             { value: _JOIN_FIELDS(v, ['names51',], true) }, // Nombre Propietario
-            { value: _JOIN_FIELDS(v, ['surnames51',], true) }, // "Apellidos Propietario
+            { value: _JOIN_FIELDS(v, ['surnames51',], true) }, // Apellidos Propietario
             { value: v.matricula }, // Matricula No
             { value: (v.direccion ?? '').toUpperCase() }, // Dirección Predio
             { value: v.clock_license }, // Fecha Licencia
@@ -983,6 +984,59 @@ export default function FUN_REPORT_GEN(props) {
         ]
     };
 
+    const header_9 = [
+        "No Licencia",
+        "Clase Y Modalidad De La Licencia",
+        "Fecha De Solicitud",
+        "Beneficiario",
+        "Direccion",
+        "Matricula Inmobiliaria",
+        "Fecha De Expedicion",
+        "Valor Expensas",
+        "Metraje",
+        "Tipo De Estampilla", // Departamental
+        "Nombre De La Estampilla", // PRO-UIS
+        "Valor Pagado estampilla",
+        "Fecha De Pago estampilla",
+        "Mecanismo De Entrega De Cesiones", // ""
+    ];
+
+    let report_data_9 = (v) => {
+        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
+        let isPH = regexChecker_isPh(_CHILD_1, true);
+        let taxes = getJSONFull(v.taxes);
+        var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0): 0;
+        var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0): 0;
+
+        var rule = formsParser1(_CHILD_1);
+        var subrule = formsParser1(_CHILD_1);
+        var use = _FUN_6_PARSER(_CHILD_1.usos, true);
+        var st = v.estrato - 1
+        var Q = taxes.id_payment_0_area || false;
+        var year = moment(v.pay_date).format('YYYY')
+
+        var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
+
+        let expenses_total = Number(taxes.id_payment_1_real || cv_charge ) + Number(taxes.id_payment_0_real || expenses.cf)
+        let metraje = Number(taxes.id_payment_0_area || 0) + Number(cv_area)
+        return [
+            { value: isPH ? v.id_public_ph : v.id_public }, // No Licencia
+            { value: formsParser1(_CHILD_1, true) }, // Clase Y Modalidad De La Licencia
+            { value: v.clock_payment }, // Fecha De Solicitud
+            { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // Beneficiario
+            { value: (v.direccion ?? '').toUpperCase() }, // Direccion
+            { value: v.matricula  }, // Matricula Inmobiliaria
+            { value: v.clock_license }, // Fecha De Expedicion
+            { value: expenses_total.toFixed(0) }, // Valor Expensas
+            { value: metraje.toFixed(2) }, // Metraje
+            { value: "Departamental" }, // Tipo De Estampilla
+            { value: "PRO-UIS" }, // Nombre De La Estampilla
+            { value: taxes.uis }, // Valor Pagado estampilla
+            { value: v.clock_payment_uis }, // Fecha De Pago estampilla
+            { value: "" }, // Mecanismo De Entrega De Cesiones
+        ]
+    };
+
     useEffect(() => {
         if (load == 0) _GET_DATA();
         if (load == 0) _GET_DATA_MONEY();
@@ -1038,6 +1092,7 @@ export default function FUN_REPORT_GEN(props) {
     }
     let _SET_DATA_CONTRALORIA = (_data) => {
         var dataCon = [];
+        var dataCon2 = [];
         var dataCam = [];
         var dataDan = [];
         var dataPlan = [];
@@ -1054,10 +1109,11 @@ export default function FUN_REPORT_GEN(props) {
             //dataMon.push(report_data_6(v));
             if (cons_7(v)) dataCmdb.push(report_data_7(v));
             dataPlan2.push(report_data_8(v));
-
+            dataCon2.push(report_data_9(v));
         })
 
         setDataCon(dataCon);
+        setDataCon2(dataCon2);
         setDataCam(dataCam);
         setDataDan(dataDan);
         setDataPlan(dataPlan);
@@ -1277,6 +1333,7 @@ export default function FUN_REPORT_GEN(props) {
                     {_LIST_FINISH()}
                 </div>
             </div>
+
             <div className='row my-2'>
                 <div className='col'>
                     <label className='fw-bold'>DATOS CONTRALORIA - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_1, dataContraloria, 'CONTRALORIA')}>
@@ -1286,6 +1343,17 @@ export default function FUN_REPORT_GEN(props) {
             </div>
             {preview['pre_0'] ? <div className='row container-sh'>
                 <Spreadsheet data={dataContraloria} columnLabels={header_1} />
+            </div> : ''}
+
+            <div className='row my-2'>
+                <div className='col'>
+                    <label className='fw-bold'>DATOS CONTRAELORIA DEPARTAMENTAL - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_9, dataContraloria2, 'CONTRALORIA DEPARTAMENTAL')}>
+                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_8']} onClick={() => setPre({ ['pre_8']: !preview['pre_8'] })} >
+                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                </div>
+            </div>
+            {preview['pre_8'] ? <div className='row container-sh'>
+                <Spreadsheet data={dataContraloria2} columnLabels={header_9} />
             </div> : ''}
 
             <div className='row my-2'>

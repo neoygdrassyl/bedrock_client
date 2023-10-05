@@ -191,6 +191,14 @@ class RECORD_PH_REVIEW extends Component {
             value = value.split(';');
             return value
         }
+        let _GET_STEP_TYPE_JSON = (_id_public) => {
+            var STEP = LOAD_STEP(_id_public);
+            if (!STEP.id) return {};
+            var value = STEP['json']
+            if (!value) return {};
+            value = getJSONFull(value);
+            return value
+        }
         function capitalize(s) {
             return s && s[0].toUpperCase() + s.slice(1);
         }
@@ -199,7 +207,7 @@ class RECORD_PH_REVIEW extends Component {
             return <>
                 <div className='row mx-5 my-3 text-start'>
                     <strong>TIPO DE NOTIFICACIÓN</strong>
-    
+
                     <div className="col-4">
                         <select className='form-select' id="type_not">
                             <option value="0">NO USAR</option>
@@ -302,17 +310,19 @@ class RECORD_PH_REVIEW extends Component {
                 let _context = _GET_STEP_TYPE(re.pid + '_c', 'value');
 
                 _check2.shift();
-               
-                if(_check2.includes('0')){
-                    if(_value[0] != 'false' )_RESUME += ` - ${_value[0]}\n`
-                    _check.map((c, i) =>{{
-                        if(c == 0 && _context[i] && i != 0){
-                            _RESUME += `${nomen}. ${_context[i]}\n`;
-                            nomen++;
+
+                if (_check2.includes('0')) {
+                    if (_value[0] != 'false') _RESUME += ` - ${_value[0]}\n`
+                    _check.map((c, i) => {
+                        {
+                            if (c == 0 && _context[i] && i != 0) {
+                                _RESUME += `${nomen}. ${_context[i]}\n`;
+                                nomen++;
+                            }
                         }
-                    }})
+                    })
                     _RESUME += `\n`
-                }               
+                }
             })
 
             return <>
@@ -980,8 +990,209 @@ class RECORD_PH_REVIEW extends Component {
             if (details) _RESUME.push(`- Observaciones: \n${details}`)
             if (_RESUME) _RESUME = _RESUME.join('\n\n')
 
-            checks = _GET_STEP_TYPE('phcl', 'check');
 
+            if (_GLOBAL_ID === 'cb1') {
+                checks = _GET_STEP_TYPE('phcl', 'check');
+            } else {
+                if (_CHILD.detail) _RESUME.push(`- Observaciones y conclusiones: \n${_CHILD.detail}`)
+                if (_RESUME) _RESUME = _RESUME.join('\n\n')
+
+                checks = [];
+
+                let partialChecks = _GET_STEP_TYPE('rar_1', 'check', 'record_arc_steps'); // Rótulo
+                checks.push(partialChecks[1]); // 0
+                checks.push(partialChecks[2]); // 1
+                checks.push(partialChecks[3]); // 2
+                checks.push(partialChecks[4]); // 3
+
+                let partialValue = _GET_STEP_TYPE('rar_1', 'value');
+                let partialNotes = _GET_STEP_TYPE('rar_1_c', 'value')
+                let has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+
+                partialChecks = _GET_STEP_TYPE('rar_2', 'check', 'record_arc_steps'); // Características del predio
+                checks.push(partialChecks[1]); // 4
+                checks.push(partialChecks[2]); // 5
+                checks.push(partialChecks[3]); // 6
+                checks.push(partialChecks[4]); // 7
+                checks.push(partialChecks[5]); // 8
+
+                partialValue = _GET_STEP_TYPE('rar_2', 'value');
+                partialNotes = _GET_STEP_TYPE('rar_2_c', 'value')
+                has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+                partialChecks = _GET_STEP_TYPE('rar_3', 'check', 'record_arc_steps'); // Cuadro de áreas
+                checks.push(partialChecks[1]); // 9
+
+                partialValue = _GET_STEP_TYPE('rar_3', 'value');
+                partialNotes = _GET_STEP_TYPE('rar_3_c', 'value')
+                has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+                partialChecks = _GET_STEP_TYPE('rar_4', 'check', 'record_arc_steps'); // Plantas arquitectónicas por piso, sótano o semisótano cubiertas
+                checks.push(partialChecks[1]); // 10
+                checks.push(partialChecks[2]); // 11
+                checks.push(partialChecks[3]); // 12
+                checks.push(partialChecks[4]); // 13
+                checks.push(partialChecks[5]); // 14
+                checks.push(partialChecks[6]); // 15
+
+                partialValue = _GET_STEP_TYPE('rar_4', 'value');
+                partialNotes = _GET_STEP_TYPE('rar_4_c', 'value')
+                has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+
+                partialChecks = _GET_STEP_TYPE('rar_5', 'check', 'record_arc_steps'); // Cortes
+                checks.push(partialChecks[1]); // 16
+                checks.push(partialChecks[2]); // 17
+                checks.push(partialChecks[3]); // 18
+                checks.push(partialChecks[4]); // 19
+                checks.push(partialChecks[5]); // 20
+
+                partialValue = _GET_STEP_TYPE('rar_5', 'value');
+                partialNotes = _GET_STEP_TYPE('rar_5_c', 'value')
+                has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+                partialChecks = _GET_STEP_TYPE('rar_6', 'check', 'record_arc_steps'); // Fachadas
+                checks.push(partialChecks[1]); // 21
+                checks.push(partialChecks[2]); // 22
+                checks.push(partialChecks[3]); // 23
+
+                partialValue = _GET_STEP_TYPE('rar_6', 'value');
+                partialNotes = _GET_STEP_TYPE('rar_6_c', 'value')
+                has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+
+                partialChecks = _GET_STEP_TYPE('rar_7', 'check', 'record_arc_steps');
+                checks.push(partialChecks[1]); // 24
+
+                partialValue = _GET_STEP_TYPE('rar_7', 'value');
+                partialNotes = _GET_STEP_TYPE('rar_7_c', 'value')
+                has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+
+
+                partialChecks = _GET_STEP_TYPE('rar_8', 'check', 'record_arc_steps');
+                checks.push(partialChecks[1]); // 25
+
+                partialValue = _GET_STEP_TYPE('rar_8', 'value');
+                partialNotes = _GET_STEP_TYPE('rar_8_c', 'value')
+                has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+
+
+                partialChecks = _GET_STEP_TYPE('rar_5', 'check', 'record_arc_steps');
+                checks.push(partialChecks[7]); // 26
+
+                partialValue = _GET_STEP_TYPE('rar_5', 'value');
+                partialNotes = _GET_STEP_TYPE('rar_5_c', 'value')
+                has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+
+
+                partialChecks = _GET_STEP_TYPE('rar_0', 'check', 'record_arc_steps');
+                checks.push(partialChecks[1]); // 27
+
+                partialValue = _GET_STEP_TYPE('rar_0', 'value');
+                partialNotes = _GET_STEP_TYPE('rar_0_c', 'value')
+                has_note = partialNotes.some((n, i) => i > 0 && n)
+                if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                if (has_note) _RESUME += '\n'
+
+                partialChecks = _GET_STEP_TYPE('rar_9', 'check');
+                if (partialChecks) {
+                    partialValue = _GET_STEP_TYPE('rar_9', 'value');
+                    partialNotes = _GET_STEP_TYPE('rar_9_c', 'value')
+                    checks.push(partialChecks[1]);
+                    has_note = partialNotes.some((n, i) => i > 0 && n)
+                    if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                    partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                    if (has_note) _RESUME += '\n'
+                }
+
+                partialChecks = _GET_STEP_TYPE('rar_10', 'check');
+                if (partialChecks) {
+                    partialValue = _GET_STEP_TYPE('rar_10', 'value');
+                    partialNotes = _GET_STEP_TYPE('rar_10_c', 'value')
+                    checks.push(partialChecks[1]);
+                    has_note = partialNotes.some((n, i) => i > 0 && n)
+                    if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                    partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                    if (has_note) _RESUME += '\n'
+                }
+
+                partialChecks = _GET_STEP_TYPE('rar_11', 'check');
+                if (partialChecks) {
+                    partialValue = _GET_STEP_TYPE('rar_11', 'value');
+                    partialNotes = _GET_STEP_TYPE('rar_11_c', 'value')
+                    checks.push(partialChecks[1]);
+                    has_note = partialNotes.some((n, i) => i > 0 && n)
+                    if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                    partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                    if (has_note) _RESUME += '\n'
+                }
+
+                partialChecks = _GET_STEP_TYPE('rar_12', 'check');
+                if (partialChecks) {
+                    partialValue = _GET_STEP_TYPE('rar_12', 'value');
+                    partialNotes = _GET_STEP_TYPE('rar_12_c', 'value')
+                    checks.push(partialChecks[1]);
+                    has_note = partialNotes.some((n, i) => i > 0 && n)
+                    if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                    partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                    if (has_note) _RESUME += '\n'
+                }
+
+                partialChecks = _GET_STEP_TYPE('rar_13', 'check');
+                if (partialChecks) {
+                    partialValue = _GET_STEP_TYPE('rar_13', 'value');
+                    partialNotes = _GET_STEP_TYPE('rar_13_c', 'value')
+                    checks.push(partialChecks[1]);
+                    has_note = partialNotes.some((n, i) => i > 0 && n)
+                    if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                    partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                    if (has_note) _RESUME += '\n'
+                }
+
+                partialChecks = _GET_STEP_TYPE('rar_14', 'check');
+                if (partialChecks) {
+                    partialValue = _GET_STEP_TYPE('rar_14', 'value');
+                    partialNotes = _GET_STEP_TYPE('rar_14_c', 'value')
+                    checks.push(partialChecks[1]);
+                    has_note = partialNotes.some((n, i) => i > 0 && n)
+                    if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
+                    partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
+                    if (has_note) _RESUME += '\n'
+                }
+
+            }
 
             let _city = document.getElementById('func_pdf_0_2').value;
             let _number = document.getElementById('func_pdf_0_1').value;
@@ -1015,8 +1226,8 @@ class RECORD_PH_REVIEW extends Component {
 
             save_step('phnd', false, formData);
 
-           
-            if(document.getElementById('review_ph_detail_area')){
+
+            if (document.getElementById('review_ph_detail_area')) {
                 formData = new FormData();
                 let area = document.getElementById('review_ph_detail_area').value;
                 let history = document.getElementById('review_ph_detail_beofre').value;
@@ -1029,10 +1240,10 @@ class RECORD_PH_REVIEW extends Component {
                 formData.set('version', currentVersionR);
                 formData.set('recordPhId', currentRecord.id);
                 formData.set('id_public', 'ph_details');
-    
+
                 save_step('ph_details', false, formData);
             }
-           
+
         }
 
         let save_step = (_id_public, useSwal, formData, start, end) => {
@@ -1233,7 +1444,7 @@ class RECORD_PH_REVIEW extends Component {
                         {_COMPONENT_DETAILS_3()}
                         {_GLOBAL_ID == 'cp1' ? _COMPONENT_DETAILS_5() : ''}
                         {_COMPONENT_DETAILS_2()}
-                        
+
 
                         <label className="app-p lead fw-bold my-2">3.2 CONFIGURACION RESOLUCIÓN</label>
                         {_COMPONENT_CONFIG()}
