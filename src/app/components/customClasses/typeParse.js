@@ -100,7 +100,7 @@ export const SERIES_MODULES_RELATION = {
 
     //'1100-70': [''],
 
-    '1100-190': ['1:A', '1:B', '1:C', '1:D', '1:E',],
+    '1100-190': ['1:A', '1:B', '1:C', '1:D', '1:E', '1:D,1:G,2:OA'],
 
     '1100-200': ['1:G,2:C'],
 
@@ -163,6 +163,7 @@ export const SUBSERIES_MODULES_RELATION = {
     '1100-190.36': ['1:D', '5:B', '5:D', '5:F', '5:g'],
     '1100-190.37': ['1:D', '5:B', '5:D', '5:g'],
     '1100-190.38': ['1:D', '5:B', '5:C', '5:D', '5:F', '5:g'],
+    '1100-190.39': ['1:D', '1:G', '2:OA', '2:PH' ],
 
     '1100-250.01': ['1:G', '2:B'],
     '1100-250.02': ['1:G', '2:D'],
@@ -210,7 +211,7 @@ export const VR_DOCUMENTS_OF_INTEREST = {
     ],
     'law2': ',511,512,513,514,516,517,518,519,520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,601,602,621,622,623,624,625,626,627,630,631,632,633,634,635,636,641,642,643,651,652,653,671,672,680,681,682,683,685,685,686,6862,688,689,6609,6610,6611,6612,6613,6617,',
     'arc': ['687', '907', '909', '916', '917', '6603', '6614',],
-    'eng': ['660a', '660b', '660c', '660d', '660e', '6601', '6602', '6604', '6605', '6607', '6608', '6615', '6616', '6618', '6619'],
+    'eng': ['660a', '660b', '660c', '660d', '660e', '6601', '6602', '6604', '6605', '6607', '6608', '6615', '6616', '6618', '6619', '686'],
 }
 
 export function formsParser1(object) {
@@ -417,6 +418,8 @@ export function regexChecker_isPh(input, parser) {
 export function regexChecker_isOA(input) {
     let modalidad = input.tramite;
     let tipo = input.tipo;
+    if (!modalidad) modalidad = input.item_2;
+    if (!tipo) tipo = input.item_1;
     if (!modalidad) return false;
     if (!tipo) tipo = "";
     if (modalidad == 'B' || modalidad == 'D' || tipo.includes('G')) return true;
@@ -621,6 +624,7 @@ export function _IDENTIFY_SERIES(_CHILD_1, select = [1, 1, 1, 1, 1], isOA) {
         if (REGEX_MATCH_1100_40_06(_CHILD.item_2) && isOA) _CONDITONS.push('2:BIENES');
         if (REGEX_MATCH_1100_40_07(_CHILD.item_2) && isOA) _CONDITONS.push('2:ESTRUCTURAL');
         if (REGEX_MATCH_1100_250(_CHILD.item_2)) _CONDITONS.push('2:PRORROGA');
+
     }
     if (select[2]) {
         if (_CHILD.item_3 == 'A') _CONDITONS.push('3:A');

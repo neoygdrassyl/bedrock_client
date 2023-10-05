@@ -97,7 +97,20 @@ class RECORD_LAW_PDF extends Component {
             icon: 'info',
             showConfirmButton: false,
         });
+
+        let model = this.props.currentItem.model
+        if (!model) return MySwal.fire({
+            title: 'SOLICITUD SIN MODELO',
+            text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
+            icon: 'error',
+            showConfirmButton: true,
+            confirmButtonText: 'CONTINUAR',
+        });
+
         var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordlawextra";
+        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordlawextra";
+        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordlawextra2022";
+
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
@@ -116,13 +129,26 @@ class RECORD_LAW_PDF extends Component {
         let _number = _headers.number;
         let pageCount = pdfDoc.getPageCount();
         for (let i = 0; i < pageCount; i++) {
-            page = pdfDoc.getPage(i);
-            page.moveTo(215, 783)
-            page.drawText(_number, { size: 14 })
-            page.moveTo(100, 770)
-            page.drawText(_city, { size: 9 })
-            page.moveTo(420, 830)
-            page.drawText(id_public, { size: 14 })
+            if (Number(model) == 2021 || i > 0){
+                page = pdfDoc.getPage(i);
+                page.moveTo(215, 783)
+                page.drawText(_number, { size: 14 })
+                page.moveTo(100, 770)
+                page.drawText(_city, { size: 9 })
+                page.moveTo(420, 830)
+                page.drawText(id_public, { size: 14 })
+            } 
+
+            // THIS IS DONE BECAUSE THE SIZE OF THE PAGES ARE DIFERENT, ONE IS LETTER, OTHER IS LEGAL
+            if (Number(model) >= 2022 && i == 0) {
+                page = pdfDoc.getPage(i);
+                page.moveTo(200, 783 - 150)
+                page.drawText(_number, { size: 14 })
+                page.moveTo(100, 770 - 150)
+                page.drawText(_city, { size: 9 })
+                page.moveTo(450, 830 - 165)
+                page.drawText(id_public, { size: 14 })
+            }
         }
 
         handleLAWhCheck(pdfDoc, page, chekcs, _detail, 0, 1)
@@ -240,7 +266,7 @@ class RECORD_LAW_PDF extends Component {
                 });
         }
         let _CHILD = _GET_CHILD_REVIEW();
-        let _WORKER_NAME =  currentRecord.worker_name;
+        let _WORKER_NAME = currentRecord.worker_name;
         let _RR = _GET_RECORD_REVIEW();
 
         let _REVIEWS = _GET_CLOCK_STATE_VERSION(11, 200).resolver_context ? _GET_CLOCK_STATE_VERSION(11, 200).resolver_context.split(';') : [];
@@ -304,43 +330,85 @@ class RECORD_LAW_PDF extends Component {
             _code = _code.split(',');
             _check = _check.split(',');
             let index = null;
-            // 6.1
-            index = _code.indexOf('511');
-            checks.push({ index: _check[index], Y: 682, offset: [0, 0, -4] })
 
-            index = _code.indexOf('518');
-            checks.push({ index: _check[index], Y: 646 })
+            let model = currentItem.model
+            if (Number(model) == 2021) {
+                // 6.1
+                index = _code.indexOf('511');
+                checks.push({ index: _check[index], Y: 682, offset: [0, 0, -4] })
 
-            index = _code.indexOf('513');
-            checks.push({ index: _check[index], Y: 597, offset: [0, 0, -4] })
+                index = _code.indexOf('518');
+                checks.push({ index: _check[index], Y: 646 })
 
-            index = _code.indexOf('512');
-            checks.push({ index: _check[index], Y: 547 })
+                index = _code.indexOf('513');
+                checks.push({ index: _check[index], Y: 597, offset: [0, 0, -4] })
 
-            index = _code.indexOf('517');
-            checks.push({ index: _check[index], Y: 506 })
+                index = _code.indexOf('512');
+                checks.push({ index: _check[index], Y: 547 })
 
-            index = _code.indexOf('6610');
-            checks.push({ index: _check[index], Y: 456 })
+                index = _code.indexOf('517');
+                checks.push({ index: _check[index], Y: 506 })
 
-            index = _code.indexOf('516');
-            checks.push({ index: _check[index], Y: 394 })
+                index = _code.indexOf('6610');
+                checks.push({ index: _check[index], Y: 456 })
 
-            index = _code.indexOf('6614');
-            checks.push({ index: _check[index], Y: 344 })
+                index = _code.indexOf('516');
+                checks.push({ index: _check[index], Y: 394 })
 
-            index = _code.indexOf('6609');
-            checks.push({ index: _check[index], Y: 303 })
+                index = _code.indexOf('6614');
+                checks.push({ index: _check[index], Y: 344 })
 
-            var indexS = [_code.indexOf('624'), _code.indexOf('636'), _code.indexOf('653'), _code.indexOf('683')];
-            index = -1;
-            for (let i = 0; i < indexS.length; i++) {
-                const currentIndex = indexS[i];
-                if (currentIndex > -1) { index = currentIndex; break; }
+                index = _code.indexOf('6609');
+                checks.push({ index: _check[index], Y: 303 })
+
+                var indexS = [_code.indexOf('624'), _code.indexOf('636'), _code.indexOf('653'), _code.indexOf('683')];
+                index = -1;
+                for (let i = 0; i < indexS.length; i++) {
+                    const currentIndex = indexS[i];
+                    if (currentIndex > -1) { index = currentIndex; break; }
+                }
+                checks.push({ index: _check[index], Y: 266 })
             }
-            checks.push({ index: _check[index], Y: 266 })
+            if (Number(model) >= 2022) {
+                let _offset =  [-8, -1, 7]
+                index = _code.indexOf('511');
+                checks.push({ index: _check[index], Y: 542, offset: _offset})
 
+                index = _code.indexOf('518');
+                checks.push({ index: _check[index], Y: 506, offset: _offset })
 
+                index = _code.indexOf('513');
+                checks.push({ index: _check[index], Y: 463, offset: _offset })
+
+                index = _code.indexOf('512');
+                checks.push({ index: _check[index], Y: 416, offset: _offset })
+
+                index = _code.indexOf('517');
+                checks.push({ index: _check[index], Y: 369, offset: _offset })
+
+                index = _code.indexOf('6610');
+                checks.push({ index: _check[index], Y: 311, offset: _offset })
+
+                index = _code.indexOf('516');
+                checks.push({ index: _check[index], Y: 259, offset: _offset })
+
+                index = _code.indexOf('6614');
+                checks.push({ index: _check[index], Y: 257, offset: _offset })
+
+                index = _code.indexOf('6609');
+                checks.push({ index: _check[index], Y: 219, offset: _offset })
+
+                index = _code.indexOf('6609');
+                checks.push({ index: _check[index], Y: 183, offset: _offset })
+
+                var indexS = [_code.indexOf('624'), _code.indexOf('636'), _code.indexOf('653'), _code.indexOf('683')];
+                index = -1;
+                for (let i = 0; i < indexS.length; i++) {
+                    const currentIndex = indexS[i];
+                    if (currentIndex > -1) { index = currentIndex; break; }
+                }
+                checks.push({ index: _check[index], Y: 148, offset: _offset })
+            }
 
             let _city = document.getElementById('func_pdf_0_2').value;
             let _number = document.getElementById('func_pdf_0_1').value;

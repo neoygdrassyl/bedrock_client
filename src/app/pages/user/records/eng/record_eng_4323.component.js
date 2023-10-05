@@ -379,7 +379,7 @@ class RECORD_ENG_STEP_4323 extends Component {
             let j66 = _GET_STEP_TYPE_INDEX('s4313', 'value', 20) ?? 0;
 
             let op = 0.1 * j60 * j66 / (e60 * e66);
-
+            console.log(op)
             op = Number(op).toFixed(3)
             if (document.getElementById('j183')) document.getElementById('j183').value = op
         }
@@ -400,7 +400,7 @@ class RECORD_ENG_STEP_4323 extends Component {
             let j66 = _GET_STEP_TYPE_INDEX('s4313', 'value', 20) ?? 0;
 
             let op = 0.48 * (j60 * j66) / (e66 * e60);
-
+           
             op = Number(op).toFixed(3)
             if (document.getElementById('j186')) document.getElementById('j186').value = op
         }
