@@ -1,0 +1,198 @@
+[
+    {
+        "id": 1,
+        "name": "Capilla de los Dolores",
+        "dir": "Carrera 10 No 35 - PAR",
+        "law": "Decreto 22 10 21-VII-1954",
+        "type": "Nacional"
+    },
+    {
+        "id": 2,
+        "name": "Casa Bolívar",
+        "dir": "Calle 37 No 12-15",
+        "law": "Resolución 16 13 26-XI-1999",
+        "type": "Nacional"
+    },
+    {
+        "id": 3,
+        "name": "Casa en donde nació el General Custodio García Rovira",
+        "dir": "Calle 35 No 8-44, 68, 78",
+        "law": "Ley 48 1-IX-1966",
+        "type": "Nacional"
+    },
+    {
+        "id": 4,
+        "name": "Edificio del Antiguo Colegio de Nuestra Señora del Pilar",
+        "dir": "Carreras 19 y 20, Calles 31 y 32",
+        "law": "Decreto 1910 2-XI-1995",
+        "type": "Nacional"
+    },
+    {
+        "id": 5,
+        "name": "Coliseo Peralta",
+        "dir": "Carrera 12 41-70 41-80, Calle 42 11-65 11-75 11-85",
+        "law": "Decreto 292 24-II-1975",
+        "type": "Nacional"
+    },
+    {
+        "id": 6,
+        "name": "Estación del Ferrocarril Café Madrid",
+        "dir": "Inspección Departamental Estación Madrid",
+        "law": "Decreto 746 24-IV-1996",
+        "type": "Nacional"
+    },
+    {
+        "id": 7,
+        "name": "Iglesia de San Laureano",
+        "dir": "Carrera 12 No 36-08 Despacho Parroquial",
+        "law": "Resolución 000015 de enero 04 de 2010",
+        "type": "Departamental"
+    },
+    {
+        "id": 8,
+        "name": "Casa donde nació Luis Galán Sarmiento",
+        "dir": "Calle 36 No 24-82",
+        "law": "Resolución 08541 de julio de 17 de 2009",
+        "type": "Departamental"
+    },
+    {
+        "id": 9,
+        "name": "Edificio del Teatro Santander",
+        "dir": "Calle 33 No 18-60 y Carrera 17 No 33 - 18",
+        "law": "Resolución 0088 del 24 de abril de 2007",
+        "type": "Municipal"
+    },
+    {
+        "id": 10,
+        "name": "Iglesia de San Laureano",
+        "dir": "Carrera 12 36-08",
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 11,
+        "name": "Club del Comercio",
+        "dir": "Carrera 12 36 - 08",
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 12,
+        "name": "Edificio del antiguo Hotel Bucarica",
+        "dir": "Carrera 20 No 35 - 18 /50",
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 13,
+        "name": "Catedral de la Sagrada Familia",
+        "dir": "Calle 36 No 19 - 56",
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 14,
+        "name": "Edificio C.P. Clausen",
+        "dir": "Carrera 14 No 35-05/11/17/23 y Calle 35 No 12 08/06/10/14", 
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 15,
+        "name": "Manzana de la Gobernación de Santander",
+        "dir": "Calle 37 No 10 - 30", 
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 16,
+        "name": "Alcaldía de Bucaramanga",
+        "dir": "Calle 35 No 10 - 37", 
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 17,
+        "name": "Palacio de Justicia",
+        "dir": "Calle 35 No 11 - 45, Carrera 11No 34 - 45", 
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 18,
+        "name": "Universidad Industrial de Santander",
+        "dir": "Calle 9 Carrera 27, Barrio Universidad", 
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 19,
+        "name": "Villa Olimpica",
+        "dir": "Calle 9 a 14, Carrera 29 a 32", 
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 20,
+        "name": "Edificio Armando Puyana sede Administrativa y Auditorio - Universidad Autónoma de Bucaramanga, Campus El Jardín",
+        "dir": "Avenida 42 No 48 - 11", 
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 21,
+        "name": "Complejo militar",
+        "dir": "Calle 14 Carreras 33 a 29", 
+        "law": "Acuerdo 034 de 2000",
+        "type": "Municipal"
+    },
+    {
+        "id": 22,
+        "name": "Edificio del instituto Municipal de Cultura y/o Biblioteca Publica Gabriel Turbay",
+        "dir": "Calle 30 No 26 - 117", 
+        "law": "Resolución No 0490 de 2011",
+        "type": "Municipal"
+    },
+    {
+        "id": 23,
+        "name": "Casa Streithorst",
+        "dir": "Calle 32 No 27 - 28 y Carrera 27 No 32 - 11", 
+        "law": "Resolución No 0491 de 2011",
+        "type": "Municipal"
+    },
+    {
+        "id": 24,
+        "name": "Casa Luis Perú de la Croix",
+        "dir": "Calle 37 No 11 -18", 
+        "law": "Resolución No 0499 de 2011",
+        "type": "Municipal"
+    },
+    {
+        "id": 25,
+        "name": "Fundación Museo de Arte Moderno",
+        "dir": "Calle 37 No 26 -26", 
+        "law": "Resolución No 0757 de 2012",
+        "type": "Municipal"
+    },
+    {
+        "id": 26,
+        "name": "Casa Ambrosío Peña Puyana",
+        "dir": "Carrera 34 No 41 - 51 / Calle 42 No 34 - 13", 
+        "law": "Resolución No 0403 de 2013",
+        "type": "Municipal"
+    },
+    {
+        "id": 27,
+        "name": "Fachada y pórticos de la plaza San Mateo",
+        "dir": "Calle 34 No 16 - 01", 
+        "law": "Resolución No 0434 de 2013",
+        "type": "Municipal"
+    },
+    {
+        "id": 28,
+        "name": "Casa Mario Acevedo Díaz",
+        "dir": "Calle 64 No 28 - 28 / 42", 
+        "law": "Resolución No 0750 de 2013",
+        "type": "Municipal"
+    }
+]
