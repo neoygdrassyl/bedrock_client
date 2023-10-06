@@ -70,19 +70,36 @@ class RECORD_ARC_38 extends Component {
             icon: 'info',
             showConfirmButton: false,
         });
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
-        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
-        var pdfDoc = await PDFDocument.load(formPdfBytes);
 
         const currentItem = _currentItem;
         const id_public = currentItem.id_public;
+
+        let model = currentItem.model
+        if (!model) return MySwal.fire({
+            title: 'SOLICITUD SIN MODELO',
+            text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
+            icon: 'error',
+            showConfirmButton: true,
+            confirmButtonText: 'CONTINUAR',
+        });
+
+        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
+        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
+        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra2022";
+
+       var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var pdfDoc = await PDFDocument.load(formPdfBytes);
+
+        
+
+        
 
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
         page.setFont(helveticaFont)
         // WIDTH = 612, HEIGHT = 936
 
-        handleArchCheck(pdfDoc, page, chekcs, _detail, 0, 1)
+        handleArchCheck(pdfDoc, page, chekcs, _detail, 0, 1, model)
 
 
         let _city = _headers.city;
@@ -90,13 +107,26 @@ class RECORD_ARC_38 extends Component {
         let pageCount = pdfDoc.getPageCount();
 
         for (let i = 0; i < pageCount; i++) {
-            page = pdfDoc.getPage(i);
-            page.moveTo(215, 783)
-            page.drawText(_number, { size: 14 })
-            page.moveTo(100, 770)
-            page.drawText(_city, { size: 9 })
-            page.moveTo(420, 830)
-            page.drawText(id_public, { size: 14 })
+            if (Number(model) == 2021 || i > 0){
+                page = pdfDoc.getPage(i);
+                page.moveTo(215, 783)
+                page.drawText(_number, { size: 14 })
+                page.moveTo(100, 770)
+                page.drawText(_city, { size: 9 })
+                page.moveTo(420, 830)
+                page.drawText(id_public, { size: 14 })
+            } 
+
+            // THIS IS DONE BECAUSE THE SIZE OF THE PAGES ARE DIFERENT, ONE IS LETTER, OTHER IS LEGAL
+            if (Number(model) >= 2022 && i == 0) {
+                page = pdfDoc.getPage(i);
+                page.moveTo(200, 783 - 150)
+                page.drawText(_number, { size: 14 })
+                page.moveTo(100, 770 - 150)
+                page.drawText(_city, { size: 9 })
+                page.moveTo(450, 830 - 165)
+                page.drawText(id_public, { size: 14 })
+            }
         }
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
