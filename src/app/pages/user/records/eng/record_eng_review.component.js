@@ -13,6 +13,7 @@ import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 
 const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 class RECORD_ENG_REVIEW extends Component {
     constructor(props) {
@@ -111,7 +112,7 @@ class RECORD_ENG_REVIEW extends Component {
         value = value.split(';');
         return value
     }
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
+    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers, _date) {
         let swaMsg = this.props.swaMsg;
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -148,6 +149,7 @@ class RECORD_ENG_REVIEW extends Component {
 
 
         let _city = _headers.city;
+        if (_date && _GLOBAL_ID === 'cb1') _city = _headers.city + ", radicado el " + _date;
         let _number = _headers.number;
         let pageCount = pdfDoc.getPageCount();
 
@@ -1348,6 +1350,7 @@ class RECORD_ENG_REVIEW extends Component {
             return <select class="form-select" id="record_version">{_COMPONENT}</select>
         }
         let CREATE_PDF_CHECK = () => {
+            let CLOCK_3 = _GET_CLOCK_STATE(3, 1)
             let _CHILD = _GET_REVIEW();
             let _RESUME = [];
             _RESUME.push(_CHILD.detail_2)
@@ -1363,7 +1366,7 @@ class RECORD_ENG_REVIEW extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, checks, currentItem, headers)
+            this.CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
         }
         return (
             <div className="record_eng_review container">

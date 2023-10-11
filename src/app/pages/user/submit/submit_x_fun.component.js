@@ -331,7 +331,7 @@ class SUBMIT_X_FUN extends Component {
 
             let completed = 0;
             toSubmit.map(code => {
-                if (submited.includes(code) || inChecked.includes(code)) completed++;
+                if (submited.includes(code) || inChecked.includes(code)) completed = completed + 1;
             })
 
             return { completed, toSubmit, inChecked, allCheckedCounter }
@@ -423,7 +423,7 @@ class SUBMIT_X_FUN extends Component {
                 data={incomplete.filter(row => {
                     if (simple) {
                         const { completed, toSubmit, inChecked, allCheckedCounter } = processCodes(row)
-                        return (completed == toSubmit.length && completed != 0)
+                        return (completed >= toSubmit.length && completed != 0)
                     }
                     return true
                 })}
