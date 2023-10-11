@@ -62,7 +62,7 @@ class RECORD_ARC_38 extends Component {
         })
 
     };
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
+    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers, _date) {
         let swaMsg = this.props.swaMsg;
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -87,12 +87,8 @@ class RECORD_ARC_38 extends Component {
         if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
         if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra2022";
 
-       var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
-
-        
-
-        
 
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
@@ -103,11 +99,12 @@ class RECORD_ARC_38 extends Component {
 
 
         let _city = _headers.city;
+        if (_date && _GLOBAL_ID === 'cb1') _city = _headers.city + ", radicado el " + _date;
         let _number = _headers.number;
         let pageCount = pdfDoc.getPageCount();
 
         for (let i = 0; i < pageCount; i++) {
-            if (Number(model) == 2021 || i > 0){
+            if (Number(model) == 2021 || i > 0) {
                 page = pdfDoc.getPage(i);
                 page.moveTo(215, 783)
                 page.drawText(_number, { size: 14 })
@@ -115,7 +112,7 @@ class RECORD_ARC_38 extends Component {
                 page.drawText(_city, { size: 9 })
                 page.moveTo(420, 830)
                 page.drawText(id_public, { size: 14 })
-            } 
+            }
 
             // THIS IS DONE BECAUSE THE SIZE OF THE PAGES ARE DIFERENT, ONE IS LETTER, OTHER IS LEGAL
             if (Number(model) >= 2022 && i == 0) {
@@ -646,7 +643,7 @@ class RECORD_ARC_38 extends Component {
                                     : ""
                                 }
                                 {(ireview != null) && allowReview ?
-                                //false ?
+                                    //false ?
                                     <RECORD_DOCUMENT_VERSION
                                         currentItem={currentItem}
                                         currentVersion={currentVersion}
@@ -1202,6 +1199,7 @@ class RECORD_ARC_38 extends Component {
         }
 
         let CREATE_PDF_CHECK = () => {
+            let CLOCK_3 = _GET_CLOCK_STATE(3, 1)
             let _CHILD = _GET_CHILD_38();
             let _RESUME = [];
             let checks;
@@ -1281,7 +1279,7 @@ class RECORD_ARC_38 extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, checks, currentItem, headers)
+            this.CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
         }
         let _VERSIONS_SELECT = () => {
             var _COMPONENT = [];

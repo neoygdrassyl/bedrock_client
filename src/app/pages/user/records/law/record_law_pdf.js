@@ -7,6 +7,7 @@ import moment from 'moment';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { handleLAWhCheck } from '../../../../components/customClasses/pdfCheckHandler';
 const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 class RECORD_LAW_PDF extends Component {
     constructor(props) {
@@ -89,7 +90,7 @@ class RECORD_LAW_PDF extends Component {
             }
         }, '');
     };
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
+    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers, _date) {
         let swaMsg = this.props.swaMsg;
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -126,6 +127,7 @@ class RECORD_LAW_PDF extends Component {
 
 
         let _city = _headers.city;
+        if (_date && _GLOBAL_ID === 'cb1') _city = _headers.city + ", radicado el " + _date;
         let _number = _headers.number;
         let pageCount = pdfDoc.getPageCount();
         for (let i = 0; i < pageCount; i++) {
@@ -305,7 +307,7 @@ class RECORD_LAW_PDF extends Component {
         }
         let CREATE_PDF_CHECK = () => {
             let _RESUME = [];
-
+            let CLOCK_3 = _GET_CLOCK_STATE_VERSION(3, 1)
             let values_1 = this._GET_STEP_TYPE('s1', 'value');
             let values_f53 = this._GET_STEP_TYPE('f53', 'value');
             let values_law = this._GET_STEP_TYPE('flaw', 'value');
@@ -417,7 +419,7 @@ class RECORD_LAW_PDF extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, checks, currentItem, headers)
+            this.CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
         }
         return (
             <>
