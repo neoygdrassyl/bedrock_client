@@ -8,6 +8,7 @@ import moment from 'moment';
 import { cities, domains, domains_number } from '../../../../components/jsons/vars';
 
 const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 class FUN_PDF_CHECK extends Component {
     constructor(props) {
         super(props);
@@ -180,6 +181,25 @@ class FUN_PDF_CHECK extends Component {
         }
         return _CHILD;
     }
+
+    _GET_CLOCK = () => {
+        var _CHILD = this.props.currentItem.fun_clocks;
+        var _LIST = [];
+        if (_CHILD) {
+            _LIST = _CHILD;
+        }
+        return _LIST;
+    }
+
+    _GET_CLOCK_STATE = (_state) => {
+        var _CLOCK = this._GET_CLOCK();
+        if (_state == null) return false;
+        for (var i = 0; i < _CLOCK.length; i++) {
+            if (_CLOCK[i].state == _state) return _CLOCK[i];
+        }
+        return false;
+    }
+
     WordWrap(text, maxLength) {
         if (!text) return false;
 
@@ -209,7 +229,20 @@ class FUN_PDF_CHECK extends Component {
             icon: 'info',
             showConfirmButton: false,
         });
+
+        let model = this.props.currentItem.model
+        if (!model) return MySwal.fire({
+            title: 'SOLICITUD SIN MODELO',
+            text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
+            icon: 'error',
+            showConfirmButton: true,
+            confirmButtonText: 'CONTINUAR',
+        });
+
         var formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
+        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
+        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat2022";
+
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
@@ -223,13 +256,40 @@ class FUN_PDF_CHECK extends Component {
         // WIDTH = 612, HEIGHT = 936
 
         let _city = document.getElementById('func_pdf_0_2').value;
+        let _date = this._GET_CLOCK_STATE(3)
+        if (_date.date_start && _GLOBAL_ID === 'cb1') _city = document.getElementById('func_pdf_0_2').value + ", radicado el " + _date.date_start;
         let _number = document.getElementById('func_pdf_0_1').value;
-        page.moveTo(215, 783)
-        page.drawText(_number, { size: 14 })
-        page.moveTo(100, 770)
-        page.drawText(_city, { size: 9 })
-        page.moveTo(420, 830)
-        page.drawText(currentItem.id_public, { size: 14 })
+
+        let ox = 0
+        let oy = 0
+
+        let o_si = 0
+        let o_no = 0
+        let o_na = 0
+
+        let m_2022 = Number(model) >= 2022
+
+        let print_new_page = (n) => {
+            if (m_2022) {
+                let y_offset = 0
+                if (n == 2 || n == 3) y_offset = -15
+                page.moveTo(210, 632 + y_offset)
+                page.drawText(_number, { size: 14 })
+                page.moveTo(100, 620 + y_offset)
+                page.drawText(_city, { size: 9 })
+                page.moveTo(450, 665 + y_offset)
+                page.drawText(currentItem.id_public, { size: 14 })
+            }
+            else {
+                page.moveTo(215, 783)
+                page.drawText(_number, { size: 14 })
+                page.moveTo(100, 770)
+                page.drawText(_city, { size: 9 })
+                page.moveTo(420, 830)
+                page.drawText(currentItem.id_public, { size: 14 })
+            }
+        }
+        print_new_page(0)
 
         // FUN 1
         _child = this._GET_CHILD_1();
@@ -320,575 +380,488 @@ class FUN_PDF_CHECK extends Component {
         // NEXT PAGE
         page = pdfDoc.getPage(1);
 
-        page.moveTo(215, 783)
-        page.drawText(_number, { size: 14 })
-        page.moveTo(100, 770)
-        page.drawText(_city, { size: 9 })
-        page.moveTo(420, 830)
-        page.drawText(currentItem.id_public, { size: 14 })
+        print_new_page(1)
 
         // FUN R
         _child = this._GET_CHILD_REVIEW();
         let _code = _child.code;
         let _check = _child.checked;
 
-
         if (_code && _check) {
             _code = _code.split(',');
             _check = _check.split(',');
+
+            let print_review = () => {
+                let size = 10
+                let text = "x"
+                if (index > -1) {
+                    let _value = _check[index]
+                    if (_value == 0) { { page.moveTo(o_no, oy); page.drawText(text, { size: size }) } }
+                    if (_value == 1) { { page.moveTo(o_si, oy); page.drawText(text, { size: size }) } }
+                    if (_value == 2) { { page.moveTo(o_na, oy); page.drawText(text, { size: size }) } }
+                } else page.moveTo(o_na, oy); page.drawText(text, { size: size })
+            }
+
             let index = null;
             // 6.1
-            index = _code.indexOf('511');  // 511
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 634); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(478, 634); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(557, 634); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(557, 634); page.drawText('x', { size: 10 })
 
+            index = _code.indexOf('511');  // 511
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 524; }
+            else { o_si = 478; o_no = 520; o_na = 557; oy = 634; }
+            print_review()
 
             index = _code.indexOf('512'); // 512
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 621); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(478, 621); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(557, 621); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(557, 621); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 535; }
+            else { o_si = 478; o_no = 520; o_na = 557; oy = 621; }
+            print_review()
 
             index = _code.indexOf('516'); // 516
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 609); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(478, 609); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(557, 609); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(557, 609); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 502; }
+            else { o_si = 478; o_no = 520; o_na = 557; oy = 609; }
+            print_review()
 
             index = _code.indexOf('518'); // 518
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 597); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(478, 597); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(557, 597); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(557, 597); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 502; }
+            else { o_si = 478; o_no = 520; o_na = 557; oy = 597; print_review();}
 
             index = _code.indexOf('513'); // 513
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 584); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(478, 584); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(557, 584); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(557, 584); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 513; }
+            else { o_si = 478; o_no = 520; o_na = 557; oy = 584; }
+            print_review()
 
             index = _code.indexOf('517'); // 517
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 572); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(478, 572); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(557, 572); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(557, 572); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 491; }
+            else { o_si = 478; o_no = 520; o_na = 557; oy = 572; }
+            print_review()
 
             index = _code.indexOf('519'); // 519
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 561); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(478, 561); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(557, 561); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(557, 561); page.drawText('x', { size: 10 })
-
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 476; }
+            else { o_si = 478; o_no = 520; o_na = 557; oy = 561; }
+            print_review()
 
             // 6.2
+
+            // 6.2 A
             index = _code.indexOf('621');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 496); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 496); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 496); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 496); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 423; }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 496; }
+            print_review()
 
             index = _code.indexOf('601a');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 484); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 484); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 484); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 484); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 412; }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 484; }
+            print_review()
 
             index = _code.indexOf('622');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 472); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 472); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 472); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 472); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 401; }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 472; }
+            print_review()
 
             index = _code.indexOf('602a');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 460); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 460); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 460); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 460); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 390; }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 460; }
+            print_review()
 
+             // 6.2 B
             index = _code.indexOf('623');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 422); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 422); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 422); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 422); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 360; }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 422; }
+            print_review()
 
             index = _code.indexOf('601b');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 406); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 406); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 406); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 406); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 336; }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 406; }
+            print_review()
 
             index = _code.indexOf('602b');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 394); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 394); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 394); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 394); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 321 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 394; }
+            print_review()
 
             index = _code.indexOf('624');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 378); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 378); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 378); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 378); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 306 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 378; }
+            print_review()
 
             index = _code.indexOf('625');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 359); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 359); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 359); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 359); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 291 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 359; }
+            print_review()
 
+             // 6.2 C
             index = _code.indexOf('626');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 315); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 315); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 315); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 315); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 265 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 315; }
+            print_review()
 
             index = _code.indexOf('627');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 296); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 296); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 296); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 296); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 250 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 296; }
+            print_review()
 
             index = _code.indexOf('601c');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 280); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 280); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 280); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 280); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 239 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 280; }
+            print_review()
 
             index = _code.indexOf('602c');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 268); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 268); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 268); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 268); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 228 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 268; }
+            print_review()
 
             // 6.3
             index = _code.indexOf('630');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 222); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 222); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 222); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 222); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 201 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 222; }
+            print_review()
 
             index = _code.indexOf('631');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 206); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 206); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 206); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 206); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 190 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 206; }
+            print_review()
 
             index = _code.indexOf('632');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 190); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 190); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 190); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 190); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 175 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 190; }
+            print_review()
 
             index = _code.indexOf('633');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 178); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 178); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 178); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 178); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 160 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 178; }
+            print_review()
 
             index = _code.indexOf('634');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 140); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 140); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 140); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 140); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 129 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 140; }
+            print_review()
 
             index = _code.indexOf('635');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 120); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 120); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 120); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 120); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 106 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 120; }
+            print_review()
 
             index = _code.indexOf('636');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 101); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 101); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 101); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 101); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 91 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 101; }
+            print_review()
 
             // 6.4
             index = _code.indexOf('641');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(517, 44); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(474, 44); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(555, 44); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(555, 44); page.drawText('x', { size: 10 })
-
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 53 }
+            else { o_si = 474; o_no = 517; o_na = 555; oy = 44; }
+            print_review()
 
             // NEXT PAGE
             page = pdfDoc.getPage(2);
 
-            page.moveTo(215, 783)
-            page.drawText(_number, { size: 14 })
-            page.moveTo(100, 770)
-            page.drawText(_city, { size: 9 })
-            page.moveTo(420, 830)
-            page.drawText(currentItem.id_public, { size: 14 })
+            print_new_page(2)
 
             index = _code.indexOf('642');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 674); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 674); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 674); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 674); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 674 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 674 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 674 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 674 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('643');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 661); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 661); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 661); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 661); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 661 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 661 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 661 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 661 + oy); page.drawText('x', { size: 10 })
 
             // 6.5
             index = _code.indexOf('651');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 618); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(489, 618); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(556, 618); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(556, 618); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 618 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(489 + ox, 618 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(556 + ox, 618 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(556 + ox, 618 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('652');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 602); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(489, 602); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(556, 602); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(556, 602); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 602 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(489 + ox, 602 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(556 + ox, 602 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(556 + ox, 602 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('653');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 586); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(489, 586); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(556, 586); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(556, 586); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 586 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(489 + ox, 586 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(556 + ox, 586 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(556 + ox, 586 + oy); page.drawText('x', { size: 10 })
 
             // 6.6
             index = _code.indexOf('6601');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 528); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 528); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 528); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 528); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 528 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 528 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 528 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 528 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6602');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 515); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 515); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 515); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 515); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 515 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 515 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 515 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 515 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6603');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 504); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 504); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 504); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 504); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 504 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 504 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 504 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 504 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6604');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 492); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 492); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 492); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 492); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 492 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 492 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 492 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 492 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6605');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 480); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 480); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 480); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 480); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 480 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 480 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 480 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 480 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('660a');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 433); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 433); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 433); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 433); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 433 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 433 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 433 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 433 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('660b');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 421); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 421); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 421); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 421); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 421 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 421 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 421 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 421 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('660c');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 408); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 408); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 408); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 408); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 408 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 408 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 408 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 408 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('660d');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 392); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 392); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 392); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 392); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 392 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 392 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 392 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 392 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('660e');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 373); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 373); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 373); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 373); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 373 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 373 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 373 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 373 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6607');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 323); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 323); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 323); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 323); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 323 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 323 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 323 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 323 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6608');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 303); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 303); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 303); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 303); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 303 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 303 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 303 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 303 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6609');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 257); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 257); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 257); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 257); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 257 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 257 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 257 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 257 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6610');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 203); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 203); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 203); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 203); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 203 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 203 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 203 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 203 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6611');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 146); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 146); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 146); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 146); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 146 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 146 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 146 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 146 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6612');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 108); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 108); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 108); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 108); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 108 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 108 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 108 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 108 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6613');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 92); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 92); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 92); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 92); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 92 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 92 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 92 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 92 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6614');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 51); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 51); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 51); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 51); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 51 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 51 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 51 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 51 + oy); page.drawText('x', { size: 10 })
 
 
             // NEXT PAGE
             page = pdfDoc.getPage(3);
 
-            page.moveTo(215, 783)
-            page.drawText(_number, { size: 14 })
-            page.moveTo(100, 770)
-            page.drawText(_city, { size: 9 })
-            page.moveTo(420, 830)
-            page.drawText(currentItem.id_public, { size: 14 })
+            print_new_page(3)
 
             // 6.7
             index = _code.indexOf('671');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 654); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 654); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 654); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 654); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 654 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 654 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 654 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 654 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('672');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 643); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 643); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 643); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 643); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 643 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 643 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 643 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 643 + oy); page.drawText('x', { size: 10 })
 
             // 6.8
             index = _code.indexOf('680');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 580); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 580); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 580); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 580); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 580 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 580 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 580 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 580 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('681');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 545); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 545); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 545); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 545); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 545 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 545 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 545 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 545 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('682');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 530); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 530); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 530); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 530); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 530 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 530 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 530 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 530 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('683');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 510); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 510); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 510); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 510); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 510 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 510 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 510 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 510 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('684');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 495); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 495); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 495); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 495); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 495 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 495 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 495 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 495 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('685');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 482); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 482); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 482); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 482); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 482 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 482 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 482 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 482 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6861');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 448); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 448); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 448); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 448); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 448 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 448 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 448 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 448 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('687');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 415); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 415); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 415); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 415); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 415 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 415 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 415 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 415 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('6862');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 403); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 403); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 403); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 403); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 403 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 403 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 403 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 403 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('688');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 365); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 365); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 365); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 365); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 365 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 365 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 365 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 365 + oy); page.drawText('x', { size: 10 })
 
             index = _code.indexOf('689');
             if (index > -1) {
                 let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520, 350); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485, 350); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553, 350); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553, 350); page.drawText('x', { size: 10 })
+                if (_value == 0) { { page.moveTo(520 + ox, 350 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 1) { { page.moveTo(485 + ox, 350 + oy); page.drawText('x', { size: 10 }) } }
+                if (_value == 2) { { page.moveTo(553 + ox, 350 + oy); page.drawText('x', { size: 10 }) } }
+            } else page.moveTo(553 + ox, 350 + oy); page.drawText('x', { size: 10 })
         }
 
         _child = this._GET_CHILD_C();
-        page.moveTo(46, 120); page.drawText(_child.item_c1, { size: 14 }); // WORKER NAME
-        page.moveTo(410, 120); page.drawText(dateParser(_child.item_c6), { size: 12 }); // DATE OF REVIEW
+        page.moveTo(46 + ox, 120 + oy); page.drawText(_child.item_c1, { size: 14 }); // WORKER NAME
+        page.moveTo(410 + ox, 120 + oy); page.drawText(dateParser(_child.item_c6), { size: 12 }); // DATE OF REVIEW
         let _details = _child.item_c4;
-        
+
         let formatString = _details.split('\n');
-        if(_details.length > 0){
+        if (_details.length > 0) {
             for (let i = 0; i < formatString.length; i++) {
                 formatString[i] = formatString[i].replace(/^/, ``);
             }
@@ -902,20 +875,7 @@ class FUN_PDF_CHECK extends Component {
             _detailsArray.map((value, i) => { page.moveTo(46, 301 - i * 15.25); page.drawText(`${value}`, { size: 7 }); })
         }
 
-       
-/*        let _detailsWrapped = this.WordWrap(_details, 105);
-        if (_detailsWrapped) {
-            let _detailsArray = _detailsWrapped.split("\n");
-            if (_detailsArray[0]) { page.moveTo(46, 301); page.drawText(_detailsArray[0], { size: 8 }); }
-            if (_detailsArray[1]) { page.moveTo(46, 285); page.drawText(_detailsArray[1], { size: 8 }); }
-            if (_detailsArray[2]) { page.moveTo(46, 270); page.drawText(_detailsArray[2], { size: 8 }); }
-            if (_detailsArray[3]) { page.moveTo(46, 256); page.drawText(_detailsArray[3], { size: 8 }); }
-            if (_detailsArray[4]) { page.moveTo(46, 242); page.drawText(_detailsArray[4], { size: 8 }); }
-            if (_detailsArray[5]) { page.moveTo(46, 227); page.drawText(_detailsArray[5], { size: 8 }); }
-            if (_detailsArray[6]) { page.moveTo(46, 212); page.drawText(_detailsArray[6], { size: 8 }); }
-            if (_detailsArray[7]) { page.moveTo(46, 199); page.drawText(_detailsArray[7], { size: 8 }); }
-        }
-        */
+
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
         pdfDoc.setCreationDate(moment().toDate());
