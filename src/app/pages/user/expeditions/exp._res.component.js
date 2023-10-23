@@ -500,18 +500,20 @@ export default function EXP_RES(props) {
         const duty_cb = reso.duty_cb ? reso.duty_cb.split(',') : [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
         const arts_cb = reso.arts_cb ? reso.arts_cb.split(',') : [1, 1, 1, 1, 1];
 
-        const sexto_a1_dv = taxes.id_payment_3 ?? '';
-        const sexto_a2_dv = _GET_CLOCK_STATE(65).date_start ?? ''
-        const sexto_a3_dv = duty.charge ?? '';
+        const sexto_v = reso.sexto_v ? reso.sexto_v.split(';') : []
+        const sexto_a1_dv =  sexto_v[0] || taxes.id_payment_3 || '';
+        const sexto_a2_dv =  sexto_v[1] || _GET_CLOCK_STATE(65).date_start || ''
+        const sexto_a3_dv =  sexto_v[2] || duty.charge || '';
 
         const sexto_b_dv = reso.sexto_b ?? 'De acuerdo con el área generadora para la actividad de comercio y las unidades de uso xxx en estrato xxx se requieren xx unidades de parqueo. El proyecto presenta 2 cupos en el sitio y queda por compensar 1. De esta obligación se notifica al titular del presente acto de reconocimiento para que dé cumplimiento en el momento procesal exigible, esto es como condición para poder desarrollar el uso del suelo (licencia de funcionamiento), por cuanto que para expedir la presente actuación se verificó el cumplimiento de la norma vigente de carácter municipal, art. 471 del POT. Lo anterior debe realizarse de conformidad con lo establecido en las normas vigentes (Acuerdo 065 de 2006 y del Decreto 0198 de 2015 que reglamenta los artículos 363 y 364 del POT).';
 
-        const sexto_c1_dv = currentItem.id_payment ?? '';
-        const sexto_c2_dv = taxes.id_payment_1 ?? '';
-        const sexto_c3_dv = taxChargeDelineacion ?? '';
-        const sexto_c4_dv = taxes.id_payment_4 ?? '';
-        const sexto_c5_dv = taxes.uis ?? '';
-        const sexto_c6_dv = taxes.id_payment_2 ?? '';
+       
+        const sexto_c1_dv = currentItem.id_payment || sexto_v[3] || '';
+        const sexto_c2_dv = sexto_v[4] || taxes.id_payment_1 || '';
+        const sexto_c3_dv = sexto_v[5] || taxChargeDelineacion || '';
+        const sexto_c4_dv = sexto_v[6] || taxes.id_payment_4 || '';
+        const sexto_c5_dv = sexto_v[7] || taxes.uis || '';
+        const sexto_c6_dv = sexto_v[8] || taxes.id_payment_2 || '';
 
         const cond_show = type.includes('SUBDIVISION') ? 'sub' : 'other'; //type.includes('CONSTRUCCION') || type.includes('RECONOCIMIENTO')
 

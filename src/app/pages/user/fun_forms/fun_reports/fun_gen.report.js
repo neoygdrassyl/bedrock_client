@@ -73,20 +73,29 @@ export default function FUN_REPORT_GEN(props) {
         "Total Delineación",
         "Total Sub-Suelo",
         "Total Fondo embellecimiento",
-        "Total Pro-Uis",
+        "Total Pro-UIS",
         "Cédula Catastral",
+        "Estrato",
     ];
 
     let report_data_1 = (v) => {
+        var regex = /[.,\s]/g;
         let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
         let isPH = regexChecker_isPh(_CHILD_1, true);
         let taxes = getJSONFull(v.taxes);
+        let reso = getJSONFull(v.reso);
         let tmp = getJSONFull(v.tmp);
         let tax1 = tmp.zone ?? 0.1;
         let delineamiento = _GLOBAL_ID == 'cb1' ? _FIELDS_ADD(v.expc_1, ';') : _FIELDS_MULTIPLY(v.expa_1, v.expc_1, ';', ';');
-        let cargoVble = _GLOBAL_ID == 'cb1' ? _FIELDS_ADD(v.expc_0, ';') : _FIELDS_MULTIPLY(v.expa_0, v.expc_0, ';', ';');
-        let aint;
-        aint = _FIELDS_ADD(v.r33a_build, ',', undefined, 2);
+        let delineamiento_2 = reso.sexto_v ? reso.sexto_v.split(';')[2] : false
+        if (delineamiento_2) delineamiento_2 = delineamiento_2.replace(regex, '');
+
+        var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
+        var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
+        let metraje = Number(taxes.id_payment_0_area || 0) + Number(cv_area)
+        let uis = ((taxes.id_payment_2_p || 0) * Number(taxes.uis ?? 0)) / 100 + Number(taxes.uis ?? 0)
+        let uis_2 = reso.sexto_v ? reso.sexto_v.split(';')[4] : false
+        if (uis_2) uis_2 = uis_2.replace(regex, '');
 
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, //  Solicitud No
@@ -97,13 +106,14 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.matricula }, // Matricula No
             { value: (v.direccion ?? '').toUpperCase() }, // Dirección Predio
             { value: v.clock_license }, // Fecha Licencia
-            { value: aint }, // Total Area Inter
-            { value: cargoVble }, // Total Cargo Vble
-            { value: delineamiento }, // Total Delineación
+            { value: metraje.toFixed(2) }, // Total Area Inter
+            { value: Number(taxes.id_payment_1_real || cv_charge) }, // Total Cargo Vble
+            { value: delineamiento_2 || delineamiento || 0 }, // Total Delineación
             { value: (Math.ceil(delineamiento * tax1 / 50) * 50).toFixed(0) }, // Total Sub-Suelo
             { value: 0 }, // Total Fondo embellecimiento
-            { value: taxes.uis ?? 0 }, //  Total Pro-Uis
+            { value: uis_2 || uis || 0 }, //  Total Pro-UIS
             { value: v.catastral_2 || v.catastral },  //  Cédula Catastral
+            { value: v.estrato }, // Estrato
         ]
     }
 
@@ -704,9 +714,9 @@ export default function FUN_REPORT_GEN(props) {
 
         var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
 
-        var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0): 0;
-        var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0): 0;
-      
+        var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
+        var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
+
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, //  Número de Licecia
             { value: formsParser1(_CHILD_1) }, //  Tipo de tramite
@@ -721,7 +731,7 @@ export default function FUN_REPORT_GEN(props) {
 
             { value: Number(cv_charge).toFixed(0) }, // Cargo Variable
             { value: taxes.id_payment_1_real || 0 }, // Cargo Variable Pägado
-            { value: Number(cv_charge - (taxes.id_payment_1_real || 0)).toFixed(0)}, // Cargo Variable Diferencia
+            { value: Number(cv_charge - (taxes.id_payment_1_real || 0)).toFixed(0) }, // Cargo Variable Diferencia
             { value: taxes.id_payment_1 }, // Factura Nr Cargo Variable
             { value: taxes.id_payment_1_date }, // Factura Fecha Cargo Variable
             { value: Number(cv_area).toFixed(2) }, // Area Liquidada Cargo Variable
@@ -984,6 +994,7 @@ export default function FUN_REPORT_GEN(props) {
         ]
     };
 
+    // CONTRALORIA DEPARTAMENTAL
     const header_9 = [
         "No Licencia",
         "Clase Y Modalidad De La Licencia",
@@ -999,14 +1010,16 @@ export default function FUN_REPORT_GEN(props) {
         "Valor Pagado estampilla",
         "Fecha De Pago estampilla",
         "Mecanismo De Entrega De Cesiones", // ""
+        "Estrato",
     ];
 
     let report_data_9 = (v) => {
         let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
         let isPH = regexChecker_isPh(_CHILD_1, true);
         let taxes = getJSONFull(v.taxes);
-        var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0): 0;
-        var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0): 0;
+        let reso = getJSONFull(v.reso);
+        var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
+        var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
 
         var rule = formsParser1(_CHILD_1);
         var subrule = formsParser1(_CHILD_1);
@@ -1017,23 +1030,29 @@ export default function FUN_REPORT_GEN(props) {
 
         var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
 
-        let expenses_total = Number(taxes.id_payment_1_real || cv_charge ) + Number(taxes.id_payment_0_real || expenses.cf)
+        let expenses_total = Number(taxes.id_payment_1_real || cv_charge) + Number(taxes.id_payment_0_real || expenses.cf)
         let metraje = Number(taxes.id_payment_0_area || 0) + Number(cv_area)
+        let uis = ((taxes.id_payment_2_p || 0) * Number(taxes.uis ?? 0)) / 100 + Number(taxes.uis ?? 0)
+        let uis_2 = reso.sexto_v ? reso.sexto_v.split(';')[4] : false
+        var regex = /[.,\s]/g;
+        if (uis_2) uis_2 = uis_2.replace(regex, '');
+
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, // No Licencia
             { value: formsParser1(_CHILD_1, true) }, // Clase Y Modalidad De La Licencia
             { value: v.clock_payment }, // Fecha De Solicitud
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // Beneficiario
             { value: (v.direccion ?? '').toUpperCase() }, // Direccion
-            { value: v.matricula  }, // Matricula Inmobiliaria
+            { value: v.matricula }, // Matricula Inmobiliaria
             { value: v.clock_license }, // Fecha De Expedicion
             { value: expenses_total.toFixed(0) }, // Valor Expensas
             { value: metraje.toFixed(2) }, // Metraje
             { value: "Departamental" }, // Tipo De Estampilla
             { value: "PRO-UIS" }, // Nombre De La Estampilla
-            { value: taxes.uis }, // Valor Pagado estampilla
+            { value: uis_2 || uis || 0 }, // Valor Pagado estampilla
             { value: v.clock_payment_uis }, // Fecha De Pago estampilla
             { value: "" }, // Mecanismo De Entrega De Cesiones
+            { value: v.estrato }, // Estrato
         ]
     };
 
@@ -1148,14 +1167,14 @@ export default function FUN_REPORT_GEN(props) {
         if (state == '100') return isString ? 'ARCHIVADO' : <label className='fw-bold'>CERRADO</label>
         if (state == '101') return isString ? 'ARCHIVADO' : <label className='fw-bold text-primary'>ARCHIVADO</label>
         if (state == '200') {
-            if(isString){
-                if(row.clock_close_6) return 'NEGADA'
-                if(row.clock_close_5) return 'DESISTIDO (Voluntario)'
-                if(row.clock_close_4) return 'DESISTIDO (No radicó pagos'
-                if(row.clock_close_3) return 'DESISTIDO (No subsanó Acta)'
-                if(row.clock_close_2) return 'DESISTIDO (No radicó valla)'
-                if(row.clock_close_1) return 'DESISTIDO (Incompleto)'
-            }else return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
+            if (isString) {
+                if (row.clock_close_6) return 'NEGADA'
+                if (row.clock_close_5) return 'DESISTIDO (Voluntario)'
+                if (row.clock_close_4) return 'DESISTIDO (No radicó pagos'
+                if (row.clock_close_3) return 'DESISTIDO (No subsanó Acta)'
+                if (row.clock_close_2) return 'DESISTIDO (No radicó valla)'
+                if (row.clock_close_1) return 'DESISTIDO (Incompleto)'
+            } else return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
         }
         if (state == '201') return isString ? 'DESISTIDO (Incompleto)' : <label className='text-danger text-center'>DESISTIDO (Incompleto)</label>
         if (state == '202') return isString ? 'DESISTIDO (No radicó valla)' : <label className='text-danger text-center'>DESISTIDO (No radicó valla)</label>
