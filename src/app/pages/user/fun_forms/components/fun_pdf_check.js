@@ -268,6 +268,7 @@ class FUN_PDF_CHECK extends Component {
         let o_na = 0
 
         let m_2022 = Number(model) >= 2022
+        m_2022 = false
 
         let print_new_page = (n) => {
             if (m_2022) {

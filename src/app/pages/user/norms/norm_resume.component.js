@@ -117,7 +117,7 @@ export default function NORM_RESUME(props) {
         let formData = new FormData();
 
         formData.set('id', id);
-        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.ficha == item_general.zon_norm && ficha.sector == item_general.sector && ficha.subsector == item_general.subsector)
+        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.ficha == item_general.zon_norm && ficha.sector == item_general.sector && ficha.subsector == item_general.subsector  && ficha.front == item_general.fron)
         if (!FICHA) FICHA = {}
 
         formData.set('ficha', JSON.stringify(FICHA));
@@ -339,7 +339,7 @@ export default function NORM_RESUME(props) {
     </>
 
     const R_4_EDIF = () => {
-        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.ficha == item_general.zon_norm && ficha.sector == item_general.sector && ficha.subsector == item_general.subsector)
+        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.ficha == item_general.zon_norm && ficha.sector == item_general.sector && ficha.subsector == item_general.subsector && ficha.front == item_general.front)
         if (!FICHA) FICHA = {}
         return <>
             <div className='bg-dark p-2 m-1 row text-light'>
@@ -389,7 +389,7 @@ export default function NORM_RESUME(props) {
     }
 
     const R_5_AISLAMIENTOS = () => {
-        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.sector == item_general.sector && ficha.subsector == item_general.subsector)
+        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.sector == item_general.sector && ficha.subsector == item_general.subsector  && ficha.front == item_general.fron)
         if (!FICHA) FICHA = {}
 
         return <>

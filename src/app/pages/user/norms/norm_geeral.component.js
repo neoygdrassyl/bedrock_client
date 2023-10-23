@@ -38,7 +38,7 @@ export default function NORM_GENERAL(props) {
     const [fichas, setFichas] = useState(NORM_GEN_DATA);
     const [sectors, setSectors] = useState(NORM_GEN_DATA[0].sectors);
     const [subsectors, setSubsectors] = useState(NORM_GEN_DATA[0].sectors[0].subsectors);
-    const [fronts, setFronts] = useState(FICHA_NORM[0].front);
+    const [fronts, setFronts] = useState([{front: FICHA_NORM[0].front}]);
 
     useEffect(() => {
         if (load == 0 || !id) loadData();
@@ -243,11 +243,12 @@ export default function NORM_GENERAL(props) {
     }
 
     function set_Fronts() {
-        let findFront = FICHA_NORM.find(ficha =>
+        let findFront = FICHA_NORM.filter(ficha =>
             ficha.ficha == selectFicha &&
             ficha.sector == selectSector &&
             ficha.subsector == selectSubsector)
-        if (findFront) setFronts(findFront.front)
+            console.log(findFront)
+        if (findFront.length) setFronts(findFront)
     }
 
     // ***************************  JXS *********************** //
@@ -361,7 +362,7 @@ export default function NORM_GENERAL(props) {
                             <i class="fas fa-star-of-life"></i>
                         </span>
                         <select class="form-select" id="norm_front" defaultValue={item.front}>
-                            <option>{fronts}</option>
+                            {fronts.map(front => <option>{front.front}</option>)}
                         </select>
                     </div>
                 </div>
@@ -396,7 +397,7 @@ export default function NORM_GENERAL(props) {
                 </div>
 
                 <div className="col-6">
-                    <label >1.13 Georegerenciación</label>
+                    <label >1.13 Georefenciación</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-map-marker-alt"></i>
