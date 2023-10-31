@@ -36,6 +36,7 @@ export default function FUN_REPORT_GEN(props) {
     const moment = require('moment');
 
     var [localData, setDataLocal] = useState([]);
+
     var [dataContraloria, setDataCon] = useState([]);
     var [dataContraloria2, setDataCon2] = useState([]);
     var [dataCamacol, setDataCam] = useState([]);
@@ -45,6 +46,8 @@ export default function FUN_REPORT_GEN(props) {
     var [dataMoney, setDataMoney] = useState([]);
     var [dataCMDB, setDataCMDB] = useState([]);
     var [dataPlaneacion2, setDataPlan2] = useState([]);
+    var [dataResume, setDataResume] = useState([]);
+    var [dataIgac, setDataIgac] = useState([]);
 
     var [load, setLoad] = useState(0);
     var [preview, setPre] = useState(false);
@@ -720,7 +723,7 @@ export default function FUN_REPORT_GEN(props) {
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, //  Número de Licecia
             { value: formsParser1(_CHILD_1) }, //  Tipo de tramite
-            { value: _GET_STATE_STR(v.state, true, false) }, // Estado
+            { value: _GET_STATE_STR(v.state) }, // Estado
 
             { value: (expenses.cf).toFixed(0) }, // Cargo Fijo
             { value: taxes.id_payment_0_real || 0 }, // Cargo Fijo Pagado
@@ -1056,9 +1059,96 @@ export default function FUN_REPORT_GEN(props) {
         ]
     };
 
+    // RESUMEN
+    const header_10 = [
+        "No Licencia",
+        "Modalidad De La Licencia",
+        "No Expedicion",
+        "Estado",
+        "Fecha De Solicitud",
+        "Fecha De Expedicion",
+        "Dirección",
+        "Predial",
+        "Matricula",
+        "Propietario",
+    ];
+
+    let report_data_10 = (v) => {
+        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
+        let isPH = regexChecker_isPh(_CHILD_1, true);
+        let reso = getJSONFull(v.reso);
+
+        return [
+            { value: isPH ? v.id_public_ph : v.id_public }, // No Licencia
+            { value: formsParser1(_CHILD_1, true) }, // Modalidad De La Licencia
+            { value: v.exp_id ? v.exp_id.includes('-') ? v.exp_id.split('-')[1] : v.exp_id : '' }, // No Expedicion
+            { value: reso.state || _GET_STATE_STR(v.state) }, // Estado
+            { value: v.clock_payment }, // Fecha De Solicitud
+            { value: v.clock_license || v.clock_license_ph }, // Fecha De Expedicion
+            { value: (v.direccion ?? '').toUpperCase() }, // Dirección
+            { value: v.catastral_2 || v.catastral }, // Predial
+            { value: v.matricula }, // Matricula
+            { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // Propietario
+        ]
+    };
+
+    // IGAC
+    const header_11 = [
+        "Radicado",
+        "Modalidad de Licencia",
+        "Departamento",
+        "Municipio",
+        "Identificacion catastral",
+        "Matricula inmobiliaria",
+        "Area del predio",
+        "Area licenciada",
+        "Area construida",
+        "Direccion",
+        "Longitud",
+        "Latitud",
+        "Clasificación del suelo",
+        "Tipo de vivienda",
+        "BIC",
+    ];
+    let report_data_11 = (v) => {
+        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
+        let isPH = regexChecker_isPh(_CHILD_1, true);
+        let taxes = getJSONFull(v.taxes);
+        var arc_control = getJSONFull(v.arc_control);
+
+        let coords = v.step_ageo ? v.step_ageo.split(';') : [];
+        let coords_n = "N: " + (coords[0] || '')
+        let coords_e = "E: " + (coords[1] || '')
+
+        let bic = v.cultural === "A" ? 'SI' : false
+        if (!bic) bic = v.cultural === "B" ? 'NO' : ''
+
+        var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
+        let metraje = Number(taxes.id_payment_0_area || 0) + Number(cv_area)
+
+        return [
+            { value: isPH ? v.id_public_ph : v.id_public }, // No Licencia
+            { value: formsParser1(_CHILD_1, true) }, // Modalidad De La Licencia
+            { value: infoCud.state.toUpperCase() }, // Departamento
+            { value: infoCud.city.toUpperCase() }, // Municipio
+            { value: v.catastral_2 || v.catastral }, // Identificacion catastral
+            { value: v.matricula }, // Matricula inmobiliaria
+            { value: arc_control.m2_brute || '' }, // Area del predio (bruta)
+            { value: arc_control.m2_useful || metraje.toFixed(2) }, // Area licenciada (intervenida)
+            { value: arc_control.m2_useful || metraje.toFixed(2) }, // Area construida (intervenida)
+            { value: (v.direccion ?? '').toUpperCase() }, // Direccion
+            { value: coords_n }, // Longitud
+            { value: coords_e }, // Latitud
+            { value: _FUN_24_PARSER(v.suelo, true) }, // Clasificación del suelo
+            { value: _FUN_8_PARSER(v.vivienda, true) }, // Tipo de vivienda
+            { value: bic }, // BIC
+        ]
+    };
+
     useEffect(() => {
         if (load == 0) _GET_DATA();
         if (load == 0) _GET_DATA_MONEY();
+        if (load == 0) _GET_DATA_RESUME();
     }, [load]);
 
     // ***************************  DATA GETTERS *********************** //
@@ -1103,6 +1193,19 @@ export default function FUN_REPORT_GEN(props) {
                 console.log(e);
             });
     }
+    let _GET_DATA_RESUME = () => {
+        FUNService.reportsResume(date_1, date_2)
+            .then(response => {
+                var data = [];
+                response.data.map(v => data.push(report_data_10(v)))
+                setDataResume(data)
+                setLoad(1)
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
+
     let _SET_DATA_MONEY = (_data) => {
         var dataMon = [];
         _data.map(v => dataMon.push(report_data_6(v)))
@@ -1119,6 +1222,9 @@ export default function FUN_REPORT_GEN(props) {
         var dataMon = [];
         var dataCmdb = [];
         var dataPlan2 = [];
+        var dataIga = [];
+
+
         _data.map(v => {
             dataCon.push(report_data_1(v));
             dataCam.push(report_data_2(v));
@@ -1129,6 +1235,7 @@ export default function FUN_REPORT_GEN(props) {
             if (cons_7(v)) dataCmdb.push(report_data_7(v));
             dataPlan2.push(report_data_8(v));
             dataCon2.push(report_data_9(v));
+            dataIga.push(report_data_11(v));
         })
 
         setDataCon(dataCon);
@@ -1140,6 +1247,7 @@ export default function FUN_REPORT_GEN(props) {
         //setDataMoney(dataMon);
         setDataCMDB(dataCmdb);
         setDataPlan2(dataPlan2);
+        setDataIgac(dataIga);
     }
     // *************************  DATA CONVERTERS ********************** //
     let _JOIN_FIELDS = (row, fields, up) => {
@@ -1158,32 +1266,24 @@ export default function FUN_REPORT_GEN(props) {
         }
         return strName.join(', ').trim()
     }
-    let _GET_STATE_STR = (state, isString, row) => {
-        if (state < '-1') return isString ? 'DESISTIDO (Ejecución)' : <label className='text-danger text-center'>DESISTIDO (Ejecución)</label>
+    let _GET_STATE_STR = (state) => {
+        if (state < '-1') return 'DESISTIDO (Ejecución)'
         if (state == '-1') return 'INCOMPLETO'
         if (state == '1') return 'INCOMPLETO'
         if (state == '5') return 'LYDF'
         if (state == '50') return 'EXPEDICIÓN'
-        if (state == '100') return isString ? 'ARCHIVADO' : <label className='fw-bold'>CERRADO</label>
-        if (state == '101') return isString ? 'ARCHIVADO' : <label className='fw-bold text-primary'>ARCHIVADO</label>
-        if (state == '200') {
-            if (isString) {
-                if (row.clock_close_6) return 'NEGADA'
-                if (row.clock_close_5) return 'DESISTIDO (Voluntario)'
-                if (row.clock_close_4) return 'DESISTIDO (No radicó pagos'
-                if (row.clock_close_3) return 'DESISTIDO (No subsanó Acta)'
-                if (row.clock_close_2) return 'DESISTIDO (No radicó valla)'
-                if (row.clock_close_1) return 'DESISTIDO (Incompleto)'
-            } else return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
-        }
-        if (state == '201') return isString ? 'DESISTIDO (Incompleto)' : <label className='text-danger text-center'>DESISTIDO (Incompleto)</label>
-        if (state == '202') return isString ? 'DESISTIDO (No radicó valla)' : <label className='text-danger text-center'>DESISTIDO (No radicó valla)</label>
-        if (state == '203') return isString ? 'DESISTIDO (No subsanó Acta)' : <label className='text-danger text-center'>DESISTIDO (No subsanó Acta)</label>
-        if (state == '204') return isString ? 'DESISTIDO (No radicó pagos)' : <label className='text-danger text-center'>DESISTIDO (No radicó pagos)</label>
-        if (state == '205') return isString ? 'DESISTIDO (Voluntario)' : <label className='text-danger text-center'>DESISTIDO (Voluntario)</label>
-        if (state == '206') return isString ? 'DESISTIDO (Negada)' : <label className='text-danger text-center'>DESISTIDO (Negada)</label>
+        if (state == '100') return 'OTORGADA'
+        if (state == '101') return 'OTORGADA'
+        if (state == '200') return 'DESISTIDO'
+        if (state == '201') return 'DESISTIDO (Incompleto)'
+        if (state == '202') return 'DESISTIDO (No radicó valla)'
+        if (state == '203') return 'DESISTIDO (No subsanó Acta)'
+        if (state == '204') return 'DESISTIDO (No radicó pagos)'
+        if (state == '205') return 'DESISTIDO (Voluntario)'
+        if (state == '206') return 'DESISTIDO (Negada)'
         return ''
     }
+
     // (DATA, STRING SEPARATOS, INDEX  (OPTIONAL), TO FIXED NUMBER (OPTIONAL))
     function _FIELDS_ADD(field, ss, ind, dec) {
         if (!field) return (0).toFixed(dec ?? 0);
@@ -1456,6 +1556,31 @@ export default function FUN_REPORT_GEN(props) {
                     </div> : ''}
                 </>
                 : null}
+
+            <div className='row my-2'>
+                <div className='col'>
+                    <label className='fw-bold'>OBSERVATORIO IGAC - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_11, dataIgac, 'Observatorio IGAC')}>
+                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_11']} onClick={() => setPre({ ['pre_11']: !preview['pre_11'] })} >
+                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                </div>
+            </div>
+            {preview['pre_11'] ? <div className='row container-sh'>
+                <Spreadsheet data={dataIgac} columnLabels={header_11} />
+            </div> : ''}
+
+
+            <div className='row my-2'>
+                <div className='col'>
+                    <label className='fw-bold'>RESUMEN - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_10, dataResume, 'Resumen')}>
+                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_9']} onClick={() => setPre({ ['pre_9']: !preview['pre_9'] })} >
+                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                </div>
+            </div>
+            {preview['pre_9'] ? <div className='row container-sh'>
+                <Spreadsheet data={dataResume} columnLabels={header_10} />
+            </div> : ''}
+
+
 
 
         </div >

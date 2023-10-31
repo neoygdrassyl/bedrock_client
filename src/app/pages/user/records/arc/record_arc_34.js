@@ -627,6 +627,7 @@ class RECORD_ARC_34 extends Component {
                     <div className="col-6 p-1">
                         <div class="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[2]} onChange={() => manage_ra_34('a41')}>
+                                <option>SIN INFORMACION</option>
                                 {SUBMIT_ARC_TRATAMIENTO_URBANISTICO.map(op => <option>{op}</option>)}
                             </select>
                         </div>
@@ -683,6 +684,7 @@ class RECORD_ARC_34 extends Component {
                     <div className="col-6 p-1">
                         <div class="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[4]} onChange={() => manage_ra_34('a41')}>
+                                <option>SIN INFORMACION</option>
                                 {SUBMIT_ARC_AREA_ACTIVIDAD.map(op => <option>{op}</option>)}
                             </select>
                         </div>

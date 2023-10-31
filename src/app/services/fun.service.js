@@ -90,6 +90,9 @@ class UserslDataService {
   reportsFinance(date_start, date_end) {
     return http.get(`/${route}/reports_finance/${date_start}&${date_end}`);
   }
+  reportsResume(date_start, date_end) {
+    return http.get(`/${route}/reports_resume/${date_start}&${date_end}`);
+  }
   reportsPublicData(id_start, id_end) {
     return http.get(`/${route}/reports_public/${id_start}&${id_end}`);
   }

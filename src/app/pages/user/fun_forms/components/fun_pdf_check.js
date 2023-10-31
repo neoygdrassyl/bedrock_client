@@ -239,9 +239,13 @@ class FUN_PDF_CHECK extends Component {
             confirmButtonText: 'CONTINUAR',
         });
 
+        
+        let m_2022 = Number(model) >= 2022
+        m_2022 = false
+
         var formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
-        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
-        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat2022";
+        if (m_2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
+        if (m_2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat2022";
 
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
@@ -267,8 +271,6 @@ class FUN_PDF_CHECK extends Component {
         let o_no = 0
         let o_na = 0
 
-        let m_2022 = Number(model) >= 2022
-        m_2022 = false
 
         let print_new_page = (n) => {
             if (m_2022) {
