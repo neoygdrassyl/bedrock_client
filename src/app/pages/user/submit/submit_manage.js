@@ -340,6 +340,7 @@ class SUBMIT_MANAGE extends Component {
                                 <option value={1} selected={_CHILD.list_type == 1}>RADICACIÓN SOLICITUD</option>
                                 <option value={2} selected={_CHILD.list_type == 2}>ASESORÍA TÉCNICA</option>
                                 <option value={3} selected={_CHILD.list_type == 3}>CORRECCIONES SOLICITUD</option>
+                                <option value={4} selected={_CHILD.list_type == 4}>TRAMITE</option>
                                 <option value={0} selected={_CHILD.list_type == 0}>OTRO</option>
                             </select>
                         </div>

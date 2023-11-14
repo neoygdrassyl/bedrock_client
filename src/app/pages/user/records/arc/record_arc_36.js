@@ -269,6 +269,7 @@ class RECORD_ARC_36 extends Component {
             const value35 = _GET_STEP_TYPE('s35', 'value');
             const dutyClock = _GET_CLOCK_STATE(65).resolver_context || 'NO';
             let tra = value34[2] ? value34[2].split('-')[1] : '';
+            tra = tra || ''
             let strata = _GET_CHILD_2().item_267
             let m2comp = strata > 2 && strata < 5 ? 4 : 6;
             const _CHECK = _GET_STEP_TYPE('s36_useduty', 'check');
