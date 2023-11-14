@@ -48,6 +48,7 @@ export default function FUN_REPORT_GEN(props) {
     var [dataPlaneacion2, setDataPlan2] = useState([]);
     var [dataResume, setDataResume] = useState([]);
     var [dataIgac, setDataIgac] = useState([]);
+    var [dataNotaria, setDataNotaria] = useState([]);
 
     var [load, setLoad] = useState(0);
     var [preview, setPre] = useState(false);
@@ -444,7 +445,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.clock_payment }, //  Fecha de Radicación
             { value: isPH ? v.clock_license_ph : v.clock_license }, //  Fecha De Licencia
             { value: exp_steps.n_lic }, //  N° Folios de Licencia
-            { value: v.exp_id ? v.exp_id.includes('-') ? v.exp_id.split('-')[1] : v.exp_id : '' }, //  Resolucion
+            { value: isPH ? v.id_public_ph : v.exp_id }, //  Resolucion
             { value: v.clock_res_date }, //  Fecha De Resolucion
             { value: exp_steps.n_res }, //  N° Folios de Resolucion
             { value: exp_steps.norm }, //  Norma
@@ -962,7 +963,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.clock_payment }, // POTFecApli // Radicacion
             { value: isPH ? v.clock_license_ph : v.clock_license }, // FechaLicencia
             { value: exp_steps.n_lic }, // FoliosLicencia
-            { value: v.exp_id ? v.exp_id.includes('-') ? v.exp_id.split('-')[1] : v.exp_id : '' }, // Resolucion ID
+            { value: isPH ? v.id_public_ph : v.exp_id }, // Resolucion ID
             { value: v.clock_res_date }, // FechaRes
             { value: exp_steps.n_res }, // FoliosRes
             { value: exp_steps.norm }, // Norma
@@ -1081,7 +1082,7 @@ export default function FUN_REPORT_GEN(props) {
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, // No Licencia
             { value: formsParser1(_CHILD_1, true) }, // Modalidad De La Licencia
-            { value: v.exp_id ? v.exp_id.includes('-') ? v.exp_id.split('-')[1] : v.exp_id : '' }, // No Expedicion
+            { value: isPH ? v.id_public_ph : v.exp_id }, // No Expedicion
             { value: reso.state || _GET_STATE_STR(v.state) }, // Estado
             { value: v.clock_payment }, // Fecha De Solicitud
             { value: v.clock_license || v.clock_license_ph }, // Fecha De Expedicion
@@ -1142,6 +1143,28 @@ export default function FUN_REPORT_GEN(props) {
             { value: _FUN_24_PARSER(v.suelo, true) }, // Clasificación del suelo
             { value: _FUN_8_PARSER(v.vivienda, true) }, // Tipo de vivienda
             { value: bic }, // BIC
+        ]
+    };
+
+    // Superintendencia de Notariado y Registro
+    const header_12 = [
+        "No. RADICADO DEL EXPEDIENTE",
+        "No. DE ACTO ADMINISTATIVO",
+        "TIPO DE TRAMITE",
+        "TIPO DE DECISIÓN",
+        "FECHA DE EXPEDICIÓN",
+        "FECHA DE EJECUTORIA",
+    ];
+    let report_data_12 = (v) => {
+        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
+        let isPH = regexChecker_isPh(_CHILD_1, true);
+        return [
+            { value: isPH ? v.id_public : v.id_public }, // No. RADICADO DEL EXPEDIENTE
+            { value: isPH ? v.id_public_ph : v.exp_id }, // No. DE ACTO ADMINISTATIVO
+            { value: formsParser1(_CHILD_1, true) }, // TIPO DE TRAMITE
+            { value: "Expedido" }, // TIPO DE DECISIÓN
+            { value: isPH ? v.clock_license_ph : v.clock_license }, // FECHA DE EXPEDICIÓN
+            { value: isPH ? v.clock_license_ph : v.clock_eje }, // FECHA DE EJECUTORIA
         ]
     };
 
@@ -1223,6 +1246,7 @@ export default function FUN_REPORT_GEN(props) {
         var dataCmdb = [];
         var dataPlan2 = [];
         var dataIga = [];
+        var notaria = [];
 
 
         _data.map(v => {
@@ -1236,6 +1260,7 @@ export default function FUN_REPORT_GEN(props) {
             dataPlan2.push(report_data_8(v));
             dataCon2.push(report_data_9(v));
             dataIga.push(report_data_11(v));
+            notaria.push(report_data_12(v));
         })
 
         setDataCon(dataCon);
@@ -1248,6 +1273,7 @@ export default function FUN_REPORT_GEN(props) {
         setDataCMDB(dataCmdb);
         setDataPlan2(dataPlan2);
         setDataIgac(dataIga);
+        setDataNotaria(notaria);
     }
     // *************************  DATA CONVERTERS ********************** //
     let _JOIN_FIELDS = (row, fields, up) => {
@@ -1568,6 +1594,16 @@ export default function FUN_REPORT_GEN(props) {
                 <Spreadsheet data={dataIgac} columnLabels={header_11} />
             </div> : ''}
 
+            <div className='row my-2'>
+                <div className='col'>
+                    <label className='fw-bold'>SUPERINTENDENCIA DE NOTARIADO Y REGISTRO - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_12, dataNotaria, 'Superintendencia de Notariado y Registro')}>
+                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_12']} onClick={() => setPre({ ['pre_12']: !preview['pre_12'] })} >
+                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                </div>
+            </div>
+            {preview['pre_12'] ? <div className='row container-sh'>
+                <Spreadsheet data={dataNotaria} columnLabels={header_12} />
+            </div> : ''}
 
             <div className='row my-2'>
                 <div className='col'>

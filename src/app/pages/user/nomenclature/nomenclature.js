@@ -316,6 +316,7 @@ class NOMENCLATURE extends Component {
                 'Nr BOLETÍN',
                 'DIRECCIÓN',
                 'Nr DE NOMENCLATURAS A EXPEDIR',
+                'FECHA DE RADICACIÓN',
                 'FECHA DE EXPEDICIÓN',
                 'ACCESO',
                 'DESTINO',
@@ -329,6 +330,7 @@ class NOMENCLATURE extends Component {
                 row.push(_data[i].id_public);
                 row.push(_data[i].address);
                 row.push(_data[i].number);
+                row.push(_data[i].date_start);
                 row.push(_data[i].date_end);
                 row.push(_data[i].details ? _data[i].details.replace(/[\r\n]+ */g, ' ') : ' ');
                 row.push('Servicios Públicos y Notariales');
@@ -452,6 +454,7 @@ class NOMENCLATURE extends Component {
                                     paginationRowsPerPageOptions={[20, 50, 100]}
                                     className="data-table-component"
                                     noHeader
+                            
                                 />
                             ) : (
                                 <div className="text-center">

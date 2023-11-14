@@ -556,6 +556,12 @@ class FUN_PDF_CHECK extends Component {
 
             // NEXT PAGE
             page = pdfDoc.getPage(2);
+            ox = 0
+            oy = 0
+    
+            o_si = 0
+            o_no = 0
+            o_na = 0
 
             print_new_page(2)
 
