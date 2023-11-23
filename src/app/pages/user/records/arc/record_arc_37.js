@@ -184,21 +184,47 @@ export default function RECORD_ARC_37(props) {
         reduced.map((r) => sum += Number(r))
         return sum;
     }
+
+    let _GET_AJUSTES = (_historic) => {
+        let STEP = LOAD_STEP('a_config');
+        let json = STEP ? STEP.json ?? {} : {};
+        json = getJSON_Simple(json)
+        let tagsH = json.tagh ? json.tagh.split(';') : [];
+        var historic = _historic ? _historic.split(';') : [];
+        let reduced = historic.filter((_h, i) => {
+            if (!tagsH[i]) return false
+            let tag = tagsH[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            return tag.includes('ajuste');
+        })
+        let sum = 0;
+        reduced.map((r) => sum += Number(r))
+        return sum;
+    }
+
+    let _GET_TOTAL_AREA = (_build, _historic) => {
+        if (!_build) return 0;
+        var build = _build.split(",");
+        var area_1 = 0;
+        var area_5 = 0
+        var historic = _GET_HISTORIC(_historic)
+        var ajustes = _GET_AJUSTES(_historic)
+        if (build[0] > 0) area_1 += Number(build[0]);
+        if (build[1] > 0) area_1 += Number(build[1]);
+        if (build[10] > 0) area_1 += Number(build[10]);
+        //if (build[6] > 0) area_5 = Number(build[6]);
+        if (build[7] > 0) area_5 += Number(build[7]);
+        var _TOTAL_AREA = Number(historic) + Number(ajustes) + area_1 - area_5;
+        return (_TOTAL_AREA).toFixed(2);
+    }
     
     
     let _GET_NET_INDEX = (_build, _destroy, _historic) => {
         if (!_build) return 0;
-        var build = _build.split(",");
         var destroy = Number(_ADD_AREAS(_destroy));
-        var areaToBuild = 0;
-        var area_5 = 0
+        var areaToBuild = _GET_TOTAL_AREA(_build, _historic);
         var historic = _GET_HISTORIC(_historic)
-        if (build[0] > 0) areaToBuild = Number(build[0]);
-        if (build[10] > 0) areaToBuild = Number(build[10]);
-        if (build[1] > 0) areaToBuild = Number(build[1]);
-        //if (build[6] > 0) area_5 = Number(build[6]);
-        if (build[7] > 0) area_5 += Number(build[7]);
-        var _NET_IDEX = Number(historic) + areaToBuild - destroy - area_5;
+        var _NET_IDEX = Number(historic) + areaToBuild - destroy;
+        console.log(areaToBuild, destroy)
         return (_NET_IDEX).toFixed(2);
     }
     function array_sort(a, b) {
