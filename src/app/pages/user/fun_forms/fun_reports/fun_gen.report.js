@@ -1163,8 +1163,8 @@ export default function FUN_REPORT_GEN(props) {
             { value: isPH ? v.id_public_ph : v.exp_id }, // No. DE ACTO ADMINISTATIVO
             { value: formsParser1(_CHILD_1, true) }, // TIPO DE TRAMITE
             { value: "Expedido" }, // TIPO DE DECISIÓN
-            { value: isPH ? v.clock_license_ph : v.clock_license }, // FECHA DE EXPEDICIÓN
-            { value: isPH ? v.clock_license_ph : v.clock_eje }, // FECHA DE EJECUTORIA
+            { value: isPH ? v.clock_license_ph : v.clock_res_date }, // FECHA DE EXPEDICIÓN
+            { value: isPH ? v.clock_license_ph : v.clock_license }, // FECHA DE EJECUTORIA
         ]
     };
 
