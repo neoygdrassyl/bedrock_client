@@ -229,6 +229,12 @@ export const REVIEW_DOCS = [
             { v: 9, c: 9, rtype: ['ph',], name: 'Cuadro de linderos ', },
         ]
     },
+    {
+        v: 0, c: 0, pid: 'rar_15', rtype: ['con', 'sub', 'cer', 'ph', 'col',], title: false,
+        items: [
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: ' Visualización de planos y detalles claros (no borrosos) para verificar su cumplimiento', }
+        ]
+    },
 ];
 
 

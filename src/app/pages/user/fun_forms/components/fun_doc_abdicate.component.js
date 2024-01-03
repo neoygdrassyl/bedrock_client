@@ -216,6 +216,50 @@ export default function FUN_D_ABDICATE(props) {
                     </datalist>
                 </div>
             </div>
+
+            {_GLOBAL_ID == "cp1" ?
+                <>
+
+                    <div className="row m-2">
+                        <div className="col-4">
+                            <label>Nombre Notificador(a)</label>
+                            <input class="form-control form-control-sm" id="fda_name_not" />
+                        </div>
+                        <div className="col-4">
+                            <label>Cargo Notificador(a)</label>
+                            <input class="form-control form-control-sm" id="fda_role_not" />
+                        </div>
+                    </div>
+
+                    <div className="row m-2">
+                        <label>Recursos</label>
+
+                        <div className="col-12 d-flex justify-content-start">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="fda_res" />
+                                <label class="form-check-label">REPOSICIÓN ANTE LA CURADORA URBANA N° 1 DE PIEDECUESTA </label>
+                            </div>
+                        </div>
+                        <div className="col-12 d-flex justify-content-start">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="fda_res" />
+                                <label class="form-check-label">APELACIÓN ANTE LA OFICINA ASESORA DE PLANEACIÓN DE PIEDECUESTA O EN SU DEFECTO ANTE EL ALCALDE MUNICIPAL  </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="row m-2">
+                        <label>Renuncia a términos</label>
+
+                        <div className="col-12 d-flex justify-content-start">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="fda_adbdicate" />
+                                <label class="form-check-label">SI </label>
+                            </div>
+                        </div>
+                    </div>
+                </> : null}
+
         </>
     }
     // ***************************  APIS *********************** //
@@ -230,11 +274,14 @@ export default function FUN_D_ABDICATE(props) {
 
         formData.set('date_year', year_1);
         formData.set('date_string', document.getElementById('fda_date_2').value);
+        formData.set('date_ll', dateParser(document.getElementById('fda_date_1').value));
+
         formData.set('time_string', document.getElementById('fda_time_t').value);
         formData.set('time_hour', hour);
         formData.set('time_min', min);
         formData.set('date_string_2', document.getElementById('fda_res_date_2').value);
         formData.set('date_year_2', year_2);
+        formData.set('date_ll_2', dateParser(document.getElementById('fda_res_date_1').value));
 
 
         formData.set('f51_name', document.getElementById('fda_f51').value);
@@ -243,6 +290,17 @@ export default function FUN_D_ABDICATE(props) {
 
         formData.set('id_res', document.getElementById('fda_res_id').value);
         formData.set('id_public', document.getElementById('fda_id').value);
+
+        if (document.getElementById('fda_name_not'))  formData.set('name_not', document.getElementById('fda_name_not').value);
+        if (document.getElementById('fda_role_not'))  formData.set('role_not', document.getElementById('fda_role_not').value);
+
+        if (document.getElementById('fda_adbdicate')) formData.set('adbdicate', document.getElementById('fda_adbdicate').checked);
+        if (document.getElementsByName('fda_res').length > 0) {
+            let resources = "";
+            resources += document.getElementsByName('fda_res')[0].checked ? '1,' : '0,';
+            resources += document.getElementsByName('fda_res')[1].checked ? '1' : '0';
+            formData.set('resources', resources);
+        }
 
         MySwal.fire({
             title: swaMsg.title_wait,

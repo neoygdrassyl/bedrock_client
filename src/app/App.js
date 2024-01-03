@@ -239,7 +239,7 @@ export default function App() {
                             swaMsg={t("swa_messages", { returnObjects: true })}
                             breadCrums={t("breadCrums", { returnObjects: true })}
                             translation={t("liquidator.liquidator", { returnObjects: true })}
-                            versioni={'2023'} hideInfo useSelector
+                            versioni={'2024'} hideInfo useSelector
                           />
                         </PrivateRoute>
                         <PrivateRoute path='/archive'>

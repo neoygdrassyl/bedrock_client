@@ -517,7 +517,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                     resolver_id6: null,
                     resolver_sattus: null,
                     resolver_context: null,
-                    disabled: value == '-4' || value == '-3' ? false : value == '-30' && currentItem.state == 200 && _CHECK_IF_PROCESS_ENDED(NegativeState) ? false : !edit,
+                    disabled: (value == '-4' || value == '-3') ? false : value == '-30' && currentItem.state == 200 && _CHECK_IF_PROCESS_ENDED(NegativeState) ? false : !edit,
                 }
                 let clock = _GET_CLOCK_STATE_VERSION(value, NegativeState);
 

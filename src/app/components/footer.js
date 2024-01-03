@@ -12,8 +12,7 @@ class Footer extends Component {
           </div>
 
           <div class="text-center p-1">
-            {translation.str_cr}
-            <a target="_blank" href="//devnatriana.com" className="text-white"> Nestor Triana</a>
+          Desarrollado por: <a target="_blank" href="//devnatriana.com" className="text-white"> Nestor Triana</a>
           </div>
         </footer>
       </div >

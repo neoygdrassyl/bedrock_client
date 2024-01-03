@@ -283,6 +283,21 @@ class RECORD_ENG_STEP_44 extends Component {
                             </div>
                         </div>
                     </li>
+                    <li class="list-group-item py-0">
+                        <div className="row">
+                            <div className="col-10">
+                                <label className="">Visualización de planos y detalles claros (no borrosos) para verificar su cumplimiento</label>
+                            </div>
+                            <div className="col-2">
+                                <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s44', 'check', 15) ?? 1)} name="r_e_select_s44"
+                                    defaultValue={_GET_STEP_TYPE_INDEX('s44', 'check', 15) ?? 1} onChange={() => manage_step_44()}>
+                                    <option value="0" className="text-danger">NO</option>
+                                    <option value="1" className="text-success">SI</option>
+                                    <option value="2" className="text-warning">N/A</option>
+                                </select>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
             </>
         }
@@ -334,6 +349,7 @@ class RECORD_ENG_STEP_44 extends Component {
                     ]
                 },
                 { title: '*Todos los planos y estudios especializados deben ir debidamente rotulados y firmados por profesional idóneo de acuerdo con el Título VI – Ley 400 de 1997', items: [], },
+                
             ]
 
             return LIST.map((list, i) => {
