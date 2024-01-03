@@ -202,7 +202,7 @@ class EXP_1 extends Component {
             let sum = 0.0;
             _areas.map(area => {
                 if (area.payment == 0) sum += Number(area.area)
-            }) 
+            })
             return (sum).toFixed(2)
         }
         let _GET_EXPENSES = (area) => {
@@ -283,7 +283,7 @@ class EXP_1 extends Component {
                             </div>
                             <div className="col">
                                 <label className="mt-1">Factura #</label>
-                                <input type="text" class="form-control" id="expedition_18"defaultValue={taxes.id_payment_1 ?? ''} />
+                                <input type="text" class="form-control" id="expedition_18" defaultValue={taxes.id_payment_1 ?? ''} />
                             </div>
                         </div>
                     </div>
@@ -478,6 +478,38 @@ class EXP_1 extends Component {
 
                     </> : ''}
 
+
+                {_GLOBAL_ID === 'cp1' ? <>
+                    <div class="card border border-dark mb-3">
+                        <div class="card-header text-uppercase">Delineación Urbana</div>
+                        <div class="card-body text-dark">
+                            <div className="row">
+
+                                <div className="col-3">
+                                    <label className="mt-1">Valor (COP)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="del_4" defaultValue={taxes.muni_deli || mun_1 || ''} disabled />
+                                    </div>
+                                </div>
+                                <div className="col-3">
+                                    <label className="mt-1">Valor Pagado (COP)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="del_pay" defaultValue={_GET_EXPEDITION_JSON('taxes').del_pay ?? ''} />
+                                    </div>
+                                </div>
+                                <div className="col-3">
+                                    <label className="mt-1">Fecha Factura</label>
+                                    <input type="date" class="form-control" id="del_date" max="2100-01-01" defaultValue={_GET_EXPEDITION_JSON('taxes').del_date ?? ''} />
+                                </div>
+                                <div className="col-3">
+                                    <label className="mt-1">Factura #</label>
+                                    <input type="text" class="form-control" id="del_number" defaultValue={_GET_EXPEDITION_JSON('taxes').del_number ?? ''} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </> : null}
+
             </>
         }
         // FUNCTIONS AND APIS Tipología edificatoria Aislad. /Plataforma Continua Artículo 471° POT
@@ -522,10 +554,15 @@ class EXP_1 extends Component {
             if (document.getElementById("expedition_25")) taxes.id_payment_0_area = document.getElementById("expedition_25").value;
             if (document.getElementById("expedition_27")) taxes.id_payment_0_real = document.getElementById("expedition_27").value;
 
-              // TAXES MUNICIPALES
-              if (document.getElementById("expedition_28")) taxes.muni_deli = document.getElementById("expedition_28").value;
-              if (document.getElementById("expedition_29")) taxes.muni_uso = document.getElementById("expedition_29").value;
-              if (document.getElementById("expedition_30")) taxes.muni_enb = document.getElementById("expedition_30").value;
+            // TAXES MUNICIPALES
+            if (document.getElementById("expedition_28")) taxes.muni_deli = document.getElementById("expedition_28").value;
+            if (document.getElementById("expedition_29")) taxes.muni_uso = document.getElementById("expedition_29").value;
+            if (document.getElementById("expedition_30")) taxes.muni_enb = document.getElementById("expedition_30").value;
+
+            // TAXES DELINEACION URBANA
+            if (document.getElementById("del_pay")) taxes.del_pay = document.getElementById("del_pay").value;
+            if (document.getElementById("del_date")) taxes.del_date = document.getElementById("del_date").value;
+            if (document.getElementById("del_number")) taxes.del_number = document.getElementById("del_number").value;
 
             formData.set('taxes', JSONObjectParser(taxes));
 

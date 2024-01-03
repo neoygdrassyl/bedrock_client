@@ -307,11 +307,10 @@ export default function RECORD_ARC_AREAS_2(props) {
         if (!_build) return 0;
         var destroy = Number(_ADD_AREAS(_destroy));
         var areaToBuild = _GET_TOTAL_AREA(_build, _historic);
-        var historic = _GET_HISTORIC(_historic)
-        var _NET_IDEX = Number(historic) + areaToBuild - destroy;
-        console.log(areaToBuild, destroy)
+        var _NET_IDEX = Number(areaToBuild) - Number(destroy);
         return (_NET_IDEX).toFixed(2);
     }
+    
     let _GET_TOTAL_AREAS = (_field, _index, ss) => {
         let areas = _GET_CHILD_33_AREAS();
         let sum = 0;

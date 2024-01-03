@@ -49,6 +49,7 @@ export default function FUN_REPORT_GEN(props) {
     var [dataResume, setDataResume] = useState([]);
     var [dataIgac, setDataIgac] = useState([]);
     var [dataNotaria, setDataNotaria] = useState([]);
+    var [dataAuditoria, setDataAuditoria] = useState([]);
 
     var [load, setLoad] = useState(0);
     var [preview, setPre] = useState(false);
@@ -1168,10 +1169,89 @@ export default function FUN_REPORT_GEN(props) {
         ]
     };
 
+    // Auditoria Contral dedpartamental
+    const header_13 = [
+        "RADICADO",
+        "Clase Y Modalidad De La Licencia",
+        "Fecha De Solicitud",
+        "Matricula Inmobiliaria",
+        "Numero predial",
+        "Numero de Resolución",
+        "Fecha De Expedicion RESOLUCION",
+        "Valor Expensas",
+        "Metraje",
+        "Estrato",
+        "Valor Pagado estampilla PROUIS",
+        "Fecha De Pago estampilla",
+        "NUMERO RECIBO PROUIS",
+        "CARGO FIJO",
+        "FACTURA CARGO FIJO",
+        "FECHA FACTURA CARGO FIJO",
+        "CARGO VARIABLE",
+        "FACTURA CARGO VARIABLE",
+        "FECHA FAC CARGO VARIABLE",
+        "IMPUESTO DELIENACION URBANA VALOR PAGADO",
+        "NUMERO DE RECIBO DELINEACION URBANA",
+        "FECHA PAGO DELINEACION URBANA",
+    ];
+    let report_data_13 = (v) => {
+        var regex = /[.,\s]/g;
+        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic,  usos: v.usos };
+        let isPH = regexChecker_isPh(_CHILD_1, true);
+        let taxes = getJSONFull(v.taxes);
+        let reso = getJSONFull(v.reso);
+        let tmp = getJSONFull(v.tmp);
+
+        let uis = ((taxes.id_payment_2_p || 0) * Number(taxes.uis ?? 0)) / 100 + Number(taxes.uis ?? 0)
+        let uis_2 = reso.sexto_v ? reso.sexto_v.split(';')[4] : false
+        if (uis_2) uis_2 = uis_2.replace(regex, '');
+
+        var rule = formsParser1(_CHILD_1);
+        var subrule = formsParser1(_CHILD_1);
+        var use = _FUN_6_PARSER(_CHILD_1.usos, true);
+        var st = v.estrato - 1
+        var Q = taxes.id_payment_0_area || false;
+        var year = moment(v.pay_date).format('YYYY')
+
+        var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year);
+        var cv_charge = v.exp_charge ? v.exp_charge.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
+
+        var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
+        let metraje = Number(taxes.id_payment_0_area || 0) + Number(cv_area)
+
+        return [
+            { value: isPH ? v.id_public : v.id_public }, // RADICADO
+            { value: formsParser1(_CHILD_1, true) }, // Clase Y Modalidad De La Licencia
+            { value: v.clock_payment }, // Fecha De Solicitud
+            { value: v.matricula }, // Matricula Inmobiliaria
+            { value: v.catastral_2 || v.catastral }, // Numero predial
+            { value: isPH ? v.id_public_ph : v.exp_id }, // Numero de Resolución
+            { value: isPH ? v.clock_license_ph : v.clock_license }, // Fecha De Expedicion RESOLUCION
+            { value: Number(expenses.cf.toFixed(0)) + Number(cv_charge.toFixed(0)) }, // Valor Expensas
+            { value: metraje.toFixed(2) }, // Metraje
+            { value: v.estrato }, // Estrato
+            { value: uis || uis_2 || 0 }, // Valor Pagado estampilla PROUIS
+            { value: v.clock_payment_uis }, // Fecha De Pago estampilla
+            { value: taxes.id_payment_2 }, // NUMERO RECIBO PROUIS
+            { value: Number(expenses.cf).toFixed(0) }, // CARGO FIJO
+            { value: v.pay_id }, // FACTURA CARGO FIJO
+            { value: v.pay_date }, // FECHA FACTURA CARGO FIJO
+            { value: Number(cv_charge).toFixed(0) }, // CARGO VARIABLE
+            { value: taxes.id_payment_1 }, // FACTURA CARGO VARIABLE
+            { value: taxes.id_payment_1_date }, // FECHA FAC CARGO VARIABLE
+            { value: taxes.del_pay }, // IMPUESTO DELIENACION URBANA VALOR PAGADO
+            { value: taxes.del_number }, // NUMERO DE RECIBO DELINEACION URBANA
+            { value: taxes.del_date }, // FECHA PAGO DELINEACION URBANA
+
+        ]
+    };
+
     useEffect(() => {
-        if (load == 0) _GET_DATA();
-        if (load == 0) _GET_DATA_MONEY();
-        if (load == 0) _GET_DATA_RESUME();
+        if (load == 0) {
+            _GET_DATA();
+            _GET_DATA_MONEY();
+            _GET_DATA_RESUME();
+        }
     }, [load]);
 
     // ***************************  DATA GETTERS *********************** //
@@ -1231,9 +1311,14 @@ export default function FUN_REPORT_GEN(props) {
 
     let _SET_DATA_MONEY = (_data) => {
         var dataMon = [];
-        _data.map(v => dataMon.push(report_data_6(v)))
+        var auditoria = [];
+        _data.map(v => {
+            dataMon.push(report_data_6(v));
+            auditoria.push(report_data_13(v));
+          
+        })
         setDataMoney(dataMon);
-
+        setDataAuditoria(auditoria);
     }
     let _SET_DATA_CONTRALORIA = (_data) => {
         var dataCon = [];
@@ -1247,6 +1332,8 @@ export default function FUN_REPORT_GEN(props) {
         var dataPlan2 = [];
         var dataIga = [];
         var notaria = [];
+       
+
 
 
         _data.map(v => {
@@ -1261,6 +1348,8 @@ export default function FUN_REPORT_GEN(props) {
             dataCon2.push(report_data_9(v));
             dataIga.push(report_data_11(v));
             notaria.push(report_data_12(v));
+           
+
         })
 
         setDataCon(dataCon);
@@ -1274,6 +1363,8 @@ export default function FUN_REPORT_GEN(props) {
         setDataPlan2(dataPlan2);
         setDataIgac(dataIga);
         setDataNotaria(notaria);
+       
+
     }
     // *************************  DATA CONVERTERS ********************** //
     let _JOIN_FIELDS = (row, fields, up) => {
@@ -1603,6 +1694,17 @@ export default function FUN_REPORT_GEN(props) {
             </div>
             {preview['pre_12'] ? <div className='row container-sh'>
                 <Spreadsheet data={dataNotaria} columnLabels={header_12} />
+            </div> : ''}
+
+            <div className='row my-2'>
+                <div className='col'>
+                    <label className='fw-bold'>AUDITORES CONTRA DEPARTAMENTAL - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_13, dataAuditoria, 'Auditores Contra departamental')}>
+                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_13']} onClick={() => setPre({ ['pre_13']: !preview['pre_13'] })} >
+                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                </div>
+            </div>
+            {preview['pre_13'] ? <div className='row container-sh'>
+                <Spreadsheet data={dataAuditoria} columnLabels={header_13} />
             </div> : ''}
 
             <div className='row my-2'>

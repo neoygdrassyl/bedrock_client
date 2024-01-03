@@ -126,7 +126,7 @@ const old_2022 = [
 
 ]
 
-const UVT = 42412;
+const UVT = 47065;
 const rules_matrix = () => {
 
     if (_GLOBAL_ID == 'cb1') return []
