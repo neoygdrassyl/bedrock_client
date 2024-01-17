@@ -9,6 +9,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import DOCS_LIST from './components/docs_list.component';
 import FUN_6_HISTORY from './components/fun_6_history.component';
+import submitService from '../../../services/submit.service';
 
 
 const MySwal = withReactContent(Swal);
@@ -17,14 +18,15 @@ class FUN_6_VIEW extends Component {
         super(props);
         this.requestUpdate = this.requestUpdate.bind(this);
         this.retrieveItem = this.retrieveItem.bind(this);
+        this.retrieveItemVR = this.retrieveItemVR.bind(this);
         this.state = {
             attachs: 0,
             edit: false,
             item: null,
             show_doc_1: false,
             modal_searchList: false,
-            pqrsxfun: false,
             currentItem6: [],
+            VRList: [],
             load: false,
         };
     }
@@ -33,6 +35,19 @@ class FUN_6_VIEW extends Component {
     }
     componentDidMount() {
         this.retrieveItem(this.props.currentId);
+        this.retrieveItemVR(this.props.currentItem.id_public);
+    }
+    retrieveItemVR(id) {
+        submitService.getIdRelated(id).then(response => {
+            let newList = [];
+            let List = response.data
+            if (!List) return;
+            List.map((value, i) => {
+                let vr = value.id_public;
+                if (!newList.includes(vr)) newList.push(vr)
+            })
+            this.setState({ VRList: newList, load: true })
+        })
     }
     retrieveItem(id) {
         FUN_SERVICE.get(id)
@@ -53,17 +68,7 @@ class FUN_6_VIEW extends Component {
                 });
             });
     }
-    retrievePQRSxFUN(id_public) {
-        FUN_SERVICE.loadPQRSxFUN(id_public)
-            .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
+
     componentDidUpdate(prevProps, prevState) {
         if (this.state.item !== prevState.item && this.state.item != null) {
             document.getElementById('fun6_descriptions_edit').value = this.state.item.description;
@@ -94,6 +99,19 @@ class FUN_6_VIEW extends Component {
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.description}</label>
+                },
+                {
+                    name: <label>VR</label>,
+                    selector: 'id_replace',
+                    sortable: true,
+                    filterable: true,
+                    minWidth: '50px',
+                    maxWidth: '150px',
+                    cell: row => this.props.VREdit ? <select className='form-select form-select-sm' id="f_6_vr" defaultValue={row.id_replace || ''}
+                        onChange={(e) => edit_6_vr(row.id, e.target.value)}>
+                        <option value="">SIN VR</option>
+                        {this.state.VRList.map(vr => <option>{vr}</option>)}
+                    </select> : <label>{row.id_replace}</label>
                 },
                 {
                     name: <label>CÓDIGO</label>,
@@ -364,6 +382,22 @@ class FUN_6_VIEW extends Component {
                 });
 
         }
+        let edit_6_vr = (id, new_vr) => {
+            formData = new FormData();
+            formData.set('id_replace', new_vr);
+            FUNService.update_6(id, formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+
+                        this.setState({ edit: false, item: null });
+                        this.requestUpdate(currentItem.id);
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+        }
+
         return (
             <div>
                 {_CHILD_6_LIST()}

@@ -2208,6 +2208,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                             {regexChecker_isPh(row, true) ?
                                 <>
                                     <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_ph', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
+                                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'expedition', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>
                                 :
                                 <>

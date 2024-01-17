@@ -6,6 +6,7 @@ import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import FUN_SERVICE from '../../../services/fun.service';
 
+
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
 import { MDBBtn } from 'mdb-react-ui-kit';
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
@@ -15,7 +16,7 @@ const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 export default function EXP_RES(props) {
-    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
 
     // ***************************  DATA GETTERS *********************** //
     let _GET_EXPEDITION_JSON = (field) => {
@@ -388,6 +389,9 @@ export default function EXP_RES(props) {
         const duty_9_dv = reso.duty_9 || 'Obtener, previa la ocupación y/o transferencia de las nuevas edificaciones que requieren supervisión técnica independiente, el Certificado Técnico de Ocupación emitido por parte del Supervisor Técnico Independiente siguiendo lo previsto en el Título 1 del Reglamento Colombiano de Construcción Sismo Resistente NSR-10 (…).';
         const duty_10_dv = reso.duty_10 || 'Remitir, para el caso de proyectos que requieren supervisión técnica independiente, copia de las actas de la supervisión técnica independiente que se expidan durante el desarrollo de la obra, así como el certificado técnico de ocupación, a las autoridades competentes para ejercer el control urbano en el municipio o distrito quienes remitirán copia a la entidad encargada de conservar el expediente del proyecto, y serán de público conocimiento. En los casos de patrimonios autónomos en los que el fideicomiso ostente la titularidad del predio y/o de la licencia de construcción, se deberá prever en el correspondiente contrato fiduciario quien es el responsable de esta obligación.'
         const duty_17_dv = reso.duty_17 || 'Solicitar en los términos establecidos en el artículo 2.2.6.1.4.7 del presente decreto la diligencia de inspección para la entrega material de las áreas de cesión.'
+        const duty_18_dv = reso.duty_18 || ''
+        const duty_19_dv = reso.duty_19 || ''
+        const duty_20_dv = reso.duty_20 || ''
 
         const added_pot_artis = {
             0: 'Plan de Ordenamiento Territorial. Articulos...',
@@ -465,24 +469,36 @@ export default function EXP_RES(props) {
         let tb_text = () => {
             let text = `# |  Número predial | Matricula inmobiliaria | Dirección | Barrio | Área predio\n`;
             let f2 = _GET_CHILD_2();
+            let law_liberties = recordArc.record_law_11_liberties
+
+            let isLiberty = law_liberties.length > 0 ? true : false
             let max_rows = 0;
             let max = f2.item_23.split('/').length;
-            if (max > max_rows) max_rows = max;
-            max = f2.item_232.split('/').length;
-            if (max > max_rows) max_rows = max;
-            max = f2.item_22.split('/').length;
-            if (max > max_rows) max_rows = max;
-            max = f2.item_211.split('/').length;
-            if (max > max_rows) max_rows = max;
 
-            for (let i = 0; i < max; i++) {
-                let cat = f2.item_23.split('/')[i] || '';
-                let cat2 = f2.item_232.split('/')[i] || '';
-                let mat = f2.item_22.split('/')[i] || '';
-                let dir = f2.item_211.split('/')[i] || '';
-
-                text += `${i + 1} | ${cat || cat2} | ${mat} | ${dir} | ${f2.item_261} | XXX m2\n`;
+            if (isLiberty) {
+                text = `# |  Número predial | Matricula inmobiliaria | Dirección | Área predio\n`;
+                law_liberties.map((item, i) => {
+                    text += `${i + 1} | ${item.predial_2 || item.predial} | ${item.id_public} | ${item.address} |  ${item.boundary.split(',')[0]} m2\n`;
+                })
             }
+            else {
+                if (max > max_rows) max_rows = max;
+                max = f2.item_232.split('/').length;
+                if (max > max_rows) max_rows = max;
+                max = f2.item_22.split('/').length;
+                if (max > max_rows) max_rows = max;
+                max = f2.item_211.split('/').length;
+                if (max > max_rows) max_rows = max;
+                for (let i = 0; i < max; i++) {
+                    let cat = f2.item_23.split('/')[i] || '';
+                    let cat2 = f2.item_232.split('/')[i] || '';
+                    let mat = f2.item_22.split('/')[i] || '';
+                    let dir = f2.item_211.split('/')[i] || '';
+    
+                    text += `${i + 1} | ${cat || cat2} | ${mat} | ${dir} | ${f2.item_261} | XXX m2\n`;
+                }
+            }
+            
 
             return text;
         }
@@ -492,6 +508,7 @@ export default function EXP_RES(props) {
         const art_1_txt = reso.art_1_txt ? reso.art_1_txt : `Parágrafo. El área del predio fue tomada del cálculo de los linderos consignados en el certificado de libertad y tradición y/o títulos de propiedad; los trámites concernientes a la inscripción, aclaración y/o corrección de área y linderos del predio con fines registrales, deberá adelantarlos ante el Área Metropolitana de Bucaramanga (gestor catastral), mediante los procedimientos establecidos en la resolución conjunta IGAC No. 1101 SNR No. 11344 del 31 de Diciembre de 2020. Por lo anterior, se sugiere antes de radicar cualquier otra actuación, realizar la inscripción del área conforme a lo antes indicado, para asegurar un trámite notarial y registral exitoso.`;
         const primero = reso.primero ? reso.primero : '';
         const segundo_cb = reso.segundo_cb ? reso.segundo_cb.split(';') : [1, 1, 1, 1, 1];
+        const segundo_a = reso.segundo_a ? reso.segundo_a : 'El titular de la solicitud urbanística ostenta la calidad de propietario, poseedor, fideicomiso o de fideicomitente de los inmuebles sujetos a este procedimiento, por tanto, se ajusta al requerimiento establecido en el artículo 2.2.6.1.2.1.5 del Decreto 1077 de 2015.';
         const tercero_cb = reso.tercero_cb ? reso.tercero_cb.split(',') : [1, 1, 1, 1, 1];
         const quinto_cb_dv = reso.quinto ? 1 : 0;
         const sexto_cb = reso.sexto_cb ? reso.sexto_cb.split(',') : [1, 1, 1];
@@ -501,13 +518,13 @@ export default function EXP_RES(props) {
         const arts_cb = reso.arts_cb ? reso.arts_cb.split(',') : [1, 1, 1, 1, 1];
 
         const sexto_v = reso.sexto_v ? reso.sexto_v.split(';') : []
-        const sexto_a1_dv =  sexto_v[0] || taxes.id_payment_3 || '';
-        const sexto_a2_dv =  sexto_v[1] || _GET_CLOCK_STATE(65).date_start || ''
-        const sexto_a3_dv =  sexto_v[2] || duty.charge || '';
+        const sexto_a1_dv = sexto_v[0] || taxes.id_payment_3 || '';
+        const sexto_a2_dv = sexto_v[1] || _GET_CLOCK_STATE(65).date_start || ''
+        const sexto_a3_dv = sexto_v[2] || duty.charge || '';
 
         const sexto_b_dv = reso.sexto_b ?? 'De acuerdo con el área generadora para la actividad de comercio y las unidades de uso xxx en estrato xxx se requieren xx unidades de parqueo. El proyecto presenta 2 cupos en el sitio y queda por compensar 1. De esta obligación se notifica al titular del presente acto de reconocimiento para que dé cumplimiento en el momento procesal exigible, esto es como condición para poder desarrollar el uso del suelo (licencia de funcionamiento), por cuanto que para expedir la presente actuación se verificó el cumplimiento de la norma vigente de carácter municipal, art. 471 del POT. Lo anterior debe realizarse de conformidad con lo establecido en las normas vigentes (Acuerdo 065 de 2006 y del Decreto 0198 de 2015 que reglamenta los artículos 363 y 364 del POT).';
 
-       
+
         const sexto_c1_dv = currentItem.id_payment || sexto_v[3] || '';
         const sexto_c2_dv = sexto_v[4] || taxes.id_payment_1 || '';
         const sexto_c3_dv = sexto_v[5] || taxChargeDelineacion || '';
@@ -565,15 +582,14 @@ export default function EXP_RES(props) {
                         </div>
                     </div>
                     <div className="col text-start">
-                        <p>El titular de la solicitud urbanística ostenta la calidad de propietario, poseedor, fideicomiso o de fideicomitente de los inmuebles sujetos a este procedimiento, por tanto, se ajusta al requerimiento establecido en el
-                            artículo 2.2.6.1.2.1.5 del Decreto 1077 de 2015.</p>
+                        <textarea class="form-control" rows={3} id="expedition_doc_res_segundo_a">{segundo_a}</textarea>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={segundo_cb[1] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
+                            <input class="form-check-input" type="checkbox" defaultChecked={segundo_cb[1] == 1 ? true : false}  name="expedition_doc_res_segundo_cb"/>
                             <label>B.</label>
                         </div>
                     </div>
@@ -1207,6 +1223,48 @@ export default function EXP_RES(props) {
 
                 <div className="row mb-1">
                     <div className="col-2">
+                    </div>
+                    <div className="col-1">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[17] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                            <label>18.</label>
+                        </div>
+                    </div>
+                    <div className="col text-start">
+                        <textarea class="form-control" id="expedition_doc_res_duty_18" rows={'2'} defaultValue={duty_18_dv}></textarea>
+                    </div>
+                </div>
+
+                <div className="row mb-1">
+                    <div className="col-2">
+                    </div>
+                    <div className="col-1">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[18] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                            <label>19.</label>
+                        </div>
+                    </div>
+                    <div className="col text-start">
+                        <textarea class="form-control" id="expedition_doc_res_duty_19" rows={'2'} defaultValue={duty_19_dv}></textarea>
+                    </div>
+                </div>
+
+                <div className="row mb-1">
+                    <div className="col-2">
+                    </div>
+                    <div className="col-1">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[19] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                            <label>20.</label>
+                        </div>
+                    </div>
+                    <div className="col text-start">
+                        <textarea class="form-control" id="expedition_doc_res_duty_20" rows={'2'} defaultValue={duty_20_dv}></textarea>
+                    </div>
+                </div>
+
+                <div className="row mb-1">
+                    <div className="col-2">
                         <label className="mt-4 fw-bold">ADICIONAL</label>
                     </div>
                     <div className="col-1">
@@ -1357,7 +1415,7 @@ export default function EXP_RES(props) {
                     </div>
 
                     <div className="col">
-                    <input class="form-control" id="expedition_doc_res_art_4_p" defaultValue={art_4_p_dv} />
+                        <input class="form-control" id="expedition_doc_res_art_4_p" defaultValue={art_4_p_dv} />
                     </div>
                 </div>
             </>
@@ -3142,7 +3200,17 @@ export default function EXP_RES(props) {
                         <label class="form-check-label">Usar paginación</label>
                     </div>
                 </div>
+
             </div>
+            <div className="row m-3">
+                <div className="col d-flex justify-content-center">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="record_rew_pagesx" defaultChecked={false} />
+                        <label class="form-check-label">Paginacion Arriba</label>
+                    </div>
+                </div>
+            </div>
+
 
             <div className="row mb-2 text-center">
 
@@ -3177,6 +3245,8 @@ export default function EXP_RES(props) {
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Saltos entre parrafos</label>
                         <input type="number" min={1} step={1} class="form-control-sm" id="record_page_step" defaultValue={1} />
+                    </div>
+                    <div className="col d-flex justify-content-center">
                     </div>
                 </div> : null}
 
@@ -3293,6 +3363,7 @@ export default function EXP_RES(props) {
         formData.set('r_signs', r_signs);
         formData.set('r_pagesi', document.getElementById("record_rew_pagesi").checked);
         formData.set('r_pagesn', document.getElementById("record_rew_pagesn").checked);
+        formData.set('r_pagesx', document.getElementById("record_rew_pagesx").checked);
         formData.set('logo', document.getElementById('exp_pdf_reso_logo').value);
         formData.set('model', document.getElementById('expedition_doc_res_model').value);
         formData.set('header_text', document.getElementById('expedition_doc_header_text').value);
@@ -3328,6 +3399,7 @@ export default function EXP_RES(props) {
 
         if (document.getElementById('expedition_doc_res_segundo_1')) formData.set('segundo_1', document.getElementById('expedition_doc_res_segundo_1').value);
         if (document.getElementById('expedition_doc_res_segundo_2')) formData.set('segundo_2', document.getElementById('expedition_doc_res_segundo_2').value);
+        if (document.getElementById('expedition_doc_res_segundo_a')) formData.set('segundo_a', document.getElementById('expedition_doc_res_segundo_a').value);
 
         if (document.getElementById('expedition_doc_res_tercero_1')) formData.set('tercero_1', document.getElementById('expedition_doc_res_tercero_1').value);
         if (document.getElementById('expedition_doc_res_tercero_2')) formData.set('tercero_2', document.getElementById('expedition_doc_res_tercero_2').value);
@@ -3344,6 +3416,9 @@ export default function EXP_RES(props) {
         if (document.getElementById('expedition_doc_res_duty_9')) formData.set('duty_9', document.getElementById('expedition_doc_res_duty_9').value);
         if (document.getElementById('expedition_doc_res_duty_10')) formData.set('duty_10', document.getElementById('expedition_doc_res_duty_10').value);
         if (document.getElementById('expedition_doc_res_duty_17')) formData.set('duty_17', document.getElementById('expedition_doc_res_duty_17').value);
+        if (document.getElementById('expedition_doc_res_duty_18')) formData.set('duty_18', document.getElementById('expedition_doc_res_duty_18').value);
+        if (document.getElementById('expedition_doc_res_duty_19')) formData.set('duty_19', document.getElementById('expedition_doc_res_duty_19').value);
+        if (document.getElementById('expedition_doc_res_duty_20')) formData.set('duty_20', document.getElementById('expedition_doc_res_duty_20').value);
         if (document.getElementById('expedition_doc_res_duty_21')) formData.set('duty_21', document.getElementById('expedition_doc_res_duty_21').value);
 
 
@@ -3355,7 +3430,7 @@ export default function EXP_RES(props) {
         if (document.getElementById('expedition_doc_res_art_4_1_dv')) formData.set('art_4_1', document.getElementById('expedition_doc_res_art_4_1_dv').value);
         if (document.getElementById('expedition_doc_res_art_4_2_dv')) formData.set('art_4_2', document.getElementById('expedition_doc_res_art_4_2_dv').value);
         if (document.getElementById('expedition_doc_res_art_4_p')) formData.set('art_4_p', document.getElementById('expedition_doc_res_art_4_p').value);
-        
+
         if (document.getElementById('expedition_doc_res_art_5')) formData.set('art_5', document.getElementById('expedition_doc_res_art_5').value);
         if (document.getElementById('expedition_doc_res_art_7')) formData.set('art_7', document.getElementById('expedition_doc_res_art_7').value);
         if (document.getElementById('expedition_doc_res_art_8')) formData.set('art_8', document.getElementById('expedition_doc_res_art_8').value);
@@ -3565,6 +3640,8 @@ export default function EXP_RES(props) {
             else values.push(0)
         }
         reso.segundo_cb = values.join(';');
+        reso.segundo_a =  document.getElementsByName('expedition_doc_res_segundo_a').value;
+
 
         values = [];
         values_html = document.getElementsByName('expedition_doc_res_sexto_v');
@@ -3655,6 +3732,9 @@ export default function EXP_RES(props) {
         reso.duty_9 = document.getElementById("expedition_doc_res_duty_9") ? document.getElementById("expedition_doc_res_duty_9").value : '';
         reso.duty_10 = document.getElementById("expedition_doc_res_duty_10") ? document.getElementById("expedition_doc_res_duty_10").value : '';
         reso.duty_17 = document.getElementById("expedition_doc_res_duty_17") ? document.getElementById("expedition_doc_res_duty_17").value : '';
+        reso.duty_18 = document.getElementById("expedition_doc_res_duty_18") ? document.getElementById("expedition_doc_res_duty_18").value : '';
+        reso.duty_19 = document.getElementById("expedition_doc_res_duty_19") ? document.getElementById("expedition_doc_res_duty_19").value : '';
+        reso.duty_20 = document.getElementById("expedition_doc_res_duty_20") ? document.getElementById("expedition_doc_res_duty_20").value : '';
         reso.duty_21 = document.getElementById("expedition_doc_res_duty_21") ? document.getElementById("expedition_doc_res_duty_21").value : '';
 
         reso.art_1_txt = document.getElementById("expedition_doc_res_art_1_text") ? document.getElementById("expedition_doc_res_art_1_text").value : '';
@@ -3664,7 +3744,7 @@ export default function EXP_RES(props) {
         reso.art_4_1 = document.getElementById("expedition_doc_res_art_4_1_dv") ? document.getElementById("expedition_doc_res_art_4_1_dv").value : '';
         reso.art_4_2 = document.getElementById("expedition_doc_res_art_4_2_dv") ? document.getElementById("expedition_doc_res_art_4_2_dv").value : '';
         reso.art_4_p = document.getElementById('expedition_doc_res_art_4_p') ? document.getElementById('expedition_doc_res_art_4_p').value : '';
-        
+
         reso.art_1p = document.getElementById("expedition_doc_res_art_1p") ? document.getElementById("expedition_doc_res_art_1p").value : '';
         reso.art_5 = document.getElementById("expedition_doc_res_art_5") ? document.getElementById("expedition_doc_res_art_5").value : '';
         reso.art_7 = document.getElementById("expedition_doc_res_art_7") ? document.getElementById("expedition_doc_res_art_7").value : '';

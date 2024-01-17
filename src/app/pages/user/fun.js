@@ -1117,6 +1117,7 @@ class FUN extends Component {
                             {regexChecker_isPh(row, true) ?
                                 <>
                                     <button type="button" onClick={() => this.toggle_recordPH(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
+                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>
                                 :
                                 <>

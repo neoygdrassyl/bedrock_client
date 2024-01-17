@@ -41,19 +41,20 @@ export default function FUN_6_UPLOAD(props) {
                     </div>
                 </div>
                 <div className="row d-flex justify-content-start">
-                    <div className="col-3">
+                    <div className="col">
                         <div class="input-group">
                             <span class="input-group-text bg-info text-white"><i class="fas fa-hashtag"></i></span>
                             <input type="text" class="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
                         </div>
                     </div>
-                    <div className="col-3">
+                    <div className="col">
                         <div class="input-group">
                             <span class="input-group-text bg-info text-white"><i class="far fa-sticky-note"></i></span>
                             <input type="number" class="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages" />
                         </div>
                     </div>
-                    <div className="col">
+
+                    <div className="col-4">
                         <div class="input-group">
                             <span class="input-group-text bg-info text-white"><i class="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
                             <input type="date" class="form-control" max="2100-01-01" defaultValue={moment().format('YYYY-MM-DD')} name="fun6_dates" />

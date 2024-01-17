@@ -746,8 +746,10 @@ class RECORD_ARC_34 extends Component {
 
                     <div className="col-6 p-1">
                         <div class="input-group">
-                            <input type="text" class="form-control me-1" name="s_34_values" onBlur={() => manage_ra_34('a41')}
-                                defaultValue={value34[7] || g_dv} />
+                            <select className="form-select" name="s_34_values" defaultValue={value34[7] || g_dv} onChange={() => manage_ra_34('a41')}>
+                                <option>SI</option>
+                                <option>NO</option>
+                            </select>
                         </div>
                     </div>
                     <div className="col-3 p-1">

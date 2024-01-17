@@ -571,6 +571,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                         {regexChecker_isPh(row, true) ?
                             <>
                                 <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
+                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                             </>
                             :
                             <>

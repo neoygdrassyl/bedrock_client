@@ -5,7 +5,7 @@ import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import JSONObjectParser from '../../../components/jsons/jsonReplacer';
 import { axis, infoCud, zones, zonesTable } from '../../../components/jsons/vars'
-import { regexChecker_isOA_2, _MANAGE_IDS, _CALCULATE_EXPENSES, formsParser1 } from '../../../components/customClasses/typeParse';
+import { regexChecker_isOA_2, _MANAGE_IDS, _CALCULATE_EXPENSES, formsParser1, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_CALC from './exp_calc.component';
 import { _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import moment from 'moment'
@@ -165,6 +165,8 @@ class EXP_1 extends Component {
             return false;
         }
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : false)
+        let isPH = () => regexChecker_isPh(currentItem ? _GET_CHILD_1() : false, true)
+
         // DATA CONVERTERS
 
         let _GET_EXP_VAR_COST = () => {
@@ -260,6 +262,7 @@ class EXP_1 extends Component {
                     </div>
                 </div>
 
+            {!isPH() ?<>
                 <div class="card border border-dark mb-3">
                     <div class="card-header text-uppercase">Expensas variables</div>
                     <div class="card-body text-dark">
@@ -316,9 +319,11 @@ class EXP_1 extends Component {
                         </div>
                     </div>
                 </div>
+            </> : null}
+               
 
 
-                {!conOA() && _GLOBAL_ID === 'cb1' ? <>
+                {!conOA() && _GLOBAL_ID === 'cb1' && !isPH() ? <>
 
                     <div class="card border border-dark mb-3">
                         <div class="card-header text-uppercase">Impuestos, tasas y estampillas</div>

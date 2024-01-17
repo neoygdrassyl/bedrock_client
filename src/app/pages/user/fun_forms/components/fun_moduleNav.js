@@ -180,17 +180,7 @@ class FUN_MODULE_NAV extends Component {
 
                                                     </> : ''}
 
-                                                    {FROM == "expedition"
-                                                        ? <div className="row mx-2 mb-1">
-                                                            <a className="btn btn-sm btn-light m-0 p-2 shadow-none">
-                                                                <i class="far fa-file-alt fa-2x" ></i> <label className="fs-6 align-top">EXPEDICIÓN</label>
-                                                            </a>
-                                                        </div>
-                                                        : <div className="row mx-2 mb-1">
-                                                            <a className="btn btn-sm btn-warning m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(currentItem, "expedition", FROM)}>
-                                                                <i class="far fa-file-alt fa-2x" ></i> <label className="fs-6 align-top">EXPEDICIÓN</label>
-                                                            </a>
-                                                        </div>}
+                                                   
                                                 </>
                                                 : <>
                                                     {FROM == "record_ph"
@@ -205,6 +195,18 @@ class FUN_MODULE_NAV extends Component {
                                                             </a>
                                                         </div>}
                                                 </>}
+                                                
+                                                {FROM == "expedition"
+                                                        ? <div className="row mx-2 mb-1">
+                                                            <a className="btn btn-sm btn-light m-0 p-2 shadow-none">
+                                                                <i class="far fa-file-alt fa-2x" ></i> <label className="fs-6 align-top">EXPEDICIÓN</label>
+                                                            </a>
+                                                        </div>
+                                                        : <div className="row mx-2 mb-1">
+                                                            <a className="btn btn-sm btn-warning m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(currentItem, "expedition", FROM)}>
+                                                                <i class="far fa-file-alt fa-2x" ></i> <label className="fs-6 align-top">EXPEDICIÓN</label>
+                                                            </a>
+                                                        </div>}
                                         </>
                                         : ""}
 

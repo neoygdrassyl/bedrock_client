@@ -2,7 +2,7 @@ import { MDBBtn } from 'mdb-react-ui-kit';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { dateParser } from '../../../../components/customClasses/typeParse';
+import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
 import moment from 'moment';
 
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -107,9 +107,9 @@ export default function FUN_D_ABDICATE(props) {
         return _CHILD_VARS;
     }
     let _SET_F51 = (name, id, role) => {
-        let f51 = _GET_CHILD_51();
+        let f51 = f51x3();
         if (name) {
-            let find = f51.find(f => f.name + ' ' + f.surname == name);
+            let find = f51.find(f => f.name == name);
             if (!find) return;
             document.getElementById('fda_f51_id').value = find.id_number;
             document.getElementById('fda_f51_role').value = find.role;
@@ -117,20 +117,39 @@ export default function FUN_D_ABDICATE(props) {
         if (id) {
             let find = f51.find(f => f.id_number == id);
             if (!find) return;
-            document.getElementById('fda_f51').value = find.name + ' ' + find.surname;
+            document.getElementById('fda_f51').value = find.name;
             document.getElementById('fda_f51_role').value = find.role;
         }
         if (role) {
             let find = f51.find(f => f.role == role);
             if (!find) return;
-            document.getElementById('fda_f51').value = find.name + ' ' + find.surname;
+            document.getElementById('fda_f51').value = find.name;
             document.getElementById('fda_f51_id').value = find.id_number;
         }
     }
+
+    let f51x3 = () => {
+        let f53 = _GET_CHILD_53();
+        let list = _GET_CHILD_51().map(i => ({
+            name: i.name + " " + i.surname,
+            id_number: i.id_number,
+            role: i.role,
+        }))
+
+        list = [...list, {
+            name: f53.item_5311 + " " + f53.item_5312,
+            id_number: f53.item_532,
+            role: f53.item_533,
+        }]
+
+        return list
+    }
+
     // ***************************  JXS *********************** //
     let _COMPONENT = () => {
         let RES_DATA = currentItem.expedition || {};
-        let f51 = _GET_CHILD_51();
+        let RES_DATA_MAIN = currentItem.expedition || {};
+        RES_DATA = RES_DATA.reso ? getJSONFull(RES_DATA.reso) : {};
         var writtenNumber = require('written-number');
         writtenNumber.defaults.lang = 'es';
         let date_1 = dateParser(moment().format('YYYY-MM-DD'));
@@ -144,6 +163,8 @@ export default function FUN_D_ABDICATE(props) {
             if (!isNaN(s)) return writtenNumber(s)
             return s
         }).join(' ');
+
+       
 
         return <>
             <div className="row m-2">
@@ -178,7 +199,7 @@ export default function FUN_D_ABDICATE(props) {
                 </div>
                 <div className="col">
                     <label>Resolución</label>
-                    <input type="text" class="form-control form-control-sm" id="fda_res_id" defaultValue={RES_DATA.id_public} />
+                    <input type="text" class="form-control form-control-sm" id="fda_res_id" defaultValue={RES_DATA_MAIN.id_public} />
                 </div>
                 <div className="col-6">
                     <label>Resolución Fecha</label>
@@ -198,21 +219,21 @@ export default function FUN_D_ABDICATE(props) {
                     <label>Titular</label>
                     <input list="fda_f51_list" class="form-control form-control-sm" id="fda_f51" onChange={(e) => _SET_F51(e.target.value, false, false)} />
                     <datalist id="fda_f51_list" >
-                        {f51.map(f => <option value={f.name + ' ' + f.surname} />)}
+                        {f51x3().map(f => <option value={f.name} />)}
                     </datalist>
                 </div>
                 <div className="col">
                     <label>Documento</label>
                     <input list="fda_f51_id_list" class="form-control form-control-sm" id="fda_f51_id" onChange={(e) => _SET_F51(false, e.target.value, false)} />
                     <datalist id="fda_f51_id_list">
-                        {f51.map(f => <option value={f.id_number}>{f.name + ' ' + f.surname}: {f.id_number}</option>)}
+                        {f51x3().map(f => <option value={f.id_number}>{f.name}: {f.id_number}</option>)}
                     </datalist>
                 </div>
                 <div className="col">
                     <label>Calidad</label>
                     <input list="fda_f51_role_list" class="form-control form-control-sm" id="fda_f51_role" onChange={(e) => _SET_F51(false, false, e.target.value)} />
                     <datalist id="fda_f51_role_list">
-                        {f51.map(f => <option value={f.role} >{f.name + ' ' + f.surname}: {f.role}</option>)}
+                        {f51x3().map(f => <option value={f.role} >{f.name}: {f.role}</option>)}
                     </datalist>
                 </div>
             </div>

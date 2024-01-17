@@ -4,9 +4,11 @@ import withReactContent from 'sweetalert2-react-content'
 
 // SERVICES
 import Submit_Service from '../../../services/submit.service'
+import funService from '../../../services/fun.service';
 import moment from 'moment';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import { MDBBtn } from 'mdb-react-ui-kit';
+import DataTable from 'react-data-table-component';
 
 
 const MySwal = withReactContent(Swal);
@@ -16,14 +18,27 @@ class SUBMIT_ANEX extends Component {
         super(props);
         this.refreshList = this.refreshList.bind(this);
         this.refreshItem = this.refreshItem.bind(this);
+        this.loadFun6 = this.loadFun6.bind(this);
         this.state = {
+            fun6: []
         };
+    }
+    componentDidMount() {
+        this.loadFun6()
     }
     refreshList() {
         this.props.refreshList();
+        this.loadFun6()
     }
     refreshItem(id) {
         this.props.refreshItem(id);
+        this.loadFun6()
+    }
+    loadFun6() {
+        funService.getAll_VrFun(this.props.currentItem.id_related, this.props.currentItem.id_public)
+        .then(response => {
+            this.setState({fun6: response.data})
+        })
     }
 
 
@@ -48,6 +63,72 @@ class SUBMIT_ANEX extends Component {
             let url = _GET_DOC().path + '/' + _GET_DOC().filename;
             url = url.replace("docs/submit/", "");
             return url;
+        }
+
+
+        let _CHILD_6_LIST = () => {
+            let _LIST = this.state.fun6;
+            const columns = [
+                {
+                    name: <label className="text-center">DESCRIPCIÓN</label>,
+                    selector: 'description',
+                    sortable: true,
+                    filterable: true,
+                    cell: row => <label>{row.description}</label>
+                },
+                {
+                    name: <label>CÓDIGO</label>,
+                    selector: 'id_public',
+                    sortable: true,
+                    filterable: true,
+                    maxWidth: '50px',
+                    cell: row => <label>{row.id_public}</label>
+                },
+                {
+                    name: <label>FOLIOS</label>,
+                    selector: 'pages',
+                    sortable: true,
+                    filterable: true,
+                    maxWidth: '40px',
+                    cell: row => <label>{row.pages}</label>
+                },
+                {
+                    name: <label>FECHA RADICACIÓN</label>,
+                    selector: 'date',
+                    sortable: true,
+                    filterable: true,
+                    maxWidth: '100px',
+                    cell: row => <label>{row.date}</label>
+                },
+                {
+                    name: <label>ACCIÓN</label>,
+                    button: true,
+                    minWidth: '150px',
+                    cell: row => <>
+                        <VIZUALIZER url={row.path + "/" + row.filename} apipath={'/files/'}
+                            icon='fas fa-search'
+                            iconWrapper='btn btn-sm btn-info m-0 p-1 shadow-none'
+                            iconStyle={{ fontSize: '150%' }} />
+                    </>
+                },
+            ]
+            return <DataTable
+                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                noDataComponent="No hay Items"
+                striped="true"
+                columns={columns}
+                data={_LIST}
+                highlightOnHover
+                pagination
+                paginationPerPage={15}
+                paginationRowsPerPageOptions={[15, 30, 60]}
+                className="data-table-component"
+                title={'DOCUMENTOS DIGITALIZADOS'}
+                noHeader
+                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+
+                dense
+            />
         }
 
         // FUNCTIONS & APIS
@@ -247,6 +328,12 @@ class SUBMIT_ANEX extends Component {
                     </div>
 
                 </form>
+
+                <hr className="my-3" />
+                <label className="fw-bold my-2">DOCUMENTOS DIGITALIZADOS EN PROYECTO</label>
+
+                {_CHILD_6_LIST()}
+
             </div >
         );
     }
