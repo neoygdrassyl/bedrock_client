@@ -54,14 +54,16 @@ class PQRSNEW extends Component {
             for (var i = 0; i < solicitors; i++) {
                 _COMPONENT.push(<div className="row">
                     <label className="app-p lead text-start fw-normal text-uppercase">SOLICITANTE N° {i + 1}</label>
+
                     <div className="col-lg-6 col-md-6">
+                        <label class="m-0">Nombre:</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
                             <input type="text" class="form-control" placeholder="Nombre Completo" name="pqrs_sol_1" />
                         </div>
-
+                        <label class="m-0">Tipo de persona:</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
@@ -75,13 +77,7 @@ class PQRSNEW extends Component {
                         </div>
                     </div>
                     <div className="col-lg-6 col-md-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-id-card"></i>
-                            </span>
-                            <input type="text" class="form-control" placeholder="Numero de Documento" name="pqrs_sol_3" />
-                        </div>
-
+                        <label class='m-0'>Tipo de documento: </label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-id-card"></i>
@@ -94,6 +90,15 @@ class PQRSNEW extends Component {
                                 <option>TARJETA DE IDENTIDAD</option>
                                 <option>OTRO</option>
                             </select>
+                        </div>
+                        <label class='m-0'>Numero de documento: </label>
+                        <div class="input-group my-1">
+
+
+                            <span class="input-group-text bg-info text-white">
+                                <i class="far fa-id-card"></i>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Numero de Documento" name="pqrs_sol_3" />
                         </div>
                     </div>
                 </div>)
@@ -449,6 +454,14 @@ class PQRSNEW extends Component {
             else if (type == 'Entrega de Copias') { time_element.value = 3; }
             else time_element.disabled = false
         }
+
+        let _REQUIRES_REPLY = (value) => {
+            switch(value){
+                case 'aqui va tipo de peticion': return true;
+
+            }
+            
+        }
         return (
             <div>
                 <form onSubmit={generatePQRS} id="app-formNew" enctype="multipart/form-data">
@@ -456,20 +469,21 @@ class PQRSNEW extends Component {
                         <label className="app-p lead text-start fw-bold text-uppercase">1.1 IDENTIFICACIÓN DEL PETICIONARIO</label>
                         <div className="text-end m-3">
 
-                            {solicitors > 1
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusSolicitor()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                            {(solicitors && contacts)  > 1
+                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => (this.minusSolicitor(), this.minusContact())}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addSolicitor()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => (this.addSolicitor(), this.addContact())}
+                            ><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
                         </div>
                         {_SOLICITORS_COMPONENT()}
                         <hr className="my-3" />
 
                         <label className="app-p lead text-start fw-bold text-uppercase">1.2 DATOS PARA NOTIFICACION</label>
                         <div className="text-end m-3">
-                            {contacts > 1
+                            {/* {contacts > 1
                                 ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusContact()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addContact()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addContact()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn> */}
                         </div>
                         {_CONTACTS_COMPONENT()}
                         <hr className="my-3" />

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem } from 'mdb-react-ui-kit';
 import { Link } from "react-router-dom";
+import { DashBoardCard } from '../../components/dashBoardCards/dashBoardCard.js';
 
 import LOGO_LIGHT_THEME from '../../img/beckrock/Grises_logo.png'
 import LOGO_DARK_THEME from '../../img/beckrock/Claros_logo.png'
@@ -32,164 +33,64 @@ class Dashboard extends Component {
 
                     </div>
 
-                    <div className="col-lg-8 col-md-10">
+                    <div className="col-lg-6 col-md-8">
                         <h1 className="text-center my-4">Panel de Control</h1>
                         <hr />
                         <h2 className="text-start my-4">Módulos de Trabajo</h2>
                         <div className="d-flex justify-content-around py-3">
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-envelope-open-text fa-4x" style={{ "color": "Crimson" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/mail'}>
-                                                <button className="btn-info btn my-3"><h3> BUZÓN DE MENSAJES</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                            <MDBCol md="4" className="px-2">
+                                <DashBoardCard title="Buzon de Mensajes" image="fas fa-envelope-open-text fa-3x" link={"/mail"} imageColor=" Crimson" />
+
                             </MDBCol>
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="far fa-calendar-alt fa-4x" style={{ "color": "MediumSeaGreen" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/appointments'}>
-                                                <button className="btn-info btn my-3"><h3> CALENDARIO DE CITAS</h3></button></Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                            <MDBCol md="4" className="px-2">
+                                <DashBoardCard title="Calendario de Citas" image="fas fa-calendar-alt fa-3x" link={"/appointments"} imageColor=" MediumSeaGreen" />
+
                             </MDBCol>
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-file-import fa-4x" style={{ "color": "Khaki" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/submit'}>
-                                                <button className="btn-info btn my-3"><h3>VENTANILLA ÚNICA</h3></button></Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+
+                            <MDBCol md="4" className="px-2">
+                                <DashBoardCard title="Ventanilla Única" image="fas fa-file-import fa-3x" link={"/submit"} imageColor=" Khaki" />
+                            </MDBCol>
+                            <MDBCol md="4" className="px-2">
+                                <DashBoardCard title="Publicaciones" image="fas fa-newspaper fa-3x" link={"/publish"} imageColor=" LightSalmon" />
+                            </MDBCol>
+                            <MDBCol md="4" className="px-2">
+                                <DashBoardCard title="Peticiones PQRS" image="fas fa-file-invoice fa-3x" link={"/pqrsadmin"} imageColor=" MediumPurple" />
                             </MDBCol>
                         </div>
-
                         <div className="d-flex justify-content-around py-3">
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-newspaper fa-4x" style={{ "color": "LightSalmon" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/publish'}>
-                                                <button className="btn-info btn my-3"><h3>PUBLICACIONES</h3></button></Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+
+                            <MDBCol md="4" className="px-2">
+                                <DashBoardCard title="Nomenclaturas" image="fas fa-signature fa-3x" link={"/nomenclature"} imageColor=" Plum" />
+
                             </MDBCol>
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-file-signature fa-4x" style={{ "color": "Plum" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/nomenclature'}>
-                                                <button className="btn-info btn my-3"><h3> NOMENCLATURAS</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+
+                            <MDBCol md="4" className="px-2">
+                                <DashBoardCard title="Archivo" image="fas fa-folder-open fa-3x" link={"/archive"} imageColor=" LightSeaGreen" />
+
                             </MDBCol>
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-folder-open fa-4x" style={{ "color": "LightSeaGreen" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/archive'}>
-                                                <button className="btn-info btn my-3"><h3>ARCHIVO</h3></button></Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                            <MDBCol md="4" className="px-2">
+                                <DashBoardCard title="Radicar Licencias" image="fas fa-file-alt fa-3x" link={"/fun"} imageColor=" DodgerBlue" />
                             </MDBCol>
+                            <MDBCol md="4" className="px-2">
+                                <DashBoardCard title="Gestionar Licencias" image="fas fa-folder fa-3x" link={"/funmanage"} imageColor=" DodgerBlue" />
+                            </MDBCol>
+                            <MDBCol md="4" className="px-2">
+                                {_GLOBAL_ID == "cb1" ?
+                                    <DashBoardCard title="Normas Urbanas" image="fas fa-home fa-3x" link={"/norms"} imageColor=" darkcyan" />
+                                    : null}
+                            </MDBCol>   
                         </div>
 
                         <div className="d-flex justify-content-around">
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-file-alt fa-4x" style={{ "color": "DodgerBlue" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/fun'}>
-                                                <button className="btn-info btn my-3"><h3> RADICAR LICENCIAS</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-file-alt fa-4x" style={{ "color": "DodgerBlue" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/funmanage'}>
-                                                <button className="btn-info btn my-3"><h3> GESTIONAR LICENCIAS</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-file-invoice fa-4x" style={{ "color": "MediumPurple" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/pqrsadmin'}>
-                                                <button className="btn-info btn my-3"><h3> PETICIONES PQRS</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
                         </div>
 
-                        <div className="d-flex justify-content-around my-3">
+                        {/* <div className="d-flex justify-content-around my-3">
                             <MDBCol md="4" className="px-3">
                             </MDBCol>
-                            <MDBCol md="4" className="px-3">
-                                {_GLOBAL_ID == "cb1" ?
-                                    <MDBCard className="bg-card">
-                                        <MDBCardBody>
-                                            <div className="text-center">
-                                                <i class="fas fa-home fa-4x" style={{ "color": "darkcyan" }}></i>
-                                            </div>
-                                            <div className="text-center">
-                                                <Link to={'/norms'}>
-                                                    <button className="btn-info btn my-3"><h3> NORMAS URBANAS</h3></button>
-                                                </Link>
-                                            </div>
-                                        </MDBCardBody>
-                                    </MDBCard>
-                                    : null}
 
-                            </MDBCol>
                             <MDBCol md="4" className="px-3">
                             </MDBCol>
-                        </div>
+                        </div> */}
 
                         <hr />
                         <h2 className="text-start my-4">Utilidades y Documentación</h2>
