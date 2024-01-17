@@ -9,7 +9,7 @@ import RECORD_REVIEW_SERVICE from '../../../services/record_review.service';
 import FUN_VERSION_NAV from '../fun_forms/components/fun_versionNav';
 import FUN_MODULE_NAV from '../fun_forms/components/fun_moduleNav';
 import FUN_G_REPORTS from '../fun_forms/components/fun_g_reports.component';
-import { dateParser_finalDate, dateParser_timeLeft, regexChecker_isOA_2, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
+import { dateParser_finalDate, dateParser_timeLeft, regexChecker_isOA_2, _MANAGE_IDS, dateParser_dateDiff } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FunService from '../../../services/fun.service';
 import { cities, domains_number, infoCud } from '../../../components/jsons/vars';
@@ -467,7 +467,14 @@ class RECORD_REVIEW extends Component {
             { alert: 'TERMINA PROCESO DE CORRECCIÓN', },
             { state: false, limit: pro() ? 46 : 31, limit_id: [32, 33], name: 'Reanudación De Términos Curaduria', types: false, desc: false, alt: [32, 33, 35] },
         ]
-
+        let get_map_clock = (_array) => {
+            let clock = false;
+            for (let i = 0; i < _array.length; i++) {
+                const element = _GET_CLOCK_STATE(_array[i]);
+                if (element.date_start) clock = element
+            }
+            return clock
+        }
 
         // JSX CONTROLLERS
         let _CHILD_6_SELECT = () => {
@@ -524,9 +531,22 @@ class RECORD_REVIEW extends Component {
             </>
         }
         let _COMPONENT_REVIEW = () => {
+
+            let limit_1 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, 30)
+            let limit_2 = ''
+            if (record_clocks[6].limit != undefined && record_clocks[6].alt == undefined)
+                limit_2 = dateParser_finalDate(get_map_clock(record_clocks[6].limit_id).date_start, record_clocks[6].limit);
+            if (record_clocks[6].limit != undefined && record_clocks[6].alt)
+                limit_2 = dateParser_finalDate(get_map_clock(record_clocks[6].alt).date_start, 1);
+
+            let is_Outdate_1 = dateParser_dateDiff(limit_1, currentRecord.date, true)
+            let is_Outdate_2 = dateParser_dateDiff(limit_2,  currentRecord.date_2, true)
+
             return <>
                 <div className="row">
-                    <div className="col-2">
+                    <div className="col-4">
+                        <br />
+                        <label className='fw-bold'>Fecha limite: </label> {limit_1} {is_Outdate_1 < 0 ?<label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
                     </div>
                     <div className="col-4">
                         <label>Fecha del acta de observaciones</label>
@@ -551,9 +571,12 @@ class RECORD_REVIEW extends Component {
                             </select>
                         </div>
                     </div>
+
                 </div>
                 <div className="row">
-                    <div className="col-2">
+                    <div className="col-4">
+                        <br />
+                        <label className='fw-bold'>Fecha limite: </label>  {limit_2} {is_Outdate_2 < 0 ?<label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
                     </div>
                     <div className="col-4">
                         <label>Fecha del acta de Correcciones</label>
@@ -579,6 +602,7 @@ class RECORD_REVIEW extends Component {
                             </select>
                         </div>
                     </div>
+
                 </div>
             </>
         }
@@ -676,14 +700,7 @@ class RECORD_REVIEW extends Component {
             </>
         }
         let _COMPONENT_CLOCK_LIST = () => {
-            let get_map_clock = (_array) => {
-                let clock = false;
-                for (let i = 0; i < _array.length; i++) {
-                    const element = _GET_CLOCK_STATE(_array[i]);
-                    if (element.date_start) clock = element
-                }
-                return clock
-            }
+
 
             return record_clocks.map((value, i) => <>
                 {value.alert ? <div className="row mx-2 my-0 text-center">
@@ -1812,7 +1829,7 @@ class RECORD_REVIEW extends Component {
                                     </Collapsible>
                                     <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">2.2 CARTA DE AMPLIACIÓN DE TERMINOS</label>}>
                                         <div className='text-start'>
-                                        <RECORD_DOC_LETTER_2
+                                            <RECORD_DOC_LETTER_2
                                                 translation={translation}
                                                 swaMsg={swaMsg}
                                                 globals={globals}

@@ -22,9 +22,11 @@ class EXP_DOCS extends Component {
         };
     }
     render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = this.props;
         const { } = this.state;
         // DATA GETTERS
+
+
         let _GET_EXPEDITION_JSON = (field) => {
             let json = currentRecord[field];
             if (!json) return {}
@@ -147,6 +149,22 @@ class EXP_DOCS extends Component {
                     });
                 });
 
+        }
+        let _GET_CLOCK = () => {
+            var _CHILD = currentItem.fun_clocks;
+            var _LIST = [];
+            if (_CHILD) {
+                _LIST = _CHILD;
+            }
+            return _LIST;
+        }
+        let _GET_CLOCK_STATE = (_state, _version) => {
+            var _CLOCK = _GET_CLOCK();
+            if (_state == null) return false;
+            for (var i = 0; i < _CLOCK.length; i++) {
+                if (_CLOCK[i].state == _state) return _CLOCK[i];
+            }
+            return false;
         }
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : false)
         //  DATA CONVERTERS
@@ -1614,6 +1632,7 @@ class EXP_DOCS extends Component {
                         <select class="form-select me-1" id={"expedition_eje_p1"} defaultValue={reso_vig_p1_dv}>
                             <option value={1}>al haber concluido los términos de ley sin haberse interpuesto ningún recurso</option>
                             <option value={2} >al haber renunciado expresamente a los términos de ley para interponer los recursos</option>
+                            <option value={3} >NO USAR</option>
                         </select>
                     </div>
                 </div>
@@ -1748,6 +1767,14 @@ class EXP_DOCS extends Component {
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="eje_pdf_rew_pagesn" defaultChecked="true" />
                             <label class="form-check-label">Usar paginación</label>
+                        </div>
+                    </div>
+                </div>
+                <div className="row m-3">
+                    <div className="col d-flex justify-content-center">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="eje_pdf_rew_pagesx" defaultChecked={false} />
+                            <label class="form-check-label">Paginacion Arriba</label>
                         </div>
                     </div>
                 </div>
@@ -2104,7 +2131,7 @@ class EXP_DOCS extends Component {
             formData.set('name', document.getElementById('expedition_doc_6_7').value);
             formData.set('nameid', document.getElementById('expedition_doc_6_8').value);
 
-            if(document.getElementById('expedition_doc_6_area')) formData.set('area', document.getElementById('expedition_doc_6_area').value);
+            if (document.getElementById('expedition_doc_6_area')) formData.set('area', document.getElementById('expedition_doc_6_area').value);
 
             // AREAS
             let _areas = document.getElementsByName('expedition_doc_6_areas');
@@ -2336,6 +2363,7 @@ class EXP_DOCS extends Component {
         }
         let pd_eje = () => {
             formData = new FormData();
+            var reso = _GET_EXPEDITION_JSON('reso');
 
             let rew_name = String(window.user.role_short + ' ' + window.user.name_full).toUpperCase();
             formData.set('r_simple_name', rew_name);
@@ -2343,6 +2371,7 @@ class EXP_DOCS extends Component {
             formData.set('r_signs', document.getElementById("eje_pdf_rew_signs").checked);
             formData.set('r_pagesi', document.getElementById("eje_pdf_rew_pagesi").checked);
             formData.set('r_pagesn', document.getElementById("eje_pdf_rew_pagesn").checked);
+            formData.set('r_pagesx', document.getElementById("eje_pdf_rew_pagesx").checked);
             formData.set('r_sign_align', document.getElementById('eje_pdf_reso_1').value);
             formData.set('logo', document.getElementById('eje_pdf_reso_logo').value);
 
@@ -2361,6 +2390,9 @@ class EXP_DOCS extends Component {
             formData.set('id_public', document.getElementById('expedition_eje_id_public').value);
             formData.set('reso_pot', document.getElementById('expedition_eje_pot').value);
             formData.set('reso_state', document.getElementById('expedition_eje_state').value);
+
+            formData.set('reso_date', reso.date);
+            formData.set('lic_date', _GET_CLOCK_STATE(3, false).date_start || false);
 
             let vigs = {
                 '0': 'CERO (0) MESES',
@@ -2629,6 +2661,7 @@ class EXP_DOCS extends Component {
                         currentVersionR={currentVersionR}
                         requestUpdate={this.props.requestUpdate}
                         requestUpdateRecord={this.props.requestUpdateRecord}
+                        recordArc={recordArc}
                     />
                 </Collapsible>
 

@@ -1178,6 +1178,8 @@ export default function FUN_REPORT_GEN(props) {
         "Numero predial",
         "Numero de Resolución",
         "Fecha De Expedicion RESOLUCION",
+        "Fecha Ejecutoria",
+        "Estado",
         "Valor Expensas",
         "Metraje",
         "Estrato",
@@ -1219,6 +1221,17 @@ export default function FUN_REPORT_GEN(props) {
         var cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
         let metraje = Number(taxes.id_payment_0_area || 0) + Number(cv_area)
 
+        let cargo_fijo = taxes.id_payment_0_real || Number(expenses.cf).toFixed(0);
+        let cargo_varibable = taxes.id_payment_1_real || Number(cv_charge).toFixed(0)
+
+        const sexto_v = reso.sexto_v ? reso.sexto_v.split(';') : []
+
+        let del_pay = taxes.del_pay || sexto_v[2]  || '' 
+        let del_number = taxes.del_number ||  sexto_v[3]  || ''
+        if(reso.parcon){
+            del_pay = taxes.del_pay || sexto_v[3]  || '' 
+            del_number = taxes.del_number ||  sexto_v[4]  || ''
+        }
         return [
             { value: isPH ? v.id_public : v.id_public }, // RADICADO
             { value: formsParser1(_CHILD_1, true) }, // Clase Y Modalidad De La Licencia
@@ -1226,21 +1239,23 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.matricula }, // Matricula Inmobiliaria
             { value: v.catastral_2 || v.catastral }, // Numero predial
             { value: isPH ? v.id_public_ph : v.exp_id }, // Numero de Resolución
-            { value: isPH ? v.clock_license_ph : v.clock_license }, // Fecha De Expedicion RESOLUCION
-            { value: Number(expenses.cf.toFixed(0)) + Number(cv_charge.toFixed(0)) }, // Valor Expensas
+            { value: isPH ? v.clock_license_ph : v.clock_res_date }, // Fecha De Expedicion RESOLUCION
+            { value: isPH ? v.clock_license_ph : v.clock_license }, // Fecha Ejecutoria
+            { value: reso.state || _GET_STATE_STR(v.state)}, // Estado
+            { value: Number(cargo_fijo) + Number(cargo_varibable) }, // Valor Expensas
             { value: metraje.toFixed(2) }, // Metraje
             { value: v.estrato }, // Estrato
             { value: uis || uis_2 || 0 }, // Valor Pagado estampilla PROUIS
             { value: v.clock_payment_uis }, // Fecha De Pago estampilla
             { value: taxes.id_payment_2 }, // NUMERO RECIBO PROUIS
-            { value: Number(expenses.cf).toFixed(0) }, // CARGO FIJO
+            { value: cargo_fijo }, // CARGO FIJO
             { value: v.pay_id }, // FACTURA CARGO FIJO
             { value: v.pay_date }, // FECHA FACTURA CARGO FIJO
-            { value: Number(cv_charge).toFixed(0) }, // CARGO VARIABLE
+            { value: cargo_varibable }, // CARGO VARIABLE
             { value: taxes.id_payment_1 }, // FACTURA CARGO VARIABLE
             { value: taxes.id_payment_1_date }, // FECHA FAC CARGO VARIABLE
-            { value: taxes.del_pay }, // IMPUESTO DELIENACION URBANA VALOR PAGADO
-            { value: taxes.del_number }, // NUMERO DE RECIBO DELINEACION URBANA
+            { value: del_pay }, // IMPUESTO DELIENACION URBANA VALOR PAGADO
+            { value: del_number }, // NUMERO DE RECIBO DELINEACION URBANA
             { value: taxes.del_date }, // FECHA PAGO DELINEACION URBANA
 
         ]
@@ -1299,9 +1314,7 @@ export default function FUN_REPORT_GEN(props) {
     let _GET_DATA_RESUME = () => {
         FUNService.reportsResume(date_1, date_2)
             .then(response => {
-                var data = [];
-                response.data.map(v => data.push(report_data_10(v)))
-                setDataResume(data)
+                _SET_DATA_RESUME(response.data)
                 setLoad(1)
             })
             .catch(e => {
@@ -1309,16 +1322,28 @@ export default function FUN_REPORT_GEN(props) {
             });
     }
 
-    let _SET_DATA_MONEY = (_data) => {
-        var dataMon = [];
+    let _SET_DATA_RESUME = (_data) => {
+        var dataResume = [];
         var auditoria = [];
         _data.map(v => {
-            dataMon.push(report_data_6(v));
+            dataResume.push(report_data_10(v));
             auditoria.push(report_data_13(v));
           
         })
-        setDataMoney(dataMon);
+        setDataResume(dataResume);
         setDataAuditoria(auditoria);
+    }
+
+    let _SET_DATA_MONEY = (_data) => {
+        var dataMon = [];
+       
+        _data.map(v => {
+            dataMon.push(report_data_6(v));
+           
+          
+        })
+        setDataMoney(dataMon);
+        
     }
     let _SET_DATA_CONTRALORIA = (_data) => {
         var dataCon = [];
@@ -1333,8 +1358,6 @@ export default function FUN_REPORT_GEN(props) {
         var dataIga = [];
         var notaria = [];
        
-
-
 
         _data.map(v => {
             dataCon.push(report_data_1(v));

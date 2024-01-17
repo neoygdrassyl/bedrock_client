@@ -5,6 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 import FUN_SERVICE from '../../../services/fun.service';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
+import RECORD_LAW_SERVICE from '../../../services/record_law.service';
 import FUN_VERSION_NAV from '../fun_forms/components/fun_versionNav';
 import FUN_MODULE_NAV from '../fun_forms/components/fun_moduleNav';
 import EXP_1 from './exp_1.component';
@@ -12,7 +13,7 @@ import EXP_AREAS from './exp_areas.component';
 import EXP_DOCS from './exp_docs.component';
 import EXP_CLOCKS from './exp_clocks.component';
 import EXP_LIC from './exp_lic.component';
-import { regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
+import { regexChecker_isOA_2, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_2 from './exp_2.component';
 
 
@@ -27,17 +28,20 @@ class EXPEDITION extends Component {
         this.requestUpdate = this.requestUpdate.bind(this);
         this.retrieveItem = this.retrieveItem.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.setItem_RecordArc = this.setItem_RecordArc.bind(this);
         this.state = {
             currentRecord: null,
             currentVersionR: null,
             loaded: false,
             currentStepIndex: 0,
             pqrsxfun: false,
+            recordArc: null,
         };
     }
     componentDidMount() {
         this.setItem_Record();
         this.retrieveItem(this.props.currentId);
+        this.setItem_RecordArc();
     }
     setItem_Record() {
         EXPEDITION_SERVICE.getRecord(this.props.currentId)
@@ -82,6 +86,23 @@ class EXPEDITION extends Component {
     requestUpdate(id) {
         this.retrieveItem(id);
     }
+    setItem_RecordArc() {
+        RECORD_LAW_SERVICE.getRecord(this.props.currentId)
+            .then(response => {
+                if (response.data.length < 1) {
+                    this.setState({
+                        recordArc: {},
+                    });
+                } else {
+                    this.setState({
+                        recordArc: response.data[0],
+                    });
+                }
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
     closeModal() {
         this.props.closeModal();
         this.props.requesRefresh();
@@ -118,7 +139,7 @@ class EXPEDITION extends Component {
     }
     render() {
         const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem } = this.state;
+        const { loaded, currentRecord, currentVersionR, currentItem, recordArc } = this.state;
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -130,14 +151,26 @@ class EXPEDITION extends Component {
             }
             if (_CHILD) {
                 if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id;
-                    _CHILD_VARS.tramite = _CHILD[_CURRENT_VERSION].tramite;
-                    _CHILD_VARS.description = _CHILD[_CURRENT_VERSION].description ? _CHILD[_CURRENT_VERSION].description : "";
+                    _CHILD_VARS = {
+                        item_0: _CHILD[_CURRENT_VERSION].id,
+                        tipo: _CHILD[_CURRENT_VERSION].tipo ? _CHILD[_CURRENT_VERSION].tipo : "",
+                        tramite: _CHILD[_CURRENT_VERSION].tramite ? _CHILD[_CURRENT_VERSION].tramite : "",
+                        m_urb: _CHILD[_CURRENT_VERSION].m_urb ? _CHILD[_CURRENT_VERSION].m_urb : "",
+                        m_sub: _CHILD[_CURRENT_VERSION].m_sub ? _CHILD[_CURRENT_VERSION].m_sub : "",
+                        m_lic: _CHILD[_CURRENT_VERSION].m_lic ? _CHILD[_CURRENT_VERSION].m_lic : "",
+                        item_6: _CHILD[_CURRENT_VERSION].usos ? _CHILD[_CURRENT_VERSION].usos : "",
+                        item_7: _CHILD[_CURRENT_VERSION].area ? _CHILD[_CURRENT_VERSION].area : "",
+                        item_8: _CHILD[_CURRENT_VERSION].vivienda ? _CHILD[_CURRENT_VERSION].vivienda : "",
+                        item_9: _CHILD[_CURRENT_VERSION].cultural ? _CHILD[_CURRENT_VERSION].cultural : "",
+                        item_101: _CHILD[_CURRENT_VERSION].regla_1 ? _CHILD[_CURRENT_VERSION].regla_1 : "",
+                        item_102: _CHILD[_CURRENT_VERSION].regla_2 ? _CHILD[_CURRENT_VERSION].regla_2 : "",
+                    }
                 }
             }
             return _CHILD_VARS;
         }
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : false)
+        let isPH = () => regexChecker_isPh(currentItem ? _GET_CHILD_1() : false, true)
         // DATA CONVERTERS
         // JSX CONTROLLERS
 
@@ -196,7 +229,7 @@ class EXPEDITION extends Component {
                                         requestUpdate={this.requestUpdate}
                                         requestUpdateRecord={this.requestUpdateRecord} />
 
-                                    {!conOA() ? <>
+                                    {!conOA() && !isPH() ? <>
                                         <EXP_AREAS
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
@@ -207,43 +240,48 @@ class EXPEDITION extends Component {
                                             requestUpdateRecord={this.requestUpdateRecord} />
                                     </> : ''}
 
-                                    <EXP_2
-                                        translation={translation} swaMsg={swaMsg} globals={globals}
-                                        currentItem={currentItem}
-                                        currentVersion={currentVersion}
-                                        currentRecord={currentRecord}
-                                        currentVersionR={currentVersionR}
-                                        requestUpdate={this.requestUpdate}
-                                        requestUpdateRecord={this.requestUpdateRecord} />
+                                    {!isPH() ?
+                                        <>
+                                            <EXP_2
+                                                translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                requestUpdate={this.requestUpdate}
+                                                requestUpdateRecord={this.requestUpdateRecord} />
 
 
-                                    <EXP_DOCS
-                                        translation={translation} swaMsg={swaMsg} globals={globals}
-                                        currentItem={currentItem}
-                                        currentVersion={currentVersion}
-                                        currentRecord={currentRecord}
-                                        currentVersionR={currentVersionR}
-                                        requestUpdate={this.requestUpdate}
-                                        requestUpdateRecord={this.requestUpdateRecord} />
+                                            <EXP_DOCS
+                                                translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                recordArc={recordArc}
+                                                requestUpdate={this.requestUpdate}
+                                                requestUpdateRecord={this.requestUpdateRecord} />
 
-                                    <EXP_CLOCKS
-                                        translation={translation} swaMsg={swaMsg} globals={globals}
-                                        currentItem={currentItem}
-                                        currentVersion={currentVersion}
-                                        currentRecord={currentRecord}
-                                        currentVersionR={currentVersionR}
-                                        requestUpdate={this.requestUpdate}
-                                    />
+                                            <EXP_CLOCKS
+                                                translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                requestUpdate={this.requestUpdate}
+                                            />
 
-                                    <EXP_LIC
-                                        translation={translation} swaMsg={swaMsg} globals={globals}
-                                        currentItem={currentItem}
-                                        currentVersion={currentVersion}
-                                        currentRecord={currentRecord}
-                                        currentVersionR={currentVersionR}
-                                        requestUpdate={this.requestUpdate}
-                                        closeModal={this.closeModal}
-                                    />
+                                            <EXP_LIC
+                                                translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                requestUpdate={this.requestUpdate}
+                                                closeModal={this.closeModal}
+                                            />
+                                        </> : null}
+
                                     {NAV_FUNA()}
 
                                 </>

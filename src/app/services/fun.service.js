@@ -102,7 +102,9 @@ class UserslDataService {
   getAll_incDocs() {
     return http.get(`/${route}/getall/incdocs`);
   }
-
+  getAll_VrFun(fun_id, vr_id) {
+    return http.get(`/${route}/vrxfun6/${fun_id}&${vr_id}`);
+  }
 
   create(data) {
     return http.post(`/${route}`, data);

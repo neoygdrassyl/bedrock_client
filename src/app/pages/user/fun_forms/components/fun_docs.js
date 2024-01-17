@@ -156,20 +156,20 @@ class FUN_DOCS extends Component {
                         </div>
                     </div>
                     <div className="row d-flex justify-content-start">
-                        <div className="col-3">
+                        <div className="col">
                             <div class="input-group">
                                 <span class="input-group-text bg-info text-white"><i class="fas fa-hashtag"></i></span>
                                 <input type="text" class="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
                             </div>
                         </div>
-                        <div className="col-3">
+                        <div className="col">
                             <div class="input-group">
                                 <span class="input-group-text bg-info text-white"><i class="far fa-sticky-note"></i></span>
                                 <input type="number" class="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages"
                                     id={'fun6_page_' + i} />
                             </div>
                         </div>
-                        <div className="col">
+                        <div className="col-4">
                             <div class="input-group">
                                 <span class="input-group-text bg-info text-white"><i class="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
                                 <input type="date" class="form-control" max="2100-01-01" defaultValue={moment().format('YYYY-MM-DD')} name="fun6_dates" />
@@ -191,8 +191,9 @@ class FUN_DOCS extends Component {
             let files = document.getElementsByName("files_fun6s");
             formData.set('attachs_length', attachs);
             for (var i = 0; i < attachs; i++) {
+                let code = document.getElementsByName("fun6_codes")
                 if (files[i].files[0]) {
-                    formData.append('file', files[i].files[0], "fun6_" + _creationYear + "_" + _folder + "_" + files[i].files[0].name)
+                    formData.append('file', files[i].files[0], "fun6_" + _creationYear + "_" + _folder + "_" + code[i].value + "-"+ files[i].files[0].name)
                 }
             }
 
@@ -286,6 +287,7 @@ class FUN_DOCS extends Component {
                         currentId={this.props.currentId}
                         currentVersion={currentVersion}
                         requestUpdate={this.requestUpdate}
+                        VREdit
                     />
 
                     <legend className="my-2 px-3 text-uppercase">
