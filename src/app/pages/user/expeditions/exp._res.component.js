@@ -2416,6 +2416,35 @@ export default function EXP_RES(props) {
 
         </>
     }
+    let _MODEL_NEG1 = () => {
+        var taxes = _GET_EXPEDITION_JSON('taxes');
+        var reso = _GET_EXPEDITION_JSON('reso');
+        let _areas = _GET_CHILD_AREAS();
+        let taxChargeDelineacion = 0;
+        for (var i = 0; i < _areas.length; i++) {
+            if (_areas[i].payment == 1 || _areas[i].payment == 2) {
+                taxChargeDelineacion += _areas[i].charge;
+            }
+        }
+
+        const sexto_c7_dv = reso.old_lic ?? 'ninguno de ellos se hizo parte.';
+
+        return <>
+            <div className="row mb-1">
+                <div className="col">
+                    <div className='row text-start'>
+                        <p>VR y fecha de manifiesto de desitimiento </p>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <input type="text" class="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </>
+    }
     let _MODEL_NEG5 = () => {
         var taxes = _GET_EXPEDITION_JSON('taxes');
         var reso = _GET_EXPEDITION_JSON('reso');
@@ -3000,6 +3029,7 @@ export default function EXP_RES(props) {
             if (model == 'ons') return _MODEL_ONS();
             if (model == 'upvigon') return _MODEL_UPVIG();
             if (model == 'upvigam') return _MODEL_UPVIG_2();
+            if (model == 'neg1') return _MODEL_NEG1();
             if (model == 'neg5') return _MODEL_NEG5();
             if (model == 'pro') return _MODEL_PRO();
             if (model == 'licup') return _MODEL_LICUP();
@@ -3305,6 +3335,7 @@ export default function EXP_RES(props) {
 
             models.push({
                 group: 'DESESTIMIENTOS', items: [
+                    { value: 'neg1', label: 'DESESTIMIENTO POR LYDF' },
                     { value: 'neg3', label: 'DESESTIMIENTO ACTA DE OBSERVACIONES' },
                     { value: 'neg4', label: 'DESESTIMIENTO POR NO PAGO' },
                     { value: 'neg5', label: 'DESESTIMIENTO VOLUNTARIO' },
