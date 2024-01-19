@@ -12,6 +12,7 @@ build_cup1.zip
 build_cub1.zip
 build.zip
 *.zip
+.vscode
 
 # testing
 /coverage
