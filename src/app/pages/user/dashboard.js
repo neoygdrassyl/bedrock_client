@@ -78,113 +78,41 @@ class Dashboard extends Component {
                                 {_GLOBAL_ID == "cb1" ?
                                     <DashBoardCard title="Normas Urbanas" image="fas fa-home fa-3x" link={"/norms"} imageColor=" darkcyan" />
                                     : null}
-                            </MDBCol>   
+                            </MDBCol>
                         </div>
 
                         <div className="d-flex justify-content-around">
                         </div>
 
-                        {/* <div className="d-flex justify-content-around my-3">
-                            <MDBCol md="4" className="px-3">
-                            </MDBCol>
-
-                            <MDBCol md="4" className="px-3">
-                            </MDBCol>
-                        </div> */}
-
                         <hr />
                         <h2 className="text-start my-4">Utilidades y Documentación</h2>
                         <div className="d-flex justify-content-around py-3">
                             <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="far fa-file-alt fa-4x" style={{ "color": "Crimson" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/osha'}>
-                                                <button className="btn-info btn my-3"><h3>DOCUMENTOS</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                                <DashBoardCard title="Documentos" image="far fa-file-alt fa-3x" link={"/osha"} imageColor=" Crimson" />
                             </MDBCol>
                             <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-calculator fa-4x" style={{ "color": "Midnightblue" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/calculator'}>
-                                                <button className="btn-info btn my-3"><h3>CALCULADORA DE EXPENSAS</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                                <DashBoardCard title="Calculadora de Expensas" image="fas fa-calculator fa-3x" link={"/calculator"} imageColor=" Midnightblue" />
                             </MDBCol>
                             <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-book fa-4x" style={{ "color": "darkgrey" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/dictionary'}>
-                                                <button className="btn-info btn my-3"><h3>DICCIONARIO DE CONSECUTIVOS</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                                <DashBoardCard title="Diccionario de Consecutivos" image="fas fa-book fa-3x" link={"/dictionary"} imageColor=" darkgrey" />
                             </MDBCol>
-                        </div>
 
-                        <div className="d-flex justify-content-around py-3">
+
                             <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-atlas fa-4x" style={{ "color": "Brown" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/guide_user'}>
-                                                <button className="btn-info btn my-3"><h3>MANUAL DE USUARIO</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                                <DashBoardCard title="Manual de Usuario" image="fas fa-atlas fa-3x" link={"/guide_user"} imageColor=" Brown" />
                             </MDBCol>
                             <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-hard-hat fa-4x" style={{ "color": "Black" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/profesionals'}>
-                                                <button className="btn-info btn my-3"><h3>BASE DE DATOS PROFESIONALES</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="4" className="px-3">
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <div className="text-center">
-                                            <i class="fas fa-address-book fa-4x" style={{ "color": "MediumSeaGreen" }}></i>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link to={'/certs'}>
-                                                <button className="btn-info btn my-3"><h3>HISTORIAL PROFESIONALES</h3></button>
-                                            </Link>
-                                        </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                                <DashBoardCard title="Base de Datos Profesionales" image="fas fa-hard-hat fa-3x" link={"/profesionals"} imageColor=" Black" />
                             </MDBCol>
                         </div>
-                    </div>
-                </div>
+                        <div className="d-flex justify-content-around py-3"
+                            lassName="px-3">
+                            <MDBCol md="4" className="px-3">
+                                <DashBoardCard title="Historial Profesionales" image="fas fa-address-book fa-4x" link={"/certs"} imageColor=" MediumSeaGreen" />
+                            </MDBCol>
+                        </div>
+                    </div >
+                </div >
             </div >
         );
     }
