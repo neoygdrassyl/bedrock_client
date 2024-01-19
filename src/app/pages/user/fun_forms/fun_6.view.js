@@ -56,7 +56,6 @@ class FUN_6_VIEW extends Component {
                     currentItem6: response.data.fun_6s,
                     load: true
                 })
-                this.retrievePQRSxFUN(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
