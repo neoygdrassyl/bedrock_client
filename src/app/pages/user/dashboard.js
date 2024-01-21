@@ -24,7 +24,7 @@ class Dashboard extends Component {
                     </MDBBreadcrumb>
 
                     <div className="row d-flex justify-content-center">
-                        <div className="col-6 text-end">
+                        <div className="col-4 text-end">
                             {this.props.theme == 'light'
                                 ? <img src={LOGO_LIGHT_THEME} class="d-block w-100" alt="..." />
                                 : <img src={LOGO_DARK_THEME} class="d-block w-100" alt="..." />}
@@ -32,7 +32,7 @@ class Dashboard extends Component {
                         </div>
 
                     </div>
-
+                
                     <div className="col-lg-6 col-md-8">
                         <h1 className="text-center my-4">Panel de Control</h1>
                         <hr />
