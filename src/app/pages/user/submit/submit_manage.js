@@ -444,7 +444,7 @@ class SUBMIT_MANAGE extends Component {
             let id_public = document.getElementById("submit_1").value;
             formData.set('id_public', id_public);
 
-            if (id_related == id_public) return MySwal.fire({
+            if (false) return MySwal.fire({
                 title: "ERROR DE DUPLICACIÓN",
                 text: "(1. Número de radicación ) y (2. Número de Solicitud)  deben ser consecutivos diferentes",
                 icon: 'error',

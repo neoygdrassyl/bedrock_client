@@ -117,7 +117,7 @@ export default function NORM_RESUME(props) {
         let formData = new FormData();
 
         formData.set('id', id);
-        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.ficha == item_general.zon_norm && ficha.sector == item_general.sector && ficha.subsector == item_general.subsector  && ficha.front == item_general.fron)
+        let FICHA = FICHA_NORM_JSON.find(ficha => ficha.ficha == item_general.zon_norm && ficha.sector == item_general.sector && ficha.subsector == item_general.subsector && ficha.front == item_general.front)
         if (!FICHA) FICHA = {}
 
         formData.set('ficha', JSON.stringify(FICHA));

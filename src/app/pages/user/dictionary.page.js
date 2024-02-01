@@ -509,6 +509,15 @@ export default function DICTIONARY(props) {
                 <MDBTabsPane show={tab == 'D'}>
                     {_COMPONENT_SEARCH_BAR('search_d', filter_D, setFil_D)}
                     {_COMPONENT_PAGINATION(LIST_D, pag_D, limit_D, setPag_D, filter_D, 'cub')}
+                    <div className='row mx-3'>
+                        <div className='col text-end'>
+                            <MDBBtn onClick={() => generateCVS(
+                                ['CÓDIGO', 'PROCESO', 'DESCRIPCCIÓN'], 
+                                LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res}`])), 
+                                'LISTADO CONSECUTIVOS DE SALIDA')}
+                                color='success' size='sm' outline><i class="fas fa-table"></i> DESCARGAR CSV</MDBBtn>
+                        </div>
+                    </div>
                     {_COMPONENT_MAIN_LIST(LIST_D, filter_D, 'cub', limit_D, pag_D, _COMPONENT_POPC_D)}
                 </MDBTabsPane>
             </MDBTabsContent>
@@ -612,6 +621,8 @@ export default function DICTIONARY(props) {
 
         link.click();
     }
+
+
     return (
         <>
             {_HEADER_COMPONENET()}

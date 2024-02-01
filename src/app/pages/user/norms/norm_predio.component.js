@@ -342,6 +342,7 @@ export default function NORM_PREDIOS(props) {
                     <div class="input-group my-1">
                         <select class="form-select" defaultValue={editItem ? editItem.bic_pred : ""} id={"norm_bic_pred" + edit}>
                             <option>NO</option>
+                            <option>SI</option>
                             {BICS.map( bic => <option>{bic.name}</option>)}
                         </select>
                     </div>
@@ -350,8 +351,8 @@ export default function NORM_PREDIOS(props) {
                     <label>Área BIC</label>
                     <div class="input-group my-1">
                     <select class="form-select" defaultValue={editItem ? editItem.bic_area : ""} id={"predio_bic_area" + edit}>
-                            <option value={0}>NO APLICA</option>
-                            <option value={1}>APLICA</option>
+                            <option value={0}>NO</option>
+                            <option value={1}>SI</option>
                         </select>
                     </div>
                 </div>
@@ -359,8 +360,8 @@ export default function NORM_PREDIOS(props) {
                     <label>Sujeto a Copm. Esp. Publico</label>
                     <div class="input-group my-1">
                     <select class="form-select" defaultValue={editItem ? editItem.art_192 : ""} id={"norm_art_192" + edit}>
-                            <option value={0}>NO APLICA</option>
-                            <option value={1}>APLICA</option>
+                            <option value={0}>NO</option>
+                            <option value={1}>SI</option>
                         </select>
                     </div>
                 </div>
