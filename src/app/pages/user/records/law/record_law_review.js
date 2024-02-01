@@ -514,8 +514,7 @@ class RECORD_LAW_EVALUATION extends Component {
                                         onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
                                     : ""
                                 }
-                                {false ?
-                                //false ?
+                                {true ?
                                     <RECORD_DOCUMENT_VERSION
                                         currentItem={currentItem}
                                         currentVersion={currentVersion}

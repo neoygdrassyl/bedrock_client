@@ -82,7 +82,6 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         let _LIST = _GET_CHILD_6();
         for (var i = 0; i < _LIST.length; i++) {
             if (_LIST[i].id_replace == _ID) {
-                console.log(_LIST[i])
                 return _LIST[i];
             }
         }

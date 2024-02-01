@@ -91,6 +91,7 @@ class FUN_6_VIEW extends Component {
 
         let _CHILD_6_LIST = () => {
             let _LIST = currentItem6;
+            let isRewDoc = (id) => id.includes('law')  || id.includes('eng') || id.includes('arc')
             const columns = [
                 {
                     name: <label className="text-center">DESCRIPCIÓN</label>,
@@ -106,11 +107,11 @@ class FUN_6_VIEW extends Component {
                     filterable: true,
                     minWidth: '50px',
                     maxWidth: '150px',
-                    cell: row => this.props.VREdit ? <select className='form-select form-select-sm' id="f_6_vr" defaultValue={row.id_replace || ''}
+                    cell: row => this.props.VREdit && !isRewDoc(row.id_replace || '') ? <select className='form-select form-select-sm' id="f_6_vr" defaultValue={row.id_replace || ''}
                         onChange={(e) => edit_6_vr(row.id, e.target.value)}>
                         <option value="">SIN VR</option>
                         {this.state.VRList.map(vr => <option>{vr}</option>)}
-                    </select> : <label>{row.id_replace}</label>
+                    </select> : isRewDoc(row.id_replace || '') ? 'INFORME' : <label>{row.id_replace}</label>
                 },
                 {
                     name: <label>CÓDIGO</label>,

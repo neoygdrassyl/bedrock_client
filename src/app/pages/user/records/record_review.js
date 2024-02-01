@@ -531,13 +531,32 @@ class RECORD_REVIEW extends Component {
             </>
         }
         let _COMPONENT_REVIEW = () => {
+            const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
+            
+            let limit_1 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, _fun_0_type_time[currentItem.type] ?? 45)
+            
+            const viaTime = () => {
+                let ldfTime = _GET_CLOCK_STATE(5).date_start;
+                let actaTime = _GET_CLOCK_STATE(30).date_start;
+                let acta2Time = _GET_CLOCK_STATE(49).date_start;
+                let corrTime = _GET_CLOCK_STATE(35).date_start;
+                
+                const evaDefaultTime = _fun_0_type_time[currentItem.type] ?? 45
+                let time = 1;
+    
+                if (ldfTime && actaTime) {
+                    if (acta2Time && corrTime) {
+                        time = evaDefaultTime - dateParser_dateDiff(ldfTime, actaTime) - dateParser_dateDiff(acta2Time, corrTime);
+                    } else {
+                        time = evaDefaultTime - dateParser_dateDiff(ldfTime, actaTime);
+                    }
+                }
+                if (time < 1) time = 1;
+                return time;
+            }
 
-            let limit_1 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, 30)
-            let limit_2 = ''
-            if (record_clocks[6].limit != undefined && record_clocks[6].alt == undefined)
-                limit_2 = dateParser_finalDate(get_map_clock(record_clocks[6].limit_id).date_start, record_clocks[6].limit);
-            if (record_clocks[6].limit != undefined && record_clocks[6].alt)
-                limit_2 = dateParser_finalDate(get_map_clock(record_clocks[6].alt).date_start, 1);
+            let limit_2 = dateParser_finalDate(_GET_CLOCK_STATE(35).date_start || _GET_CLOCK_STATE(50).date_start, viaTime())
+            
 
             let is_Outdate_1 = dateParser_dateDiff(limit_1, currentRecord.date, true)
             let is_Outdate_2 = dateParser_dateDiff(limit_2,  currentRecord.date_2, true)
