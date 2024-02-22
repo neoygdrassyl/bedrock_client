@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBBtn, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent, MDBBtnGroup } from 'mdb-react-ui-kit';
+import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBBtn, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent, MDBBtnGroup, MDBTypography } from 'mdb-react-ui-kit';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
@@ -55,6 +55,7 @@ class PQRSADMIN extends Component {
         this.refreshRequested = this.refreshRequested.bind(this);
         this.refreshCurrentItem = this.refreshCurrentItem.bind(this);
         this.setSubtmitRows = this.setSubtmitRows.bind(this);
+        this.retrievePending = this.retrievePending.bind(this);
         this.state = {
             error: null,
             isLoaded: false,
@@ -92,10 +93,13 @@ class PQRSADMIN extends Component {
             fillActive: '1',
             filterreply: false,
             filterreply2: false,
+
+            pending: [],
         };
     }
     componentDidMount() {
         this.retrievePublish();
+        this.retrievePending();
     }
     retrievePublish() {
         PQRS_Main.getAllPqrs()
@@ -110,7 +114,21 @@ class PQRSADMIN extends Component {
                 console.log(e);
             });
     }
+
+    retrievePending() {
+        PQRS_Main.getAllPqrsPending()
+            .then(response => {
+                this.setState({
+                    pending: response.data,
+                });
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
+
     refreshList() {
+        this.retrievePending();
         this.retrievePublish();
         this.setState({
             currentItem: null,
@@ -150,7 +168,7 @@ class PQRSADMIN extends Component {
             if (_LIST[i].pqrs_workers) {
                 for (var j = 0; j < _LIST[i].pqrs_workers.length; j++) {
                     let worker = _LIST[i].pqrs_workers[j]
-                    if ((!worker.reply && worker.worker_id == window.user.id) || (!worker.reply && (window.user.roleId == 1 || window.user.roleId == 5|| window.user.roleId == 3 ))) {
+                    if ((!worker.reply && worker.worker_id == window.user.id) || (!worker.reply && (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3))) {
                         worker.id_master = _LIST[i].id;
                         worker.id_public = _LIST[i].id_publico;
                         worker.time = _LIST[i].pqrs_time.time;
@@ -173,7 +191,7 @@ class PQRSADMIN extends Component {
             if (_LIST[i].pqrs_workers) {
                 for (var j = 0; j < _LIST[i].pqrs_workers.length; j++) {
                     let worker = _LIST[i].pqrs_workers[j]
-                    if (worker.worker_id == window.user.id || (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 )) {
+                    if (worker.worker_id == window.user.id || (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3)) {
                         listNotReplyTo.push(_LIST[i])
                         break;
                     }
@@ -279,9 +297,9 @@ class PQRSADMIN extends Component {
             modalEditable: !this.state.modalEditable
         });
     }
-    funcion =()=>{
-       var x = this.state.editMaster == true
-       return x
+    funcion = () => {
+        var x = this.state.editMaster == true
+        return x
     }
     // END MODAL CONTROLS
     setItem(item) {
@@ -311,11 +329,11 @@ class PQRSADMIN extends Component {
         return parseDate;
     }
     navigation = (item, TO, FROM) => {
-        
+
         switch (FROM) {
             case "general":
                 this.toggleInfo(false)
-                this.setState({editMaster: false})
+                this.setState({ editMaster: false })
                 break;
             case "edit":
                 this.toggleEdit(false)
@@ -337,11 +355,11 @@ class PQRSADMIN extends Component {
                 break;
             case "manage":
                 this.toggleManage(false)
-                this.setState({editMaster: false})
+                this.setState({ editMaster: false })
                 break;
             case "editable":
                 this.toggleEditable(false)
-                this.setState({editMaster: false})
+                this.setState({ editMaster: false })
                 break;
 
         }
@@ -520,6 +538,24 @@ class PQRSADMIN extends Component {
 
         }
 
+        const PENDING_COMPONENT = () => (
+            <div className="col-lg-11 col-md-12">
+                <MDBTypography note noteColor="warning">
+                    <div className="row">
+                        <div className="col-10">
+                            <label className="fw-bold">PQRS PENDIENTES POR VENTANILLA ÚNICA: </label>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-10">
+                            <ul>
+                                {this.state.pending.map((i) => <li>{i.id_pending}</li>)}
+                            </ul>
+                        </div>
+                    </div>
+                </MDBTypography >
+            </div >
+        )
         // -----------------
         const rowSelectedStyle = [
             {
@@ -608,7 +644,7 @@ class PQRSADMIN extends Component {
                     <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                         <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye"></i></button>
                     </MDBTooltip>
-                    {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 
+                    {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3
                         ? <>
                             <MDBTooltip title='Gestionar peticion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                                 <button className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => this.toggleManage(row)}><i class="fas fa-cog"></i></button>
@@ -674,7 +710,7 @@ class PQRSADMIN extends Component {
                     <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                         <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye"></i></button>
                     </MDBTooltip>
-                    {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 
+                    {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3
                         ? <>
                             {dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal) > (row.pqrs_law.extension == false ? (row.pqrs_time.time * 1) : (row.pqrs_time.time * 2))
                                 ? <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
@@ -733,7 +769,7 @@ class PQRSADMIN extends Component {
                     <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye "></i></button>
 
                 </MDBTooltip>,
-                
+
             },
         ]
         // CUSTOM STYLES FOR THE MODAL
@@ -866,6 +902,8 @@ class PQRSADMIN extends Component {
                         <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u7}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
 
+
+                    {this.state.pending.length > 0 ? PENDING_COMPONENT() : ''}
 
                     <div className="col-lg-11 col-md-12">
                         <h1 className="text-center my-4">GESTIÓN DE PQRS Y SOLICITUDES</h1>
@@ -1266,10 +1304,10 @@ class PQRSADMIN extends Component {
                                 closeModal={this.toggleEditable}
                                 translation_form={translation_form}
                                 retrievePublish={this.retrievePublish}
-                            /> : 
+                            /> :
                             <ACESS_EDIT
                                 swaMsg={swaMsg}
-                                editMaster1={()=>this.setState({editMaster: !this.state.editMaster})}
+                                editMaster1={() => this.setState({ editMaster: !this.state.editMaster })}
                                 NAVIGATION={this.navigation}
                                 translation={translation}
                                 currentId={this.state.currentId}

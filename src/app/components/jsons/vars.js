@@ -101,7 +101,7 @@ const info = {
         state: 'SANTANDER',
         nomen: '68276-2-',
         nomens: '2',
-        address: 'TV 154 No 150-44 LOCAL 5 -Edificio Torres del Bosque',
+        address: 'CL 4 7 57 Casco Antiguo Floridablanca',
         web: ' - ',
         number1: '67 78 293',
         number2: '(+57)305 216 6699',

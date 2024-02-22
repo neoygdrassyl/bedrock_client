@@ -15,6 +15,10 @@ class PqrsMainDataService {
     return http.get(`/${route}/pqrs/all`);
   }
 
+  getAllPqrsPending() {
+    return http.get(`/${route}/pqrs/pending`);
+  }
+
   getAllMacro(date_start, date_end) {
     return http.get(`/${route}/pqrs/macro/${date_start}&${date_end}`);
   }

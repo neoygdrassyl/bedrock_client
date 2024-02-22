@@ -11,7 +11,7 @@ const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
-    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, outCodes } = props;
 
     // ***************************  DATA GETTERS *********************** //
 
@@ -104,7 +104,7 @@ export default function EXP_CLOCKS(props) {
     let _COMPONENT_CLOCKS = () => {
         return <>
             <div className="row mx-2 bg-info text-white">
-                <div className="col-4 text-center">
+                <div className="col-3 text-center">
                     <label className="fw-bold mt-1">TITULO</label>
                 </div>
                 <div className="col text-center">
@@ -117,13 +117,16 @@ export default function EXP_CLOCKS(props) {
                     <label className="fw-bold mt-1">INFORMACION</label>
                 </div>
                 <div className="col text-center">
+                    <label className="fw-bold mt-1">CONCECUTIVO</label>
+                </div>
+                <div className="col text-center">
                     <label className="fw-bold mt-1">ANEXO</label>
                 </div>
                 <div className="col-1 text-center">
                 </div>
             </div>
             <div className="row mx-2 my-0">
-                <div className="col-4 border">
+                <div className="col-3 border">
                     <label className="fw-bold mt-2 ">{get_clockExistIcon(3)} Expensas Fijas</label>
                 </div>
                 <div className="col border py-1 text-center">
@@ -134,6 +137,8 @@ export default function EXP_CLOCKS(props) {
                 <div className="col border py-1">
                 </div>
 
+                <div className="col border py-1">
+                </div>
                 <div className="col border py-1">
                 </div>
 
@@ -155,7 +160,6 @@ export default function EXP_CLOCKS(props) {
                 if (!needClock) return;
             }
             if (value.show) return;
-
             return <>
                 {value.title ?
                     <>
@@ -167,7 +171,7 @@ export default function EXP_CLOCKS(props) {
                     </>
                     :
                     <div className="row mx-2 my-0">
-                        <div className="col-4 border">
+                        <div className="col-3 border">
                             <label className="fw-bold mt-2">{get_clockExistIcon(value.state)} {value.name}</label>
                         </div>
                         <div className="col border py-0">
@@ -190,6 +194,15 @@ export default function EXP_CLOCKS(props) {
                                 </select>
                                 : ''}
 
+                        </div>
+
+                        <div className="col border py-0">
+                            <input list="codes_exp" autoComplete='off' className='form-input form-select form-select-sm' id={'clock_exp_id_related_' + i} defaultValue={_GET_CLOCK_STATE(value.state).id_related ?? ''}
+                                onBlur={(e) => save_clock(value, i)}/>
+
+                            <datalist id="codes_exp">
+                                {outCodes.map((data) => <option value={value.cub}>{data.cub}</option>)}
+                            </datalist>
                         </div>
 
                         <div className="col border py-0">
@@ -223,11 +236,14 @@ export default function EXP_CLOCKS(props) {
         let date_start = document.getElementById("clock_exp_date_" + i).value;
         let resolver_context = document.getElementById("clock_exp_res_" + i) ? document.getElementById("clock_exp_res_" + i).value : false;
         let resolver_id6 = document.getElementById("clock_exp_id6_" + i).value;
+        let id_related = document.getElementById("clock_exp_id_related_" + i).value;
+        
 
         formDataClock.set('date_start', date_start);
         if (resolver_context) formDataClock.set('resolver_context', resolver_context);
         formDataClock.set('resolver_id6', resolver_id6);
         formDataClock.set('state', value.state);
+        formDataClock.set('id_related', id_related);
         let desc = value.desc;
         if (resolver_context) desc = desc + ': ' + resolver_context;
         formDataClock.set('desc', desc);
@@ -366,7 +382,7 @@ let extraClocks = () => {
     const clocks = [
         ...extraClocks(),
         { title: 'RESOLUCIÓN' },
-        { state: 70, name: "Acto Administrativo / Resolución ", desc: "Expedición Acto Administrativo ", limit: [69, 5], info: ['OTORGA', 'NIEGA', 'DESISTE', 'RECURSO', 'INTERNO', 'OTRO'] },
+        { state: 70, name: "Acto Administrativo / Resolución ", desc: "Expedición Acto Administrativo ", limit: [69, 5], info: ['OTORGA', 'NIEGA', 'DESISTE', 'RECURSO', 'REVOCATORIA DIRECTA', 'SILENCIO ADMINISTRATIVO', 'ACLARACIONES Y CORRECCIONES', 'INTERNO', 'OTRO'] },
         { state: 71, name: "Citación (Resolución)", desc: "Citación para notificar al solicitante de Acto Administrativo", info: ['MEDIO EFICAZ', 'CERTIFICADO', 'ELECTRÓNICO'] },
         { state: 72, name: "Notificación (Resolución)", desc: "Se le notifica al solicitante del Acto Administrativo", limit: [71, 5], info: ['PERSONAL', 'ELECTRÓNICO',] },
         { state: 73, name: "Notificación por aviso (Resolución)", desc: "El solicitante NO se presento para el Acto Administrativo, fue informado por otros medios", limit: [71, 10], info: ['CERTIFICADO', 'ELECTRÓNICO'] },
@@ -378,7 +394,8 @@ let extraClocks = () => {
         { state: 751, name: "Citación (Recurso)", desc: "Citación para notificar al solicitante de Recurso", limit: [74, 5], info: ['MEDIO EFICAZ', 'CERTIFICADO', 'ELECTRÓNICO'], requiredClock: 74 },
         { state: 752, name: "Notificación (Recurso)", desc: "Se le notifica al solicitante del Recurso", limit: [751, 5], info: ['PERSONAL', 'ELECTRÓNICO',], requiredClock: 74 },
         { state: 733, name: "Notificación por aviso (Recurso)", desc: "El solicitante NO se presento para el Recurso, fue informado por otros medios", limit: [751, 10], info: ['CERTIFICADO', 'ELECTRÓNICO'], requiredClock: 74 },
-        { state: 76, name: "Resuelve Recurso (Planeación)", desc: "El recurso se resuelve por planeación", limit: [74, 30], info: ['CONFIRMA', 'REVOCA - MODIFICA'], requiredClock: 74 },
+        { state: 762, name: "Traslado Recurso", desc: "Se traslada el recurso", limit: [75, 5], requiredClock: 74 },
+        { state: 76, name: "Apelación (Planeación)", desc: "El recurso se resuelve por planeación", limit: [74, 30], info: ['CONFIRMA', 'REVOCA - MODIFICA'], requiredClock: 74 },
         { state: 761, name: "Recepción Notificación (Planeación)", desc: "Se recibe el recurso de planeación", requiredClock: 74 },
         //{ state: 80, name: "Certificación de Ejecutoria", desc: "Certificación de Ejecutoria", limit: [[72, 73], 10],},
         { title: 'LICENCIA' },

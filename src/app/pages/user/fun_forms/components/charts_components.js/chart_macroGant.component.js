@@ -172,7 +172,9 @@ class FUN_CHART_MACRO_GRANTT extends Component {
 
                     let limit = con22 ? limit_part_1 : clock_ext ? 45 : 30;
                     let con8 = rowCon || _x;
-                    let con9 = dayEva2 || (limit - Math.abs(dayEva));
+                    let acta2Time =   (limit_part_1) + (30) + (row.clock_corrections ? 15: 0) + (5)
+                    let limit_2 = dateParser_finalDate(row.clock_date, acta2Time )
+                    let con9 = dateParser_dateDiff(limit_2,  row.rec_review_2 || moment().format('YYYY-MM-DD'), true)
 
                     if (rowCon) {
                         if (con9 > 0) _ADD_MARK('eva', {
