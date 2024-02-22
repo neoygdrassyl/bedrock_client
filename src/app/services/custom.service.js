@@ -47,6 +47,11 @@ class CustomlDataService {
     return http.get(`/consult/consult_cubDictionary`);
   }
 
+  loadDictionary_cub_id(id) {
+    return http.get(`/consult/consult_cubDictionary/${id}`);
+  }
+
+
   loadDictionary_fun() {
     return http.get(`/consult/consult_funDictionary`);
   }

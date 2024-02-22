@@ -1079,7 +1079,7 @@ export default function FUN_REPORT_GEN(props) {
         let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
         let isPH = regexChecker_isPh(_CHILD_1, true);
         let reso = getJSONFull(v.reso);
-
+        
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, // No Licencia
             { value: formsParser1(_CHILD_1, true) }, // Modalidad De La Licencia

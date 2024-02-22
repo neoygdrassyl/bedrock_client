@@ -542,7 +542,7 @@ class FUN_CLOCK_CHART extends Component {
             { id: 'de3', title: 'DES. NO CUMPLE CORRECCIONES', color: colorNeg, s: [-5, -3], f1: [49, false], f2: false, dLenght: 45, required: false, },
             //{ id: 'eva2', title: 'EVALUACIÓN (p.2)', color: colorCom, s: [35, false], f1: [49, false], f2: false, dLenght: corrTime(), required: requereCorr(), },
             
-            { id: 'via', title: 'VIABILIDAD', color: colorCom, s: [49, false], s2: [35, false], f1: [61, false], f2: false, dLenght: viaTime(), required: true, },
+            { id: 'via', title: 'VIABILIDAD', color: colorCom, s: [49, false], s2: [35, false], f1: [61, false], f2: false, dLenght: viaTime(), required: true, }, 
 
             { id: 'nvia', title: 'NOT. VIABILIDAD', color: colorCom, s: [55, false], f1: [55, false], f2: [57, false], dLenght: 15, required: true, },
 
