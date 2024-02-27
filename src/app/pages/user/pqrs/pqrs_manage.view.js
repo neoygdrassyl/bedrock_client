@@ -25,6 +25,7 @@ import PQRS_EDIT_ATTACH from './components/pqrs_manage_attachs.component';
 import { SEEN_COMPONENT_FORM } from './components/pqrs.senn.component';
 import { PQRS_SEND_DATE } from './components/pqrs_send_date.component';
 import { HISTORY_PQRS_INFO } from './components/pqrs_histoy.component';
+import { PQRS_ID_CONFIRM } from './components/pqrs_id_confitm.component';
 
 const moment = require('moment');
 
@@ -986,6 +987,12 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                     refreshCurrentItem={loadData}
                                     attachs={true}
                                 />
+                                 <div className="col-6">
+                                    <PQRS_ID_CONFIRM
+                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                        currentItem={currentItem}
+                                    />
+                                </div>
                             </div>
                         </Collapsible>
                     </fieldset>
@@ -1018,9 +1025,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         <hr></hr>
                         <h3 className='px-4'>HISTORIAL RELACIONADO</h3>
                         <HISTORY_PQRS_INFO
-                         translation={translation} swaMsg={swaMsg} globals={globals}
-                         currentItem={currentItem}
-                         refreshCurrentItem={loadData}
+                            translation={translation} swaMsg={swaMsg} globals={globals}
+                            currentItem={currentItem}
+                            refreshCurrentItem={loadData}
                         />
                     </fieldset>
 
@@ -1225,6 +1232,12 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                     refreshCurrentItem={loadData}
                                     attachs={true}
                                 />
+                                <div className="col-6">
+                                    <PQRS_SEND_DATE
+                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                        currentItem={currentItem}
+                                    />
+                                </div>
                             </div>
                         </Collapsible>
                     </fieldset>
