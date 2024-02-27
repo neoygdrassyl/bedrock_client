@@ -1219,7 +1219,7 @@ class RECORD_REVIEW extends Component {
             //let id_public = currentItem.id_public;
             formData.set('id_public', id_public);
             formData.set('new_cub', id_public);
-            formData.set('prev_cub', currentItem.id_public);
+            formData.set('prev_cub', currentRecord.id_public);
 
             manage_review(true);
         }

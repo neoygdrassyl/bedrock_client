@@ -61,18 +61,18 @@ class PQRS_MACROTABLE extends Component {
         // DATA GETTER
 
         //DATA CONVERTERS
-        let _GET_STATUS_COMPONENT = (status) => {
+        let _GET_STATUS_COMPONENT = (status, string = false) => {
             switch (status) {
                 case 0:
-                    return <label className="text-danger fw-bold">ACTIVO</label>
+                    return string ? 'ACTIVO': <label className="text-danger fw-bold">ACTIVO</label>
                 case 1:
-                    return <label className="text-success fw-bold">CERRADO</label>
+                    return string ? 'CERRADO':<label className="text-success fw-bold">CERRADO</label>
                 case 2:
-                    return <label className="text-primary fw-bold">ARCHIVADO</label>
+                    return string ? 'ARCHIVADO':<label className="text-primary fw-bold">ARCHIVADO</label>
                 case 3:
-                    return <label className="text-secondary fw-bold">TRASLADADO</label>
-                default:
-                    break;
+                    return string ? 'TRASLADADO':<label className="text-secondary fw-bold">TRASLADADO</label>
+                default:;
+                    return ''
             }
         }
         let _REPLIES_COMPONENT = (item) => {
@@ -124,20 +124,22 @@ class PQRS_MACROTABLE extends Component {
                 cell: row => <> <MDBTooltip title='Informacion solicitud' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                     <button className="btn btn-sm btn-info m-0 p-2 shadow-none"
                         onClick={() => this.props.NAVIGATION_GEN(row)}>
-                        <i class="far fa-eye fa-2x" ></i></button></MDBTooltip>
+                        <i class="far fa-eye" ></i></button></MDBTooltip>
                     {_GET_REPLY_TIME_TIME(row) > 15
                         ? <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={row}
                             refreshList={this.retrieveMacro}
                         />
                         : ""}
-                </>
+                </>,
+                excell: false,
             },
             {
                 name: "",
                 center: true,
                 maxWidth: "40px",
-                cell: row => <label>{_GET_STOPLIGHT_COLOR(row)}</label>
+                cell: row => <label>{_GET_STOPLIGHT_COLOR(row)}</label>,
+                excell: false,
             },
             { 
                 name: <label  className="text-center">CONSECUTIVO VENTANILLA ÚNICA</label>,
@@ -145,70 +147,122 @@ class PQRS_MACROTABLE extends Component {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.id_global}</label>
+                cell: row => <label>{row.id_global}</label>,
+                excellHeader: "RADICADO VENTANILLA",
+                excellValue: row => row.id_global
             }, 
-            {
-                name: <label  className="text-center">CONSECUTIVO ENTRADA</label>,
-                selector: 'id_publico',
-                sortable: true,
-                filterable: true,
-                center: true,
-                cell: row => <label>{row.id_publico}</label>
-            },
-            {
-                name: <label  className="text-center">CONSECUTIVO GUIÁ</label>,
-                selector: 'id_correspondency',
-                sortable: true,
-                filterable: true,
-                center: true,
-                cell: row => <label>{row.id_correspondency}</label>
-            },
-            {
-                name: <label  className="text-center">ESTADO</label>,
-                selector: 'status',
-                sortable: true,
-                filterable: true,
-                center: true,
-                cell: row => <>{_GET_STATUS_COMPONENT(row.status)}</>
-            },
-            {
-                name: <label  className="text-center">MEDIO DE RADICACIÓN ORIGINAL</label>,
-                selector: 'pqrs_info.radication_channel',
-                sortable: true,
-                filterable: true,
-                minWidth: "200px",
-                center: true,
-                cell: row => <label>{row.pqrs_info ? row.pqrs_info.radication_channel : ''}</label>
-            },
             {
                 name: <label  className="text-center">FECHA RADICACIÓN</label>,
                 selector: 'pqrs_time.legal',
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.pqrs_time ? row.pqrs_time.legal : ''}</label>
+                cell: row => <label>{row.pqrs_time ? row.pqrs_time.legal : ''}</label>,
+                excellHeader: "FECHA RADICACIÓN",
+                excellValue: row => row.pqrs_time ? row.pqrs_time.legal : ''
             },
             {
-                name: <label  className="text-center">TOTAL RESPUESTAS DE PROFESIONALES</label>,
-                selector: row => _REPLIES_COMPONENT(row),
+                name: <label  className="text-center">CANAL DE INGRESO </label>,
+                selector: 'pqrs_info.radication_channel',
                 sortable: true,
+                filterable: true,
+                minWidth: "200px",
                 center: true,
-                cell: row => <label>{_REPLIES_COMPONENT(row) + " de " + row.pqrs_workers.length}</label>
+                cell: row => <label>{row.pqrs_info ? row.pqrs_info.radication_channel : ''}</label>,
+                excellHeader: "CANAL DE INGRESO",
+                excellValue: row => row.pqrs_info ? row.pqrs_info.radication_channel : ''
             },
             {
-                name: <label className="text-center">FECHA LIMITE RESPUESTA LEGAL</label>,
-                selector: 'pqrs_time.legal',
-                sortable: true,
+                name: <label  className="text-center">NOMBRE PETICIONARIO</label>,
+                minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_time ? (dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time)) : ''}</label>
+                cell: row => <label>{row.pqrs_solocitors.map(e => e.name).join(', ')}</label>,
+                excellHeader: "NOMBRE PETICIONARIO",
+                excellValue: row => row.pqrs_solocitors.map(e => e.name).join(' ')
             },
             {
-                name: <label  className="text-center">TIEMPO RESTANTE</label>,
-                selector: row => (!row.status && row.pqrs_time ? dateParser_timeLeft(row.pqrs_time.legal, row.pqrs_time.time) : -9999),
+                name: <label  className="text-center">TIPO DE PETICIONARIO</label>,
+                minWidth: "200px",
+                center: true,
+                cell: row => <label>{row.pqrs_solocitors.map(e => e.type).join(', ')}</label>,
+                excellHeader: "TIPO DE PETICIONARIO",
+                excellValue: row => row.pqrs_solocitors.map(e => e.type).join(' ')
+            },
+            {
+                name: <label  className="text-center">TIPO DE DOCUMENTO</label>,
+                minWidth: "200px",
+                center: true,
+                cell: row => <label>{row.pqrs_solocitors.map(e => e.type_id).join(', ')}</label>,
+                excellHeader: "TIPO DE DOCUMENTO",
+                excellValue: row => row.pqrs_solocitors.map(e => e.type_id).join(' ')
+            }, 
+            {
+                name: <label  className="text-center">NUMERO DE DOCUMENTO</label>,
+                minWidth: "200px",
+                center: true,
+                cell: row => <label>{row.pqrs_solocitors.map(e => e.id_number).join(', ')}</label>,
+                excellHeader: "NUMERO DE DOCUMENTO",
+                excellValue: row => row.pqrs_solocitors.map(e => e.id_number).join(' ')
+            }, 
+            {
+                name: <label  className="text-center">DIRECCION</label>,
+                minWidth: "200px",
+                center: true,
+                cell: row => <label>{row.pqrs_contacts.map(e => e.address).join(', ')}</label>,
+                excellHeader: "DIRECCION",
+                excellValue: row => row.pqrs_contacts.map(e => e.address).join(' ')
+            },
+            {
+                name: <label  className="text-center">MUNICIPIO</label>,
+                minWidth: "200px",
+                center: true,
+                cell: row => <label>{row.pqrs_contacts.map(e => e.county).join(', ')}</label>,
+                excellHeader: "MUNICIPIO",
+                excellValue: row => row.pqrs_contacts.map(e => e.county).join(' ')
+            },
+            {
+                name: <label  className="text-center">CONTACTO</label>,
+                minWidth: "200px",
+                center: true,
+                cell: row => <label>{row.pqrs_contacts.map(e => e.email || e.phone).join(', ')}</label>,
+                excellHeader: "CONTACTO",
+                excellValue: row => row.pqrs_contacts.map(e => e.email || e.phone).join(' ')
+            }, 
+            {
+                name: <label  className="text-center">AUTORIZA CORREO ELECTRONICO</label>,
+                minWidth: "200px",
+                center: true,
+                cell: row => <label>{row.pqrs_contacts.map(e => e.notify ? "SI" : "NO").join(', ')}</label>,
+                excellHeader: "AUTORIZA CORREO ELECTRONICO",
+                excellValue: row => row.pqrs_contacts.map(e => e.notify ? "SI" : "NO").join(' ')
+            },
+            {
+                name: <label  className="text-center">TIPO DE PETICIÓN</label>,
+                selector: row => row.type,
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <label>{row.type}</label>,
+                excellHeader: "TIPO DE PETICIÓN",
+                excellValue: row => row.type
+            },
+            {
+                name: <label  className="text-center">TIEMPO PARA RESPONDER</label>,
+                selector: row => row.pqrs_time ? row.pqrs_time.time : '',
                 sortable: true,
                 center: true,
-                
-                cell: row => <label>{!row.status && row.pqrs_time? dateParser_timeLeft(row.pqrs_time.legal, row.pqrs_time.time) + ' dia(s)' : ""}</label>
+                cell: row => <label>{row.pqrs_time ? row.pqrs_time.time : ''}  Dia(s)</label>,
+                excellHeader: "TIEMPO PARA RESPONDER",
+                excellValue: row => row.pqrs_time ? row.pqrs_time.time : ''
+            },
+            {
+                name: <label  className="text-center">TIEMPO DE RESPUESTA</label>,
+                selector: row => _GET_REPLY_TIME_TIME(row),
+                sortable: true,
+                center: true,
+                cell: row => <label>{_GET_REPLY_TIME_REPORT(row)}</label>,
+                excellHeader: "TIEMPO DE RESPUESTA",
+                excellValue: row => _GET_REPLY_TIME_TIME(row)
             },
             {
                 name: <label  className="text-center">CONSECUTIVO SALIDA</label>,
@@ -216,24 +270,78 @@ class PQRS_MACROTABLE extends Component {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.id_reply}</label>
+                cell: row => <label>{row.id_reply}</label>,
+                excellHeader: "CONSECUTIVO SALID",
+                excellValue: row => row.id_reply
             },
             {
-                name: <label  className="text-center">FECHA REAL DE RESPUESTA</label>,
+                name: <label className="text-center">FECHA LIMITE RESPUESTA LEGAL</label>,
+                selector: 'pqrs_time.legal',
+                sortable: true,
+                center: true,
+                cell: row => <label>{row.pqrs_time ? (dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time)) : ''}</label>,
+                excellHeader: "FECHA LIMITE RESPUESTA LEGAL",
+                excellValue: row => row.pqrs_time ? (dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time)) : ''
+            },
+            {
+                name: <label  className="text-center">TIEMPO RESTANTE</label>,
+                selector: row => (!row.status && row.pqrs_time ? dateParser_timeLeft(row.pqrs_time.legal, row.pqrs_time.time) : -9999),
+                sortable: true,
+                center: true,
+                cell: row => <label>{!row.status && row.pqrs_time? dateParser_timeLeft(row.pqrs_time.legal, row.pqrs_time.time) + ' dia(s)' : ""}</label>,
+                excell: false
+            },
+            {
+                name: <label  className="text-center">FECHA DE RESPUESTA</label>,
                 selector: 'pqrs_time.reply_formal',
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.pqrs_time ? row.pqrs_time.reply_formal : ''}</label>
+                cell: row => <label>{row.pqrs_time ? row.pqrs_time.reply_formal : ''}</label>,
+                excellHeader: "FECHA DE RESPUESTA",
+                excellValue: row => row.pqrs_time ? row.pqrs_time.reply_formal : ''
+            },
+
+            // MEDIO DE EGRESO
+
+            {
+                name: <label  className="text-center">ESTADO</label>,
+                selector: 'status',
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <>{_GET_STATUS_COMPONENT(row.status)}</>,
+                excellHeader: "ESTADO",
+                excellValue: row => _GET_STATUS_COMPONENT(row.status, true)
             },
             {
-                name: <label  className="text-center">TIEMPO DE RESPUESTA</label>,
-                selector: row => _GET_REPLY_TIME_TIME(row),
+                name: <label  className="text-center">EFICAZ</label>,
+                selector: row => row.pqrs_time ? row.pqrs_time.time && _GET_REPLY_TIME_TIME(row) && Number(_GET_REPLY_TIME_TIME(row)) <= Number(row.pqrs_time.time) ? 'SI' : 'NO' : '',
                 sortable: true,
+                filterable: true,
                 center: true,
-                minWidth: "200px",
-                cell: row => <label>{_GET_REPLY_TIME_REPORT(row)}</label>
+                cell: row => <>{row.pqrs_time ? row.pqrs_time.time && _GET_REPLY_TIME_TIME(row) && Number(_GET_REPLY_TIME_TIME(row)) <= Number(row.pqrs_time.time) ? 'SI' : 'NO' : ''}</>,
+                excellHeader: "EFICAZ",
+                excellValue: row => row.pqrs_time ? row.pqrs_time.time && _GET_REPLY_TIME_TIME(row) && Number(_GET_REPLY_TIME_TIME(row)) <= Number(row.pqrs_time.time) ? 'SI' : 'NO' : ''
             },
+            {
+                name: <label  className="text-center">INDICADOR</label>,
+                selector: row => row.pqrs_time ? row.pqrs_time.time && _GET_REPLY_TIME_TIME(row) ? Number(Number(_GET_REPLY_TIME_TIME(row)) / Number(row.pqrs_time.time)).toFixed(1)  : '' : '',
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <>{row.pqrs_time ? row.pqrs_time.time && _GET_REPLY_TIME_TIME(row) ? Number(Number(_GET_REPLY_TIME_TIME(row)) / Number(row.pqrs_time.time)).toFixed(1)  : '' : ''}</>,
+                excellHeader: "EFICAZ",
+                excellValue: row => row.pqrs_time ? row.pqrs_time.time && _GET_REPLY_TIME_TIME(row) ? Number(Number(_GET_REPLY_TIME_TIME(row)) / Number(row.pqrs_time.time)).toFixed(1)  : '' : ''
+            },
+            {
+                name: <label  className="text-center">DESCRIPCIÓN</label>,
+                cell: row => row.content && row.content.length > 0 ? row.content.substring(0, 50) + (row.content.length > 50 ? "..." : '' ): '',
+                minWidth: "200px",
+                excellHeader: "DESCRIPCIÓN",
+                excellValue: row => row.content ? row.content.replace(/[\n\r]+ */g, ' ').replace(/[;]+ */g, ', ').replace(/[,]+ */g, ' ') : ''
+            },
+ 
 
         ]
 
@@ -243,36 +351,13 @@ class PQRS_MACROTABLE extends Component {
             let _data = this.state.data_macro;
             const rows = [];
 
-            const headRows = [
-                "CONSECUTIVO VENTANILLA ÚNICA",
-                'CONSECUTIVO ENTRADA',
-                'CONSECUTIVO GUIÁ',
-                'MEDIO RADICACIÓN ORIGINAL',
-                'FECHA RADICACIÓN',
-                'HORA RADICACIÓN',
-                'FECHA LIMITE RESPUESTA LEGAL',
-                'CONSECUTIVO SALIDA',
-                'FECHA REAL DE RESPUESTA',
-                'TIEMPO DE RESPUESTA',
-                'ASUNTO'];
+            const headRows = columns.filter(row => (row.excell != false)).map(row => row.excellHeader);
 
             rows.push(headRows);
             _data.map(_d => {
                 let row = [];
-                row.push(_d.id_global || ''); // id_global CONSECUTIVO VENTANILLA ÚNICA
-                row.push(_d.id_publico || ''); // id_publico CONSECUTIVO ENTRADA
-                row.push(_d.id_correspondency || ''); // id_correspondency CONSECUTIVO GUIÁ
-                row.push(_d.pqrs_info ? _d.pqrs_info.radication_channel: ''); // radication_channel MEDIO RADICACIÓN ORIGINAL
-                row.push(_d.pqrs_time ? _d.pqrs_time.legal: ''); // legal FECHA RADICACIÓN
-                row.push(_d.pqrs_time ? _d.pqrs_time.creation ? _d.pqrs_time.creation.split(' ')[1] : '' : ''); // legal HORA DE RESPUESTA
-                row.push(_d.pqrs_time ? dateParser_finalDate(_d.pqrs_time.legal, _d.pqrs_time.time) : ''); // final date
-                row.push(_d.id_reply); // id_reply
-                row.push(_d.pqrs_time ? _d.pqrs_time.reply_formal : ''); // reply_date
-                row.push(_GET_REPLY_TIME_TIME(_d) ? _GET_REPLY_TIME_TIME(_d) + " dia(s)" : ""); // reply_time
-                let new_conent = _d.content ? _d.content.replace(/[\n\r]+ */g, ' ') : '';
-                new_conent = new_conent.replace(/\;/g, ':');
-                new_conent = new_conent.replaceAll('#', '%23').replaceAll('°', 'r');
-                row.push(new_conent) // ASUNTO
+                let entry =  columns.filter(e => (e.excell != false)).map(e => e.excellValue(_d))
+                row.push(entry); 
                 rows.push(row)
             }) 
 
@@ -280,8 +365,10 @@ class PQRS_MACROTABLE extends Component {
                 + rows.map(e => e.join(";")).join("\n");
 
             var encodedUri = encodeURI(csvContent);
+            const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
+
             var link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", fixedEncodedURI);
             link.setAttribute("download", `REPORTE_PQRS_${this.props.date_start}_${this.props.date_end}.csv`);
             document.body.appendChild(link); // Required for FF
 
