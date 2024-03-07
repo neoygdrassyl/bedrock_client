@@ -17,6 +17,7 @@ import FUN_DOC_CONFIRM_INCOMPLETE from './components/fun_doc_confirminc';
 import FUN_C_CLOCKS from './components/fun_c_clocks.component';
 import moment from 'moment';
 import submitService from '../../../services/submit.service';
+import { GEM_CODE_LIST } from '../../../components/customClasses/typeParse';
 
 const MySwal = withReactContent(Swal);
 class FUNC extends Component {
@@ -211,167 +212,10 @@ class FUNC extends Component {
             let FOUND_CODE = VRDocs.find(vr => code.includes(vr.code));
             return FOUND_CODE;
         }
-        let BUILD_LIST = () => {
-            const _CODE_LIST_61 = {
-                parent: '6.1 DOCUMENTOS COMUNES A TODA SOLICITUD',
-                codes: ['511', '512', '513', '516', '517', '518', '519']
-            };
-            const _CODE_LIST_62 = {
-                parent: '6.2 DOCUNENTOS ADICIONALES EN LICENCIA DE URBANIZACIÓN',
-                children: [
-                    {
-                        parent: 'A. Modalidad Desarrollo',
-                        codes: ['621', '601a', '622', '602a']
-                    },
-                    {
-                        parent: 'B. Modalidad Saneamiento',
-                        codes: ['623', '601b', '602b', '624', '625']
-                    },
-                    {
-                        parent: 'C. Modalidad Recuperacion',
-                        codes: ['626', '627', '601c', '602c']
-                    }
-                ]
-            };
-            const _CODE_LIST_63 = {
-                parent: '6.3 DOCUMENTOS ADICIONALES EN LA LICENCIA DE PARCELACION',
-                codes: ['631', '632', '633', '630'],
-                children: [
-                    {
-                        parent: 'Documentos adicionales en licencia de parcaleación para saneamiento',
-                        codes: ['634', '635', '636']
-                    },
-                ]
-            };
-            const _CODE_LIST_64 = {
-                parent: '6.4 DOCUMENTOS ADICIONALES EN LA LICENCIA DE SUBDIVISION',
-                children: [
-                    {
-                        parent: 'A. Modalidad Subdivisión Urbana y Rural',
-                        codes: ['641']
-                    },
-                    {
-                        parent: 'B. Modalidad Reloteo',
-                        codes: ['642', '643'],
-                    },
-                ]
-            };
-            const _CODE_LIST_65 = {
-                parent: '6.5 DOCUMENTOS RECONOCIMIENTO DE EDIFICACIONES',
-                codes: ['651', '652', '653']
-            };
-            const _CODE_LIST_66 = {
-                parent: '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN',
-                codes: ['6601', '6602', '6603', '6604', '6605',],
-                children: [
-                    {
-                        parent: 'Revisión indepenciente de los diseños estructurales',
-                        codes: ['660a', '660b', '660c', '660d', '660e', '6607', '6608',]
-                    },
-                    {
-                        parent: 'Bien de interés cultural',
-                        codes: ['6609',]
-                    },
-                    {
-                        parent: 'Propiedad Horizontal',
-                        codes: ['6610',]
-                    },
-                    {
-                        parent: 'Reforzamiento Estructural para Edificaciones en riesgo por daños en la estructura',
-                        codes: ['6611',]
-                    },
-                    {
-                        parent: 'Equipamientos en suelos objeto de entrega de cesiones anticipadas',
-                        codes: ['6612', '6613',]
-                    },
-                    {
-                        parent: 'Trámite presentado ante autoridad distinta a la que otorgo la licencia inicial',
-                        codes: ['6614',]
-                    },
-                    {
-                        parent: 'Modalidad de Modificacion y Adecuacion',
-                        codes: ['6615',]
-                    },
-                    {
-                        parent: 'Modalidad de Demolicion y Cerramiento',
-                        codes: ['6616', '6617', '6618', '6619']
-                    },
-
-                ]
-            };
-            const _CODE_LIST_67 = {
-                parent: '6.7 DOCUMENTOS ADICIONALES EN LICENCIAS DE INTERVENCIÓN Y OCUPACIÓN DEL ESPACIO PÚBLICO',
-                codes: ['671', '672']
-            };
-            const _CODE_LIST_68 = {
-                parent: '6.8 DOCUMENTOS PARA OTRAS ACTUACIONES',
-                children: [
-                    {
-                        parent: 'Ajuste de cotas y áreas',
-                        codes: ['680',]
-                    },
-                    {
-                        parent: 'Aprobación de los planos de propiedad horizontal',
-                        codes: ['681', '682', '683', '684', '685',]
-                    },
-                    {
-                        parent: 'Autorización para el movimiento de tierras',
-                        codes: ['686',]
-                    },
-                    {
-                        parent: 'Aprobación de piscinas',
-                        codes: ['687', '6862',]
-                    },
-                    {
-                        parent: 'Modificación del plano urbanístico',
-                        codes: ['688', '689']
-                    },
-                ]
-            };
-
+        let BUILD_LIST = (concat) => {
             const _FUN_1 = _GET_CHILD_1();
-            let list = [];
-            list = list.concat(_CODE_LIST_61.codes);
-
-            if (_FUN_1.item_1.includes('A')) {
-                if (_FUN_1.item_3.includes('A')) list = list.concat(_CODE_LIST_62.children[0].codes);
-                if (_FUN_1.item_3.includes('B')) list = list.concat(_CODE_LIST_62.children[1].codes);
-                if (_FUN_1.item_3.includes('C')) list = list.concat(_CODE_LIST_62.children[2].codes);
-            }
-            if (_FUN_1.item_1.includes('B')) {
-                list = list.concat(_CODE_LIST_63.codes);
-                list = list.concat(_CODE_LIST_63.children[0].codes);
-            }
-            if (_FUN_1.item_1.includes('C')) {
-                if (_FUN_1.item_3.includes('A') || _FUN_1.item_3.includes('B')) list = list.concat(_CODE_LIST_64.children[0].codes);
-                if (_FUN_1.item_3.includes('C')) list = list.concat(_CODE_LIST_62.children[1].codes);
-            }
-            if (_FUN_1.item_1.includes('F')) {
-                list = list.concat(_CODE_LIST_65.codes);
-            }
-            if (_FUN_1.item_1.includes('D')) {
-                list = list.concat(_CODE_LIST_66.codes);
-                list = list.concat(_CODE_LIST_66.children[0].codes);
-                list = list.concat(_CODE_LIST_66.children[1].codes);
-                list = list.concat(_CODE_LIST_66.children[2].codes);
-                list = list.concat(_CODE_LIST_66.children[3].codes);
-                list = list.concat(_CODE_LIST_66.children[4].codes);
-                list = list.concat(_CODE_LIST_66.children[5].codes);
-                list = list.concat(_CODE_LIST_66.children[6].codes);
-                list = list.concat(_CODE_LIST_66.children[7].codes);
-            }
-            if (_FUN_1.item_1.includes('E')) {
-                list = list.concat(_CODE_LIST_67.codes);
-            }
-            if (_FUN_1.item_1.includes('G')) {
-                list = list.concat(_CODE_LIST_68.children[0].codes);
-                list = list.concat(_CODE_LIST_68.children[1].codes);
-                list = list.concat(_CODE_LIST_68.children[2].codes);
-                list = list.concat(_CODE_LIST_68.children[3].codes);
-                list = list.concat(_CODE_LIST_68.children[4].codes);
-            }
-
-            return list;
+            let list = GEM_CODE_LIST(_FUN_1, concat)
+            return list
         }
         let _ALLOW_REVIEW = () => {
             let FUN_R = _GET_FUN_R();
@@ -379,7 +223,7 @@ class FUNC extends Component {
             let CHECK = FUN_R.checked ? FUN_R.checked.split(',') : [];
             let REVIEWS = FUN_R.review ? FUN_R.review.split(',') : [];
             let R_CODES = FUN_R.code ? FUN_R.code.split(',') : [];
-            let CODES = BUILD_LIST();
+            let CODES = BUILD_LIST(true);
             let _ALLOW = CODES.every((c, i) => {
                 let R = REVIEWS.find((r) => { return r.includes(c); })
                 let r_i = R_CODES.findIndex(r => r.includes(c));

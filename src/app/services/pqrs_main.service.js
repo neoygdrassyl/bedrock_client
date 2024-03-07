@@ -164,6 +164,11 @@ class PqrsMainDataService {
     return http.delete(`/${route}`);
   }
 
+  // STEPS
+  get_all_step() {return http.get(`/${route}/step`)}
+  create_step(data) {return http.post(`/${route}/step`, data) }
+  update_step(id, data){return http.put(`/${route}/step/${id}`, data)}
+  delete_step(id) {return http.delete(`/${route}/step/${id}`)}
 }
 
 export default new PqrsMainDataService();

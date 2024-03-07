@@ -555,8 +555,8 @@ class Appointments extends Component {
                                             <tr>
                                                 <td><label>Nombre Profesional</label></td>
                                                 <td>
-                                                    <select class="form-select" id="app_worker" defaultValue={currentItem.appointment_type ? 1 : 0}>
-                                                        {users.map(user => <option>{user.name.toUpperCase()} {user.surname.toUpperCase()}</option>)}
+                                                    <select class="form-select" id="app_worker" defaultValue={(currentItem.profesional).normalize("NFD").replace(/[\u0300-\u036f]/g, "")}>
+                                                        {users.map(user => <option>{`${user.name.toUpperCase()} ${user.surname.toUpperCase()}`}</option>)}
                                                     </select>
                                                 </td>
                                             </tr>

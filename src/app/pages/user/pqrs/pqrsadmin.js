@@ -711,14 +711,11 @@ class PQRSADMIN extends Component {
                         <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye"></i></button>
                     </MDBTooltip>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3
-                        ? <>
-                            {dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal) > (row.pqrs_law.extension == false ? (row.pqrs_time.time * 1) : (row.pqrs_time.time * 2))
-                                ? <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
-                                    currentItem={row}
-                                    refreshList={this.refreshList}
-                                />
-                                : ""}
-                        </>
+                        ?
+                        <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
+                            currentItemId={row.id}
+                            refreshList={this.refreshList}
+                        />
                         : ""}
 
                 </>,
