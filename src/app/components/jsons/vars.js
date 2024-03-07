@@ -52,7 +52,13 @@ const info = {
         exp_rules : ['Exp. Variables', 'Imp. Minicipal'],
         res_extras : {
             art1p : ""
-        }
+        },
+        other_entities: [
+            {id: "Planeación", name: "Secretaria de planeación Municipio de Bucaramanga", official: "Arq. LYDA XIMENA RODRIGUEZ ACEVEDO", job: "Secretaria Municipal", email: "secretariaplaneacion@bucaramanga.gov.co", other: "H2/P2"},
+            {id: "CDMB", name: "Corporación autónoma de la Meseta de Bucaramanga", official: "Dr. JUAN CARLOS REEYES NOVA", job: "Director CDMB", email: "info@cdmb.gov.co", other: "H2/P2"},
+            {id: "UNGR", name: "Unidad Nacional para la Gestión del Riesgo", official: "Dr. OLMEDO DE JESUS LOPEZ MARTINEZ", job: "Director general", email: "correspondedncia@gestiondelriesgo.gov.co", other: "H2/P2"},
+            {id: "INGEOMINAS", name: "INGEOMINAS", official: "Dr. HÉCTOR JULIO FIERRO MORALEES", job: "Director general", email: "relacionciudadana@sgc.gov.co", other: "H2/P2"},
+        ]
     },
     'cp1': {
         name: 'CURADURIA URBANA 1',
@@ -89,7 +95,8 @@ const info = {
         exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
         res_extras : {
             art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
-        }
+        },
+        other_entities: false,
     },
     'fl2': {
         name: 'CURADURIA URBANA 2',
@@ -126,9 +133,12 @@ const info = {
         exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
         res_extras : {
             art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
-        }
+        },
+        other_entities: false,
     },
 }
+
+
 
 
 export const cities = <>

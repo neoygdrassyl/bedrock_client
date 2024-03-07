@@ -8,6 +8,17 @@ import { regexChecker_cota, regexChecker_isPh, regexChecker_modPlano, regexCheck
 
 const MySwal = withReactContent(Swal);
 
+
+const fatherValues = ['511', '512', '513', '516', '517', '518', '519',
+    '621', '601a', '622', '602a', '623', '601b', '602b', '624', '625', '626', '627', '601c', '602c',
+    '630', '631', '632', '633', '634', '635', '636',
+    '641', '642', '643',
+    '651', '652', '653',
+    '6601', '6602', '6603', '6604', '6605', '911', '660a', '660b', '660c', '660d', '660e', '660f', '6607', '6608',
+    '6609', '6610', '6611', '6612', '6613', '6614', '6615', '6616', '6617', '6618', '6619',
+    '671', '672',
+    '680', '681', '682', '683', '684', '685', '686', '687', '6862', '688', '689', '6891', '6892', '6893'];
+
 const dvCheckList = {
     '511': item => true,
     '512': item => true,
@@ -59,6 +70,7 @@ const dvCheckList = {
     '660c': item => item.fun_1s[0] ? item.fun_1s[0].area == 'D' : true,
     '660d': item => item.fun_1s[0] ? item.fun_1s[0].area == 'C' : true,
     '660e': item => item.fun_1s[0] ? item.fun_1s[0].area == 'D' : true,
+    '660f': item => true,
     '6607': item => item.fun_1s[0] ? item.fun_1s[0].area == 'B' || item.fun_1s[0].area == 'C' || item.fun_1s[0].area == 'D' : true,
     '6608': item => item.fun_1s[0] ? item.fun_1s[0].area == 'B' || item.fun_1s[0].area == 'C' || item.fun_1s[0].area == 'D' : true,
     '6609': item => item.fun_1s[0] ? item.fun_1s[0].cultural ? item.fun_1s[0].cultural == 'A' : true : true,
@@ -87,7 +99,9 @@ const dvCheckList = {
     '6862': item => item.fun_1s[0] ? item.fun_1s[0].tramite ? regexChecker_piscina(item.fun_1s[0].tramite) : true : true,
     '688': item => item.fun_1s[0] ? item.fun_1s[0].tramite ? regexChecker_modPlano(item.fun_1s[0].tramite) : true : true,
     '689': item => item.fun_1s[0] ? item.fun_1s[0].tramite ? regexChecker_modPlano(item.fun_1s[0].tramite) : true : true,
-
+    '6891': item => true,
+    '6892': item => true,
+    '6893': item => true,
 }
 class FUN_CHECKLIST_N extends Component {
     constructor(props) {
@@ -98,16 +112,6 @@ class FUN_CHECKLIST_N extends Component {
     componentDidUpdate(prevProps) {
         // Uso tipico (no olvides de comparar las props):
         if (this.props.currentVersion !== prevProps.currentVersion && this.props.currentVersion != null) {
-            let fatherValues = ['511', '512', '513', '516', '517', '518', '519',
-                '621', '601a', '622', '602a', '623', '601b', '602b', '624', '625', '626', '627', '601c', '602c',
-                '630', '631', '632', '633', '634', '635', '636',
-                '641', '642', '643',
-                '651', '652', '653',
-                '6601', '6602', '6603', '6604', '6605', '911', '660a', '660b', '660c', '660d', '660e', '6607', '6608',
-                '6609', '6610', '6611', '6612', '6613', '6614', '6615', '6616', '6617', '6618', '6619',
-                '671', '672',
-                '680', '681', '682', '683', '684', '685', '686', '687', '6862', '688', '689'];
-
             for (var i = 0; i < fatherValues.length; i++) {
                 let radios = document.getElementsByName(fatherValues[i]);
                 if (radios.length) {
@@ -211,6 +215,8 @@ class FUN_CHECKLIST_N extends Component {
                 else return false;
             }
         }
+
+        let m_2022 = Number(currentItem.model) >= 2022
 
         let _SET_610 = () => {
             return <>
@@ -428,7 +434,9 @@ class FUN_CHECKLIST_N extends Component {
                         <sup className="">Indique la condición por la que se debe adelantar la revisión (Apéndice A-6.3 NSR 10)</sup>
                     </div>
                 </div>
-                {_PRINT_GROUP(['660a', '660b', '660c', '660d', '660e'])}
+                {_PRINT_GROUP(
+                    m_2022 ? ['660a', '660b', '660c', '660d', '660e', '660f'] : ['660a', '660b', '660c', '660d', '660e']
+                )}
                 <div className="row">
                     <div className="col-12">
                         <p className="">Para las condiciones anteroriores, adjuntar los siguinetes documentos:</p>
@@ -565,6 +573,23 @@ class FUN_CHECKLIST_N extends Component {
                         </div>
                     </div>
                     {_PRINT_GROUP(['688', '689'])}
+
+                    {m_2022 ? <>
+
+                        <div className="row">
+                            <div className="col-12">
+                                <label className="fw-bold">Concepto de norma urbanística y uso del suelo:</label>
+                            </div>
+                        </div>
+                        {_PRINT_GROUP(['6891', '6892'])}
+
+                       <div className="row">
+                            <div className="col-12">
+                                <label className="fw-bold">Bienes destinados al uso público o con vocación al uso público:</label>
+                            </div>
+                        </div>
+                        {_PRINT_GROUP(['6893'])}
+                    </> : null}
                 </>
             }
         }
@@ -605,16 +630,6 @@ class FUN_CHECKLIST_N extends Component {
             const _CHILD_REVIEW = _SET_CHILD_REVIEW();
 
             let radios = [];
-            let fatherValues = ['511', '512', '513', '516', '517', '518', '519',
-                '621', '601a', '622', '602a', '623', '601b', '602b', '624', '625', '626', '627', '601c', '602c',
-                '630', '631', '632', '633', '634', '635', '636',
-                '641', '642', '643',
-                '651', '652', '653',
-                '6601', '6602', '6603', '6604', '6605', '911', '660a', '660b', '660c', '660d', '660e', '6607', '6608',
-                '6609', '6610', '6611', '6612', '6613', '6614', '6615', '6616', '6617', '6618', '6619',
-                '671', '672',
-                '680', '681', '682', '683', '684', '685', '686', '687', '6862', '688', '689'];
-
             for (var i = 0; i < fatherValues.length; i++) {
                 radios = document.getElementsByName(fatherValues[i]);
                 if (radios.length) {

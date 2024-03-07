@@ -125,12 +125,6 @@ class PQRS_MACROTABLE extends Component {
                     <button className="btn btn-sm btn-info m-0 p-2 shadow-none"
                         onClick={() => this.props.NAVIGATION_GEN(row)}>
                         <i class="far fa-eye" ></i></button></MDBTooltip>
-                    {_GET_REPLY_TIME_TIME(row) > 15
-                        ? <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
-                            currentItem={row}
-                            refreshList={this.retrieveMacro}
-                        />
-                        : ""}
                 </>,
                 excell: false,
             },

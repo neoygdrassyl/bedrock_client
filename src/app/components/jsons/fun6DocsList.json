@@ -136,6 +136,7 @@
     "660d":"Edificaciones que tengan menos de 2000m2 de área construida, que cuenten con la posibilidad de tramitar ampliaciones que alcancen los 2000m2",
     "6610":"Copia del acta del órgano competente de administración de la propiedad horizontal o del documento que haga sus veces, autorizando la ejecución de las obras sometidas al régimen de propiedad horizontal",
     "660e":"Edificaciones de menos de 2000m2 de área construida que deban someterse a Supervision Técnica Independiente",
+    "660f":"El proyecto constructivo genera 5 o más unidades de vivienda para transferir a terceros",
     "6611":"Concepto técnico expedido por la autoridad municipal o distrital encargada de la gestión del riesgo u orden judicial o administrativa que ordene reforzar el inmueble.",
     "6612":"Certificación de disponibilidad inmediata de servicios públicos domiciliarios.",
     "6613":"Información que soporte el acceso directo al predio objeto de cesión desde una vía pública vehicular en las condiciones de la norma urbanística correspondiente.",
@@ -160,6 +161,9 @@
     "6862":"Estudios geotécnicos y de suelos. (Otras actuaciones)",
     "688":"Copia de la licencia de urbanización, sus modificaciones, prórroga y/o revalidación y los planos que hacen parte de las mismas.",
     "689":"Planos que contengan la nueva propuesta de modificación de plano urbanístico.",
+    "6891":"Dirección oficial del predio o su ubicación si se encuentra en suelo rural.",
+    "6892":"Antecedentes urbanísticos como licencias y demás, en caso de existir.",
+    "6893":"Plano record de identificación de zonas de uso público elaborado por el Ministerio de Vivienda, Ciudad y Territorio.",
     
     "700":"Factura Cargo Fijo.",
     "701":"Factura Cargo Variable. ",

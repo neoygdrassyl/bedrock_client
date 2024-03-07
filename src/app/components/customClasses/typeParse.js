@@ -163,7 +163,7 @@ export const SUBSERIES_MODULES_RELATION = {
     '1100-190.36': ['1:D', '5:B', '5:D', '5:F', '5:g'],
     '1100-190.37': ['1:D', '5:B', '5:D', '5:g'],
     '1100-190.38': ['1:D', '5:B', '5:C', '5:D', '5:F', '5:g'],
-    '1100-190.39': ['1:D', '1:G', '2:OA', '2:PH' ],
+    '1100-190.39': ['1:D', '1:G', '2:OA', '2:PH'],
 
     '1100-250.01': ['1:G', '2:B'],
     '1100-250.02': ['1:G', '2:D'],
@@ -206,13 +206,232 @@ export const VR_DOCUMENTS_OF_INTEREST = {
         '641', '642', '643',
         '651', '652', '653',
         '671', '672',
-        '680', '681', '682', '683', '685', '685', '686', '6862', '688', '689',
+        '680', '681', '682', '683', '685', '685', '686', '6862', '688', '689', '6891', '6892', '6893',
         '6609', '6610', '6611', '6612', '6613', '6617',
     ],
-    'law2': ',511,512,513,514,516,517,518,519,520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,601,602,621,622,623,624,625,626,627,630,631,632,633,634,635,636,641,642,643,651,652,653,671,672,680,681,682,683,685,685,686,6862,688,689,6609,6610,6611,6612,6613,6617,',
+    'law2': ',511,512,513,514,516,517,518,519,520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,601,602,621,622,623,624,625,626,627,630,631,632,633,634,635,636,641,642,643,651,652,653,671,672,680,681,682,683,685,685,686,6862,688,689,6891,6892,6893,6609,6610,6611,6612,6613,6617,',
     'arc': ['687', '907', '909', '916', '917', '6603', '6614',],
-    'eng': ['660a', '660b', '660c', '660d', '660e', '6601', '6602', '6604', '6605', '6607', '6608', '6615', '6616', '6618', '6619', '686'],
+    'eng': ['660a', '660b', '660c', '660d', '660e', '660f', '6601', '6602', '6604', '6605', '6607', '6608', '6615', '6616', '6618', '6619', '686'],
 }
+
+const _CODE_LIST_61 = {
+    parent: '6.1 DOCUMENTOS COMUNES A TODA SOLICITUD',
+    codes: ['511', '512', '513', '516', '517', '518', '519']
+};
+const _CODE_LIST_62 = {
+    parent: '6.2 DOCUNENTOS ADICIONALES EN LICENCIA DE URBANIZACIÓN',
+    children: [
+        {
+            parent: 'A. Modalidad Desarrollo',
+            codes: ['621', '601a', '622', '602a']
+        },
+        {
+            parent: 'B. Modalidad Saneamiento',
+            codes: ['623', '601b', '602b', '624', '625']
+        },
+        {
+            parent: 'C. Modalidad Recuperacion',
+            codes: ['626', '627', '601c', '602c']
+        }
+    ]
+};
+const _CODE_LIST_63 = {
+    parent: '6.3 DOCUMENTOS ADICIONALES EN LA LICENCIA DE PARCELACION',
+    codes: ['631', '632', '633',],
+    children: [
+        {
+            parent: 'Documentos adicionales en licencia de parcaleación para saneamiento',
+            codes: ['634', '635', '636',]
+        },
+    ]
+};
+const _CODE_LIST_64 = {
+    parent: '6.4 DOCUMENTOS ADICIONALES EN LA LICENCIA DE SUBDIVISION',
+    children: [
+        {
+            parent: 'A. Modalidad Subdivisión Urbana y Rural',
+            codes: ['641']
+        },
+        {
+            parent: 'B. Modalidad Reloteo',
+            codes: ['642', '643'],
+        },
+    ]
+};
+const _CODE_LIST_65 = {
+    parent: '6.5 DOCUMENTOS RECONOCIMIENTO DE EDIFICACIONES',
+    codes: ['651', '652', '653']
+};
+const _CODE_LIST_66 = {
+    parent: '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN',
+    codes: ['6601', '6602', '6603', '6604', '6605',],
+    children: [
+        {
+            parent: 'Revisión indepenciente de los diseños estructurales',
+            codes: ['660a', '660b', '660c', '660d', '660e', '660f', '6607', '6608',]
+        },
+        {
+            parent: 'Bien de interés cultural',
+            codes: ['6609',]
+        },
+        {
+            parent: 'Propiedad Horizontal',
+            codes: ['6610',]
+        },
+        {
+            parent: 'Reforzamiento Estructural para Edificaciones en riesgo por daños en la estructura',
+            codes: ['6611',]
+        },
+        {
+            parent: 'Equipamientos en suelos objeto de entrega de cesiones anticipadas',
+            codes: ['6612', '6613',]
+        },
+        {
+            parent: 'Trámite presentado ante autoridad distinta a la que otorgo la licencia inicial',
+            codes: ['6614',]
+        },
+        {
+            parent: 'Modalidad de Modificacion y Adecuacion',
+            codes: ['6615',]
+        },
+        {
+            parent: 'Modalidad de Demolicion y Cerramiento',
+            codes: ['6616', '6617', '6618', '6619']
+        },
+
+    ]
+};
+const _CODE_LIST_67 = {
+    parent: '6.7 DOCUMENTOS ADICIONALES EN LICENCIAS DE INTERVENCIÓN Y OCUPACIÓN DEL ESPACIO PÚBLICO',
+    codes: ['671', '672']
+};
+const _CODE_LIST_68 = {
+    parent: '6.8 DOCUMENTOS PARA OTRAS ACTUACIONES',
+    children: [
+        {
+            parent: 'Ajuste de cotas y áreas',
+            codes: ['680',]
+        },
+        {
+            parent: 'Aprobación de los planos de propiedad horizontal',
+            codes: ['681', '682', '683', '684', '685',]
+        },
+        {
+            parent: 'Autorización para el movimiento de tierras',
+            codes: ['686',]
+        },
+        {
+            parent: 'Aprobación de piscinas',
+            codes: ['687', '6862',]
+        },
+        {
+            parent: 'Modificación del plano urbanístico',
+            codes: ['688', '689']
+        },
+        {
+            parent: 'Concepto de norma urbanística y uso del suelo',
+            codes: ['6891', '6892']
+        },
+        {
+            parent: 'Bienes destinados al uso público o con vocación al uso público',
+            codes: ['6893',]
+        },
+    ]
+};
+
+export function GEM_CODE_LIST(_FUN_1, concat = false) {
+    let list = [];
+    if (concat) {
+        list = list.concat(_CODE_LIST_61.codes);
+
+        if (_FUN_1.item_1.includes('A')) {
+            if (_FUN_1.item_3.includes('A')) list = list.concat(_CODE_LIST_62.children[0].codes);
+            if (_FUN_1.item_3.includes('B')) list = list.concat(_CODE_LIST_62.children[1].codes);
+            if (_FUN_1.item_3.includes('C')) list = list.concat(_CODE_LIST_62.children[2].codes);
+        }
+        if (_FUN_1.item_1.includes('B')) {
+            list = list.concat(_CODE_LIST_63.codes);
+            list = list.concat(_CODE_LIST_63.children[0].codes);
+        }
+        if (_FUN_1.item_1.includes('C')) {
+            if (_FUN_1.item_3.includes('A') || _FUN_1.item_3.includes('B')) list = list.concat(_CODE_LIST_64.children[0].codes);
+            if (_FUN_1.item_3.includes('C')) list = list.concat(_CODE_LIST_62.children[1].codes);
+        }
+        if (_FUN_1.item_1.includes('F')) {
+            list = list.concat(_CODE_LIST_65.codes);
+        }
+        if (_FUN_1.item_1.includes('D')) {
+            list = list.concat(_CODE_LIST_66.codes);
+            list = list.concat(_CODE_LIST_66.children[0].codes);
+            list = list.concat(_CODE_LIST_66.children[1].codes);
+            list = list.concat(_CODE_LIST_66.children[2].codes);
+            list = list.concat(_CODE_LIST_66.children[3].codes);
+            list = list.concat(_CODE_LIST_66.children[4].codes);
+            list = list.concat(_CODE_LIST_66.children[5].codes);
+            list = list.concat(_CODE_LIST_66.children[6].codes);
+            list = list.concat(_CODE_LIST_66.children[7].codes);
+        }
+        if (_FUN_1.item_1.includes('E')) {
+            list = list.concat(_CODE_LIST_67.codes);
+        }
+        if (_FUN_1.item_1.includes('G')) {
+            list = list.concat(_CODE_LIST_68.children[0].codes);
+            list = list.concat(_CODE_LIST_68.children[1].codes);
+            list = list.concat(_CODE_LIST_68.children[2].codes);
+            list = list.concat(_CODE_LIST_68.children[3].codes);
+            list = list.concat(_CODE_LIST_68.children[4].codes);
+            list = list.concat(_CODE_LIST_68.children[5].codes);
+            list = list.concat(_CODE_LIST_68.children[6].codes);
+        }
+
+        return list;
+    } else {
+        list.push(_CODE_LIST_61);
+
+        if (_FUN_1.item_1.includes('A')) {
+            if (_FUN_1.item_3.includes('A')) list.push(_CODE_LIST_62.children[0]);
+            if (_FUN_1.item_3.includes('B')) list.push(_CODE_LIST_62.children[1]);
+            if (_FUN_1.item_3.includes('C')) list.push(_CODE_LIST_62.children[2]);
+        }
+        if (_FUN_1.item_1.includes('B')) {
+            list.push(_CODE_LIST_63);
+            if (_FUN_1.item_3.includes('B')) list.push(_CODE_LIST_63.children[0]);
+        }
+        if (_FUN_1.item_1.includes('C')) {
+            if (_FUN_1.item_3.includes('A') || _FUN_1.item_3.includes('B')) list.push(_CODE_LIST_64.children[0]);
+            if (_FUN_1.item_3.includes('C')) list.push(_CODE_LIST_62.children[1]);
+        }
+        if (_FUN_1.item_1.includes('F')) {
+            list.push(_CODE_LIST_65);
+        }
+        if (_FUN_1.item_1.includes('D')) {
+            list.push(_CODE_LIST_66);
+            list.push(_CODE_LIST_66.children[0]);
+            list.push(_CODE_LIST_66.children[1]);
+            list.push(_CODE_LIST_66.children[2]);
+            list.push(_CODE_LIST_66.children[3]);
+            list.push(_CODE_LIST_66.children[4]);
+            list.push(_CODE_LIST_66.children[5]);
+            list.push(_CODE_LIST_66.children[6]);
+            list.push(_CODE_LIST_66.children[7]);
+        }
+        if (_FUN_1.item_1.includes('E')) {
+            list.push(_CODE_LIST_67);
+        }
+        if (_FUN_1.item_1.includes('G')) {
+            list.push(_CODE_LIST_68.children[0]);
+            list.push(_CODE_LIST_68.children[1]);
+            list.push(_CODE_LIST_68.children[2]);
+            list.push(_CODE_LIST_68.children[3]);
+            list.push(_CODE_LIST_68.children[4]);
+            list.push(_CODE_LIST_68.children[5]);
+            list.push(_CODE_LIST_68.children[6]);
+        }
+        return list;
+    }
+
+}
+
 
 export function formsParser1(object) {
     if (!object) return "";
@@ -951,7 +1170,7 @@ export function _MANAGE_IDS(_data, _type) {
     return new_id;
 }
 
-export function _GET_EXPENSES_DATA (year) {
+export function _GET_EXPENSES_DATA(year) {
     const values = {
         '2020': { value: 877803, units: 'SMLV', name: 'SALARIO MINIMO MENSUAL VIGENTE', cfi: 0.4, cvi: 0.8 },
         '2021': { value: 908526, units: 'SMLV', name: 'SALARIO MINIMO MENSUAL VIGENTE', cfi: 0.4, cvi: 0.8 },
@@ -960,12 +1179,12 @@ export function _GET_EXPENSES_DATA (year) {
         '2024': { value: 47065, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
     }
 
-    if(!values[year]) return values[Object.keys(values)[Object.keys(values).length - 1]] // return last entry of values
+    if (!values[year]) return values[Object.keys(values)[Object.keys(values).length - 1]] // return last entry of values
     else return values[year]
 }
 
 export function _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year) {
-    const EMTPY_RESPONSE = { cf: 0, cv: 0, ct: 0, i: 0, j:0, cvi: 0, cfi: 0};
+    const EMTPY_RESPONSE = { cf: 0, cv: 0, ct: 0, i: 0, j: 0, cvi: 0, cfi: 0 };
     if (!rule) return EMTPY_RESPONSE;
     if (!subrule) return EMTPY_RESPONSE;
     if (!use) return EMTPY_RESPONSE;
@@ -1018,5 +1237,5 @@ export function _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year) {
     let _subtotal_cf = Math.round((cf * r1 * r2) * i * m);
     let _subtotal_cv = Math.round(((cv * r1 * r21) / h * i * j * m));
 
-     return { cf: _subtotal_cf, cv: _subtotal_cv, ct: _subtotal_cf + _subtotal_cv, i: i, j: j, cvi: (cv * r1 * r21) / h , cfi: (cf * r1 * r2)}
+    return { cf: _subtotal_cf, cv: _subtotal_cv, ct: _subtotal_cf + _subtotal_cv, i: i, j: j, cvi: (cv * r1 * r21) / h, cfi: (cf * r1 * r2) }
 }

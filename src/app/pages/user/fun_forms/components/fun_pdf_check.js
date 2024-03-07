@@ -239,12 +239,12 @@ class FUN_PDF_CHECK extends Component {
             confirmButtonText: 'CONTINUAR',
         });
 
-        
+
         let m_2022 = Number(model) >= 2022
-        m_2022 = false
+        // m_2022 = false
 
         var formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
-        if (m_2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
+        // if (m_2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
         if (m_2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat2022";
 
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
@@ -300,86 +300,179 @@ class FUN_PDF_CHECK extends Component {
         if (_child) {
             // FUN 1.1
             if (_child.item_1) {
-                if (_child.item_1.includes('A')) { page.moveTo(221, 700); page.drawText('x', { size: 11 }) }
-                if (_child.item_1.includes('B')) { page.moveTo(221, 690); page.drawText('x', { size: 11 }) }
-                if (_child.item_1.includes('C')) { page.moveTo(221, 679); page.drawText('x', { size: 11 }) }
-                if (_child.item_1.includes('D')) { page.moveTo(221, 668); page.drawText('x', { size: 11 }) }
-                if (_child.item_1.includes('E')) { page.moveTo(221, 652); page.drawText('x', { size: 11 }) }
-                if (_child.item_1.includes('F')) { page.moveTo(221, 624); page.drawText('x', { size: 11 }) }
-                if (_child.item_1.includes('G')) { page.moveTo(221, 601); page.drawText('x', { size: 11 }) }
+                if (m_2022) {
+                    if (_child.item_1.includes('A')) { page.moveTo(273, 573); page.drawText('X', { size: 12 }) }
+                    // if (_child.item_1.includes('B')) { page.moveTo(273, 561); page.drawText('X', { size: 12 }) }
+                    if (_child.item_1.includes('C')) { page.moveTo(273, 561); page.drawText('X', { size: 12 }) }
+                    if (_child.item_1.includes('D')) { page.moveTo(273, 550); page.drawText('X', { size: 12 }) }
+                    if (_child.item_1.includes('E')) { page.moveTo(273, 535); page.drawText('X', { size: 12 }) }
+                    if (_child.item_1.includes('F')) { page.moveTo(273, 512); page.drawText('X', { size: 12 }) }
+                    if (_child.item_1.includes('G')) { page.moveTo(273, 496); page.drawText('X', { size: 12 }) }
+                }
+                else {
+                    if (_child.item_1.includes('A')) { page.moveTo(221, 700); page.drawText('x', { size: 11 }) }
+                    if (_child.item_1.includes('B')) { page.moveTo(221, 690); page.drawText('x', { size: 11 }) }
+                    if (_child.item_1.includes('C')) { page.moveTo(221, 679); page.drawText('x', { size: 11 }) }
+                    if (_child.item_1.includes('D')) { page.moveTo(221, 668); page.drawText('x', { size: 11 }) }
+                    if (_child.item_1.includes('E')) { page.moveTo(221, 652); page.drawText('x', { size: 11 }) }
+                    if (_child.item_1.includes('F')) { page.moveTo(221, 624); page.drawText('x', { size: 11 }) }
+                    if (_child.item_1.includes('G')) { page.moveTo(221, 601); page.drawText('x', { size: 11 }) }
+                }
             }
         }
+
         // FUN 1.2
         if (_child.item_2) {
-            if (_child.item_2 != 'A' && _child.item_2 != 'B' && _child.item_2 != 'C' && _child.item_2 != 'D') {
-                page.moveTo(332, 613); page.drawText(_child.item_2, { size: 9 })
-                page.moveTo(524, 618); page.drawText('x', { size: 11 })
-            }
-            else {
-                if (_child.item_2 == 'A') { page.moveTo(522, 700); page.drawText('x', { size: 11 }) }
-                if (_child.item_2 == 'B') { page.moveTo(522, 690); page.drawText('x', { size: 11 }) }
-                if (_child.item_2 == 'C') { page.moveTo(522, 673); page.drawText('x', { size: 11 }) }
-                if (_child.item_2 == 'D') { page.moveTo(524, 651); page.drawText('x', { size: 11 }) }
+            if (m_2022) {
+                if (_child.item_2 != 'A' && _child.item_2 != 'B' && _child.item_2 != 'C' && _child.item_2 != 'D') {
+                    page.moveTo(342, 507); page.drawText(_child.item_2, { size: 9 })
+                    page.moveTo(542, 512); page.drawText('X', { size: 12 })
+                }
+                else {
+                    if (_child.item_2 == 'A') { page.moveTo(542, 573); page.drawText('X', { size: 12 }) }
+                    // if (_child.item_2 == 'B') { page.moveTo(542, 690); page.drawText('X', { size: 12 }) }
+                    if (_child.item_2 == 'C') { page.moveTo(542, 561); page.drawText('X', { size: 12 }) }
+                    if (_child.item_2 == 'D') { page.moveTo(542, 550); page.drawText('X', { size: 12 }) }
+                }
+
+            } else {
+                if (_child.item_2 != 'A' && _child.item_2 != 'B' && _child.item_2 != 'C' && _child.item_2 != 'D') {
+                    page.moveTo(332, 613); page.drawText(_child.item_2, { size: 9 })
+                    page.moveTo(524, 618); page.drawText('x', { size: 11 })
+                }
+                else {
+                    if (_child.item_2 == 'A') { page.moveTo(522, 700); page.drawText('x', { size: 11 }) }
+                    if (_child.item_2 == 'B') { page.moveTo(522, 690); page.drawText('x', { size: 11 }) }
+                    if (_child.item_2 == 'C') { page.moveTo(522, 673); page.drawText('x', { size: 11 }) }
+                    if (_child.item_2 == 'D') { page.moveTo(524, 651); page.drawText('x', { size: 11 }) }
+                }
             }
         }
+
         // FUN 1.3
         if (_child.item_3) {
-            if (_child.item_3 == 'A') { page.moveTo(222, 562); page.drawText('x', { size: 11 }) }
-            if (_child.item_3 == 'B') { page.moveTo(222, 546); page.drawText('x', { size: 11 }) }
-            if (_child.item_3 == 'C') { page.moveTo(222, 532); page.drawText('x', { size: 11 }) }
+            if (m_2022) {
+                if (_child.item_3 == 'A') { page.moveTo(273, 466); page.drawText('X', { size: 12 }) }
+                if (_child.item_3 == 'B') { page.moveTo(273, 449); page.drawText('X', { size: 12 }) }
+                if (_child.item_3 == 'C') { page.moveTo(273, 438); page.drawText('X', { size: 12 }) }
+            } else {
+                if (_child.item_3 == 'A') { page.moveTo(222, 562); page.drawText('X', { size: 11 }) }
+                if (_child.item_3 == 'B') { page.moveTo(222, 546); page.drawText('X', { size: 11 }) }
+                if (_child.item_3 == 'C') { page.moveTo(222, 532); page.drawText('X', { size: 11 }) }
+            }
+
         }
+
         // FUN 1.4
         if (_child.item_4) {
-            if (_child.item_4 == 'A') { page.moveTo(222, 504); page.drawText('x', { size: 11 }) }
-            if (_child.item_4 == 'B') { page.moveTo(222, 491); page.drawText('x', { size: 11 }) }
-            if (_child.item_4 == 'C') { page.moveTo(222, 472); page.drawText('x', { size: 11 }) }
+            if (m_2022) {
+                if (_child.item_4 == 'A') { page.moveTo(273, 414); page.drawText('X', { size: 12 }) }
+                if (_child.item_4 == 'B') { page.moveTo(273, 403); page.drawText('X', { size: 12 }) }
+                if (_child.item_4 == 'C') { page.moveTo(273, 392); page.drawText('X', { size: 12 }) }
+            }
+            else {
+                if (_child.item_4 == 'A') { page.moveTo(222, 504); page.drawText('x', { size: 11 }) }
+                if (_child.item_4 == 'B') { page.moveTo(222, 491); page.drawText('x', { size: 11 }) }
+                if (_child.item_4 == 'C') { page.moveTo(222, 472); page.drawText('x', { size: 11 }) }
+            }
+
         }
+
         // FUN 1.5
         if (_child.item_5) {
-            if (_child.item_5.includes('A')) { page.moveTo(400, 555); page.drawText('x', { size: 11 }) }
-            if (_child.item_5.includes('B')) { page.moveTo(400, 518); page.drawText('x', { size: 11 }) }
-            if (_child.item_5.includes('C')) { page.moveTo(400, 504); page.drawText('x', { size: 11 }) }
-            if (_child.item_5.includes('D')) { page.moveTo(400, 490); page.drawText('x', { size: 11 }) }
-            if (_child.item_5.includes('E')) { page.moveTo(400, 472); page.drawText('x', { size: 11 }) }
-            if (_child.item_5.includes('F')) { page.moveTo(542, 555); page.drawText('x', { size: 11 }) }
-            if (_child.item_5.includes('G')) {
-                page.moveTo(542, 518); page.drawText('x', { size: 11 });
-                page.moveTo(542, 532); page.drawText('x', { size: 11 })
+            if (m_2022) {
+                if (_child.item_5.includes('A')) { page.moveTo(408, 466); page.drawText('X', { size: 12 }) }
+                if (_child.item_5.includes('B')) { page.moveTo(408, 450); page.drawText('X', { size: 12 }) }
+                if (_child.item_5.includes('C')) { page.moveTo(408, 439); page.drawText('X', { size: 12 }) }
+                if (_child.item_5.includes('D')) { page.moveTo(408, 426); page.drawText('X', { size: 12 }) }
+                if (_child.item_5.includes('E')) { page.moveTo(408, 414); page.drawText('X', { size: 12 }) }
+                if (_child.item_5.includes('F')) { page.moveTo(542, 466); page.drawText('X', { size: 12 }) }
+                if (_child.item_5.includes('G')) {
+                    page.moveTo(542, 439); page.drawText('X', { size: 12 });
+                }
+                if (_child.item_5.includes('g')) {
+                    page.moveTo(542, 426); page.drawText('X', { size: 12 });
+                }
+                if (_child.item_5.includes('H')) { page.moveTo(542, 414); page.drawText('X', { size: 12 }) }
+                if (_child.item_5.includes('I')) { page.moveTo(542, 403); page.drawText('X', { size: 12 }) }
+            } else {
+                if (_child.item_5.includes('A')) { page.moveTo(400, 555); page.drawText('x', { size: 11 }) }
+                if (_child.item_5.includes('B')) { page.moveTo(400, 518); page.drawText('x', { size: 11 }) }
+                if (_child.item_5.includes('C')) { page.moveTo(400, 504); page.drawText('x', { size: 11 }) }
+                if (_child.item_5.includes('D')) { page.moveTo(400, 490); page.drawText('x', { size: 11 }) }
+                if (_child.item_5.includes('E')) { page.moveTo(400, 472); page.drawText('x', { size: 11 }) }
+                if (_child.item_5.includes('F')) { page.moveTo(542, 555); page.drawText('x', { size: 11 }) }
+                if (_child.item_5.includes('G')) {
+                    page.moveTo(542, 518); page.drawText('x', { size: 11 });
+                    page.moveTo(542, 532); page.drawText('x', { size: 11 })
+                }
+                if (_child.item_5.includes('g')) {
+                    page.moveTo(542, 504); page.drawText('x', { size: 11 });
+                    page.moveTo(542, 532); page.drawText('x', { size: 11 })
+                }
+                if (_child.item_5.includes('H')) { page.moveTo(542, 490); page.drawText('x', { size: 11 }) }
+                if (_child.item_5.includes('I')) { page.moveTo(542, 472); page.drawText('x', { size: 11 }) }
             }
-            if (_child.item_5.includes('g')) {
-                page.moveTo(542, 504); page.drawText('x', { size: 11 });
-                page.moveTo(542, 532); page.drawText('x', { size: 11 })
-            }
-            if (_child.item_5.includes('H')) { page.moveTo(542, 490); page.drawText('x', { size: 11 }) }
-            if (_child.item_5.includes('I')) { page.moveTo(542, 472); page.drawText('x', { size: 11 }) }
         }
 
         // FUN 53
+
+
         _child = this._GET_CHILD_53();
-        page.moveTo(90, 415); page.drawText(_child.item_5311 + ' ' + _child.item_5312, { size: 9 });
-        page.moveTo(400, 415); page.drawText(_child.item_536, { size: 9 });
-        page.moveTo(110, 400); page.drawText(_child.item_534, { size: 9 });
-        page.moveTo(400, 400); page.drawText(_child.item_535, { size: 9 });
+        if (m_2022) {
+            page.moveTo(80, 352); page.drawText(_child.item_5311 + ' ' + _child.item_5312, { size: 9 });
+            page.moveTo(370, 352); page.drawText(_child.item_536, { size: 9 });
+            page.moveTo(100, 340); page.drawText(_child.item_534, { size: 9 });
+            page.moveTo(350, 340); page.drawText(_child.item_535, { size: 9 });
+        } else {
+            page.moveTo(90, 415); page.drawText(_child.item_5311 + ' ' + _child.item_5312, { size: 9 });
+            page.moveTo(400, 415); page.drawText(_child.item_536, { size: 9 });
+            page.moveTo(110, 400); page.drawText(_child.item_534, { size: 9 });
+            page.moveTo(400, 400); page.drawText(_child.item_535, { size: 9 });
+        }
+
 
         // FUN C
         _child = this._GET_CHILD_C();
-        page.moveTo(105, 320); page.drawText(_child.item_c1, { size: 9 }); // WORKER NAME
-        page.moveTo(105, 296); page.drawText(dateParser(_child.item_c6), { size: 9 }); // DATE OF REVIEW
-        page.moveTo(385, 296); page.drawText(currentItem.id_public, { size: 9 }); // ID PUBLIC
+        if (m_2022) {
+            page.moveTo(90, 294); page.drawText(_child.item_c1, { size: 9 }); // WORKER NAME
+            page.moveTo(90, 278); page.drawText(dateParser(_child.item_c6), { size: 9 }); // DATE OF REVIEW
+            page.moveTo(350, 278); page.drawText(currentItem.id_public, { size: 9 }); // ID PUBLIC
+        } else {
+            page.moveTo(105, 320); page.drawText(_child.item_c1, { size: 9 }); // WORKER NAME
+            page.moveTo(105, 296); page.drawText(dateParser(_child.item_c6), { size: 9 }); // DATE OF REVIEW
+            page.moveTo(385, 296); page.drawText(currentItem.id_public, { size: 9 }); // ID PUBLIC
+        }
+
+
 
         let _condition = _child.item_c3;
-        if (_condition == '1') { page.moveTo(430, 238); page.drawText("x", { size: 15 }); }
-        else { page.moveTo(430, 215); page.drawText("x", { size: 15 }); }
-
         let _actor = _child.item_c8;
-        if (_actor.includes('A')) { page.moveTo(183, 201); page.drawText('x', { size: 10 }) }
-        if (_actor.includes('B')) { page.moveTo(250, 201); page.drawText('x', { size: 10 }) }
-        if (_actor.includes('C')) { page.moveTo(320, 201); page.drawText('x', { size: 10 }) }
 
-        page.moveTo(85, 155); page.drawText(_child.item_c5, { size: 10 }); // NAME
-        page.moveTo(340, 141); page.drawText(_child.item_c3 == 1 ? dateParser(_child.item_c9) : dateParser(_child.item_c2), { size: 9 }); // DATE
-        page.moveTo(172, 141); page.drawText(_child.item_c7, { size: 9 }); // ID NUMBER
+        if (m_2022) {
+            if (_condition == '1') { page.moveTo(316, 246); page.drawText("x", { size: 16 }); }
+            else { page.moveTo(316, 232); page.drawText("x", { size: 16 }); }
 
+            if (_actor.includes('A')) { page.moveTo(175, 216); page.drawText('x', { size: 16 }) }
+            if (_actor.includes('B')) { page.moveTo(240, 216); page.drawText('x', { size: 16 }) }
+            if (_actor.includes('C')) { page.moveTo(307, 216); page.drawText('x', { size: 16 }) }
+
+            page.moveTo(90, 170); page.drawText(_child.item_c5, { size: 10 }); // NAME
+            page.moveTo(150, 160); page.drawText(_child.item_c7, { size: 9 }); // ID NUMBER
+            page.moveTo(400, 160); page.drawText(_child.item_c3 == 1 ? dateParser(_child.item_c9) : dateParser(_child.item_c2), { size: 9 }); // DATE
+
+        } else {
+            if (_condition == '1') { page.moveTo(430, 238); page.drawText("x", { size: 15 }); }
+            else { page.moveTo(430, 215); page.drawText("x", { size: 15 }); }
+
+            if (_actor.includes('A')) { page.moveTo(183, 201); page.drawText('x', { size: 10 }) }
+            if (_actor.includes('B')) { page.moveTo(250, 201); page.drawText('x', { size: 10 }) }
+            if (_actor.includes('C')) { page.moveTo(320, 201); page.drawText('x', { size: 10 }) }
+
+            page.moveTo(85, 155); page.drawText(_child.item_c5, { size: 10 }); // NAME
+            page.moveTo(340, 141); page.drawText(_child.item_c3 == 1 ? dateParser(_child.item_c9) : dateParser(_child.item_c2), { size: 9 }); // DATE
+            page.moveTo(172, 141); page.drawText(_child.item_c7, { size: 9 }); // ID NUMBER
+        }
         // NEXT PAGE
         page = pdfDoc.getPage(1);
 
@@ -425,7 +518,7 @@ class FUN_PDF_CHECK extends Component {
 
             index = _code.indexOf('518'); // 518
             if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 502; }
-            else { o_si = 478; o_no = 520; o_na = 557; oy = 597; print_review();}
+            else { o_si = 478; o_no = 520; o_na = 557; oy = 597; print_review(); }
 
             index = _code.indexOf('513'); // 513
             if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 513; }
@@ -465,7 +558,7 @@ class FUN_PDF_CHECK extends Component {
             else { o_si = 474; o_no = 517; o_na = 555; oy = 460; }
             print_review()
 
-             // 6.2 B
+            // 6.2 B
             index = _code.indexOf('623');
             if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 360; }
             else { o_si = 474; o_no = 517; o_na = 555; oy = 422; }
@@ -491,7 +584,7 @@ class FUN_PDF_CHECK extends Component {
             else { o_si = 474; o_no = 517; o_na = 555; oy = 359; }
             print_review()
 
-             // 6.2 C
+            // 6.2 C
             index = _code.indexOf('626');
             if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 265 }
             else { o_si = 474; o_no = 517; o_na = 555; oy = 315; }
@@ -558,7 +651,7 @@ class FUN_PDF_CHECK extends Component {
             page = pdfDoc.getPage(2);
             ox = 0
             oy = 0
-    
+
             o_si = 0
             o_no = 0
             o_na = 0
@@ -566,307 +659,238 @@ class FUN_PDF_CHECK extends Component {
             print_new_page(2)
 
             index = _code.indexOf('642');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 674 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 674 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 674 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 674 + oy); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 544; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 674; }
+            print_review()
 
             index = _code.indexOf('643');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 661 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 661 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 661 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 661 + oy); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 534; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 661; }
+            print_review()
 
             // 6.5
             index = _code.indexOf('651');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 618 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(489 + ox, 618 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(556 + ox, 618 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(556 + ox, 618 + oy); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 509; }
+            else { o_si = 489; o_no = 520; o_na = 556; oy = 618; }
+            print_review()
+
 
             index = _code.indexOf('652');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 602 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(489 + ox, 602 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(556 + ox, 602 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(556 + ox, 602 + oy); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 498; }
+            else { o_si = 489; o_no = 520; o_na = 556; oy = 602; }
+            print_review()
 
             index = _code.indexOf('653');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 586 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(489 + ox, 586 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(556 + ox, 586 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(556 + ox, 586 + oy); page.drawText('x', { size: 10 })
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 487; }
+            else { o_si = 489; o_no = 520; o_na = 556; oy = 586; }
+            print_review()
+
 
             // 6.6
-            index = _code.indexOf('6601');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 528 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 528 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 528 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 528 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6601'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 455; } // Memoria de cálculos y diseños estructurales
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 528; } // Memoria de cálculos y diseños estructurales
+            print_review()
 
-            index = _code.indexOf('6602');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 515 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 515 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 515 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 515 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6602'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 433; } // Copia de los estudios geotécnicos y de suelos B
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 515; } // Copia de los estudios geotécnicos y de suelos B
+            print_review()
 
-            index = _code.indexOf('6603');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 504 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 504 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 504 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 504 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6603'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 411; } // El proyecto arquitectónico D
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 504; } // El proyecto arquitectónico  D
+            print_review()
 
-            index = _code.indexOf('6604');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 492 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 492 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 492 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 492 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6604'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 444; } // Memoria de diseño de los elementos no estructurales A
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 492; } // Memoria de diseño de los elementos no estructurales A
+            print_review()
 
-            index = _code.indexOf('6605');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 480 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 480 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 480 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 480 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6605'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 422; } // Planos estructurales del proyecto C
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 480; } // Planos estructurales del proyecto C
+            print_review()
 
-            index = _code.indexOf('660a');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 433 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 433 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 433 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 433 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('660a'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 378; } // Edificaciones que tengan o superen los 2.000 m
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 433; } // Edificaciones que tengan o superen los 2.000 m2 de área construida 
+            print_review()
 
-            index = _code.indexOf('660b');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 421 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 421 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 421 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 421 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('660b'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 367; } //  Edificaciones que en conjunto superen los 2.000 m
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 421; } // Edificaciones que en conjunto superen los 2.000 m2 de área construida 
+            print_review()
 
-            index = _code.indexOf('660c');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 408 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 408 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 408 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 408 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('660c'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 356; } // Edificaciones que deban someterse a supervisión técnica independiente
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 408; } // Edificaciones que deban someterse a supervisión técnica independiente 
+            print_review()
 
-            index = _code.indexOf('660d');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 392 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 392 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 392 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 392 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('660d'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 344; } //  Edificaciones que tengan menos de 2.000 m
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 392; } // Edificaciones que tengan menos de 2.000 m 
+            print_review()
 
-            index = _code.indexOf('660e');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 373 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 373 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 373 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 373 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('660e'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 319; } // Edificaciones que tengan menos de 2.000 m
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 373; } // Edificaciones de menos de 2 000 m H
+            print_review()
 
-            index = _code.indexOf('6607');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 323 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 323 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 323 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 323 + oy); page.drawText('x', { size: 10 })
+            if (m_2022) {
+                index = _code.indexOf('660f');
+                { o_si = 474; o_no = 516; o_na = 557; oy = 302; }  // NEW El proyecto constructivo genera 5 o más unidades de vivienda para transferir a terceros.
+                print_review()
+            }
 
-            index = _code.indexOf('6608');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 303 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 303 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 303 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 303 + oy); page.drawText('x', { size: 10 })
 
-            index = _code.indexOf('6609');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 257 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 257 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 257 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 257 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6607'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 274; }  // Memoria de los cálculos y planos estructurales
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 323; } // Memoria de los cálculos y planos estructurales, firmados por el revisor independiente de los diseños estructurales
+            print_review()
 
-            index = _code.indexOf('6610');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 203 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 203 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 203 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 203 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6608'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 254; }  // Memorial firmado por el revisor independiente de los diseños estructurales
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 303; } // Memorial firmado por el revisor independiente de los diseños estructurales, en el que certifique el alcance de la revisión
+            print_review()
 
-            index = _code.indexOf('6611');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 146 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 146 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 146 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 146 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6609'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 221; }  // Anteproyecto o autorización de intervención aprobada por el Ministerio de Cultura ...
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 257; } // Anteproyecto aprobado por el Ministerio de Cultur...
+            print_review()
 
-            index = _code.indexOf('6612');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 108 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 108 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 108 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 108 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6610'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 188; }  // Copia del acta del órgano competente de administració
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 203; } // Copia del acta del órgano competente de administración de la propiedad horizonta...
+            print_review()
 
-            index = _code.indexOf('6613');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 92 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 92 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 92 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 92 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6611'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 155; }   // Concepto técnico expedido por la autoridad municipal o distrital encargada...
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 146; } // Concepto técnico expedido por la autoridad municipa...
+            print_review()
 
-            index = _code.indexOf('6614');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 51 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 51 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 51 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 51 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6612'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 126; } // Certificación de disponibilidad inmediata de servicios públicos domiciliarios
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 108; } // Certificación de disponibilidad inmediata de servicios públicos domiciliarios
+            print_review()
+
+            index = _code.indexOf('6613'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 111; } // Información que soporte el acceso directo al predio objeto de cesión desde una vía pública...
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 92; } // nformación que soporte el acceso directo al predio objeto de cesión desde una vía pública...
+            print_review()
+
+            index = _code.indexOf('6614'); // OK
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 82; } // Licencias anteriores o el instrumento que haga sus veces 
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 51; } // Licencias anteriores o el instrumento que haga sus veces con los respectivos planos
+            print_review()
 
 
             // NEXT PAGE
             page = pdfDoc.getPage(3);
+            ox = 0
+            oy = 0
 
+            o_si = 0
+            o_no = 0
+            o_na = 0
             print_new_page(3)
 
             // 6.7
-            index = _code.indexOf('671');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 654 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 654 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 654 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 654 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('671');  // Descripción general del proyecto
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 528; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 654; }
+            print_review()
 
-            index = _code.indexOf('672');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 643 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 643 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 643 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 643 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('672');  // Copia de los planos de diseño del proyectO
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 517; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 643; }
+            print_review()
 
             // 6.8
-            index = _code.indexOf('680');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 580 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 580 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 580 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 580 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('680');  // Copia del plano correspondiente
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 473; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 580; }
+            print_review()
 
-            index = _code.indexOf('681');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 545 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 545 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 545 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 545 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('681');  // Planos de alinderamiento
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 450; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 545; }
+            print_review()
 
-            index = _code.indexOf('682');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 530 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 530 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 530 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 530 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('682');  // Presentación de solicitud ante autoridad distinta a la que otorgó la licencia...
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 434; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 530; }
+            print_review()
 
-            index = _code.indexOf('683');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 510 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 510 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 510 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 510 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('683');  // Para licencias urbanísticas que hayan perdido su vigencia...
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 415; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 510; }
+            print_review()
 
-            index = _code.indexOf('684');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 495 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 495 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 495 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 495 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('684');  // Cuadro de áreas o proyecto de división
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 400; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 495; }
+            print_review()
 
-            index = _code.indexOf('685');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 482 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 482 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 482 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 482 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('685');  // Bienes de interés cultural: Anteproyecto o autorización de intervención aprobada
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 389; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 482; }
+            print_review()
 
-            index = _code.indexOf('6861');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 448 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 448 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 448 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 448 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6861');  // Estudios de suelos y geotécnicos
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 365; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 448; }
+            print_review()
 
-            index = _code.indexOf('687');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 415 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 415 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 415 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 415 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('687');  // Planos de diseño y arquitectónicos (NSR-10)
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 341; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 415; }
+            print_review()
 
-            index = _code.indexOf('6862');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 403 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 403 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 403 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 403 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6862');  // Estudios geotécnicos y de suelos
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 330; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 403; }
+            print_review()
 
-            index = _code.indexOf('688');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 365 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 365 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 365 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 365 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('6862');  // Estudios geotécnicos y de suelos
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 330; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 403; }
+            print_review()
 
-            index = _code.indexOf('689');
-            if (index > -1) {
-                let _value = _check[index]
-                if (_value == 0) { { page.moveTo(520 + ox, 350 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 1) { { page.moveTo(485 + ox, 350 + oy); page.drawText('x', { size: 10 }) } }
-                if (_value == 2) { { page.moveTo(553 + ox, 350 + oy); page.drawText('x', { size: 10 }) } }
-            } else page.moveTo(553 + ox, 350 + oy); page.drawText('x', { size: 10 })
+            index = _code.indexOf('688');  // Copia de la licencia de urbanización, sus modificaciones, prórroga y/o revalidación...
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 302; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 365; }
+            print_review()
+
+            index = _code.indexOf('689');  // Planos que contengan la nueva propuesta urbanística objeto de aprobación
+            if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 287; }
+            else { o_si = 485; o_no = 520; o_na = 553; oy = 350; }
+            print_review()
+
+            if (m_2022) {
+                index = _code.indexOf('6891');  // NEW Dirección oficial del predio o su ubicación si se encuentra en suelo rural
+                { o_si = 474; o_no = 516; o_na = 557; oy = 263; }
+                print_review()
+
+                index = _code.indexOf('6892');   // NEW Antecedentes urbanísticos como licencias y demás, en caso de existir
+                { o_si = 474; o_no = 516; o_na = 557; oy = 252; }
+                print_review()
+
+                index = _code.indexOf('6893');  // NEW Plano record de identificación de zonas de uso público elaborado por el Ministerio de Vivienda, Ciudad y Territorio
+                { o_si = 474; o_no = 516; o_na = 557; oy = 227; }
+                print_review()
+            }
         }
 
         _child = this._GET_CHILD_C();
-        page.moveTo(46 + ox, 120 + oy); page.drawText(_child.item_c1, { size: 14 }); // WORKER NAME
-        page.moveTo(410 + ox, 120 + oy); page.drawText(dateParser(_child.item_c6), { size: 12 }); // DATE OF REVIEW
+        if (m_2022) {
+            page.moveTo(50, 83); page.drawText(_child.item_c1, { size: 14 }); // WORKER NAME
+            page.moveTo(430, 83); page.drawText(dateParser(_child.item_c6), { size: 12 }); // DATE OF REVIEW
+        }
+        else {
+            page.moveTo(46 + ox, 120 + oy); page.drawText(_child.item_c1, { size: 14 }); // WORKER NAME
+            page.moveTo(410 + ox, 120 + oy); page.drawText(dateParser(_child.item_c6), { size: 12 }); // DATE OF REVIEW
+        }
         let _details = _child.item_c4;
 
         let formatString = _details.split('\n');
@@ -881,7 +905,9 @@ class FUN_PDF_CHECK extends Component {
         );
         if (_detailsWrapped(formatString)) {
             let _detailsArray = _detailsWrapped(formatString).split("\n");
-            _detailsArray.map((value, i) => { page.moveTo(46, 301 - i * 15.25); page.drawText(`${value}`, { size: 7 }); })
+
+            if (m_2022) _detailsArray.map((value, i) => { page.moveTo(46, 195 - i * 11.35); page.drawText(`${value}`, { size: 7 }); })
+            else _detailsArray.map((value, i) => { page.moveTo(46, 301 - i * 15.25); page.drawText(`${value}`, { size: 7 }); })
         }
 
 

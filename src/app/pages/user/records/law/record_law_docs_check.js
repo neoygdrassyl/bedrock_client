@@ -7,7 +7,7 @@ import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import DataTable from 'react-data-table-component';
-import { VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
+import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 
 const MySwal = withReactContent(Swal);
@@ -62,125 +62,44 @@ class RECORD_LAW_DOCSCHECK extends Component {
 
         const _docsScope = docsScope ? VR_DOCUMENTS_OF_INTEREST[docsScope] : [];
 
-        const _CODE_LIST_61 = {
-            parent: '6.1 DOCUMENTOS COMUNES A TODA SOLICITUD',
-            codes: ['511', '512', '513', '516', '517', '518', '519']
-        };
-        const _CODE_LIST_62 = {
-            parent: '6.2 DOCUNENTOS ADICIONALES EN LICENCIA DE URBANIZACIÓN',
-            children: [
-                {
-                    parent: 'A. Modalidad Desarrollo',
-                    codes: ['621', '601a', '622', '602a']
-                },
-                {
-                    parent: 'B. Modalidad Saneamiento',
-                    codes: ['623', '601b', '602b', '624', '625']
-                },
-                {
-                    parent: 'C. Modalidad Recuperacion',
-                    codes: ['626', '627', '601c', '602c']
-                }
-            ]
-        };
-        const _CODE_LIST_63 = {
-            parent: '6.3 DOCUMENTOS ADICIONALES EN LA LICENCIA DE PARCELACION',
-            codes: ['631', '632', '633',],
-            children: [
-                {
-                    parent: 'Documentos adicionales en licencia de parcaleación para saneamiento',
-                    codes: ['634', '635', '636',]
-                },
-            ]
-        };
-        const _CODE_LIST_64 = {
-            parent: '6.4 DOCUMENTOS ADICIONALES EN LA LICENCIA DE SUBDIVISION',
-            children: [
-                {
-                    parent: 'A. Modalidad Subdivisión Urbana y Rural',
-                    codes: ['641']
-                },
-                {
-                    parent: 'B. Modalidad Reloteo',
-                    codes: ['642', '643'],
-                },
-            ]
-        };
-        const _CODE_LIST_65 = {
-            parent: '6.5 DOCUMENTOS RECONOCIMIENTO DE EDIFICACIONES',
-            codes: ['651', '652', '653']
-        };
-        const _CODE_LIST_66 = {
-            parent: '6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN',
-            codes: ['6601', '6602', '6603', '6604', '6605',],
-            children: [
-                {
-                    parent: 'Revisión indepenciente de los diseños estructurales',
-                    codes: ['660a', '660b', '660c', '660d', '660e', '6607', '6608',]
-                },
-                {
-                    parent: 'Bien de interés cultural',
-                    codes: ['6609',]
-                },
-                {
-                    parent: 'Propiedad Horizontal',
-                    codes: ['6610',]
-                },
-                {
-                    parent: 'Reforzamiento Estructural para Edificaciones en riesgo por daños en la estructura',
-                    codes: ['6611',]
-                },
-                {
-                    parent: 'Equipamientos en suelos objeto de entrega de cesiones anticipadas',
-                    codes: ['6612', '6613',]
-                },
-                {
-                    parent: 'Trámite presentado ante autoridad distinta a la que otorgo la licencia inicial',
-                    codes: ['6614',]
-                },
-                {
-                    parent: 'Modalidad de Modificacion y Adecuacion',
-                    codes: ['6615',]
-                },
-                {
-                    parent: 'Modalidad de Demolicion y Cerramiento',
-                    codes: ['6616', '6617', '6618', '6619']
-                },
-
-            ]
-        };
-        const _CODE_LIST_67 = {
-            parent: '6.7 DOCUMENTOS ADICIONALES EN LICENCIAS DE INTERVENCIÓN Y OCUPACIÓN DEL ESPACIO PÚBLICO',
-            codes: ['671', '672']
-        };
-        const _CODE_LIST_68 = {
-            parent: '6.8 DOCUMENTOS PARA OTRAS ACTUACIONES',
-            children: [
-                {
-                    parent: 'Ajuste de cotas y áreas',
-                    codes: ['680',]
-                },
-                {
-                    parent: 'Aprobación de los planos de propiedad horizontal',
-                    codes: ['681', '682', '683', '684', '685',]
-                },
-                {
-                    parent: 'Autorización para el movimiento de tierras',
-                    codes: ['686',]
-                },
-                {
-                    parent: 'Aprobación de piscinas',
-                    codes: ['687', '6862',]
-                },
-                {
-                    parent: 'Modificación del plano urbanístico',
-                    codes: ['688', '689']
-                },
-            ]
-        };
-
         const _CODE_LIST = []
         // DATA GETTER
+        let _GET_CHILD_1 = () => {
+            var _CHILD = currentItem.fun_1s;
+            var _CURRENT_VERSION = 0;
+            var _CHILD_VARS = {
+                item_0: "",
+                item_1: "",
+                item_2: "",
+                item_3: "",
+                item_4: "",
+                item_5: "",
+                item_6: "",
+                item_7: "",
+                item_8: "",
+                item_9: "",
+                item_101: "",
+                item_102: "",
+            }
+            if (_CHILD) {
+                if (_CHILD[_CURRENT_VERSION] != null) {
+                    _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id;
+                    _CHILD_VARS.item_1 = _CHILD[_CURRENT_VERSION].tipo ? _CHILD[_CURRENT_VERSION].tipo : "";
+                    _CHILD_VARS.item_2 = _CHILD[_CURRENT_VERSION].tramite ? _CHILD[_CURRENT_VERSION].tramite : "";
+                    _CHILD_VARS.item_3 = _CHILD[_CURRENT_VERSION].m_urb ? _CHILD[_CURRENT_VERSION].m_urb : "";
+                    _CHILD_VARS.item_4 = _CHILD[_CURRENT_VERSION].m_sub ? _CHILD[_CURRENT_VERSION].m_sub : "";
+                    _CHILD_VARS.item_5 = _CHILD[_CURRENT_VERSION].m_lic ? _CHILD[_CURRENT_VERSION].m_lic : "";
+                    _CHILD_VARS.item_6 = _CHILD[_CURRENT_VERSION].usos ? _CHILD[_CURRENT_VERSION].usos : "";
+                    _CHILD_VARS.item_7 = _CHILD[_CURRENT_VERSION].area ? _CHILD[_CURRENT_VERSION].area : "";
+                    _CHILD_VARS.item_8 = _CHILD[_CURRENT_VERSION].vivienda ? _CHILD[_CURRENT_VERSION].vivienda : "";
+                    _CHILD_VARS.item_9 = _CHILD[_CURRENT_VERSION].cultural ? _CHILD[_CURRENT_VERSION].cultural : "";
+                    _CHILD_VARS.item_101 = _CHILD[_CURRENT_VERSION].regla_1 ? _CHILD[_CURRENT_VERSION].regla_1 : "";
+                    _CHILD_VARS.item_102 = _CHILD[_CURRENT_VERSION].regla_2 ? _CHILD[_CURRENT_VERSION].regla_2 : "";
+                }
+            }
+            return _CHILD_VARS;
+        }
+
         let _GET_CHILD_6 = () => {
             var _CHILD = _FUN_6;
             var _LIST = [];
@@ -305,6 +224,13 @@ class RECORD_LAW_DOCSCHECK extends Component {
             },
         ];
         // COMPONENT JSX
+        let BUILD_LIST = () => {
+            const _FUN_1 = _GET_CHILD_1();
+            let list = GEM_CODE_LIST(_FUN_1)
+            return list
+        }
+
+        
         let _COMPONENT_TABLE_LIST = () => {
             if (!_FUN_R) return []
             let _DOCS = _FUN_R.code;
@@ -333,53 +259,10 @@ class RECORD_LAW_DOCSCHECK extends Component {
                 })
             })
 
-
             return newList;
         }
 
-        let BUILD_LIST = () => {
-            let list = [];
-            list.push(_CODE_LIST_61);
-
-            if (_FUN_1.item_1.includes('A')) {
-                if (_FUN_1.item_3.includes('A')) list.push(_CODE_LIST_62.children[0]);
-                if (_FUN_1.item_3.includes('B')) list.push(_CODE_LIST_62.children[1]);
-                if (_FUN_1.item_3.includes('C')) list.push(_CODE_LIST_62.children[2]);
-            }
-            if (_FUN_1.item_1.includes('B')) {
-                list.push(_CODE_LIST_63);
-                if (_FUN_1.item_3.includes('B')) list.push(_CODE_LIST_63.children[0]);
-            }
-            if (_FUN_1.item_1.includes('C')) {
-                if (_FUN_1.item_3.includes('A') || _FUN_1.item_3.includes('B')) list.push(_CODE_LIST_64.children[0]);
-                if (_FUN_1.item_3.includes('C')) list.push(_CODE_LIST_62.children[1]);
-            }
-            if (_FUN_1.item_1.includes('F')) {
-                list.push(_CODE_LIST_65);
-            }
-            if (_FUN_1.item_1.includes('D')) {
-                list.push(_CODE_LIST_66);
-                list.push(_CODE_LIST_66.children[0]);
-                list.push(_CODE_LIST_66.children[1]);
-                list.push(_CODE_LIST_66.children[2]);
-                list.push(_CODE_LIST_66.children[3]);
-                list.push(_CODE_LIST_66.children[4]);
-                list.push(_CODE_LIST_66.children[5]);
-                list.push(_CODE_LIST_66.children[6]);
-                list.push(_CODE_LIST_66.children[7]);
-            }
-            if (_FUN_1.item_1.includes('E')) {
-                list.push(_CODE_LIST_67);
-            }
-            if (_FUN_1.item_1.includes('G')) {
-                list.push(_CODE_LIST_68.children[0]);
-                list.push(_CODE_LIST_68.children[1]);
-                list.push(_CODE_LIST_68.children[2]);
-                list.push(_CODE_LIST_68.children[3]);
-                list.push(_CODE_LIST_68.children[4]);
-            }
-            return list;
-        }
+      
         // FUNCTIONS & APIS
         var formData = new FormData();
         const columns = [
