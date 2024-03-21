@@ -277,8 +277,8 @@ class RECORD_PH_REVIEW extends Component {
 
             return <div className="row py-2">
                 <div className="col-12">
-                    <label>Observaciones, separe cada punto con (solo) un salto de linea. (máximo 4000 caracteres)</label>
-                    <textarea className="input-group" maxLength="2000" id="review_ph_detail_2" rows="4"
+                    <label>Observaciones, separe cada punto con (solo) un salto de linea. (máximo 5000 caracteres)</label>
+                    <textarea className="input-group" maxLength="5000" id="review_ph_detail_2" rows="4"
                         defaultValue={_CHILD}></textarea>
                 </div>
             </div>
