@@ -70,7 +70,7 @@ class FUN_ALERT extends Component {
     SET_DEFAULT_OBJECT() {
         let _CHILD = this.state.currentItem.fun_3s[0];
         if (_CHILD) {
-            if (_CHILD.id_alerted == -1) {
+            if (_CHILD.alters_info) {
                 document.getElementById('confirm_cb').checked = true;
                 this.setState({ cb0: true })
                 if (_CHILD.alters_info) {
@@ -317,7 +317,7 @@ class FUN_ALERT extends Component {
             document.getElementById('alert_id_alert').value = _CHILD.id_alerted != -1 ? _CHILD.id_alerted : "";
             document.getElementById('alert_date_confirm').value = _CHILD.alerted;
 
-            if (_CHILD.id_alerted == -1) {
+            if (_CHILD.alters_info) {
                 this.setState({ cb0: true })
                 if (_CHILD.alters_info) {
                     this.setState({ cb: true })
@@ -806,11 +806,12 @@ class FUN_ALERT extends Component {
             let id_alerted = document.getElementById("alert_id_alert").value;
             let cb = document.getElementById("confirm_cb").checked;
             if (cb) {
-                formData.set('id_alerted', -1);
+                formData.set('id_alerted', id_alerted);
                 formData.set('state', 2);
             } else if (alerted && id_alerted) {
                 formData.set('id_alerted', id_alerted);
                 formData.set('state', 1);
+                formData.set('alters_info', "");
             }
 
             let cb_2 = document.getElementById("confirm_cb_2");
