@@ -21,22 +21,71 @@ export const PQRS_SET_REPLY1 = (props) => {
         const x = currentItem.pqrs_solocitors.map(function (value) { return ` ${value.name}` })
         return x.join(', ');
     }
-    const funcion4 = () => {
-        const y = currentItem.pqrs_contacts.map(function (value) { return ` ${value.email ? value.email : value.address ? value.address : ''} ` })
+    const get_email = () => {
+        const y = currentItem.pqrs_contacts.map(function (value) { return `${value.email ? value.email : ''}` }).join(', ')
+        return y;
+    }
+    const get_address = () => {
+        const y = currentItem.pqrs_contacts.map(function (value) { return `${ value.address ? value.address : ''}` }).join(', ')
         return y;
     }
 
+    const fontSize = "font-size: 12px;"
 
     const textdefauld = (conten) => (`
-    <p style="margin-left: 150px; line-height: 1.5;"><span style="font-family: arial, helvetica, sans-serif;"><br></span></p> <p
-    style="margin-left: 80px; line-height: 1.5;"><span style="font-family: arial, helvetica, sans-serif;"><br></span></p> <p
-     style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; font-size: 14px; ">${infoCud.city}, ${dateParser(moment().format('YYYY-MM-DD'))}</span></p><p style="text-align: center; margin-left: 470px; line-height: 0.5;"><span style="font-family: arial,
-       helvetica, sans-serif; font-size: 14px;"><strong>${currentItem.id_reply ?? ''}</strong></span></p><p style="margin-left: 80px; line-height: 0.5;"><span
-        style="font-family: arial, helvetica, sans-serif; font-size: 14px;, margin-left: 30px;"><strong>Peticionario: </strong></span></p><p
-         style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; font-size: 14px;, margin-left:
-          30px;"><strong>${funcion3()}</strong></span></p><p style="margin-left: 80px; line-height: 0.5;"><strong>${funcion4()}
-           </strong></p><p style="margin-left: 80px; line-height: 0.5;"><strong><br></strong></p> <p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; font-size: 14px;"><strong style="font-size: 14px;"><br></strong></span></p><p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; font-size: 14px;"><strong style="font-size: 14px;">Asunto:</strong><strong>&nbsp;Respuesta a su petición ${currentItem.id_global || currentItem.id_publico || ''}</strong></span></p><p style="margin-left: 80px; line-height: 0.5;"><br></p><p style="margin-left: 80px; line-height: 0.5;"><br></p><p style="margin-left: 80px; line-height: 0.5;">${conten}</p><p><br></p><p style="margin-left: 80px; line-height: 0.5;"><br></p><p style="margin-left: 80px; line-height: 0.5;"><br></p><p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif; font-size: 14px;">Cordialmente, </span></strong></p><p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; font-size: 14px;"><br></strong></span></strong></p><p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; font-size: 14px;"><br></strong></span></strong></p><p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; font-size: 14px;"><br></strong></span></strong></p><p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif; font-size: 14px;"><strong>ARQ. </strong><strong>${infoCud.dir}</strong> </span></strong></p><p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; font-size: 14px;">${infoCud.job}</strong></span></strong></p><p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; font-size: 14px;">Revisado por:</strong></span></strong></p><p><br></p>
-    `)
+    <p style="margin-left: 150px; line-height: 1.5;"><span style="font-family: arial, helvetica, sans-serif;"><br></span></p> 
+    <p style="margin-left: 80px; line-height: 1.5;"><span style="font-family: arial, helvetica, sans-serif;"><br></span></p> 
+    <p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};">${infoCud.city}, ${dateParser(moment().format('YYYY-MM-DD'))}</span></p>
+    <p style="text-align: center; margin-left: 470px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};"><strong>${currentItem.id_reply ?? ''}</strong></span></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};, margin-left: 30px;"><strong>Peticionario: </strong></span></p>
+    ${get_email() ? `<p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};, margin-left: 30px;"><strong>${get_email()}</strong></span></p>` : ""}
+    ${get_address() ? `<p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};, margin-left: 30px;"><strong>${get_address()} </strong></span></p>` : ""}    
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><br></strong></p>
+    <table style="margin-left: 80px; margin-right: 80px; border: none; font-family: arial, helvetica, sans-serif; ${fontSize};">
+        <tr>
+            <td style="width: 25%;"><strong> Radicado interno: </strong></td>
+            <td> ${currentItem.id_global || currentItem.id_publico || ''} </td>
+        </tr>
+        <tr>
+            <td><strong> Fecha de radicado: </strong></td>
+            <td> ${dateParser(currentItem.pqrs_time.legal)} </td>
+        </tr>
+        <tr>
+            <td><strong> Referencia: </strong></td>
+            <td> Respuesta a petición ${currentItem.id_global || currentItem.id_publico || ''} </td>
+        </tr>
+        <tr>
+            <td><strong> Peticionario: </strong></td>
+            <td> ${funcion3()} </td>
+        </tr>
+        <tr>
+            <td><strong> Asunto: </strong></td>
+            <td> ${currentItem.content} </td>
+        </tr>
+        ${currentItem.pqrs_fun ? `<tr>
+            <td><strong> Asociado a un proyecto: </strong></td>
+            <td> ${currentItem.pqrs_fun.id_public} </td>
+        </tr>`:  '' }
+        <tr>
+            <td><strong> Término: </strong></td>
+            <td> ${currentItem.pqrs_time.time} días hábiles</td>
+        </tr>
+    </table> 
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><br></strong></p> 
+    <p style="margin-left: 80px; line-height: 0.5;"><strong>Cordial saludo,</strong></p> 
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><br></strong></p> 
+    <p style="margin-left: 80px; line-height: 0.5;  font-family: arial, helvetica, sans-serif;">${conten}</p>
+    <p><br></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><br></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><br></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif; ${fontSize};">Cordialmente, </span></strong></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; ${fontSize};"><br></strong></span></strong></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; ${fontSize};"><br></strong></span></strong></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; ${fontSize};"><br></strong></span></strong></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif; ${fontSize};"><strong>ARQ. </strong><strong>${infoCud.dir}</strong> </span></strong></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; ${fontSize};">${infoCud.job}</strong></span></strong></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; ${fontSize};">Revisado por:</strong></span></strong></p>
+`)
 
     const fgs = ()=>(`
     
@@ -251,7 +300,6 @@ export const PQRS_SET_REPLY1 = (props) => {
 
                 </div>
 
-                <label>Respuesta de Oficio (Máximo 4000 Caracteres)</label>
                 <JoditEditor
                     ref={editor}
                     value={cargar}

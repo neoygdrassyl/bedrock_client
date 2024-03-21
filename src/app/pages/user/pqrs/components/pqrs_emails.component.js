@@ -216,7 +216,7 @@ class PQRS_EMAILS extends Component {
                             </span>
                             <input type="text" class="form-control" id="pqrs_email_1"
                                 defaultValue={_EMAILS} required />
-                            <button type="submit" class="btn btn-warning shadow-none">ENVIAR CORREO</button>
+                            <button type="submit" class="btn btn-warning shadow-none" disabled>ENVIAR CORREO</button>
                         </div>
                     </div>
                     <div className="col-6">
@@ -412,19 +412,6 @@ class PQRS_EMAILS extends Component {
                         <form id="form_extension_email" onSubmit={email}>
                             <div className="" >
                                 {_EMAIL_COMPONENT()}
-                                {this.props.email_types[0] == 3
-                                    ? <>
-                                        <div className="col-6">
-                                            <PQRS_SEND_DATE
-                                             translation={translation} swaMsg={swaMsg} globals={globals}
-                                             currentItem={currentItem}
-                                             email_types={[3]}
-                                             attachs={true}
-                                            
-                                            />
-                                        </div>
-                                    </>
-                                    : ""}
                                 {attachs
                                     ? <>
                                         <div className="text-end m-3">

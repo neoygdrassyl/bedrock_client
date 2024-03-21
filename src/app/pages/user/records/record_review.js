@@ -531,13 +531,12 @@ class RECORD_REVIEW extends Component {
             </>
         }
         let _COMPONENT_REVIEW = () => {
-
-            let limit_1 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, 30)
-            let limit_2 = ''
-            if (record_clocks[6].limit != undefined && record_clocks[6].alt == undefined)
-                limit_2 = dateParser_finalDate(get_map_clock(record_clocks[6].limit_id).date_start, record_clocks[6].limit);
-            if (record_clocks[6].limit != undefined && record_clocks[6].alt)
-                limit_2 = dateParser_finalDate(get_map_clock(record_clocks[6].alt).date_start, 1);
+            const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
+            const evaDefaultTime = _fun_0_type_time[currentItem.type] ?? 45
+            let limit_1 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, evaDefaultTime)
+            let notTime = dateParser_dateDiff(_GET_CLOCK_STATE(31).date_start,  _GET_CLOCK_STATE(32).date_start ||_GET_CLOCK_STATE(33).date_start)
+            let acta2Time =   (evaDefaultTime) + (30) + (_GET_CLOCK_STATE(35).date_start ? 15: 0) + (5)
+            let limit_2 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, acta2Time )
 
             let is_Outdate_1 = dateParser_dateDiff(limit_1, currentRecord.date, true)
             let is_Outdate_2 = dateParser_dateDiff(limit_2,  currentRecord.date_2, true)
@@ -1220,7 +1219,7 @@ class RECORD_REVIEW extends Component {
             //let id_public = currentItem.id_public;
             formData.set('id_public', id_public);
             formData.set('new_cub', id_public);
-            formData.set('prev_cub', currentItem.id_public);
+            formData.set('prev_cub', currentRecord.id_public);
 
             manage_review(true);
         }

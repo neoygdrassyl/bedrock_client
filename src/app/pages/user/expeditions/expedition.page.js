@@ -8,6 +8,7 @@ import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import RECORD_LAW_SERVICE from '../../../services/record_law.service';
 import FUN_VERSION_NAV from '../fun_forms/components/fun_versionNav';
 import FUN_MODULE_NAV from '../fun_forms/components/fun_moduleNav';
+import CUSTOM_DATA_SERVICE from '../../../services/custom.service';
 import EXP_1 from './exp_1.component';
 import EXP_AREAS from './exp_areas.component';
 import EXP_DOCS from './exp_docs.component';
@@ -21,6 +22,7 @@ import EXP_2 from './exp_2.component';
 const MySwal = withReactContent(Swal);
 
 class EXPEDITION extends Component {
+   
     constructor(props) {
         super(props);
         this.setItem_Record = this.setItem_Record.bind(this);
@@ -29,6 +31,7 @@ class EXPEDITION extends Component {
         this.retrieveItem = this.retrieveItem.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.setItem_RecordArc = this.setItem_RecordArc.bind(this);
+        this.requestOutCodes = this.requestOutCodes.bind(this);
         this.state = {
             currentRecord: null,
             currentVersionR: null,
@@ -36,12 +39,24 @@ class EXPEDITION extends Component {
             currentStepIndex: 0,
             pqrsxfun: false,
             recordArc: null,
+            outCodes : [],
         };
     }
     componentDidMount() {
         this.setItem_Record();
         this.retrieveItem(this.props.currentId);
         this.setItem_RecordArc();
+    }
+    requestOutCodes(id) {
+        CUSTOM_DATA_SERVICE.loadDictionary_cub_id(id)
+            .then(response => {
+                this.setState({
+                    outCodes: response.data,
+                });
+            })
+            .catch(e => {
+                console.log(e);
+            });
     }
     setItem_Record() {
         EXPEDITION_SERVICE.getRecord(this.props.currentId)
@@ -115,6 +130,7 @@ class EXPEDITION extends Component {
                     load: true
                 })
                 this.retrievePQRSxFUN(response.data.id_public);
+                this.requestOutCodes(response.data.id_public)
             })
             .catch(e => {
                 console.log(e);
@@ -269,6 +285,7 @@ class EXPEDITION extends Component {
                                                 currentRecord={currentRecord}
                                                 currentVersionR={currentVersionR}
                                                 requestUpdate={this.requestUpdate}
+                                                outCodes={this.state.outCodes}
                                             />
 
                                             <EXP_LIC

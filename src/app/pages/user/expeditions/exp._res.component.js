@@ -3050,6 +3050,9 @@ export default function EXP_RES(props) {
                 {_GLOBAL_ID == 'cb1' ? <option>OTORGADA</option> : ''}
                 {_GLOBAL_ID == 'cp1' ? <option>OTORGADA</option> : ''}
                 <option>RECURSO</option>
+                <option>REVOCATORIA DIRECTA</option>
+                <option>SILENCIO ADMINISTRATIVO</option>
+                <option>ACLARACIONES Y CORRECCIONES</option>
                 <option>INTERNO</option>
                 <option>OTRO</option>
             </>;
@@ -3061,8 +3064,8 @@ export default function EXP_RES(props) {
             let rev1Op = <option>RESUELVE</option>;
 
             if (model == 'open') return defaultOp;
-            if (model == 'neg' || model == 'neg1' || model == 'neg2' || model == 'neg3' || model == 'neg4' || model == 'neg5') return desOp;
-            if (model == 'des') return negOp;
+            if (model == 'neg' || model == 'neg1' || model == 'neg2' || model == 'neg3' || model == 'neg4' || model == 'neg5') return negOp;
+            if (model == 'des') return desOp;
             if (model == 'clear') return clearOp;
             if (model == 'rev') return revOp;
             if (model == 'rev0') return rev0Op;
@@ -3293,9 +3296,9 @@ export default function EXP_RES(props) {
         var default_model = currentRecord.model || 'open';
 
         let models = [
-            { value: 'open', label: 'ABIERTO' },
-            { value: 'des', label: 'DESISTIDA' },
-            { value: 'neg', label: 'NEGADA' },
+            { value: 'open', label: 'MODELO DE RESOLUCION ABIERTO' },
+            { value: 'des', label: 'MODELO DE RESOLUCION DESISTIDA' },
+            { value: 'neg', label: 'MODELO DE RESOLUCION NEGADA' },
         ];
 
         if (_GLOBAL_ID == 'cb1') {

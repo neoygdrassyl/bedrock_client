@@ -15,6 +15,10 @@ class PqrsMainDataService {
     return http.get(`/${route}/pqrs/all`);
   }
 
+  getAllPqrsPending() {
+    return http.get(`/${route}/pqrs/pending`);
+  }
+
   getAllMacro(date_start, date_end) {
     return http.get(`/${route}/pqrs/macro/${date_start}&${date_end}`);
   }
@@ -160,6 +164,11 @@ class PqrsMainDataService {
     return http.delete(`/${route}`);
   }
 
+  // STEPS
+  get_all_step() {return http.get(`/${route}/step`)}
+  create_step(data) {return http.post(`/${route}/step`, data) }
+  update_step(id, data){return http.put(`/${route}/step/${id}`, data)}
+  delete_step(id) {return http.delete(`/${route}/step/${id}`)}
 }
 
 export default new PqrsMainDataService();

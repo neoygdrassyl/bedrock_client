@@ -341,6 +341,7 @@ class SUBMIT_MANAGE extends Component {
                                 <option value={2} selected={_CHILD.list_type == 2}>ASESORÍA TÉCNICA</option>
                                 <option value={3} selected={_CHILD.list_type == 3}>CORRECCIONES SOLICITUD</option>
                                 <option value={4} selected={_CHILD.list_type == 4}>TRAMITE</option>
+                                <option value={5} selected={_CHILD.list_type == 5}>PQRS</option>
                                 <option value={0} selected={_CHILD.list_type == 0}>OTRO</option>
                             </select>
                         </div>
@@ -444,7 +445,7 @@ class SUBMIT_MANAGE extends Component {
             let id_public = document.getElementById("submit_1").value;
             formData.set('id_public', id_public);
 
-            if (id_related == id_public) return MySwal.fire({
+            if (false) return MySwal.fire({
                 title: "ERROR DE DUPLICACIÓN",
                 text: "(1. Número de radicación ) y (2. Número de Solicitud)  deben ser consecutivos diferentes",
                 icon: 'error',
