@@ -1281,7 +1281,7 @@ export default function FUN_REPORT_GEN(props) {
         "USO EXCLUSIVO OFICINA DE GESTION DOCUMENTAL - CONSECUTIVO DE CAJA",
         "USO EXCLUSIVO OFICINA DE GESTION DOCUMENTAL - OBSERVACIONES",
         "CURADURIA",
-        "FECHA DEE REPORTE", // AAAAMM
+        "FECHA DE REPORTE", // AAAAMM
         "TIPO DE LICENCIA",
         "MODALIDAD DE LICENCIA",
         "ACTO DE RECONOCIMIENTO",
@@ -1339,14 +1339,15 @@ export default function FUN_REPORT_GEN(props) {
     ];
 
     let report_data_14 = (v) => {
-        let regex = /[.,\s]/g;
+        //let regex = /[.,\s]/g;
         let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic, usos: v.usos };
         let isPH = regexChecker_isPh(_CHILD_1, true);
         let taxes = getJSONFull(v.taxes);
         let reso = getJSONFull(v.reso);
-        let tmp = getJSONFull(v.tmp);
+        //let tmp = getJSONFull(v.tmp);
         let arc_control = getJSONFull(v.arc_control);
         var exp_steps = getJSONFull(v.control);
+
         // -------------------------------------------
         let coords = v.step_ageo ? v.step_ageo.split(';') : [];
         if (coords.length) {
@@ -1398,20 +1399,25 @@ export default function FUN_REPORT_GEN(props) {
         let worker_eng_1 = _FIND_F5(F52, ['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL']);
         let worker_eng_2 = _FIND_F5(F52, ['INGENIERO CIVIL GEOTECNISTA']);
         let worker_eng_3 = _FIND_F5(F52, ['INGENIERO TOPOGRAFO Y/O TOPÓGRAFO']);
+        let worker_eng_4 = _FIND_F5(F52, ['REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES']);
         let worker_eng = [];
         if (worker_eng_1.name) worker_eng.push((worker_eng_1.name ?? '') + ' ' + (worker_eng_1.surname ?? ''))
-        if (worker_eng_2.name) worker_eng.push((worker_eng_2.name ?? '') + ' ' + (worker_eng_2.surname ?? ''))
-        if (worker_eng_3.name) worker_eng.push((worker_eng_3.name ?? '') + ' ' + (worker_eng_3.surname ?? ''))
         worker_eng = worker_eng.join(', ')
+        let worker_eng_other = []
+        if (worker_eng_2.name) worker_eng_other.push((worker_eng_2.name ?? '') + ' ' + (worker_eng_2.surname ?? ''))
+        if (worker_eng_3.name) worker_eng_other.push((worker_eng_3.name ?? '') + ' ' + (worker_eng_3.surname ?? ''))
+        if (worker_eng_4.name) worker_eng_other.push((worker_eng_4.name ?? '') + ' ' + (worker_eng_4.surname ?? ''))
+        worker_eng_other = worker_eng_other.join(', ')
         // -------------------------------------------
         let arc_bp = v.arc_bp ? v.arc_bp.split(';') : [];
         let eng_cant = v.eng_doc_cant ? v.eng_doc_cant.split(';') : [];
         let eng_doc_pag = v.eng_doc_pag ? v.eng_doc_pag.split(';') : [];
         let eng_ncert = v.eng_ncert
-        console.log(eng_cant)
-        let arc_op = Number(arc_bp[1] || 0) + Number(arc_bp[2] || 0) + Number(arc_bp[3] || 0) + Number(arc_bp[4] || 0) + Number(arc_bp[5] || 0) + Number(arc_bp[6] || 0) + Number(arc_bp[7] || 0) + Number(arc_bp[8] || 0)
+        let arc_op = Number(arc_bp[1] || 0) + Number(arc_bp[2] || 0) + Number(arc_bp[3] || 0) + Number(arc_bp[4] || 0) + Number(arc_bp[5] || 0) + Number(arc_bp[7] || 0) + Number(arc_bp[8] || 0)
         // -------------------------------------------
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
+        // -------------------------------------------
+        let vig = reso.eje || '';
         // -------------------------------------------
         return [
             { value: '' }, // No de ORDEN
@@ -1430,12 +1436,12 @@ export default function FUN_REPORT_GEN(props) {
             { value: '' }, // NOTAS
             { value: '' }, // USO EXCLUSIVO OFICINA DE GESTION DOCUMENTAL - CONSECUTIVO DE CAJA
             { value: '' }, // USO EXCLUSIVO OFICINA DE GESTION DOCUMENTAL - OBSERVACIONES
-            { value: infoCud.nomens }, // CURADURIA
-            { value: '' }, // FECHA DEE REPORTE // AAAAMM
-            { value: formsParser1(_CHILD_1, true) }, // TIPO DE LICENCIA
-            { value: _FUN_1_PARSER(_CHILD_1.tipo, true) }, // MODALIDAD DE LICENCIA
-            { value: '' }, // ACTO DE RECONOCIMIENTO
-            { value: '' }, // DESTINACIÓN
+            { value: infoCud.name + " DE " + (infoCud.city).toUpperCase() }, // CURADURIA
+            { value: '' }, // FECHA DE REPORTE // AAAAMM
+            { value: _FUN_1_PARSER(_CHILD_1.tipo, true) }, // TIPO DE LICENCIA
+            { value: isPH ? '' : formsParser1(_CHILD_1, true) }, // MODALIDAD DE LICENCIA
+            { value: isPH ? formsParser1(_CHILD_1, true) : '' }, // ACTO DE RECONOCIMIENTO
+            { value: _FUN_6_PARSER(v.usos, true) }, // DESTINACIÓN
             { value: (v.direccion ?? '').toUpperCase() }, // DIRECCIÓN
             { value: v.barrio }, // BARRIO
             { value: coords.join(', ') }, // GEORERENCIACION  COORDENADAS
@@ -1444,36 +1450,52 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.matricula }, // MATRICULA INMOBILIARIA
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // PROPIETARIO Y/O TITULAR DE LA LICENCIA
             { value: infoCud.pot }, // RESOLUCIONES Y/O ACUERDOS DEL POT
-            { value: moment(v.clock_payment).format('YYYYMMDD') }, // FECHA DE RADICADO SOLICITUD LICENCIA // yyyymmdd
-            { value: moment(isPH ? v.clock_license_ph : v.clock_res_date).format('YYYYMMDD') }, // FECHA DEE EXPEDICIÓN DE LA LICENCIA // YYYYMMDD
-            { value: '' }, // FECHA DE VIGENCIA DE LA LICENCIA // YYYYMMDD
+            { value: v.clock_payment ? moment(v.clock_payment).format('YYYYMMDD') : '' }, // FECHA DE RADICADO SOLICITUD LICENCIA // yyyymmdd
+            {
+                value: isPH ?
+                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+            }, // FECHA DEE EXPEDICIÓN DE LA LICENCIA // YYYYMMDD
+            { value: vig }, // FECHA DE VIGENCIA DE LA LICENCIA // YYYYMMDD
             { value: '' }, // No FOLIOS LICENCIA
             { value: isPH ? v.id_public_ph : v.exp_id }, // ACTO ADMINISTRATIVO DE LA LICENCIA - No
-            { value: isPH ? moment(v.clock_license_ph).format('YYYYMMDD') : moment(v.clock_res_date).format('YYYYMMDD') }, // ACTO ADMINISTRATIVO DE LA LICENCIA - FECHA // YYYYMMDD
+            {
+                value: isPH ?
+                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+            }, // ACTO ADMINISTRATIVO DE LA LICENCIA - FECHA // YYYYMMDD
             { value: '' }, // ACTO ADMINISTRATIVO DE LA LICENCIA - FOLIOS
-            { value: isPH ? moment(v.clock_license_ph).format('YYYYMMDD') : moment(v.clock_res_date).format('YYYYMMDD') }, // LICENCIA EJECUTORIADA - No
-            { value: isPH ? moment(v.clock_license_ph).format('YYYYMMDD') : moment(v.clock_license).format('YYYYMMDD') }, // LICENCIA EJECUTORIADA - FECHA // YYYYMMDD
+            {
+                value: isPH ?
+                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+            }, // LICENCIA EJECUTORIADA - No
+            {
+                value: isPH ?
+                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_license ? moment(v.clock_license).format('YYYYMMDD') : '')
+            }, // LICENCIA EJECUTORIADA - FECHA // YYYYMMDD
             { value: '' }, // LICENCIA EJECUTORIADA - FOLIOS
             { value: exp_steps.norm }, // NORMA URBANA - No
-            { value: moment(exp_steps.date_norm).format('YYYYMMDD') }, // NORMA URBANA - FECHA EXPEDICIÓN // YYYYMMDD
+            { value: exp_steps.date_norm ? moment(exp_steps.date_norm).format('YYYYMMDD') : '' }, // NORMA URBANA - FECHA EXPEDICIÓN // YYYYMMDD
             { value: exp_steps.n_norm }, // NORMA URBANA - FOLIOS
             { value: worker_arc }, // RESPONSABLES - ARQUITECTO
             { value: worker_eng }, // RESPONSABLES - INGENIERO
             { value: (worker.name ?? '') + ' ' + (worker.surname ?? '') }, // RESPONSABLES - DE OBRA
-            { value: '' }, // RESPONSABLES - OTROS
+            { value: worker_eng_other }, // RESPONSABLES - OTROS
             { value: arc_bp[6] ?? '' }, // PLANOS - No PLANOS TOPOGRAFICOS
             { value: arc_bp[0] ?? '' }, // PLANOS - No PLANOS ARQUITECTONICOS
             { value: eng_cant[2] ?? '' }, // PLANOS - No PLANOS ESTRUCTURALES
             { value: arc_op }, // PLANOS - OTROS
             { value: eng_cant[0] || '' }, // MEMORIAS DE CALCULO - No
             { value: eng_doc_pag[0] || '' }, // MEMORIAS DE CALCULO FOLIOS
-            { value: eng_cant[5] || ''  }, // PERITAJE TECNICO - No
+            { value: eng_cant[5] || '' }, // PERITAJE TECNICO - No
             { value: eng_doc_pag[5] || '' }, // PERITAJE TECNICO - FOLIOS
-            { value: '' }, // CERTIFICADO ESTRUCTURAL - No
-            { value: '' }, // CERTIFICADO ESTRUCTURAL - FOLIOS
-            { value: '' }, // ESTUDIOS DE SUELOS - No
-            { value: '' }, // ESTUDIO DE SUELOS FOLIOS
-            { value: '' }, // OTROS FOLIOS
+            { value: v.id_public }, // CERTIFICADO ESTRUCTURAL - No
+            { value: eng_ncert }, // CERTIFICADO ESTRUCTURAL - FOLIOS
+            { value: eng_cant[9] || '' }, // ESTUDIOS DE SUELOS - No
+            { value: eng_doc_pag[9] || '' }, // ESTUDIO DE SUELOS FOLIOS
+            { value: arc_bp[6] || '' }, // OTROS FOLIOS
             { value: '' }, // CDs
             { value: uv }, // No DE UNIDADES DE VIVIENDA
             { value: uc }, // No DE UNIDADES DE COMERCIO
