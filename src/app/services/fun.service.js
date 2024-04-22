@@ -130,6 +130,9 @@ class UserslDataService {
   gen_doc_checkcontrol(data) {
     return http.post(`/${route}/gendoc/checkcontrol`, data);
   }
+  gen_doc_checkcontrol_2(data) {
+    return http.post(`/${route}/gendoc/checkcontrol_2`, data);
+  }
   gen_doc_stickerarchive(data) {
     return http.post(`/${route}/gendoc/stickerarchive`, data);
   }

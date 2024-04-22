@@ -31,6 +31,7 @@ import FUN_CERTIFICATION from './fun_doc_certification.component';
 import { PDFDocument } from 'pdf-lib'
 import fs from 'fs'
 import FUN_D_ABDICATE from './fun_doc_abdicate.component';
+import FUN_D_CONTROL_2 from './fun_d_control.component_2';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -469,6 +470,21 @@ class FUN_DOCS extends Component {
                                 <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">HOJA DE CONTROL DOCUMENTAL</label>}>
                                     <div className='text-start'>
                                         <FUN_D_CONTROL
+                                            translation={translation}
+                                            swaMsg={swaMsg}
+                                            globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            requestUpdate={this.requestUpdate}
+                                        />
+                                    </div>
+                                </Collapsible>
+                            </div>
+
+                            <div id="fund_doc_control">
+                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">HOJA DE CONTROL DE INVENTARIO</label>}>
+                                    <div className='text-start'>
+                                        <FUN_D_CONTROL_2
                                             translation={translation}
                                             swaMsg={swaMsg}
                                             globals={globals}

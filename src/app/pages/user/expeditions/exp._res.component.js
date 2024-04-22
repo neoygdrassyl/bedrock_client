@@ -3017,7 +3017,7 @@ export default function EXP_RES(props) {
     // ******************************* JSX ***************************** // 
     let _COMPONENT_DOC_RES = () => {
         var model = currentRecord.model || 'open';
-        let canSave = window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5;
+        let canSave = (window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5) || _GLOBAL_ID == 'cb1';
         function getModel(model) {
             if (model == 'open') return _MODEL_OPEN();
             if (model == 'neg') return _MODEL_NEG();
@@ -3064,7 +3064,7 @@ export default function EXP_RES(props) {
             let rev1Op = <option>RESUELVE</option>;
 
             if (model == 'open') return defaultOp;
-            if (model == 'neg' || model == 'neg1' || model == 'neg2' || model == 'neg3' || model == 'neg4' || model == 'neg5') return negOp;
+            if (model == 'neg' || model == 'neg1' || model == 'neg2' || model == 'neg3' || model == 'neg4' || model == 'neg5') return desOp;
             if (model == 'des') return desOp;
             if (model == 'clear') return clearOp;
             if (model == 'rev') return revOp;
