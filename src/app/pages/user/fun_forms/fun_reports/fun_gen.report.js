@@ -270,6 +270,7 @@ export default function FUN_REPORT_GEN(props) {
         else if (_ADD(EXP_A, 'units', 'apartamento (NO VIP)') > 0) tipe1 = 'Apartamento';
 
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
+        p_desc = p_desc.replaceAll(';',",");
         return [
             { value: isPH ? moment(v.clock_license_ph).format('MM-YYYY') : moment(v.clock_license).format('MM-YYYY') }, //  Mes y Año De Aprobacion
             { value: isPH ? v.id_public_ph : v.id_public },  //  Numero De Licencia de Cnstruccion
@@ -434,6 +435,7 @@ export default function FUN_REPORT_GEN(props) {
         var arc_bp = v.arc_bp ? v.arc_bp.split(';') : [];
 
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
+        p_desc = p_desc.replaceAll(';',",");
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, //  Licencia
             { value: formsParser1(v, true) }, //  Tipo De Licencia
@@ -634,7 +636,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: u_vis }, //  Unidades VIS
             { value: u_vip }, //  Unidades VIP
             { value: u_nvis }, //  Unidades NO VIS
-            { value: arc_control.m2_brute || 0 }, //  Area Bruta M2
+            { value: arc_control.m2_brute || arc_control.m2_predio || 0 }, //  Area Bruta M2
             { value: arc_control.m2_net || 0 }, //  Area Neta M2
             { value: arc_control.m2_useful || 0 }, //  Area Util M2
             { value: a_vis }, //  Area Consruida VIS
@@ -923,6 +925,7 @@ export default function FUN_REPORT_GEN(props) {
         height = height > 0 ? height : '';
         // -------------------------------------------
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
+        p_desc = p_desc.replaceAll(';',",");
         // -------------------------------------------
         let coords = v.step_ageo ? v.step_ageo.split(';') : [];
         if (coords.length) {
@@ -1341,13 +1344,13 @@ export default function FUN_REPORT_GEN(props) {
     let report_data_14 = (v) => {
         //let regex = /[.,\s]/g;
         let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic, usos: v.usos };
-        let isPH = regexChecker_isPh(_CHILD_1, true);
-        let taxes = getJSONFull(v.taxes);
-        let reso = getJSONFull(v.reso);
+        const isPH = regexChecker_isPh(_CHILD_1, true);
+        const taxes = getJSONFull(v.taxes);
+        const reso = getJSONFull(v.reso);
         //let tmp = getJSONFull(v.tmp);
-        let arc_control = getJSONFull(v.arc_control);
+        const arc_control = getJSONFull(v.arc_control);
         var exp_steps = getJSONFull(v.control);
-
+        const json34 =  getJSONFull(v.arc_json34);
         // -------------------------------------------
         let coords = v.step_ageo ? v.step_ageo.split(';') : [];
         if (coords.length) {
@@ -1416,6 +1419,7 @@ export default function FUN_REPORT_GEN(props) {
         let arc_op = Number(arc_bp[1] || 0) + Number(arc_bp[2] || 0) + Number(arc_bp[3] || 0) + Number(arc_bp[4] || 0) + Number(arc_bp[5] || 0) + Number(arc_bp[7] || 0) + Number(arc_bp[8] || 0)
         // -------------------------------------------
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
+        p_desc = p_desc.replaceAll(';',",");
         // -------------------------------------------
         let vig = reso.eje || '';
         // -------------------------------------------
@@ -1504,7 +1508,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.parking ?? arc_control.n_parking }, // No DE PARQUEADEROS
             { value: floors }, // No DE PISOS
             { value: height }, // ALTURA DE LA EDIFICACION
-            { value: arc_control.m2_brute || '' }, // AREA (m2) TOTAL PREDIOS
+            { value: json34 ?  json34.m2 ? json34.m2  + ' m2' : arc_control.m2_predio ? arc_control.m2_predio + ' m2' : '' : '' }, // AREA (m2) TOTAL PREDIOS
             { value: metraje.toFixed(2) }, // AREA (m2) INTERVENIDA
             { value: arc_control.m2_useful || metraje.toFixed(2) }, // AREA (m2) CONSTRUIDA
             { value: p_desc }, // DESCRIPCIÓN DEL PROYECTO
@@ -1701,7 +1705,7 @@ export default function FUN_REPORT_GEN(props) {
         let bigest = -Infinity;
         fields.map(f => {
             let num = f.replace(/^\D+/g, '');
-            if (num > bigest) bigest = num;
+            if (Number(num )> Number(bigest)) bigest = num;
         }
         );
         return bigest == -Infinity ? 0 : bigest;
