@@ -376,7 +376,7 @@ export default function FUN_D_CONTROL_2(props) {
                 <div className='col-8 border'>{ENG}</div>
             </div>
             <div className='row'>
-                <div className='col-4 border fw-bold'>DIRECOTOR DE LA CONSTRUCCION</div>
+                <div className='col-4 border fw-bold'>DIRECTOR DE LA CONSTRUCCIÓN</div>
                 <div className='col-8 border'>{SUPERVISOR}</div>
             </div>
         </>
