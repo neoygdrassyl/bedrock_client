@@ -177,7 +177,7 @@ const rules_matrix = () => {
                 { name: 'Construcción obra nueva uso comercio o servicios en suelo rural, suburbano y expansion urbana, y otras modalidades', mult: 21179.25, preFix: '2007', },
                 { name: 'Construcción obra nueva uso institucional o dotacional y otras modalidades', mult: 8471.70, preFix: '2007', },
                 { name: 'Construcción obra nueva uso industrial y otras modalidades', mult: 18826.00, preFix: '2007', },
-                { name: 'Licencia de cerramiento por metro lineal', mult: 4707, preFix: '2015', },
+                { name: 'Licencia de cerramiento por metro lineal', mult: 4706.50, preFix: '2015', },
 
             ]
         },

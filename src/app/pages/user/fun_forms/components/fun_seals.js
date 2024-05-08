@@ -2,7 +2,7 @@ import { MDBBtn } from 'mdb-react-ui-kit';
 import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { formsParser1 } from '../../../../components/customClasses/typeParse';
+import { dateParser, formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
 import sealService from '../../../../services/seal.service';
 import CustomService from '../../../../services/custom.service';
 
@@ -45,6 +45,15 @@ class FUN_SEAL extends Component {
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
         const { currentSeal } = this.state;
+
+        var sael_name = ''
+        if(currentItem.expedition) sael_name += currentItem.expedition.id_public ? `RESOLUCIÓN ${currentItem.expedition.id_public} DEL ` : '';
+        if(currentItem.expedition){
+            var reso = getJSONFull(currentItem.expedition.reso)
+            if (reso.date) sael_name += currentItem.expedition.tmp ? `${dateParser(reso.date).toUpperCase()} ` : '';
+        } 
+        if(currentItem.id_public) sael_name += `No. ${currentItem.id_public}`
+
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -256,13 +265,13 @@ class FUN_SEAL extends Component {
             <div className="py-3">
                 <form onSubmit={save_seal} id="app-form">
                     <div className="row">
-                        <div className=" col-6">
+                        <div className=" col-12">
                             <label>No. Radicación</label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text bg-info text-white">
                                     <i class="fas fa-hashtag"></i>
                                 </span>
-                                <input type="text" class="form-control" defaultValue={currentItem.id_public} id="seal_1" />
+                                <input type="text" class="form-control" defaultValue={sael_name} id="seal_1" />
                             </div>
                         </div>
                     </div>

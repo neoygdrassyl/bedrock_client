@@ -131,10 +131,10 @@ class CLOCKS_CONTROL extends Component {
                 { state: 30, name: 'Acta Parte 1: Observaciones', limit: [5, false, _fun_0_type_time[currentItem.type] ?? 45], icon: <i class="fas fa-file-alt text-success"></i>, },
                 { state: 31, name: 'Citación (Observaciones)', icon: <i class="far fa-envelope text-secondary"></i>, },
                 { state: 32, name: 'Notificación (Observaciones)', limit: [31, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
-                { state: 33, name: 'Notificación por aviso (Observaciones)', limit: [31, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
+                { state: 33, name: 'Notificación por aviso (Observaciones)', limit: [31, false, 10], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
     
-                { state: 34, name: 'Prórroga correcciones', optional: true, limit: [[32, 33], false, [30, 30]], icon: <i class="far fa-dot-circle"></i>, },
-                { state: 35, name: 'Correcciones', optional: !requereCorr(), limit: [[32, 33], false, [35, 35, 40]], limitValues: presentExt() ? 45 : 30, icon: <i class="fas fa-file-alt"></i>, },
+                { state: 34, name: 'Prórroga correcciones', optional: true, limit: [[33, 32], false, [30, 30]], icon: <i class="far fa-dot-circle"></i>, },
+                { state: 35, name: 'Correcciones', optional: !requereCorr(), limit: [[33, 32], false, [35, 35, 40]], limitValues: presentExt() ? 45 : 30, icon: <i class="fas fa-file-alt"></i>, },
     
                 { state: stepsToCheck, version: -3, optional: true, icon: <i class="far fa-dot-circle text-danger"></i> },
     
