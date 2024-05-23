@@ -194,6 +194,7 @@ export const SUBSERIES_MODULES_RELATION = {
     '1100-260.21': ['1:D', '1:F', '5:B', '5:D', '5:g'],
     '1100-260.22': ['1:D', '1:F', '5:B', '5:D', '5:F', '5:g'],
     '1100-260.23': ['1:D', '1:F', '5:C', '5:D', '5:G'],
+    '1100-260.24': ['1:D', '1:F', '5:F', '5:g'],
 }
 
 // RECIEVES AN OBJECT FUN 1 ONLY CARING ABOUT 5 OF ITS PROPERTIES
