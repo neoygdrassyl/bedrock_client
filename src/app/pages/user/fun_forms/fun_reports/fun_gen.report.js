@@ -50,6 +50,7 @@ export default function FUN_REPORT_GEN(props) {
     var [dataIgac, setDataIgac] = useState([]);
     var [dataNotaria, setDataNotaria] = useState([]);
     var [dataAuditoria, setDataAuditoria] = useState([]);
+    var [dataFDPM, setDataFDPM] = useState([]);
 
     var [load, setLoad] = useState(0);
     var [preview, setPre] = useState(false);
@@ -269,6 +270,7 @@ export default function FUN_REPORT_GEN(props) {
         else if (_ADD(EXP_A, 'units', 'apartamento (NO VIP)') > 0) tipe1 = 'Apartamento';
 
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
+        p_desc = p_desc.replaceAll(';',",");
         return [
             { value: isPH ? moment(v.clock_license_ph).format('MM-YYYY') : moment(v.clock_license).format('MM-YYYY') }, //  Mes y Año De Aprobacion
             { value: isPH ? v.id_public_ph : v.id_public },  //  Numero De Licencia de Cnstruccion
@@ -433,6 +435,7 @@ export default function FUN_REPORT_GEN(props) {
         var arc_bp = v.arc_bp ? v.arc_bp.split(';') : [];
 
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
+        p_desc = p_desc.replaceAll(';',",");
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, //  Licencia
             { value: formsParser1(v, true) }, //  Tipo De Licencia
@@ -633,7 +636,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: u_vis }, //  Unidades VIS
             { value: u_vip }, //  Unidades VIP
             { value: u_nvis }, //  Unidades NO VIS
-            { value: arc_control.m2_brute || 0 }, //  Area Bruta M2
+            { value: arc_control.m2_brute || arc_control.m2_predio || 0 }, //  Area Bruta M2
             { value: arc_control.m2_net || 0 }, //  Area Neta M2
             { value: arc_control.m2_useful || 0 }, //  Area Util M2
             { value: a_vis }, //  Area Consruida VIS
@@ -922,6 +925,7 @@ export default function FUN_REPORT_GEN(props) {
         height = height > 0 ? height : '';
         // -------------------------------------------
         var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
+        p_desc = p_desc.replaceAll(';',",");
         // -------------------------------------------
         let coords = v.step_ageo ? v.step_ageo.split(';') : [];
         if (coords.length) {
@@ -1079,7 +1083,7 @@ export default function FUN_REPORT_GEN(props) {
         let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
         let isPH = regexChecker_isPh(_CHILD_1, true);
         let reso = getJSONFull(v.reso);
-        
+
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, // No Licencia
             { value: formsParser1(_CHILD_1, true) }, // Modalidad De La Licencia
@@ -1198,7 +1202,7 @@ export default function FUN_REPORT_GEN(props) {
     ];
     let report_data_13 = (v) => {
         var regex = /[.,\s]/g;
-        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic,  usos: v.usos };
+        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic, usos: v.usos };
         let isPH = regexChecker_isPh(_CHILD_1, true);
         let taxes = getJSONFull(v.taxes);
         let reso = getJSONFull(v.reso);
@@ -1226,11 +1230,11 @@ export default function FUN_REPORT_GEN(props) {
 
         const sexto_v = reso.sexto_v ? reso.sexto_v.split(';') : []
 
-        let del_pay = taxes.del_pay || sexto_v[2]  || '' 
-        let del_number = taxes.del_number ||  sexto_v[3]  || ''
-        if(reso.parcon){
-            del_pay = taxes.del_pay || sexto_v[3]  || '' 
-            del_number = taxes.del_number ||  sexto_v[4]  || ''
+        let del_pay = taxes.del_pay || sexto_v[2] || ''
+        let del_number = taxes.del_number || sexto_v[3] || ''
+        if (reso.parcon) {
+            del_pay = taxes.del_pay || sexto_v[3] || ''
+            del_number = taxes.del_number || sexto_v[4] || ''
         }
         return [
             { value: isPH ? v.id_public : v.id_public }, // RADICADO
@@ -1241,7 +1245,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: isPH ? v.id_public_ph : v.exp_id }, // Numero de Resolución
             { value: isPH ? v.clock_license_ph : v.clock_res_date }, // Fecha De Expedicion RESOLUCION
             { value: isPH ? v.clock_license_ph : v.clock_license }, // Fecha Ejecutoria
-            { value: reso.state || _GET_STATE_STR(v.state)}, // Estado
+            { value: reso.state || _GET_STATE_STR(v.state) }, // Estado
             { value: Number(cargo_fijo) + Number(cargo_varibable) }, // Valor Expensas
             { value: metraje.toFixed(2) }, // Metraje
             { value: v.estrato }, // Estrato
@@ -1258,6 +1262,256 @@ export default function FUN_REPORT_GEN(props) {
             { value: del_number }, // NUMERO DE RECIBO DELINEACION URBANA
             { value: taxes.del_date }, // FECHA PAGO DELINEACION URBANA
 
+        ]
+    };
+
+    // INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018)
+    const header_14 = [
+        "No de ORDEN",
+        "CODIGO - SERIE",
+        "CODIGO - SUBSERIE",
+        "NOMBRE SERIE/SUBSERIE O ASUNTO",
+        "FECHAS EXTENA - INICIAL",
+        "FECHA EXTERNA - FINAL",
+        "UNIDAD DE CONVSERVACIÓN - No DE CAJA",
+        "UNIAD DE CONVSERVACIÓN - No. DE CARPETA",
+        "UNIAD DE CONVSERVACIÓN - OTROS",
+        "No DE FOLIOS",
+        "SOPORTE",
+        "FRECUENCIA DE CONSULTA",
+        "RADICADO DE LICENCIA URBANISTICA",
+        "NOTAS",
+        "USO EXCLUSIVO OFICINA DE GESTION DOCUMENTAL - CONSECUTIVO DE CAJA",
+        "USO EXCLUSIVO OFICINA DE GESTION DOCUMENTAL - OBSERVACIONES",
+        "CURADURIA",
+        "FECHA DE REPORTE", // AAAAMM
+        "TIPO DE LICENCIA",
+        "MODALIDAD DE LICENCIA",
+        "ACTO DE RECONOCIMIENTO",
+        "DESTINACIÓN",
+        "DIRECCIÓN",
+        "BARRIO",
+        "GEORERENCIACION  COORDENADAS",
+        "ESTRATO",
+        "NUMERO PREDIAL",
+        "MATRICULA INMOBILIARIA",
+        "PROPIETARIO Y/O TITULAR DE LA LICENCIA",
+        "RESOLUCIONES Y/O ACUERDOS DEL POT",
+        "FECHA DE RADICADO SOLICITUD LICENCIA", // yyyymmdd
+        "FECHA DEE EXPEDICIÓN DE LA LICENCIA", // YYYYMMDD
+        "FECHA DE VIGENCIA DE LA LICENCIA", // YYYYMMDD
+        "No FOLIOS LICENCIA",
+        "ACTO ADMINISTRATIVO DE LA LICENCIA - No.",
+        "ACTO ADMINISTRATIVO DE LA LICENCIA - FECHA", // YYYYMMDD
+        "ACTO ADMINISTRATIVO DE LA LICENCIA - FOLIOS",
+        "LICENCIA EJECUTORIADA - No",
+        "LICENCIA EJECUTORIADA - FECHA", // YYYYMMDD
+        "LICENCIA EJECUTORIADA - FOLIOS",
+        "NORMA URBANA - No.",
+        "NORMA URBANA - FECHA EXPEDICIÓN.", // YYYYMMDD
+        "NORMA URBANA - FOLIOS",
+        "RESPONSABLES - ARQUITECTO",
+        "RESPONSABLES - INGENIERO",
+        "RESPONSABLES - DE OBRA",
+        "RESPONSABLES - OTROS",
+        "PLANOS - No PLANOS TOPOGRAFICOS",
+        "PLANOS - No PLANOS ARQUITECTONICOS",
+        "PLANOS - No PLANOS ESTRUCTURALES",
+        "PLANOS - OTROS",
+        "MEMORIAS DE CALCULO - No",
+        "MEMORIAS DE CALCULO FOLIOS",
+        "PERITAJE TECNICO - No",
+        "PERITAJE TECNICO - FOLIOS",
+        "CERTIFICADO ESTRUCTURAL - No",
+        "CERTIFICADO ESTRUCTURAL - FOLIOS",
+        "ESTUDIOS DE SUELOS - No",
+        "ESTUDIO DE SUELOS FOLIOS",
+        "OTROS FOLIOS",
+        "CDs",
+        "No DE UNIDADES DE VIVIENDA",
+        "No DE UNIDADES DE COMERCIO",
+        "No DE UNIDADES DOTACIIONALES",
+        "No DE UNIDADES INDUSTRIALES",
+        "No DE PARQUEADEROS",
+        "No DE PISOS",
+        "ALTURA DE LA EDIFICACION",
+        "AREA (m2) TOTAL PREDIOS",
+        "AREA (m2) INTERVENIDA",
+        "AREA (m2) CONSTRUIDA",
+        "DESCRIPCIÓN DEL PROYECTO",
+    ];
+
+    let report_data_14 = (v) => {
+        //let regex = /[.,\s]/g;
+        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic, usos: v.usos };
+        const isPH = regexChecker_isPh(_CHILD_1, true);
+        const taxes = getJSONFull(v.taxes);
+        const reso = getJSONFull(v.reso);
+        //let tmp = getJSONFull(v.tmp);
+        const arc_control = getJSONFull(v.arc_control);
+        var exp_steps = getJSONFull(v.control);
+        const json34 =  getJSONFull(v.arc_json34);
+        // -------------------------------------------
+        let coords = v.step_ageo ? v.step_ageo.split(';') : [];
+        if (coords.length) {
+            coords[0] = "N: " + coords[0];
+            coords[1] = "E: " + coords[1];
+        }
+        // -------------------------------------------
+        let cv_area = v.exp_area ? v.exp_area.split(';').reduce((sum, next) => sum += Number(next), 0) : 0;
+        let metraje = Number(taxes.id_payment_0_area || 0) + Number(cv_area)
+        // -------------------------------------------
+        let aint;
+        let amp;
+        let uc;
+        let uv;
+        let floors;
+        aint = _FIELDS_ADD(v.r33a_build, ',', undefined, 2);
+        amp = _FIELDS_ADD(v.r33a_build, ',', 1, 2);
+        uc = _FIELDS_ADD(v.r33a_units, ';', 1, 0);
+        uv = _FIELDS_ADD(v.r33a_units, ';', 0, 0);
+        floors = _FIELDS_GET_GREATER(v.r33a_floor);
+        let height = '';
+        let levels = v.r33a_level ? v.r33a_level.split('%%') : [];
+        levels = levels.map(l => l ? l.split('&')[0].includes('-') ? -Number(l.split('&')[1]) : Number(l.split('&')[1]) : 0);
+        let heightRule = v.arule_check === '1' ? true : false;
+        if (heightRule) height = Math.max.apply(Math, levels).toFixed(2);
+        else height = levels.reduce((sum, next) => { if (next > 0) return sum + next; return sum }, 0).toFixed(2);
+        height = height > 0 ? height : '';
+        // -------------------------------------------
+        let EXP_A = v.exp_a_obj ? v.exp_a_obj.split('&&') : [];
+        EXP_A = EXP_A.map(ea => getJSONFull(ea));
+
+        //let dest_a1 = _ADD(EXP_A, 'area', 'Comercial y de Servicios');
+        //let dest_a2 = _ADD(EXP_A, 'area', 'Dotacional');
+        //let dest_a3 = _ADD(EXP_A, 'area', 'Industrial');
+        //let dest_a4 = _ADD(EXP_A, 'area', 'Multiple');
+
+        //let dest_u1 = _ADD(EXP_A, 'units', 'Comercial y de Servicios');
+        let dest_u2 = _ADD(EXP_A, 'units', 'Dotacional');
+        let dest_u3 = _ADD(EXP_A, 'units', 'Industrial');
+        //let dest_u4 = _ADD(EXP_A, 'units', 'Multiple');
+        // -------------------------------------------
+        let F52 = v.objs_52 ? v.objs_52.split('&&') : [];
+        F52 = F52.map(f => getJSONFull(f));
+        // -------------------------------------------
+        let worker = _FIND_F5(F52, ['DIRECTOR DE LA CONSTRUCCION', 'URBANIZADOR O CONSTRUCTOR RESPONSABLE']);
+        // -------------------------------------------
+        let worker_arc = _FIND_F5(F52, ['ARQUITECTO PROYECTISTA']);
+        worker_arc = (worker_arc.name ?? '') + ' ' + (worker_arc.surname ?? '')
+        let worker_eng_1 = _FIND_F5(F52, ['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL']);
+        let worker_eng_2 = _FIND_F5(F52, ['INGENIERO CIVIL GEOTECNISTA']);
+        let worker_eng_3 = _FIND_F5(F52, ['INGENIERO TOPOGRAFO Y/O TOPÓGRAFO']);
+        let worker_eng_4 = _FIND_F5(F52, ['REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES']);
+        let worker_eng = [];
+        if (worker_eng_1.name) worker_eng.push((worker_eng_1.name ?? '') + ' ' + (worker_eng_1.surname ?? ''))
+        worker_eng = worker_eng.join(', ')
+        let worker_eng_other = []
+        if (worker_eng_2.name) worker_eng_other.push((worker_eng_2.name ?? '') + ' ' + (worker_eng_2.surname ?? ''))
+        if (worker_eng_3.name) worker_eng_other.push((worker_eng_3.name ?? '') + ' ' + (worker_eng_3.surname ?? ''))
+        if (worker_eng_4.name) worker_eng_other.push((worker_eng_4.name ?? '') + ' ' + (worker_eng_4.surname ?? ''))
+        worker_eng_other = worker_eng_other.join(', ')
+        // -------------------------------------------
+        let arc_bp = v.arc_bp ? v.arc_bp.split(';') : [];
+        let eng_cant = v.eng_doc_cant ? v.eng_doc_cant.split(';') : [];
+        let eng_doc_pag = v.eng_doc_pag ? v.eng_doc_pag.split(';') : [];
+        let eng_ncert = v.eng_ncert
+        let arc_op = Number(arc_bp[1] || 0) + Number(arc_bp[2] || 0) + Number(arc_bp[3] || 0) + Number(arc_bp[4] || 0) + Number(arc_bp[5] || 0) + Number(arc_bp[7] || 0) + Number(arc_bp[8] || 0)
+        // -------------------------------------------
+        var p_desc = v.arc_desc ? v.arc_desc.split(';')[1] : v.description;
+        p_desc = p_desc.replaceAll(';',",");
+        // -------------------------------------------
+        let vig = reso.eje || '';
+        // -------------------------------------------
+        return [
+            { value: '' }, // No de ORDEN
+            { value: '' }, // CODIGO - SERIE
+            { value: '' }, // CODIGO - SUBSERIE
+            { value: '' }, // NOMBRE SERIE/SUBSERIE O ASUNTO
+            { value: '' }, // FECHAS EXTENA - INICIAL
+            { value: '' }, // FECHA EXTERNA - FINAL
+            { value: '' }, // UNIDAD DE CONVSERVACIÓN - No DE CAJA
+            { value: '' }, // UNIAD DE CONVSERVACIÓN - No. DE CARPETA
+            { value: '' }, // UNIAD DE CONVSERVACIÓN - OTROS
+            { value: '' }, // No DE FOLIOS
+            { value: '' }, // SOPORTE
+            { value: '' }, // FRECUENCIA DE CONSULTA ---
+            { value: '' }, // RADICADO DE LICENCIA URBANISTICA
+            { value: '' }, // NOTAS
+            { value: '' }, // USO EXCLUSIVO OFICINA DE GESTION DOCUMENTAL - CONSECUTIVO DE CAJA
+            { value: '' }, // USO EXCLUSIVO OFICINA DE GESTION DOCUMENTAL - OBSERVACIONES
+            { value: infoCud.name + " DE " + (infoCud.city).toUpperCase() }, // CURADURIA
+            { value: '' }, // FECHA DE REPORTE // AAAAMM
+            { value: _FUN_1_PARSER(_CHILD_1.tipo, true) }, // TIPO DE LICENCIA
+            { value: isPH ? '' : formsParser1(_CHILD_1, true) }, // MODALIDAD DE LICENCIA
+            { value: isPH ? formsParser1(_CHILD_1, true) : '' }, // ACTO DE RECONOCIMIENTO
+            { value: _FUN_6_PARSER(v.usos, true) }, // DESTINACIÓN
+            { value: (v.direccion ?? '').toUpperCase() }, // DIRECCIÓN
+            { value: v.barrio }, // BARRIO
+            { value: coords.join(', ') }, // GEORERENCIACION  COORDENADAS
+            { value: v.estrato }, // ESTRATO
+            { value: v.catastral_2 || v.catastral }, // NUMERO PREDIAL
+            { value: v.matricula }, // MATRICULA INMOBILIARIA
+            { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // PROPIETARIO Y/O TITULAR DE LA LICENCIA
+            { value: infoCud.pot }, // RESOLUCIONES Y/O ACUERDOS DEL POT
+            { value: v.clock_payment ? moment(v.clock_payment).format('YYYYMMDD') : '' }, // FECHA DE RADICADO SOLICITUD LICENCIA // yyyymmdd
+            {
+                value: isPH ?
+                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+            }, // FECHA DEE EXPEDICIÓN DE LA LICENCIA // YYYYMMDD
+            { value: vig }, // FECHA DE VIGENCIA DE LA LICENCIA // YYYYMMDD
+            { value: '' }, // No FOLIOS LICENCIA
+            { value: isPH ? v.id_public_ph : v.exp_id }, // ACTO ADMINISTRATIVO DE LA LICENCIA - No
+            {
+                value: isPH ?
+                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+            }, // ACTO ADMINISTRATIVO DE LA LICENCIA - FECHA // YYYYMMDD
+            { value: '' }, // ACTO ADMINISTRATIVO DE LA LICENCIA - FOLIOS
+            {
+                value: isPH ?
+                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_res_date ? moment(v.clock_res_date).format('YYYYMMDD') : '')
+            }, // LICENCIA EJECUTORIADA - No
+            {
+                value: isPH ?
+                    (v.clock_license_ph ? moment(v.clock_license_ph).format('YYYYMMDD') : '') :
+                    (v.clock_license ? moment(v.clock_license).format('YYYYMMDD') : '')
+            }, // LICENCIA EJECUTORIADA - FECHA // YYYYMMDD
+            { value: '' }, // LICENCIA EJECUTORIADA - FOLIOS
+            { value: exp_steps.norm }, // NORMA URBANA - No
+            { value: exp_steps.date_norm ? moment(exp_steps.date_norm).format('YYYYMMDD') : '' }, // NORMA URBANA - FECHA EXPEDICIÓN // YYYYMMDD
+            { value: exp_steps.n_norm }, // NORMA URBANA - FOLIOS
+            { value: worker_arc }, // RESPONSABLES - ARQUITECTO
+            { value: worker_eng }, // RESPONSABLES - INGENIERO
+            { value: (worker.name ?? '') + ' ' + (worker.surname ?? '') }, // RESPONSABLES - DE OBRA
+            { value: worker_eng_other }, // RESPONSABLES - OTROS
+            { value: arc_bp[6] ?? '' }, // PLANOS - No PLANOS TOPOGRAFICOS
+            { value: arc_bp[0] ?? '' }, // PLANOS - No PLANOS ARQUITECTONICOS
+            { value: eng_cant[2] ?? '' }, // PLANOS - No PLANOS ESTRUCTURALES
+            { value: arc_op }, // PLANOS - OTROS
+            { value: eng_cant[0] || '' }, // MEMORIAS DE CALCULO - No
+            { value: eng_doc_pag[0] || '' }, // MEMORIAS DE CALCULO FOLIOS
+            { value: eng_cant[5] || '' }, // PERITAJE TECNICO - No
+            { value: eng_doc_pag[5] || '' }, // PERITAJE TECNICO - FOLIOS
+            { value: v.id_public }, // CERTIFICADO ESTRUCTURAL - No
+            { value: eng_ncert }, // CERTIFICADO ESTRUCTURAL - FOLIOS
+            { value: eng_cant[9] || '' }, // ESTUDIOS DE SUELOS - No
+            { value: eng_doc_pag[9] || '' }, // ESTUDIO DE SUELOS FOLIOS
+            { value: arc_bp[6] || '' }, // OTROS FOLIOS
+            { value: '' }, // CDs
+            { value: uv }, // No DE UNIDADES DE VIVIENDA
+            { value: uc }, // No DE UNIDADES DE COMERCIO
+            { value: dest_u2 }, // No DE UNIDADES DOTACIIONALES
+            { value: dest_u3 }, // No DE UNIDADES INDUSTRIALES
+            { value: v.parking ?? arc_control.n_parking }, // No DE PARQUEADEROS
+            { value: floors }, // No DE PISOS
+            { value: height }, // ALTURA DE LA EDIFICACION
+            { value: json34 ?  json34.m2 ? json34.m2  + ' m2' : arc_control.m2_predio ? arc_control.m2_predio + ' m2' : '' : '' }, // AREA (m2) TOTAL PREDIOS
+            { value: metraje.toFixed(2) }, // AREA (m2) INTERVENIDA
+            { value: arc_control.m2_useful || metraje.toFixed(2) }, // AREA (m2) CONSTRUIDA
+            { value: p_desc }, // DESCRIPCIÓN DEL PROYECTO
         ]
     };
 
@@ -1284,7 +1538,7 @@ export default function FUN_REPORT_GEN(props) {
                 })
 
                 setDataLocal(curatedData)
-                if (response.data.length > 0) _SET_DATA_CONTRALORIA(curatedData)
+                if (response.data.length > 0) _SET_DATA_FINISHED(curatedData)
                 setLoad(1)
             })
             .catch(e => {
@@ -1328,7 +1582,7 @@ export default function FUN_REPORT_GEN(props) {
         _data.map(v => {
             dataResume.push(report_data_10(v));
             auditoria.push(report_data_13(v));
-          
+
         })
         setDataResume(dataResume);
         setDataAuditoria(auditoria);
@@ -1336,16 +1590,16 @@ export default function FUN_REPORT_GEN(props) {
 
     let _SET_DATA_MONEY = (_data) => {
         var dataMon = [];
-       
+
         _data.map(v => {
             dataMon.push(report_data_6(v));
-           
-          
+
+
         })
         setDataMoney(dataMon);
-        
+
     }
-    let _SET_DATA_CONTRALORIA = (_data) => {
+    let _SET_DATA_FINISHED = (_data) => {
         var dataCon = [];
         var dataCon2 = [];
         var dataCam = [];
@@ -1357,7 +1611,8 @@ export default function FUN_REPORT_GEN(props) {
         var dataPlan2 = [];
         var dataIga = [];
         var notaria = [];
-       
+        var FPDM = [];
+
 
         _data.map(v => {
             dataCon.push(report_data_1(v));
@@ -1371,8 +1626,7 @@ export default function FUN_REPORT_GEN(props) {
             dataCon2.push(report_data_9(v));
             dataIga.push(report_data_11(v));
             notaria.push(report_data_12(v));
-           
-
+            FPDM.push(report_data_14(v));
         })
 
         setDataCon(dataCon);
@@ -1386,7 +1640,7 @@ export default function FUN_REPORT_GEN(props) {
         setDataPlan2(dataPlan2);
         setDataIgac(dataIga);
         setDataNotaria(notaria);
-       
+        setDataFDPM(FPDM);
 
     }
     // *************************  DATA CONVERTERS ********************** //
@@ -1451,7 +1705,7 @@ export default function FUN_REPORT_GEN(props) {
         let bigest = -Infinity;
         fields.map(f => {
             let num = f.replace(/^\D+/g, '');
-            if (num > bigest) bigest = num;
+            if (Number(num )> Number(bigest)) bigest = num;
         }
         );
         return bigest == -Infinity ? 0 : bigest;
@@ -1729,6 +1983,18 @@ export default function FUN_REPORT_GEN(props) {
             {preview['pre_13'] ? <div className='row container-sh'>
                 <Spreadsheet data={dataAuditoria} columnLabels={header_13} />
             </div> : ''}
+
+            <div className='row my-2'>
+                <div className='col'>
+                    <label className='fw-bold'>INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018) - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_14, dataFDPM, 'INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018)')}>
+                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_14']} onClick={() => setPre({ ['pre_14']: !preview['pre_14'] })} >
+                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                </div>
+            </div>
+            {preview['pre_14'] ? <div className='row container-sh'>
+                <Spreadsheet data={dataFDPM} columnLabels={header_14} />
+            </div> : ''}
+
 
             <div className='row my-2'>
                 <div className='col'>
