@@ -81,6 +81,7 @@ import GUIDE_USER from './pages/user/guide_user/guide_user.page';
 import { infoCud } from './components/jsons/vars';
 import NORMS from './pages/user/norms/norms.page';
 import CERTIFICATE_WORKER from './pages/user/certifications/certification.page';
+import Manage_User from './pages/user/solicitors_/manage_users';
 
 
 const MySwal = withReactContent(Swal);
@@ -160,12 +161,18 @@ export default function App() {
                             theme={theme}
                           />
                         </PrivateRoute>
+                        <PrivateRoute path='/manage_users'>
+                          <Manage_User translation={t("title", { returnObjects: true })}
+                            swaMsg={t("swa_messages", { returnObjects: true })}
+                            breadCrums={t("breadCrums", { returnObjects: true })}
+                          />
+                        </PrivateRoute>   
                         <PrivateRoute path='/publish'>
                           <Publish translation={t("title", { returnObjects: true })}
                             swaMsg={t("swa_messages", { returnObjects: true })}
                             breadCrums={t("breadCrums", { returnObjects: true })}
                           />
-                        </PrivateRoute>
+                        </PrivateRoute>          
                         <PrivateRoute path='/seals'>
                           <Seals translation={t("title", { returnObjects: true })}
                             swaMsg={t("swa_messages", { returnObjects: true })}

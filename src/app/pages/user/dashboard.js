@@ -39,16 +39,19 @@ class Dashboard extends Component {
                         <h2 className="text-start my-4">Módulos de Trabajo</h2>
                         <div className="row py-3">
                             <MDBCol className="px-2">
+                                <DashBoardCard title="Gestionar Usuarios" image="fas fa-solid fa-users fa-3x" link={"/manage_users"} imageColor=" LightSalmon" />
+                            </MDBCol>
+                            <MDBCol className="px-2">
                                 <DashBoardCard title="Buzon de Mensajes" image="fas fa-envelope-open-text fa-3x" link={"/mail"} imageColor=" Crimson" />
 
                             </MDBCol>
-                            <MDBCol  className="px-2">
+                            <MDBCol className="px-2">
                                 <DashBoardCard title="Calendario de Citas" image="fas fa-calendar-alt fa-3x" link={"/appointments"} imageColor=" MediumSeaGreen" />
                             </MDBCol>
                             <MDBCol className="px-2">
                                 <DashBoardCard title="Ventanilla Única" image="fas fa-file-import fa-3x" link={"/submit"} imageColor=" Khaki" />
                             </MDBCol>
-                            <MDBCol  className="px-2">
+                            <MDBCol className="px-2">
                                 <DashBoardCard title="Publicaciones" image="fas fa-newspaper fa-3x" link={"/publish"} imageColor=" LightSalmon" />
                             </MDBCol>
                             <MDBCol className="px-2">
@@ -59,14 +62,14 @@ class Dashboard extends Component {
                             <MDBCol className="px-2">
                                 <DashBoardCard title="Nomenclaturas" image="fas fa-signature fa-3x" link={"/nomenclature"} imageColor=" Plum" />
                             </MDBCol>
-                            <MDBCol  className="px-2">
+                            <MDBCol className="px-2">
                                 <DashBoardCard title="Archivo" image="fas fa-folder-open fa-3x" link={"/archive"} imageColor=" LightSeaGreen" />
 
                             </MDBCol>
                             <MDBCol className="px-2">
                                 <DashBoardCard title="Radicar Licencias" image="fas fa-file-alt fa-3x" link={"/fun"} imageColor=" DodgerBlue" />
                             </MDBCol>
-                            <MDBCol  className="px-2">
+                            <MDBCol className="px-2">
                                 <DashBoardCard title="Gestionar Licencias" image="fas fa-folder fa-3x" link={"/funmanage"} imageColor=" DodgerBlue" />
                             </MDBCol>
                             <MDBCol className="px-2">
