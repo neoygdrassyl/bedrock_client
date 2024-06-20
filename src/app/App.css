@@ -153,3 +153,18 @@ fieldset
 }
 
 .app-pointer { cursor: pointer; }
+
+#overlayer {
+  max-width: 90%;
+  margin: 0 auto;
+}
+@media (max-width: 1200px) {
+  #overlayer {
+    max-width: 100%;
+  }
+}
+@media (max-width: 1200px) {
+  #overlayer {
+    max-width: 100%;
+  }
+}

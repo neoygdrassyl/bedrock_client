@@ -120,7 +120,7 @@ export default function App() {
                 <BtnChat translation={t("misc.btn_chat", { returnObjects: true })} />
                 <div class="bg-image">
                   <div class="bg-image-gr">
-                    <div class="container container-primary p-0">
+                  <div id="overlayer" class="container overlay-container container-primary p-0">
                       <Route render={(props) => (
                         <Title {...props} translation={t("title", { returnObjects: true })}
                           swaMsg={t("swa_messages", { returnObjects: true })}
