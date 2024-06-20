@@ -182,8 +182,8 @@ class SUBMIT extends Component {
             content: {
                 position: 'absolute',
                 top: '40px',
-                left: '20%',
-                right: '20%',
+                left: '15%',
+                right: '15%',
                 bottom: '40px',
                 border: '1px solid #ccc',
                 overflow: 'auto',
@@ -313,7 +313,7 @@ class SUBMIT extends Component {
             link.click();
         }
         return (
-            <div className="submit  container">
+            <div className="submit  container-fluid">
                 <div className="row my-4 d-flex justify-content-center">
                     <MDBBreadcrumb className="mx-5">
                         <MDBBreadcrumbItem>
@@ -452,7 +452,7 @@ class SUBMIT extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i class="fas fa-plus-circle"></i> NUEVA ENTRADA </h3>
+                        <h3><i class="fas fa-plus-circle"></i> NUEVA ENTRADA | {moment().format('YYYY-MM-DD')} </h3>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_new()}></MDBBtn>
                     </div>
                     <SUBTMIT_MANAGE
