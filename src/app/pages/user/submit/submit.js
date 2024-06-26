@@ -7,6 +7,7 @@ import { dateParser } from '../../../components/customClasses/typeParse';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import SUBTMIT_MANAGE from './submit_manage'
+import SUBTMIT_CREATE from './submit_create'
 import Modal from 'react-modal';
 import moment from 'moment';
 
@@ -182,8 +183,8 @@ class SUBMIT extends Component {
             content: {
                 position: 'absolute',
                 top: '40px',
-                left: '15%',
-                right: '15%',
+                left: '5%',
+                right: '5%',
                 bottom: '40px',
                 border: '1px solid #ccc',
                 overflow: 'auto',
@@ -454,8 +455,9 @@ class SUBMIT extends Component {
                     <div className="my-4 d-flex justify-content-between">
                         <h3><i class="fas fa-plus-circle"></i> NUEVA ENTRADA | {moment().format('YYYY-MM-DD')} </h3>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_new()}></MDBBtn>
+
                     </div>
-                    <SUBTMIT_MANAGE
+                    <SUBTMIT_CREATE
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         refreshList={this.refreshList}
                         closeModal={this.toggle_new} />

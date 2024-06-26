@@ -12,8 +12,9 @@ class NEW_SOLICITOR extends Component {
         super(props);
         this.state = {
             list: [],
-            currentItem: false,
-            showOtherInput: false // Estado para controlar la visibilidad del input
+            showOtherInput: false,
+            actionDone: false,
+            user: null
         };
         this.handleSolicitorTypeChange = this.handleSolicitorTypeChange.bind(this);
     }
@@ -23,16 +24,11 @@ class NEW_SOLICITOR extends Component {
     }
     render() {
         const { translation, swaMsg, globals, translation_form, } = this.props;
-        const solicitor_type = [
-            {
-
-            }
-        ]
 
         const clearForm = () => {
             document.getElementById("app-formNewSolicitor").reset()
         }
-        const { showOtherInput } = this.state;
+        const { showOtherInput, user, actionDone } = this.state;
         var formData = new FormData();
         // SUBMIT
         let generateSOLICITOR = (e) => {
@@ -40,7 +36,7 @@ class NEW_SOLICITOR extends Component {
             console.log(formData);
             // GET DATA OF PERSONAL INFO
             let solicitor_id = document.getElementById("solicitor_id").value;
-            formData.set('id_public', solicitor_id);
+            formData.set('id', solicitor_id);
             let solicitor_document_type = document.getElementById("solicitor_document_type").value;
             formData.set('document_type', solicitor_document_type);
 
@@ -54,7 +50,7 @@ class NEW_SOLICITOR extends Component {
             formData.set('role', solicitor_type);
             if (solicitor_type === 'OTRO') {
                 let otherSolicitorType = document.getElementById("other_solicitor_type").value;
-                formData.set('other_role', otherSolicitorType);
+                formData.set('role', otherSolicitorType);
             }
 
             //GET DATA OF ADRESS
@@ -64,8 +60,8 @@ class NEW_SOLICITOR extends Component {
             formData.set('town', solicitor_mun);
             let solicitor_barr = document.getElementById("solicitor_barr").value;
             formData.set('neighborhood', solicitor_barr);
-            let solicitor_adress = document.getElementById("solicitor_adress").value;
-            formData.set('address', solicitor_adress);
+            let solicitor_address = document.getElementById("solicitor_address").value;
+            formData.set('address', solicitor_address);
 
             // GET DATA OF CONTACT
             let solicitor_email = document.getElementById("solicitor_email").value;
@@ -80,6 +76,24 @@ class NEW_SOLICITOR extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
+            formData.forEach(i => formData.get(i))
+            if (user) {
+                MySwal.fire({
+                    title: swaMsg.generic_success_title,
+                    text: swaMsg.generic_success_text,
+                    icon: 'success',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+                this.setState({
+                    actionDone: true
+                })
+                console.log()
+                document.getElementById('step_1_circle').style.backgroundColor = 'green'
+                document.getElementById('step_2').removeAttribute('hidden')
+
+
+                return true
+            }
             Solicitors_service.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
@@ -89,8 +103,15 @@ class NEW_SOLICITOR extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        clearForm();
+                        this.setState({
+                            user: formData,
+                            actionDone: true,
+                        })
                         this.props.refreshList();
+                        document.getElementById('step_1_circle').style.backgroundColor = 'green'
+                        document.getElementById('step_2').removeAttribute('disabled')
+
+
                     }
                     else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
@@ -120,149 +141,232 @@ class NEW_SOLICITOR extends Component {
                     });
                 });
         };
-        return (
-            <div>
-                <form onSubmit={generateSOLICITOR} id="app-formNewSolicitor">
+        let getSolicitorById = (e) => {
+            e.preventDefault();
+            let solicitor_id = document.getElementById("solicitor_id_search").value;
+            console.log(solicitor_id)
+            Solicitors_service.getById(solicitor_id)
+                .then(response => {
+                    if (response.status == 200) {
+                        console.log(response.data)
+                        this.setState({
+                            user: response.data,
+                            userRegistered: true,
+                            getInfoView: false,
+                            createUserView: true,
+                        });
+                        MySwal.fire({
+                            title: swaMsg.generic_success_title,
+                            text: swaMsg.generic_success_text,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                    else {
+                        this.setState({
+                            userRegistered: false,
+                            getInfoView: false,
+                            createUserView: true,
+                        });
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+        }
 
-                    <div className="row my-4 d-flex justify-content-center">
-                        <label className="app-p lead text-start fw-bold text-uppercase m-2">1.TIPO DE USUARIO</label>
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6">
-                                <label class="m-0">Tipo de solicitante:</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <select class="form-select" id="solicitor_type" onChange={this.handleSolicitorTypeChange}>
-                                        <option>OPCION 0</option>
-                                        <option>OPCION 1</option>
-                                        <option>OPCION 2</option>
-                                        <option>OPCION 3</option>
-                                        <option>OTRO</option>
-                                    </select>
-                                </div>
-                            </div>
-                            {showOtherInput && (
-                                <div className="row my-2">
+        if (true) {
+            return (
+                <> <div><form onSubmit={getSolicitorById} className="row">
+                    <div className="col-lg-10 col-md-6">
+                        <div className="input-group">
+                            <label class="me-2">Buscar registro:</label>
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control USER"
+                                id="solicitor_id_search"
+                                placeholder="Número de Documento"
+                            />
+                        </div>
+                        {
+                            user ? <button className='rounded-circle' style={{
+                                width: '30px',
+                                height: '30px',
+                                cursor: 'pointer',
+                                backgroundColor:'red'
+                            }} onClick={() => this.setState({
+                                user: null,
+                                actionDone: false
+                            })}></button> : ''
+                        }
+                    </div>
+                </form>
+                </div>
+                    <div>
+                        <form onSubmit={generateSOLICITOR} id="app-formNewSolicitor">
+                            {/* {user.name !== null ? user.name : 'fhgh'} */}
+                            <div className="row d-flex justify-content-center">
+                                <label className="app-p lead text-start fw-bold text-uppercase m-2">TIPO DE USUARIO</label>
+                                <div className="row">
                                     <div className="col-lg-6 col-md-6">
-                                        <label className="m-0">Especifique otro tipo:</label>
-                                        <div className="input-group my-1">
-                                            <span className="input-group-text bg-info text-white">
-                                                <i className="fas fa-user"></i>
+                                        <label class="m-0">Tipo de solicitante:</label>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-user"></i>
                                             </span>
-                                            <input type="text" className="form-control" placeholder="Especifique otro tipo" id="other_solicitor_type" />
+                                            <select class="form-select" id="solicitor_type" defaultValue={user && user.role ? user.role : 'OPCION 0'} onChange={this.handleSolicitorTypeChange} >
+                                                <option value='OPCION 0' >OPCION 0</option>
+                                                <option value='OPCION 1'>OPCION 1</option>
+                                                <option value='OPCION 1' >OPCION 2</option>
+                                                <option value='OPCION 1'>OPCION 3</option>
+                                                <option value='OTRO' >OTRO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {showOtherInput && (
+                                        <div className="col-lg-6 col-md-6">
+                                            <label className="m-0">Especifique otro tipo:</label>
+                                            <div className="input-group my-1">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="fas fa-user"></i>
+                                                </span>
+                                                <input type="text" className="form-control" placeholder="Especifique otro tipo" id="other_solicitor_type" />
+                                            </div>
+                                        </div>
+
+                                    )}
+                                </div>
+
+                                <hr className="my-3" />
+                                <label className="app-p lead text-start fw-bold text-uppercase m-2">INFORMACIÓN PERSONAL</label>
+                                <div className="row">
+                                    <div className="col-lg-6 col-md-6">
+                                        <label class="m-0">Nombre:</label>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-user"></i>
+                                            </span>
+                                            <input type="text" class="form-control" placeholder="Nombre Completo" id="solicitor_name" defaultValue={user && user.name ? user.name : ''} />
+                                        </div>
+                                        <label class="m-0">Tipo de persona:</label>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-user"></i>
+                                            </span>
+                                            <select class="form-select" id="solicitor_person" defaultValue={user && user.person_type ? user.person_type : ''}>
+                                                <option value='NATURAL'>NATURAL</option>
+                                                <option value='JURIDICO'>JURIDICO</option>
+                                                <option value='ESTABLECIMIENTO DE COMERCIO'>ESTABLECIMIENTO DE COMERCIO</option>
+                                                <option value='MENOR DE EDAD/ADOLECENTE'>MENOR DE EDAD/ADOLECENTE</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-6">
+                                        <label class='m-0'>Tipo de documento: </label>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="far fa-id-card"></i>
+                                            </span>
+                                            <select class="form-select" id="solicitor_document_type" defaultValue={user && user.document_type ? user.document_type : ''}>
+                                                <option value='CEDULA DE CIUDADANIA'>CEDULA DE CIUDADANIA</option>
+                                                <option value='NIT'>NIT</option>
+                                                <option value='CEDULA DE EXTRANJERIA' >CEDULA DE EXTRANJERIA</option>
+                                                <option value='REGISTRO CIVIL'>REGISTRO CIVIL</option>
+                                                <option value='TARJETA DE IDENTIDAD'>TARJETA DE IDENTIDAD</option>
+                                                <option value='OTRO'>OTRO</option>
+                                            </select>
+                                        </div>
+                                        <label class='m-0'>Numero de documento: </label>
+                                        <div class="input-group my-1">
+
+
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="far fa-id-card"></i>
+                                            </span>
+                                            <input type="number" class="form-control" placeholder="Numero de Documento" id="solicitor_id" defaultValue={user && user.id ? user.id : ''} />
                                         </div>
                                     </div>
                                 </div>
-                            )}
-                        </div>
+                                <hr className="my-3" />
 
-                        <hr className="my-3" />
-                        <label className="app-p lead text-start fw-bold text-uppercase m-2">2.INFORMACIÓN PERSONAL</label>
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6">
-                                <label class="m-0">Nombre:</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <input type="text" class="form-control" placeholder="Nombre Completo" id="solicitor_name" />
+                                <label className="app-p lead text-start fw-bold text-uppercase m-2">INFORMACIÓN DE CONTACTO</label>
+
+                                <div className="row">
+                                    <div className="col-lg-6 col-md-6">
+                                        <label>Física</label>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-globe-americas"></i>
+                                            </span>
+                                            <input type="text" class="form-control" placeholder="Departamento" id="solicitor_dep" defaultValue={user && user.department ? user.department : ''} />
+                                        </div>
+
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-globe-americas"></i>
+                                            </span>
+                                            <input type="text" class="form-control" placeholder="Municipio" id="solicitor_mun" defaultValue={user && user.town ? user.town : ''} />
+                                        </div>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-map-marked-alt"></i>
+                                            </span>
+                                            <input type="text" class="form-control" placeholder="Barrio" id="solicitor_barr" defaultValue={user && user.neighborhood ? user.neighborhood : ''} />
+                                        </div>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-map-signs"></i>
+                                            </span>
+                                            <input type="text" class="form-control" placeholder="Direccion Fisica" id="solicitor_address" defaultValue={user && user.address ? user.address : ''} />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-6">
+                                        <label >Electrónica</label>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-phone-alt"></i>
+                                            </span>
+                                            <input type="number" class="form-control" placeholder="Numero de Contacto" id="solicitor_phone" defaultValue={user && user.phone ? user.phone : ''} />
+                                        </div>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="far fa-envelope"></i>
+                                            </span>
+                                            <input type="text" class="form-control" placeholder="Correo Electrónico" id="solicitor_email" defaultValue={user && user.email ? user.email : ''} />
+                                        </div>
+                                    </div>
                                 </div>
-                                <label class="m-0">Tipo de persona:</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <select class="form-select" id="solicitor_person">
-                                        <option>NATURAL</option>
-                                        <option>JURIDICO</option>
-                                        <option>ESTABLECIMIENTO DE COMERCIO</option>
-                                        <option>MENOR DE EDAD/ADOLECENTE</option>
-                                    </select>
-                                </div>
+                                {
+                                    !actionDone ? <div className="text-center py-4 mt-3">
+                                        <button className="btn btn-xs btn-success" id='step'><i class="fas fa-folder-plus"></i> CONTINUAR </button>
+                                    </div> : ''
+                                    // if ! user ? crear : update
+                                    //luego el boton disabled.
+
+                                }
+
                             </div>
-                            <div className="col-lg-6 col-md-6">
-                                <label class='m-0'>Tipo de documento: </label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-id-card"></i>
-                                    </span>
-                                    <select class="form-select" id="solicitor_document_type">
-                                        <option>CEDULA DE CIUDADANIA</option>
-                                        <option>NIT</option>
-                                        <option>CEDULA DE EXTRANJERIA</option>
-                                        <option>REGISTRO CIVIL</option>
-                                        <option>TARJETA DE IDENTIDAD</option>
-                                        <option>OTRO</option>
-                                    </select>
-                                </div>
-                                <label class='m-0'>Numero de documento: </label>
-                                <div class="input-group my-1">
-
-
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-id-card"></i>
-                                    </span>
-                                    <input type="number" class="form-control" placeholder="Numero de Documento" id="solicitor_id" />
-                                </div>
-                            </div>
-                        </div>
-                        <hr className="my-3" />
-
-                        <label className="app-p lead text-start fw-bold text-uppercase m-2">3. INFORMACIÓN DE CONTACTO</label>
-
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6">
-                                <label class="lead">Física</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-globe-americas"></i>
-                                    </span>
-                                    <input type="text" class="form-control" placeholder="Departamento" id="solicitor_dep" />
-                                </div>
-
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-globe-americas"></i>
-                                    </span>
-                                    <input type="text" class="form-control" placeholder="Municipio" id="solicitor_mun" />
-                                </div>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-map-marked-alt"></i>
-                                    </span>
-                                    <input type="text" class="form-control" placeholder="Barrio" id="solicitor_barr" />
-                                </div>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-map-signs"></i>
-                                    </span>
-                                    <input type="text" class="form-control" placeholder="Direccion Fisica" id="solicitor_adress" />
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <label class="lead">Electrónica</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-phone-alt"></i>
-                                    </span>
-                                    <input type="number" class="form-control" placeholder="Numero de Contacto" id="solicitor_phone" />
-                                </div>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-envelope"></i>
-                                    </span>
-                                    <input type="text" class="form-control" placeholder="Correo Electrónico" id="solicitor_email" />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="text-center py-4 mt-3">
-                            <button className="btn btn-xs btn-success"><i class="fas fa-folder-plus"></i> CREAR </button>
-                        </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-        );
+                </>
+
+            );
+        }
     }
 }
 

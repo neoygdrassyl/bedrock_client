@@ -272,6 +272,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             let type = document.getElementById("geni_type").value;
             let missing = document.getElementById("geni_missing").value;
             let cub = document.getElementById("geng_cub_inc").value;
+            //let law_option = 
 
             formData.set('date_doc', date_doc);
             formData.set('date', date);
@@ -350,6 +351,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             cub_inc_json.city = city;
             cub_inc_json.type = type;
             cub_inc_json.missing = missing;
+            // cub_inc_json.law_option = law_option;
 
             formData.set('cub_inc_json', JSON.stringify(cub_inc_json));
 
