@@ -26,7 +26,6 @@ class SUBMIT_CREATE extends Component {
     }
     componentDidMount() {
         this.refreshItem()
-        this.retrievePublish()
     }
 
     refreshItem() {
@@ -44,8 +43,8 @@ class SUBMIT_CREATE extends Component {
     }
     //TEMPORAL ----------------------------------------------------------
 
-    retrievePublish() {
-        SubmitService.getAll()
+    retrievePublish(id) {
+        Solicitors_service.getVRs(id)
             .then(response => {
                 this.asignList(response.data);
             })
@@ -62,7 +61,7 @@ class SUBMIT_CREATE extends Component {
     //--------------------------------
 
     render() {
-        const { translation, swaMsg, globals, currentId } = this.props;
+        const { translation, swaMsg, globals } = this.props;
         const { currentItem, list, isLoaded } = this.state;
         const userID = document.getElementById('solicitor_id') ? (document.getElementById('solicitor_id').value) : ''
         const columns = [
@@ -256,6 +255,31 @@ class SUBMIT_CREATE extends Component {
                                 <form id='form_reason_submit' onSubmit={save_reason_response}>
                                     {COMPONENT_NEW_REASON(_CHILD)}
                                 </form>
+                                <div className="row ">
+                                    <div className="text-center col-12">
+                                        {isLoaded ? (
+                                            <DataTable
+                                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                                striped="true"
+                                                columns={columns}
+                                                data={list}
+                                                highlightOnHover
+                                                pagination
+                                                paginationPerPage={5}
+                                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                                className="data-table-component"
+                                                noHeader
+
+                                                dense
+                                                defaultSortFieldId={1}
+                                                defaultSortAsc={false}
+                                            />
+                                        ) : (
+                                            <div className="text-center">
+                                                <button onClick={() => { this.retrievePublish(document.getElementById("solicitor_id").value) }}>Cargar info</button>
+                                            </div>)}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -541,31 +565,6 @@ class SUBMIT_CREATE extends Component {
                             <label >3. Observaciones y detalles (Maximo 2000 Caracteres)</label>
                             <textarea class="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
                                 defaultValue={_CHILD.details}></textarea>
-                        </div>
-                    </div>
-                    <div className="row ">
-                        <div className="text-center col-12">
-                            {isLoaded ? (
-                                <DataTable
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                    striped="true"
-                                    columns={columns}
-                                    data={list}
-                                    highlightOnHover
-                                    pagination
-                                    paginationPerPage={5}
-                                    paginationRowsPerPageOptions={[20, 50, 100]}
-                                    className="data-table-component"
-                                    noHeader
-
-                                    dense
-                                    defaultSortFieldId={1}
-                                    defaultSortAsc={false}
-                                />
-                            ) : (
-                                <div className="text-center">
-                                    <h4 className="fw-bold">CARGANDO INFORMACION...</h4>
-                                </div>)}
                         </div>
                     </div>
                     <div className="text-center py-4 mt-3">

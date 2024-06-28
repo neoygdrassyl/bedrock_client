@@ -18,6 +18,9 @@ class Solicitors_service {
   update(id, data) {
     return http.put(`/${route}/update/${id}`, data);
   }
+  getVRs(id_) {
+    return http.get(`/${route}/getVRs/${id_}`);
+  }
 
 //   delete(id) {
 //     return http.delete(`/${route}/${id}`);
