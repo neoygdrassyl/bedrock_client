@@ -36,7 +36,7 @@ class NEW_SOLICITOR extends Component {
             console.log(formData);
             // GET DATA OF PERSONAL INFO
             let solicitor_id = document.getElementById("solicitor_id").value;
-            formData.set('id', solicitor_id);
+            formData.set('id_doc', solicitor_id);
             let solicitor_document_type = document.getElementById("solicitor_document_type").value;
             formData.set('document_type', solicitor_document_type);
 
@@ -109,7 +109,7 @@ class NEW_SOLICITOR extends Component {
                         })
                         this.props.refreshList();
                         document.getElementById('step_1_circle').style.backgroundColor = 'green'
-                        document.getElementById('step_2').removeAttribute('disabled')
+                        document.getElementById('step_2').removeAttribute('hidden')
 
 
                     }
@@ -189,34 +189,42 @@ class NEW_SOLICITOR extends Component {
 
         if (true) {
             return (
-                <> <div><form onSubmit={getSolicitorById} className="row">
-                    <div className="col-lg-10 col-md-6">
-                        <div className="input-group">
-                            <label class="me-2">Buscar registro:</label>
-                            <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
-                            </span>
-                            <input
-                                type="text"
-                                className="form-control USER"
-                                id="solicitor_id_search"
-                                placeholder="Número de Documento"
-                            />
+                <> <div className='my-2'><form onSubmit={getSolicitorById} className="row">
+                    <div className="col-lg-10 col-md-6 d-flex align-items-end">
+                        <div className='me-2'>
+                            <label class="my-1">Buscar registro:</label>
+                            <div className="input-group">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-hashtag"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    className="form-control USER"
+                                    id="solicitor_id_search"
+                                    placeholder="Número de Documento"
+                                />
+                            </div>
                         </div>
                         {
-                            user ? <button className='rounded-circle' style={{
-                                width: '30px',
-                                height: '30px',
-                                cursor: 'pointer',
-                                backgroundColor:'red'
-                            }} onClick={() => this.setState({
-                                user: null,
-                                actionDone: false
-                            })}></button> : ''
+                            user ? <button className='ms-1 rounded-circle' style={{
+                                width: '40px',
+                                height: '40px',
+                                cursor: 'pointer'
+                            }}
+                                onClick={() => {
+                                    this.setState({
+                                        user: null,
+                                        actionDone: false
+                                    })
+                                    document.getElementById('solicitor_id_search').value = ''
+                                }
+                                }><i className="fas fa-regular fa-trash"></i></button> : ''
                         }
                     </div>
-                </form>
-                </div>
+                </form >
+                </div >
+
+                    <hr className="my-3" />
                     <div>
                         <form onSubmit={generateSOLICITOR} id="app-formNewSolicitor">
                             {/* {user.name !== null ? user.name : 'fhgh'} */}
@@ -252,7 +260,7 @@ class NEW_SOLICITOR extends Component {
                                     )}
                                 </div>
 
-                                <hr className="my-3" />
+                                <div className="my-3" />
                                 <label className="app-p lead text-start fw-bold text-uppercase m-2">INFORMACIÓN PERSONAL</label>
                                 <div className="row">
                                     <div className="col-lg-6 col-md-6">
@@ -298,11 +306,11 @@ class NEW_SOLICITOR extends Component {
                                             <span class="input-group-text bg-info text-white">
                                                 <i class="far fa-id-card"></i>
                                             </span>
-                                            <input type="number" class="form-control" placeholder="Numero de Documento" id="solicitor_id" defaultValue={user && user.id ? user.id : ''} />
+                                            <input type="number" class="form-control" placeholder="Numero de Documento" id="solicitor_id" defaultValue={user && user.id_doc ? user.id_doc : ''} />
                                         </div>
                                     </div>
                                 </div>
-                                <hr className="my-3" />
+                                <div className="my-3" />
 
                                 <label className="app-p lead text-start fw-bold text-uppercase m-2">INFORMACIÓN DE CONTACTO</label>
 

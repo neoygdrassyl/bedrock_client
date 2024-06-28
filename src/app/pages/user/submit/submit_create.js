@@ -9,7 +9,7 @@ import FunService from '../../../services/fun.service';
 import { formsParser1 } from '../../../components/customClasses/typeParse';
 import NEW_SOLICITOR from '../solicitors_/solicitor_create';
 import Solicitors_service from '../../../services/solicitors.service.js';
-
+import DataTable from 'react-data-table-component';
 
 const MySwal = withReactContent(Swal);
 
@@ -19,11 +19,14 @@ class SUBMIT_CREATE extends Component {
         this.refreshList = this.refreshList.bind(this);
         this.state = {
             list: [],
-            currentItem: false
+            currentItem: false,
+            isLoaded: false
         };
+
     }
     componentDidMount() {
         this.refreshItem()
+        this.retrievePublish()
     }
 
     refreshItem() {
@@ -39,11 +42,47 @@ class SUBMIT_CREATE extends Component {
     refreshList(id) {
         this.props.refreshList(id);
     }
+    //TEMPORAL ----------------------------------------------------------
+
+    retrievePublish() {
+        SubmitService.getAll()
+            .then(response => {
+                this.asignList(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
+    asignList(_LIST) {
+        this.setState({
+            list: _LIST,
+            isLoaded: true,
+        });
+    }
+    //--------------------------------
 
     render() {
         const { translation, swaMsg, globals, currentId } = this.props;
-        const { currentItem, step2, step3 } = this.state;
+        const { currentItem, list, isLoaded } = this.state;
         const userID = document.getElementById('solicitor_id') ? (document.getElementById('solicitor_id').value) : ''
+        const columns = [
+            {
+                name: <label className="text-center">Nr. RADICACIÓN</label>,
+                selector: 'id_public',
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <label>{row.id_public}</label>
+            },
+            {
+                name: <label className="text-center">TIPO</label>,
+                selector: 'type',
+                sortable: true,
+                filterable: true,
+                center: true,
+                cell: row => <label>{row.type}</label>
+            }
+        ]
         // DATA GETTERS
         let GET_SUBMIT = () => {
             var _CHILD = currentItem;
@@ -502,6 +541,31 @@ class SUBMIT_CREATE extends Component {
                             <label >3. Observaciones y detalles (Maximo 2000 Caracteres)</label>
                             <textarea class="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
                                 defaultValue={_CHILD.details}></textarea>
+                        </div>
+                    </div>
+                    <div className="row ">
+                        <div className="text-center col-12">
+                            {isLoaded ? (
+                                <DataTable
+                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                    striped="true"
+                                    columns={columns}
+                                    data={list}
+                                    highlightOnHover
+                                    pagination
+                                    paginationPerPage={5}
+                                    paginationRowsPerPageOptions={[20, 50, 100]}
+                                    className="data-table-component"
+                                    noHeader
+
+                                    dense
+                                    defaultSortFieldId={1}
+                                    defaultSortAsc={false}
+                                />
+                            ) : (
+                                <div className="text-center">
+                                    <h4 className="fw-bold">CARGANDO INFORMACION...</h4>
+                                </div>)}
                         </div>
                     </div>
                     <div className="text-center py-4 mt-3">
