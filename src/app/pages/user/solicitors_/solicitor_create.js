@@ -78,20 +78,24 @@ class NEW_SOLICITOR extends Component {
             });
             formData.forEach(i => formData.get(i))
             if (user) {
-                MySwal.fire({
-                    title: swaMsg.generic_success_title,
-                    text: swaMsg.generic_success_text,
-                    icon: 'success',
-                    confirmButtonText: swaMsg.text_btn,
-                });
-                this.setState({
-                    actionDone: true
-                })
-                console.log()
-                document.getElementById('step_1_circle').style.backgroundColor = 'green'
-                document.getElementById('step_2').removeAttribute('hidden')
+                Solicitors_service.update(solicitor_id, formData)
+                    .then(response => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.generic_success_title,
+                                text: swaMsg.generic_success_text,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
 
-
+                            this.setState({
+                                // user: response,
+                                actionDone: true
+                            })
+                            document.getElementById('step_1_circle').style.backgroundColor = 'green'
+                            document.getElementById('step_2').removeAttribute('hidden')
+                        }
+                    })
                 return true
             }
             Solicitors_service.create(formData)
@@ -147,7 +151,7 @@ class NEW_SOLICITOR extends Component {
             console.log(solicitor_id)
             Solicitors_service.getById(solicitor_id)
                 .then(response => {
-                    if (response.status == 200) {
+                    if (response.status == 200 && response.data) {
                         console.log(response.data)
                         this.setState({
                             user: response.data,

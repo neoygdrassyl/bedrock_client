@@ -15,9 +15,9 @@ class Solicitors_service {
   addReason(data){
     return http.post(`/${route}/addReason`, data);
   }
-//   update(id, data) {
-//     return http.put(`/${route}/${id}`, data);
-//   }
+  update(id, data) {
+    return http.put(`/${route}/update/${id}`, data);
+  }
 
 //   delete(id) {
 //     return http.delete(`/${route}/${id}`);
