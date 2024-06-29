@@ -276,7 +276,15 @@ class SUBMIT_CREATE extends Component {
                                             />
                                         ) : (
                                             <div className="text-center">
-                                                <button onClick={() => { this.retrievePublish(document.getElementById("solicitor_id").value) }}>Cargar info</button>
+                                                <button onClick={() => {
+                                                    document.getElementById("solicitor_id").value != '' ?
+                                                        this.retrievePublish(document.getElementById("solicitor_id").value) : MySwal.fire({
+                                                            title: 'No hay un usuario registrado',
+                                                            text: swaMsg.generic_error_text,
+                                                            icon: 'warning',
+                                                            confirmButtonText: swaMsg.text_btn,
+                                                        });
+                                                }}>Cargar info</button>
                                             </div>)}
                                     </div>
                                 </div>
