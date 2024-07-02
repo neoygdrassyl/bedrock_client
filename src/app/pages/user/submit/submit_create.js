@@ -280,7 +280,7 @@ class SUBMIT_CREATE extends Component {
                                                     document.getElementById("solicitor_id").value != '' ?
                                                         this.retrievePublish(document.getElementById("solicitor_id").value) : MySwal.fire({
                                                             title: 'No hay un usuario registrado',
-                                                            text: swaMsg.generic_error_text,
+                                                            text: 'Por favor llene los datos del formulario',
                                                             icon: 'warning',
                                                             confirmButtonText: swaMsg.text_btn,
                                                         });
@@ -634,7 +634,7 @@ class SUBMIT_CREATE extends Component {
                     </div>}
                     <div className="row">
                         <div className="col-12">
-                            <label>3.2 Estado</label>
+                            <label>3. Estado</label>
                             <div class="input-group mb-1">
                                 <span class="input-group-text bg-info text-white">
                                     <i class="fas fa-hashtag"></i>
@@ -645,7 +645,7 @@ class SUBMIT_CREATE extends Component {
                     </div>
                     <div className="row">
                         <div className="col-12">
-                            <label>4 Fecha y hora ingreso</label>
+                            <label>4. Fecha y hora ingreso</label>
                             <div class="input-group mb-1">
                                 <span class="input-group-text bg-info text-white">
                                     <i class="far fa-calendar-alt"></i>
@@ -666,7 +666,7 @@ class SUBMIT_CREATE extends Component {
                     </div>
                     <div className="row">
                         <div className="col-12">
-                            <label>7. Funcionario que recibe</label>
+                            <label>6. Funcionario que recibe</label>
                             <div class="input-group mb-1">
                                 <span class="input-group-text bg-info text-white">
                                     <i class="far fa-user"></i>
@@ -675,7 +675,7 @@ class SUBMIT_CREATE extends Component {
                             </div>
                         </div>
                         <div className="col-12">
-                            <label>8. Número de Identificación Persona que entrega</label>
+                            <label>7. Número de Identificación Persona que entrega</label>
                             <div class="input-group mb-1">
                                 <span class="input-group-text bg-info text-white">
                                     <i class="far fa-user"></i>

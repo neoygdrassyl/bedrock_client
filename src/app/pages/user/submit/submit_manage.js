@@ -9,7 +9,6 @@ import FunService from '../../../services/fun.service';
 import SUBMIT_ANEX from './submit_anex.component';
 import SUBMIT_LIST from './submit_list.component';
 import { formsParser1 } from '../../../components/customClasses/typeParse';
-import NEW_SOLICITOR from '../solicitors_/solicitor_create';
 
 const MySwal = withReactContent(Swal);
 
@@ -58,10 +57,9 @@ class SUBMIT_MANAGE extends Component {
                 time: _CHILD ? _CHILD.time : moment().format('HH:mm'),
                 owner: _CHILD ? _CHILD.owner : null,
                 worker_reciever: _CHILD ? _CHILD.worker_reciever : window.user.name + " " + window.user.surname,
-                name_retriever: _CHILD ? _CHILD.name_retriever : null,
+                name_retriever: (_CHILD && _CHILD.name_retriever) ? _CHILD.name_retriever : (_CHILD && _CHILD.submitSolicitors.length > 0) ? _CHILD.submitSolicitors[0].solicitor.name : null,
                 id_number_retriever: _CHILD ? _CHILD.id_number_retriever : null,
                 details: _CHILD ? _CHILD.details : null,
-
                 list_category: _CHILD ? _CHILD.list_category : null,
                 list_code: _CHILD ? _CHILD.list_code : null,
                 list_pages: _CHILD ? _CHILD.list_pages : null,
@@ -198,425 +196,307 @@ class SUBMIT_MANAGE extends Component {
                 });
 
         }
-        let _GET_LAST_OA = () => {
-            let new_id = "";
-            FunService.getLastOA()
-                .then(response => {
-                    if (response.data.length) {
-                        new_id = response.data[0].id;
-                        if (new_id) {
-                            let _id = new_id.split('-')
-                            let concecutive = _id[1];
-                            concecutive = Number(concecutive) + 1
-                            if (concecutive < 1000) concecutive = "0" + concecutive
-                            if (concecutive < 100) concecutive = "0" + concecutive
-                            if (concecutive < 10) concecutive = "0" + concecutive
-                            new_id = `${_id[0]}-${concecutive}`
-                            document.getElementById('submit_2').value = new_id;
-                        } else document.getElementById('submit_2').value = "OA" + moment().format('YYYY') + "-0001";
-                    } else document.getElementById('submit_2').value = "OA" + moment().format('YYYY') + "-0001";
-                })
-                .catch(e => {
-                    console.log(e);
-                    MySwal.fire({
-                        title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el concecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
-                    });
-                });
-
-        }
         // COMPONENTs JSX
         let COMPONENT_UPDATE = () => {
             let _CHILD = GET_SUBMIT();
-            return <>
-                <div className='row mb-4'>
-                    <NEW_SOLICITOR
-                        translation={translation} swaMsg={swaMsg} globals={globals}
-                        refreshList={this.refreshList} />
-                </div>
-
-                <div className="row">
-                    <div className="col-4">
-                        <label >1. Número de radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_1" required
-                                defaultValue={_CHILD.id_public} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
-                        </div>
-                    </div>
-                    <div className="col-5">
-                        <label >2. Número de solicitud</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_2"
-                                defaultValue={_CHILD.id_related} />
-                            <button type="button" class="btn btn-warning shadow-none"
-                                onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</button>
-                        </div>
-                        {this.state.verifyMSG}
-                    </div>
-                    <div className="col-3">
-                        {this.state.payment
-                            ? <>
-                                <label >2.1 Consecutivo Pago</label>
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-hashtag"></i>
-                                    </span>
-                                    <input type="text" class="form-control" id="submit_21" required
-                                        defaultValue={_CHILD.id_related} />
-                                </div>
-                            </>
-                            : ""}
-                    </div>
-                </div>
-                {!this.props.edit
-                    ? <div className="row text-end">
-                        <div className="col-8">
-                            <div class="form-check my-3 px-5">
-                                <input class="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => this.setState({ payment: e.target.checked })} />
-                                <p class="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
-                            </div>
-                        </div>
-                        <div className="col-4">
-                            {this.state.payment
-                                ? <>
-                                    <button type="button" class="btn btn-info shadow-none me-1"
-                                        onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</button>
-                                    <button type="button" class="btn btn-info shadow-none"
-                                        onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</button>
-                                </>
-                                : ""}
-                        </div>
-                    </div>
-                    : ""}
-
-                <div className="row text-end">
-                    <div className="col-12">
-
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-12">
-                        <label >3.1 Tipo</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
-                            </span>
-                            <input list="submit_type" class="form-control" id="submit_4"
-                                defaultValue={_CHILD.type} utocomplete="off" maxLength={250} />
-                            <datalist id="submit_type">
-                                <option value="LICENCIA" />
-                                <option value="URBANIZACION" />
-                                <option value="PARCELACION" />
-                                <option value="SUBDIVICON" />
-                                <option value="RECONOCIMIENTO" />
-                                <option value="COSTRUCCION" />
-                                <option value="OTRAS ACTUACIONES" />
-                                <option value="VISTO BUENO" />
-                                <option value="PROPIEDAD HORIZONTAL" />
-                                <option value="EXPENSAS / IMPUESTOS " />
-                            </datalist>
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label >3.2 Estado</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
-                        </div>
-                    </div>
-                    <div className="col-6">
-                        <label >3.3 Tipo de Radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
-                            </span>
-                            <select className='form-select' id="submit_41" defaultValue={_CHILD.list_type}>
-                                <option value={1} selected={_CHILD.list_type == 1}>RADICACIÓN SOLICITUD</option>
-                                <option value={2} selected={_CHILD.list_type == 2}>ASESORÍA TÉCNICA</option>
-                                <option value={3} selected={_CHILD.list_type == 3}>CORRECCIONES SOLICITUD</option>
-                                <option value={4} selected={_CHILD.list_type == 4}>TRAMITE</option>
-                                <option value={5} selected={_CHILD.list_type == 5}>PQRS</option>
-                                <option value={0} selected={_CHILD.list_type == 0}>OTRO</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label >4 Fecha y hora ingreso</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
-                            </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="submit_3" required
-                                defaultValue={_CHILD.date} />
-                            <input type="time" class="form-control" id="submit_32"
-                                defaultValue={_CHILD.time} />
-                        </div>
-                    </div>
-
-                    <div className="col-6">
-                        <label >5. Propietarios</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_5" maxLength={250}
-                                defaultValue={_CHILD.owner} />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className="col-4">
-                        <label >7. Funcionario que recibe</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_7" disabled
-                                defaultValue={_CHILD.worker_reciever} />
-                        </div>
-                    </div>
-                    <div className="col-4">
-                        <label >8. Persona que entrega</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_8" maxLength={250}
-                                defaultValue={_CHILD.name_retriever} />
-                        </div>
-                    </div>
-                    <div className="col-4">
-                        <label >8.1 C.C. Persona</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control" id="submit_81" maxLength={250}
-                                onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
-                                defaultValue={_CHILD.id_number_retriever} />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="row mt-2">
-                    <div className="col-12">
-                        <label >9. Observaciones y detalles (Maximo 2000 Caracteres)</label>
-                        <textarea class="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
-                            defaultValue={_CHILD.details}></textarea>
-                    </div>
-                </div>
-
-            </>
-        }
-
-        let COMPONENT_NEW = () => {
-            let _CHILD = GET_SUBMIT();
             return (
-                <div className="container-fluid">
+                <>
                     <div className="row">
-                        {/* Primera sección */}
-                        <div className="col-lg-5 col-md-14 border-end border-2 border-black">
-                            <h2>Usuario Solicitante</h2>
-
-                            <NEW_SOLICITOR
-                                translation={translation} swaMsg={swaMsg} globals={globals}
-                                refreshList={this.refreshList} nextStep={this.nextStep}/>
-                            <button type="button" class="btn btn-info text-blue" onClick={() => console.log(document.getElementById('solicitor_id').value)}>GENERAR VRRRRR</button>
-
-                        </div>
-
-                        {/* Segunda sección */}
-                        <div className="col-lg-3 col-md-11 border-end border-2 border-black">
-                            <div>
-                                <h2>Motivo Razón</h2>
-                                <div className="row mb-3">
-                                    <div className="col-12">
-                                        <label className="form-label">2.1 Calidad en la que viene</label>
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-info text-white">
-                                                <i className="fas fa-hashtag"></i>
-                                            </span>
-                                            <input type="text" className="form-control" id="otro_nombre_de_id" defaultValue={_CHILD.list_type_str} maxLength={250} />
-                                        </div>
+                        <div className="col-lg-4 col-md-12">
+                            <div className="row">
+                                <div className="col-12">
+                                    <label>1. Número de radicación</label>
+                                    <div className="input-group mb-1">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="fas fa-hashtag"></i>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="submit_1"
+                                            required
+                                            defaultValue={_CHILD.id_public}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="btn btn-info shadow-none"
+                                            onClick={() => _GET_LAST_ID()}
+                                        >
+                                            GENERAR
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="row mb-3">
-                                    <div className="col-12">
-                                        <label className="form-label">2.2 Tipo</label>
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-info text-white">
-                                                <i className="far fa-check-square"></i>
-                                            </span>
-                                            <input list="submit_type" className="form-control" id="submit_4" defaultValue={_CHILD.type} autoComplete="off" maxLength={250} />
-                                            <datalist id="submit_type">
-                                                <option value="LICENCIA" />
-                                                <option value="URBANIZACION" />
-                                                <option value="PARCELACION" />
-                                                <option value="SUBDIVICON" />
-                                                <option value="RECONOCIMIENTO" />
-                                                <option value="CONSTRUCCION" />
-                                                <option value="OTRAS ACTUACIONES" />
-                                                <option value="VISTO BUENO" />
-                                                <option value="PROPIEDAD HORIZONTAL" />
-                                                <option value="EXPENSAS / IMPUESTOS " />
-                                            </datalist>
-                                        </div>
+                                <div className="col-12">
+                                    <label>2. Número de solicitud</label>
+                                    <div className="input-group mb-1">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="fas fa-hashtag"></i>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="submit_2"
+                                            defaultValue={_CHILD.id_related}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="btn btn-warning shadow-none"
+                                            onClick={() => _VERIFY_RELATED_ID()}
+                                        >
+                                            VERIFICAR
+                                        </button>
+                                    </div>
+                                    {this.state.verifyMSG}
+                                </div>
+                                <div className="col-12">
+                                    {this.state.payment ? (
+                                        <>
+                                            <label>2.1 Consecutivo Pago</label>
+                                            <div className="input-group mb-1">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="fas fa-hashtag"></i>
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="submit_21"
+                                                    required
+                                                    defaultValue={_CHILD.id_related}
+                                                />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        ""
+                                    )}
+                                </div>
+                                <div className="col-12">
+                                    <label>3. Fecha y hora ingreso</label>
+                                    <div className="input-group mb-1">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="far fa-calendar-alt"></i>
+                                        </span>
+                                        <input
+                                            type="date"
+                                            max="2100-01-01"
+                                            className="form-control"
+                                            id="submit_3"
+                                            required
+                                            defaultValue={_CHILD.date}
+                                        />
+                                        <input
+                                            type="time"
+                                            className="form-control"
+                                            id="submit_32"
+                                            defaultValue={_CHILD.time}
+                                        />
                                     </div>
                                 </div>
-                                <div className="row mb-3">
-                                    <div className="col-12">
-                                        <label className="form-label">2.3 Tipo de Radicación</label>
-                                        <div className="input-group">
-                                            <span className="input-group-text bg-info text-white">
-                                                <i className="far fa-check-square"></i>
-                                            </span>
-                                            <select className="form-select" id="submit_41" defaultValue={_CHILD.list_type}>
-                                                <option value={1} selected={_CHILD.list_type == 1}>RADICACIÓN SOLICITUD</option>
-                                                <option value={2} selected={_CHILD.list_type == 2}>ASESORÍA TÉCNICA</option>
-                                                <option value={3} selected={_CHILD.list_type == 3}>CORRECCIONES SOLICITUD</option>
-                                                <option value={4} selected={_CHILD.list_type == 4}>TRAMITE</option>
-                                                <option value={5} selected={_CHILD.list_type == 5}>PQRS</option>
-                                                <option value={0} selected={_CHILD.list_type == 0}>OTRO</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="row ">
-                                    <div className="col-12">
-                                        <label >3. Observaciones y detalles (Maximo 2000 Caracteres)</label>
-                                        <textarea class="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
-                                            defaultValue={_CHILD.details}></textarea>
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
-
-                        {/* Tercera sección */}
                         <div className="col-lg-4 col-md-12">
-                            <div>
-                                <h2>Creación de VR</h2>
-                                <div className="row">
-                                    <div className="col-12">
-                                        <label>1. Número de radicación</label>
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-hashtag"></i>
-                                            </span>
-                                            <input type="text" class="form-control" id="submit_1" required defaultValue={_CHILD.id_public} />
-                                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
-                                        </div>
-                                    </div>
-                                    <div className="col-12">
-                                        <label>2. Número de solicitud</label>
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-hashtag"></i>
-                                            </span>
-                                            <input type="text" class="form-control" id="submit_2" defaultValue={_CHILD.id_related} />
-                                            <button type="button" class="btn btn-warning shadow-none" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</button>
-                                        </div>
-                                        {this.state.verifyMSG}
-                                    </div>
-                                    <div className="col-12">
-                                        {this.state.payment && <>
-                                            <label>2.1 Consecutivo Pago</label>
-                                            <div class="input-group mb-1">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="fas fa-hashtag"></i>
-                                                </span>
-                                                <input type="text" class="form-control" id="submit_21" required defaultValue={_CHILD.id_related} />
-                                            </div>
-                                        </>}
+                            <div className="col-12">
+                                <label>4. Tipo</label>
+                                <div className="input-group mb-1">
+                                    <span className="input-group-text bg-info text-white">
+                                        <i className="far fa-check-square"></i>
+                                    </span>
+                                    <input
+                                        list="submit_type"
+                                        className="form-control"
+                                        id="submit_4"
+                                        defaultValue={_CHILD.type}
+                                        autocomplete="off"
+                                        maxLength={250}
+                                    />
+                                    <datalist id="submit_type">
+                                        <option value="LICENCIA" />
+                                        <option value="URBANIZACION" />
+                                        <option value="PARCELACION" />
+                                        <option value="SUBDIVICON" />
+                                        <option value="RECONOCIMIENTO" />
+                                        <option value="COSTRUCCION" />
+                                        <option value="OTRAS ACTUACIONES" />
+                                        <option value="VISTO BUENO" />
+                                        <option value="PROPIEDAD HORIZONTAL" />
+                                        <option value="EXPENSAS / IMPUESTOS " />
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div className="col-12">
+                                <label>4.2 Tipo de Radicación</label>
+                                <div className="input-group mb-1">
+                                    <span className="input-group-text bg-info text-white">
+                                        <i className="far fa-check-square"></i>
+                                    </span>
+                                    <select
+                                        className="form-select"
+                                        id="submit_41"
+                                        defaultValue={_CHILD.list_type}
+                                    >
+                                        <option value={1} selected={_CHILD.list_type == 1}>
+                                            RADICACIÓN SOLICITUD
+                                        </option>
+                                        <option value={2} selected={_CHILD.list_type == 2}>
+                                            ASESORÍA TÉCNICA
+                                        </option>
+                                        <option value={3} selected={_CHILD.list_type == 3}>
+                                            CORRECCIONES SOLICITUD
+                                        </option>
+                                        <option value={4} selected={_CHILD.list_type == 4}>
+                                            TRAMITE
+                                        </option>
+                                        <option value={5} selected={_CHILD.list_type == 5}>
+                                            PQRS
+                                        </option>
+                                        <option value={0} selected={_CHILD.list_type == 0}>
+                                            OTRO
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="col-12">
+                                <label>4.3 Estado</label>
+                                <div className="input-group mb-1">
+                                    <span className="input-group-text bg-info text-white">
+                                        <i className="fas fa-hashtag"></i>
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="submit_42"
+                                        defaultValue={_CHILD.list_type_str}
+                                        maxLength={250}
+                                    />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div className="col-lg-4 col-md-12">
+                            <div className="row">
+                                <div className="col-12">
+                                    <label>5. Propietarios</label>
+                                    <div className="input-group mb-1">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="far fa-user"></i>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="submit_5"
+                                            maxLength={250}
+                                            defaultValue={_CHILD.owner}
+                                        />
                                     </div>
                                 </div>
-                                {!this.props.edit && <div className="row text-end">
-                                    <div className="col-12">
-                                        <div class="form-check my-3">
-                                            <input class="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => this.setState({ payment: e.target.checked })} />
-                                            <p class="form-check-label" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
-                                        </div>
-                                    </div>
-                                    {this.state.payment && <div className="col-12 text-end">
-                                        <button type="button" class="btn btn-info shadow-none me-1" onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</button>
-                                        <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</button>
-                                    </div>}
-                                </div>}
-                                <div className="row">
-                                    <div className="col-12">
-                                        <label>3.2 Estado</label>
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-hashtag"></i>
-                                            </span>
-                                            <input type="text" class="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
-                                        </div>
+
+                                <div className="col-12">
+                                    <label>6. Funcionario que recibe</label>
+                                    <div className="input-group mb-1">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="far fa-user"></i>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="submit_7"
+                                            disabled
+                                            defaultValue={_CHILD.worker_reciever}
+                                        />
                                     </div>
                                 </div>
-                                <div className="row">
-                                    <div className="col-12">
-                                        <label>4 Fecha y hora ingreso</label>
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-calendar-alt"></i>
-                                            </span>
-                                            <input type="date" max="2100-01-01" class="form-control" id="submit_3" required defaultValue={_CHILD.date} />
-                                            <input type="time" class="form-control" id="submit_32" defaultValue={_CHILD.time} />
-                                        </div>
-                                    </div>
-                                    <div className="col-12">
-                                        <label>5. Propietarios</label>
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-user"></i>
-                                            </span>
-                                            <input type="text" class="form-control" id="submit_5" maxLength={250} defaultValue={_CHILD.owner} />
-                                        </div>
+                                <div className="col-6">
+                                    <label>7. Persona que entrega</label>
+                                    <div className="input-group mb-1">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="far fa-user"></i>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="submit_8"
+                                            maxLength={250}
+                                            defaultValue={_CHILD.name_retriever}
+                                        />
                                     </div>
                                 </div>
-                                <div className="row">
-                                    <div className="col-12">
-                                        <label>7. Funcionario que recibe</label>
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-user"></i>
-                                            </span>
-                                            <input type="text" class="form-control" id="submit_7" disabled defaultValue={_CHILD.worker_reciever} />
-                                        </div>
-                                    </div>
-                                    <div className="col-12">
-                                        <label>8. Persona que entrega</label>
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-user"></i>
-                                            </span>
-                                            <input type="text" class="form-control" id="submit_8" maxLength={250} defaultValue={_CHILD.name_retriever} />
-                                        </div>
+                                <div className="col-6">
+                                    <label>7.1 C.C. Persona</label>
+                                    <div className="input-group mb-1">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="far fa-user"></i>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="submit_81"
+                                            maxLength={250}
+                                            onBlur={(e) => {
+                                                if (e.currentTarget === e.target) _REGEX_IDNUMBER(e);
+                                            }}
+                                            defaultValue={_CHILD.id_number_retriever}
+                                        />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                     </div>
-                </div>
+
+                    <div className="row mt-2">
+                        <div className="col-12">
+                            <label>9. Observaciones y detalles (Máximo 2000 caracteres)</label>
+                            <textarea
+                                className="form-control mb-3"
+                                rows="3"
+                                maxLength="2000"
+                                id="submit_9"
+                                defaultValue={_CHILD.details}
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    {!this.props.edit && (
+                        <div className="row text-end">
+                            <div className="col-8">
+                                <div className="form-check my-3 px-5">
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="payment_cb"
+                                        onChange={(e) => this.setState({ payment: e.target.checked })}
+                                    />
+                                    <p className="form-check-label text-start">
+                                        SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="col-4">
+                                {this.state.payment && (
+                                    <>
+                                        <button
+                                            type="button"
+                                            className="btn btn-info shadow-none me-1"
+                                            onClick={() => _GET_LAST_ID_PUBLIC()}
+                                        >
+                                            GENERAR LIC
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn-info shadow-none"
+                                            onClick={() => _GET_LAST_ID("submit_2")}
+                                        >
+                                            GENERAR VR
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </>
             );
+
         }
+
         // FUNCTIONS AND APIS
         var formData = new FormData();
 
@@ -644,13 +524,6 @@ class SUBMIT_MANAGE extends Component {
 
             let id_public = document.getElementById("submit_1").value;
             formData.set('id_public', id_public);
-
-            if (false) return MySwal.fire({
-                title: "ERROR DE DUPLICACIÓN",
-                text: "(1. Número de radicación ) y (2. Número de Solicitud)  deben ser consecutivos diferentes",
-                icon: 'error',
-                confirmButtonText: swaMsg.text_btn,
-            });
 
             let date = document.getElementById("submit_3").value;
             if (date) formData.set('date', date);
@@ -722,65 +595,22 @@ class SUBMIT_MANAGE extends Component {
                         });
                     });
             }
-            else {
-                SubmitService.create(formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.refreshList();
-                            this.props.closeModal();
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                        else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    });
-            }
         }
 
         return (
             <div className="Nomenclature_new container-fluid">
                 <>
                     <legend className="mt-2 mb-4 px-3 text-uppercase Collapsible border-0" id="fun_pdf">
-                        <label className="app-p lead fw-normal text-uppercase text-light">{currentItem ? "ACTUALIZAR" : "NUEVA"} ENTRADA</label>
+                        <label className="app-p lead fw-normal text-uppercase text-light">ACTUALIZAR ENTRADA</label>
                     </legend>
 
-                    {currentItem ? COMPONENT_UPDATE() : COMPONENT_NEW()}
 
                     <form id="form_manage_submit" onSubmit={save_submit}
                     >
-                        {/* {currentItem ? COMPONENT_UPDATE() : COMPONENT_NEW()} */}
+                        {COMPONENT_UPDATE()}
                         <div className="row mb-3 text-center">
                             <div className="col-12">
-                                {currentItem
-                                    ? <button className="btn btn-success my-3"><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
-                                    : <button className="btn btn-success my-3"><i class="fas fa-plus-circle"></i> CREAR </button>}
+                                <button className="btn btn-success my-3"><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
 
                             </div>
                         </div>
