@@ -4,6 +4,8 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
 import HolyDays from '../../../components/holydays.list.json'
+import SubmitService from '../../../services/submit.service.js';
+
 
 const moment = require('moment');
 const momentB = require('moment-business-days');
@@ -16,6 +18,7 @@ class PQRSNEW extends Component {
             contacts: 1,
             licence: false,
             attachs: 0,
+            solicitorVR: null,
         };
     }
     clearForm() {
@@ -46,7 +49,7 @@ class PQRSNEW extends Component {
     }
     render() {
         const { translation, swaMsg, globals, translation_form, } = this.props;
-        const { solicitors, contacts, licence, attachs } = this.state;
+        const { solicitors, contacts, licence, attachs, solicitorVR } = this.state;
         var formData = new FormData();
 
         let _SOLICITORS_COMPONENT = () => {
@@ -61,14 +64,14 @@ class PQRSNEW extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Nombre Completo" name="pqrs_sol_1" />
+                            <input type="text" class="form-control" placeholder="Nombre Completo" name="pqrs_sol_1" defaultValue={solicitorVR && solicitorVR.name && i === 0 ? solicitorVR.name : ''} />
                         </div>
                         <label class="m-0">Tipo de persona:</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <select class="form-select" name="pqrs_sol_2">
+                            <select class="form-select" name="pqrs_sol_2" defaultValue={solicitorVR && solicitorVR.person_type && i === 0 ? solicitorVR.person_type : ''}>
                                 <option>NATURAL</option>
                                 <option>JURIDICO</option>
                                 <option>ESTABLECIMIENTO DE COMERCIO</option>
@@ -82,7 +85,7 @@ class PQRSNEW extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-id-card"></i>
                             </span>
-                            <select class="form-select" name="pqrs_sol_4">
+                            <select class="form-select" name="pqrs_sol_4" defaultValue={solicitorVR && solicitorVR.document_type && i === 0 ? solicitorVR.document_type : ''}>
                                 <option>CEDULA DE CIUDADANIA</option>
                                 <option>NIT</option>
                                 <option>CEDULA DE EXTRANJERIA</option>
@@ -98,7 +101,7 @@ class PQRSNEW extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-id-card"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Numero de Documento" name="pqrs_sol_3" />
+                            <input type="text" class="form-control" placeholder="Numero de Documento" name="pqrs_sol_3" defaultValue={solicitorVR && solicitorVR.id_doc && i === 0 ? solicitorVR.id_doc : ''} />
                         </div>
                     </div>
                 </div>)
@@ -116,20 +119,20 @@ class PQRSNEW extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-map-signs"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Direccion Fisica" name="pqrs_con_1" />
+                            <input type="text" class="form-control" placeholder="Direccion Fisica" name="pqrs_con_1" defaultValue={solicitorVR && solicitorVR.address && i === 0 ? solicitorVR.address : ''} />
                         </div>
 
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-map-marked-alt"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Barrio" name="pqrs_con_2" />
+                            <input type="text" class="form-control" placeholder="Barrio" name="pqrs_con_2" defaultValue={solicitorVR && solicitorVR.neighborhood && i === 0 ? solicitorVR.neighborhood : ''} />
                         </div>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-phone-alt"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Numero de Contacto" name="pqrs_con_3" />
+                            <input type="text" class="form-control" placeholder="Numero de Contacto" name="pqrs_con_3" defaultValue={solicitorVR && solicitorVR.phone && i === 0 ? solicitorVR.phone : ''} />
                         </div>
                         <div class="form-check mx-5 my-3">
                             <input class="form-check-input" type="checkbox" value="" name="pqrs_con_7" />
@@ -141,20 +144,20 @@ class PQRSNEW extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-globe-americas"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Departamento" name="pqrs_con_4" />
+                            <input type="text" class="form-control" placeholder="Departamento" name="pqrs_con_4" defaultValue={solicitorVR && solicitorVR.department && i === 0 ? solicitorVR.department : ''} />
                         </div>
 
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-globe-americas"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Municipio" name="pqrs_con_5" />
+                            <input type="text" class="form-control" placeholder="Municipio" name="pqrs_con_5" defaultValue={solicitorVR && solicitorVR.town && i === 0 ? solicitorVR.town : ''} />
                         </div>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Correo Electronico" name="pqrs_con_6" />
+                            <input type="text" class="form-control" placeholder="Correo Electronico" name="pqrs_con_6" defaultValue={solicitorVR && solicitorVR.email && i === 0 ? solicitorVR.email : ''} />
                         </div>
                     </div>
                 </div>)
@@ -462,8 +465,82 @@ class PQRSNEW extends Component {
             }
 
         }
+
+        let getSolicitorById = (e) => {
+            e.preventDefault();
+            let valueVR = document.getElementById("VR_search").value;
+            console.log(valueVR)
+            SubmitService.getSearch(1, valueVR)
+                .then(response => {
+                    if (response.status == 200 && response.data) {
+                        console.log(response.data)
+                        this.setState({
+                            solicitorVR: response.data[0].submitSolicitors[0].solicitor,
+                        });
+                        document.getElementById("pqrs_mas_6").value = response.data[0].id_public
+
+                        MySwal.fire({
+                            title: swaMsg.generic_success_title,
+                            text: swaMsg.generic_success_text,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                    else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+        }
         return (
             <div>
+                <form onSubmit={getSolicitorById} className="row">
+                    <div className="col-lg-10 col-md-6 d-flex align-items-end">
+                        <div className='me-2'>
+                            <label class="my-1">Buscar registro (VR):</label>
+                            <div className="input-group">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-hashtag"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    className="form-control USER_VR"
+                                    id="VR_search"
+                                    placeholder="Número de Documento"
+                                />
+                            </div>
+                        </div>
+                        {
+                            solicitorVR ? <button className='ms-1 rounded-circle' style={{
+                                width: '40px',
+                                height: '40px',
+                                cursor: 'pointer'
+                            }}
+                                onClick={() => {
+                                    this.setState({
+                                        solicitorVR: null
+                                    })
+                                    document.getElementById('VR_search').value = ''
+                                    document.getElementById("pqrs_mas_6").value = '';
+
+                                }
+                                }><i className="fas fa-regular fa-trash"></i></button> : ''
+                        }
+                    </div>
+                </form >
                 <form onSubmit={generatePQRS} id="app-formNew" enctype="multipart/form-data">
                     <div className="row my-4 d-flex justify-content-center">
 
@@ -504,7 +581,7 @@ class PQRSNEW extends Component {
                                 </div>
                                 {_CONTACTS_COMPONENT()}
                             </div>
-                            <div className="col-lg-5 col-md-12 lg-mx-5">
+                            <div className="col-lg-5 col-md-12 mx-lg-5">
                                 <label className="app-p lead text-start fw-bold text-uppercase">
                                     1.3 CASOS DE ACTUACIONES Y LICENCIAS
                                 </label>

@@ -245,8 +245,8 @@ class SUBMIT extends Component {
             });
         };
         let search = () => {
-            let field = document.getElementById("submit_search_0").value;
-            let string = document.getElementById("submit_search_1").value;
+            let field = document.getElementById("submit_search_0").value; //OPTION
+            let string = document.getElementById("submit_search_1").value; //VALUE
             if (string) {
                 MySwal.fire({
                     title: swaMsg.title_wait,

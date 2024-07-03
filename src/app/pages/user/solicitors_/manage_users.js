@@ -60,16 +60,6 @@ class Manage_User extends Component {
             })
         })
     }
-    retrieveSearch(field, string) {
-        SubmitService.getSearch(field, string)
-            .then(response => {
-                this.asignList(response.data);
-                MySwal.close();
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
     asignList(_LIST) {
         this.setState({
             list: _LIST,
@@ -110,11 +100,11 @@ class Manage_User extends Component {
         const columns = [
             {
                 name: <label className="text-center">Nr. Identificación</label>,
-                selector: 'id_public',
+                selector: 'id_doc',
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <label className='py-1'>{row.id_doc}</label>
             },
             {
                 name: <label className="text-center">Tipo de documento</label>,
@@ -122,7 +112,7 @@ class Manage_User extends Component {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.document_type}</label>
+                cell: row => <label className='py-1'>{row.document_type}</label>
             },
             {
                 name: <label className="text-center">Nombre</label>,
@@ -130,7 +120,7 @@ class Manage_User extends Component {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.name}</label>
+                cell: row => <label className='py-1'>{row.name}</label>
             },
             {
                 name: <label className="text-center">Email</label>,
@@ -138,7 +128,7 @@ class Manage_User extends Component {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.email}</label>
+                cell: row => <label className='py-1'>{row.email}</label>
             },
             {
                 name: <label className="text-center">Tipo de solicitante</label>,
@@ -146,7 +136,7 @@ class Manage_User extends Component {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.role}</label>
+                cell: row => <label className='py-1'>{row.role}</label>
             },
             {
                 name: <label className="text-center">Fecha de Registro</label>,
@@ -156,7 +146,7 @@ class Manage_User extends Component {
                 center: true,
                 cell: row => {
                     row.createdAt = row.createdAt = new Date()
-                    return < label > {
+                    return <label className='py-1'> {
                         row.createdAt.toLocaleDateString()
                     }</label >
                 }
