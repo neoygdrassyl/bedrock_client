@@ -166,7 +166,7 @@ class PQRSNEW extends Component {
             var _COMPONENT = [];
             for (var i = 0; i < attachs; i++) {
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
-                    <div className="col-lg-8 col-md-8 ">
+                    <div className="col-lg-12 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div class="input-group">
                             <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
@@ -456,234 +456,338 @@ class PQRSNEW extends Component {
         }
 
         let _REQUIRES_REPLY = (value) => {
-            switch(value){
+            switch (value) {
                 case 'aqui va tipo de peticion': return true;
 
             }
-            
+
         }
         return (
             <div>
                 <form onSubmit={generatePQRS} id="app-formNew" enctype="multipart/form-data">
                     <div className="row my-4 d-flex justify-content-center">
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.1 IDENTIFICACIÓN DEL PETICIONARIO</label>
-                        <div className="text-end m-3">
 
-                            {(solicitors && contacts)  > 1
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => (this.minusSolicitor(), this.minusContact())}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
-                                : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => (this.addSolicitor(), this.addContact())}
-                            ><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
-                        </div>
-                        {_SOLICITORS_COMPONENT()}
-                        <hr className="my-3" />
-
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.2 DATOS PARA NOTIFICACION</label>
-                        <div className="text-end m-3">
-                            {/* {contacts > 1
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusContact()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
-                                : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addContact()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn> */}
-                        </div>
-                        {_CONTACTS_COMPONENT()}
-                        <hr className="my-3" />
-
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.3 CASOS DE ACTUACIONES Y LICENCIAS</label>
-                        <div class="form-check my-3 px-5">
-                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => this.toggleLicense()} />
-                            <p class="form-check-label text-start" >¿Esta es una solicitud relacionada con una actuación urbanistica o licencia?</p>
-                        </div>
-                        {licence
-                            ? <div className="row">
-                                <div className="col-lg-6 col-md-6">
-                                    <div class="input-group my-1">
-                                        <span class="input-group-text bg-info text-white">
-                                            <i class="fas fa-map-signs"></i>
-                                        </span>
-                                        <input type="text" class="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1" />
-                                    </div>
-                                    <div class="input-group my-1">
-                                        <span class="input-group-text bg-info text-white">
-                                            <i class="fas fa-map-marked-alt"></i>
-                                        </span>
-                                        <input type="text" class="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2" />
-                                    </div>
-
+                        <div className="row">
+                            <div className="col-lg-3 col-md-12">
+                                <label className="app-p lead text-start fw-bold text-uppercase">
+                                    1.1 IDENTIFICACIÓN DEL PETICIONARIO
+                                </label>
+                                <div className="text-end m-3">
+                                    {(solicitors && contacts) > 1 ? (
+                                        <MDBBtn
+                                            className="btn btn-xs btn-secondary mx-3"
+                                            onClick={() => (this.minusSolicitor(), this.minusContact())}
+                                        >
+                                            <i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO
+                                        </MDBBtn>
+                                    ) : (
+                                        ""
+                                    )}
+                                    <MDBBtn
+                                        className="btn btn-xs btn-secondary"
+                                        onClick={() => (this.addSolicitor(), this.addContact())}
+                                    >
+                                        <i class="fas fa-plus-circle"></i> AÑADIR OTRO
+                                    </MDBBtn>
                                 </div>
+                                {_SOLICITORS_COMPONENT()}
+                                <hr className="my-3" />
 
-                                <div className="col-lg-6 col-md-6">
-                                    <div class="input-group my-1">
+                                <label className="app-p lead text-start fw-bold text-uppercase">
+                                    1.2 DATOS PARA NOTIFICACION
+                                </label>
+                                <div className="text-end m-3">
+                                    {/* {contacts > 1
+                      ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusContact()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                      : ""}
+                  <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addContact()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn> */}
+                                </div>
+                                {_CONTACTS_COMPONENT()}
+                            </div>
+                            <div className="col-lg-5 col-md-12 lg-mx-5">
+                                <label className="app-p lead text-start fw-bold text-uppercase">
+                                    1.3 CASOS DE ACTUACIONES Y LICENCIAS
+                                </label>
+                                <div class="form-check my-3 px-5">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="licence_checkbox"
+                                        onChange={() => this.toggleLicense()}
+                                    />
+                                    <p class="form-check-label text-start">
+                                        ¿Esta es una solicitud relacionada con una actuación urbanistica o licencia?
+                                    </p>
+                                </div>
+                                {licence ? (
+                                    <div className="row">
+                                        <div className="col-lg-6 col-md-6">
+                                            <div class="input-group my-1">
+                                                <span class="input-group-text bg-info text-white">
+                                                    <i class="fas fa-map-signs"></i>
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    placeholder="Numero de Radicacion"
+                                                    id="pqrs_fun_1"
+                                                />
+                                            </div>
+                                            <div class="input-group my-1">
+                                                <span class="input-group-text bg-info text-white">
+                                                    <i class="fas fa-map-marked-alt"></i>
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    placeholder="N° Predial / Catastral"
+                                                    id="pqrs_fun_2"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="col-lg-6 col-md-6">
+                                            <div class="input-group my-1">
+                                                <span class="input-group-text bg-info text-white">
+                                                    <i class="fas fa-user"></i>
+                                                </span>
+                                                <select class="form-select" id="pqrs_fun_3">
+                                                    <option>TITULAR DE LA ACTUACIÓN</option>
+                                                    <option>INSTITUCIÓN DE CONTROL</option>
+                                                    <option>VECINO COLINDANTE</option>
+                                                    <option>INTERESADO</option>
+                                                    <option>OTRO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    ""
+                                )}
+
+                                <label className="app-p lead text-start fw-bold text-uppercase">
+                                    1.4 DESCRIPCIÓN DE LA SOLICITUD
+                                </label>
+                                <div className="row">
+                                    <div className="col-lg-6 col-md-6">
+                                        <label>Número de registro Ventanilla Unica</label>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-hashtag"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="pqrs_mas_6" />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-6">
+                                        <label>Número de registro de caso(histórico año 2021)</label>
+                                        <div class="input-group my-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-hashtag"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="pqrs_mas_1" />
+                                            <button
+                                                type="button"
+                                                class="btn btn-info shadow-none"
+                                                onClick={() => _GET_LAST_ID()}
+                                            >
+                                                GENERAR
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-6">
+                                        <label>Clasificación de la Petición</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-check-square"></i>
+                                            </span>
+                                            <input
+                                                list="browsers"
+                                                id="pqrs_mas_2"
+                                                class="form-control"
+                                                onChange={() => _SET_REPLY_TIME()}
+                                                autoComplete="false"
+                                            />
+                                            <datalist id="browsers">
+                                                <option value="Peticion General" />
+                                                <option value="Peticion de documentos y de información" />
+                                                <option value="Peticion de consulta" />
+                                                <option value="Peticiones de autoridades y entes de control" />
+                                                <option value="Entrega de Copias" />
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-6">
+                                        <label>Canal de radicación original</label>
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-check-square"></i>
+                                            </span>
+                                            <select class="form-select" id="pqrs_mas_3">
+                                                {selectTypeChannel}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-6">
+                                        <label>Palabras Clave (Separadas por coma)</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="fas fa-font"></i>
+                                            </span>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                maxLength="200"
+                                                id="pqrs_mas_5"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-6">
+                                        <label>Fecha de radicación</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                            <input
+                                                type="date"
+                                                max="2100-01-01"
+                                                class="form-control"
+                                                id="pqrs_time_1"
+                                                required
+                                                onChange={() => _SET_LEGAL_TIME()}
+                                            />
+                                            <input
+                                                type="time"
+                                                class="form-control"
+                                                id="pqrs_time_10"
+                                                required
+                                                onChange={() => _SET_LEGAL_TIME()}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-6">
+                                        <label>Fecha inicio de términos</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-info text-white" id="type-pqrs">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                            <input
+                                                type="date"
+                                                max="2100-01-01"
+                                                class="form-control"
+                                                id="pqrs_time_2"
+                                                disabled
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-6">
+                                        <label>Termino legal de respuesta</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-info text-white">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                            <input
+                                                type="number"
+                                                step="1"
+                                                min="1"
+                                                class="form-control"
+                                                placeholder="Termino legal de respuesta"
+                                                id="pqrs_time_time"
+                                                defaultValue={"15"}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12">
+                                        <label>Contenido o descripción de la Solicitud (Maximo 2000 Caracteres)</label>
+                                        <textarea
+                                            class="form-control mb-3"
+                                            rows="3"
+                                            maxLength="2000"
+                                            id="pqrs_mas_4"
+                                        ></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div className="col-lg-3 col-md-12">
+                                <label className="app-p lead text-start fw-bold text-uppercase">
+                                    1.5 DOCUMENTOS ANEXOS
+                                </label>
+                                <div className="text-end m-3">
+                                    {attachs > 0 ? (
+                                        <MDBBtn
+                                            className="btn btn-xs btn-secondary mx-3"
+                                            onClick={() => this.minusAttach()}
+                                        >
+                                            <i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO
+                                        </MDBBtn>
+                                    ) : (
+                                        ""
+                                    )}
+                                    <MDBBtn
+                                        className="btn btn-xs btn-secondary"
+                                        onClick={() => this.addAttach()}
+                                    >
+                                        <i class="fas fa-plus-circle"></i> AÑADIR OTRO
+                                    </MDBBtn>
+                                </div>
+                                {_ATTACHS_COMPONENT()}
+                                <hr className="my-3" />
+                                <label className="app-p lead text-start fw-bold text-uppercase m-3">
+                                    1.6 INFORMACIÓN DEL PROFESIONAL
+                                </label>
+                                <div className="col-lg-12 col-md-12">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Profesional que Generar esta Solicitud"
+                                        disabled
+                                    />
+                                    <div class="input-group mb-1">
                                         <span class="input-group-text bg-info text-white">
                                             <i class="fas fa-user"></i>
                                         </span>
-                                        <select class="form-select" id="pqrs_fun_3">
-                                            <option>TITULAR DE LA ACTUACIÓN</option>
-                                            <option>INSTITUCIÓN DE CONTROL</option>
-                                            <option>VECINO COLINDANTE</option>
-                                            <option>INTERESADO</option>
-                                            <option>OTRO</option>
-                                        </select>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            defaultValue={window.user.name + " " + window.user.surname}
+                                            id="pqrs_mas_worker_creator"
+                                            disabled
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-lg-12 col-md-12">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Fecha en la cual se genera esta Solicitud"
+                                        disabled
+                                    />
+                                    <div class="input-group mb-1">
+                                        <span class="input-group-text bg-info text-white">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                        <input
+                                            type="date"
+                                            class="form-control"
+                                            defaultValue={moment().format("YYYY-MM-DD")}
+                                            disabled
+                                        />
                                     </div>
                                 </div>
                             </div>
-                            : ""}
-                        <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.4 DESCRIPCIÓN DE LA SOLICITUD</label>
-
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6">
-                                <label>Número de registro Ventanilla Unica</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-hashtag"></i>
-                                    </span>
-                                    <input type="text" class="form-control" id="pqrs_mas_6" />
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <label>Número de registro de caso(histórico año 2021)</label>
-                                <div class="input-group my-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-hashtag"></i>
-                                    </span>
-                                    <input type="text" class="form-control" id="pqrs_mas_1" />
-                                    <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
-                                </div>
-                            </div>
-
-
-
-                        </div>
-
-                        <div className="row">
-
-                            <div className="col-lg-6 col-md-6">
-                                <label>Clasificación de la Petición</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-check-square"></i>
-                                    </span>
-                                    <input list="browsers" id="pqrs_mas_2" class="form-control" onChange={() => _SET_REPLY_TIME()}
-                                        autoComplete='false' />
-                                    <datalist id="browsers">
-                                        <option value="Peticion General" />
-                                        <option value="Peticion de documentos y de información" />
-                                        <option value="Peticion de consulta" />
-                                        <option value="Peticiones de autoridades y entes de control" />
-                                        <option value="Entrega de Copias" />
-                                    </datalist>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div className="row">
-
-                            <div className="col-lg-6 col-md-6">
-                                <label>Canal de radicación original</label>
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-check-square"></i>
-                                    </span>
-                                    <select class="form-select" id="pqrs_mas_3">
-                                        {selectTypeChannel}
-                                    </select>
-                                </div>
-
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <label>Palabras Clave (Separadas por coma)</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-font"></i>
-                                    </span>
-                                    <input type="text" class="form-control" maxLength="200" id="pqrs_mas_5" />
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6">
-                                <label> Fecha de radicación</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-calendar-alt"></i>
-                                    </span>
-                                    <input type="date" max="2100-01-01" class="form-control" id="pqrs_time_1" required
-                                        onChange={() => _SET_LEGAL_TIME()} />
-                                    <input type="time" class="form-control" id="pqrs_time_10" required
-                                        onChange={() => _SET_LEGAL_TIME()} />
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                                <label>Fecha inicio de términos</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                                        <i class="far fa-calendar-alt"></i>
-                                    </span>
-                                    <input type="date" max="2100-01-01" class="form-control" id="pqrs_time_2" disabled required />
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6">
-                                <label>Termino legal de respuesta </label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="far fa-calendar-alt"></i>
-                                    </span>
-                                    <input type="number" step="1" min="1" class="form-control"
-                                        placeholder="Termino legal de respuesta" id="pqrs_time_time" defaultValue={'15'} />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col">
-                                <label>Contenido o descripción de la Solicitud (Maximo 2000 Caracteres)</label>
-                                <textarea class="form-control mb-3" rows="3" maxlength="2000" id="pqrs_mas_4"></textarea>
-                            </div>
-                        </div>
-                        <hr className="my-3" />
-
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.5 DOCUMENTOS ANEXOS</label>
-                        <div className="text-end m-3">
-                            {attachs > 0
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
-                                : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
-                        </div>
-                        {_ATTACHS_COMPONENT()}
-                        <hr className="my-3" />
-                        <label className="app-p lead text-start fw-bold text-uppercase m-3">1.6 INFORMACIÓN DEL PROFESIONAL</label>
-                        <div className="col-lg-6 col-md-6">
-                            <input type="text" class="form-control" placeholder="Profesional que Generar esta Solicitud" disabled />
-                            <div class="input-group mb-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-user"></i>
-                                </span>
-                                <input type="text" class="form-control" defaultValue={window.user.name + " " + window.user.surname} id="pqrs_mas_worker_creator" disabled />
-                            </div>
-                        </div>
-                        <div className="col-lg-6 col-md-6">
-                            <input type="text" class="form-control" placeholder="Fecha en la cual se genera esta Solicitud" disabled />
-                            <div class="input-group mb-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
-                                </span>
-                                <input type="date" class="form-control" defaultValue={moment().format('YYYY-MM-DD')} disabled />
-                            </div>
                         </div>
                         <div className="text-center py-4 mt-3">
-                            <button className="btn btn-xs btn-success"><i class="fas fa-folder-plus"></i> GENERAR </button>
+                            <button className="btn btn-xs btn-success">
+                                <i class="fas fa-folder-plus"></i> GENERAR
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
+
         );
     }
 }

@@ -778,13 +778,13 @@ class PQRSADMIN extends Component {
                 right: 0,
                 bottom: 0,
                 backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                zIndex: 2
+                zIndex: 2,
             },
             content: {
                 position: 'absolute',
                 top: '40px',
-                left: '15%',
-                right: '15%',
+                left: '5%',
+                right: '5%',
                 bottom: '40px',
                 border: '1px solid #ccc',
                 overflow: 'auto',
