@@ -5,6 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import VIZUALIZER from '../../../components/vizualizer.component';
+import Solicitors_service from '../../../services/solicitors.service';
 
 const MySwal = withReactContent(Swal);
 class FUNN51 extends Component {
@@ -14,6 +15,7 @@ class FUNN51 extends Component {
             new: false,
             edit: false,
             legal: false,
+            holder: null
         };
     }
     componentDidUpdate(prevState) {
@@ -47,7 +49,7 @@ class FUNN51 extends Component {
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+        const { holder } = this.state;
 
         var formData = new FormData();
 
@@ -116,8 +118,80 @@ class FUNN51 extends Component {
                 document.getElementById(e.target.id).value = _value;
             }
         }
-
+        //GET BY ID
+        let getSolicitorById = (e) => {
+            e.preventDefault();
+            let solicitor_id = document.getElementById("solicitor_id_search").value;
+            Solicitors_service.getById(solicitor_id)
+                .then(response => {
+                    if (response.status == 200 && response.data) {
+                        console.log(response.data)
+                        this.setState({
+                            holder: response.data,
+                        });
+                        MySwal.fire({
+                            title: swaMsg.generic_success_title,
+                            text: swaMsg.generic_success_text,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                    else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+        }
         // COMPONENTS JSX
+        let _COMPONENT_SEARCH = () => {
+            return <>
+                <form onSubmit={getSolicitorById} className="row">
+                    <div className="col-lg-10 col-md-6 d-flex align-items-end">
+                        <div className='me-2'>
+                            <label class="my-1">Buscar registro:</label>
+                            <div className="input-group">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-hashtag"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    className="form-control USER"
+                                    id="solicitor_id_search"
+                                    placeholder="Número de Documento"
+                                />
+                            </div>
+                        </div>
+                        {
+                            holder ? <button className='ms-1 rounded-circle' style={{
+                                width: '40px',
+                                height: '40px',
+                                cursor: 'pointer'
+                            }}
+                                onClick={() => {
+                                    this.setState({
+                                        holder: null
+                                    })
+                                    document.getElementById('solicitor_id_search').value = ''
+                                }
+                                }><i className="fas fa-regular fa-trash"></i></button> : ''
+                        }
+                    </div>
+                </form >
+            </>
+        }
         let _COMPONENT_NEW = () => {
             return <>
                 <div className="row mb-1">
@@ -127,7 +201,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <select className='form-select' id="f_51_type"
+                            <select className='form-select' id="f_51_type" defaultValue={holder && holder.person_type ? holder.person_type : ''}
                                 onChange={(e) => {
                                     if (e.target.value == 'PERSONA JURIDICA') {
                                         document.getElementById('f_51_rep_name').disabled = false;
@@ -153,7 +227,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_name" disabled />
+                            <input type="text" class="form-control" id="f_51_rep_name" disabled defaultValue={holder && holder.person_type === 'JURIDICA' && holder.name ? holder.name : ''} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -162,7 +236,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_idnumber" disabled
+                            <input type="text" class="form-control" id="f_51_rep_idnumber" disabled defaultValue={holder && holder.person_type === 'JURIDICA' && holder.id_doc ? holder.id_doc : ''}
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
@@ -175,7 +249,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_5111" />
+                            <input type="text" class="form-control" id="f_5111" defaultValue={holder && holder.name ? holder.name : ''} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -184,7 +258,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_5112" />
+                            <input type="text" class="form-control" id="f_5112" defaultValue={holder && holder.name ? holder.name : ''}/>
                         </div>
                     </div>
                 </div>
@@ -196,7 +270,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-id-card"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_512" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
+                            <input type="text" class="form-control" id="f_512" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}  defaultValue={holder && holder.id_doc ? holder.id_doc : ''} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -205,7 +279,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_513" />
+                            <input type="text" class="form-control" id="f_513" defaultValue={holder && holder.email ? holder.email : ''}  />
                         </div>
                     </div>
                 </div>
@@ -216,7 +290,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-phone-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_514" />
+                            <input type="text" class="form-control" id="f_514" defaultValue={holder && holder.phone ? holder.phone : ''}/>
                         </div>
                     </div>
                     <div className="col-6">
@@ -225,7 +299,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-phone-alt"></i>
                             </span>
-                            <select className='form-select' id="f_515">
+                            <select className='form-select' id="f_515" >
                                 <option>PROPIETARIO</option>
                                 <option>PROPIETARIO COMUNEROS</option>
                                 <option>PROPIETARIO FIDUCIARIA</option>
@@ -308,7 +382,7 @@ class FUNN51 extends Component {
                         </div>
                     </div>
                     <div className="col-6">
-                        <label>5.1.0.2 Cédula (Representante Lega)</label>
+                        <label>5.1.0.2 Cédula (Representante Legal)</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
@@ -763,6 +837,8 @@ class FUNN51 extends Component {
                 </div>
                 {this.state.new
                     ? <>
+                        {_COMPONENT_SEARCH()}
+                        <hr className='my-3'/>
                         <form id="form_fun_51_new" onSubmit={new_51}>
                             {_COMPONENT_NEW()}
                             <div className="row mb-3 text-center">
@@ -782,6 +858,9 @@ class FUNN51 extends Component {
                 </div>
                 {this.state.edit
                     ? <>
+                        {_COMPONENT_SEARCH()}
+                        <hr className='my-3'/>
+
                         <form id="form_fun_51_edit" onSubmit={edit_51}>
                             <h3 className="my-3 text-center">Actualizar Titular</h3>
                             {_COMPONENT_EDIT()}
