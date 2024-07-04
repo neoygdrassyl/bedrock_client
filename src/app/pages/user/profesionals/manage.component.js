@@ -6,6 +6,8 @@ import withReactContent from 'sweetalert2-react-content'
 import VIEWER from '../../../components/viewer.component';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import profesionalsService from '../../../services/profesionals.service';
+import Solicitors_service from '../../../services/solicitors.service';
+
 
 const MySwal = withReactContent(Swal);
 
@@ -40,10 +42,79 @@ export default function PROFESIONALS_MANAGE(props) {
             <VIEWER params={[_folder, file]} API={downloadFile} />
         </>
     }
-
+    //GET BY ID
+    let getSolicitorById = (e) => {
+        e.preventDefault();
+        let solicitor_id = document.getElementById("solicitor_id_search").value;
+        console.log(solicitor_id)
+        Solicitors_service.getById(solicitor_id)
+            .then(response => {
+                if (response.status == 200 && response.data) {
+                    setData(response.data);
+                    MySwal.fire({
+                        title: swaMsg.generic_success_title,
+                        text: swaMsg.generic_success_text,
+                        icon: 'success',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+                else {
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+    }
+    // COMPONENTS JSX
+    let _COMPONENT_SEARCH = () => {
+        return <>
+            <form onSubmit={getSolicitorById} className="row">
+                <div className="col-lg-10 col-md-6 d-flex align-items-end">
+                    <div className='me-2'>
+                        <label class="my-1">Buscar registro:</label>
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control USER"
+                                id="solicitor_id_search"
+                                placeholder="Número de Documento"
+                            />
+                        </div>
+                    </div>
+                    {
+                        data.name ? <button className='ms-1 rounded-circle' style={{
+                            width: '40px',
+                            height: '40px',
+                            cursor: 'pointer'
+                        }}
+                            onClick={() => {
+                                setData({});
+                                document.getElementById('solicitor_id_search').value = ''
+                            }
+                            }><i className="fas fa-regular fa-trash"></i></button> : ''
+                    }
+                </div>
+            </form >
+        </>
+    }
     let FORM_COMPONENT = () => {
         return <>
-            <Divider>INFORMACIÓN GENEAL</Divider>
+            <Divider>INFORMACIÓN GENERAL</Divider>
             <div className='row my-1'>
                 <div className='col'>
                     <label>Primer Nombre</label>
@@ -74,7 +145,7 @@ export default function PROFESIONALS_MANAGE(props) {
                 </div>
                 <div className='col'>
                     <label>Documento</label>
-                    <input type="text" class="form-control" id="prof_id_number" defaultValue={data.id_number} required
+                    <input type="text" class="form-control" id="prof_id_number" defaultValue={data.id_number || data.id_doc} required
                         onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                 </div>
                 <div className='col'>
@@ -83,7 +154,7 @@ export default function PROFESIONALS_MANAGE(props) {
                 </div>
                 <div className='col'>
                     <label>Número de contacto</label>
-                    <input type="text" class="form-control" id="prof_number" defaultValue={data.number} />
+                    <input type="text" class="form-control" id="prof_number" defaultValue={data.number || data.phone} />
                 </div>
             </div>
             <div className='row my-1'>
@@ -95,9 +166,11 @@ export default function PROFESIONALS_MANAGE(props) {
                     <label>Matricula Fecha</label>
                     <input type="date" class="form-control" id="prof_registration_date" defaultValue={data.registration_date} />
                 </div>
+            </div>
+            <div className='row my-1'>
                 <div className='col-6'>
                     <div className='mt-4'>
-                    <label>Concentimiento de trato de datos: </label> {data.concent ? <i class="fas fa-check text-success"></i> : <i class="fas fa-times text-danger ms-2"></i>} 
+                        <label>Concentimiento de trato de datos: </label> {data.concent ? <i class="fas fa-check text-success"></i> : <i class="fas fa-times text-danger ms-2"></i>}
                     </div>
                 </div>
             </div>
@@ -251,6 +324,7 @@ export default function PROFESIONALS_MANAGE(props) {
                     <label>CARGANDO...</label>
                 </div>
             </div> : ''}
+            {id ? '' : _COMPONENT_SEARCH()}
             <form onSubmit={manage} enctype="multipart/form-data">
                 {load == 1 ? FORM_COMPONENT() : ''}
                 <div className="text-start py-2">

@@ -227,7 +227,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_name" disabled defaultValue={holder && holder.person_type === 'JURIDICA' && holder.name ? holder.name : ''} />
+                            <input type="text" class="form-control" id="f_51_rep_name" disabled />
                         </div>
                     </div>
                     <div className="col-6">
@@ -236,7 +236,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_idnumber" disabled defaultValue={holder && holder.person_type === 'JURIDICA' && holder.id_doc ? holder.id_doc : ''}
+                            <input type="text" class="form-control" id="f_51_rep_idnumber" disabled
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
@@ -258,7 +258,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_5112" defaultValue={holder && holder.name ? holder.name : ''}/>
+                            <input type="text" class="form-control" id="f_5112" defaultValue={holder && holder.name ? holder.name : ''} />
                         </div>
                     </div>
                 </div>
@@ -270,7 +270,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-id-card"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_512" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}  defaultValue={holder && holder.id_doc ? holder.id_doc : ''} />
+                            <input type="text" class="form-control" id="f_512" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} defaultValue={holder && holder.id_doc ? holder.id_doc : ''} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -279,7 +279,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_513" defaultValue={holder && holder.email ? holder.email : ''}  />
+                            <input type="text" class="form-control" id="f_513" defaultValue={holder && holder.email ? holder.email : ''} />
                         </div>
                     </div>
                 </div>
@@ -290,7 +290,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-phone-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_514" defaultValue={holder && holder.phone ? holder.phone : ''}/>
+                            <input type="text" class="form-control" id="f_514" defaultValue={holder && holder.phone ? holder.phone : ''} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -838,7 +838,7 @@ class FUNN51 extends Component {
                 {this.state.new
                     ? <>
                         {_COMPONENT_SEARCH()}
-                        <hr className='my-3'/>
+                        <hr className='my-3' />
                         <form id="form_fun_51_new" onSubmit={new_51}>
                             {_COMPONENT_NEW()}
                             <div className="row mb-3 text-center">
@@ -859,7 +859,7 @@ class FUNN51 extends Component {
                 {this.state.edit
                     ? <>
                         {_COMPONENT_SEARCH()}
-                        <hr className='my-3'/>
+                        <hr className='my-3' />
 
                         <form id="form_fun_51_edit" onSubmit={edit_51}>
                             <h3 className="my-3 text-center">Actualizar Titular</h3>

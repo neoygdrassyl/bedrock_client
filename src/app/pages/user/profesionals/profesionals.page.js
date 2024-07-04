@@ -188,7 +188,7 @@ export default function PROFESIONALS(props) {
     return <>
       <div className='row'>
         <div className='col-3'>
-          { window.user.id == 1 || window.user.roleId == 3 ? <MDBBtn color='success' onClick={() => { setId(false); setModal(!modal) }}><i class="fas fa-plus-circle"></i> NUEVO PROFESIONAL</MDBBtn> : null }
+          { window.user.id == 1 || window.user.roleId == 1 ? <MDBBtn color='success' onClick={() => { setId(false); setModal(!modal) }}><i class="fas fa-plus-circle"></i> NUEVO PROFESIONAL</MDBBtn> : null }
         </div>
         <div className='col'>
           <div class="row">
