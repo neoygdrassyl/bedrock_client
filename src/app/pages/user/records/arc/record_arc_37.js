@@ -38,8 +38,8 @@ export default function RECORD_ARC_37(props) {
             name: 'I (INSTITUCIONAL)', subs: [
                 { name: 'I-1 (RECLUSIÓN)', index: [11] },
                 { name: 'I-2 (SALUD O INCAPACIDAD)', index: [11, 9, 22] },
-                { name: 'I-4 (SEGURIDAD PÚBLICA)', index: [1.8, 4.6] },
-                { name: 'I-2 (SALUD O INCAPACIDAD)', index: [2.8] },
+                { name: 'I-3 (EDUCACIÓN)', index: [1.8, 4.6] },
+                { name: 'I-4 (SEGURIDAD PÚBLICA)', index: [2.8] },
                 { name: 'I-5 (SERVICIO PÚBLICO)', index: [0.3] },
             ]
         },
