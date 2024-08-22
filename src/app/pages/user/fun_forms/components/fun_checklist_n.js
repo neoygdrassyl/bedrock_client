@@ -435,7 +435,7 @@ class FUN_CHECKLIST_N extends Component {
                     </div>
                 </div>
                 {_PRINT_GROUP(
-                    m_2022 ? ['660a', '660b', '660c', '660d', '660e', '660f'] : ['660a', '660b', '660c', '660d', '660e']
+                    m_2022 ? ['660a', '660b', '660c', '660d', '660e', '660f'] : ['660a', '660b', '660c', '660d', '660e', '660f']
                 )}
                 <div className="row">
                     <div className="col-12">

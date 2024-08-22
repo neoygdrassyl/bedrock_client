@@ -39,6 +39,7 @@ import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
 import SUBMIT_X_FUN from '../submit/submit_x_fun.component';
 import PQRS_MANAGE_COMPONENT from './pqrs_manage.view';
 import { ACESS_EDIT } from './access_edit';
+import { MDBCollapse } from 'mdbreact';
 
 // JSONS
 //const momentHolydays = require('../../components/jsons/holydaysmoment.json')
@@ -95,6 +96,7 @@ class PQRSADMIN extends Component {
             filterreply2: false,
 
             pending: [],
+            pending_open: false,
         };
     }
     componentDidMount() {
@@ -541,18 +543,32 @@ class PQRSADMIN extends Component {
         const PENDING_COMPONENT = () => (
             <div className="col-lg-11 col-md-12">
                 <MDBTypography note noteColor="warning">
+
                     <div className="row">
                         <div className="col-10">
                             <label className="fw-bold">PQRS PENDIENTES POR VENTANILLA ÚNICA: </label>
                         </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-10">
-                            <ul>
-                                {this.state.pending.map((i) => <li>{i.id_pending}</li>)}
-                            </ul>
+                        <div className="col text-end">
+                            <MDBTooltip title='Ver Listado' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
+                                <MDBBtn
+                                    color="info"
+                                    size="sm"
+                                    onClick={() => this.setState({ pending_open: !this.state.pending_open })}
+                                    className="px-2"
+                                > <i class="fas fa-info-circle fa-2x"></i>
+                                </MDBBtn>
+                            </MDBTooltip>
                         </div>
                     </div>
+                    <MDBCollapse id='pending_list' isOpen={this.state.pending_open}>
+                        <div className="row">
+                            <div className="col-10">
+                                <ul>
+                                    {this.state.pending.map((i) => <li>{i.id_pending}</li>)}
+                                </ul>
+                            </div>
+                        </div>
+                    </MDBCollapse>
                 </MDBTypography >
             </div >
         )
