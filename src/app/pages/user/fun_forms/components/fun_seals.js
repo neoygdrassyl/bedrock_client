@@ -221,6 +221,8 @@ class FUN_SEAL extends Component {
             // DATA FROM THE PARENT
             let id_request =document.getElementById("seal_1").value
             formData.set('id_request', id_request);
+            let fun_id = currentItem.id_public
+            formData.set('fun_id', fun_id);
             let mode = document.getElementById("seal_2").value
             formData.set('mode', mode);
             let date = document.getElementById("seal_5").value

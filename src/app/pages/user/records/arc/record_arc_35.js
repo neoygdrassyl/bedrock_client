@@ -555,7 +555,7 @@ class RECORD_ARC_35 extends Component {
                                 <h5>Carga (3.50*7.00)</h5>
                             </div>
                             <div className="col-2 px-0">
-                                <h5>Motos (1.50*7.00)</h5>
+                                <h5>Motos (2.00*7.00)</h5>
                             </div>
                             <div className="col-2 px-0">
                                 <h5>Bicicletas (0.50*2.50)</h5>
@@ -633,7 +633,7 @@ class RECORD_ARC_35 extends Component {
                                 <h5>Carga (3.50*7.00)</h5>
                             </div>
                             <div className="col-2 px-0">
-                                <h5>Motos (1.50*7.00)</h5>
+                                <h5>Motos (2.00*7.00)</h5>
                             </div>
                             <div className="col-2 px-0">
                                 <h5>Bicicletas (0.50*2.50)</h5>
@@ -739,7 +739,7 @@ class RECORD_ARC_35 extends Component {
                     cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 3)}</label>
                 },
                 {
-                    name: <label>Motos (1.50*7.00)</label>,
+                    name: <label>Motos (2.00*7.00)</label>,
                     center: true,
                     compact: true,
                     minWidth: '50px',
@@ -834,7 +834,7 @@ class RECORD_ARC_35 extends Component {
                                 <label className="fw-bold">Carga (3.50*7.00)</label>
                             </div>
                             <div className="col p-1 text-center">
-                                <label className="fw-bold">Motos (1.50*7.00)</label>
+                                <label className="fw-bold">Motos (2.00*7.00)</label>
                             </div>
                             <div className="col p-1 text-center">
                                 <label className="fw-bold">Bicicletas (0.50*2.50)</label>
