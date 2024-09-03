@@ -24,7 +24,7 @@ class Dashboard extends Component {
                     </MDBBreadcrumb>
 
                     <div className="row d-flex justify-content-center">
-                        <div className="col-6 text-end">
+                        <div className="col-4 text-end">
                             {this.props.theme == 'light'
                                 ? <img src={LOGO_LIGHT_THEME} class="d-block w-100" alt="..." />
                                 : <img src={LOGO_DARK_THEME} class="d-block w-100" alt="..." />}
@@ -37,36 +37,41 @@ class Dashboard extends Component {
                         <h1 className="text-center my-4">Panel de Control</h1>
                         <hr />
                         <h2 className="text-start my-4">Módulos de Trabajo</h2>
-                        <div className="row py-3">
+                        <div className="d-flex justify-content-around py-3">
                             <MDBCol className="px-2">
                                 <DashBoardCard title="Buzon de Mensajes" image="fas fa-envelope-open-text fa-3x" link={"/mail"} imageColor=" Crimson" />
 
                             </MDBCol>
-                            <MDBCol  className="px-2">
+                            <MDBCol className="px-2">
                                 <DashBoardCard title="Calendario de Citas" image="fas fa-calendar-alt fa-3x" link={"/appointments"} imageColor=" MediumSeaGreen" />
+
                             </MDBCol>
+
                             <MDBCol className="px-2">
                                 <DashBoardCard title="Ventanilla Única" image="fas fa-file-import fa-3x" link={"/submit"} imageColor=" Khaki" />
                             </MDBCol>
-                            <MDBCol  className="px-2">
+                            <MDBCol className="px-2">
                                 <DashBoardCard title="Publicaciones" image="fas fa-newspaper fa-3x" link={"/publish"} imageColor=" LightSalmon" />
                             </MDBCol>
                             <MDBCol className="px-2">
                                 <DashBoardCard title="Peticiones PQRS" image="fas fa-file-invoice fa-3x" link={"/pqrsadmin"} imageColor=" MediumPurple" />
                             </MDBCol>
                         </div>
-                        <div className="row py-3">
+                        <div className="d-flex justify-content-around py-3">
+
                             <MDBCol className="px-2">
                                 <DashBoardCard title="Nomenclaturas" image="fas fa-signature fa-3x" link={"/nomenclature"} imageColor=" Plum" />
+
                             </MDBCol>
-                            <MDBCol  className="px-2">
+
+                            <MDBCol className="px-2">
                                 <DashBoardCard title="Archivo" image="fas fa-folder-open fa-3x" link={"/archive"} imageColor=" LightSeaGreen" />
 
                             </MDBCol>
                             <MDBCol className="px-2">
                                 <DashBoardCard title="Radicar Licencias" image="fas fa-file-alt fa-3x" link={"/fun"} imageColor=" DodgerBlue" />
                             </MDBCol>
-                            <MDBCol  className="px-2">
+                            <MDBCol className="px-2">
                                 <DashBoardCard title="Gestionar Licencias" image="fas fa-folder fa-3x" link={"/funmanage"} imageColor=" DodgerBlue" />
                             </MDBCol>
                             <MDBCol className="px-2">
@@ -81,7 +86,7 @@ class Dashboard extends Component {
 
                         <hr />
                         <h2 className="text-start my-4">Utilidades y Documentación</h2>
-                        <div className="row py-3">
+                        <div className="d-flex justify-content-around py-3">
                             <MDBCol className="px-3">
                                 <DashBoardCard title="Documentos" image="far fa-file-alt fa-3x" link={"/osha"} imageColor=" Crimson" />
                             </MDBCol>
@@ -91,6 +96,8 @@ class Dashboard extends Component {
                             <MDBCol className="px-3">
                                 <DashBoardCard title="Diccionario de Consecutivos" image="fas fa-book fa-3x" link={"/dictionary"} imageColor=" darkgrey" />
                             </MDBCol>
+
+
                             <MDBCol className="px-3">
                                 <DashBoardCard title="Manual de Usuario" image="fas fa-atlas fa-3x" link={"/guide_user"} imageColor=" Brown" />
                             </MDBCol>
@@ -98,9 +105,9 @@ class Dashboard extends Component {
                                 <DashBoardCard title="Base de Datos Profesionales" image="fas fa-hard-hat fa-3x" link={"/profesionals"} imageColor=" Black" />
                             </MDBCol>
                         </div>
-                        <div className="d-flex justify-content-around py-3"
+                        <div className="d-flex justify-content-center py-3"
                             lassName="px-3">
-                            <MDBCol className="px-3">
+                            <MDBCol className="px-3 d-flex justify-content-center">
                                 <DashBoardCard title="Historial Profesionales" image="fas fa-address-book fa-4x" link={"/certs"} imageColor=" MediumSeaGreen" />
                             </MDBCol>
                         </div>
