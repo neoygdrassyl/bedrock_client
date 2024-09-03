@@ -17,6 +17,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
         this.state = {
             load: false,
             curatedList: [],
+            vrsRelated: []
         };
     }
     componentDidMount() {
@@ -54,6 +55,8 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
     retrieveItem() {
         SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
             this.setCuratedList(response.data)
+            this.setState({ vrsRelated: response.data })
+
         })
     }
     setCuratedList(List) {
@@ -110,6 +113,9 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     });
                 });
 
+        }
+        let _GET_ALL_VRS_RELATED = () => {
+            return (this.state.vrsRelated)
         }
         let _SET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -302,13 +308,27 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                         <input type="text" class="form-control mb-3" id="geng_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
+
                     <div className="col">
-                        <label className="mt-1">5.4 {infoCud.serials.end} Carta LyDF</label>
+                        <label className="mt-1">5.4.1 {infoCud.serials.end} Carta LyDF</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="geng_cub_ldf"
                                 defaultValue={_GET_CHILD_LAW().cub_ldf ?? ''} />
                             {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
                                 : ''}
+                        </div>
+                        <div className="col">
+                            <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
+                            <div class="input-group">
+                                <select class="form-select" defaultValue={""}>
+                                    <option value=''>Seleccione una opción</option>
+                                    {this.state.vrsRelated.map((value, key) => (
+                                        <option key={value.id} value={value.title}>
+                                            {value.id_public}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -350,7 +370,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 </div>
 
                 <div className="row mb-3">
-                <div className="col">
+                    <div className="col">
                         <label>5.10 Dirección Predio</label>
                         <input type="text" class="form-control mb-3" id="geng_address_2"
                             defaultValue={_JSON.address_2 ?? _CHILD_2.item_211} />
@@ -520,7 +540,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             let type = document.getElementById("geng_type").value;
             formData.set('type', type);
 
-            formData.set('type_not',  document.getElementById("type_not").value);
+            formData.set('type_not', document.getElementById("type_not").value);
 
             var _CHILD = currentItem.fun_cs;
             var _CURRENT_VERSION = currentItem.version - 1;
