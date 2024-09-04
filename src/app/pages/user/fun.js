@@ -1262,7 +1262,8 @@ class FUN extends Component {
         }
 
         return (
-            <div className="Publish container">
+            
+            <div className="Publish container-fluid p-5">
                 <div className="row my-4 d-flex justify-content-center">
                     <MDBBreadcrumb className="mx-5">
                         <MDBBreadcrumbItem>
@@ -1287,82 +1288,83 @@ class FUN extends Component {
                     <FUN_WORKER_ASIGN translation={translation} globals={globals}
                         type={"eng"}
                         openModal={this.openModal} />
+                    <div style={{ paddingLeft: '175px', paddingRight: '175px' }}>
+                        <MDBRow>
+                            <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
+                            <MDBCol md="6">
+                                <MDBCard className="bg-card mb-3">
+                                    <MDBCardBody>
+                                        <MDBCardTitle className="text-center"> <h4>GENERAR NUEVA RADICACIÓN</h4></MDBCardTitle>
+                                        <form onSubmit={handleSubmit} id="app-form">
 
-                    <MDBRow>
-                        <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
-                        <MDBCol md="6">
-                            <MDBCard className="bg-card mb-3">
-                                <MDBCardBody>
-                                    <MDBCardTitle className="text-center"> <h4>GENERAR NUEVA RADICACIÓN</h4></MDBCardTitle>
-                                    <form onSubmit={handleSubmit} id="app-form">
-
-                                        <div className='row'>
-                                            <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-calendar-alt"></i>
-                                                    </span>
-                                                    <input type="date" class="form-control" id="f_01" required />
+                                            <div className='row'>
+                                                <div className='col'>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-info text-white">
+                                                            <i class="far fa-calendar-alt"></i>
+                                                        </span>
+                                                        <input type="date" class="form-control" id="f_01" required />
+                                                    </div>
+                                                </div>
+                                                <div className='col-7'>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-info text-white">
+                                                            <i class="fas fa-hashtag"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" defaultValue={nomens} id="f_02" required />
+                                                        <MDBBtn class="btn btn-sm btn-info shadow-none m-1"
+                                                            onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</MDBBtn>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className='col-7'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="fas fa-hashtag"></i>
-                                                    </span>
-                                                    <input type="text" class="form-control" defaultValue={nomens} id="f_02" required />
-                                                    <MDBBtn class="btn btn-sm btn-info shadow-none m-1"
-                                                        onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</MDBBtn>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div className="text-center">
-                                            <button className="btn btn btn-success my-1"><i class="fas fa-folder-plus"></i> CREAR </button>
-                                        </div>
-                                    </form>
-                                </MDBCardBody>
-                            </MDBCard>
-                        </MDBCol>
-                        <MDBCol md="6">
-                            <MDBCard className="bg-card mb-3">
-                                <MDBCardBody>
-                                    <MDBCardTitle className="text-center"> <h4>CONSULTAR SOLICITUD</h4></MDBCardTitle>
-                                    <form onSubmit={search} id="app-form">
-                                        <div className='row'>
-                                            <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="fas fa-info-circle"></i>
-                                                    </span>
-                                                    <select class="form-select" id="search_0" required>
-                                                        <option value="1">Numero de Radicado</option>
-                                                        <option value="2">Numero de Matricula Inmobiliaria</option>
-                                                        <option value="3">Numero de Indentificacion Predial/Catastral</option>
-                                                        <option value="4">Direccion Actual</option>
-                                                        <option value="5">C.C o NIT</option>
-                                                        <option value="6">Nombre</option>
-                                                    </select>
+                                            <div className="text-center">
+                                                <button className="btn btn btn-success my-1"><i class="fas fa-folder-plus"></i> CREAR </button>
+                                            </div>
+                                        </form>
+                                    </MDBCardBody>
+                                </MDBCard>
+                            </MDBCol>
+                            <MDBCol md="6">
+                                <MDBCard className="bg-card mb-3">
+                                    <MDBCardBody>
+                                        <MDBCardTitle className="text-center"> <h4>CONSULTAR SOLICITUD</h4></MDBCardTitle>
+                                        <form onSubmit={search} id="app-form">
+                                            <div className='row'>
+                                                <div className='col'>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-info text-white">
+                                                            <i class="fas fa-info-circle"></i>
+                                                        </span>
+                                                        <select class="form-select" id="search_0" required>
+                                                            <option value="1">Numero de Radicado</option>
+                                                            <option value="2">Numero de Matricula Inmobiliaria</option>
+                                                            <option value="3">Numero de Indentificacion Predial/Catastral</option>
+                                                            <option value="4">Direccion Actual</option>
+                                                            <option value="5">C.C o NIT</option>
+                                                            <option value="6">Nombre</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className='col'>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-info text-white">
+                                                            <i class="far fa-comment-dots"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" id="search_1" />
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-comment-dots"></i>
-                                                    </span>
-                                                    <input type="text" class="form-control" id="search_1" />
-                                                </div>
+                                            <div className="text-center">
+                                                <button className="btn btn-secondary mt-1"><i class="fas fa-search-plus"></i> CONSULTAR </button>
                                             </div>
-                                        </div>
-                                        <div className="text-center">
-                                            <button className="btn btn-secondary mt-1"><i class="fas fa-search-plus"></i> CONSULTAR </button>
-                                        </div>
-                                    </form>
-                                </MDBCardBody>
-                            </MDBCard>
-                        </MDBCol>
-                    </MDBRow>
-
+                                        </form>
+                                    </MDBCardBody>
+                                </MDBCard>
+                            </MDBCol>
+                        
+                        </MDBRow>
+                    </div>
                     {list_search.length > 0 ?
                         <div className="row d-flex justify-content-center">
                             <div className="col-12">
@@ -1384,7 +1386,6 @@ class FUN extends Component {
                                     noHeader
                                     onRowClicked={(e) => this.setState({ selectedRow: e.id })}
                                     dense
-
                                     progressPending={!isLoaded}
                                     progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
                                 />
