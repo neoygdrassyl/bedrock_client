@@ -543,11 +543,11 @@ class RECORD_REVIEW extends Component {
 
             return <>
                 <div className="row">
-                    <div className="col-4">
+                    <div className="col-2">
                         <br />
                         <label className='fw-bold'>Fecha limite: </label> {limit_1} {is_Outdate_1 < 0 ?<label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
                     </div>
-                    <div className="col-4">
+                    <div className="col-5">
                         <label>Fecha del acta de observaciones</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
@@ -573,11 +573,11 @@ class RECORD_REVIEW extends Component {
 
                 </div>
                 <div className="row">
-                    <div className="col-4">
+                    <div className="col-2">
                         <br />
                         <label className='fw-bold'>Fecha limite: </label>  {limit_2} {is_Outdate_2 < 0 ?<label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
                     </div>
-                    <div className="col-4">
+                    <div className="col-5">
                         <label>Fecha del acta de Correcciones</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
@@ -1039,16 +1039,24 @@ class RECORD_REVIEW extends Component {
         let _BTN_GEN_ID = () => {
             return <>
                 <div className='row'>
-                    <div className="col-4">
+                    <div className="col-2">
                     </div>
-                    <div className="col-4">
-                        <label className="mt-1">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
+                    <div className="col-5">
+                        <label className="mt-2">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="rev_cub"
                                 defaultValue={currentRecord.id_public ?? ''} />
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
                         </div>
                     </div>
+                    <div className="col-4" >
+                        <label className="mt-2">{infoCud.serials.start}</label>
+                        <div class="input-group ">
+                            <select class="form-select" defaultValue={""}>
+                                <option value=''>Seleccione una opción</option>
+                        </select>
+                    </div>
+                </div>
                 </div>
             </>
         }

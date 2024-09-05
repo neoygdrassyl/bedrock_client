@@ -316,9 +316,17 @@ class EXP_1 extends Component {
                                     <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
                                 </div>
                             </div>
+                            <div className="col-3" >
+                            <label className="mt-1">{infoCud.serials.start}</label>
+                            <div class="input-group ">
+                                <select class="form-select" defaultValue={""}>
+                                    <option value=''>Seleccione una opción</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
             </> : null}
                
 
@@ -445,6 +453,14 @@ class EXP_1 extends Component {
                                             <input type="text" class="form-control" id="expedition_11"
                                                 defaultValue={currentRecord.cub2 ?? ''} />
                                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
+                                        </div>
+                                    </div>
+                                    <div className="col-4" >
+                                        <label className="mt-1">{infoCud.serials.start}</label>
+                                        <div class="input-group ">
+                                            <select class="form-select" defaultValue={""}>
+                                                <option value=''>Seleccione una opción</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div className="col-3">
@@ -639,14 +655,14 @@ class EXP_1 extends Component {
         }
         return (
             <div className="record_ph_gen container">
-                <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="nav_expedition_1">
+                <legend className="my-2 px-2 text-uppercase Collapsible text-center" id="nav_expedition_1">
                     <label className="app-p lead fw-normal">INFORMACION GENERAL</label>
                 </legend>
                 <form id="form_expedition" onSubmit={save_exp}>
                     {_COMPONENT_GENERAL()}
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3"><i class="far fa-check-square"></i>GUARDAR CAMBIOS </button>
+                            <button className="btn btn-success my-3"><i class="far fa-check-square"></i> GUARDAR CAMBIOS </button>
                         </div>
                     </div>
                 </form>

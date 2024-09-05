@@ -183,6 +183,14 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                                 defaultValue={currentItem.id_public} />
                         </div>
                     </div>
+                    <div className="col-6 ms-auto" >
+                        <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
+                        <div class="input-group ">
+                            <select class="form-select" defaultValue={""}>
+                                <option value=''>Seleccione una opción</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">

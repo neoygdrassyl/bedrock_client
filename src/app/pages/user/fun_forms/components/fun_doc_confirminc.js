@@ -30,6 +30,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             m_urb: [],
             m_sub: [],
             m_lic: [],
+            vrsRelated: []
         }
         if (_CHILD) {
             if (_CHILD[_CURRENT_VERSION] != null) {
@@ -205,8 +206,17 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                             {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
                                 : ''}
                         </div>
+                        <div className="col">
+                            <label className="mt-1">5.2.1 {infoCud.serials.start}</label>
+                            <div class="input-group">
+                                <select class="form-select" defaultValue={""}>
+                                    <option value=''>Seleccione una opción</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.4 Ciudad</label>
@@ -222,7 +232,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         <label>5.6. Fecha Limite</label>
                         <input type="date" class="form-control mb-3" max='2100-01-01' id="geni_date_limit" required
                             defaultValue={_JSON.date_limit || dateParser_finalDate(_GET_CLOCK_STATE(3).date_start, 30)} />
-                    </div>
+                </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
