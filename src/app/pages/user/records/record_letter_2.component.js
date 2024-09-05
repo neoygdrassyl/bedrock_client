@@ -153,6 +153,14 @@ class RECORD_DOC_LETTER_2 extends Component {
                             {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</button>
                                 : ''}
                         </div>
+                        <div className="col" >
+                            <label className="mt-1">{infoCud.serials.start}</label>
+                            <div class="input-group ">
+                                <select class="form-select" defaultValue={""}>
+                                    <option value=''>Seleccione una opción</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="row mb-3">

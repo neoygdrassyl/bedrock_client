@@ -316,7 +316,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                                 defaultValue={_GET_CHILD_LAW().cub_ldf ?? ''} />
                             {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
                                 : ''}
-                        </div>
+                    </div>
                         <div className="col">
                             <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
                             <div class="input-group">

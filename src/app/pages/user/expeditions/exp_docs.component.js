@@ -1505,6 +1505,14 @@ class EXP_DOCS extends Component {
                                 defaultValue={currentRecord.cub3 || ''} />
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
                         </div>
+                        <div className="col" >
+                            <label className="mt-1">{infoCud.serials.start}</label>
+                            <div class="input-group ">
+                                <select class="form-select" defaultValue={""}>
+                                    <option value=''>Seleccione una opción</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="row mb-3">
