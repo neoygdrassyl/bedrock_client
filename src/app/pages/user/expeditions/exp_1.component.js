@@ -442,12 +442,12 @@ class EXP_1 extends Component {
                             <div class="card-body text-dark">
 
                                 <div className="row">
-                                    <div className="col-3">
+                                    <div className="col">
                                         <label className="mt-1">Fecha</label>
                                         <input type="date" class="form-control" id="expedition_10" max="2100-01-01"
                                             defaultValue={currentRecord.date2 ?? ''} />
                                     </div>
-                                    <div className="col-3">
+                                    <div className="col">
                                         <label className="mt-1">{infoCud.serials.end}</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="expedition_11"
@@ -455,7 +455,7 @@ class EXP_1 extends Component {
                                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
                                         </div>
                                     </div>
-                                    <div className="col-4" >
+                                    <div className="col" >
                                         <label className="mt-1">{infoCud.serials.start}</label>
                                         <div class="input-group ">
                                             <select class="form-select" defaultValue={""}>
@@ -464,7 +464,7 @@ class EXP_1 extends Component {
                                         </div>
                                     </div>
                                     <div className="col-3">
-                                        <label className="mt-1">Factura #</label>
+                                        <label className="mt-2">Factura #</label>
                                         <input type="text" class="form-control" id="expedition_20"
                                             defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_3 ?? ''} />
                                     </div>
@@ -654,7 +654,7 @@ class EXP_1 extends Component {
                 });
         }
         return (
-            <div className="record_ph_gen container">
+            <div className="record_ph_gen container p-3">
                 <legend className="my-2 px-2 text-uppercase Collapsible text-center" id="nav_expedition_1">
                     <label className="app-p lead fw-normal">INFORMACION GENERAL</label>
                 </legend>

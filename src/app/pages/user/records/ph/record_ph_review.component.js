@@ -353,12 +353,21 @@ class RECORD_PH_REVIEW extends Component {
                         <input type="text" class="form-control mb-3" id="phnot_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
+                    <div></div>
                     <div className="col">
                         <label className="mt-1"> {infoCud.serials.end} Carta Citación</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="phnot_cub"
                                 defaultValue={currentRecord.cub || ''} />
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('phnot_cub')}>GENERAR</button>
+                        </div>
+                    </div>
+                    <div className="col" >
+                        <label className="mt-1">{infoCud.serials.start}</label>
+                        <div class="input-group ">
+                            <select class="form-select" defaultValue={""}>
+                                <option value=''>Seleccione una opción</option>
+                            </select>
                         </div>
                     </div>
                 </div>

@@ -308,7 +308,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                         <input type="text" class="form-control mb-3" id="geng_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
-
+                    <div></div>
                     <div className="col">
                         <label className="mt-1">5.4.1 {infoCud.serials.end} Carta LyDF</label>
                         <div class="input-group">
@@ -316,19 +316,19 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                                 defaultValue={_GET_CHILD_LAW().cub_ldf ?? ''} />
                             {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
                                 : ''}
+                        </div>
                     </div>
-                        <div className="col">
-                            <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
-                            <div class="input-group">
-                                <select class="form-select" defaultValue={""}>
-                                    <option value=''>Seleccione una opción</option>
-                                    {this.state.vrsRelated.map((value, key) => (
-                                        <option key={value.id} value={value.title}>
-                                            {value.id_public}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                    <div className="col">
+                        <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
+                        <div class="input-group">
+                            <select class="form-select" defaultValue={""}>
+                                <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.title}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                 </div>

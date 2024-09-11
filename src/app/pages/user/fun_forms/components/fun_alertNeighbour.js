@@ -157,33 +157,34 @@ class FUN_ALERT_NEIGHBOUR extends Component {
 
             return <>
                 <div className="row mb-3">
-                    <div className="col-3">
+                    <div className="col">
                         <label>2.1.1. Fecha de documento</label>
                         <input type="date" class="form-control" max='2100-01-01' id="gen_alert_date" required
                             defaultValue={moment().format('YYYY-MM-DD')} />
                     </div>
-                    <div className="col-3">
+                    <div className="col">
                         <label>2.1.2 Fecha de Pago</label>
                         <div class="input-group my-1">
                             <input type="date" class="form-control" max='2100-01-01' id="gen_pay_date"
                                 defaultValue={_GET_CLOCK_STATE(3).date_start} />
                         </div>
                     </div>
-                    <div className="col-3">
+                    <div className="col">
                         <label>2.1.3 Consecutivo de Salida</label>
                         <div class="input-group my-1">
                             <input type="text" class="form-control" id="gen_alert_id_cub" disabled
                                 defaultValue={_GET_CHILD_3_IDCUB_DEFAULT()} />
                         </div>
                     </div>
-                    <div className="col-3">
+                    <div></div>
+                    <div className="col">
                         <label>2.1.4 Consecutivo Radicado</label>
                         <div class="input-group my-1">
                             <input type="text" class="form-control" id="gen_alert_id_public" disabled
                                 defaultValue={currentItem.id_public} />
                         </div>
                     </div>
-                    <div className="col-6 ms-auto" >
+                    <div className="col ms-auto" >
                         <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
                         <div class="input-group ">
                             <select class="form-select" defaultValue={""}>
