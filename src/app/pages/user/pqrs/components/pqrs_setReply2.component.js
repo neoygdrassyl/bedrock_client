@@ -274,7 +274,7 @@ export const PQRS_SET_REPLY1 = (props) => {
             <form onSubmit={replyPQRS} id="app-formReply">
 
                 <div className="row">
-                    <div className="col-6">
+                    <div className="col-5">
                         <label className='text-start'>Consecutivo de Salida</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
@@ -285,10 +285,18 @@ export const PQRS_SET_REPLY1 = (props) => {
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                         </div>
                     </div>
+                    <div className="col-4">
+                        <label className="mt-0">{infoCud.serials.start}</label>
+                        <div class="input-group ">
+                            <select class="form-select" defaultValue={""}>
+                                <option value=''>Seleccione una opción</option>
+                            </select>
+                        </div>
+                    </div>
 
-                    <div className="col-6">
+                    <div className="col-3">
                         <label>Fecha creacion documento</label>
-                        <div class="input-group my-1">
+                        <div class="input-group my-1 ">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-hashtag"></i>
                             </span>

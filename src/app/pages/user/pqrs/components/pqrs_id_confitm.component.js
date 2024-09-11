@@ -86,14 +86,26 @@ export const PQRS_ID_CONFIRM = (props) => {
     }
 
     return (
-        <div class="input-group my-1">
-            <span class="input-group-text bg-info text-white">
-                <i class="fas fa-hashtag"></i>
-            </span>
-            <input type="text" class="form-control" defaultValue={currentItem.id_confirm}
-                id="pqrs_master_id_confirm" require />
-            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
-            <button type="button" class="btn btn-success shadow-none" onClick={() => UPDATE_PQRS()}>GUARDAR</button>
+        <div className="text-center">
+            <label className="mt-0 center-text"> {infoCud.serials.end}</label>
+            <div class="input-group my-1">
+                <span class="input-group-text bg-info text-white">
+                    <i class="fas fa-hashtag"></i>
+                </span>
+                <input type="text" class="form-control" defaultValue={currentItem.id_confirm}
+                    id="pqrs_master_id_confirm" require />
+                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                <button type="button" class="btn btn-success shadow-none" onClick={() => UPDATE_PQRS()}>GUARDAR</button>
+            </div>
+            <div>
+                <label className="mt-1">{infoCud.serials.start}</label>
+                <div class="input-group ">
+                    <select class="form-select" defaultValue={""}>
+                        <option value=''>Seleccione una opción</option>
+                    </select>
+                </div>
+            </div>
         </div>
+        
     )
 }

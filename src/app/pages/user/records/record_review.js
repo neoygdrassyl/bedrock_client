@@ -1050,7 +1050,7 @@ class RECORD_REVIEW extends Component {
                         </div>
                     </div>
                     <div className="col-4" >
-                        <label className="mt-2">{infoCud.serials.start}</label>
+                        <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group ">
                             <select class="form-select" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>

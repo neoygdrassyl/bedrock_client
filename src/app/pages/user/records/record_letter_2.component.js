@@ -145,6 +145,7 @@ class RECORD_DOC_LETTER_2 extends Component {
                         <input type="text" class="form-control mb-3" id="gena2_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
+                    <div></div>
                     <div className="col">
                         <label className="mt-1">{infoCud.serials.end} Carta Acta de Obs.</label>
                         <div class="input-group">
@@ -153,13 +154,13 @@ class RECORD_DOC_LETTER_2 extends Component {
                             {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</button>
                                 : ''}
                         </div>
-                        <div className="col" >
-                            <label className="mt-1">{infoCud.serials.start}</label>
-                            <div class="input-group ">
-                                <select class="form-select" defaultValue={""}>
-                                    <option value=''>Seleccione una opción</option>
-                                </select>
-                            </div>
+                    </div>
+                    <div className="col" >
+                        <label className="mt-1">{infoCud.serials.start}</label>
+                        <div class="input-group ">
+                            <select class="form-select" defaultValue={""}>
+                                <option value=''>Seleccione una opción</option>
+                            </select>
                         </div>
                     </div>
                 </div>

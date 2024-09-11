@@ -1498,6 +1498,7 @@ class EXP_DOCS extends Component {
                         <input type="text" class="form-control mb-3" id="exodfb_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
+                    <div></div>
                     <div className="col">
                         <label className="mt-1"> {infoCud.serials.end} Carta Citación</label>
                         <div class="input-group">
@@ -1505,13 +1506,13 @@ class EXP_DOCS extends Component {
                                 defaultValue={currentRecord.cub3 || ''} />
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
                         </div>
-                        <div className="col" >
-                            <label className="mt-1">{infoCud.serials.start}</label>
-                            <div class="input-group ">
-                                <select class="form-select" defaultValue={""}>
-                                    <option value=''>Seleccione una opción</option>
-                                </select>
-                            </div>
+                    </div>
+                    <div className="col" >
+                        <label className="mt-1">{infoCud.serials.start}</label>
+                        <div class="input-group ">
+                            <select class="form-select" defaultValue={""}>
+                                <option value=''>Seleccione una opción</option>
+                            </select>
                         </div>
                     </div>
                 </div>

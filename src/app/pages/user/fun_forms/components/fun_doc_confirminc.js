@@ -198,13 +198,15 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         <input type="text" class="form-control mb-3" id="geni_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
-                    <div className="col">
-                        <label className="mt-1">5.3 {infoCud.serials.end} Carta Incompleto</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geng_cub_inc"
-                                defaultValue={_GET_CHILD_LAW().cub_inc || ''} />
-                            {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
-                                : ''}
+                    
+                        <div className="col">
+                            <label className="mt-1">5.3 {infoCud.serials.end} Carta Incompleto</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="geng_cub_inc"
+                                    defaultValue={_GET_CHILD_LAW().cub_inc || ''} />
+                                {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
+                                    : ''}
+                            </div>
                         </div>
                         <div className="col">
                             <label className="mt-1">5.2.1 {infoCud.serials.start}</label>
@@ -214,7 +216,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                                 </select>
                             </div>
                         </div>
-                    </div>
+
                 </div>
 
                 <div className="row mb-3">

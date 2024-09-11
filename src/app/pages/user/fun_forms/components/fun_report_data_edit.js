@@ -86,10 +86,10 @@ class FUN_REPORT_DATA_EDIT extends Component {
             var _CHILD = _GET_LAW_REPORT_DATA();
             return <>
                 <div className="row">
-                    <div className="col-9 p-1">
+                    <div className="col-8 p-3 ">
                         <label>Curaduría notifico reconocimiento a la entidad interesada</label>
                     </div>
-                    <div className="col-3 p-1">
+                    <div className="col-4 p-2">
                         <select class="form-select" defaultValue={_CHILD[0]} id="fun_report_data_1">
                             <option value="0">SIN NOTIFICAR</option>
                             <option value="1">NOTIFICADO</option>
@@ -97,10 +97,10 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-9 p-1">
+                    <div className="col-8 p-3">
                         <label>Identificación del oficio (Consecutivo {infoCud.serials.end})</label>
                     </div>
-                    <div className="col-3 p-1">
+                    <div className="col-4 p-2">
                         <div class="input-group my-1">
                             <input type="text" class="form-control" id="fun_report_data_2" defaultValue={_GET_CHILD_LAW().report_cub} />
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
@@ -108,42 +108,54 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-9 p-1">
+                    <div className="col-8 p-3">
+                        <label>Documento de entrada asociado({infoCud.serials.start})</label>
+                    </div>
+                    <div className="col-4 p-2 ">
+                        <div class="input-group">
+                            <select class="form-select" defaultValue={""}>
+                                <option value=''>Seleccione una opción</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-8 p-3">
                         <label>Fecha de Radicación ante la entidad interesada</label>
                     </div>
-                    <div className="col-3 p-1">
+                    <div className="col-4 p-2">
                         <input type="date" max="2100-01-01" class="form-control" id="fun_report_data_3" defaultValue={_CHILD[2]} />
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-9 p-1">
+                    <div className="col-8 p-3">
                         <label>Respuesta entidad interesada radicación</label>
                     </div>
-                    <div className="col-3 p-1">
+                    <div className="col-4 p-2">
                         <input type="text" class="form-control" id="fun_report_data_4" defaultValue={_CHILD[3]} />
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-9 p-1">
+                    <div className="col-8 p-3">
                         <label>Fecha Limite (Fecha radicación mas 10 días hábiles)</label>
                     </div>
-                    <div className="col-3 p-1">
+                    <div className="col-4 p-2">
                         <label className="fw-bold">{dateParser(dateParser_finalDate(_CHILD[2], 10))}</label>
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-9 p-1">
+                    <div className="col-8 p-3">
                         <label>Oficio de la entidad interesada</label>
                     </div>
-                    <div className="col-3 p-1">
+                    <div className="col-4 p-2">
                         <input type="text" class="form-control" id="fun_report_data_5" defaultValue={_CHILD[5]} />
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-9 p-1">
+                    <div className="col-8 p-3">
                         <label>Documento</label>
                     </div>
-                    <div className="col-3 p-1">
+                    <div className="col-4 p-2">
                         <select class="form-select" id="fun_report_data_6" defaultValue={_CHILD[6]} >
                             <option value="-1">APORTADO FÍSICAMENTE</option>
                             <option value="0">SIN DOCUMENTO</option>
