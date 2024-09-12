@@ -7,6 +7,7 @@ class PQRS_MODULE_NAV extends Component {
     }
     render() {
         const { translation, currentItem, FROM } = this.props;
+        const isAdmin = window.user.name_short === "Luis Parra"
 
         let _GET_WORKER_VAR = (worker_id) => {
             let _WORKERS = currentItem.pqrs_workers;
@@ -95,7 +96,7 @@ class PQRS_MODULE_NAV extends Component {
                                     }
                                     {currentItem.status == 0
                                         ? <>
-                                            {window.user.roleId == 5 || window.user.roleId == 1
+                                            {window.user.roleId == 5 || window.user.roleId == 1  || isAdmin
                                                 ? <>
                                                     {FROM == "manage"
                                                         ? <div className="row mx-2 mb-1">
