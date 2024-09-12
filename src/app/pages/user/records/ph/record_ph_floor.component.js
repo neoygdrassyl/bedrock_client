@@ -274,11 +274,11 @@ class RECORD_PH_FLOOR extends Component {
                 },
                 {
                     name: <label className="text-center">Total Común Construida</label>,
-                    selector: row => Number((row.common).split(';')[2]) + Number((row.common).split(';')[0]),
+                    selector: row => (Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])).toFixed(2),
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label className="fw-bold text-secondary">{Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])}</label>
+                    cell: row => <label className="fw-bold text-secondary">{(Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])).toFixed(2) }</label>
                 },
                 {
                     name: <label className="text-center">Area Total Visto Bueno</label>,
