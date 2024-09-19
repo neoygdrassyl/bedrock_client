@@ -8,11 +8,15 @@ import { infoCud } from '../../../components/jsons/vars';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import { MDBBtn } from 'mdb-react-ui-kit';
 import RecordReviewService from '../../../services/record_review.service';
+import SubmitService from '../../../services/submit.service'
 
 const MySwal = withReactContent(Swal);
 class RECORD_DOC_LETTER_2 extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            vrsRelated: []
+        };
     }
     componentDidUpdate(prevProps) {
         // Uso tipico (no olvides de comparar las props):
@@ -20,6 +24,15 @@ class RECORD_DOC_LETTER_2 extends Component {
             var _CHILD_1 = this._SET_CHILD_1_FOREIGNER();
             document.getElementById('gena_type').value = formsParser1(_CHILD_1)
         }
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
+        console.log(this.props)
     }
     _SET_CHILD_1_FOREIGNER = () => {
         var _CHILD = this.props.currentItem.fun_1s;
@@ -160,6 +173,11 @@ class RECORD_DOC_LETTER_2 extends Component {
                         <div class="input-group ">
                             <select class="form-select" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>

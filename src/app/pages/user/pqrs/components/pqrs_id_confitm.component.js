@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import moment from 'moment';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
+import SubmitService from '../../../../services/submit.service'
+import submitService from '../../../../services/submit.service';
 //const moment = require('moment');
 
 
 const MySwal = withReactContent(Swal);
 export const PQRS_ID_CONFIRM = (props) => {
+
     const { currentItem, swaMsg } = props;
     let _GET_LAST_ID = () => {
         let new_id = "";
@@ -45,7 +48,18 @@ export const PQRS_ID_CONFIRM = (props) => {
             });
 
     }
-
+    
+    const [vrsRelated, setVrsRelated] = useState([])
+    useEffect(() => {
+        let _GET_ALL_VRS_RELATED = () => {
+            SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                console.log(currentItem)
+                setVrsRelated(response.data)
+            })
+        }
+        _GET_ALL_VRS_RELATED()
+    }, [])
+    
     const UPDATE_PQRS = () => {
         var form = new FormData();
 
@@ -84,6 +98,7 @@ export const PQRS_ID_CONFIRM = (props) => {
             console.log(e);
         });
     }
+    
 
     return (
         <div className="text-center">
@@ -102,6 +117,11 @@ export const PQRS_ID_CONFIRM = (props) => {
                 <div class="input-group ">
                     <select class="form-select" defaultValue={""}>
                         <option value=''>Seleccione una opción</option>
+                        {vrsRelated.map((value, key) => (
+                            <option key={value.id} value={value.id_public}>
+                                {value.id_public}
+                            </option>
+                        ))}
                     </select>
                 </div>
             </div>

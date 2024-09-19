@@ -8,11 +8,15 @@ import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { MDBBtn } from 'mdb-react-ui-kit';
 import DCO_LIS from '../../../../components/jsons/fun6DocsList.json'
+import SubmitService from '../../../../services/submit.service'
 
 const MySwal = withReactContent(Swal);
 class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            vrsRelated: []
+        }
     }
     componentDidUpdate(prevProps) {
         // Uso tipico (no olvides de comparar las props):
@@ -20,6 +24,9 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             var _CHILD_1 = this._SET_CHILD_1_FOREIGNER();
             document.getElementById('geni_type').value = formsParser1(_CHILD_1)
         }
+    }
+    componentDidMount() {
+        this.retrieveItem();
     }
     _SET_CHILD_1_FOREIGNER = () => {
         var _CHILD = this.props.currentItem.fun_1s;
@@ -42,7 +49,11 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             }
         }
         return _CHILD_VARS;
-
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
@@ -178,6 +189,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
 
             return dooc_sting;
         }
+        
         // *********************************
         let _GENDOC_COMPONENT = () => {
             var _MISSING = _SET_MISSING_FUN_R();
@@ -213,6 +225,11 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                             <div class="input-group">
                                 <select class="form-select" defaultValue={""}>
                                     <option value=''>Seleccione una opción</option>
+                                    {this.state.vrsRelated.map((value, key) => (
+                                        <option key={value.id} value={value.id_public}>
+                                            {value.id_public}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
