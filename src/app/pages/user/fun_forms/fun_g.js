@@ -1037,12 +1037,12 @@ class FUNG extends Component {
                         nomenclature={'9.'}
                     />
 
-
+{/* 
                     <FUNG_NAV
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                    />
+                    /> */}
                     <FUN_MODULE_NAV
                         translation={translation}
                         currentItem={currentItem}

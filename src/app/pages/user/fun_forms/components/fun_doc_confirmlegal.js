@@ -113,9 +113,6 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 });
 
         }
-        let _GET_ALL_VRS_RELATED = () => {
-            return (this.state.vrsRelated)
-        }
         let _SET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
             var _CURRENT_VERSION = currentVersion - 1;
@@ -323,7 +320,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                             <select class="form-select" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.title}>
+                                    <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
                                 ))}
