@@ -8,11 +8,23 @@ import { infoCud } from '../../../components/jsons/vars';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import { MDBBtn } from 'mdb-react-ui-kit';
 import RecordReviewService from '../../../services/record_review.service';
+import SubmitService from '../../../services/submit.service';
 
 const MySwal = withReactContent(Swal);
 class RECORD_DOC_LETTER extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            vrsRelated: []
+        };
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
     }
     componentDidUpdate(prevProps) {
         // Uso tipico (no olvides de comparar las props):
@@ -154,9 +166,14 @@ class RECORD_DOC_LETTER extends Component {
                     </div>
                     <div className="col  mb-auto" >
                         <label className="mt-1">{infoCud.serials.start}</label>
-                        <div class="input-group ">
+                        <div class="input-group">
                             <select class="form-select" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -203,7 +220,7 @@ class RECORD_DOC_LETTER extends Component {
         }
 
         let gen_confirmDoc = (e) => {
-          
+
             if (e) e.preventDefault();
             let formData = new FormData();
 

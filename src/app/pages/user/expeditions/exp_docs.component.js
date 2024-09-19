@@ -10,6 +10,8 @@ import Collapsible from 'react-collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import moment from 'moment';
 import EXP_RES from './exp._res.component';
+import SubmitService from '../../../services/submit.service'
+
 
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -19,7 +21,16 @@ class EXP_DOCS extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            vrsRelated: []
         };
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = this.props;
@@ -1512,6 +1523,11 @@ class EXP_DOCS extends Component {
                         <div class="input-group ">
                             <select class="form-select" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
