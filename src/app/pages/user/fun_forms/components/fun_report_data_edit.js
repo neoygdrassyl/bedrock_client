@@ -7,6 +7,7 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import FUN_REPORT_DATA_PDF from './fun_report_data_pdf.component';
 import { infoCud } from '../../../../components/jsons/vars';
 import { FUN_REPORT_DATA_JODIT } from './fun_report_data_jodit.compoent';
+import SubmitService from '../../../../services/submit.service'
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -15,13 +16,21 @@ class FUN_REPORT_DATA_EDIT extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            vrsRelated: []
         };
     }
-
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
+        console.log(this.props)
+    }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
         const { } = this.state;
-
 
         // DATA GETERS
         let _GET_CHILD_6 = () => {
@@ -113,8 +122,13 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     </div>
                     <div className="col-4 p-2 ">
                         <div class="input-group">
-                            <select class="form-select" defaultValue={""}>
+                        <select class="form-select" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.title}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>

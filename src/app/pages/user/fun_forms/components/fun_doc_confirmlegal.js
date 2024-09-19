@@ -56,7 +56,6 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
         SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
             this.setCuratedList(response.data)
             this.setState({ vrsRelated: response.data })
-
         })
     }
     setCuratedList(List) {

@@ -6,15 +6,25 @@ import moment from 'moment';
 import { formsParser1, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
+import SubmitService from '../../../../services/submit.service'
+
 
 const MySwal = withReactContent(Swal);
 class FUN_ALERT_NEIGHBOUR extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            vrsRelated: []
         };
     }
-
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
+    }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
         const { } = this.state;
@@ -189,6 +199,11 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                         <div class="input-group ">
                             <select class="form-select" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
