@@ -1030,8 +1030,8 @@ class FUN extends Component {
                 content: {
                     position: 'absolute',
                     top: '10px',
-                    left: '20%',
-                    right: '15%',
+                    left: '15%',
+                    right: '1%',
                     bottom: '10px',
                     border: '1px solid #ccc',
                     overflow: 'auto',

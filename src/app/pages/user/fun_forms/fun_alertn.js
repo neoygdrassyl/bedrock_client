@@ -1006,7 +1006,7 @@ class FUN_ALERT extends Component {
 
                         </>
                         : ""}
-                    <NAV_FUNA />
+                    {/* <NAV_FUNA /> */}
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentItem}
@@ -1029,7 +1029,7 @@ class FUN_ALERT extends Component {
         );
     }
 }
-
+/*
 const NAV_FUNA = () => {
     return (
         <div className="btn-navpqrs">
@@ -1068,5 +1068,6 @@ const NAV_FUNA = () => {
         </div>
     );
 }
+    */
 
 export default FUN_ALERT;

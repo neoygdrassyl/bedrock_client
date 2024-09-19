@@ -547,7 +547,7 @@ class FUN_DOCS extends Component {
                     </div>
 
 
-                    <FUND_NAV currentItem={currentItem} />
+                    {/* <FUND_NAV currentItem={currentItem} /> */}
                     <FUN_MODULE_NAV
                         translation={translation}
                         currentItem={currentItem}
