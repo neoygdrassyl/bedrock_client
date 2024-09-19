@@ -1037,8 +1037,8 @@ class FUNG extends Component {
                         nomenclature={'9.'}
                     />
 
-{/* 
-                    <FUNG_NAV
+
+                    {/* <FUNG_NAV
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
