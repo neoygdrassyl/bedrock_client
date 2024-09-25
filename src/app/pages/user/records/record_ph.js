@@ -406,7 +406,7 @@ class RECORD_PH extends Component {
                                         requestRefresh={this.retrieveItem} />
 
                                 </div>
-                                {NAV_FUNA(_GET_CHILD_1())}
+                                {/* {NAV_FUNA(_GET_CHILD_1())} */}
                             </> : <>
 
                                 <fieldset className="p-3">

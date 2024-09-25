@@ -800,7 +800,7 @@ class PQRSADMIN extends Component {
                 position: 'absolute',
                 top: '40px',
                 left: '15%',
-                right: '15%',
+                right: '5%',
                 bottom: '40px',
                 border: '1px solid #ccc',
                 overflow: 'auto',

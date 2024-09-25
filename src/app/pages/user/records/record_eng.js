@@ -676,7 +676,7 @@ class RECORD_ENG extends Component {
 
 
 
-                                {NAV_FUNA(currentRecord)}
+                                {/* {NAV_FUNA(currentRecord)} */}
                             </> : <>
 
                                 <fieldset className="p-3">

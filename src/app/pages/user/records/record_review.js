@@ -1937,7 +1937,7 @@ class RECORD_REVIEW extends Component {
                                         <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIMIENTO,
                                             NO SE PUEDE PROSEGUIR HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
                                 </div>
-                                {NAV_FUNA()}
+                                {/* {NAV_FUNA()} */}
                             </> : <>
 
                                 <fieldset className="p-3">
