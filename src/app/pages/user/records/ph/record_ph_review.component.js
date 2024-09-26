@@ -13,6 +13,7 @@ import Collapsible from 'react-collapsible';
 import { cities, domains_number, infoCud } from '../../../../components/jsons/vars';
 import { getJSONFull, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
+import SubmitService from '../../../../services/submit.service'
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -21,7 +22,16 @@ class RECORD_PH_REVIEW extends Component {
     constructor(props) {
         super(props);
         this.state = {
-        };
+            vrsRelated: []
+        };  
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
     }
     async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
         let swaMsg = this.props.swaMsg;
@@ -75,6 +85,7 @@ class RECORD_PH_REVIEW extends Component {
 
 
     }
+    
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
         const { } = this.state;
@@ -367,6 +378,11 @@ class RECORD_PH_REVIEW extends Component {
                         <div class="input-group ">
                             <select class="form-select" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>

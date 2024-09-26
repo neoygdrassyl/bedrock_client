@@ -6,8 +6,8 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import { dateParser } from '../../../../components/customClasses/typeParse';
+import SubmitService from '../../../../services/submit.service'
 //const moment = require('moment');
-
 
 const MySwal = withReactContent(Swal);
 export const PQRS_SET_REPLY1 = (props) => {
@@ -16,6 +16,15 @@ export const PQRS_SET_REPLY1 = (props) => {
     const [state, setState] = useState({});
     const editor = useRef(null)
     const [content, setContent] = useState('')
+    const [vrsRelated, setVrsRelated] = useState([])
+    useEffect(() => {
+        let _GET_ALL_VRS_RELATED = () => {
+            SubmitService.getIdRelated(currentItem.id_global).then(response => {
+                setVrsRelated(response.data)
+            })
+        }
+        _GET_ALL_VRS_RELATED()
+    }, [])
 
     const funcion3 = () => {
         const x = currentItem.pqrs_solocitors.map(function (value) { return ` ${value.name}` })
@@ -290,6 +299,11 @@ export const PQRS_SET_REPLY1 = (props) => {
                         <div class="input-group ">
                             <select class="form-select" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_global}>
+                                        {value.id_global}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
