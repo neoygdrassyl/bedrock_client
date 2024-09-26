@@ -32,7 +32,6 @@ class RECORD_DOC_LETTER_2 extends Component {
         SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
             this.setState({ vrsRelated: response.data })
         })
-        console.log(this.props)
     }
     _SET_CHILD_1_FOREIGNER = () => {
         var _CHILD = this.props.currentItem.fun_1s;

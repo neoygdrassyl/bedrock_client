@@ -5,9 +5,8 @@ import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import SubmitService from '../../../../services/submit.service'
-import submitService from '../../../../services/submit.service';
-//const moment = require('moment');
 
+//const moment = require('moment');
 
 const MySwal = withReactContent(Swal);
 export const PQRS_ID_CONFIRM = (props) => {
@@ -52,8 +51,7 @@ export const PQRS_ID_CONFIRM = (props) => {
     const [vrsRelated, setVrsRelated] = useState([])
     useEffect(() => {
         let _GET_ALL_VRS_RELATED = () => {
-            SubmitService.getIdRelated(currentItem.id_public).then(response => {
-                console.log(currentItem)
+            SubmitService.getIdRelated(currentItem.id_global).then(response => {
                 setVrsRelated(response.data)
             })
         }
@@ -118,8 +116,8 @@ export const PQRS_ID_CONFIRM = (props) => {
                     <select class="form-select" defaultValue={""}>
                         <option value=''>Seleccione una opción</option>
                         {vrsRelated.map((value, key) => (
-                            <option key={value.id} value={value.id_public}>
-                                {value.id_public}
+                            <option key={value.id} value={value.id_global}>
+                                {value.id_global}
                             </option>
                         ))}
                     </select>
