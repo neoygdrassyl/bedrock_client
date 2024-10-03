@@ -19,6 +19,7 @@ import RECORD_DOC_LETTER from './record_letter.component';
 import RECORD_DOC_LETTER_2 from './record_letter_2.component';
 import Collapsible from 'react-collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
+import SubmitService from '../../../services/submit.service';
 
 
 const MySwal = withReactContent(Swal);
@@ -37,6 +38,7 @@ class RECORD_REVIEW extends Component {
             loaded: false,
             currentStepIndex: 0,
             pqrsxfun: false,
+            vrsRelated: []
         };
     }
     componentDidMount() {
@@ -94,6 +96,9 @@ class RECORD_REVIEW extends Component {
                     load: true
                 })
                 this.retrievePQRSxFUN(response.data.id_public);
+                SubmitService.getIdRelated(response.data.id_public).then(resres => {
+                    this.setState({ vrsRelated: resres.data })
+                })
             })
             .catch(e => {
                 console.log(e);
@@ -116,6 +121,7 @@ class RECORD_REVIEW extends Component {
                 console.log(e);
             });
     }
+
     async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
         let swaMsg = this.props.swaMsg;
         MySwal.fire({
@@ -192,7 +198,7 @@ class RECORD_REVIEW extends Component {
 
     render() {
         const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem, currentStepIndex } = this.state;
+        const { loaded, currentRecord, currentVersionR, currentItem, currentStepIndex , vrsRelated } = this.state;
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -534,18 +540,18 @@ class RECORD_REVIEW extends Component {
             const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
             const evaDefaultTime = _fun_0_type_time[currentItem.type] ?? 45
             let limit_1 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, evaDefaultTime)
-            let notTime = dateParser_dateDiff(_GET_CLOCK_STATE(31).date_start,  _GET_CLOCK_STATE(32).date_start ||_GET_CLOCK_STATE(33).date_start)
-            let acta2Time =   (evaDefaultTime) + (30) + (_GET_CLOCK_STATE(35).date_start ? 15: 0) + (5)
-            let limit_2 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, acta2Time )
+            let notTime = dateParser_dateDiff(_GET_CLOCK_STATE(31).date_start, _GET_CLOCK_STATE(32).date_start || _GET_CLOCK_STATE(33).date_start)
+            let acta2Time = (evaDefaultTime) + (30) + (_GET_CLOCK_STATE(35).date_start ? 15 : 0) + (5)
+            let limit_2 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, acta2Time)
 
             let is_Outdate_1 = dateParser_dateDiff(limit_1, currentRecord.date, true)
-            let is_Outdate_2 = dateParser_dateDiff(limit_2,  currentRecord.date_2, true)
+            let is_Outdate_2 = dateParser_dateDiff(limit_2, currentRecord.date_2, true)
 
             return <>
                 <div className="row">
                     <div className="col-2">
                         <br />
-                        <label className='fw-bold'>Fecha limite: </label> {limit_1} {is_Outdate_1 < 0 ?<label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
+                        <label className='fw-bold'>Fecha limite: </label> {limit_1} {is_Outdate_1 < 0 ? <label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
                     </div>
                     <div className="col-5">
                         <label>Fecha del acta de observaciones</label>
@@ -575,7 +581,7 @@ class RECORD_REVIEW extends Component {
                 <div className="row">
                     <div className="col-2">
                         <br />
-                        <label className='fw-bold'>Fecha limite: </label>  {limit_2} {is_Outdate_2 < 0 ?<label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
+                        <label className='fw-bold'>Fecha limite: </label>  {limit_2} {is_Outdate_2 < 0 ? <label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
                     </div>
                     <div className="col-5">
                         <label>Fecha del acta de Correcciones</label>
@@ -1053,10 +1059,14 @@ class RECORD_REVIEW extends Component {
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group ">
                             <select class="form-select" defaultValue={""}>
-                                <option value=''>Seleccione una opción</option>
-                        </select>
+                                {vrsRelated && vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
-                </div>
                 </div>
             </>
         }

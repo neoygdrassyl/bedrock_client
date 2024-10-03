@@ -115,7 +115,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                 <div class="input-group ">
                     <select class="form-select" defaultValue={""}>
                         <option value=''>Seleccione una opción</option>
-                        {vrsRelated.map((value, key) => (
+                        {vrsRelated && vrsRelated.map((value, key) => (
                             <option key={value.id} value={value.id_global}>
                                 {value.id_global}
                             </option>
