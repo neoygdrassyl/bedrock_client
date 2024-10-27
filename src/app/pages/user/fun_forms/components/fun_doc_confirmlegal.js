@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../components/customClasses/typeParse'
 import FUNService from '../../../../services/fun.service'
 import SubmitService from '../../../../services/submit.service'
+import CubXVrDataService from '../../../../services/cubXvr.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
@@ -317,7 +318,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     <div className="col">
                         <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
                         <div class="input-group">
-                            <select class="form-select" defaultValue={""}>
+                            <select class="form-select" id="vr_selected" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -636,6 +637,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
 
             manage_law(true, formData);
             if (document.getElementById('control_func_3').checked) createEvent(false)
+            createVRxCUB_relation(new_id)
 
         }
         let manage_law = (useMySwal, formData) => {
@@ -833,6 +835,54 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                         }
                     });
             }
+        }
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+            
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id);
+            formatData.set('process', 'CARTA LEGAL Y DEBIDA FORMA');
+            
+            let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', desc);
+            let date = document.getElementById('geng_date_doc').value;
+            formatData.set('date', date);
+
+            CubXVrDataService.createCubXVr(formatData)
+                .then(response => {
+                    if (response.data !== null) {
+
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACION",
+                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    
+                });
         }
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>
