@@ -1,6 +1,6 @@
 import http from "../../http-common";
 
-const route = "cub_x_vr";
+const route = "cubXVr";
 
 class CubXVrDataService {
     getByCUB(id) {
