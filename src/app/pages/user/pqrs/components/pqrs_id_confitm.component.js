@@ -108,7 +108,6 @@ export const PQRS_ID_CONFIRM = (props) => {
                 <input type="text" class="form-control" defaultValue={currentItem.id_confirm}
                     id="pqrs_master_id_confirm" require />
                 <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
-                <button type="button" class="btn btn-success shadow-none" onClick={() => UPDATE_PQRS()}>GUARDAR</button>
             </div>
             <div>
                 <label className="mt-1">{infoCud.serials.start}</label>
@@ -122,6 +121,11 @@ export const PQRS_ID_CONFIRM = (props) => {
                         ))}
                     </select>
                 </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-success btn-lg shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
+                        GUARDAR
+                    </button>
             </div>
         </div>
         
