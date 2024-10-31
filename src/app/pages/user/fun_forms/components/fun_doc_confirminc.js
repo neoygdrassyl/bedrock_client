@@ -3,6 +3,7 @@ import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MA
 import FUNService from '../../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import CubXVrDataService from '../../../../services/cubXvr.service'
 import moment from 'moment';
 import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -189,7 +190,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
 
             return dooc_sting;
         }
-        
+
         // *********************************
         let _GENDOC_COMPONENT = () => {
             var _MISSING = _SET_MISSING_FUN_R();
@@ -210,29 +211,29 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         <input type="text" class="form-control mb-3" id="geni_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
-                    
-                        <div className="col">
-                            <label className="mt-1">5.3 {infoCud.serials.end} Carta Incompleto</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="geng_cub_inc"
-                                    defaultValue={_GET_CHILD_LAW().cub_inc || ''} />
-                                {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
-                                    : ''}
-                            </div>
+
+                    <div className="col">
+                        <label className="mt-1">5.3 {infoCud.serials.end} Carta Incompleto</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="geng_cub_inc"
+                                defaultValue={_GET_CHILD_LAW().cub_inc || ''} />
+                            {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
+                                : ''}
                         </div>
-                        <div className="col">
-                            <label className="mt-1">5.2.1 {infoCud.serials.start}</label>
-                            <div class="input-group">
-                                <select class="form-select" defaultValue={""}>
-                                    <option value=''>Seleccione una opción</option>
-                                    {this.state.vrsRelated.map((value, key) => (
-                                        <option key={value.id} value={value.id_public}>
-                                            {value.id_public}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                    </div>
+                    <div className="col">
+                        <label className="mt-1">5.2.1 {infoCud.serials.start}</label>
+                        <div class="input-group">
+                            <select class="form-select" id="vr_selected" defaultValue={""}>
+                                <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
+                    </div>
 
                 </div>
 
@@ -251,7 +252,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         <label>5.6. Fecha Limite</label>
                         <input type="date" class="form-control mb-3" max='2100-01-01' id="geni_date_limit" required
                             defaultValue={_JSON.date_limit || dateParser_finalDate(_GET_CLOCK_STATE(3).date_start, 30)} />
-                </div>
+                    </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
@@ -381,9 +382,10 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             cub_inc_json.missing = missing;
 
             formData.set('cub_inc_json', JSON.stringify(cub_inc_json));
-
+            
             manage_law(true, formData);
-
+            if (document.getElementById("vr_selected").value) createVRxCUB_relation(new_id);
+            
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -485,6 +487,51 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                     });
             }
 
+        }
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id);
+            formatData.set('process', 'CARTA INCOMPLETO');
+
+            let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', desc);
+            let date = document.getElementById('geng_date_doc').value;
+            
+            formatData.set('date', date);
+            CubXVrDataService.createCubXVr(formatData)
+                .then(response => {
+                    if (response.data !== null) {
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACION",
+                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+
+                });
         }
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>
