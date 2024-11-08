@@ -17,6 +17,8 @@ import PQRS_Service from '../../../services/pqrs_main.service';
 import FUN_SIGN_PDF from './components/fun_sign_pdf.component';
 import { _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 
+import CubXVrDataService from '../../../services/cubXvr.service'
+
 const MySwal = withReactContent(Swal);
 class FUN_ALERT extends Component {
     constructor(props) {
@@ -37,6 +39,7 @@ class FUN_ALERT extends Component {
     componentDidMount() {
         this.retrieveItem(this.props.currentId);
     }
+    
     retrieveItem(id) {
         FUN_SERVICE.get(id)
             .then(response => {
@@ -191,7 +194,7 @@ class FUN_ALERT extends Component {
 
     }
     render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
+        const { translation, swaMsg, globals, currentVersion, vr_selected  } = this.props;
         const { currentItem } = this.state;
 
         // DATA GETTERS
@@ -773,9 +776,59 @@ class FUN_ALERT extends Component {
                     });
                 });
         }
+
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+            
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id);
+            formatData.set('process', 'PUBLICIDAD COMUNICACION A VECINOS');
+            
+            let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', desc);
+            let date = document.getElementById('geng_date_doc').value;
+            formatData.set('date', date);
+
+            CubXVrDataService.createCubXVr(formatData)
+                .then(response => {
+                    if (response.data !== null) {
+
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACION",
+                            text: `El consecutivo  de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    
+                });
+        }
         let alertAddress = () => {
             let formData = new FormData();
             formData.set('fun0Id', currentItem.id);
+            console.log(vr_selected)
 
             let child_i = document.getElementById("alert_id_3").value;
             if (!_SET_CHILD_3()[child_i]) {
@@ -798,6 +851,9 @@ class FUN_ALERT extends Component {
             formData.set('new_id', new_id || false);
             let prev_id = _SET_CHILD_3()[child_i].id_cub;
             formData.set('prev_id', prev_id);
+
+            createVRxCUB_relation(new_id)
+
 
             let alerted = document.getElementById("alert_date_confirm").value;
             if (alerted) formData.set('alerted', alerted);
