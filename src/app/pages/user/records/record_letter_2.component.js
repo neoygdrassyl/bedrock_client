@@ -171,7 +171,7 @@ class RECORD_DOC_LETTER_2 extends Component {
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" id="vr_selected" defaultValue={""}>
+                            <select class="form-select" id="vr_selected1" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -418,19 +418,22 @@ class RECORD_DOC_LETTER_2 extends Component {
 
         }
         let createVRxCUB_relation = (cub_selected) => {
-            let vr = document.getElementById("vr_selected").value;
+            let vr = document.getElementById("vr_selected1").value;
             let cub = cub_selected;
             let formatData = new FormData();
+            console.log(vr)
             
             formatData.set('vr', vr);
             formatData.set('cub', cub);
             formatData.set('fun', currentItem.id);
             formatData.set('process', 'CARTA AMPLIACION DE TERMINOS');
             
+            /*
             let desc = document.getElementById('geng_type').value;
             formatData.set('desc', desc);
             let date = document.getElementById('geng_date_doc').value;
             formatData.set('date', date);
+            */
             CubXVrDataService.createCubXVr(formatData)
                 .then(response => {
                     if (response.data !== null) {

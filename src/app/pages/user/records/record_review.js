@@ -20,6 +20,7 @@ import RECORD_DOC_LETTER_2 from './record_letter_2.component';
 import Collapsible from 'react-collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import SubmitService from '../../../services/submit.service';
+import CubXVrDataService from '../../../services/cubXvr.service'
 
 
 const MySwal = withReactContent(Swal);
@@ -547,6 +548,7 @@ class RECORD_REVIEW extends Component {
             let is_Outdate_1 = dateParser_dateDiff(limit_1, currentRecord.date, true)
             let is_Outdate_2 = dateParser_dateDiff(limit_2, currentRecord.date_2, true)
 
+
             return <>
                 <div className="row">
                     <div className="col-2">
@@ -1058,7 +1060,7 @@ class RECORD_REVIEW extends Component {
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" defaultValue={""}>
+                            <select class="form-select" id="vr_selected" defaultValue={""}>
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
@@ -1190,6 +1192,9 @@ class RECORD_REVIEW extends Component {
             let engId = _CHECK_ENG_REPORT();
             let arcId = _CHECK_ARC_REPORT();
 
+            let new_id = document.getElementById("rev_cub").value;
+            formData.set('new_id', new_id);
+
             /*
             if (window.user.roleId != 1) {
                 if ((!lawId || !engId || !arcId)) return MySwal.fire({
@@ -1212,6 +1217,7 @@ class RECORD_REVIEW extends Component {
                 if (SweetAlertResult.isConfirmed) {
                     save_review();
                     save_clock();
+                    createVRxCUB_relation(new_id)
                 }
             });
         }
@@ -1455,11 +1461,59 @@ class RECORD_REVIEW extends Component {
             }
 
         }
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+            
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id);
+            formatData.set('process', 'CARTA LEGAL Y DEBIDA FORMA');
+            /*
+            let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', desc);
+            let date = document.getElementById('geng_date_doc').value;
+            formatData.set('date', date);
+            */
+            CubXVrDataService.createCubXVr(formatData)
+                .then(response => {
+                    if (response.data !== null) {
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACION",
+                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    
+                });
+        }
 
         let update_fun_0 = (e) => {
             e.preventDefault();
             let acta1 = [currentRecord.date, currentRecord.check];
             let acta2 = [currentRecord.date_2, currentRecord.check_2];
+
+            let new_id = document.getElementById("rev_cub").value;
+            formData.set('new_id', new_id || false); 
 
             if (!(acta1[1] == 1 || (acta1[1] == 0 && acta2[1] == 1))) MySwal.fire({
                 title: "ADVERTENCIA",
@@ -1496,7 +1550,7 @@ class RECORD_REVIEW extends Component {
                     save_clock_exp();
                 }
             });
-
+            createVRxCUB_relation(new_id)
 
 
         }

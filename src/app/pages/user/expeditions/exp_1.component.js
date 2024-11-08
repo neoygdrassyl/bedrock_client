@@ -10,6 +10,7 @@ import EXP_CALC from './exp_calc.component';
 import { _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import moment from 'moment'
 import SubmitService from '../../../services/submit.service'
+import CubXVrDataService from '../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -237,7 +238,7 @@ class EXP_1 extends Component {
             let taxes = _GET_EXPEDITION_JSON('taxes');
             let mun_tax = zonesTable[_GET_EXPEDITION_JSON('tmp').zone] ?? 0.1;
             let mun_1 = _GET_EXP_SECOND_COST();
-            console.log(this.state.vrsRelated)
+            //console.log(this.state.vrsRelated)
             return <>
                 <div class="card border border-dark mb-3">
                     <div class="card-header text-uppercase">Expensas Fijas</div>
@@ -328,7 +329,7 @@ class EXP_1 extends Component {
                                 <div className="col-3" >
                                     <label className="mt-1">{infoCud.serials.start}</label>
                                     <div class="input-group">
-                                        <select class="form-select" defaultValue={""}>
+                                        <select class="form-select" id="vr_selected" defaultValue={""}>
                                             <option value=''>Seleccione una opción</option>
                                             {this.state.vrsRelated.map((value, key) => (
                                                 <option key={value.id} value={value.id_public}>
@@ -472,7 +473,7 @@ class EXP_1 extends Component {
                                     <div className="col" >
                                         <label className="mt-1">{infoCud.serials.start}</label>
                                         <div class="input-group">
-                                            <select class="form-select" defaultValue={""}>
+                                            <select class="form-select" id="vr_selected1" defaultValue={""}>
                                                 <option value=''>Seleccione una opción</option>
                                                 {this.state.vrsRelated.map((value, key) => (
                                                     <option key={value.id} value={value.id_public}>
@@ -621,8 +622,68 @@ class EXP_1 extends Component {
 
             formData.set('duty', JSONObjectParser(duty));
 
-
+            createVRxCUB_relation(cub1,cub2) 
+           
             manage_exp();
+        }
+
+        let createVRxCUB_relation = (cub_selected, cub_selected1) => {
+            let vr 
+            let cub 
+            if(cub_selected  != ''){
+                cub = cub_selected
+                vr = document.getElementById("vr_selected").value;
+            }else if(cub_selected1  != ''){
+                cub = cub_selected1
+                vr = document.getElementById("vr_selected1").value;
+            }
+            
+            let formatData = new FormData();
+            
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id);
+            console.log(currentItem.id)
+            formatData.set('process', 'EXPEDICION - INFORMACION GENERAL - ACTO LICENCIA / DEBERES URBANISTICO');
+            /*
+            let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', desc);
+            let date = document.getElementById('geng_date_doc').value;
+            formatData.set('date', date);
+            */
+
+            CubXVrDataService.createCubXVr(formatData)
+                .then(response => {
+                    if (response.data !== null) {
+
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACION",
+                            text: `El consecutivo  de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    
+                });
         }
 
         let manage_exp = () => {
