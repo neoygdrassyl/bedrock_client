@@ -108,7 +108,7 @@ export const PQRS_ID_CONFIRM = (props) => {
         formatData.set('vr', vr);
         formatData.set('cub', cub);
         formatData.set('fun', currentItem.id);
-        formatData.set('process', 'CARTA LEGAL Y DEBIDA FORMA');
+        formatData.set('process', 'ENVIAR CONFIRMACION POR EMAIL');
         
         
         let desc = "Email"
