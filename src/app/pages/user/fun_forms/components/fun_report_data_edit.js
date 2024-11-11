@@ -7,7 +7,8 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import FUN_REPORT_DATA_PDF from './fun_report_data_pdf.component';
 import { infoCud } from '../../../../components/jsons/vars';
 import { FUN_REPORT_DATA_JODIT } from './fun_report_data_jodit.compoent';
-import SubmitService from '../../../../services/submit.service'
+import SubmitService from '../../../../services/submit.service';
+import CubXVrDataService from '../../../../services/cubXvr.service';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -122,7 +123,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     </div>
                     <div className="col-4 p-2 ">
                         <div class="input-group">
-                        <select class="form-select" defaultValue={""}>
+                        <select class="form-select" id="vr_selected1" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.title}>
@@ -292,6 +293,49 @@ class FUN_REPORT_DATA_EDIT extends Component {
             formData.set('prev_id', prev_id);
 
             manage_law();
+            createVRxCUB_relation(new_id)
+        }
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected1").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+    
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id);
+            formatData.set('process', 'CONTROL DE DOCUMENTACION ESPECIAL');
+            // let desc = document.getElementById('geng_type').value;
+            // formatData.set('desc', desc);
+            let date = document.getElementById('fun_report_data_3').value;
+            formatData.set('date', date);
+            CubXVrDataService.createCubXVr(formatData)
+                .then(response => {
+                    if (response.data !== null) {
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACION",
+                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
         }
         return (
             <div className="fun_report_data container_arc">
