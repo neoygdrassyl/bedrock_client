@@ -23,6 +23,7 @@ import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
 
 
+
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
@@ -199,7 +200,7 @@ class RECORD_REVIEW extends Component {
 
     render() {
         const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem, currentStepIndex , vrsRelated } = this.state;
+        const { loaded, currentRecord, currentVersionR, currentItem, currentStepIndex, vrsRelated } = this.state;
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -547,7 +548,6 @@ class RECORD_REVIEW extends Component {
 
             let is_Outdate_1 = dateParser_dateDiff(limit_1, currentRecord.date, true)
             let is_Outdate_2 = dateParser_dateDiff(limit_2, currentRecord.date_2, true)
-
 
             return <>
                 <div className="row">
@@ -1060,7 +1060,7 @@ class RECORD_REVIEW extends Component {
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" id="vr_selected" defaultValue={""}>
+                            <select class="form-select" defaultValue={""} id="vr_selected">
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
@@ -1192,9 +1192,6 @@ class RECORD_REVIEW extends Component {
             let engId = _CHECK_ENG_REPORT();
             let arcId = _CHECK_ARC_REPORT();
 
-            let new_id = document.getElementById("rev_cub").value;
-            formData.set('new_id', new_id);
-
             /*
             if (window.user.roleId != 1) {
                 if ((!lawId || !engId || !arcId)) return MySwal.fire({
@@ -1217,7 +1214,7 @@ class RECORD_REVIEW extends Component {
                 if (SweetAlertResult.isConfirmed) {
                     save_review();
                     save_clock();
-                    createVRxCUB_relation(new_id)
+                    createVRxCUB_relation();
                 }
             });
         }
@@ -1461,59 +1458,11 @@ class RECORD_REVIEW extends Component {
             }
 
         }
-        let createVRxCUB_relation = (cub_selected) => {
-            let vr = document.getElementById("vr_selected").value;
-            let cub = cub_selected;
-            let formatData = new FormData();
-            
-            formatData.set('vr', vr);
-            formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
-            formatData.set('process', 'CARTA LEGAL Y DEBIDA FORMA');
-            /*
-            let desc = document.getElementById('geng_type').value;
-            formatData.set('desc', desc);
-            let date = document.getElementById('geng_date_doc').value;
-            formatData.set('date', date);
-            */
-            CubXVrDataService.createCubXVr(formatData)
-                .then(response => {
-                    if (response.data !== null) {
-                    } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    
-                });
-        }
 
         let update_fun_0 = (e) => {
             e.preventDefault();
             let acta1 = [currentRecord.date, currentRecord.check];
             let acta2 = [currentRecord.date_2, currentRecord.check_2];
-
-            let new_id = document.getElementById("rev_cub").value;
-            formData.set('new_id', new_id || false); 
 
             if (!(acta1[1] == 1 || (acta1[1] == 0 && acta2[1] == 1))) MySwal.fire({
                 title: "ADVERTENCIA",
@@ -1550,7 +1499,7 @@ class RECORD_REVIEW extends Component {
                     save_clock_exp();
                 }
             });
-            createVRxCUB_relation(new_id)
+
 
 
         }
@@ -1860,6 +1809,53 @@ class RECORD_REVIEW extends Component {
             headers.number = _number
 
             this.CREATE_CHECK(_RESUME, _CHECKS, currentItem, headers)
+        }
+        let createVRxCUB_relation = () => {
+            let vr = document.getElementById("vr_selected").value;
+            console.log(vr)
+            let cub = document.getElementById("rev_cub").value;
+            let formatData = new FormData();    
+
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id);
+            formatData.set('process', 'OBSERVACIONES Y CORRECIONES');
+
+            // let date = document.getElementById('record_review_2').value;
+            // formatData.set('date', date);
+
+            CubXVrDataService.createCubXVr(formatData)
+                .then(response => {
+                    if (response.data !== null) {
+
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACION",
+                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+
+                });
         }
 
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : {})

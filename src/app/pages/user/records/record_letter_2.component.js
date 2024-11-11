@@ -431,9 +431,10 @@ class RECORD_DOC_LETTER_2 extends Component {
             /*
             let desc = document.getElementById('geng_type').value;
             formatData.set('desc', desc);
-            let date = document.getElementById('geng_date_doc').value;
-            formatData.set('date', date);
             */
+            let date = document.getElementById('gena2_date_doc').value;
+            formatData.set('date', date);
+            
             CubXVrDataService.createCubXVr(formatData)
                 .then(response => {
                     if (response.data !== null) {

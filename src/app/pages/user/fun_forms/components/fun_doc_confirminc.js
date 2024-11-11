@@ -384,7 +384,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             formData.set('cub_inc_json', JSON.stringify(cub_inc_json));
             
             manage_law(true, formData);
-            if (document.getElementById("vr_selected").value) createVRxCUB_relation(new_id);
+            createVRxCUB_relation(new_id);
             
         }
         let manage_law = (useMySwal, formData) => {
@@ -490,6 +490,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
         }
         let createVRxCUB_relation = (cub_selected) => {
             let vr = document.getElementById("vr_selected").value;
+            console.log(vr)
             let cub = cub_selected;
             let formatData = new FormData();
 

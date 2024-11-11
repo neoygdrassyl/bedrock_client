@@ -411,7 +411,7 @@ class RECORD_DOC_LETTER extends Component {
                     });
             }
         }
-        let createVRxCUB_relation = (cub_selected) => {
+        let createVRxCUB_relation = (cub_selected) => { 
             let vr = document.getElementById("vr_selected").value;
             let cub = cub_selected;
             let formatData = new FormData();
@@ -421,12 +421,13 @@ class RECORD_DOC_LETTER extends Component {
             formatData.set('fun', currentItem.id);
             formatData.set('process', 'CARTA ACTA DE OBSERVACIONES');
 
-            let desc = document.getElementById('geng_type').value;
-            formatData.set('desc', desc);
-            let date = document.getElementById('geng_date_doc').value;
+            // let desc = document.getElementById('geng_type').value;
+            // formatData.set('desc', "desc");
+            let date = document.getElementById('gena_date_doc').value;
             formatData.set('date', date);
             CubXVrDataService.createCubXVr(formatData)
                 .then(response => {
+                    console.log(response);
                     if (response.data !== null) {
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
