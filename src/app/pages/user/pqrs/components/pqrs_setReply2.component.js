@@ -7,6 +7,7 @@ import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import SubmitService from '../../../../services/submit.service'
+import CubXVrDataService from '../../../../services/cubXvr.service'
 //const moment = require('moment');
 
 const MySwal = withReactContent(Swal);
@@ -35,7 +36,7 @@ export const PQRS_SET_REPLY1 = (props) => {
         return y;
     }
     const get_address = () => {
-        const y = currentItem.pqrs_contacts.map(function (value) { return `${ value.address ? value.address : ''}` }).join(', ')
+        const y = currentItem.pqrs_contacts.map(function (value) { return `${value.address ? value.address : ''}` }).join(', ')
         return y;
     }
 
@@ -74,7 +75,7 @@ export const PQRS_SET_REPLY1 = (props) => {
         ${currentItem.pqrs_fun ? `<tr>
             <td><strong> Asociado a un proyecto: </strong></td>
             <td> ${currentItem.pqrs_fun.id_public} </td>
-        </tr>`:  '' }
+        </tr>`: ''}
         <tr>
             <td><strong> Término: </strong></td>
             <td> ${currentItem.pqrs_time.time} días hábiles</td>
@@ -96,7 +97,7 @@ export const PQRS_SET_REPLY1 = (props) => {
     <p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; ${fontSize};">Revisado por:</strong></span></strong></p>
 `)
 
-    const fgs = ()=>(`
+    const fgs = () => (`
     
     `)
 
@@ -197,6 +198,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 icon: 'info',
                 showConfirmButton: false,
             });
+            createVRxCUB_relation(new_id);
             PQRS_Service.formalReply(formData)
                 .then(response => {
                     if (response.data === 'OK') {
@@ -240,6 +242,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 icon: 'error',
             });
         }
+        
     };
 
     let _GET_LAST_ID = () => {
@@ -275,9 +278,50 @@ export const PQRS_SET_REPLY1 = (props) => {
                     confirmButtonText: props.swaMsg.text_btn,
                 });
             });
-
     }
-    var validar = currentItem.pqrs_time  ? currentItem.pqrs_time.reply_doc_date : null
+    let createVRxCUB_relation = (cub_selected) => {
+        let vr = document.getElementById("vr_selected").value;
+        let cub = cub_selected;
+        let formatData = new FormData();
+
+        formatData.set('vr', vr);
+        formatData.set('cub', cub);
+        formatData.set('fun', currentItem.id);
+        formatData.set('process', 'RESPUESTA FORMAL DE LA PETICION');
+        // let desc = document.getElementById('geng_type').value;
+        // formatData.set('desc', desc);
+        let date = document.getElementById('pqrs_reply_time_formalReply').value;
+        formatData.set('date', date);
+        CubXVrDataService.createCubXVr(formatData)
+            .then(response => {
+                if (response.data !== null) {
+                } else if (response.data === 'ERROR_DUPLICATE') {
+                    MySwal.fire({
+                        title: "ERROR DE DUPLICACION",
+                        text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                        icon: 'error',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                } else {
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+    }
+    var validar = currentItem.pqrs_time ? currentItem.pqrs_time.reply_doc_date : null
     return (
         <div>
             <form onSubmit={replyPQRS} id="app-formReply">
@@ -297,7 +341,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     <div className="col-4">
                         <label className="mt-0">{infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" defaultValue={""}>
+                            <select class="form-select" id="vr_selected" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_global}>
