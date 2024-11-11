@@ -5,6 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import SubmitService from '../../../../services/submit.service'
+import CubXVrDataService from '../../../../services/cubXvr.service'
 
 //const moment = require('moment');
 
@@ -52,7 +53,7 @@ export const PQRS_ID_CONFIRM = (props) => {
     useEffect(() => {
         let _GET_ALL_VRS_RELATED = () => {
             SubmitService.getIdRelated(currentItem.id_global).then(response => {
-                setVrsRelated(response.data)
+              setVrsRelated(response.data)
             })
         }
         _GET_ALL_VRS_RELATED()
@@ -62,9 +63,11 @@ export const PQRS_ID_CONFIRM = (props) => {
         var form = new FormData();
 
         const id_confirm = document.getElementById("pqrs_master_id_confirm").value
+        let vr = document.getElementById("vr_selected").value;
         form.set('id_confirm', id_confirm);
         form.set('id_old', currentItem.id_confirm);
 
+        createVRxCUB_relation(id_confirm)
         PQRS_Service.update(currentItem.id, form)
         .then(response => {
             if (response.data === 'OK') {
@@ -96,6 +99,58 @@ export const PQRS_ID_CONFIRM = (props) => {
             console.log(e);
         });
     }
+
+    let createVRxCUB_relation = (cub_selected) => {
+        let vr = document.getElementById("vr_selected").value;
+        let cub = cub_selected;
+        let formatData = new FormData();
+        
+        formatData.set('vr', vr);
+        formatData.set('cub', cub);
+        formatData.set('fun', currentItem.id);
+        formatData.set('process', 'CARTA LEGAL Y DEBIDA FORMA');
+        
+        
+        let desc = "Email"
+        formatData.set('desc', desc);
+        /*
+        let date = document.getElementById('geng_date_doc').value;
+        formatData.set('date', date);
+        */
+
+        CubXVrDataService.createCubXVr(formatData)
+            .then(response => {
+                if (response.data !== null) {
+
+                } else if (response.data === 'ERROR_DUPLICATE') {
+                    MySwal.fire({
+                        title: "ERROR DE DUPLICACION",
+                        text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                        icon: 'error',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                } else {
+
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+
+                }
+            })
+            .catch(e => {
+                console.log(e);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                
+            });
+    }
     
 
     return (
@@ -112,7 +167,7 @@ export const PQRS_ID_CONFIRM = (props) => {
             <div>
                 <label className="mt-1">{infoCud.serials.start}</label>
                 <div class="input-group ">
-                    <select class="form-select" defaultValue={""}>
+                    <select class="form-select" id="vr_selected"  defaultValue={""}>
                         <option value=''>Seleccione una opción</option>
                         {vrsRelated && vrsRelated.map((value, key) => (
                             <option key={value.id} value={value.id_global}>
