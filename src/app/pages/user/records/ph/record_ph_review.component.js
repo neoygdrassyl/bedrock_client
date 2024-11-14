@@ -1354,12 +1354,12 @@ class RECORD_PH_REVIEW extends Component {
             formatData.set('fun', currentItem.id);
             console.log(currentItem.id)
             formatData.set('process', 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
-            /*
-            let desc = document.getElementById('geng_type').value;
-            formatData.set('desc', desc);
-            let date = document.getElementById('geng_date_doc').value;
+            
+            // let desc = document.getElementById('geng_type').value;
+            // formatData.set('desc', desc);
+            let date = document.getElementById('phnot_date_doc').value;
             formatData.set('date', date);
-            */
+            
 
             CubXVrDataService.createCubXVr(formatData)
                 .then(response => {
