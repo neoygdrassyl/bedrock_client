@@ -481,7 +481,7 @@ class EXP_1 extends Component {
                                                     </option>
                                                 ))}
                                             </select>
-                                        </div>  
+                                        </div>
                                     </div>
                                     <div className="col-3">
                                         <label className="mt-2">Factura #</label>
@@ -622,35 +622,41 @@ class EXP_1 extends Component {
 
             formData.set('duty', JSONObjectParser(duty));
 
-            createVRxCUB_relation(cub1,cub2) 
-           
+            createVRxCUB_relation(cub1, cub2)
+
             manage_exp();
         }
 
         let createVRxCUB_relation = (cub_selected, cub_selected1) => {
-            let vr 
-            let cub 
-            if(cub_selected  != ''){
-                cub = cub_selected
-                vr = document.getElementById("vr_selected").value;
-            }else if(cub_selected1  != ''){
-                cub = cub_selected1
-                vr = document.getElementById("vr_selected1").value;
+            let cub1 = cub_selected;
+            let cub2 = cub_selected1;
+            let vr1 = document.getElementById("vr_selected").value;
+            let vr2 = document.getElementById("vr_selected1").value;
+
+            if (cub1 && vr1) {
+                let formatData1 = new FormData();
+                formatData1.set('vr', vr1);
+                formatData1.set('cub', cub1);
+                formatData1.set('fun', currentItem.id);
+                formatData1.set('process', 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
+                sendDataToCreate(formatData1);
             }
-            
-            let formatData = new FormData();
-            
-            formatData.set('vr', vr);
-            formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
-            console.log(currentItem.id)
-            formatData.set('process', 'EXPEDICION - INFORMACION GENERAL - ACTO LICENCIA / DEBERES URBANISTICO');
+            if (cub2 && vr2) {
+                let formatData2 = new FormData();
+                formatData2.set('vr', vr2);
+                formatData2.set('cub', cub2);
+                formatData2.set('fun', currentItem.id);
+                formatData2.set('process', 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
+                sendDataToCreate(formatData2);
+            }
             /*
             let desc = document.getElementById('geng_type').value;
             formatData.set('desc', desc);
             let date = document.getElementById('geng_date_doc').value;
             formatData.set('date', date);
             */
+        }
+        let sendDataToCreate = (formatData) => {
 
             CubXVrDataService.createCubXVr(formatData)
                 .then(response => {
@@ -676,14 +682,15 @@ class EXP_1 extends Component {
                 })
                 .catch(e => {
                     console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+
                 });
+
         }
 
         let manage_exp = () => {
