@@ -123,7 +123,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     </div>
                     <div className="col-4 p-2 ">
                         <div class="input-group">
-                        <select class="form-select" id="vr_selected1" defaultValue={""}>
+                            <select class="form-select" id="vr_selected1" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.title}>
@@ -183,96 +183,96 @@ class FUN_REPORT_DATA_EDIT extends Component {
         // FUNCTIONS AND APIS
         var formData = new FormData();
 
-        let manage_law = () => {
-            let _CHILD = _GET_CHILD_LAW();
-            formData.set('fun0Id', currentItem.id);
+        // let manage_law = () => {
+        //     let _CHILD = _GET_CHILD_LAW();
+        //     formData.set('fun0Id', currentItem.id);
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-            if (_CHILD.id) {
+        //     MySwal.fire({
+        //         title: swaMsg.title_wait,
+        //         text: swaMsg.text_wait,
+        //         icon: 'info',
+        //         showConfirmButton: false,
+        //     });
+        //     if (_CHILD.id) {
 
-                FUN_SERVICE.update_law(_CHILD.id, formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id)
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                        else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    });
-            }
-            else {
-                FUN_SERVICE.create_law(formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.props.requestUpdate(currentItem.id)
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACION",
-                                text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                        else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    });
-            }
-        }
+        //         FUN_SERVICE.update_law(_CHILD.id, formData)
+        //             .then(response => {
+        //                 if (response.data === 'OK') {
+        //                     MySwal.fire({
+        //                         title: swaMsg.publish_success_title,
+        //                         text: swaMsg.publish_success_text,
+        //                         footer: swaMsg.text_footer,
+        //                         icon: 'success',
+        //                         confirmButtonText: swaMsg.text_btn,
+        //                     });
+        //                     this.props.requestUpdate(currentItem.id)
+        //                 } else if (response.data === 'ERROR_DUPLICATE') {
+        //                     MySwal.fire({
+        //                         title: "ERROR DE DUPLICACION",
+        //                         text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+        //                         icon: 'error',
+        //                         confirmButtonText: swaMsg.text_btn,
+        //                     });
+        //                 }
+        //                 else {
+        //                     MySwal.fire({
+        //                         title: swaMsg.generic_eror_title,
+        //                         text: swaMsg.generic_error_text,
+        //                         icon: 'warning',
+        //                         confirmButtonText: swaMsg.text_btn,
+        //                     });
+        //                 }
+        //             })
+        //             .catch(e => {
+        //                 console.log(e);
+        //                 MySwal.fire({
+        //                     title: swaMsg.generic_eror_title,
+        //                     text: swaMsg.generic_error_text,
+        //                     icon: 'warning',
+        //                     confirmButtonText: swaMsg.text_btn,
+        //                 });
+        //             });
+        //     }
+        //     else {
+        //         FUN_SERVICE.create_law(formData)
+        //             .then(response => {
+        //                 if (response.data === 'OK') {
+        //                     MySwal.fire({
+        //                         title: swaMsg.publish_success_title,
+        //                         text: swaMsg.publish_success_text,
+        //                         footer: swaMsg.text_footer,
+        //                         icon: 'success',
+        //                         confirmButtonText: swaMsg.text_btn,
+        //                     });
+        //                     this.props.requestUpdate(currentItem.id)
+        //                 } else if (response.data === 'ERROR_DUPLICATE') {
+        //                     MySwal.fire({
+        //                         title: "ERROR DE DUPLICACION",
+        //                         text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+        //                         icon: 'error',
+        //                         confirmButtonText: swaMsg.text_btn,
+        //                     });
+        //                 }
+        //                 else {
+        //                     MySwal.fire({
+        //                         title: swaMsg.generic_eror_title,
+        //                         text: swaMsg.generic_error_text,
+        //                         icon: 'warning',
+        //                         confirmButtonText: swaMsg.text_btn,
+        //                     });
+        //                 }
+        //             })
+        //             .catch(e => {
+        //                 console.log(e);
+        //                 MySwal.fire({
+        //                     title: swaMsg.generic_eror_title,
+        //                     text: swaMsg.generic_error_text,
+        //                     icon: 'warning',
+        //                     confirmButtonText: swaMsg.text_btn,
+        //                 });
+        //             });
+        //     }
+        // }
         let save_law = (e) => {
             e.preventDefault();
             formData = new FormData();
@@ -292,14 +292,14 @@ class FUN_REPORT_DATA_EDIT extends Component {
             let prev_id = _GET_CHILD_LAW().report_cub;
             formData.set('prev_id', prev_id);
 
-            manage_law();
+            //manage_law();
             createVRxCUB_relation(new_id)
         }
         let createVRxCUB_relation = (cub_selected) => {
             let vr = document.getElementById("vr_selected1").value;
             let cub = cub_selected;
             let formatData = new FormData();
-    
+
             formatData.set('vr', vr);
             formatData.set('cub', cub);
             formatData.set('fun', currentItem.id);
@@ -308,13 +308,37 @@ class FUN_REPORT_DATA_EDIT extends Component {
             // formatData.set('desc', desc);
             let date = document.getElementById('fun_report_data_3').value;
             formatData.set('date', date);
+            // Mostrar mensaje inicial de espera
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+            // Mostrar mensaje inicial de espera
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+            // Crear relación
             CubXVrDataService.createCubXVr(formatData)
-                .then(response => {
-                    if (response.data !== null) {
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
                             icon: 'error',
                             confirmButtonText: swaMsg.text_btn,
                         });
@@ -327,8 +351,8 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         });
                     }
                 })
-                .catch(e => {
-                    console.log(e);
+                .catch((error) => {
+                    console.error(error);
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,
                         text: swaMsg.generic_error_text,
@@ -336,7 +360,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-        }
+        };
         return (
             <div className="fun_report_data container_arc">
                 <form id="form_report_data_edit" onSubmit={save_law}>
