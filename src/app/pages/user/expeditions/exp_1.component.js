@@ -624,7 +624,7 @@ class EXP_1 extends Component {
 
             createVRxCUB_relation(cub1, cub2)
 
-            manage_exp();
+            //manage_exp();
         }
 
         let createVRxCUB_relation = (cub_selected, cub_selected1) => {
@@ -658,40 +658,54 @@ class EXP_1 extends Component {
         }
         let sendDataToCreate = (formatData) => {
 
+            
+            // Mostrar mensaje inicial de espera
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+        
+            // Crear relación
             CubXVrDataService.createCubXVr(formatData)
-                .then(response => {
-                    if (response.data !== null) {
-
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: `El consecutivo  de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
                             icon: 'error',
                             confirmButtonText: swaMsg.text_btn,
                         });
                     } else {
-
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-
                     }
                 })
-                .catch(e => {
-                    console.log(e);
+                .catch((error) => {
+                    console.error(error);
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,
                         text: swaMsg.generic_error_text,
                         icon: 'warning',
                         confirmButtonText: swaMsg.text_btn,
                     });
-
                 });
-
-        }
+        };
 
         let manage_exp = () => {
             MySwal.fire({
