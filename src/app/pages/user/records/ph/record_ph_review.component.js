@@ -1359,41 +1359,56 @@ class RECORD_PH_REVIEW extends Component {
             // formatData.set('desc', desc);
             let date = document.getElementById('phnot_date_doc').value;
             formatData.set('date', date);
-            
-
+        
+            // Mostrar mensaje inicial de espera
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+        
+            // Crear relación
             CubXVrDataService.createCubXVr(formatData)
-                .then(response => {
-                    if (response.data !== null) {
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
 
+                        this.props.requestUpdateRecord(currentItem.id);
+                        this.props.requestUpdate(currentItem.id);
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: `El consecutivo  de este formulario ya existe, debe de elegir un consecutivo nuevo`,
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                             icon: 'error',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                    } else {
-
+                    }
+                    else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
                 });
-        }
+        };
 
         let save_cub = (e) => {
             e.preventDefault();
@@ -1414,6 +1429,7 @@ class RECORD_PH_REVIEW extends Component {
             createVRxCUB_relation(cub)
 
 
+            /*
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
@@ -1459,6 +1475,7 @@ class RECORD_PH_REVIEW extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                */
         }
         let pdfnot_gen = () => {
             formData = new FormData();
