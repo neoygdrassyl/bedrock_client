@@ -633,20 +633,27 @@ class EXP_1 extends Component {
             let vr1 = document.getElementById("vr_selected").value;
             let vr2 = document.getElementById("vr_selected1").value;
 
+            let date1 = document.getElementById('expedition_1').value;
+            let date2 = document.getElementById('expedition_10').value;
+
             if (cub1 && vr1) {
                 let formatData1 = new FormData();
                 formatData1.set('vr', vr1);
                 formatData1.set('cub', cub1);
-                formatData1.set('fun', currentItem.id);
+                formatData1.set('fun', currentItem.id_public);
                 formatData1.set('process', 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
+                formatData1.set('desc', 'Acta de Viabilidad');
+                formatData1.set('date', date1);
                 sendDataToCreate(formatData1);
             }
             if (cub2 && vr2) {
                 let formatData2 = new FormData();
                 formatData2.set('vr', vr2);
                 formatData2.set('cub', cub2);
-                formatData2.set('fun', currentItem.id);
+                formatData2.set('fun', currentItem.id_public);
                 formatData2.set('process', 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
+                formatData2.set('desc', 'Deberes Urbanisticos');
+                formatData2.set('date', date2);
                 sendDataToCreate(formatData2);
             }
             /*

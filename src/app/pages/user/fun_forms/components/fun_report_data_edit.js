@@ -123,7 +123,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     </div>
                     <div className="col-4 p-2 ">
                         <div class="input-group">
-                            <select class="form-select" id="vr_selected1" defaultValue={""}>
+                            <select class="form-select" id="vr_selected" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.title}>
@@ -296,16 +296,16 @@ class FUN_REPORT_DATA_EDIT extends Component {
             createVRxCUB_relation(new_id)
         }
         let createVRxCUB_relation = (cub_selected) => {
-            let vr = document.getElementById("vr_selected1").value;
+            let vr = document.getElementById("vr_selected").value;
             let cub = cub_selected;
             let formatData = new FormData();
 
             formatData.set('vr', vr);
             formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
+            formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'CONTROL DE DOCUMENTACION ESPECIAL');
             // let desc = document.getElementById('geng_type').value;
-            // formatData.set('desc', desc);
+            formatData.set('desc', 'Reporte de reconocimiento');
             let date = document.getElementById('fun_report_data_3').value;
             formatData.set('date', date);
             // Mostrar mensaje inicial de espera

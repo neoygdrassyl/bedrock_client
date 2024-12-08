@@ -425,13 +425,14 @@ class RECORD_DOC_LETTER_2 extends Component {
             
             formatData.set('vr', vr);
             formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
+            formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'CARTA AMPLIACION DE TERMINOS');
             
             /*
             let desc = document.getElementById('geng_type').value;
             formatData.set('desc', desc);
             */
+            formatData.set('desc', "Carta ampliación de términos");
             let date = document.getElementById('gena2_date_doc').value;
             formatData.set('date', date);
             

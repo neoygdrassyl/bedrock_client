@@ -1351,12 +1351,11 @@ class RECORD_PH_REVIEW extends Component {
             
             formatData.set('vr', vr);
             formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
-            console.log(currentItem.id)
+            formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
             
             // let desc = document.getElementById('geng_type').value;
-            // formatData.set('desc', desc);
+            formatData.set('desc', 'Citacion Notificación Resolución de Aprovación de Plano de Propiedad Horizontal');
             let date = document.getElementById('phnot_date_doc').value;
             formatData.set('date', date);
         
