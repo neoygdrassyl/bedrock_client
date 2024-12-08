@@ -37,8 +37,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             tramite: [],
             m_urb: [],
             m_sub: [],
-            m_lic: [],
-            vrsRelated: []
+            m_lic: []
         }
         if (_CHILD) {
             if (_CHILD[_CURRENT_VERSION] != null) {
@@ -224,7 +223,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                     <div className="col">
                         <label className="mt-1">5.2.1 {infoCud.serials.start}</label>
                         <div class="input-group">
-                            <select class="form-select" id="vr_selected" defaultValue={""}>
+                            <select class="form-select" id="vr_selected1" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -489,14 +488,14 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
 
         }
         let createVRxCUB_relation = (cub_selected) => {
-            let vr = document.getElementById("vr_selected").value;
+            let vr = document.getElementById("vr_selected1").value;
             console.log(vr)
             let cub = cub_selected;
             let formatData = new FormData();
 
             formatData.set('vr', vr);
             formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
+            formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'CARTA INCOMPLETO');
 
             let desc = document.getElementById('geng_type').value;
