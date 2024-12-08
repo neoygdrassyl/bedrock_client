@@ -418,11 +418,11 @@ class RECORD_DOC_LETTER extends Component {
 
             formatData.set('vr', vr);
             formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
+            formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'CARTA DE RATIFICACION');
 
             // let desc = document.getElementById('geng_type').value;
-            // formatData.set('desc', "desc");
+            formatData.set('desc', 'Carta Acta Observaciones');
             let date = document.getElementById('gena_date_doc').value;
             formatData.set('date', date);
 

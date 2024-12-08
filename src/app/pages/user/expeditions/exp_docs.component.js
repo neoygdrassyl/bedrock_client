@@ -1105,12 +1105,12 @@ class EXP_DOCS extends Component {
             
             formatData.set('vr', vr);
             formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
+            formatData.set('fun', currentItem.id_public);
             console.log(currentItem.id)
             formatData.set('process', 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
             
             // let desc = document.getElementById('geng_type').value;
-            // formatData.set('desc', desc);
+            formatData.set('desc', 'Citacion Notificación Resolución');
             let date = document.getElementById('exodfb_date_doc').value;
             formatData.set('date', date);
             
