@@ -843,7 +843,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
         
             formatData.set('vr', vr);
             formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
+            formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'CARTA LEGAL Y DEBIDA FORMA');
         
             let desc = document.getElementById('geng_type').value;
