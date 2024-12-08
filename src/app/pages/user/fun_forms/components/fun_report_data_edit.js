@@ -27,7 +27,6 @@ class FUN_REPORT_DATA_EDIT extends Component {
         SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
             this.setState({ vrsRelated: response.data })
         })
-        console.log(this.props)
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
