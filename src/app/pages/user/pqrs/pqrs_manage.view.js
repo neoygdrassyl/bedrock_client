@@ -987,11 +987,15 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                     refreshCurrentItem={loadData}
                                     attachs={true}
                                 />
-                                 <div className="col-6">
-                                    <PQRS_ID_CONFIRM
-                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                <div className="row justify-content-center">
+                                    <div className="col-4 mx-auto">
+                                        <PQRS_ID_CONFIRM
+                                        translation={translation} 
+                                        swaMsg={swaMsg} 
+                                        globals={globals}
                                         currentItem={currentItem}
-                                    />
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </Collapsible>

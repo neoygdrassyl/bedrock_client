@@ -9,6 +9,8 @@ import { regexChecker_isOA_2, _MANAGE_IDS, _CALCULATE_EXPENSES, formsParser1, re
 import EXP_CALC from './exp_calc.component';
 import { _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import moment from 'moment'
+import SubmitService from '../../../services/submit.service'
+import CubXVrDataService from '../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -16,12 +18,20 @@ class EXP_1 extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            vrsRelated: []
         };
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
         const { } = this.state;
-
         // DATA GETTERS
         let _GET_CHILD_CLOCK = () => {
             var _CHILD = currentItem.fun_clocks;
@@ -228,7 +238,7 @@ class EXP_1 extends Component {
             let taxes = _GET_EXPEDITION_JSON('taxes');
             let mun_tax = zonesTable[_GET_EXPEDITION_JSON('tmp').zone] ?? 0.1;
             let mun_1 = _GET_EXP_SECOND_COST();
-
+            //console.log(this.state.vrsRelated)
             return <>
                 <div class="card border border-dark mb-3">
                     <div class="card-header text-uppercase">Expensas Fijas</div>
@@ -262,73 +272,78 @@ class EXP_1 extends Component {
                     </div>
                 </div>
 
-            {!isPH() ?<>
-                <div class="card border border-dark mb-3">
-                    <div class="card-header text-uppercase">Expensas variables</div>
-                    <div class="card-body text-dark">
-                        <div className="row">
-                            <div className="col">
-                                <label className="mt-1">Area (m2)</label>
-                                <input type="text" class="form-control" id="exp_var_0" disabled value={_GET_EXP_VAR_AREA()} />
-                            </div>
-                            <div className="col">
-                                <label className="mt-1">Valor (COP)</label>
-                                <input type="text" class="form-control" id="exp_var_1" disabled value={_GET_EXP_VAR_COST()} />
-                            </div>
-                            <div className="col">
-                                <label className="mt-1">Valor Pagado (COP)</label>
-                                <input type="number" step={1} class="form-control" id="expedition_26" defaultValue={taxes.id_payment_1_real ?? ''} />
-                            </div>
-                            <div className="col">
-                                <label className="mt-1">Fecha</label>
-                                <input type="date" class="form-control" id="expedition_24" max="2100-01-01"
-                                    defaultValue={taxes.id_payment_1_date ?? ''} />
-                            </div>
-                            <div className="col">
-                                <label className="mt-1">Factura #</label>
-                                <input type="text" class="form-control" id="expedition_18" defaultValue={taxes.id_payment_1 ?? ''} />
+                {!isPH() ? <>
+                    <div class="card border border-dark mb-3">
+                        <div class="card-header text-uppercase">Expensas variables</div>
+                        <div class="card-body text-dark">
+                            <div className="row">
+                                <div className="col">
+                                    <label className="mt-1">Area (m2)</label>
+                                    <input type="text" class="form-control" id="exp_var_0" disabled value={_GET_EXP_VAR_AREA()} />
+                                </div>
+                                <div className="col">
+                                    <label className="mt-1">Valor (COP)</label>
+                                    <input type="text" class="form-control" id="exp_var_1" disabled value={_GET_EXP_VAR_COST()} />
+                                </div>
+                                <div className="col">
+                                    <label className="mt-1">Valor Pagado (COP)</label>
+                                    <input type="number" step={1} class="form-control" id="expedition_26" defaultValue={taxes.id_payment_1_real ?? ''} />
+                                </div>
+                                <div className="col">
+                                    <label className="mt-1">Fecha</label>
+                                    <input type="date" class="form-control" id="expedition_24" max="2100-01-01"
+                                        defaultValue={taxes.id_payment_1_date ?? ''} />
+                                </div>
+                                <div className="col">
+                                    <label className="mt-1">Factura #</label>
+                                    <input type="text" class="form-control" id="expedition_18" defaultValue={taxes.id_payment_1 ?? ''} />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card border border-dark mb-3">
-                    <div class="card-header text-uppercase">Acto de tramite de licencia</div>
-                    <div class="card-body text-dark">
-                        <div className="row">
-                            <div className="col-3">
-                                <label className="mt-1">Fecha</label>
-                                <input type="date" class="form-control" id="expedition_1" max="2100-01-01"
-                                    defaultValue={currentRecord.date ?? ''} />
-                            </div>
-                            <div className="col-3">
-                                <label className="mt-1">Ajuste Cargo Fijo</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="expedition_23"
-                                        defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_fix ?? 0} />
+                    <div class="card border border-dark mb-3">
+                        <div class="card-header text-uppercase">Acto de tramite de licencia</div>
+                        <div class="card-body text-dark">
+                            <div className="row">
+                                <div className="col-3">
+                                    <label className="mt-1">Fecha</label>
+                                    <input type="date" class="form-control" id="expedition_1" max="2100-01-01"
+                                        defaultValue={currentRecord.date ?? ''} />
                                 </div>
-                            </div>
-                            <div className="col-3">
-                                <label className="mt-1">{infoCud.serials.end} Acto</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="expedition_2"
-                                        defaultValue={currentRecord.cub1 ?? ''} />
-                                    <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
+                                <div className="col-3">
+                                    <label className="mt-1">Ajuste Cargo Fijo</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="expedition_23"
+                                            defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_fix ?? 0} />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="col-3" >
-                            <label className="mt-1">{infoCud.serials.start}</label>
-                            <div class="input-group ">
-                                <select class="form-select" defaultValue={""}>
-                                    <option value=''>Seleccione una opción</option>
-                                </select>
+                                <div className="col-3">
+                                    <label className="mt-1">{infoCud.serials.end} Acto</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="expedition_2"
+                                            defaultValue={currentRecord.cub1 ?? ''} />
+                                        <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
+                                    </div>
+                                </div>
+                                <div className="col-3" >
+                                    <label className="mt-1">{infoCud.serials.start}</label>
+                                    <div class="input-group">
+                                        <select class="form-select" id="vr_selected" defaultValue={""}>
+                                            <option value=''>Seleccione una opción</option>
+                                            {this.state.vrsRelated.map((value, key) => (
+                                                <option key={value.id} value={value.id_public}>
+                                                    {value.id_public}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            </> : null}
-               
+                </> : null}
+
 
 
                 {!conOA() && _GLOBAL_ID === 'cb1' && !isPH() ? <>
@@ -457,9 +472,14 @@ class EXP_1 extends Component {
                                     </div>
                                     <div className="col" >
                                         <label className="mt-1">{infoCud.serials.start}</label>
-                                        <div class="input-group ">
-                                            <select class="form-select" defaultValue={""}>
+                                        <div class="input-group">
+                                            <select class="form-select" id="vr_selected1" defaultValue={""}>
                                                 <option value=''>Seleccione una opción</option>
+                                                {this.state.vrsRelated.map((value, key) => (
+                                                    <option key={value.id} value={value.id_public}>
+                                                        {value.id_public}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
@@ -602,9 +622,97 @@ class EXP_1 extends Component {
 
             formData.set('duty', JSONObjectParser(duty));
 
+            createVRxCUB_relation(cub1, cub2)
 
-            manage_exp();
+            //manage_exp();
         }
+
+        let createVRxCUB_relation = (cub_selected, cub_selected1) => {
+            let cub1 = cub_selected;
+            let cub2 = cub_selected1;
+            let vr1 = document.getElementById("vr_selected").value;
+            let vr2 = document.getElementById("vr_selected1").value;
+
+            let date1 = document.getElementById('expedition_1').value;
+            let date2 = document.getElementById('expedition_10').value;
+
+            if (cub1 && vr1) {
+                let formatData1 = new FormData();
+                formatData1.set('vr', vr1);
+                formatData1.set('cub', cub1);
+                formatData1.set('fun', currentItem.id_public);
+                formatData1.set('process', 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
+                formatData1.set('desc', 'Acta de Viabilidad');
+                formatData1.set('date', date1);
+                sendDataToCreate(formatData1);
+            }
+            if (cub2 && vr2) {
+                let formatData2 = new FormData();
+                formatData2.set('vr', vr2);
+                formatData2.set('cub', cub2);
+                formatData2.set('fun', currentItem.id_public);
+                formatData2.set('process', 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
+                formatData2.set('desc', 'Deberes Urbanisticos');
+                formatData2.set('date', date2);
+                sendDataToCreate(formatData2);
+            }
+            /*
+            let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', desc);
+            let date = document.getElementById('geng_date_doc').value;
+            formatData.set('date', date);
+            */
+        }
+        let sendDataToCreate = (formatData) => {
+
+            
+            // Mostrar mensaje inicial de espera
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+        
+            // Crear relación
+            CubXVrDataService.createCubXVr(formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+        };
 
         let manage_exp = () => {
             MySwal.fire({
@@ -656,7 +764,7 @@ class EXP_1 extends Component {
         return (
             <div className="record_ph_gen container p-3">
                 <legend className="my-2 px-2 text-uppercase Collapsible text-center" id="nav_expedition_1">
-                    <label className="app-p lead fw-normal">INFORMACION GENERAL</label>
+                    <label className="app-p lead fw-normal">INFORMACIÓN GENERAL</label>
                 </legend>
                 <form id="form_expedition" onSubmit={save_exp}>
                     {_COMPONENT_GENERAL()}

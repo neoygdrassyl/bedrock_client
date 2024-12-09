@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../components/customClasses/typeParse'
 import FUNService from '../../../../services/fun.service'
 import SubmitService from '../../../../services/submit.service'
+import CubXVrDataService from '../../../../services/cubXvr.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
@@ -56,7 +57,6 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
         SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
             this.setCuratedList(response.data)
             this.setState({ vrsRelated: response.data })
-
         })
     }
     setCuratedList(List) {
@@ -113,9 +113,6 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     });
                 });
 
-        }
-        let _GET_ALL_VRS_RELATED = () => {
-            return (this.state.vrsRelated)
         }
         let _SET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -321,10 +318,10 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     <div className="col">
                         <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
                         <div class="input-group">
-                            <select class="form-select" defaultValue={""}>
+                            <select class="form-select" id="vr_selected" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.title}>
+                                    <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
                                 ))}
@@ -638,8 +635,9 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             fun_c_control.push(document.getElementById("control_func_3").checked ? 1 : 0);
             formData.set('fun_c_control', fun_c_control.join(';'));
 
-            manage_law(true, formData);
+            //manage_law(true, formData);
             if (document.getElementById('control_func_3').checked) createEvent(false)
+            createVRxCUB_relation(new_id)
 
         }
         let manage_law = (useMySwal, formData) => {
@@ -838,6 +836,70 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     });
             }
         }
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+        
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            formatData.set('process', 'CARTA LEGAL Y DEBIDA FORMA');
+        
+            let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', desc);
+        
+            let date = document.getElementById('geng_date_doc').value;
+            formatData.set('date', date);
+        
+            // Mostrar mensaje inicial de espera
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+        
+            // Crear relación
+            CubXVrDataService.createCubXVr(formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+        };
+        
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>
                 {_GENDOC_COMPONENT()}

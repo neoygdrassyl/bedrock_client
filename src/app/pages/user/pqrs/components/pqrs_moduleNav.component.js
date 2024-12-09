@@ -55,7 +55,7 @@ class PQRS_MODULE_NAV extends Component {
 
         return (<>
             {currentItem
-                ? <div className="btn-nav_module">
+                ? <div className="btn-nav_module-pqr">
                     <div className="">
                         <MDBCard className="container-primary m-1" border='dark' >
                             <MDBCardBody className="p-1">

@@ -587,7 +587,7 @@ class SUBMIT_MANAGE extends Component {
                         ? <>
                             <fieldset className="p-3">
                                 <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-uppercase text-light">LISA DE DOCUMENTOS</label>
+                                    <label className="app-p lead fw-normal text-uppercase text-light">LISTA DE DOCUMENTOS</label>
                                 </legend>
 
                                 <SUBMIT_LIST

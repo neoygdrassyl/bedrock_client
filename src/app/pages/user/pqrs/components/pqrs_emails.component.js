@@ -404,6 +404,44 @@ class PQRS_EMAILS extends Component {
                     console.log(e);
                 });
         };
+        const UPDATE_PQRS = () => {
+            var form = new FormData();
+    
+            const id_confirm = document.getElementById("pqrs_master_id_confirm").value
+            form.set('id_confirm', id_confirm);
+            form.set('id_old', currentItem.id_confirm);
+    
+            PQRS_Service.update(currentItem.id, form)
+            .then(response => {
+                if (response.data === 'OK') {
+                    MySwal.fire({
+                        title: swaMsg.publish_success_title,
+                        text: swaMsg.publish_success_text,
+                        footer: swaMsg.text_footer,
+                        icon: 'success',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                } else if (response.data === 'ERROR_DUPLICATE') {
+                    MySwal.fire({
+                        title: "ERROR DE DUPLICACION",
+                        text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        icon: 'error',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+                else {
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+            })
+            .catch(e => {
+                console.log(e);
+            });
+        }
 
         return (
             <div>
@@ -427,7 +465,6 @@ class PQRS_EMAILS extends Component {
                             </div >
                         </form> </>
                     : ""}
-
             </div>
         );
     }

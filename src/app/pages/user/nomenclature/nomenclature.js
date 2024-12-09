@@ -179,8 +179,8 @@ class NOMENCLATURE extends Component {
             content: {
                 position: 'absolute',
                 top: '40px',
-                left: '20%',
-                right: 'auto',
+                left: '5%',
+                right: '5%',
                 bottom: '40px',
                 border: '1px solid #ccc',
                 overflow: 'auto',
@@ -188,8 +188,7 @@ class NOMENCLATURE extends Component {
                 borderRadius: '4px',
                 outline: 'none',
                 padding: '20px',
-                marginRight: '20%',
-                width: '1000px',
+                marginRight: 'auto',
 
             }
         };

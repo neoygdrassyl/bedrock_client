@@ -182,8 +182,8 @@ class SUBMIT extends Component {
             content: {
                 position: 'absolute',
                 top: '40px',
-                left: '20%',
-                right: '20%',
+                left: '5%',
+                right: '5%',
                 bottom: '40px',
                 border: '1px solid #ccc',
                 overflow: 'auto',

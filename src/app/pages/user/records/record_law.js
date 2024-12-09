@@ -506,7 +506,7 @@ class RECORD_LAW extends Component {
                                     requestUpdateRecord={this.requestUpdateRecord}
                                 />
 
-                                {NAV_FUNA(_GET_CHILD_1())}
+                                {/* {NAV_FUNA(_GET_CHILD_1())} */}
                             </> : <>
 
                                 <fieldset className="p-3">
