@@ -156,9 +156,9 @@ class SUBMIT_MANAGE extends Component {
                             if (con) return "ACTA DE OBSERVACIONES"
                             return "ACTA DE OBSERVACIONES Y CORRECCIONES"
                         }
-                        if (state > 5 || state < 100) return "EXPEDICIÓN";
-                        if (state > 100 || state < 200) return "EXPEDIDO";
-                        if (state > 200) return "DESISTIDO";
+                        if (state > 5 && state < 100) return "EXPEDICIÓN";
+                        if (state >= 100 && state < 200) return "EXPEDIDO";
+                        if (state >= 200) return "DESISTIDO";
                     }
                     fun_51.map(value => { if (value.role == 'PROPIETARIO') owners.push(value.name + ' ' + value.surname) })
                     document.getElementById('submit_5').value = owners.join(', ');
