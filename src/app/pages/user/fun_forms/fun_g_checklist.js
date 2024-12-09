@@ -93,7 +93,7 @@ class FUNG_CHECKLIST extends Component {
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly readOnly type="radio" name="611" value="1"
+                        <input class="form-check-input" readOnly type="radio" name="611" value="1"
                             checked={_CHECK_INDEXVALUE('611', 1)} />
                     </div>
                     <div className="col-1">

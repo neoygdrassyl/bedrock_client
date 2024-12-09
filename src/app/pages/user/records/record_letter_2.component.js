@@ -8,11 +8,16 @@ import { infoCud } from '../../../components/jsons/vars';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import { MDBBtn } from 'mdb-react-ui-kit';
 import RecordReviewService from '../../../services/record_review.service';
+import SubmitService from '../../../services/submit.service'
+import CubXVrDataService from '../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
 class RECORD_DOC_LETTER_2 extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            vrsRelated: []
+        };
     }
     componentDidUpdate(prevProps) {
         // Uso tipico (no olvides de comparar las props):
@@ -20,6 +25,14 @@ class RECORD_DOC_LETTER_2 extends Component {
             var _CHILD_1 = this._SET_CHILD_1_FOREIGNER();
             document.getElementById('gena_type').value = formsParser1(_CHILD_1)
         }
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
     }
     _SET_CHILD_1_FOREIGNER = () => {
         var _CHILD = this.props.currentItem.fun_1s;
@@ -158,8 +171,13 @@ class RECORD_DOC_LETTER_2 extends Component {
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" defaultValue={""}>
+                            <select class="form-select" id="vr_selected1" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -295,8 +313,8 @@ class RECORD_DOC_LETTER_2 extends Component {
 
             formData.set('cub_act2_json', JSON.stringify(cub_act2_json));
 
-            manage_law(true, formData);
-
+            //manage_law(true, formData);
+            createVRxCUB_relation(new_id);
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -399,6 +417,73 @@ class RECORD_DOC_LETTER_2 extends Component {
             }
 
         }
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected1").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+            console.log(vr)
+            
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            formatData.set('process', 'CARTA AMPLIACION DE TERMINOS');
+            
+            /*
+            let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', desc);
+            */
+            formatData.set('desc', "Carta ampliación de términos");
+            let date = document.getElementById('gena2_date_doc').value;
+            formatData.set('date', date);
+            
+           
+            // Mostrar mensaje inicial de espera
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+        
+            // Crear relación
+            CubXVrDataService.createCubXVr(formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+        };
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>
                 {_GENDOC_COMPONENT()}

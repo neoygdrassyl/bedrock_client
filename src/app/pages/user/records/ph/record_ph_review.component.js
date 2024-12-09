@@ -13,6 +13,8 @@ import Collapsible from 'react-collapsible';
 import { cities, domains_number, infoCud } from '../../../../components/jsons/vars';
 import { getJSONFull, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
+import SubmitService from '../../../../services/submit.service'
+import CubXVrDataService from '../../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -21,7 +23,16 @@ class RECORD_PH_REVIEW extends Component {
     constructor(props) {
         super(props);
         this.state = {
-        };
+            vrsRelated: []
+        };  
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
     }
     async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
         let swaMsg = this.props.swaMsg;
@@ -75,6 +86,7 @@ class RECORD_PH_REVIEW extends Component {
 
 
     }
+    
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
         const { } = this.state;
@@ -365,8 +377,13 @@ class RECORD_PH_REVIEW extends Component {
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" defaultValue={""}>
+                            <select class="form-select" id="vr_selected" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -1327,6 +1344,70 @@ class RECORD_PH_REVIEW extends Component {
                     });
             }
         }
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+            
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            formatData.set('process', 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
+            
+            // let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', 'Citacion Notificación Resolución de Aprovación de Plano de Propiedad Horizontal');
+            let date = document.getElementById('phnot_date_doc').value;
+            formatData.set('date', date);
+        
+            // Mostrar mensaje inicial de espera
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+        
+            // Crear relación
+            CubXVrDataService.createCubXVr(formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+
+                        this.props.requestUpdateRecord(currentItem.id);
+                        this.props.requestUpdate(currentItem.id);
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                    else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+        };
 
         let save_cub = (e) => {
             e.preventDefault();
@@ -1344,8 +1425,10 @@ class RECORD_PH_REVIEW extends Component {
             cub_json.email = document.getElementById("phnot_email").value;
 
             formData.set('cub_json', JSON.stringify(cub_json));
+            createVRxCUB_relation(cub)
 
 
+            /*
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
@@ -1391,6 +1474,7 @@ class RECORD_PH_REVIEW extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                */
         }
         let pdfnot_gen = () => {
             formData = new FormData();

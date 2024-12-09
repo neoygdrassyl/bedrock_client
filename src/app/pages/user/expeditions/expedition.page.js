@@ -299,7 +299,7 @@ class EXPEDITION extends Component {
                                             />
                                         </> : null}
 
-                                    {NAV_FUNA()}
+                                    {/* {NAV_FUNA()} */}
 
                                 </>
                             </> : <>

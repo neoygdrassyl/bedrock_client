@@ -10,6 +10,9 @@ import Collapsible from 'react-collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import moment from 'moment';
 import EXP_RES from './exp._res.component';
+import SubmitService from '../../../services/submit.service'
+import CubXVrDataService from '../../../services/cubXvr.service'
+
 
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -19,7 +22,16 @@ class EXP_DOCS extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            vrsRelated: []
         };
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = this.props;
@@ -1085,6 +1097,73 @@ class EXP_DOCS extends Component {
 
             </>
         }
+
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+            
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            console.log(currentItem.id)
+            formatData.set('process', 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
+            
+            // let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', 'Citacion Notificación Resolución');
+            let date = document.getElementById('exodfb_date_doc').value;
+            formatData.set('date', date);
+            
+
+            
+            // Mostrar mensaje inicial de espera
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+        
+            // Crear relación
+            CubXVrDataService.createCubXVr(formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    } else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+        };
+        
         let _COMPONENT_DOC_6 = () => {
             let _COMPONENT = [];
             let _areas = _GET_CHILD_AREAS();
@@ -1510,8 +1589,13 @@ class EXP_DOCS extends Component {
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" defaultValue={""}>
+                            <select class="form-select" id="vr_selected" defaultValue={""}>
                                 <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -2334,7 +2418,9 @@ class EXP_DOCS extends Component {
             formData = new FormData();
             let cub3 = document.getElementById("exodfb_cub3_exp").value;
             formData.set('cub3', cub3);
+            
             formData.set('prev_cub3', currentRecord.cub3);
+            //console.log(cub3)
 
             let cub3_json = getJSONFull(currentRecord.cub3_json);
 
@@ -2345,7 +2431,9 @@ class EXP_DOCS extends Component {
             cub3_json.email = document.getElementById("exodfb_email").value;
 
             formData.set('cub3_json', JSON.stringify(cub3_json));
-            manage_exp();
+
+            createVRxCUB_relation(cub3)
+            //manage_exp();
         }
         let save_eje = () => {
             formData = new FormData();

@@ -173,7 +173,7 @@ class FUNN extends Component {
                             currentVersion={currentVersion}
                             requestUpdate={this.requestUpdate} />
 
-                        <NAV_FUNN />
+                        {/* <NAV_FUNN /> */}
                         <FUN_MODULE_NAV
                             translation={translation}
                             currentItem={currentItem}
@@ -223,73 +223,73 @@ class FUNN extends Component {
     }
 }
 
-const NAV_FUNN = () => {
-    return (
-        <div className="btn-navpqrs">
-            <MDBCard className="container-primary" border='dark'>
-                <MDBCardBody className="p-1">
+// const NAV_FUNN = () => {
+//     return (
+//         <div className="btn-navpqrs">
+//             <MDBCard className="container-primary" border='dark'>
+//                 <MDBCardBody className="p-1">
 
-                    <legend className="px-3 pt-2 text-uppercase bg-light text-center">
-                        <h6>Menu de Navegación</h6>
-                    </legend>
-                    <br />
-                    <a href="#fun_0">
-                        <legend className="px-3 text-uppercase btn-success">
-                            <h6>0. Meta datos</h6>
-                        </legend>
-                    </a>
-                    <br />
-                    <a href="#funn_1">
-                        <legend className="px-3 text-uppercase btn-info">
-                            <h6>1. Identificación de la Solicitud</h6>
-                        </legend>
-                    </a>
-                    <br />
-                    <a href="#funn_2">
-                        <legend className="px-3 text-uppercase btn-info">
-                            <h6>2. Información del Predio</h6>
-                        </legend>
-                    </a>
-                    <br />
-                    <a href="#funn_3">
-                        <legend className="px-3 text-uppercase btn-info">
-                            <h6>3. Información de Vecinos Colindante</h6>
-                        </legend>
-                    </a>
-                    <br />
-                    <a href="#funn_4">
-                        <legend className="px-3 text-uppercase btn-info">
-                            <h6>4. Linderos, Dimensiones y Áreas</h6>
-                        </legend>
-                    </a>
-                    <br />
-                    <a href="#funn_51">
-                        <legend className="px-3 text-uppercase btn-info">
-                            <h6>5.1 Titular(es) de la Licencia</h6>
-                        </legend>
-                    </a>
-                    <br />
-                    <a href="#funn_52">
-                        <legend className="px-3 text-uppercase btn-info">
-                            <h6>5.2 Profesionales Responsables</h6>
-                        </legend>
-                    </a>
-                    <br />
-                    <a href="#funn_53">
-                        <legend className="px-3 text-uppercase btn-info">
-                            <h6>5.3 Responsable de la Solicitud</h6>
-                        </legend>
-                    </a>
-                    <br />
-                    <a href="#fun_pdf">
-                        <legend className="px-3 text-uppercase btn-danger">
-                            <h6>DESCARGAR PDF</h6>
-                        </legend>
-                    </a>
-                </MDBCardBody>
-            </MDBCard>
-        </div>
-    );
-}
+//                     <legend className="px-3 pt-2 text-uppercase bg-light text-center">
+//                         <h6>Menu de Navegación</h6>
+//                     </legend>
+//                     <br />
+//                     <a href="#fun_0">
+//                         <legend className="px-3 text-uppercase btn-success">
+//                             <h6>0. Meta datos</h6>
+//                         </legend>
+//                     </a>
+//                     <br />
+//                     <a href="#funn_1">
+//                         <legend className="px-3 text-uppercase btn-info">
+//                             <h6>1. Identificación de la Solicitud</h6>
+//                         </legend>
+//                     </a>
+//                     <br />
+//                     <a href="#funn_2">
+//                         <legend className="px-3 text-uppercase btn-info">
+//                             <h6>2. Información del Predio</h6>
+//                         </legend>
+//                     </a>
+//                     <br />
+//                     <a href="#funn_3">
+//                         <legend className="px-3 text-uppercase btn-info">
+//                             <h6>3. Información de Vecinos Colindante</h6>
+//                         </legend>
+//                     </a>
+//                     <br />
+//                     <a href="#funn_4">
+//                         <legend className="px-3 text-uppercase btn-info">
+//                             <h6>4. Linderos, Dimensiones y Áreas</h6>
+//                         </legend>
+//                     </a>
+//                     <br />
+//                     <a href="#funn_51">
+//                         <legend className="px-3 text-uppercase btn-info">
+//                             <h6>5.1 Titular(es) de la Licencia</h6>
+//                         </legend>
+//                     </a>
+//                     <br />
+//                     <a href="#funn_52">
+//                         <legend className="px-3 text-uppercase btn-info">
+//                             <h6>5.2 Profesionales Responsables</h6>
+//                         </legend>
+//                     </a>
+//                     <br />
+//                     <a href="#funn_53">
+//                         <legend className="px-3 text-uppercase btn-info">
+//                             <h6>5.3 Responsable de la Solicitud</h6>
+//                         </legend>
+//                     </a>
+//                     <br />
+//                     <a href="#fun_pdf">
+//                         <legend className="px-3 text-uppercase btn-danger">
+//                             <h6>DESCARGAR PDF</h6>
+//                         </legend>
+//                     </a>
+//                 </MDBCardBody>
+//             </MDBCard>
+//         </div>
+//     );
+// }
 
 export default FUNN;
