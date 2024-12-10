@@ -437,7 +437,7 @@ class PQRSLOCK extends Component {
                                 currentItem={currentItem}
                             />
                         </fieldset>
-                        {window.user.roleId == 5 || window.user.roleId == 1
+                        {window.user.roleId == 5 || window.user.roleId == 1  || window.user.roleId == 2
                             ? <>
                                 <>
                                     <hr />

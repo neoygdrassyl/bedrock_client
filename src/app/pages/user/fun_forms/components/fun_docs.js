@@ -45,7 +45,8 @@ class FUN_DOCS extends Component {
             item: null,
             show_doc_1: false,
             modal_searchList: false,
-            pqrsxfun: false
+            pqrsxfun: false,
+            funVRList: []
         };
     }
     requestUpdate(id) {
@@ -113,7 +114,7 @@ class FUN_DOCS extends Component {
 
     render() {
         const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { attachs, currentItem } = this.state;
+        const { attachs, currentItem, funVRList } = this.state;
         var formData = new FormData();
 
         let _GET_CHILD_1 = () => {
@@ -267,6 +268,31 @@ class FUN_DOCS extends Component {
 
         }
 
+        let generateCVSNegative = (_data, _id) => {
+            var rows = [];
+            const headRows = [
+                'No. Solicitud',  'Descripción', 'VR', 'Código', 'Folios', 'Fecha Radicación'
+            ]
+            rows = _data.map(d =>
+            ([_id, d.name, d.id_public, d.code, d.page, d.date])
+            )
+            rows.unshift(headRows);
+
+            let csvContent = "data:text/csv;charset=utf-8,"
+                + rows.map(e => e.join(";")).join("\n");
+
+
+            var encodedUri = encodeURI(csvContent);
+            const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
+
+            var link = document.createElement("a");
+            link.setAttribute("href", fixedEncodedURI);
+            link.setAttribute("download", `DOCUMENTOS RADICADOS ${_id}.csv`);
+            document.body.appendChild(link); // Required for FF
+
+            link.click();
+        }
+
         let conOA = () => regexChecker_isOA_3(currentItem ? _GET_CHILD_1() : {})
         let rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
         return (
@@ -292,12 +318,22 @@ class FUN_DOCS extends Component {
                     />
 
                     <legend className="my-2 px-3 text-uppercase">
-                        <label className="app-p lead fw-normal text-uppercase" id="fund_12">1.2 DOCUMENTOS DE VENTANILLA ÚNICA</label>
+                        <div className='row my-2'>
+                            <div className='col'> 
+                                <label className="app-p lead fw-normal text-uppercase" id="fund_12">1.2 DOCUMENTOS DE VENTANILLA ÚNICA</label>
+                            </div>
+                            <div className='col text-end'>
+                                <MDBBtn outline color='success' size="sm" onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
+                                <i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn>
+                            </div>
+                        </div>
+
+                       
                     </legend>
 
                     <SUBMIT_SINGLE_VIEW
                         translation={translation} swaMsg={swaMsg} globals={globals}
-                        id_related={currentItem.id_public}
+                        id_related={currentItem.id_public} setVRList={(data) => this.setState({funVRList: data})}
                     />
 
                     <fieldset className="p-3">

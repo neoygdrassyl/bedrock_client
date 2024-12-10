@@ -3017,7 +3017,7 @@ export default function EXP_RES(props) {
     // ******************************* JSX ***************************** // 
     let _COMPONENT_DOC_RES = () => {
         var model = currentRecord.model || 'open';
-        let canSave = (window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5) || _GLOBAL_ID == 'cb1';
+        let canSave = (window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2) || _GLOBAL_ID == 'cb1';
         function getModel(model) {
             if (model == 'open') return _MODEL_OPEN();
             if (model == 'neg') return _MODEL_NEG();

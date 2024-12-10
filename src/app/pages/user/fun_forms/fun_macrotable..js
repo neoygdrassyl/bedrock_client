@@ -2827,7 +2827,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 fixedHeaderScrollHeight="700px"
                                 //selectableRows
                                 //actions={actionsMemo}
-                                expandableRows={(window.user.id == 1 || window.user.roleId == 3)}
+                                expandableRows={(window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2)}
                                 expandableRowsComponent={ExpandedComponent}
                                 //expandableRowDisabled={row => row.disabled}
                                 defaultSortFieldId={1}
@@ -2869,7 +2869,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 fixedHeaderScrollHeight="700px"
                                 //selectableRows
                                 //actions={actionsMemo}
-                                expandableRows={(window.user.id == 1 || window.user.roleId == 3)}
+                                expandableRows={(window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2)}
                                 expandableRowsComponent={ExpandedComponent}
                                 //expandableRowDisabled={row => row.disabled}
                                 defaultSortFieldId={1}

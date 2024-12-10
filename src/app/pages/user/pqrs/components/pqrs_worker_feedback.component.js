@@ -83,7 +83,7 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
                                 <button onClick={() => this.setState({ feedback: row })} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
                                     <i class="far fa-check-square fa-2x"></i></button></MDBTooltip>
                             : ""}
-                        {window.user.roleId == 5 || window.user.roleId == 1
+                        {window.user.roleId == 5 || window.user.roleId == 1 || window.user.roleId == 2
                             ? <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                                 <button onClick={() => this.setState({ worker: row })} className="btn btn-sm btn-warning m-0 p-2 shadow-none">
                                     <i class="far fa-paper-plane fa-2x"></i></button></MDBTooltip>

@@ -552,7 +552,7 @@ class SUBMIT_X_FUN extends Component {
         }
 
         // CHANGE ONE ROLE ID FOR 3 IN THE FUTURE IF IS NEEDED
-        return simple && (window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5) ?
+        return simple && (window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2) ?
             <div className="submit_x_fun  container">
                 <div className="row d-flex justify-content-center">
                     <div className="col-10">

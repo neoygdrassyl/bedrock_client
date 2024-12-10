@@ -52,6 +52,7 @@ class SUBMIT_SINGLE_VIEW extends Component {
             })
         })
         this.setState({ curatedList: newList, load: true })
+        this.props.setVRList(newList)
     };
 
     render() {

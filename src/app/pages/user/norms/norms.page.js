@@ -264,7 +264,7 @@ export default function NORMS(props) {
                         setModal(!modal);
                     }}><i class="far fa-edit"></i></MDBBtn>
                 </MDBTooltip>
-                {window.user.id == 1 || window.user.roleId == 3 ?
+                {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
                     <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
                         <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
                     </MDBTooltip>
