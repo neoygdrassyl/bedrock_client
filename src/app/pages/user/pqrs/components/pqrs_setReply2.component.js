@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
 import moment from 'moment';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -6,7 +6,6 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import { dateParser } from '../../../../components/customClasses/typeParse';
-import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 //const moment = require('moment');
 
@@ -17,16 +16,6 @@ export const PQRS_SET_REPLY1 = (props) => {
     const [state, setState] = useState({});
     const editor = useRef(null)
     const [content, setContent] = useState('')
-    const [vrsRelated, setVrsRelated] = useState([])
-    useEffect(() => {
-        let _GET_ALL_VRS_RELATED = () => {
-            SubmitService.getIdRelated(currentItem.id_global).then(response => {
-                setVrsRelated(response.data)
-            })
-        }
-        _GET_ALL_VRS_RELATED()
-    }, [])
-
     const funcion3 = () => {
         const x = currentItem.pqrs_solocitors.map(function (value) { return ` ${value.name}` })
         return x.join(', ');
@@ -274,16 +263,16 @@ export const PQRS_SET_REPLY1 = (props) => {
             });
     }
     let createVRxCUB_relation = (cub_selected) => {
-        let vr = document.getElementById("vr_selected").value;
+        let vr = currentItem.id_global
         let cub = cub_selected;
         let formatData = new FormData();
 
         formatData.set('vr', vr);
         formatData.set('cub', cub);
-        formatData.set('fun', currentItem.id);
         formatData.set('process', 'RESPUESTA FORMAL DE LA PETICION');
         // let desc = document.getElementById('geng_type').value;
         // formatData.set('desc', desc);
+        formatData.set('pqrs',1);
         let date = document.getElementById('pqrs_reply_time_formalReply').value;
         formatData.set('date', date);
         // Mostrar mensaje inicial de espera
@@ -305,7 +294,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                         confirmButtonText: swaMsg.text_btn,
                     });
                     // Refrescar la UI
-                    this.props.requestUpdate(currentItem.id, true);
+                    props.requestUpdate(currentItem.id, true);
                 } else if (response.data === 'ERROR_DUPLICATE') {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACIÓN",
@@ -347,19 +336,6 @@ export const PQRS_SET_REPLY1 = (props) => {
                             <input type="text" class="form-control" defaultValue={currentItem.id_reply}
                                 id="pqrs_master_idreply" require />
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
-                        </div>
-                    </div>
-                    <div className="col-4">
-                        <label className="mt-0">{infoCud.serials.start}</label>
-                        <div class="input-group ">
-                            <select class="form-select" id="vr_selected" defaultValue={""}>
-                                <option value=''>Seleccione una opción</option>
-                                {vrsRelated && vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.id_global}>
-                                        {value.id_global}
-                                    </option>
-                                ))}
-                            </select>
                         </div>
                     </div>
 
