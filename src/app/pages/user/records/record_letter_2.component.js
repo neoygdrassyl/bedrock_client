@@ -313,8 +313,8 @@ class RECORD_DOC_LETTER_2 extends Component {
 
             formData.set('cub_act2_json', JSON.stringify(cub_act2_json));
 
-            //manage_law(true, formData);
-            createVRxCUB_relation(new_id);
+           manage_law(true, formData);
+           //createVRxCUB_relation(new_id);
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -436,7 +436,7 @@ class RECORD_DOC_LETTER_2 extends Component {
             let date = document.getElementById('gena2_date_doc').value;
             formatData.set('date', date);
             
-           
+           /*
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -483,6 +483,7 @@ class RECORD_DOC_LETTER_2 extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                */
         };
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>

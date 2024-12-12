@@ -635,9 +635,9 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             fun_c_control.push(document.getElementById("control_func_3").checked ? 1 : 0);
             formData.set('fun_c_control', fun_c_control.join(';'));
 
-            //manage_law(true, formData);
+            manage_law(true, formData);
             if (document.getElementById('control_func_3').checked) createEvent(false)
-            createVRxCUB_relation(new_id)
+            // createVRxCUB_relation(new_id)
 
         }
         let manage_law = (useMySwal, formData) => {
@@ -852,6 +852,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             let date = document.getElementById('geng_date_doc').value;
             formatData.set('date', date);
         
+            /*
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -898,6 +899,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                */
         };
         
         return (

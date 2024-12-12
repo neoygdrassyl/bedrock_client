@@ -1359,6 +1359,7 @@ class RECORD_PH_REVIEW extends Component {
             let date = document.getElementById('phnot_date_doc').value;
             formatData.set('date', date);
         
+            /*
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -1407,6 +1408,7 @@ class RECORD_PH_REVIEW extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                */
         };
 
         let save_cub = (e) => {
@@ -1425,10 +1427,10 @@ class RECORD_PH_REVIEW extends Component {
             cub_json.email = document.getElementById("phnot_email").value;
 
             formData.set('cub_json', JSON.stringify(cub_json));
-            createVRxCUB_relation(cub)
+            //createVRxCUB_relation(cub)
 
 
-            /*
+            
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
@@ -1474,7 +1476,7 @@ class RECORD_PH_REVIEW extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-                */
+                
         }
         let pdfnot_gen = () => {
             formData = new FormData();
