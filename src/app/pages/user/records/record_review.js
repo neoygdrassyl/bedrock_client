@@ -1214,7 +1214,7 @@ class RECORD_REVIEW extends Component {
                 if (SweetAlertResult.isConfirmed) {
                     save_review();
                     save_clock();
-                    createVRxCUB_relation();
+                    // createVRxCUB_relation();
                 }
             });
         }
@@ -1824,7 +1824,7 @@ class RECORD_REVIEW extends Component {
             let date = document.getElementById('record_review_2').value;
             formatData.set('date', date);
 
-            
+            /*
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -1871,6 +1871,7 @@ class RECORD_REVIEW extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                */
         };
         
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : {})

@@ -67,8 +67,8 @@ export const PQRS_ID_CONFIRM = (props) => {
         form.set('id_confirm', id_confirm);
         form.set('id_old', currentItem.id_confirm);
 
-        createVRxCUB_relation(id_confirm)
-        /*
+        // createVRxCUB_relation(id_confirm)
+       
         PQRS_Service.update(currentItem.id, form)
         .then(response => {
             if (response.data === 'OK') {
@@ -98,7 +98,7 @@ export const PQRS_ID_CONFIRM = (props) => {
         })
         .catch(e => {
             console.log(e);
-        });*/
+        });
     }
 
     let createVRxCUB_relation = (cub_selected) => {
@@ -119,6 +119,7 @@ export const PQRS_ID_CONFIRM = (props) => {
         formatData.set('date', date);
         */
 
+        /*
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -165,6 +166,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                */
         };
     
     

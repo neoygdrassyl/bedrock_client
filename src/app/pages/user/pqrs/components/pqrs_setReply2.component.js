@@ -192,43 +192,43 @@ export const PQRS_SET_REPLY1 = (props) => {
             }
             formData.set('solicitors_name', array_solicitor.join());
             
-            createVRxCUB_relation(new_id);
-            // PQRS_Service.formalReply(formData)
-            //     .then(response => {
-            //         if (response.data === 'OK') {
-            //             MySwal.fire({
-            //                 title: swaMsg.publish_success_title,
-            //                 text: swaMsg.publish_success_text,
-            //                 footer: swaMsg.text_footer,
-            //                 icon: 'success',
-            //                 confirmButtonText: swaMsg.text_btn,
-            //             });
-            //             props.retrieveItem(currentItem.id);
-            //             props.refreshList();
-            //             if (hardReset) {
-            //                 //props.closeModal();
-            //             }
+            // createVRxCUB_relation(new_id);
+             PQRS_Service.formalReply(formData)
+                 .then(response => {
+                     if (response.data === 'OK') {
+                         MySwal.fire({
+                             title: swaMsg.publish_success_title,
+                             text: swaMsg.publish_success_text,
+                             footer: swaMsg.text_footer,
+                             icon: 'success',
+                             confirmButtonText: swaMsg.text_btn,
+                         });
+                         props.retrieveItem(currentItem.id);
+                         props.refreshList();
+                         if (hardReset) {
+                             //props.closeModal();
+                         }
 
-            //         } else if (response.data === 'ERROR_DUPLICATE') {
-            //             MySwal.fire({
-            //                 title: "ERROR DE DUPLICACION",
-            //                 text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
-            //                 icon: 'error',
-            //                 confirmButtonText: swaMsg.text_btn,
-            //             });
-            //         }
-            //         else {
-            //             MySwal.fire({
-            //                 title: swaMsg.generic_eror_title,
-            //                 text: swaMsg.generic_error_text,
-            //                 icon: 'warning',
-            //                 confirmButtonText: swaMsg.text_btn,
-            //             });
-            //         }
-            //     })
-            //     .catch(e => {
-            //         console.log(e);
-            //     });
+                     } else if (response.data === 'ERROR_DUPLICATE') {
+                         MySwal.fire({
+                             title: "ERROR DE DUPLICACION",
+                             text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                             icon: 'error',
+                             confirmButtonText: swaMsg.text_btn,
+                         });
+                     }
+                     else {
+                         MySwal.fire({
+                             title: swaMsg.generic_eror_title,
+                             text: swaMsg.generic_error_text,
+                             icon: 'warning',
+                             confirmButtonText: swaMsg.text_btn,
+                         });
+                     }
+                 })
+                 .catch(e => {
+                     console.log(e);
+                 });
         } else {
             MySwal.fire({
                 title: "NO HAY CONCECUTIVO DE SALIDA",
@@ -286,6 +286,7 @@ export const PQRS_SET_REPLY1 = (props) => {
         // formatData.set('desc', desc);
         let date = document.getElementById('pqrs_reply_time_formalReply').value;
         formatData.set('date', date);
+        /*
         // Mostrar mensaje inicial de espera
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -331,6 +332,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     confirmButtonText: swaMsg.text_btn,
                 });
             });
+            */
     };
     var validar = currentItem.pqrs_time ? currentItem.pqrs_time.reply_doc_date : null
     return (
