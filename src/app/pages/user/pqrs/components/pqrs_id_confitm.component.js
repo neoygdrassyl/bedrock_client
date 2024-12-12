@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import moment from 'moment';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
-import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 
 //const moment = require('moment');
@@ -47,23 +46,11 @@ export const PQRS_ID_CONFIRM = (props) => {
                 });
             });
 
-    }
-    
-    const [vrsRelated, setVrsRelated] = useState([])
-    useEffect(() => {
-        let _GET_ALL_VRS_RELATED = () => {
-            SubmitService.getIdRelated(currentItem.id_global).then(response => {
-              setVrsRelated(response.data)
-            })
-        }
-        _GET_ALL_VRS_RELATED()
-    }, [])
-    
+    }    
     const UPDATE_PQRS = () => {
         var form = new FormData();
 
         const id_confirm = document.getElementById("pqrs_master_id_confirm").value
-        let vr = document.getElementById("vr_selected").value;
         form.set('id_confirm', id_confirm);
         form.set('id_old', currentItem.id_confirm);
 
@@ -102,22 +89,18 @@ export const PQRS_ID_CONFIRM = (props) => {
     }
 
     let createVRxCUB_relation = (cub_selected) => {
-        let vr = document.getElementById("vr_selected").value;
+        let vr = currentItem.id_global;
         let cub = cub_selected;
         let formatData = new FormData();
-        
+        console.log(currentItem)
         formatData.set('vr', vr);
         formatData.set('cub', cub);
-        formatData.set('fun', currentItem.id);
         formatData.set('process', 'ENVIAR CONFIRMACION POR EMAIL');
-        
+        formatData.set('pqrs',1);
         
         let desc = "Email"
         formatData.set('desc', desc);
-        /*
-        let date = document.getElementById('geng_date_doc').value;
-        formatData.set('date', date);
-        */
+        formatData.set('date', new Date().toISOString().slice(0, 10));
 
             // Mostrar mensaje inicial de espera
             MySwal.fire({
@@ -139,7 +122,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                             confirmButtonText: swaMsg.text_btn,
                         });
                         // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
+                        props.requestUpdate(currentItem.id, true);
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACIÓN",
@@ -179,19 +162,6 @@ export const PQRS_ID_CONFIRM = (props) => {
                 <input type="text" class="form-control" defaultValue={currentItem.id_confirm}
                     id="pqrs_master_id_confirm" require />
                 <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
-            </div>
-            <div>
-                <label className="mt-1">{infoCud.serials.start}</label>
-                <div class="input-group ">
-                    <select class="form-select" id="vr_selected"  defaultValue={""}>
-                        <option value=''>Seleccione una opción</option>
-                        {vrsRelated && vrsRelated.map((value, key) => (
-                            <option key={value.id} value={value.id_global}>
-                                {value.id_global}
-                            </option>
-                        ))}
-                    </select>
-                </div>
             </div>
             <div class="d-flex justify-content-center">
                     <button type="button" class="btn btn-success btn-lg shadow-none mt-5" onClick={() => UPDATE_PQRS()}>

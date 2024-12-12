@@ -418,11 +418,15 @@ export default function DICTIONARY(props) {
     }
 
     let _COMPONENT_POPC_D = (it) => {
+        console.log(it)
         return <MDBPopover tag="section" popperTag='span' btnChildren={it.cub} placement='top' dismiss>
             <MDBPopoverHeader> <label>{it.cub}</label></MDBPopoverHeader>
             <MDBPopoverBody>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><label>Relación: <label className='fw-bold'>{it.id || it.vr}</label></label></li>
+                    <li class="list-group-item"><label>Relación: <label className='fw-bold'>{it.id === '1' ? it.vr : it.id}</label></label></li>
+                    {
+                        it.id !== '1' && <li class="list-group-item"><label>VR: <label className='fw-bold'>{it.vr}</label></label></li>
+                    }
                     <li class="list-group-item"><label>Proceso: <label className='fw-bold'>{it.res}</label></label></li>
                 </ul>
             </MDBPopoverBody>
@@ -512,8 +516,8 @@ export default function DICTIONARY(props) {
                     <div className='row mx-3'>
                         <div className='col text-end'>
                             <MDBBtn onClick={() => generateCVS(
-                                ['CÓDIGO', 'PROCESO', 'DESCRIPCCIÓN'], 
-                                LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res}`])), 
+                                ['CÓDIGO', 'PROCESO', 'DESCRIPCCIÓN'],
+                                LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res}`])),
                                 'LISTADO CONSECUTIVOS DE SALIDA')}
                                 color='success' size='sm' outline><i class="fas fa-table"></i> DESCARGAR CSV</MDBBtn>
                         </div>

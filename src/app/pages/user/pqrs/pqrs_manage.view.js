@@ -994,6 +994,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         swaMsg={swaMsg} 
                                         globals={globals}
                                         currentItem={currentItem}
+                                        requestUpdate={loadData}
                                         />
                                     </div>
                                 </div>
@@ -1204,6 +1205,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                     retrieveItem={loadData}
                                     refreshList={refreshList}
                                     hardReset
+                                    requestUpdate={loadData}
                                 />
                             </div>
                         </Collapsible>
