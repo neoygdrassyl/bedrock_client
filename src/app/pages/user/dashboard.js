@@ -40,7 +40,7 @@ class Dashboard extends Component {
                         <h2 className="text-start my-4">Módulos de Trabajo</h2>
                         <div className="d-flex justify-content-around py-3">
                             <MDBCol className={classnameCards}>
-                                <DashBoardCard title="Buzon de Mensajes" image="fas fa-envelope-open-text fa-3x" link={"/mail"} imageColor=" Crimson" />
+                                <DashBoardCard title="Buzón de Mensajes" image="fas fa-envelope-open-text fa-3x" link={"/mail"} imageColor=" Crimson" />
 
                             </MDBCol>
                             <MDBCol className={classnameCards}>
@@ -73,7 +73,7 @@ class Dashboard extends Component {
                                 <DashBoardCard title="Radicar Licencias" image="fas fa-file-alt fa-3x" link={"/fun"} imageColor=" DodgerBlue" />
                             </MDBCol>
                             <MDBCol className={classnameCards}>
-                                <DashBoardCard title="Gestionar Licencias" image="fas fa-folder fa-3x" link={"/funmanage"} imageColor=" DodgerBlue" />
+                                <DashBoardCard title="Gestionar Licenciass" image="fas fa-folder fa-3x" link={"/funmanage"} imageColor=" DodgerBlue" />
                             </MDBCol>
                             <MDBCol className={classnameCards}>
                                 {_GLOBAL_ID == "cb1" ?
@@ -109,7 +109,7 @@ class Dashboard extends Component {
                         <div className="d-flex justify-content-center py-3"
                             lassName="px-3">
                             <MDBCol className={classnameCards}>
-                                <DashBoardCard title="Historial Profesionales" image="fas fa-address-book fa-4x" link={"/certs"} imageColor=" MediumSeaGreen" />
+                                <DashBoardCard title="Historial de Profesionales" image="fas fa-address-book fa-4x" link={"/certs"} imageColor=" MediumSeaGreen" />
                             </MDBCol>
                         </div>
                     </div >

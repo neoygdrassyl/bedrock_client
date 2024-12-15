@@ -310,9 +310,9 @@ export default function NORMS(props) {
                     </div>
 
                     <MDBRow>
-                        <MDBCol md="4">{NEW_ITEM}</MDBCol>
-                        <MDBCol md="4">{SEARCH_ITEM}</MDBCol>
-                        <MDBCol md="4"></MDBCol>
+                        <MDBCol md="6">{NEW_ITEM}</MDBCol>
+                        <MDBCol md="6">{SEARCH_ITEM}</MDBCol>
+                        {/* <MDBCol md="4"></MDBCol> */}
                     </MDBRow>
 
                     <h2 class="text-uppercase text-center pb-2">LISTADO DE NORMAS</h2>

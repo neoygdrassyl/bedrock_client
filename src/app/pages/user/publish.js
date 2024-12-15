@@ -599,7 +599,7 @@ class Publish extends Component {
             <form onSubmit={handleSubmit} id="app-form">
               <MDBRow>
                 <MDBCol md="6">
-                  <label>Id publico</label><br />
+                  <label>Identificador público</label><br />
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-info text-white">
                       <i class="fas fa-file-signature"></i>
@@ -612,15 +612,14 @@ class Publish extends Component {
                       <i class="fas fa-id-card"></i>
                     </span>
                     <select class="form-select" id="publish_2" required onChange={(e) => handleChange(e)}>
-                      <option selected disabled >Tipo de Documento</option>
-                      <option value={'lu'}>Licencias urbanisticas</option>
-                      <option value={'oa'}>Otras actuaciones</option>
-                      <option value={'mpr'}>MPR</option>
-                      <option value={'nv'}>Aviso vecinos colindantes </option>
-                      <option value={'pp'}>Citación para notificación personal</option>
-                      <option value={'na'}>Notificaciones de avisos</option>
-                      <option value={'rp'}>Actos generales y respuestas pqrs</option>
-                      <option value={'res'}>Resoluciones</option>
+                      <option value="lu">Licencias urbanísticas</option>
+                      <option value="oa">Otras actuaciones</option>
+                      <option value="mpr">MPR</option>
+                      <option value="nv">Aviso a vecinos colindantes</option>
+                      <option value="pp">Citación para notificación personal</option>
+                      <option value="na">Notificaciones de avisos</option>
+                      <option value="rp">Actos generales y respuestas PQRS</option>
+                      <option value="res">Resoluciones</option>
                     </select>
                   </div>
                   <label>Estado documento</label><br />
@@ -646,7 +645,7 @@ class Publish extends Component {
                     <label class="input-group-text bg-info  text-white" for="file"><i class="fas fa-paperclip"></i></label>
                     <input type="file" class="form-control" id="file" accept="application/pdf" required />
                   </div>
-                  <label>Tipo de actuacion</label>
+                  <label>Tipo de actuación</label>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-info text-white" id="type-pqrs">
                       <i class="fas fa-id-card"></i>
@@ -654,20 +653,20 @@ class Publish extends Component {
                     <select class="form-select" required id="publish_3">
                       <option>Otros</option>
                       <option selected disabled className='fw-bold'> LICENCIAS URBANÍSTICAS O RECONOCIMIENTOS</option>
-                      <option >Licencias de construcción</option>
-                      <option >Reconocimientos de edificación</option>
-                      <option >Licencias de urbanización </option>
-                      <option >Licencias de subdivisión </option>
-                      <option >Licencias de parcelación </option>
+                        <option>Licencias de construcción</option>
+                        <option>Reconocimientos de edificación</option>
+                        <option>Licencias de urbanización</option>
+                        <option>Licencias de subdivisión</option>
+                        <option>Licencias de parcelación</option>
                       <hr></hr>
                       <option disabled className='fw-bold'> OTRAS ACTUACIONES </option>
-                      <option >Aprobación de planos ph</option>
-                      <option >Concepto de norma urbanística</option>
-                      <option >Concepto uso de suelo</option>
-                      <option >Ajustes de cotas de áreas </option>
-                      <option >Autorización movimientos de tierras </option>
-                      <option >Aprobación de piscinas</option>
-                      <option >Copia certificada planos</option>
+                        <option>Aprobación de planos PH</option>
+                        <option>Concepto de norma urbanística</option>
+                        <option>Concepto de uso de suelo</option>
+                        <option>Ajustes de cotas de áreas</option>
+                        <option>Autorización de movimientos de tierras</option>
+                        <option>Aprobación de piscinas</option>
+                        <option>Copia certificada de planos</option>
                       <option disabled className='fw-bold'> MLV - PRO - REV</option>
                       <option>Modificación de licencias vigentes </option>
                       <option>Prorroga de licencias y revalidaciones </option>
