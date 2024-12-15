@@ -197,7 +197,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                     <div className="col ms-auto" >
                         <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" defaultValue={""}>
+                            <select class="form-select" defaultValue={""} onChange={(e) => {this.props.setVr(e.target.value)}}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
