@@ -68,7 +68,7 @@ export const PQRS_ID_CONFIRM = (props) => {
         form.set('id_old', currentItem.id_confirm);
 
         createVRxCUB_relation(id_confirm)
-        /*
+        
         PQRS_Service.update(currentItem.id, form)
         .then(response => {
             if (response.data === 'OK') {
@@ -98,7 +98,7 @@ export const PQRS_ID_CONFIRM = (props) => {
         })
         .catch(e => {
             console.log(e);
-        });*/
+        });
     }
 
     let createVRxCUB_relation = (cub_selected) => {

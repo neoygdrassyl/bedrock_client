@@ -505,15 +505,17 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             formatData.set('date', date);
             
             // Mostrar mensaje inicial de espera
-            MySwal.fire({
+            
+            /*MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
                 icon: 'info',
                 showConfirmButton: false,
             });
-        
+        */
             // Crear relación
             CubXVrDataService.createCubXVr(formatData)
+            /*
                 .then((response) => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -550,6 +552,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                */
         };
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>
