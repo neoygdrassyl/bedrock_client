@@ -8,7 +8,6 @@ let sha256 = require('js-sha256');
 
 const MySwal = withReactContent(Swal);
 
-
 export const ACESS_EDIT = (props) => {
 
     const { swaMsg, currentItem, translation } = props;
@@ -20,14 +19,11 @@ export const ACESS_EDIT = (props) => {
         let password_user = document.getElementById("user_password").value
         formData.set('password', sha256(password_user));
 
-
         PQRS_SERVICES.login_access(formData)
             .then(response => {
                 if (response.data === 'OK') {
                     props.editMaster1()
-                }
-
-                else {
+                } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,
                         text: 'Acceso denegado',
@@ -36,34 +32,31 @@ export const ACESS_EDIT = (props) => {
                     });
                 }
             })
-
-
     }
-
 
     return <>
         <h2 className='text-center'>ACCESO A LA EDICIÓN ESPECIAL</h2>
         <fieldset className="p-3 border border-info mb-2">
-            <p>En esta vista se podrá tener acceso a la edición de la petición ya cerrada por lo cual se debe tener en cuanta los siguientes ítems.</p>
+            <p>En esta vista se podrá tener acceso a la edición de la petición ya cerrada, por lo cual se deben tener en cuenta los siguientes ítems:</p>
             <ul>
                 <li>Únicamente editar la petición en caso de que sea necesario.</li>
                 <li>Ingresar la contraseña.</li>
-                <li>Una vez ingreso la contraseña se podrá tener acceso a editar la información.</li>
+                <li>Una vez ingresada la contraseña, se podrá tener acceso para editar la información.</li>
             </ul>
             <div className='container col-5 opacity-100'>
                 <div className="row d-flex justify-content-center">
                     <div className="col">
                         <label>Contraseña</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-key"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-key"></i>
                             </span>
                             <input type='password' className='form-control' id='user_password' required></input>
                         </div>
                     </div>
                 </div>
                 <div className='text-center py-3'>
-                    <button type="button" class="btn btn-sm btn-info" onClick={access}>ACCEDER <i class="fas fa-sign-in-alt"></i></button>
+                    <button type="button" className="btn btn-sm btn-info" onClick={access}>ACCEDER <i className="fas fa-sign-in-alt"></i></button>
                 </div>
             </div>
         </fieldset>
@@ -74,6 +67,5 @@ export const ACESS_EDIT = (props) => {
             FROM={"editable"}
             NAVIGATION={props.NAVIGATION}
         />
-     
     </>
 }
