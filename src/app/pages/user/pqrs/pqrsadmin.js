@@ -597,7 +597,7 @@ class PQRSADMIN extends Component {
                 sortable: true,
                 center: true,
                 filterable: true,
-                cell: row => <label>{row.id_global ? row.id_global : row.id_publico ? row.id_publico : <label className="fw-bold text-danger">SIN CONCENCUTIVO</label>}</label>
+                cell: row => <label>{row.id_global ? row.id_global : row.id_publico ? row.id_publico : <label className="fw-bold text-danger">SIN CONSECUTIVO</label>}</label>
             },
             {
                 name: <label>¿PROFESIONAL ASIGNADO?</label>,
@@ -605,7 +605,7 @@ class PQRSADMIN extends Component {
                 cell: row => <label>{row.pqrs_workers.length ? <label>{row.pqrs_workers.map(function (value) { return <h5 className='my-0 py-0 fw-normal'>{value.name}</h5> })}</label> : <label className="fw-bold text-warning">PENDIENTE</label>}</label>
             },
             {
-                name: <label>FECHA RADICACION</label>,
+                name: <label>FECHA RADICACIÓN</label>,
                 selector: row => row.pqrs_time ? row.pqrs_time.legal : '',
                 sortable: true,
                 filterable: true,
@@ -652,7 +652,7 @@ class PQRSADMIN extends Component {
                 }
             },
             {
-                name: <label>ACCION</label>,
+                name: <label>ACCIÓN</label>,
                 button: true,
                 center: true,
                 minWidth: '150px',
@@ -675,7 +675,7 @@ class PQRSADMIN extends Component {
                 selector: row => row.id_publico ? row.id_publico : row.id_global ? row.id_global : '',
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <label className="fw-bold text-danger">SIN CONCENCUTIVO</label>}</label>
+                cell: row => <label>{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <label className="fw-bold text-danger">SIN CONSECUTIVO</label>}</label>
             },
             {
                 name: <h6>CONSECUTIVO SALIDA</h6>,
@@ -714,11 +714,11 @@ class PQRSADMIN extends Component {
                 selector: row => dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal),
                 sortable: true,
                 center: true,
-                cell: row => <label>{dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal) + ' | ' + (row.pqrs_time.time)} dia(s) habiles</label>
+                cell: row => <label>{dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal) + ' | ' + (row.pqrs_time.time)} día(s) habiles</label>
             },
 
             {
-                name: <p>ACCION</p>,
+                name: <p>ACCIÓN</p>,
                 button: true,
                 minWidth: '150px',
                 center: true,
@@ -743,7 +743,7 @@ class PQRSADMIN extends Component {
                 selector: row => row.id_publico ? row.id_publico : row.id_global ? row.id_global : '',
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <label className="fw-bold text-danger">SIN CONCENCUTIVO</label>}</label>
+                cell: row => <label>{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <label className="fw-bold text-danger">SIN CONSECUTIVO</label>}</label>
             },
             {
                 name: <label>CONSECUTIVO SALIDA</label>,
@@ -760,7 +760,7 @@ class PQRSADMIN extends Component {
                 cell: row => <label>{_STATUS_COMPONENT(row.status)}</label>
             },
             {
-                name: <label>FECHA RADICACION</label>,
+                name: <label>FECHA RADICACIÓN</label>,
                 selector: 'pqrs_time.reply_legal',
                 sortable: true,
                 filterable: true,
@@ -775,7 +775,7 @@ class PQRSADMIN extends Component {
 
             },
             {
-                name: <label>ACCION</label>,
+                name: <label>ACCIÓN</label>,
                 button: true,
                 minWidth: '150px',
                 cell: row => <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
@@ -927,7 +927,7 @@ class PQRSADMIN extends Component {
                                 <MDBCard className="bg-card mb-3">
                                     <MDBCardBody>
                                         <MDBCardTitle className="text-center"> <h4>GENERAR PQRS</h4></MDBCardTitle>
-                                        <p className="app-text-primary text-justify"> Permite la digitalizcion de una solicitud PQRS</p>
+                                        <p className="app-text-primary text-justify"> Permite la digitalización de una solicitud PQRS</p>
                                         <div className="text-center py-4 mt-3">
                                             <button className="btn btn-lg btn-success" onClick={() => this.toggle()}><i class="fas fa-folder-plus"></i> NUEVA SOLICITUD </button>
                                         </div>
@@ -944,7 +944,7 @@ class PQRSADMIN extends Component {
                                                     <i class="fas fa-info-circle"></i>
                                                 </span>
                                                 <select class="form-select" id="search_0" required>
-                                                    <option value="1">Consecutivo Entrada</option>
+                                                    <option value="1">Consecutivo de Entrada</option>
                                                     <option value="2">Consecutivo de Salida</option>
                                                     <option value="3">Numero de radicación de Licencia</option>
                                                     <option value="4">Nombre de Peticionario</option>
@@ -1068,14 +1068,14 @@ class PQRSADMIN extends Component {
                                 />
                             </> :
                                 <div>
-                                    <h4>No Data Retrieved</h4>
+                                    <h4>No hay información</h4>
                                 </div>}
                         </MDBTabsPane>
                         <MDBTabsPane show={this.state.fillActive === '10'}>
                             {isLoaded ? <>
                                 <DataTable
                                     title="Lista de peticiones archivadas"
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Página:', rangeSeparatorText: 'de' }}
                                     noDataComponent="No hay mensajes"
                                     striped="true"
                                     columns={columnsArchive}
@@ -1094,7 +1094,7 @@ class PQRSADMIN extends Component {
                                 />
                             </> :
                                 <div>
-                                    <h4>No Data Retrieved</h4>
+                                    <h4>No hay información</h4>
                                 </div>}
                         </MDBTabsPane>
 
@@ -1204,7 +1204,7 @@ class PQRSADMIN extends Component {
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>RESPONDER A PETICION -  {this.state.currentIdPublic}</h3>
+                            <h3>RESPONDER A PETICIÓN -  {this.state.currentIdPublic}</h3>
                             <div className='btn-close' color='none' onClick={() => this.toggleReply()}></div>
                         </div>
                         <hr />
@@ -1229,7 +1229,7 @@ class PQRSADMIN extends Component {
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>CERRAR PETICION -  {this.state.currentIdPublic}</h3>
+                            <h3>CERRAR PETICIÓN -  {this.state.currentIdPublic}</h3>
                             <div className='btn-close' color='none' onClick={() => this.toggleLock()}></div>
                         </div>
                         <hr />
@@ -1253,7 +1253,7 @@ class PQRSADMIN extends Component {
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>MODIFICAR PETICION -  {this.state.currentIdPublic}</h3>
+                            <h3>MODIFICAR PETICIÓN -  {this.state.currentIdPublic}</h3>
                             <div className='btn-close' color='none' onClick={() => this.toggleEdit()}></div>
                         </div>
                         <hr />
@@ -1276,7 +1276,7 @@ class PQRSADMIN extends Component {
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>GESTIONAR PETICION -  {this.state.currentIdGlobal || this.state.currentIdPublic}</h3>
+                            <h3>GESTIONAR PETICIÓN -  {this.state.currentIdGlobal || this.state.currentIdPublic}</h3>
                             <div className='btn-close' color='none' onClick={() => this.toggleManage()}></div>
                         </div>
                         <hr />
@@ -1302,7 +1302,7 @@ class PQRSADMIN extends Component {
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>EDITAR PETICION -  {this.state.currentIdGlobal || this.state.currentIdPublic}</h3>
+                            <h3>EDITAR PETICIÓN -  {this.state.currentIdGlobal || this.state.currentIdPublic}</h3>
                             <div className='btn-close' color='none' onClick={() => this.toggleEditable()}></div>
                         </div>
                         <hr />

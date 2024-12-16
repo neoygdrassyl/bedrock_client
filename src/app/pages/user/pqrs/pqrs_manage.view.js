@@ -321,7 +321,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         ]
 
         var _COMPONENT = <DataTable
-            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Página:', rangeSeparatorText: 'de' }}
             noDataComponent="No hay mensajes"
             striped="true"
             columns={columns}
@@ -701,8 +701,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
     let deteleAttach = (id) => {
         MySwal.fire({
-            title: "ELIMINAR ITEM",
-            text: "¿Esta seguro de eliminar este item de forma permanente?",
+            title: "ELIMINAR ÍTEM",
+            text: "¿Esta seguro de eliminar este ítem de forma permanente?",
             icon: 'warning',
             confirmButtonText: "ELIMINAR",
             cancelButtonText: "CANCELAR",
@@ -959,7 +959,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             <label className="px-4 app-p lead fw-normal text-uppercase"><b>2. CONFIRMAR A PETICIONARIO <i class="fas fa-check-circle"></i></b></label>
                             <br></br>
                             <br></br>
-                            <h5 className="px-2"><b>GUIA PARA ENVIAR LA CONFIRMACION POR EMAIL</b></h5>
+                            <h5 className="px-2"><b>GUÍA PARA ENVIAR LA CONFIRMACIÓN POR EMAIL</b></h5>
                             <ul>
                                 <li className="app-p"><h5>Escriba el cuerpo del email.</h5></li>
                                 <li className="app-p"><h5>Verifique los correos a los que se enviará el email, es posible añadir o quitar correos de la lista separandolos por coma (,)</h5></li>
@@ -1285,10 +1285,10 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                 </>
                     : <fieldset className="p-3" id="fung_0">
-                        <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORACION, INTENTELO NUEVAMENTE</h3></div>
+                        <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORMACIÓN, INTENTELO NUEVAMENTE</h3></div>
                     </fieldset>}
             </> : <fieldset className="p-3" id="fung_0">
-                <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
+                <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
             </fieldset>
             }
             <PQRS_MODULE_NAV

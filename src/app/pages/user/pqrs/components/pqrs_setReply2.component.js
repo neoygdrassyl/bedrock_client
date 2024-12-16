@@ -137,7 +137,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 console.log(e);
                 MySwal.fire({
                     title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
+                    text: "No ha sido posible cargar este ítem, intentelo nuevamente.",
                     icon: 'error',
                     confirmButtonText: props.swaMsg.text_btn,
                 });
@@ -200,8 +200,8 @@ export const PQRS_SET_REPLY1 = (props) => {
 
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                             icon: 'error',
                             confirmButtonText: swaMsg.text_btn,
                         });
@@ -220,8 +220,8 @@ export const PQRS_SET_REPLY1 = (props) => {
                 });
         } else {
             MySwal.fire({
-                title: "NO HAY CONCECUTIVO DE SALIDA",
-                text: "Se debe de espeficiar primero el concecutivo de Salida.",
+                title: "NO HAY CONSECUTIVO DE SALIDA",
+                text: "Se debe de espeficiar primero el consecutivo de Salida.",
                 icon: 'error',
             });
         }
@@ -340,7 +340,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     </div>
 
                     <div className="col-3">
-                        <label>Fecha creacion documento</label>
+                        <label>Fecha creación documento</label>
                         <div class="input-group my-1 ">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-hashtag"></i>
@@ -371,7 +371,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     <div class="row justify-content-center">
                         <div class="col-3">
                             <div className="text-center m-3">
-                                <button type="button" class="btn btn-sm btn-info" onClick={funcion5}><i class="fas fa-exchange-alt"></i> CARGAR INFORMACION</button>
+                                <button type="button" class="btn btn-sm btn-info" onClick={funcion5}><i class="fas fa-exchange-alt"></i> CARGAR INFORMACIÓN</button>
                             </div>
                         </div>
                         <div class="col-3">

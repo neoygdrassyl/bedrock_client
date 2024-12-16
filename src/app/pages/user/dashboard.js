@@ -73,7 +73,7 @@ class Dashboard extends Component {
                                 <DashBoardCard title="Radicar Licencias" image="fas fa-file-alt fa-3x" link={"/fun"} imageColor=" DodgerBlue" />
                             </MDBCol>
                             <MDBCol className={classnameCards}>
-                                <DashBoardCard title="Gestionar Licenciass" image="fas fa-folder fa-3x" link={"/funmanage"} imageColor=" DodgerBlue" />
+                                <DashBoardCard title="Gestionar Licencias" image="fas fa-folder fa-3x" link={"/funmanage"} imageColor=" DodgerBlue" />
                             </MDBCol>
                             <MDBCol className={classnameCards}>
                                 {_GLOBAL_ID == "cb1" ?
