@@ -91,7 +91,7 @@ class PQRSNEW extends Component {
                                 <option>OTRO</option>
                             </select>
                         </div>
-                        <label class='m-0'>Numero de documento: </label>
+                        <label class='m-0'>Número de documento: </label>
                         <div class="input-group my-1">
 
 
@@ -369,7 +369,7 @@ class PQRSNEW extends Component {
                     else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACION",
-                            text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                             icon: 'error',
                             confirmButtonText: swaMsg.text_btn,
                         });
@@ -412,7 +412,7 @@ class PQRSNEW extends Component {
                     console.log(e);
                     MySwal.fire({
                         title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el concecutivo, intentelo nuevamnte.",
+                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
                         confirmButtonText: this.props.swaMsg.text_btn,
                     });
@@ -478,7 +478,7 @@ class PQRSNEW extends Component {
                         {_SOLICITORS_COMPONENT()}
                         <hr className="my-3" />
 
-                        <label className="app-p lead text-start fw-bold text-uppercase">1.2 DATOS PARA NOTIFICACION</label>
+                        <label className="app-p lead text-start fw-bold text-uppercase">1.2 DATOS PARA NOTIFICACIÓN</label>
                         <div className="text-end m-3">
                             {/* {contacts > 1
                                 ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusContact()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
@@ -533,7 +533,7 @@ class PQRSNEW extends Component {
 
                         <div className="row">
                             <div className="col-lg-6 col-md-6">
-                                <label>Número de registro Ventanilla Unica</label>
+                                <label>Número de registro Ventanilla Única</label>
                                 <div class="input-group my-1">
                                     <span class="input-group-text bg-info text-white">
                                         <i class="fas fa-hashtag"></i>

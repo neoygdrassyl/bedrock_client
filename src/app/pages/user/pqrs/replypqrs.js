@@ -136,7 +136,7 @@ class PQRSREPLY extends Component {
                                 <p className="app-p">GUIÁ PARA DEFINIR LA RESPUESTA AL PETICIONARIO</p>
                                 <ul>
                                     <li className="app-p">Argumente el cuerpo del oficio unicamente.</li>
-                                    <li className="app-p">Especifique el CUR o Consecutivo de Salida.</li>
+                                    <li className="app-p">Especifique el CUB o Consecutivo de Salida.</li>
                                     <li className="app-p">Especifique la fecha en la cual se genera la respuesta.</li>
                                 </ul>
                                 {currentItem.id_reply
