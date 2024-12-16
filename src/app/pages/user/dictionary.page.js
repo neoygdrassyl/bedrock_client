@@ -195,28 +195,81 @@ export default function DICTIONARY(props) {
     }
 
     let _COMPONENT_SEARCH_BAR = (_id, _filter, _func) => {
-
+        const [selectedFilter, setSelectedFilter] = React.useState(''); // Estado para el filtro seleccionado
+    
         function setFilter() {
-            _func(document.getElementById(_id).value)
+            _func(document.getElementById(_id).value, selectedFilter); // Pasa filtro seleccionado
         }
+    
         function clearFilter() {
             _func('');
-            document.getElementById(_id).value = ''
+            setSelectedFilter('');
+            document.getElementById(_id).value = '';
         }
+        const filterOptions = ['CUB', 'PQRS', 'FUN'];
 
-        return <>
-            <div class="input-group m-3 px-3 mx-0">
-                <span class="input-group-text bg-linght">
-                    <i class="fas fa-search"></i>
-                </span>
-                <input type='text' className='form-control' placeholder='Busqueda...' id={_id} defaultValue={_filter}
-                    onKeyPress={(e) => { if (e.key === 'Enter') setFilter() }} />
-                <MDBBtn link color="primary" size="sm" onClick={() => setFilter()}><i class="fas fa-angle-double-right"></i> Buscar</MDBBtn>
-                {_filter ? <MDBBtn link color="danger" size="sm" onClick={() => clearFilter()}><i class="fas fa-times"></i> </MDBBtn>
-                    : ''}
-            </div>
-        </>
-    }
+        return (
+            <>
+                <div className="input-group m-3 px-3 mx-0">
+                    {/* Dropdown para filtro */}
+                    <div className="dropdown">
+                        <button
+                            className="input-group-text bg-light border-0 dropdown-toggle" type="button"
+                            id="dropdownMenuButton"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i className="fas fa-search"></i>
+                        </button>
+                        <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {filterOptions.map((filter) => (
+                                <li key={filter}>
+                                    <a className="dropdown-item" href="" 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setSelectedFilter(filter);
+                                        }}>
+                                        {filter}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+    
+                    {/* Input de búsqueda */}
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Busqueda..."
+                        id={_id}
+                        defaultValue={_filter}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') setFilter();
+                        }}/>
+    
+                    {/* Botón Buscar */}
+                    <MDBBtn link color="primary" size="sm" onClick={() => setFilter()}>
+                        <i className="fas fa-angle-double-right"></i> Buscar
+                    </MDBBtn>
+    
+                    {/* Botón Limpiar */}
+                    {_filter || selectedFilter ? (
+                        <MDBBtn link color="danger" size="sm" onClick={() => clearFilter()}>
+                            <i className="fas fa-times"></i>
+                        </MDBBtn>
+                    ) : (
+                        ''
+                    )}
+                </div>
+    
+                {/* Filtro seleccionado*/}
+                {selectedFilter && (
+                    <div className="text-muted mx-3">
+                        <small>Filtro seleccionado: {selectedFilter}</small>
+                    </div>
+                )}
+            </>
+        );
+    };    
 
     let _COMPONENT_LIST_A = () => {
 
