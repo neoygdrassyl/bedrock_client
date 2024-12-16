@@ -31,7 +31,7 @@ class PQRS_WORKERS_EMAILS extends Component {
                 console.log(e);
                 MySwal.fire({
                     title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
+                    text: "No ha sido posible cargar este ítem, intentelo nuevamente.",
                     icon: 'error',
                     confirmButtonText: this.props.swaMsg.text_btn,
                 });
