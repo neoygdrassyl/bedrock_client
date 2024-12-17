@@ -56,6 +56,8 @@ export default function DICTIONARY(props) {
 
     var [load, setLoad] = useState(0);
 
+    var [proccessToFilter, setProccessToFilter] = useState('');
+
     useEffect(() => {
         if (load == 0) loadLists();
     }, [load]);
@@ -144,13 +146,18 @@ export default function DICTIONARY(props) {
         </>
     }
 
-    let _COMPONENT_PAGINATION = (_list, _page, _limit, _func, _filter, _key) => {
-        let LIST = _list.filter((arr, i) => {
-            let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-            let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-            return curated_element.includes(curated_filter)
-        })
-
+    let _COMPONENT_PAGINATION = (_list, _page, _limit, _func, _filter, process, _key) => {
+        var LIST = [];
+        if (process !== '') {
+            LIST = _list.filter(item => item[process] == _filter)
+        }
+        else {
+            LIST = _list.filter((arr, i) => {
+                let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                return curated_element.includes(curated_filter)
+            })
+        }
         let currentItemsLenght = LIST.filter((arr, i) => Math.ceil((i + 1) / _limit) == _page).length
 
         let limit = Math.ceil(LIST.length / _limit)
@@ -195,18 +202,53 @@ export default function DICTIONARY(props) {
     }
 
     let _COMPONENT_SEARCH_BAR = (_id, _filter, _func) => {
-        const [selectedFilter, setSelectedFilter] = React.useState(''); // Estado para el filtro seleccionado
-    
         function setFilter() {
-            _func(document.getElementById(_id).value, selectedFilter); // Pasa filtro seleccionado
+            _func(document.getElementById(_id).value)
         }
-    
         function clearFilter() {
             _func('');
-            setSelectedFilter('');
+            document.getElementById(_id).value = ''
+        }
+        return <>
+            <div class="input-group m-3 px-3 mx-0">
+                <span class="input-group-text bg-linght">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type='text' className='form-control' placeholder='Busqueda...' id={_id} defaultValue={_filter}
+                    onKeyPress={(e) => { if (e.key === 'Enter') setFilter() }} />
+                <MDBBtn link color="primary" size="sm" onClick={() => setFilter()}><i class="fas fa-angle-double-right"></i> Buscar</MDBBtn>
+                {_filter ? <MDBBtn link color="danger" size="sm" onClick={() => clearFilter()}><i class="fas fa-times"></i> </MDBBtn>
+                    : ''}
+            </div>
+        </>
+    }
+    let _COMPONENT_SEARCH_BAR_CUB = (_id, _filter, _func, setProccess, process) => {
+        const [proccessSelected, setProccessSelected] = useState('')
+
+        function setFilter() {
+            _func(document.getElementById(_id).value);
+        }
+
+        function clearFilter() {
+            _func('');
+            setProccessSelected('');
+            setProccess('')
             document.getElementById(_id).value = '';
         }
-        const filterOptions = ['CUB', 'PQRS', 'FUN'];
+        const filterOptions = [
+            {
+                label: 'PQRS',
+                value: 'pqrs'
+            },
+            {
+                label: 'FUN',
+                value: 'id'
+            },
+            {
+                label: 'VR',
+                value: 'vr'
+            }
+        ];
 
         return (
             <>
@@ -222,19 +264,19 @@ export default function DICTIONARY(props) {
                         </button>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             {filterOptions.map((filter) => (
-                                <li key={filter}>
-                                    <a className="dropdown-item" href="" 
+                                <li key={filter.label}>
+                                    <span className="dropdown-item" href=""
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            setSelectedFilter(filter);
+                                            setProccessSelected(filter.value);
                                         }}>
-                                        {filter}
-                                    </a>
+                                        {filter.label}
+                                    </span>
                                 </li>
                             ))}
                         </ul>
                     </div>
-    
+
                     {/* Input de búsqueda */}
                     <input
                         type="text"
@@ -243,16 +285,22 @@ export default function DICTIONARY(props) {
                         id={_id}
                         defaultValue={_filter}
                         onKeyPress={(e) => {
-                            if (e.key === 'Enter') setFilter();
-                        }}/>
-    
+                            if (e.key === 'Enter') {
+                                setFilter()
+                                proccessSelected && setProccess(proccessSelected);
+                            };
+                        }} />
+
                     {/* Botón Buscar */}
-                    <MDBBtn link color="primary" size="sm" onClick={() => setFilter()}>
+                    <MDBBtn link color="primary" size="sm" onClick={() => {
+                        setFilter()
+                        setProccess(proccessSelected);
+                    }}>
                         <i className="fas fa-angle-double-right"></i> Buscar
                     </MDBBtn>
-    
+
                     {/* Botón Limpiar */}
-                    {_filter || selectedFilter ? (
+                    {_filter || process ? (
                         <MDBBtn link color="danger" size="sm" onClick={() => clearFilter()}>
                             <i className="fas fa-times"></i>
                         </MDBBtn>
@@ -260,16 +308,17 @@ export default function DICTIONARY(props) {
                         ''
                     )}
                 </div>
-    
+
                 {/* Filtro seleccionado*/}
-                {selectedFilter && (
+                {proccessSelected && (
                     <div className="text-muted mx-3">
-                        <small>Filtro seleccionado: {selectedFilter}</small>
+                        <small>Filtro seleccionado: {proccessSelected.toUpperCase()}</small>
                     </div>
                 )}
             </>
         );
-    };    
+    };
+
 
     let _COMPONENT_LIST_A = () => {
 
@@ -434,14 +483,20 @@ export default function DICTIONARY(props) {
             </div></>
     }
 
-    let _COMPONENT_MAIN_LIST = (_list, _filter, _key, _limit, _page, _COMPONENT_POP) => {
-        let LIST = _list.filter((arr, i) => {
-            if (_filter == '') return true
-            let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-            let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-            return curated_element.includes(curated_filter)
-        })
-
+    let _COMPONENT_MAIN_LIST = (_list, _filter, process, _key, _limit, _page, _COMPONENT_POP) => {
+        var LIST = [];
+        if (process !== '') {
+            console.log(process.toLowerCase())
+            console.log(_filter)
+            LIST = _list.filter(item => item[process] == _filter)
+        }
+        else {
+            LIST = _list.filter((arr, i) => {
+                let curated_filter = _filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                let curated_element = arr[_key].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                return curated_element.includes(curated_filter)
+            })
+        }
         return <>
             <div class="d-flex flex-wrap m-3">
                 {LIST.filter((arr, i) => Math.ceil((i + 1) / _limit) == _page).map(it => {
@@ -471,7 +526,6 @@ export default function DICTIONARY(props) {
     }
 
     let _COMPONENT_POPC_D = (it) => {
-        console.log(it)
         return <MDBPopover tag="section" popperTag='span' btnChildren={it.cub} placement='top' dismiss>
             <MDBPopoverHeader> <label>{it.cub}</label></MDBPopoverHeader>
             <MDBPopoverBody>
@@ -557,15 +611,15 @@ export default function DICTIONARY(props) {
             <MDBTabsContent>
                 <MDBTabsPane show={tab == 'C'}>
                     {_COMPONENT_SEARCH_BAR('search_c', filter_C, setFil_C)}
-                    {_COMPONENT_PAGINATION(LIST_C, pag_C, limit_c, setPag_C, filter_C, 'id_public')}
-                    {_COMPONENT_MAIN_LIST(LIST_C, filter_C, 'id_public', limit_c, pag_C, _COMPONENT_POPC_C)}
+                    {_COMPONENT_PAGINATION(LIST_C, pag_C, limit_c, setPag_C, filter_C, '', 'id_public')}
+                    {_COMPONENT_MAIN_LIST(LIST_C, filter_C,'', 'id_public', limit_c, pag_C, _COMPONENT_POPC_C)}
                 </MDBTabsPane>
             </MDBTabsContent>
 
             <MDBTabsContent>
                 <MDBTabsPane show={tab == 'D'}>
-                    {_COMPONENT_SEARCH_BAR('search_d', filter_D, setFil_D)}
-                    {_COMPONENT_PAGINATION(LIST_D, pag_D, limit_D, setPag_D, filter_D, 'cub')}
+                    {_COMPONENT_SEARCH_BAR_CUB('search_d', filter_D, setFil_D, setProccessToFilter, proccessToFilter)}
+                    {_COMPONENT_PAGINATION(LIST_D, pag_D, limit_D, setPag_D, filter_D, proccessToFilter, 'cub')}
                     <div className='row mx-3'>
                         <div className='col text-end'>
                             <MDBBtn onClick={() => generateCVS(
@@ -575,31 +629,31 @@ export default function DICTIONARY(props) {
                                 color='success' size='sm' outline><i class="fas fa-table"></i> DESCARGAR CSV</MDBBtn>
                         </div>
                     </div>
-                    {_COMPONENT_MAIN_LIST(LIST_D, filter_D, 'cub', limit_D, pag_D, _COMPONENT_POPC_D)}
+                    {_COMPONENT_MAIN_LIST(LIST_D, filter_D, proccessToFilter, 'cub', limit_D, pag_D, _COMPONENT_POPC_D)}
                 </MDBTabsPane>
             </MDBTabsContent>
 
             <MDBTabsContent>
                 <MDBTabsPane show={tab == 'E'}>
                     {_COMPONENT_SEARCH_BAR('search_e', filter_E, setFil_E)}
-                    {_COMPONENT_PAGINATION(LIST_E, pag_E, limit_E, setPag_E, filter_E, 'vr')}
-                    {_COMPONENT_MAIN_LIST(LIST_E, filter_E, 'vr', limit_E, pag_E, _COMPONENT_POPC_E)}
+                    {_COMPONENT_PAGINATION(LIST_E, pag_E, limit_E, setPag_E, filter_E, '', 'vr')}
+                    {_COMPONENT_MAIN_LIST(LIST_E, filter_E,'', 'vr', limit_E, pag_E, _COMPONENT_POPC_E)}
                 </MDBTabsPane>
             </MDBTabsContent>
 
             <MDBTabsContent>
                 <MDBTabsPane show={tab == 'F'}>
                     {_COMPONENT_SEARCH_BAR('search_f', filter_F, setFil_F)}
-                    {_COMPONENT_PAGINATION(LIST_F, pag_F, limit_F, setPag_F, filter_F, 'id_child')}
-                    {_COMPONENT_MAIN_LIST(LIST_F, filter_F, 'id_child', limit_F, pag_F, _COMPONENT_POPC_F)}
+                    {_COMPONENT_PAGINATION(LIST_F, pag_F, limit_F, setPag_F, filter_F, '', 'id_child')}
+                    {_COMPONENT_MAIN_LIST(LIST_F, filter_F,'', 'id_child', limit_F, pag_F, _COMPONENT_POPC_F)}
                 </MDBTabsPane>
             </MDBTabsContent>
 
             <MDBTabsContent>
                 <MDBTabsPane show={tab == 'G'}>
                     {_COMPONENT_SEARCH_BAR('search_g', filter_G, setFil_G)}
-                    {_COMPONENT_PAGINATION(LIST_G, pag_G, limit_G, setPag_G, filter_G, 'id_public')}
-                    {_COMPONENT_MAIN_LIST(LIST_G, filter_G, 'id_public', limit_G, pag_G, _COMPONENT_POPC_G)}
+                    {_COMPONENT_PAGINATION(LIST_G, pag_G, limit_G, setPag_G, filter_G, '', 'id_public')}
+                    {_COMPONENT_MAIN_LIST(LIST_G, filter_G,'', 'id_public', limit_G, pag_G, _COMPONENT_POPC_G)}
                 </MDBTabsPane>
             </MDBTabsContent>
 
