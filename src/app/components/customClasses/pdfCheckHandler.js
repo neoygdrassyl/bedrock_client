@@ -489,6 +489,6 @@ export function handleEnghCheck(pdfDoc, page, chekcs, _detail, p1, p2, model) {
     );
     if (_detailsWrapped(formatString)) {
         let _detailsArray = _detailsWrapped(formatString).split("\n");
-        _detailsArray.map((value, i) => { page.moveTo(45, 656 - (i * 13.00)); page.drawText(`${value}`, { size: 7 }); })
+        _detailsArray.map((value, i) => { page.moveTo(45, 656 - (i * 12.90)); page.drawText(`${value}`, { size: 7 }); })
     }
 }

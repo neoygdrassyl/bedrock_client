@@ -55,7 +55,6 @@ export const PQRS_ID_CONFIRM = (props) => {
         form.set('id_old', currentItem.id_confirm);
 
         createVRxCUB_relation(id_confirm)
-        
         PQRS_Service.update(currentItem.id, form)
         .then(response => {
             if (response.data === 'OK') {
@@ -101,6 +100,11 @@ export const PQRS_ID_CONFIRM = (props) => {
         let desc = "Email"
         formatData.set('desc', desc);
         formatData.set('date', new Date().toISOString().slice(0, 10));
+
+        /*
+        let date = document.getElementById('geng_date_doc').value;
+        formatData.set('date', date);
+        */
 
             // Mostrar mensaje inicial de espera
             MySwal.fire({
@@ -148,6 +152,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                
         };
     
     

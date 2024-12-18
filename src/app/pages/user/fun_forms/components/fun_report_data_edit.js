@@ -272,6 +272,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     });
             }
         }
+
         let save_law = (e) => {
             e.preventDefault();
             formData = new FormData();
@@ -293,6 +294,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
 
             manage_law();
             createVRxCUB_relation(new_id)
+
         }
         let createVRxCUB_relation = (cub_selected) => {
             let vr = document.getElementById("vr_selected").value;
@@ -307,6 +309,9 @@ class FUN_REPORT_DATA_EDIT extends Component {
             formatData.set('desc', 'Reporte de reconocimiento');
             let date = document.getElementById('fun_report_data_3').value;
             formatData.set('date', date);
+
+            
+
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -353,6 +358,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     });
                 });
         };
+        
         return (
             <div className="fun_report_data container_arc">
                 <form id="form_report_data_edit" onSubmit={save_law}>

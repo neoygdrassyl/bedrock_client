@@ -637,7 +637,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
 
             manage_law(true, formData);
             if (document.getElementById('control_func_3').checked) createEvent(false)
-            createVRxCUB_relation(new_id)
+            // createVRxCUB_relation(new_id)
 
         }
         let manage_law = (useMySwal, formData) => {
@@ -900,7 +900,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-            */
+                */
         };
         
         return (
