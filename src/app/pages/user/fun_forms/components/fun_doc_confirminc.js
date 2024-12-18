@@ -383,8 +383,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             formData.set('cub_inc_json', JSON.stringify(cub_inc_json));
             
             manage_law(true, formData);
-            // createVRxCUB_relation(new_id);
-            
+            createVRxCUB_relation(new_id);            
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -504,10 +503,8 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             
             formatData.set('date', date);
             
-            /*
             // Mostrar mensaje inicial de espera
-            
-            /*MySwal.fire({
+            MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
                 icon: 'info',
@@ -517,7 +514,6 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
 
             // Crear relación
             CubXVrDataService.createCubXVr(formatData)
-            /*
                 .then((response) => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -554,7 +550,6 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-                */
         };
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>

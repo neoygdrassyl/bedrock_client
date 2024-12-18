@@ -622,8 +622,7 @@ class EXP_1 extends Component {
 
             formData.set('duty', JSONObjectParser(duty));
 
-            // createVRxCUB_relation(cub1, cub2)
-
+           createVRxCUB_relation(cub1, cub2)
             manage_exp();
         }
 
@@ -665,7 +664,7 @@ class EXP_1 extends Component {
         }
         let sendDataToCreate = (formatData) => {
 
-            /*
+            
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -712,7 +711,7 @@ class EXP_1 extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-                */
+                
         };
 
         let manage_exp = () => {
