@@ -792,7 +792,6 @@ class FUN_ALERT extends Component {
             // let date = document.getElementById('geng_date_doc').value;
             // formatData.set('date', date);
 
-            /*
             CubXVrDataService.createCubXVr(formatData)
                 .then(response => {
                     if (response.data !== null) {
@@ -825,7 +824,6 @@ class FUN_ALERT extends Component {
                         });
                     
                 });
-                */
         }
 
         let alertAddress = () => {
@@ -856,7 +854,7 @@ class FUN_ALERT extends Component {
             let prev_id = _SET_CHILD_3()[child_i].id_cub;
             formData.set('prev_id', prev_id);
 
-            // createVRxCUB_relation(new_id)
+            createVRxCUB_relation(new_id)
 
 
             let alerted = document.getElementById("alert_date_confirm").value;

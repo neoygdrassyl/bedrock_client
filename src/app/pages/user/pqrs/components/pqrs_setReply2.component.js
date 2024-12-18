@@ -276,7 +276,7 @@ export const PQRS_SET_REPLY1 = (props) => {
         formatData.set('pqrs',1);
         let date = document.getElementById('pqrs_reply_time_formalReply').value;
         formatData.set('date', date);
-        /*
+        
         // Mostrar mensaje inicial de espera
         // MySwal.fire({
         //     title: swaMsg.title_wait,
@@ -286,7 +286,6 @@ export const PQRS_SET_REPLY1 = (props) => {
         // });
         // Crear relación
         CubXVrDataService.createCubXVr(formatData)
-
             .then((response) => {
                 if (response.data === 'OK') {
                     MySwal.fire({
@@ -323,7 +322,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     confirmButtonText: swaMsg.text_btn,
                 });
             });
-            */
+            
 
     };
     var validar = currentItem.pqrs_time ? currentItem.pqrs_time.reply_doc_date : null

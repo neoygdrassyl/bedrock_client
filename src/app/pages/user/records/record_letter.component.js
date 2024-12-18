@@ -427,7 +427,6 @@ class RECORD_DOC_LETTER extends Component {
             let date = document.getElementById('gena_date_doc').value;
             formatData.set('date', date);
 
-            /*
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -473,7 +472,6 @@ class RECORD_DOC_LETTER extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-                */
         };
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>
