@@ -40,7 +40,7 @@ class PQRSINFO extends Component {
                 console.log(e);
                 MySwal.fire({
                     title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, inténtelo nuevamente.",
+                    text: "No ha sido posible cargar este ítem, inténtelo nuevamente.",
                     icon: 'error',
                     confirmButtonText: this.props.swaMsg.text_btn,
                 });

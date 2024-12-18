@@ -1117,7 +1117,7 @@ class FUN extends Component {
                             {regexChecker_isPh(row, true) ?
                                 <>
                                     <button type="button" onClick={() => this.toggle_recordPH(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICIÓN</button>
                                 </>
                                 :
                                 <>
@@ -1127,12 +1127,12 @@ class FUN extends Component {
 
                                     <button type="button" onClick={() => this.toggle_recordLaw(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
                                     {!isOA ? <>
-                                        <button type="button" onClick={() => this.toggle_recordArc(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
+                                        <button type="button" onClick={() => this.toggle_recordArc(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTÓNICO</button>
                                         {rules[1] != 1 ? <button type="button" onClick={() => this.toggle_recordEng(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
 
                                         <button type="button" onClick={() => this.toggle_recordReview(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICIÓN</button>
                                 </>}
                         </> : <></>}
                 </div>
@@ -1337,10 +1337,10 @@ class FUN extends Component {
                                                             <i class="fas fa-info-circle"></i>
                                                         </span>
                                                         <select class="form-select" id="search_0" required>
-                                                            <option value="1">Numero de Radicado</option>
-                                                            <option value="2">Numero de Matricula Inmobiliaria</option>
-                                                            <option value="3">Numero de Indentificacion Predial/Catastral</option>
-                                                            <option value="4">Direccion Actual</option>
+                                                            <option value="1">Número de Radicado</option>
+                                                            <option value="2">Número de Matricula Inmobiliaria</option>
+                                                            <option value="3">Número de Indentificacion Predial/Catastral</option>
+                                                            <option value="4">Dirección Actual</option>
                                                             <option value="5">C.C o NIT</option>
                                                             <option value="6">Nombre</option>
                                                         </select>
@@ -1632,7 +1632,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-signature"></i> ACTUALIZACION DE SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
+                        <label><i class="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_n()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1658,7 +1658,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-archive"></i> GESTION DOCUMENTAL - No. Radicación :  {this.state.currentPublic} </label>
+                        <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_d()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1734,7 +1734,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-building"></i> INFORME ARQUITECTONICO - No. Radicación :  {this.state.currentPublic} </label>
+                        <label><i class="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordArc()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1840,7 +1840,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECIONES - No. Radicación :  {this.state.currentPublic} </label>
+                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordReview()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1865,7 +1865,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> EXPEDICION DE LA LICENCIA:  {this.state.currentPublic} </label>
+                        <label><i class="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_exp()}></MDBBtn>
                     </div>
                     {modalHeader}

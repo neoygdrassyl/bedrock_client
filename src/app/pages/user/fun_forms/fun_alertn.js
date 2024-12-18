@@ -30,7 +30,8 @@ class FUN_ALERT extends Component {
             edit_type: false,
             currentItem: null,
             cb: false,
-            pqrsxfun: false
+            pqrsxfun: false,
+            vr:null
         };
     }
     requestUpdate(id) {
@@ -194,7 +195,7 @@ class FUN_ALERT extends Component {
 
     }
     render() {
-        const { translation, swaMsg, globals, currentVersion, vr_selected  } = this.props;
+        const { translation, swaMsg, globals, currentVersion  } = this.props;
         const { currentItem } = this.state;
 
         // DATA GETTERS
@@ -778,19 +779,18 @@ class FUN_ALERT extends Component {
         }
 
         let createVRxCUB_relation = (cub_selected) => {
-            let vr = document.getElementById("vr_selected").value;
             let cub = cub_selected;
             let formatData = new FormData();
             
-            formatData.set('vr', vr);
+            formatData.set('vr', this.state.vr);
             formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
+            formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'PUBLICIDAD COMUNICACION A VECINOS');
             
-            let desc = document.getElementById('geng_type').value;
-            formatData.set('desc', desc);
-            let date = document.getElementById('geng_date_doc').value;
-            formatData.set('date', date);
+            // let desc = document.getElementById('geng_type').value;
+            // formatData.set('desc', desc);
+            // let date = document.getElementById('geng_date_doc').value;
+            // formatData.set('date', date);
 
             CubXVrDataService.createCubXVr(formatData)
                 .then(response => {
@@ -826,10 +826,11 @@ class FUN_ALERT extends Component {
                 });
         }
         let alertAddress = () => {
+            console.log(document.getElementById(''));
+            console.log("--------------------");
+            console.log(document.getElementById('alert_address'));
             let formData = new FormData();
             formData.set('fun0Id', currentItem.id);
-            console.log(vr_selected)
-
             let child_i = document.getElementById("alert_id_3").value;
             if (!_SET_CHILD_3()[child_i]) {
                 MySwal.fire({
@@ -1043,6 +1044,7 @@ class FUN_ALERT extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
+                            setVr={(item) => this.setState({vr : item})}
                         />
 
                         <label className="app-p lead fw-normal text-uppercase my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>

@@ -624,7 +624,7 @@ class EXP_1 extends Component {
 
             createVRxCUB_relation(cub1, cub2)
 
-            //manage_exp();
+            manage_exp();
         }
 
         let createVRxCUB_relation = (cub_selected, cub_selected1) => {

@@ -386,9 +386,9 @@ class NOMENCLATURE extends Component {
                                                 <i class="fas fa-info-circle"></i>
                                             </span>
                                             <select class="form-select" id="nomen_search_0" required>
-                                                <option value="1">Numero de Radicado</option>
-                                                <option value="2">Numero de Matricula Inmobiliaria</option>
-                                                <option value="3">Numero de Identificación Predial/Catastral</option>
+                                                <option value="1">Número de Radicado</option>
+                                                <option value="2">Número de Matricula Inmobiliaria</option>
+                                                <option value="3">Número de Identificación Predial/Catastral</option>
                                                 <option value="4">Dirección Actual</option>
                                                 <option value="5">C.C o NIT</option>
                                                 <option value="6">Nombre Solicitante</option>
