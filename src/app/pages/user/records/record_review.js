@@ -1060,7 +1060,7 @@ class RECORD_REVIEW extends Component {
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" defaultValue={""} id="vr_selected">
+                            <select class="form-select" defaultValue={""} id="vr_selected11">
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
@@ -1811,15 +1811,17 @@ class RECORD_REVIEW extends Component {
             this.CREATE_CHECK(_RESUME, _CHECKS, currentItem, headers)
         }
         let createVRxCUB_relation = () => {
-            let vr = document.getElementById("vr_selected").value;
+            let vr = document.getElementById("vr_selected11").value;
             console.log(vr)
             let cub = document.getElementById("rev_cub").value;
             let formatData = new FormData();    
 
             formatData.set('vr', vr);
             formatData.set('cub', cub);
-            formatData.set('fun', currentItem.id);
+            formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'OBSERVACIONES Y CORRECIONES');
+            formatData.set('desc', 'Observaciones y correciones');
+
 
             let date = document.getElementById('record_review_2').value;
             formatData.set('date', date);

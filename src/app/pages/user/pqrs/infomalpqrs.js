@@ -34,7 +34,7 @@ class PQRSINFORMAL extends Component {
                 console.log(e);
                 MySwal.fire({
                     title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
+                    text: "No ha sido posible cargar este ítem, inténtelo nuevamente.",
                     icon: 'error',
                     confirmButtonText: this.props.swaMsg.text_btn,
                 });
@@ -197,7 +197,7 @@ class PQRSINFORMAL extends Component {
                                     <li>Escribir la respuesta en la caja de texto seguida de las instrucciones.</li>
                                     <li>Incluir una breve descripción de la solicitud.</li>
                                     <li>Argumentar la respuesta, citando fuentes.</li>
-                                    <li>Si el peticionario ha solicitado copia de documentos, identificarlos y enumerarlos en esta caja de texto y seguidamente anexarlos en el siguinte paso.</li>
+                                    <li>Si el peticionario ha solicitado copia de documentos, identificarlos y enumerarlos en esta caja de texto y seguidamente anexarlos en el siguiente paso.</li>
                                     <li>Si la CUB1 no es competente orientar al peticionario y recomendar el traslado de la PQRS.</li>
                                 </ul>
                                 <div className="text-center m-3">
@@ -207,7 +207,7 @@ class PQRSINFORMAL extends Component {
                                 <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
                                 <div className="text-end m-3">
                                     {attachs > 0
-                                        ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                        ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
                                         : ""}
                                     <MDBBtn className="btn btn-lg btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
                                 </div>

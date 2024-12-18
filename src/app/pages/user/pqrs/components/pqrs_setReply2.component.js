@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
 import moment from 'moment';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -6,7 +6,6 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import { dateParser } from '../../../../components/customClasses/typeParse';
-import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 //const moment = require('moment');
 
@@ -17,16 +16,6 @@ export const PQRS_SET_REPLY1 = (props) => {
     const [state, setState] = useState({});
     const editor = useRef(null)
     const [content, setContent] = useState('')
-    const [vrsRelated, setVrsRelated] = useState([])
-    useEffect(() => {
-        let _GET_ALL_VRS_RELATED = () => {
-            SubmitService.getIdRelated(currentItem.id_global).then(response => {
-                setVrsRelated(response.data)
-            })
-        }
-        _GET_ALL_VRS_RELATED()
-    }, [])
-
     const funcion3 = () => {
         const x = currentItem.pqrs_solocitors.map(function (value) { return ` ${value.name}` })
         return x.join(', ');
@@ -148,7 +137,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 console.log(e);
                 MySwal.fire({
                     title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
+                    text: "No ha sido posible cargar este ítem, intentelo nuevamente.",
                     icon: 'error',
                     confirmButtonText: props.swaMsg.text_btn,
                 });
@@ -193,46 +182,46 @@ export const PQRS_SET_REPLY1 = (props) => {
             formData.set('solicitors_name', array_solicitor.join());
             
             createVRxCUB_relation(new_id);
-            // PQRS_Service.formalReply(formData)
-            //     .then(response => {
-            //         if (response.data === 'OK') {
-            //             MySwal.fire({
-            //                 title: swaMsg.publish_success_title,
-            //                 text: swaMsg.publish_success_text,
-            //                 footer: swaMsg.text_footer,
-            //                 icon: 'success',
-            //                 confirmButtonText: swaMsg.text_btn,
-            //             });
-            //             props.retrieveItem(currentItem.id);
-            //             props.refreshList();
-            //             if (hardReset) {
-            //                 //props.closeModal();
-            //             }
+            PQRS_Service.formalReply(formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                        props.retrieveItem(currentItem.id);
+                        props.refreshList();
+                        if (hardReset) {
+                            //props.closeModal();
+                        }
 
-            //         } else if (response.data === 'ERROR_DUPLICATE') {
-            //             MySwal.fire({
-            //                 title: "ERROR DE DUPLICACION",
-            //                 text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
-            //                 icon: 'error',
-            //                 confirmButtonText: swaMsg.text_btn,
-            //             });
-            //         }
-            //         else {
-            //             MySwal.fire({
-            //                 title: swaMsg.generic_eror_title,
-            //                 text: swaMsg.generic_error_text,
-            //                 icon: 'warning',
-            //                 confirmButtonText: swaMsg.text_btn,
-            //             });
-            //         }
-            //     })
-            //     .catch(e => {
-            //         console.log(e);
-            //     });
+                    } else if (response.data === 'ERROR_DUPLICATE') {
+                        MySwal.fire({
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
+                            icon: 'error',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                    else {
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                });
         } else {
             MySwal.fire({
-                title: "NO HAY CONCECUTIVO DE SALIDA",
-                text: "Se debe de espeficiar primero el concecutivo de Salida.",
+                title: "NO HAY CONSECUTIVO DE SALIDA",
+                text: "Se debe de espeficiar primero el consecutivo de Salida.",
                 icon: 'error',
             });
         }
@@ -274,63 +263,63 @@ export const PQRS_SET_REPLY1 = (props) => {
             });
     }
     let createVRxCUB_relation = (cub_selected) => {
-        let vr = document.getElementById("vr_selected").value;
+        let vr = currentItem.id_global
         let cub = cub_selected;
         let formatData = new FormData();
 
         formatData.set('vr', vr);
         formatData.set('cub', cub);
-        formatData.set('fun', currentItem.id);
         formatData.set('process', 'RESPUESTA FORMAL DE LA PETICION');
         // let desc = document.getElementById('geng_type').value;
         // formatData.set('desc', desc);
+        formatData.set('pqrs',1);
         let date = document.getElementById('pqrs_reply_time_formalReply').value;
         formatData.set('date', date);
         // Mostrar mensaje inicial de espera
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        // MySwal.fire({
+        //     title: swaMsg.title_wait,
+        //     text: swaMsg.text_wait,
+        //     icon: 'info',
+        //     showConfirmButton: false,
+        // });
         // Crear relación
         CubXVrDataService.createCubXVr(formatData)
-            .then((response) => {
-                if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                    // Refrescar la UI
-                    this.props.requestUpdate(currentItem.id, true);
-                } else if (response.data === 'ERROR_DUPLICATE') {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACIÓN",
-                        text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
-            });
+            // .then((response) => {
+            //     if (response.data === 'OK') {
+            //         MySwal.fire({
+            //             title: swaMsg.publish_success_title,
+            //             text: swaMsg.publish_success_text,
+            //             footer: swaMsg.text_footer,
+            //             icon: 'success',
+            //             confirmButtonText: swaMsg.text_btn,
+            //         });
+            //         // Refrescar la UI
+            //         this.props.requestUpdate(currentItem.id, true);
+            //     } else if (response.data === 'ERROR_DUPLICATE') {
+            //         MySwal.fire({
+            //             title: "ERROR DE DUPLICACIÓN",
+            //             text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+            //             icon: 'error',
+            //             confirmButtonText: swaMsg.text_btn,
+            //         });
+            //     } else {
+            //         MySwal.fire({
+            //             title: swaMsg.generic_eror_title,
+            //             text: swaMsg.generic_error_text,
+            //             icon: 'warning',
+            //             confirmButtonText: swaMsg.text_btn,
+            //         });
+            //     }
+            // })
+            // .catch((error) => {
+            //     console.error(error);
+            //     MySwal.fire({
+            //         title: swaMsg.generic_eror_title,
+            //         text: swaMsg.generic_error_text,
+            //         icon: 'warning',
+            //         confirmButtonText: swaMsg.text_btn,
+            //     });
+            // });
     };
     var validar = currentItem.pqrs_time ? currentItem.pqrs_time.reply_doc_date : null
     return (
@@ -349,22 +338,9 @@ export const PQRS_SET_REPLY1 = (props) => {
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                         </div>
                     </div>
-                    <div className="col-4">
-                        <label className="mt-0">{infoCud.serials.start}</label>
-                        <div class="input-group ">
-                            <select class="form-select" id="vr_selected" defaultValue={""}>
-                                <option value=''>Seleccione una opción</option>
-                                {vrsRelated && vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.id_global}>
-                                        {value.id_global}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
 
                     <div className="col-3">
-                        <label>Fecha creacion documento</label>
+                        <label>Fecha creación documento</label>
                         <div class="input-group my-1 ">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-hashtag"></i>
@@ -395,7 +371,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     <div class="row justify-content-center">
                         <div class="col-3">
                             <div className="text-center m-3">
-                                <button type="button" class="btn btn-sm btn-info" onClick={funcion5}><i class="fas fa-exchange-alt"></i> CARGAR INFORMACION</button>
+                                <button type="button" class="btn btn-sm btn-info" onClick={funcion5}><i class="fas fa-exchange-alt"></i> CARGAR INFORMACIÓN</button>
                             </div>
                         </div>
                         <div class="col-3">

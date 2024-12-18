@@ -1428,7 +1428,7 @@ class RECORD_PH_REVIEW extends Component {
             createVRxCUB_relation(cub)
 
 
-            /*
+        
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
@@ -1474,7 +1474,7 @@ class RECORD_PH_REVIEW extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-                */
+                
         }
         let pdfnot_gen = () => {
             formData = new FormData();

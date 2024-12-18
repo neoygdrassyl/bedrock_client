@@ -141,7 +141,7 @@ class PQRS_COMPONENT_CLOCKS extends Component {
                                 <label className="fw-bold">{dateParser(dateParser_finalDate(pTime.legal, pTime.time))}</label>
                             </div>
                             <div className="col">
-                                <label className="fw-bold">{pTime.time * (ext)} Dia(s) hábiles</label>
+                                <label className="fw-bold">{pTime.time * (ext)} Día(s) hábiles</label>
                             </div>
                             <div className="col">
                                 <label className="fw-bold">{validation_extension ? <label className='text-warning'>Si</label> : <label>No</label>} </label>
@@ -157,7 +157,7 @@ class PQRS_COMPONENT_CLOCKS extends Component {
                                 </> :
                                 <>
                                     <div className="col">
-                                        <label className="fw-bold">{dateParser_timeLeft(pTime.legal, pTime.time * (ext))} Dia(s) habiles</label>
+                                        <label className="fw-bold">{dateParser_timeLeft(pTime.legal, pTime.time * (ext))} Día(s) habiles</label>
                                     </div>
                                     <div className="col">
                                         <label className="fw-bold">{dateParser(dateParser_finalDate(pTime.legal, pTime.time * (ext)))}</label>

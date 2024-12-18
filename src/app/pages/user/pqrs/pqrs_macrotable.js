@@ -191,7 +191,7 @@ class PQRS_MACROTABLE extends Component {
                 excellValue: row => row.pqrs_solocitors.map(e => e.type_id).join(' ')
             }, 
             {
-                name: <label  className="text-center">NUMERO DE DOCUMENTO</label>,
+                name: <label  className="text-center">NÚMERO DE DOCUMENTO</label>,
                 minWidth: "200px",
                 center: true,
                 cell: row => <label>{row.pqrs_solocitors.map(e => e.id_number).join(', ')}</label>,
@@ -199,7 +199,7 @@ class PQRS_MACROTABLE extends Component {
                 excellValue: row => row.pqrs_solocitors.map(e => e.id_number).join(' ')
             }, 
             {
-                name: <label  className="text-center">DIRECCION</label>,
+                name: <label  className="text-center">DIRECCIÓN</label>,
                 minWidth: "200px",
                 center: true,
                 cell: row => <label>{row.pqrs_contacts.map(e => e.address).join(', ')}</label>,
@@ -223,11 +223,11 @@ class PQRS_MACROTABLE extends Component {
                 excellValue: row => row.pqrs_contacts.map(e => e.email || e.phone).join(' ')
             }, 
             {
-                name: <label  className="text-center">AUTORIZA CORREO ELECTRONICO</label>,
+                name: <label  className="text-center">AUTORIZA CORREO ELECTRÓNICO</label>,
                 minWidth: "200px",
                 center: true,
                 cell: row => <label>{row.pqrs_contacts.map(e => e.notify ? "SI" : "NO").join(', ')}</label>,
-                excellHeader: "AUTORIZA CORREO ELECTRONICO",
+                excellHeader: "AUTORIZA CORREO ELECTRÓNICO",
                 excellValue: row => row.pqrs_contacts.map(e => e.notify ? "SI" : "NO").join(' ')
             },
             {

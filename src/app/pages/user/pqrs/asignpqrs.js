@@ -122,9 +122,9 @@ class PQRSASIGN extends Component {
             return false;
         }
         let _GET_DOC_BODY = () => {
-            return `Me permite Comunicarle que el ${dateParser(moment(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
+            return `Me permito comunicarle que el ${dateParser(moment(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
             a las ${moment(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
-            Solicitud con el numero ${currentItem.id_publico}. A partir de este momento la Curaduría Urbana Estudiará
+            solicitud con el número ${currentItem.id_publico}. A partir de este momento, la Curaduría Urbana Estudiará
             su peticion y en el termino de ${currentItem.pqrs_time.time} días hábiles le dará respuesta de manera clara, precisa y
             de fondo. No obstante de requerir un mayor término para lograr este cometido la Curaduría
             Urbana Uno de Bucaramanga le informará por este medio de esta situacion.`.replace(/[\n\r]+ */g, ' ');
@@ -219,7 +219,7 @@ class PQRSASIGN extends Component {
                 },
             ]
             var _COMPONENT = <DataTable
-                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Página:', rangeSeparatorText: 'de' }}
                 noDataComponent="No hay mensajes"
                 striped="true"
                 columns={columns}
@@ -344,7 +344,7 @@ class PQRSASIGN extends Component {
         let removeAsign = (id) => {
             MySwal.fire({
                 title: "REMOVER PROFESIONAL ",
-                text: "¿Esta seguro de remover este profesional de la Peticion?",
+                text: "¿Está seguro de remover este profesional de la Peticion?",
                 icon: 'warning',
                 confirmButtonText: "REMOVER",
                 cancelButtonText: "CANCELAR",
@@ -482,7 +482,7 @@ class PQRSASIGN extends Component {
                                         translation={translation} swaMsg={swaMsg} globals={globals}
                                         currentItem={currentItem}
                                         worker={this.state.worker}
-                                        email_types={[0,1]}
+                                        email_types={[0, 1]}
                                         retrieveItem={this.retrieveItem}
                                         closeComponent={() => this.setState({ worker: false })}
                                     />
