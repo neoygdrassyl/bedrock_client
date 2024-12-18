@@ -1115,7 +1115,7 @@ class EXP_DOCS extends Component {
             formatData.set('date', date);
             
 
-            
+            /*
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -1162,6 +1162,7 @@ class EXP_DOCS extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+                */
         };
         
         let _COMPONENT_DOC_6 = () => {

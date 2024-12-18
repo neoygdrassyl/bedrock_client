@@ -1359,6 +1359,7 @@ class RECORD_PH_REVIEW extends Component {
             let date = document.getElementById('phnot_date_doc').value;
             formatData.set('date', date);
         
+            
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -1427,8 +1428,6 @@ class RECORD_PH_REVIEW extends Component {
             formData.set('cub_json', JSON.stringify(cub_json));
             createVRxCUB_relation(cub)
 
-
-        
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
