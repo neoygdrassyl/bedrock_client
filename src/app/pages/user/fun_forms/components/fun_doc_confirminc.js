@@ -53,15 +53,18 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
         }
         return _CHILD_VARS;
     }
-    retrieveItem() {
-        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-            this.setState({ vrsRelated: response.data })
-        })
-        CubXVrDataService.getByFUN(this.props.currentItem.id_public).then(response => {
-            const data = response.data.find(item => item.process === 'CARTA INCOMPLETO')
-            data && this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+    async retrieveItem() {
+        try {
+            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+                this.setState({ vrsRelated: response.data })
+            })
+            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const data = responseCubXVr.data.find(item => item.process === 'CARTA INCOMPLETO');
 
-        })
+            data && this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+        } catch (error) {
+            console.log(error);
+        }
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
