@@ -59,7 +59,8 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
         })
         CubXVrDataService.getByFUN(this.props.currentItem.id_public).then(response => {
             const data = response.data.find(item => item.process === 'CARTA INCOMPLETO')
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            data && this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+
         })
     }
     render() {
@@ -400,6 +401,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
 
             manage_law(true, formData);
             createVRxCUB_relation(new_id);
+            this.retrieveItem();
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
