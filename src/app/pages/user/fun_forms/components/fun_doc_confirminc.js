@@ -18,7 +18,8 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
         this.state = {
             vrsRelated: [],
             vrSelected: null,
-            cubSelected: null
+            cubSelected: null,
+            idCUBxVr: null,
         }
     }
     componentDidUpdate(prevProps) {
@@ -57,11 +58,8 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             this.setState({ vrsRelated: response.data })
         })
         CubXVrDataService.getByFUN(this.props.currentItem.id_public).then(response => {
-            console.log(response.data)
-            const data = response.data.find(item => item.process === 'CARTA LEGAL Y DEBIDA FORMA')
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub })
-            console.log(this.state.vrSelected)
-            console.log(this.state.cubSelected)
+            const data = response.data.find(item => item.process === 'CARTA INCOMPLETO')
+            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
         })
     }
     render() {
@@ -515,7 +513,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'CARTA INCOMPLETO');
 
-            let desc = document.getElementById('geng_type').value;
+            let desc = document.getElementById('geni_type').value;
             formatData.set('desc', desc);
             let date = document.getElementById('geng_date_doc').value;
 
@@ -529,45 +527,86 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                 showConfirmButton: false,
             });
 
-
-            // Crear relación
-            CubXVrDataService.createCubXVr(formatData)
-                .then((response) => {
-                    if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
-                    } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACIÓN",
-                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    } else {
+            if (this.state.idCUBxVr) {
+                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
                     });
-                });
+            } else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    });
+
+            }
+
         };
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>
