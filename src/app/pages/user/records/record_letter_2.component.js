@@ -16,7 +16,10 @@ class RECORD_DOC_LETTER_2 extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            vrsRelated: []
+            vrsRelated: [],
+            vrSelected: null,
+            cubSelected: null,
+            idCUBxVr: null
         };
     }
     componentDidUpdate(prevProps) {
@@ -29,10 +32,18 @@ class RECORD_DOC_LETTER_2 extends Component {
     componentDidMount() {
         this.retrieveItem();
     }
-    retrieveItem() {
-        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-            this.setState({ vrsRelated: response.data })
-        })
+    async retrieveItem() {
+        try {
+            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+                this.setState({ vrsRelated: response.data })
+            })
+            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const data = responseCubXVr.data.find(item => item.process === 'CARTA AMPLIACION DE TERMINOS');
+
+            data && this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+        } catch (error) {
+            console.log(error);
+        }
     }
     _SET_CHILD_1_FOREIGNER = () => {
         var _CHILD = this.props.currentItem.fun_1s;
@@ -163,23 +174,30 @@ class RECORD_DOC_LETTER_2 extends Component {
                         <label className="mt-1">{infoCud.serials.end} Carta Acta de Obs.</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="gena_cub_act2"
-                                defaultValue={_GET_CHILD_LAW().cub_act2 || ''} />
-                            {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</button>
+                                defaultValue={_GET_CHILD_LAW().cub_act2 || this.state.cubSelected} />
+                                {this.props.edit && !this.state.cubSelected ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act2')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
-                        <div class="input-group ">
-                            <select class="form-select" id="vr_selected1" defaultValue={""}>
-                                <option value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.id_public}>
-                                        {value.id_public}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        {
+                            this.state.vrSelected
+                                ?
+                                <input disabled type="text" class="form-control" id="vr_selected1"
+                                    defaultValue={this.state.vrSelected} />
+                                :
+                                <div class="input-group">
+                                    <select class="form-select" id="vr_selected1" defaultValue={""}>
+                                        <option disabled value=''>Seleccione una opción</option>
+                                        {this.state.vrsRelated.map((value, key) => (
+                                            <option key={value.id} value={value.id_public}>
+                                                {value.id_public}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                        }
                     </div>
                 </div>
                 <div className="row mb-3">
@@ -278,8 +296,6 @@ class RECORD_DOC_LETTER_2 extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-
-
         }
 
         let save_doc = (e) => {
@@ -314,7 +330,7 @@ class RECORD_DOC_LETTER_2 extends Component {
             formData.set('cub_act2_json', JSON.stringify(cub_act2_json));
             manage_law(true, formData);
             createVRxCUB_relation(new_id);
-
+            this.retrieveItem();
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -422,20 +438,18 @@ class RECORD_DOC_LETTER_2 extends Component {
             let cub = cub_selected;
             let formatData = new FormData();
             console.log(vr)
-            
+
             formatData.set('vr', vr);
             formatData.set('cub', cub);
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'CARTA AMPLIACION DE TERMINOS');
-            
-            /*
-            let desc = document.getElementById('geng_type').value;
-            formatData.set('desc', desc);
-            */
+
+            //let desc = document.getElementById('geni_type').value;
             formatData.set('desc', "Carta ampliación de términos");
+
             let date = document.getElementById('gena2_date_doc').value;
             formatData.set('date', date);
-            
+
             // Mostrar mensaje inicial de espera
             // MySwal.fire({
             //     title: swaMsg.title_wait,
@@ -443,45 +457,85 @@ class RECORD_DOC_LETTER_2 extends Component {
             //     icon: 'info',
             //     showConfirmButton: false,
             // });
-        
-            // Crear relación
-            CubXVrDataService.createCubXVr(formatData)
-                .then((response) => {
-                    if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
-                    } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACIÓN",
-                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    } else {
+
+            if (this.state.idCUBxVr) {
+                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
                     });
-                });
+            } else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    });
+            }
         };
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>

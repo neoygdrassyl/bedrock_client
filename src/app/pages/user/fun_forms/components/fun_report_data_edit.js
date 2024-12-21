@@ -17,16 +17,27 @@ class FUN_REPORT_DATA_EDIT extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            vrsRelated: []
+            vrsRelated: [],
+            vrSelected: null,
+            cubSelected: null,
+            idCUBxVr: null
         };
     }
     componentDidMount() {
         this.retrieveItem();
     }
-    retrieveItem() {
-        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-            this.setState({ vrsRelated: response.data })
-        })
+    async retrieveItem() {
+        try {
+            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+                this.setState({ vrsRelated: response.data })
+            })
+            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const data = responseCubXVr.data.find(item => item.process === 'CONTROL DE DOCUMENTACION ESPECIAL');
+
+            data && this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+        } catch (error) {
+            console.log(error);
+        }
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
@@ -111,8 +122,11 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     </div>
                     <div className="col-4 p-2">
                         <div class="input-group my-1">
-                            <input type="text" class="form-control" id="fun_report_data_2" defaultValue={_GET_CHILD_LAW().report_cub} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <input type="text" class="form-control" id="fun_report_data_2"
+                                defaultValue={_GET_CHILD_LAW().report_cub || this.state.cubSelected} />
+                            {this.props.edit && !this.state.cubSelected ?
+                                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                : ''}
                         </div>
                     </div>
                 </div>
@@ -121,16 +135,23 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         <label>Documento de entrada asociado({infoCud.serials.start})</label>
                     </div>
                     <div className="col-4 p-2 ">
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected" defaultValue={""}>
-                                <option value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.title}>
-                                        {value.id_public}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        {
+                            this.state.vrSelected
+                                ?
+                                <input disabled type="text" class="form-control" id="vr_selected"
+                                    defaultValue={this.state.vrSelected} />
+                                :
+                                <div class="input-group">
+                                    <select class="form-select" id="vr_selected" defaultValue={""}>
+                                        <option disabled value=''>Seleccione una opción</option>
+                                        {this.state.vrsRelated.map((value, key) => (
+                                            <option key={value.id} value={value.id_public}>
+                                                {value.id_public}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                        }
                     </div>
                 </div>
                 <div className="row">
@@ -294,7 +315,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
 
             manage_law();
             createVRxCUB_relation(new_id)
-
+            this.retrieveItem();
         }
         let createVRxCUB_relation = (cub_selected) => {
             let vr = document.getElementById("vr_selected").value;
@@ -310,8 +331,6 @@ class FUN_REPORT_DATA_EDIT extends Component {
             let date = document.getElementById('fun_report_data_3').value;
             formatData.set('date', date);
 
-            
-
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -319,46 +338,86 @@ class FUN_REPORT_DATA_EDIT extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            // Crear relación
-            CubXVrDataService.createCubXVr(formatData)
-                .then((response) => {
-                    if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
-                    } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACIÓN",
-                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    } else {
+            if (this.state.idCUBxVr) {
+                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
                     });
-                });
+            } else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                    });
+            }
         };
-        
+
         return (
             <div className="fun_report_data container_arc">
                 <form id="form_report_data_edit" onSubmit={save_law}>
