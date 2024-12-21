@@ -16,7 +16,9 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            vrsRelated: []
+            vrsRelated: [],
+            vrSelected: null,
+            cubSelected: null
         }
     }
     componentDidUpdate(prevProps) {
@@ -53,6 +55,13 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
     retrieveItem() {
         SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
             this.setState({ vrsRelated: response.data })
+        })
+        CubXVrDataService.getByFUN(this.props.currentItem.id_public).then(response => {
+            console.log(response.data)
+            const data = response.data.find(item => item.process === 'CARTA LEGAL Y DEBIDA FORMA')
+            this.setState({ vrSelected: data.vr, cubSelected: data.cub })
+            console.log(this.state.vrSelected)
+            console.log(this.state.cubSelected)
         })
     }
     render() {
@@ -215,23 +224,32 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         <label className="mt-1">5.3 {infoCud.serials.end} Carta Incompleto</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="geng_cub_inc"
-                                defaultValue={_GET_CHILD_LAW().cub_inc || ''} />
-                            {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
+                                defaultValue={_GET_CHILD_LAW().cub_inc || this.state.cubSelected} />
+                            {this.props.edit && !this.state.cubSelected ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">5.2.1 {infoCud.serials.start}</label>
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected1" defaultValue={""}>
-                                <option value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.id_public}>
-                                        {value.id_public}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        {
+                            this.state.vrSelected
+                                ?
+                                <input disabled type="text" class="form-control" id="vr_selected1"
+                                    defaultValue={this.state.vrSelected} />
+                                :
+                                <div class="input-group">
+                                    <select class="form-select" id="vr_selected1" defaultValue={""}>
+                                        <option disabled value=''>Seleccione una opción</option>
+                                        {this.state.vrsRelated.map((value, key) => (
+                                            <option key={value.id} value={value.id_public}>
+                                                {value.id_public}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                        }
+
                     </div>
 
                 </div>
@@ -381,9 +399,9 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             cub_inc_json.missing = missing;
 
             formData.set('cub_inc_json', JSON.stringify(cub_inc_json));
-            
+
             manage_law(true, formData);
-            createVRxCUB_relation(new_id);            
+            createVRxCUB_relation(new_id);
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -500,9 +518,9 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             let desc = document.getElementById('geng_type').value;
             formatData.set('desc', desc);
             let date = document.getElementById('geng_date_doc').value;
-            
+
             formatData.set('date', date);
-            
+
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -510,7 +528,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-        
+
 
             // Crear relación
             CubXVrDataService.createCubXVr(formatData)
