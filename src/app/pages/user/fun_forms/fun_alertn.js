@@ -408,11 +408,8 @@ class FUN_ALERT extends Component {
                             <label>2.2.3 Consecutivo de Salida</label>
                             <div class="input-group my-1">
                                 <input type="text" class="form-control" id="alert_id_cub"
-                                    defaultValue={_CHILD.id_cub || this.state.cubSelected} />
-                                {
-                                    !this.state.cubSelected && <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
-
-                                }
+                                    defaultValue={_CHILD.id_cub || this.state.cubSelected || ""} />
+                                   <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                             </div>
                         </div>
                     </div>

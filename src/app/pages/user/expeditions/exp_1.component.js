@@ -339,31 +339,22 @@ class EXP_1 extends Component {
                                     <label className="mt-1">{infoCud.serials.end} Acto</label>
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="expedition_2"
-                                            defaultValue={currentRecord.cub1 || this.state.cubSelected1} />
-                                        {
-                                            !this.state.cubSelected1 && <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
-                                        }
+                                            defaultValue={currentRecord.cub1 || this.state.cubSelected1 || ""} />
+                                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
                                     </div>
                                 </div>
                                 <div className="col-3" >
                                     <label className="mt-1">{infoCud.serials.start}</label>
-                                    {
-                                        this.state.vrSelected1
-                                            ?
-                                            <input disabled type="text" class="form-control" id="vr_selected"
-                                                defaultValue={this.state.vrSelected1} />
-                                            :
-                                            <div class="input-group">
-                                                <select class="form-select" id="vr_selected" defaultValue={""}>
-                                                    <option disabled value=''>Seleccione una opción</option>
-                                                    {this.state.vrsRelated.map((value, key) => (
-                                                        <option key={value.id} value={value.id_public}>
-                                                            {value.id_public}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                    }
+                                    <div class="input-group">
+                                        <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected1 || ""}>
+                                            <option disabled value=''>Seleccione una opción</option>
+                                            {this.state.vrsRelated.map((value, key) => (
+                                                <option key={value.id} value={value.id_public}>
+                                                    {value.id_public}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -492,31 +483,22 @@ class EXP_1 extends Component {
                                         <label className="mt-1">{infoCud.serials.end}</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="expedition_11"
-                                                defaultValue={currentRecord.cub2 || this.state.cubSelected2} />
-                                            {
-                                                !this.state.cubSelected2 && <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
-                                            }
+                                                defaultValue={currentRecord.cub2 || this.state.cubSelected2  || ""} />
+                                                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
                                         </div>
                                     </div>
                                     <div className="col" >
                                         <label className="mt-1">{infoCud.serials.start}</label>
-                                        {
-                                            this.state.vrSelected2
-                                                ?
-                                                <input disabled type="text" class="form-control" id="vr_selected1"
-                                                    defaultValue={this.state.vrSelected2} />
-                                                :
-                                                <div class="input-group">
-                                                    <select class="form-select" id="vr_selected1" defaultValue={""}>
-                                                        <option disabled value=''>Seleccione una opción</option>
-                                                        {this.state.vrsRelated.map((value, key) => (
-                                                            <option key={value.id} value={value.id_public}>
-                                                                {value.id_public}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                        }
+                                        <div class="input-group">
+                                            <select class="form-select" id="vr_selected1" defaultValue={this.state.vrSelected2 || ""}>
+                                                <option disabled value=''>Seleccione una opción</option>
+                                                {this.state.vrsRelated.map((value, key) => (
+                                                    <option key={value.id} value={value.id_public}>
+                                                        {value.id_public}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div className="col-3">
                                         <label className="mt-2">Factura #</label>

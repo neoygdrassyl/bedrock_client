@@ -1062,32 +1062,23 @@ class RECORD_REVIEW extends Component {
                         <label className="mt-2">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="rev_cub"
-                                defaultValue={this.state.cubSelected || currentRecord.id_public} />
-                            {
-                                !this.state.cubSelected && <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
-                            }
+                                defaultValue={this.state.cubSelected || currentRecord.id_public || ""} />
+                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
                         </div>
                     </div>
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
-                        <div class="input-group ">
-                            {
-                                this.state.vrSelected
-                                    ?
-                                    <input disabled type="text" class="form-control" id="vr_selected11"
-                                        defaultValue={this.state.vrSelected} />
-                                    :
-                                    <div class="input-group">
-                                        <select class="form-select" defaultValue={""} id="vr_selected11">
-                                            {vrsRelated && vrsRelated.map((value, key) => (
-                                                <option key={value.id} value={value.id_public}>
-                                                    {value.id_public}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                            }
+                        <div class="input-group">
+                            <select class="form-select"  id="vr_selected11" defaultValue={this.state.vrSelected || ""}>
+                                {vrsRelated && vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
+                    
+                        
                     </div>
                 </div>
             </>
