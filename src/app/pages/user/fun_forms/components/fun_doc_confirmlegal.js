@@ -68,7 +68,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
         } catch (error) {
             console.log(error);
         }
-    }   
+    }
     setCuratedList(List) {
         let newList = [];
         if (!List) return;
@@ -321,30 +321,24 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                         <div class="input-group">
                             <input type="text" class="form-control" id="geng_cub_ldf"
                                 defaultValue={_GET_CHILD_LAW().cub_ldf || this.state.cubSelected} />
-                            {this.props.edit && !this.state.cubSelected ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
+                            {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
-                        {
-                            this.state.vrSelected
-                                ?
-                                <input disabled type="text" class="form-control" id="vr_selected"
-                                    defaultValue={this.state.vrSelected} />
-                                :
-                                <div class="input-group">
-                                    <select class="form-select" id="vr_selected" defaultValue={""}>
-                                        <option disabled value=''>Seleccione una opción</option>
-                                        {this.state.vrsRelated.map((value, key) => (
-                                            <option key={value.id} value={value.id_public}>
-                                                {value.id_public}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                        <div class="input-group">
+                            <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected}>
+                                <option disabled value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
-                        }
+
                     </div>
                 </div>
                 <div className="row mb-3">
