@@ -18,16 +18,33 @@ class EXP_1 extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            vrsRelated: []
+            vrsRelated: [],
+            vrSelected1: null,
+            vrSelected2: null,
+            cubSelected1: null,
+            cubSelected2: null,
+            idCUBxVr1: null,
+            idCUBxVr2: null,
         };
     }
     componentDidMount() {
         this.retrieveItem();
     }
-    retrieveItem() {
-        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-            this.setState({ vrsRelated: response.data })
-        })
+    async retrieveItem() {
+        try {
+            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+                this.setState({ vrsRelated: response.data })
+            })
+            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            //findOne
+            const data1 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
+            const data2 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
+            data1 && this.setState({ vrSelected1: data1.vr, cubSelected1: data1.cub, idCUBxVr1: data1.id })
+            data2 && this.setState({ vrSelected2: data2.vr, cubSelected2: data2.cub, idCUBxVr2: data2.id })
+
+        } catch (error) {
+            console.log(error);
+        }
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
@@ -59,7 +76,7 @@ class EXP_1 extends Component {
                     console.log(e);
                     MySwal.fire({
                         title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el concecutivo, intentelo nuevamnte.",
+                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
                         confirmButtonText: this.props.swaMsg.text_btn,
                     });
@@ -322,22 +339,31 @@ class EXP_1 extends Component {
                                     <label className="mt-1">{infoCud.serials.end} Acto</label>
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="expedition_2"
-                                            defaultValue={currentRecord.cub1 ?? ''} />
-                                        <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
+                                            defaultValue={currentRecord.cub1 || this.state.cubSelected1} />
+                                        {
+                                            !this.state.cubSelected1 && <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
+                                        }
                                     </div>
                                 </div>
                                 <div className="col-3" >
                                     <label className="mt-1">{infoCud.serials.start}</label>
-                                    <div class="input-group">
-                                        <select class="form-select" id="vr_selected" defaultValue={""}>
-                                            <option value=''>Seleccione una opción</option>
-                                            {this.state.vrsRelated.map((value, key) => (
-                                                <option key={value.id} value={value.id_public}>
-                                                    {value.id_public}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                    {
+                                        this.state.vrSelected1
+                                            ?
+                                            <input disabled type="text" class="form-control" id="vr_selected"
+                                                defaultValue={this.state.vrSelected1} />
+                                            :
+                                            <div class="input-group">
+                                                <select class="form-select" id="vr_selected" defaultValue={""}>
+                                                    <option disabled value=''>Seleccione una opción</option>
+                                                    {this.state.vrsRelated.map((value, key) => (
+                                                        <option key={value.id} value={value.id_public}>
+                                                            {value.id_public}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -466,22 +492,31 @@ class EXP_1 extends Component {
                                         <label className="mt-1">{infoCud.serials.end}</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="expedition_11"
-                                                defaultValue={currentRecord.cub2 ?? ''} />
-                                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
+                                                defaultValue={currentRecord.cub2 || this.state.cubSelected2} />
+                                            {
+                                                !this.state.cubSelected2 && <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
+                                            }
                                         </div>
                                     </div>
                                     <div className="col" >
                                         <label className="mt-1">{infoCud.serials.start}</label>
-                                        <div class="input-group">
-                                            <select class="form-select" id="vr_selected1" defaultValue={""}>
-                                                <option value=''>Seleccione una opción</option>
-                                                {this.state.vrsRelated.map((value, key) => (
-                                                    <option key={value.id} value={value.id_public}>
-                                                        {value.id_public}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                        {
+                                            this.state.vrSelected2
+                                                ?
+                                                <input disabled type="text" class="form-control" id="vr_selected1"
+                                                    defaultValue={this.state.vrSelected2} />
+                                                :
+                                                <div class="input-group">
+                                                    <select class="form-select" id="vr_selected1" defaultValue={""}>
+                                                        <option disabled value=''>Seleccione una opción</option>
+                                                        {this.state.vrsRelated.map((value, key) => (
+                                                            <option key={value.id} value={value.id_public}>
+                                                                {value.id_public}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                        }
                                     </div>
                                     <div className="col-3">
                                         <label className="mt-2">Factura #</label>
@@ -622,8 +657,9 @@ class EXP_1 extends Component {
 
             formData.set('duty', JSONObjectParser(duty));
 
-           createVRxCUB_relation(cub1, cub2)
+            createVRxCUB_relation(cub1, cub2)
             manage_exp();
+            this.retrieveItem()
         }
 
         let createVRxCUB_relation = (cub_selected, cub_selected1) => {
@@ -643,7 +679,7 @@ class EXP_1 extends Component {
                 formatData1.set('process', 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
                 formatData1.set('desc', 'Acta de Viabilidad');
                 formatData1.set('date', date1);
-                sendDataToCreate(formatData1);
+                sendDataToCreate(formatData1, 1);
             }
             if (cub2 && vr2) {
                 let formatData2 = new FormData();
@@ -653,7 +689,7 @@ class EXP_1 extends Component {
                 formatData2.set('process', 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
                 formatData2.set('desc', 'Deberes Urbanisticos');
                 formatData2.set('date', date2);
-                sendDataToCreate(formatData2);
+                sendDataToCreate(formatData2, 2);
             }
             /*
             let desc = document.getElementById('geng_type').value;
@@ -662,9 +698,9 @@ class EXP_1 extends Component {
             formatData.set('date', date);
             */
         }
-        let sendDataToCreate = (formatData) => {
+        let sendDataToCreate = (formatData , type) => {
 
-            
+
             // Mostrar mensaje inicial de espera
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -672,46 +708,87 @@ class EXP_1 extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-        
-            // Crear relación
-            CubXVrDataService.createCubXVr(formatData)
-                .then((response) => {
-                    if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                        // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
-                    } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACIÓN",
-                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    } else {
+            if ((type === 1 && this.state.idCUBxVr1) || (type===2 && this.state.idCUBxVr2)){
+                const id = type === 1 ? this.state.idCUBxVr1 : this.state.idCUBxVr2;
+
+                CubXVrDataService.updateCubVr(id, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
+                    })
+
+            } else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        MySwal.fire({
+                            title: swaMsg.generic_eror_title,
+                            text: swaMsg.generic_error_text,
+                            icon: 'warning',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
                     });
-                });
-                
+            }
         };
 
         let manage_exp = () => {
@@ -737,7 +814,7 @@ class EXP_1 extends Component {
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACION",
-                            text: `El concecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un concecutivo nuevo`,
+                            text: `El consecutivo ${infoCud.serials.end} de este formulario ya existe, debe de elegir un consecutivo nuevo`,
                             icon: 'error',
                             confirmButtonText: swaMsg.text_btn,
                         });

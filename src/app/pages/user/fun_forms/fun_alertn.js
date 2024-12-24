@@ -31,7 +31,9 @@ class FUN_ALERT extends Component {
             currentItem: null,
             cb: false,
             pqrsxfun: false,
-            vr:null
+            vr: null,
+            cubSelected: null,
+            idCUBxVr: null
         };
     }
     requestUpdate(id) {
@@ -40,7 +42,7 @@ class FUN_ALERT extends Component {
     componentDidMount() {
         this.retrieveItem(this.props.currentId);
     }
-    
+
     retrieveItem(id) {
         FUN_SERVICE.get(id)
             .then(response => {
@@ -49,6 +51,7 @@ class FUN_ALERT extends Component {
                 })
                 this.SET_DEFAULT_OBJECT();
                 this.retrievePQRSxFUN(response.data.id_public);
+                this.retrieveCubXvrs(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -70,6 +73,12 @@ class FUN_ALERT extends Component {
             .catch(e => {
                 console.log(e);
             });
+    }
+    async retrieveCubXvrs(id_public) {
+        const response = await CubXVrDataService.getByFUN(id_public)
+        const data = response.data.find(item => item.process === 'PUBLICIDAD COMUNICACION A VECINOS')
+        data && this.setState({ vr: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+        console.log(data)
     }
     SET_DEFAULT_OBJECT() {
         let _CHILD = this.state.currentItem.fun_3s[0];
@@ -195,7 +204,7 @@ class FUN_ALERT extends Component {
 
     }
     render() {
-        const { translation, swaMsg, globals, currentVersion  } = this.props;
+        const { translation, swaMsg, globals, currentVersion } = this.props;
         const { currentItem } = this.state;
 
         // DATA GETTERS
@@ -298,7 +307,7 @@ class FUN_ALERT extends Component {
             PQRS_Service.getlascub()
                 .then(response => {
                     new_id = response.data[0].cub;
-                    new_id =_MANAGE_IDS(new_id, 'end')
+                    new_id = _MANAGE_IDS(new_id, 'end')
                     document.getElementById('alert_id_cub').value = new_id;
                 })
                 .catch(e => {
@@ -399,8 +408,11 @@ class FUN_ALERT extends Component {
                             <label>2.2.3 Consecutivo de Salida</label>
                             <div class="input-group my-1">
                                 <input type="text" class="form-control" id="alert_id_cub"
-                                    defaultValue={_CHILD.id_cub} />
-                                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                    defaultValue={_CHILD.id_cub || this.state.cubSelected} />
+                                {
+                                    !this.state.cubSelected && <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+
+                                }
                             </div>
                         </div>
                     </div>
@@ -423,7 +435,7 @@ class FUN_ALERT extends Component {
                         <div className="col-3">
                             <label>2.2.6 Fecha de Confirmación</label>
                             <input type="date" class="form-control mb-3" max='2100-01-01' id="alert_date_confirm" required
-                                defaultValue={_CHILD.alerted ?? moment().format('YYYY-MM-DD')}/>
+                                defaultValue={_CHILD.alerted ?? moment().format('YYYY-MM-DD')} />
                         </div>
                     </div>
 
@@ -781,49 +793,95 @@ class FUN_ALERT extends Component {
         let createVRxCUB_relation = (cub_selected) => {
             let cub = cub_selected;
             let formatData = new FormData();
-            
+
             formatData.set('vr', this.state.vr);
             formatData.set('cub', cub);
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'PUBLICIDAD COMUNICACION A VECINOS');
-            
+
             // let desc = document.getElementById('geng_type').value;
             // formatData.set('desc', desc);
             // let date = document.getElementById('geng_date_doc').value;
             // formatData.set('date', date);
-
-            CubXVrDataService.createCubXVr(formatData)
-                .then(response => {
-                    if (response.data !== null) {
-
-                    } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: `El consecutivo  de este formulario ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    } else {
-
+            if (this.state.idCUBxVr) {
+                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
+                    });
+            }
+            else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            MySwal.fire({
+                                title: swaMsg.publish_success_title,
+                                text: swaMsg.publish_success_text,
+                                footer: swaMsg.text_footer,
+                                icon: 'success',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            MySwal.fire({
+                                title: "ERROR DE DUPLICACIÓN",
+                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
+                                icon: 'error',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        } else {
+                            MySwal.fire({
+                                title: swaMsg.generic_eror_title,
+                                text: swaMsg.generic_error_text,
+                                icon: 'warning',
+                                confirmButtonText: swaMsg.text_btn,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                    
-                });
+                    });
+            }
         }
 
         let alertAddress = () => {
@@ -931,6 +989,7 @@ class FUN_ALERT extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+            this.retrieveItem(this.props.currentId);
         }
 
         return (
@@ -1045,7 +1104,8 @@ class FUN_ALERT extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            setVr={(item) => this.setState({vr : item})}
+                            vr={this.state.vr}
+                            setVr={(item) => this.setState({ vr: item })}
                         />
 
                         <label className="app-p lead fw-normal text-uppercase my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>

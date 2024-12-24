@@ -183,7 +183,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                         <label>2.1.3 Consecutivo de Salida</label>
                         <div class="input-group my-1">
                             <input type="text" class="form-control" id="gen_alert_id_cub" disabled
-                                defaultValue={_GET_CHILD_3_IDCUB_DEFAULT()} />
+                                defaultValue={_GET_CHILD_3_IDCUB_DEFAULT() || this.props.cubSelected} />
                         </div>
                     </div>
                     <div></div>
@@ -196,16 +196,23 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                     </div>
                     <div className="col ms-auto" >
                         <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
-                        <div class="input-group ">
-                            <select class="form-select" defaultValue={""} onChange={(e) => {this.props.setVr(e.target.value)}}>
-                                <option value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.id_public}>
-                                        {value.id_public}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        {
+                            this.props.vr ?
+                                <input disabled type="text" class="form-control" id="vr_selected1"
+                                    defaultValue={this.props.vr} />
+                                :
+                                <div class="input-group ">
+                                    <select class="form-select" defaultValue={""} onChange={(e) => { this.props.setVr(e.target.value) }}>
+                                        <option value=''>Seleccione una opción</option>
+                                        {this.state.vrsRelated.map((value, key) => (
+                                            <option key={value.id} value={value.id_public}>
+                                                {value.id_public}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                        }
+
                     </div>
                 </div>
                 <div className="row mb-3">
@@ -265,7 +272,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                         </select>
                     </div>
                     <div className="col-6">
-                        <br/>
+                        <br />
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="digital_firm" />
                             <label class="form-check-label" for="digital_firm">
