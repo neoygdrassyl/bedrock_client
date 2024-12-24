@@ -1632,31 +1632,22 @@ class EXP_DOCS extends Component {
                         <label className="mt-1"> {infoCud.serials.end} Carta Citación</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="exodfb_cub3_exp"
-                                defaultValue={currentRecord.cub3 || this.state.cubSelected} />
-                            {this.props.edit && !this.state.cubSelected ?
-                                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
-                                : ''}
+                                defaultValue={currentRecord.cub3 || this.state.cubSelected || ""} />
+                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
                         </div>
                     </div>
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
-                        {
-                            this.state.vrSelected
-                                ?
-                                <input disabled type="text" class="form-control" id="vr_selected33"
-                                    defaultValue={this.state.vrSelected} />
-                                :
-                                <div class="input-group">
-                                    <select class="form-select" id="vr_selected33" defaultValue={""}>
-                                        <option disabled value=''>Seleccione una opción</option>
-                                        {this.state.vrsRelated.map((value, key) => (
-                                            <option key={value.id} value={value.id_public}>
-                                                {value.id_public}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                        }
+                        <div class="input-group">
+                            <select class="form-select" id="vr_selected33" defaultValue={this.state.vrSelected || ""}>
+                                <option disabled value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div className="row mb-3">
