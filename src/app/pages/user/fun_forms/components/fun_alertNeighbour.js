@@ -6,15 +6,28 @@ import moment from 'moment';
 import { formsParser1, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
+import SubmitService from '../../../../services/submit.service'
+
 
 const MySwal = withReactContent(Swal);
 class FUN_ALERT_NEIGHBOUR extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            vrsRelated: []
         };
     }
-
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    componentDidUpdate(){
+        if(this.props.vr) document.getElementById("vr_selected").value = this.props.vr 
+    }
+    retrieveItem() {
+        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+            this.setState({ vrsRelated: response.data })
+        })
+    }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
         const { } = this.state;
@@ -157,30 +170,44 @@ class FUN_ALERT_NEIGHBOUR extends Component {
 
             return <>
                 <div className="row mb-3">
-                    <div className="col-3">
+                    <div className="col">
                         <label>2.1.1. Fecha de documento</label>
                         <input type="date" class="form-control" max='2100-01-01' id="gen_alert_date" required
                             defaultValue={moment().format('YYYY-MM-DD')} />
                     </div>
-                    <div className="col-3">
+                    <div className="col">
                         <label>2.1.2 Fecha de Pago</label>
                         <div class="input-group my-1">
                             <input type="date" class="form-control" max='2100-01-01' id="gen_pay_date"
                                 defaultValue={_GET_CLOCK_STATE(3).date_start} />
                         </div>
                     </div>
-                    <div className="col-3">
+                    <div className="col">
                         <label>2.1.3 Consecutivo de Salida</label>
                         <div class="input-group my-1">
-                            <input type="text" class="form-control" id="gen_alert_id_cub" disabled
-                                defaultValue={_GET_CHILD_3_IDCUB_DEFAULT()} />
+                            <input type="text" class="form-control" id="gen_alert_id_cub" 
+                                defaultValue={_GET_CHILD_3_IDCUB_DEFAULT() || this.props.cubSelected || ""} />
                         </div>
                     </div>
-                    <div className="col-3">
+                    <div></div>
+                    <div className="col">
                         <label>2.1.4 Consecutivo Radicado</label>
                         <div class="input-group my-1">
                             <input type="text" class="form-control" id="gen_alert_id_public" disabled
                                 defaultValue={currentItem.id_public} />
+                        </div>
+                    </div>
+                    <div className="col ms-auto" >
+                        <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
+                        <div class="input-group ">
+                            <select class="form-select" id="vr_selected" defaultValue={this.props.vr || ""} onChange={(e) => {this.props.setVr(e.target.value)}}>
+                                <option value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -241,7 +268,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                         </select>
                     </div>
                     <div className="col-6">
-                        <br/>
+                        <br />
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="digital_firm" />
                             <label class="form-check-label" for="digital_firm">

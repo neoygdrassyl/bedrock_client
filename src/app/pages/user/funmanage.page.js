@@ -744,7 +744,7 @@ class FUN_MANAGE extends Component {
                         </MDBCol>
                     </MDBRow>
 
-                    <MDBTabs fill className='m-0 border' pills>
+                    <MDBTabs fill className='m-2 border' pills>
                         <MDBTabsItem>
                             <MDBTabsLink onClick={() => handleFillClick('4')} active={this.state.fillActive === '4'}>
                                 <label className="upper-case">PROCESOS DIARIOS</label>
@@ -851,7 +851,7 @@ class FUN_MANAGE extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-signature"></i> ACTUALIZACION DE SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
+                        <label><i class="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_n()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -877,7 +877,7 @@ class FUN_MANAGE extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-archive"></i> GESTION DOCUMENTAL - No. Radicación :  {this.state.currentPublic} </label>
+                        <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_d()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -953,7 +953,7 @@ class FUN_MANAGE extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-building"></i> INFORME ARQUITECTONICO - No. Radicación :  {this.state.currentPublic} </label>
+                        <label><i class="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordArc()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1059,7 +1059,7 @@ class FUN_MANAGE extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECIONES - No. Radicación :  {this.state.currentPublic} </label>
+                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordReview()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1084,7 +1084,7 @@ class FUN_MANAGE extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> EXPEDICION DE LA LICENCIA:  {this.state.currentPublic} </label>
+                        <label><i class="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_exp()}></MDBBtn>
                     </div>
                     {modalHeader}

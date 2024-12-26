@@ -8,11 +8,36 @@ import { infoCud } from '../../../components/jsons/vars';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import { MDBBtn } from 'mdb-react-ui-kit';
 import RecordReviewService from '../../../services/record_review.service';
+import SubmitService from '../../../services/submit.service';
+import CubXVrDataService from '../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
 class RECORD_DOC_LETTER extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            vrsRelated: [],
+            vrSelected: null,
+            cubSelected: null,
+            idCUBxVr: null
+        };
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    async retrieveItem() {
+        try {
+            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+                this.setState({ vrsRelated: response.data })
+            })
+            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const data = responseCubXVr.data.find(item => item.process === 'CARTA DE RATIFICACION');
+            
+            if(data) document.getElementById("vr_selected").value = data.vr
+            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+        } catch (error) {
+            console.log(error);
+        }
     }
     componentDidUpdate(prevProps) {
         // Uso tipico (no olvides de comparar las props):
@@ -142,13 +167,27 @@ class RECORD_DOC_LETTER extends Component {
                         <input type="text" class="form-control mb-3" id="gena_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
+                    <div></div>
                     <div className="col">
                         <label className="mt-1">{infoCud.serials.end} Carta Acta de Obs.</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="gena_cub_act"
-                                defaultValue={_GET_CHILD_LAW().cub_act || ''} />
-                            {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act')}>GENERAR</button>
+                                defaultValue={_GET_CHILD_LAW().cub_act || this.state.cubSelected || ""} />
+                            {this.props.edit  ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act')}>GENERAR</button>
                                 : ''}
+                        </div>
+                    </div>
+                    <div className="col  mb-auto" >
+                        <label className="mt-1">{infoCud.serials.start}</label>
+                        <div class="input-group">
+                            <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected || ""}>
+                                <option disabled value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -194,7 +233,7 @@ class RECORD_DOC_LETTER extends Component {
         }
 
         let gen_confirmDoc = (e) => {
-          
+
             if (e) e.preventDefault();
             let formData = new FormData();
 
@@ -282,7 +321,8 @@ class RECORD_DOC_LETTER extends Component {
             formData.set('cub_act_json', JSON.stringify(cub_act_json));
 
             manage_law(true, formData);
-
+            createVRxCUB_relation(new_id);
+            this.retrieveItem();
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -383,7 +423,47 @@ class RECORD_DOC_LETTER extends Component {
                         }
                     });
             }
+        }
 
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            formatData.set('process', 'CARTA DE RATIFICACION');
+
+            // let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', 'Carta Acta Observaciones');
+            let date = document.getElementById('gena_date_doc').value;
+            formatData.set('date', date);
+
+            if (this.state.idCUBxVr) {
+                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            } else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
         }
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>

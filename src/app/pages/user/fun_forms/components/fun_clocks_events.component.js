@@ -38,7 +38,7 @@ export default function FUN_CLOCK_EVENTS(props) {
         {
             name: <label className="text-center">ACCIÓN</label>,
             maxWidth: '90px',
-            omit: !(window.user.roleId == 1 || window.user.roleId == 3),
+            omit: !(window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 2),
             cell: row => <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                 <MDBBtn className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => deleteEvent(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
             </MDBTooltip>

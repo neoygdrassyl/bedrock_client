@@ -156,9 +156,9 @@ class SUBMIT_MANAGE extends Component {
                             if (con) return "ACTA DE OBSERVACIONES"
                             return "ACTA DE OBSERVACIONES Y CORRECCIONES"
                         }
-                        if (state > 5 || state < 100) return "EXPEDICIÓN";
-                        if (state > 100 || state < 200) return "EXPEDIDO";
-                        if (state > 200) return "DESISTIDO";
+                        if (state > 5 && state < 100) return "EXPEDICIÓN";
+                        if (state >= 100 && state < 200) return "EXPEDIDO";
+                        if (state >= 200) return "DESISTIDO";
                     }
                     fun_51.map(value => { if (value.role == 'PROPIETARIO') owners.push(value.name + ' ' + value.surname) })
                     document.getElementById('submit_5').value = owners.join(', ');
@@ -587,7 +587,7 @@ class SUBMIT_MANAGE extends Component {
                         ? <>
                             <fieldset className="p-3">
                                 <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_pdf">
-                                    <label className="app-p lead fw-normal text-uppercase text-light">LISA DE DOCUMENTOS</label>
+                                    <label className="app-p lead fw-normal text-uppercase text-light">LISTA DE DOCUMENTOS</label>
                                 </legend>
 
                                 <SUBMIT_LIST

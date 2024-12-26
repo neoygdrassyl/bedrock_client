@@ -19,6 +19,9 @@ import RECORD_DOC_LETTER from './record_letter.component';
 import RECORD_DOC_LETTER_2 from './record_letter_2.component';
 import Collapsible from 'react-collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
+import SubmitService from '../../../services/submit.service';
+import CubXVrDataService from '../../../services/cubXvr.service'
+
 
 
 const MySwal = withReactContent(Swal);
@@ -37,6 +40,10 @@ class RECORD_REVIEW extends Component {
             loaded: false,
             currentStepIndex: 0,
             pqrsxfun: false,
+            vrsRelated: [],
+            vrSelected: null,
+            cubSelected: null,
+            idCUBxVr: null,
         };
     }
     componentDidMount() {
@@ -94,6 +101,10 @@ class RECORD_REVIEW extends Component {
                     load: true
                 })
                 this.retrievePQRSxFUN(response.data.id_public);
+                SubmitService.getIdRelated(response.data.id_public).then(resres => {
+                    this.setState({ vrsRelated: resres.data })
+                })
+                this.retrieveCubXvrs(response.data.id_public)
             })
             .catch(e => {
                 console.log(e);
@@ -115,6 +126,16 @@ class RECORD_REVIEW extends Component {
             .catch(e => {
                 console.log(e);
             });
+    }
+    async retrieveCubXvrs(id_public) {
+        console.log(id_public)
+        const response = await CubXVrDataService.getByFUN(id_public)
+        const data = response.data.find(item => item.process === 'OBSERVACIONES Y CORRECIONES')
+
+        if(data) {
+            document.getElementById("vr_selected11").value = data.vr
+            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+        }
     }
     async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
         let swaMsg = this.props.swaMsg;
@@ -192,7 +213,7 @@ class RECORD_REVIEW extends Component {
 
     render() {
         const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem, currentStepIndex } = this.state;
+        const { loaded, currentRecord, currentVersionR, currentItem, currentStepIndex, vrsRelated } = this.state;
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -534,20 +555,20 @@ class RECORD_REVIEW extends Component {
             const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
             const evaDefaultTime = _fun_0_type_time[currentItem.type] ?? 45
             let limit_1 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, evaDefaultTime)
-            let notTime = dateParser_dateDiff(_GET_CLOCK_STATE(31).date_start,  _GET_CLOCK_STATE(32).date_start ||_GET_CLOCK_STATE(33).date_start)
-            let acta2Time =   (evaDefaultTime) + (30) + (_GET_CLOCK_STATE(35).date_start ? 15: 0) + (5)
-            let limit_2 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, acta2Time )
+            let notTime = dateParser_dateDiff(_GET_CLOCK_STATE(31).date_start, _GET_CLOCK_STATE(32).date_start || _GET_CLOCK_STATE(33).date_start)
+            let acta2Time = (evaDefaultTime) + (30) + (_GET_CLOCK_STATE(35).date_start ? 15 : 0) + (5)
+            let limit_2 = dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, acta2Time)
 
             let is_Outdate_1 = dateParser_dateDiff(limit_1, currentRecord.date, true)
-            let is_Outdate_2 = dateParser_dateDiff(limit_2,  currentRecord.date_2, true)
+            let is_Outdate_2 = dateParser_dateDiff(limit_2, currentRecord.date_2, true)
 
             return <>
                 <div className="row">
-                    <div className="col-4">
+                    <div className="col-2">
                         <br />
-                        <label className='fw-bold'>Fecha limite: </label> {limit_1} {is_Outdate_1 < 0 ?<label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
+                        <label className='fw-bold'>Fecha limite: </label> {limit_1} {is_Outdate_1 < 0 ? <label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
                     </div>
-                    <div className="col-4">
+                    <div className="col-5">
                         <label>Fecha del acta de observaciones</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
@@ -573,11 +594,11 @@ class RECORD_REVIEW extends Component {
 
                 </div>
                 <div className="row">
-                    <div className="col-4">
+                    <div className="col-2">
                         <br />
-                        <label className='fw-bold'>Fecha limite: </label>  {limit_2} {is_Outdate_2 < 0 ?<label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
+                        <label className='fw-bold'>Fecha limite: </label>  {limit_2} {is_Outdate_2 < 0 ? <label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
                     </div>
-                    <div className="col-4">
+                    <div className="col-5">
                         <label>Fecha del acta de Correcciones</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
@@ -1039,15 +1060,30 @@ class RECORD_REVIEW extends Component {
         let _BTN_GEN_ID = () => {
             return <>
                 <div className='row'>
-                    <div className="col-4">
+                    <div className="col-2">
                     </div>
-                    <div className="col-4">
-                        <label className="mt-1">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
+                    <div className="col-5">
+                        <label className="mt-2">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="rev_cub"
-                                defaultValue={currentRecord.id_public ?? ''} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
+                                defaultValue={this.state.cubSelected || currentRecord.id_public || ""} />
+                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
                         </div>
+                    </div>
+                    <div className="col-4" >
+                        <label className="mt-1">{infoCud.serials.start}</label>
+                        <div class="input-group">
+                            <select class="form-select"  id="vr_selected11" defaultValue={this.state.vrSelected || ""}>
+                                <option disabled value=''>Seleccione una opción</option>
+                                {vrsRelated && vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    
+                        
                     </div>
                 </div>
             </>
@@ -1194,6 +1230,8 @@ class RECORD_REVIEW extends Component {
                 if (SweetAlertResult.isConfirmed) {
                     save_review();
                     save_clock();
+                    createVRxCUB_relation();
+                    this.retrieveItem(currentItem.id);
                 }
             });
         }
@@ -1789,6 +1827,46 @@ class RECORD_REVIEW extends Component {
 
             this.CREATE_CHECK(_RESUME, _CHECKS, currentItem, headers)
         }
+        let createVRxCUB_relation = () => {
+            let vr = document.getElementById("vr_selected11").value;
+            let cub = document.getElementById("rev_cub").value;
+            let formatData = new FormData();
+
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            formatData.set('process', 'OBSERVACIONES Y CORRECIONES');
+            formatData.set('desc', 'Observaciones y correciones');
+
+
+            let date = document.getElementById('record_review_2').value;
+            formatData.set('date', date);
+
+            if (this.state.idCUBxVr) {
+                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            } else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+        };
 
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : {})
         let rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
@@ -1929,7 +2007,7 @@ class RECORD_REVIEW extends Component {
                                         <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIMIENTO,
                                             NO SE PUEDE PROSEGUIR HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
                                 </div>
-                                {NAV_FUNA()}
+                                {/* {NAV_FUNA()} */}
                             </> : <>
 
                                 <fieldset className="p-3">

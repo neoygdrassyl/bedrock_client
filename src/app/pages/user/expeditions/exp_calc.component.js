@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { infoCud } from '../../../components/jsons/vars';
 import { _CALCULATE_EXPENSES } from '../../../components/customClasses/typeParse';
+import moment from 'moment';
 
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 const customStylesForModal = {
@@ -31,6 +32,8 @@ const customStylesForModal = {
 
     }
 };
+const CURRENT_YEAR = moment().format('YYYY')
+
 
 const PORUIS_DATA = {
     name: 'Estampilla PRO-UIS',
@@ -159,7 +162,9 @@ const old_2023 = [
         ]},
 ]
 
-const UVT = 47065;
+let UVT = 47065;
+if (CURRENT_YEAR == '2025') UVT = 49799
+
 const rules_matrix = () => {
 
     if (_GLOBAL_ID == 'cb1') return []
@@ -253,8 +258,8 @@ export default function EXP_CALC(props) {
 
         if (!rule) return;
         if (!subrule) return;
-        if (use.includes('Seleccione')) return;
-        if (st.includes('Seleccione')) st = 0;;
+        if (use && use.includes('Seleccione')) return;
+        if (st && st.includes('Seleccione')) st = 0;;
         if (!Q) return;
 
         var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q)

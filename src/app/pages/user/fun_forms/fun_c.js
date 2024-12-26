@@ -924,7 +924,7 @@ class FUNC extends Component {
                         />
                     </fieldset>
 
-                    {NAV_FUNC(currentItem.state)}
+                    {/* {NAV_FUNC(currentItem.state)} */}
                     <FUN_MODULE_NAV
                         translation={translation}
                         currentItem={currentItem}
@@ -947,7 +947,7 @@ class FUNC extends Component {
         );
     }
 }
-
+/*
 const NAV_FUNC = (state) => {
     return (
         <div className="btn-navpqrs ">
@@ -1005,5 +1005,6 @@ const NAV_FUNC = (state) => {
         </div>
     );
 }
+*/
 
 export default FUNC;

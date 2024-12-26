@@ -120,60 +120,60 @@ class EXP_2 extends Component {
             let mainuse = json34.mainuse;
             let parkings = _GET_CHILD_35_PARKING().reduce((sum, next) => sum += next.project || 0, 0);
             return <>
-                <div className="row mb-4">
-                    <label className='fw-bold'>Planeación</label>
-                    <div className="col">
-                        <label className="mt-1">N° Folios Licencia</label>
-                        <input type="number" class="form-control form-control-sm" id="exp_2_1" min="0" step="1"
-                            defaultValue={control.n_lic} onBlur={() => save_exp()} />
+                <div className="container">
+                    <label className='fw-bold fs-5'>Planeación</label>
+                    <div className="row">
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Folios Licencia</label>
+                            <input type="number" className="form-control form-control-sm" id="exp_2_1" min="0" step="1"
+                                defaultValue={control.n_lic} onBlur={() => save_exp()} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Folios de Resolución</label>
+                            <input type="number" className="form-control form-control-sm" id="exp_2_2" min="0" step="1"
+                                defaultValue={control.n_res} onBlur={() => save_exp()} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">Norma</label>
+                            <input type="text" className="form-control form-control-sm" id="exp_2_3"
+                                defaultValue={control.norm} onBlur={() => save_exp()} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">Fecha Norma</label>
+                            <input type="date" className="form-control form-control-sm" id="exp_2_4" max={'2100-12-31'}
+                                defaultValue={control.date_norm} onBlur={() => save_exp()} />
+                        </div>
                     </div>
-                    <div className="col">
-                        <label className="mt-1">N° Folios de Resolucion</label>
-                        <input type="number" class="form-control form-control-sm" id="exp_2_2" min="0" step="1"
-                            defaultValue={control.n_res} onBlur={() => save_exp()} />
+                    <div className="row mt-3">
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Folios Norma</label>
+                            <input type="text" className="form-control form-control-sm" id="exp_2_5" min="0" step="1"
+                                defaultValue={control.n_norm} onBlur={() => save_exp()} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Parqueaderos</label>
+                            <input type="number" className="form-control form-control-sm" id="exp_2_6" min="0" step="1"
+                                defaultValue={control.n_parq} onBlur={() => save_exp()} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">m2 Área predio</label>
+                            <input type="text" className="form-control form-control-sm" id="exp_2_7"
+                                defaultValue={control.area_predio} onBlur={() => save_exp()} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">Uso Principal</label>
+                            <input type="text" className="form-control form-control-sm" id="exp_2_8"
+                                defaultValue={control.uso_principal} onBlur={() => save_exp()} />
+                        </div>
+                        
+                        <div className="col-md-3">
+                            <label className="mt-1">Número de Subdivisión</label>
+                            <input type="number" class="form-control form-control-sm" id="ra_control_data_3"
+                                defaultValue={controlArc.n_sub} onBlur={() => manage_ra_33_control('pym')} />
+                        </div>
                     </div>
-                    <div className="col">
-                        <label className="mt-1">Norma</label>
-                        <input type="text" class="form-control form-control-sm" id="exp_2_3"
-                            defaultValue={control.norm} onBlur={() => save_exp()} />
-                    </div>
-                    <div className="col">
-                        <label className="mt-1">Fecha Norma</label>
-                        <input type="date" class="form-control form-control-sm" id="exp_2_4" max={'2100-12-31'}
-                            defaultValue={control.date_norm} onBlur={() => save_exp()} />
-                    </div>
-                    <div className="col">
-                        <label className="mt-1">N° Folios Norma</label>
-                        <input type="text" class="form-control form-control-sm" id="exp_2_5" min="0" step="1"
-                            defaultValue={control.n_norm} onBlur={() => save_exp()} />
-                    </div>
+                    <div className="mt-3"></div>
                 </div>
-
-                <div className="row mb-4">
-                    <div className="col">
-                        <label className="mt-1">N° Parqueaderos</label>
-                        <input type="number" class="form-control form-control-sm" id="ra_control_data_0" min="0" step="0.01"
-                            defaultValue={controlArc.n_parking || parkings} onBlur={() => manage_ra_33_control('pym')} />
-                    </div>
-                    <div className="col">
-                        <label className="mt-1">m2 Área predio</label>
-                        <input type="number" class="form-control form-control-sm" id="ra_control_data_1" min="0" step="0.01"
-                            defaultValue={controlArc.m2_predio || m2} onBlur={() => manage_ra_33_control('pym')} />
-                    </div>
-                    <div className="col">
-                        <label className="mt-1">Uso Principal</label>
-                        <input type="text" class="form-control form-control-sm" id="ra_control_data_2"
-                            defaultValue={controlArc.main_use || mainuse} onBlur={() => manage_ra_33_control('pym')} />
-                    </div>
-                    <div className="col">
-                        <label className="mt-1">Número de Subdivisión</label>
-                        <input type="number" class="form-control form-control-sm" id="ra_control_data_3"
-                            defaultValue={controlArc.n_sub} onBlur={() => manage_ra_33_control('pym')} />
-                    </div>
-                    <div className="col">
-                    </div>
-                </div>
-
             </>
         }
 
@@ -451,7 +451,7 @@ class EXP_2 extends Component {
                 });
         }
         return (
-            <div className="record_ph_gen container">
+            <div className="record_ph_gen container p-3">
                 <legend className="my-2 px-3 text-uppercase bg-light" id="nav_expedition_10">
                     <label className="app-p lead fw-normal">Control para Entidades Supervisoras {_SAVING_STATE(this.state.pym)}</label>
                 </legend>

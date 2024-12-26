@@ -1079,8 +1079,5 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
             </> : <label className='fw-bold ms-5'>CARGANDO...</label>}
 
         </div>
-        {window.user.id == 1 ? <div className='row' >
-            <pre>{JSON.stringify(clocks, null, 2)}</pre>
-            <pre>{JSON.stringify(loadItem, null, 2)}</pre></div> : ''}
     </div>);
 }

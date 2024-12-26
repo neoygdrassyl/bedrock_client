@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../components/customClasses/typeParse'
 import FUNService from '../../../../services/fun.service'
 import SubmitService from '../../../../services/submit.service'
+import CubXVrDataService from '../../../../services/cubXvr.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
@@ -17,6 +18,10 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
         this.state = {
             load: false,
             curatedList: [],
+            vrsRelated: [],
+            vrSelected: null,
+            cubSelected: null,
+            idCUBxVr: null,
         };
     }
     componentDidMount() {
@@ -51,10 +56,19 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
         return _CHILD_VARS;
 
     }
-    retrieveItem() {
-        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-            this.setCuratedList(response.data)
-        })
+    async retrieveItem() {
+        try {
+            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+                this.setState({ vrsRelated: response.data })
+            })
+            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const data = responseCubXVr.data.find(item => item.process === 'CARTA LEGAL Y DEBIDA FORMA');
+
+            if (data) document.getElementById("vr_selected").value = data.vr
+            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+        } catch (error) {
+            console.log(error);
+        }
     }
     setCuratedList(List) {
         let newList = [];
@@ -302,14 +316,30 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                         <input type="text" class="form-control mb-3" id="geng_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
+                    <div></div>
                     <div className="col">
-                        <label className="mt-1">5.4 {infoCud.serials.end} Carta LyDF</label>
+                        <label className="mt-1">5.4.1 {infoCud.serials.end} Carta LyDF</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="geng_cub_ldf"
-                                defaultValue={_GET_CHILD_LAW().cub_ldf ?? ''} />
+                                defaultValue={_GET_CHILD_LAW().cub_ldf || this.state.cubSelected || ""} />
                             {this.props.edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
                                 : ''}
                         </div>
+                    </div>
+                    <div className="col">
+                        <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
+                        <div class="input-group">
+                            <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected || ""}>
+                                <option disabled value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+
                     </div>
                 </div>
                 <div className="row mb-3">
@@ -350,7 +380,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                 </div>
 
                 <div className="row mb-3">
-                <div className="col">
+                    <div className="col">
                         <label>5.10 Dirección Predio</label>
                         <input type="text" class="form-control mb-3" id="geng_address_2"
                             defaultValue={_JSON.address_2 ?? _CHILD_2.item_211} />
@@ -520,7 +550,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             let type = document.getElementById("geng_type").value;
             formData.set('type', type);
 
-            formData.set('type_not',  document.getElementById("type_not").value);
+            formData.set('type_not', document.getElementById("type_not").value);
 
             var _CHILD = currentItem.fun_cs;
             var _CURRENT_VERSION = currentItem.version - 1;
@@ -620,6 +650,8 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
 
             manage_law(true, formData);
             if (document.getElementById('control_func_3').checked) createEvent(false)
+            createVRxCUB_relation(new_id)
+            this.retrieveItem();
 
         }
         let manage_law = (useMySwal, formData) => {
@@ -818,6 +850,48 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     });
             }
         }
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected").value;
+            let cub = cub_selected;
+            let formatData = new FormData();
+
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            formatData.set('process', 'CARTA LEGAL Y DEBIDA FORMA');
+
+            let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', desc);
+
+            let date = document.getElementById('geng_date_doc').value;
+            formatData.set('date', date);
+
+            if (this.state.idCUBxVr) {
+                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            } else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+        };
+
         return (
             <form id="genc_doc_form" onSubmit={save_doc}>
                 {_GENDOC_COMPONENT()}

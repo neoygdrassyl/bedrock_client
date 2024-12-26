@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
 import moment from 'moment';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -6,8 +6,8 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import { dateParser } from '../../../../components/customClasses/typeParse';
+import CubXVrDataService from '../../../../services/cubXvr.service'
 //const moment = require('moment');
-
 
 const MySwal = withReactContent(Swal);
 export const PQRS_SET_REPLY1 = (props) => {
@@ -16,7 +16,6 @@ export const PQRS_SET_REPLY1 = (props) => {
     const [state, setState] = useState({});
     const editor = useRef(null)
     const [content, setContent] = useState('')
-
     const funcion3 = () => {
         const x = currentItem.pqrs_solocitors.map(function (value) { return ` ${value.name}` })
         return x.join(', ');
@@ -26,7 +25,7 @@ export const PQRS_SET_REPLY1 = (props) => {
         return y;
     }
     const get_address = () => {
-        const y = currentItem.pqrs_contacts.map(function (value) { return `${ value.address ? value.address : ''}` }).join(', ')
+        const y = currentItem.pqrs_contacts.map(function (value) { return `${value.address ? value.address : ''}` }).join(', ')
         return y;
     }
 
@@ -65,7 +64,7 @@ export const PQRS_SET_REPLY1 = (props) => {
         ${currentItem.pqrs_fun ? `<tr>
             <td><strong> Asociado a un proyecto: </strong></td>
             <td> ${currentItem.pqrs_fun.id_public} </td>
-        </tr>`:  '' }
+        </tr>`: ''}
         <tr>
             <td><strong> Término: </strong></td>
             <td> ${currentItem.pqrs_time.time} días hábiles</td>
@@ -87,7 +86,7 @@ export const PQRS_SET_REPLY1 = (props) => {
     <p style="margin-left: 80px; line-height: 0.5;"><strong><span style="font-family: arial, helvetica, sans-serif;"><strong style="font-family: arial, helvetica, sans-serif; ${fontSize};">Revisado por:</strong></span></strong></p>
 `)
 
-    const fgs = ()=>(`
+    const fgs = () => (`
     
     `)
 
@@ -138,7 +137,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 console.log(e);
                 MySwal.fire({
                     title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
+                    text: "No ha sido posible cargar este ítem, intentelo nuevamente.",
                     icon: 'error',
                     confirmButtonText: props.swaMsg.text_btn,
                 });
@@ -182,12 +181,7 @@ export const PQRS_SET_REPLY1 = (props) => {
             }
             formData.set('solicitors_name', array_solicitor.join());
 
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
+            createVRxCUB_relation(new_id);
             PQRS_Service.formalReply(formData)
                 .then(response => {
                     if (response.data === 'OK') {
@@ -206,8 +200,8 @@ export const PQRS_SET_REPLY1 = (props) => {
 
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
-                            title: "ERROR DE DUPLICACION",
-                            text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                            title: "ERROR DE DUPLICACIÓN",
+                            text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                             icon: 'error',
                             confirmButtonText: swaMsg.text_btn,
                         });
@@ -224,13 +218,15 @@ export const PQRS_SET_REPLY1 = (props) => {
                 .catch(e => {
                     console.log(e);
                 });
+
         } else {
             MySwal.fire({
-                title: "NO HAY CONCECUTIVO DE SALIDA",
-                text: "Se debe de espeficiar primero el concecutivo de Salida.",
+                title: "NO HAY CONSECUTIVO DE SALIDA",
+                text: "Se debe de espeficiar primero el consecutivo de Salida.",
                 icon: 'error',
             });
         }
+
     };
 
     let _GET_LAST_ID = () => {
@@ -266,15 +262,54 @@ export const PQRS_SET_REPLY1 = (props) => {
                     confirmButtonText: props.swaMsg.text_btn,
                 });
             });
-
     }
-    var validar = currentItem.pqrs_time  ? currentItem.pqrs_time.reply_doc_date : null
+    let createVRxCUB_relation = (cub_selected) => {
+        let vr = currentItem.id_global
+        let cub = cub_selected;
+        let formatData = new FormData();
+
+        formatData.set('vr', vr);
+        formatData.set('cub', cub);
+        formatData.set('process', 'RESPUESTA FORMAL DE LA PETICION');
+        // let desc = document.getElementById('geng_type').value;
+        // formatData.set('desc', desc);
+        formatData.set('pqrs', 1);
+        let date = document.getElementById('pqrs_reply_time_formalReply').value;
+        formatData.set('date', date);
+
+        // Crear relación
+        if (props.idCUBxVr) {
+            CubXVrDataService.updateCubVr(props.idCUBxVr, formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            CubXVrDataService.createCubXVr(formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
+    };
+    var validar = currentItem.pqrs_time ? currentItem.pqrs_time.reply_doc_date : null
     return (
         <div>
             <form onSubmit={replyPQRS} id="app-formReply">
 
                 <div className="row">
-                    <div className="col-6">
+                    <div className="col-5">
                         <label className='text-start'>Consecutivo de Salida</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
@@ -286,9 +321,9 @@ export const PQRS_SET_REPLY1 = (props) => {
                         </div>
                     </div>
 
-                    <div className="col-6">
-                        <label>Fecha creacion documento</label>
-                        <div class="input-group my-1">
+                    <div className="col-3">
+                        <label>Fecha creación documento</label>
+                        <div class="input-group my-1 ">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-hashtag"></i>
                             </span>
@@ -318,7 +353,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     <div class="row justify-content-center">
                         <div class="col-3">
                             <div className="text-center m-3">
-                                <button type="button" class="btn btn-sm btn-info" onClick={funcion5}><i class="fas fa-exchange-alt"></i> CARGAR INFORMACION</button>
+                                <button type="button" class="btn btn-sm btn-info" onClick={funcion5}><i class="fas fa-exchange-alt"></i> CARGAR INFORMACIÓN</button>
                             </div>
                         </div>
                         <div class="col-3">

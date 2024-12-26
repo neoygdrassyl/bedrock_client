@@ -1030,8 +1030,8 @@ class FUN extends Component {
                 content: {
                     position: 'absolute',
                     top: '10px',
-                    left: '20%',
-                    right: '15%',
+                    left: '15%',
+                    right: '1%',
                     bottom: '10px',
                     border: '1px solid #ccc',
                     overflow: 'auto',
@@ -1117,7 +1117,7 @@ class FUN extends Component {
                             {regexChecker_isPh(row, true) ?
                                 <>
                                     <button type="button" onClick={() => this.toggle_recordPH(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICIÓN</button>
                                 </>
                                 :
                                 <>
@@ -1127,12 +1127,12 @@ class FUN extends Component {
 
                                     <button type="button" onClick={() => this.toggle_recordLaw(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
                                     {!isOA ? <>
-                                        <button type="button" onClick={() => this.toggle_recordArc(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
+                                        <button type="button" onClick={() => this.toggle_recordArc(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTÓNICO</button>
                                         {rules[1] != 1 ? <button type="button" onClick={() => this.toggle_recordEng(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
 
                                         <button type="button" onClick={() => this.toggle_recordReview(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICIÓN</button>
                                 </>}
                         </> : <></>}
                 </div>
@@ -1262,7 +1262,8 @@ class FUN extends Component {
         }
 
         return (
-            <div className="Publish container">
+            
+            <div className="Publish container-fluid p-5">
                 <div className="row my-4 d-flex justify-content-center">
                     <MDBBreadcrumb className="mx-5">
                         <MDBBreadcrumbItem>
@@ -1287,82 +1288,83 @@ class FUN extends Component {
                     <FUN_WORKER_ASIGN translation={translation} globals={globals}
                         type={"eng"}
                         openModal={this.openModal} />
+                    <div style={{ paddingLeft: '175px', paddingRight: '175px' }}>
+                        <MDBRow>
+                            <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
+                            <MDBCol md="6">
+                                <MDBCard className="bg-card mb-3">
+                                    <MDBCardBody>
+                                        <MDBCardTitle className="text-center"> <h4>GENERAR NUEVA RADICACIÓN</h4></MDBCardTitle>
+                                        <form onSubmit={handleSubmit} id="app-form">
 
-                    <MDBRow>
-                        <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
-                        <MDBCol md="6">
-                            <MDBCard className="bg-card mb-3">
-                                <MDBCardBody>
-                                    <MDBCardTitle className="text-center"> <h4>GENERAR NUEVA RADICACIÓN</h4></MDBCardTitle>
-                                    <form onSubmit={handleSubmit} id="app-form">
-
-                                        <div className='row'>
-                                            <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-calendar-alt"></i>
-                                                    </span>
-                                                    <input type="date" class="form-control" id="f_01" required />
+                                            <div className='row'>
+                                                <div className='col'>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-info text-white">
+                                                            <i class="far fa-calendar-alt"></i>
+                                                        </span>
+                                                        <input type="date" class="form-control" id="f_01" required />
+                                                    </div>
+                                                </div>
+                                                <div className='col-7'>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-info text-white">
+                                                            <i class="fas fa-hashtag"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" defaultValue={nomens} id="f_02" required />
+                                                        <MDBBtn class="btn btn-sm btn-info shadow-none m-1"
+                                                            onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</MDBBtn>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className='col-7'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="fas fa-hashtag"></i>
-                                                    </span>
-                                                    <input type="text" class="form-control" defaultValue={nomens} id="f_02" required />
-                                                    <MDBBtn class="btn btn-sm btn-info shadow-none m-1"
-                                                        onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</MDBBtn>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div className="text-center">
-                                            <button className="btn btn btn-success my-1"><i class="fas fa-folder-plus"></i> CREAR </button>
-                                        </div>
-                                    </form>
-                                </MDBCardBody>
-                            </MDBCard>
-                        </MDBCol>
-                        <MDBCol md="6">
-                            <MDBCard className="bg-card mb-3">
-                                <MDBCardBody>
-                                    <MDBCardTitle className="text-center"> <h4>CONSULTAR SOLICITUD</h4></MDBCardTitle>
-                                    <form onSubmit={search} id="app-form">
-                                        <div className='row'>
-                                            <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="fas fa-info-circle"></i>
-                                                    </span>
-                                                    <select class="form-select" id="search_0" required>
-                                                        <option value="1">Numero de Radicado</option>
-                                                        <option value="2">Numero de Matricula Inmobiliaria</option>
-                                                        <option value="3">Numero de Indentificacion Predial/Catastral</option>
-                                                        <option value="4">Direccion Actual</option>
-                                                        <option value="5">C.C o NIT</option>
-                                                        <option value="6">Nombre</option>
-                                                    </select>
+                                            <div className="text-center">
+                                                <button className="btn btn btn-success my-1"><i class="fas fa-folder-plus"></i> CREAR </button>
+                                            </div>
+                                        </form>
+                                    </MDBCardBody>
+                                </MDBCard>
+                            </MDBCol>
+                            <MDBCol md="6">
+                                <MDBCard className="bg-card mb-3">
+                                    <MDBCardBody>
+                                        <MDBCardTitle className="text-center"> <h4>CONSULTAR SOLICITUD</h4></MDBCardTitle>
+                                        <form onSubmit={search} id="app-form">
+                                            <div className='row'>
+                                                <div className='col'>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-info text-white">
+                                                            <i class="fas fa-info-circle"></i>
+                                                        </span>
+                                                        <select class="form-select" id="search_0" required>
+                                                            <option value="1">Número de Radicado</option>
+                                                            <option value="2">Número de Matricula Inmobiliaria</option>
+                                                            <option value="3">Número de Indentificacion Predial/Catastral</option>
+                                                            <option value="4">Dirección Actual</option>
+                                                            <option value="5">C.C o NIT</option>
+                                                            <option value="6">Nombre</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className='col'>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-info text-white">
+                                                            <i class="far fa-comment-dots"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" id="search_1" />
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-comment-dots"></i>
-                                                    </span>
-                                                    <input type="text" class="form-control" id="search_1" />
-                                                </div>
+                                            <div className="text-center">
+                                                <button className="btn btn-secondary mt-1"><i class="fas fa-search-plus"></i> CONSULTAR </button>
                                             </div>
-                                        </div>
-                                        <div className="text-center">
-                                            <button className="btn btn-secondary mt-1"><i class="fas fa-search-plus"></i> CONSULTAR </button>
-                                        </div>
-                                    </form>
-                                </MDBCardBody>
-                            </MDBCard>
-                        </MDBCol>
-                    </MDBRow>
-
+                                        </form>
+                                    </MDBCardBody>
+                                </MDBCard>
+                            </MDBCol>
+                        
+                        </MDBRow>
+                    </div>
                     {list_search.length > 0 ?
                         <div className="row d-flex justify-content-center">
                             <div className="col-12">
@@ -1384,7 +1386,6 @@ class FUN extends Component {
                                     noHeader
                                     onRowClicked={(e) => this.setState({ selectedRow: e.id })}
                                     dense
-
                                     progressPending={!isLoaded}
                                     progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
                                 />
@@ -1631,7 +1632,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-signature"></i> ACTUALIZACION DE SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
+                        <label><i class="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_n()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1657,7 +1658,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-archive"></i> GESTION DOCUMENTAL - No. Radicación :  {this.state.currentPublic} </label>
+                        <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_d()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1733,7 +1734,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-building"></i> INFORME ARQUITECTONICO - No. Radicación :  {this.state.currentPublic} </label>
+                        <label><i class="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordArc()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1839,7 +1840,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECIONES - No. Radicación :  {this.state.currentPublic} </label>
+                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordReview()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1864,7 +1865,7 @@ class FUN extends Component {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> EXPEDICION DE LA LICENCIA:  {this.state.currentPublic} </label>
+                        <label><i class="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {this.state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_exp()}></MDBBtn>
                     </div>
                     {modalHeader}

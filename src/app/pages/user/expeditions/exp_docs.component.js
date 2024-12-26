@@ -10,6 +10,9 @@ import Collapsible from 'react-collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import moment from 'moment';
 import EXP_RES from './exp._res.component';
+import SubmitService from '../../../services/submit.service'
+import CubXVrDataService from '../../../services/cubXvr.service'
+
 
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -19,7 +22,28 @@ class EXP_DOCS extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            vrsRelated: [],
+            vrSelected: null,
+            cubSelected: null,
+            idCUBxVr: null
         };
+    }
+    componentDidMount() {
+        this.retrieveItem();
+    }
+    async retrieveItem() {
+        try {
+            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+                this.setState({ vrsRelated: response.data })
+            })
+            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const data = responseCubXVr.data.find(item => item.process === 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
+
+            if (data) document.getElementById("vr_selected33").value = data.vr
+            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+        } catch (error) {
+            console.log(error);
+        }
     }
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = this.props;
@@ -1085,6 +1109,51 @@ class EXP_DOCS extends Component {
 
             </>
         }
+
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected33").value;
+            
+            let cub = cub_selected;
+            let formatData = new FormData();
+
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            console.log(currentItem.id)
+            formatData.set('process', 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
+
+            // let desc = document.getElementById('geng_type').value;
+            formatData.set('desc', 'Citacion Notificación Resolución');
+            let date = document.getElementById('exodfb_date_doc').value;
+            formatData.set('date', date);
+
+            
+            if (this.state.idCUBxVr) {
+                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            } else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        } 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+        };
+
         let _COMPONENT_DOC_6 = () => {
             let _COMPONENT = [];
             let _areas = _GET_CHILD_AREAS();
@@ -1498,12 +1567,26 @@ class EXP_DOCS extends Component {
                         <input type="text" class="form-control mb-3" id="exodfb_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
+                    <div></div>
                     <div className="col">
                         <label className="mt-1"> {infoCud.serials.end} Carta Citación</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="exodfb_cub3_exp"
-                                defaultValue={currentRecord.cub3 || ''} />
+                                defaultValue={currentRecord.cub3 || this.state.cubSelected || ""} />
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
+                        </div>
+                    </div>
+                    <div className="col" >
+                        <label className="mt-1">{infoCud.serials.start}</label>
+                        <div class="input-group">
+                            <select class="form-select" id="vr_selected33" defaultValue={this.state.vrSelected || ""}>
+                                <option disabled value=''>Seleccione una opción</option>
+                                {this.state.vrsRelated.map((value, key) => (
+                                    <option key={value.id} value={value.id_public}>
+                                        {value.id_public}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -2325,7 +2408,9 @@ class EXP_DOCS extends Component {
             formData = new FormData();
             let cub3 = document.getElementById("exodfb_cub3_exp").value;
             formData.set('cub3', cub3);
+
             formData.set('prev_cub3', currentRecord.cub3);
+            //console.log(cub3)
 
             let cub3_json = getJSONFull(currentRecord.cub3_json);
 
@@ -2336,7 +2421,10 @@ class EXP_DOCS extends Component {
             cub3_json.email = document.getElementById("exodfb_email").value;
 
             formData.set('cub3_json', JSON.stringify(cub3_json));
+
+            createVRxCUB_relation(cub3)
             manage_exp();
+            this.retrieveItem();
         }
         let save_eje = () => {
             formData = new FormData();
