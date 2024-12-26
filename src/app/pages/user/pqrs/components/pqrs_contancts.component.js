@@ -71,7 +71,7 @@ class PQRS_COMPONENT_CONTACTS extends Component {
                 },
             ]
             var _COMPONENT = <DataTable
-                noDataComponent="No hay conactos"
+                noDataComponent="No hay contactos"
                 striped="true"
                 columns={columns}
                 data={_LIST}

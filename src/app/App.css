@@ -100,6 +100,16 @@ html{
   margin-right: 3px;
   width: 15%;
 }
+.btn-nav_module-pqr {
+  position: fixed;
+  left: 0px; 
+  right: 0px;
+  top: 10%;
+  margin: 0px;
+  padding: 0px;
+  margin-right: 3px;
+  width: 15%;
+}
 
 .fun_nav {
   width:300px;
@@ -153,3 +163,8 @@ fieldset
 }
 
 .app-pointer { cursor: pointer; }
+
+#overlayer {
+  max-width: 100%;
+  margin: 0 auto;
+}

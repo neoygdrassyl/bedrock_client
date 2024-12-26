@@ -437,13 +437,13 @@ class PQRSLOCK extends Component {
                                 currentItem={currentItem}
                             />
                         </fieldset>
-                        {window.user.roleId == 5 || window.user.roleId == 1
+                        {window.user.roleId == 5 || window.user.roleId == 1  || window.user.roleId == 2
                             ? <>
                                 <>
                                     <hr />
 
                                     <p className="app-p text-center fw-bold">ENVIAR RESPUESTA(S)</p>
-                                    <p className="app-p">GUIÁ PARA ENVIAR LA RESPUESTA POR EMAIL</p>
+                                    <p className="app-p">GUÍA PARA ENVIAR LA RESPUESTA POR EMAIL</p>
                                     <ul>
                                         <li className="app-p">Verifique el Oficio de la respuesta, y anexelo en la caja de anexos para el email.</li>
                                         <li className="app-p">Escriba el cuerpo del email.</li>
@@ -519,11 +519,11 @@ class PQRSLOCK extends Component {
                                     </form> </>
                             </> : ""}
                     </> : <fieldset className="p-3" id="fung_0">
-                        <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORACION, INTENTELO NUEVAMENTE</h3></div>
+                        <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORMACIÓN, INTENTELO NUEVAMENTE</h3></div>
                     </fieldset>}
 
                 </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
+                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
                 </fieldset>}
 
                 <PQRS_MODULE_NAV

@@ -17,6 +17,8 @@ import PQRS_Service from '../../../services/pqrs_main.service';
 import FUN_SIGN_PDF from './components/fun_sign_pdf.component';
 import { _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 
+import CubXVrDataService from '../../../services/cubXvr.service'
+
 const MySwal = withReactContent(Swal);
 class FUN_ALERT extends Component {
     constructor(props) {
@@ -28,7 +30,10 @@ class FUN_ALERT extends Component {
             edit_type: false,
             currentItem: null,
             cb: false,
-            pqrsxfun: false
+            pqrsxfun: false,
+            vr: null,
+            cubSelected: null,
+            idCUBxVr: null
         };
     }
     requestUpdate(id) {
@@ -37,6 +42,7 @@ class FUN_ALERT extends Component {
     componentDidMount() {
         this.retrieveItem(this.props.currentId);
     }
+
     retrieveItem(id) {
         FUN_SERVICE.get(id)
             .then(response => {
@@ -45,6 +51,7 @@ class FUN_ALERT extends Component {
                 })
                 this.SET_DEFAULT_OBJECT();
                 this.retrievePQRSxFUN(response.data.id_public);
+                this.retrieveCubXvrs(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -66,6 +73,12 @@ class FUN_ALERT extends Component {
             .catch(e => {
                 console.log(e);
             });
+    }
+    async retrieveCubXvrs(id_public) {
+        const response = await CubXVrDataService.getByFUN(id_public)
+        const data = response.data.find(item => item.process === 'PUBLICIDAD COMUNICACION A VECINOS')
+        
+        if (data) this.setState({ vr: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
     }
     SET_DEFAULT_OBJECT() {
         let _CHILD = this.state.currentItem.fun_3s[0];
@@ -294,7 +307,7 @@ class FUN_ALERT extends Component {
             PQRS_Service.getlascub()
                 .then(response => {
                     new_id = response.data[0].cub;
-                    new_id =_MANAGE_IDS(new_id, 'end')
+                    new_id = _MANAGE_IDS(new_id, 'end')
                     document.getElementById('alert_id_cub').value = new_id;
                 })
                 .catch(e => {
@@ -395,8 +408,8 @@ class FUN_ALERT extends Component {
                             <label>2.2.3 Consecutivo de Salida</label>
                             <div class="input-group my-1">
                                 <input type="text" class="form-control" id="alert_id_cub"
-                                    defaultValue={_CHILD.id_cub} />
-                                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                    defaultValue={_CHILD.id_cub || this.state.cubSelected || ""} />
+                                   <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                             </div>
                         </div>
                     </div>
@@ -419,7 +432,7 @@ class FUN_ALERT extends Component {
                         <div className="col-3">
                             <label>2.2.6 Fecha de Confirmación</label>
                             <input type="date" class="form-control mb-3" max='2100-01-01' id="alert_date_confirm" required
-                                defaultValue={_CHILD.alerted ?? moment().format('YYYY-MM-DD')}/>
+                                defaultValue={_CHILD.alerted ?? moment().format('YYYY-MM-DD')} />
                         </div>
                     </div>
 
@@ -773,10 +786,49 @@ class FUN_ALERT extends Component {
                     });
                 });
         }
+
+        let createVRxCUB_relation = (cub_selected) => {
+            let cub = cub_selected;
+            let formatData = new FormData();
+
+            formatData.set('vr', this.state.vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            formatData.set('process', 'PUBLICIDAD COMUNICACION A VECINOS');
+
+            if (this.state.idCUBxVr) {
+                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+            else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            this.props.requestUpdate(currentItem.id, true);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+        }
+
         let alertAddress = () => {
+            console.log(document.getElementById(''));
+            console.log("--------------------");
+            console.log(document.getElementById('alert_address'));
             let formData = new FormData();
             formData.set('fun0Id', currentItem.id);
-
             let child_i = document.getElementById("alert_id_3").value;
             if (!_SET_CHILD_3()[child_i]) {
                 MySwal.fire({
@@ -798,6 +850,9 @@ class FUN_ALERT extends Component {
             formData.set('new_id', new_id || false);
             let prev_id = _SET_CHILD_3()[child_i].id_cub;
             formData.set('prev_id', prev_id);
+
+            createVRxCUB_relation(new_id)
+
 
             let alerted = document.getElementById("alert_date_confirm").value;
             if (alerted) formData.set('alerted', alerted);
@@ -873,6 +928,7 @@ class FUN_ALERT extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
+            this.retrieveItem(this.props.currentId);
         }
 
         return (
@@ -987,6 +1043,8 @@ class FUN_ALERT extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
+                            vr={this.state.vr}
+                            setVr={(item) => this.setState({ vr: item })}
                         />
 
                         <label className="app-p lead fw-normal text-uppercase my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>
@@ -1006,7 +1064,7 @@ class FUN_ALERT extends Component {
 
                         </>
                         : ""}
-                    <NAV_FUNA />
+                    {/* <NAV_FUNA /> */}
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentItem}
@@ -1029,7 +1087,7 @@ class FUN_ALERT extends Component {
         );
     }
 }
-
+/*
 const NAV_FUNA = () => {
     return (
         <div className="btn-navpqrs">
@@ -1068,5 +1126,6 @@ const NAV_FUNA = () => {
         </div>
     );
 }
+    */
 
 export default FUN_ALERT;

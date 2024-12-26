@@ -557,7 +557,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
         let rules = row.rules ? row.rules.split(';') : [];
         return <MDBPopoverBody>
             <div class="list-group list-group-flush">
-                {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 ?
+                {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2 ?
                     <>
                         <button type="button" onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-user-clock"></i> ASIGNAR</button>
                     </> : null}

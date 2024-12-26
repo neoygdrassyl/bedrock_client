@@ -24,7 +24,7 @@ class PQRS_MODULE_NAV extends Component {
         }
 
         let _GET_LOCK_FOR_WORKER = () => {
-            if (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 ) return true;
+            if (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2) return true;
             for (var i = 0; i < currentItem.pqrs_workers.length; i++) {
                 if (currentItem.pqrs_workers[i].worker_id == window.user.id) return true
             }
@@ -56,7 +56,7 @@ class PQRS_MODULE_NAV extends Component {
 
         return (<>
             {currentItem
-                ? <div className="btn-nav_module">
+                ? <div className="btn-nav_module-pqr">
                     <div className="">
                         <MDBCard className="container-primary m-1" border='dark' >
                             <MDBCardBody className="p-1">
@@ -96,7 +96,7 @@ class PQRS_MODULE_NAV extends Component {
                                     }
                                     {currentItem.status == 0
                                         ? <>
-                                            {window.user.roleId == 5 || window.user.roleId == 1  || isAdmin
+                                            {window.user.roleId == 5 || window.user.roleId == 1  || isAdmin || window.user.roleId == 2
                                                 ? <>
                                                     {FROM == "manage"
                                                         ? <div className="row mx-2 mb-1">

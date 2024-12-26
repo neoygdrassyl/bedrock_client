@@ -1038,11 +1038,11 @@ class FUNG extends Component {
                     />
 
 
-                    <FUNG_NAV
+                    {/* <FUNG_NAV
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                    />
+                    /> */}
                     <FUN_MODULE_NAV
                         translation={translation}
                         currentItem={currentItem}

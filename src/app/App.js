@@ -11,19 +11,6 @@ import {
   useParams,
 } from "react-router-dom";
 
-import {
-  MDBDropdown,
-  MDBDropdownMenu,
-  MDBDropdownToggle,
-  MDBDropdownItem,
-  MDBDropdownDivider,
-  MDBDropdownLink,
-  MDBBtn,
-} from 'mdb-react-ui-kit';
-
-// Pages
-import Home from './pages/home'
-
 // PQRS
 import PQRSADMIN from './pages/user/pqrs/pqrsadmin'
 
@@ -47,7 +34,6 @@ import Seals from './pages/user/seal'
 import Appointments from './pages/user/appointments'
 import Mail from './pages/user/mail'
 import FUN from './pages/user/fun'
-import MainApp from './pages/user/fun_forms/sideBar'
 import OSHA from './pages/user/osha'
 import NOMENCLATURE from './pages/user/nomenclature/nomenclature';
 import SUBMIT from './pages/user/submit/submit';
@@ -119,7 +105,7 @@ export default function App() {
                 <BtnChat translation={t("misc.btn_chat", { returnObjects: true })} />
                 <div class="bg-image">
                   <div class="bg-image-gr">
-                    <div class="container container-primary p-0">
+                    <div id="overlayer" class="container overlay-container container-primary p-0">
                       <Route render={(props) => (
                         <Title {...props} translation={t("title", { returnObjects: true })}
                           swaMsg={t("swa_messages", { returnObjects: true })}
@@ -389,7 +375,7 @@ const MyLink = React.forwardRef((props, ref) => {
 function AuthButton() {
   let history = useHistory();
   let auth = useAuth();
-  let params = useParams();
+  // let params = useParams();
 
   return auth.user ? (
     <div className='px-2'>
@@ -448,14 +434,8 @@ function LoginPage() {
   let sha256 = require('js-sha256');
   const { t } = useTranslation();
   let history = useHistory();
-  let location = useLocation();
   let auth = useAuth();
   const recaptchaRef = React.createRef();
-
-  let credentials = {
-    email: '',
-    password: '',
-  }
   var formData = new FormData();
 
   let { from } = { from: { pathname: "/dashboard" } };
@@ -508,25 +488,25 @@ function LoginPage() {
 
 
   return (
-    <div className="Login">
+    <div className="Login container py-3">
       <div className="row my-4 d-flex justify-content-center">
         <div className="col-lg-8 col-md-12">
           <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
-          <div className="d-flex justify-content-center">
-            <div className="bg-card w-50">
-              <div class="card-body">
+          <div className="d-flex justify-content-center mt-5">
+            <div className="w-75 rounded">
+              <div class="card-body" style={{backgroundColor: '#d3d3d3'}}>
                 <form onSubmit={handleSubmit}>
                   <div class="mb-3">
-                    <label for="email" class="form-label">{t('login.str_user')}</label>
+                    <label for="email" class="form-label text-black">{t('login.str_user')}</label>
                     <input type="email" class="form-control" id="email"
                       onChange={(e) => formData.set('email', e.target.value)} />
                   </div>
                   <div class="mb-3">
-                    <label for="password" class="form-label">{t('login.str_pass')}</label>
+                    <label for="password" class="form-label text-black">{t('login.str_pass')}</label>
                     <input type="password" class="form-control" id="password"
                       onChange={(e) => formData.set('password', sha256(e.target.value))} />
                   </div>
-                  <div className="text-center py-4 mt-3">
+                  <div className="text-center pt-4 mt-3">
                     <button type="submit" class="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
                   </div>
                   <ReCAPTCHA

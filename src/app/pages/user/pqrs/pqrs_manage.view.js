@@ -26,6 +26,7 @@ import { SEEN_COMPONENT_FORM } from './components/pqrs.senn.component';
 import { PQRS_SEND_DATE } from './components/pqrs_send_date.component';
 import { HISTORY_PQRS_INFO } from './components/pqrs_histoy.component';
 import { PQRS_ID_CONFIRM } from './components/pqrs_id_confitm.component';
+import cubXvrService from '../../../services/cubXvr.service';
 
 const moment = require('moment');
 
@@ -46,6 +47,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
     var [users_list, SetUsers_list] = useState({})
     var [stateadd, setStateadd] = useState(0);
     var [stateadd2, setStateadd2] = useState(0);
+    var [idCUBxVr, setIdCUBxVr] = useState(null);
+    var [idCUBxVr2, setIdCUBxVr2] = useState(null);
     const editor = useRef(null)
     const [content, setContent] = useState('')
     //const [state, setState] = useState({ attachs: 0 })
@@ -89,6 +92,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         PQRS_Service.get(currentId)
             .then(response => {
                 setCurrentItem(response.data);
+                loadVRs(response.data.id_global)
                 setLoad(true);
             })
             .catch(e => {
@@ -117,6 +121,13 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             });
     }
 
+    const loadVRs = async (id_global) => {
+        const response = await cubXvrService.getByVR(id_global)
+        const data = response.data.find(item => item.process === 'ENVIAR CONFIRMACION POR EMAIL')
+        const data2 = response.data.find(item => item.process === 'RESPUESTA FORMAL DE LA PETICION')
+        if (data) setIdCUBxVr(data.id)
+        if (data2) setIdCUBxVr2(data2.id)
+    }
 
     const refreshList = () => {
         props.refreshList()
@@ -321,7 +332,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         ]
 
         var _COMPONENT = <DataTable
-            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Página:', rangeSeparatorText: 'de' }}
             noDataComponent="No hay mensajes"
             striped="true"
             columns={columns}
@@ -701,8 +712,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
     let deteleAttach = (id) => {
         MySwal.fire({
-            title: "ELIMINAR ITEM",
-            text: "¿Esta seguro de eliminar este item de forma permanente?",
+            title: "ELIMINAR ÍTEM",
+            text: "¿Esta seguro de eliminar este ítem de forma permanente?",
             icon: 'warning',
             confirmButtonText: "ELIMINAR",
             cancelButtonText: "CANCELAR",
@@ -959,7 +970,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             <label className="px-4 app-p lead fw-normal text-uppercase"><b>2. CONFIRMAR A PETICIONARIO <i class="fas fa-check-circle"></i></b></label>
                             <br></br>
                             <br></br>
-                            <h5 className="px-2"><b>GUIA PARA ENVIAR LA CONFIRMACION POR EMAIL</b></h5>
+                            <h5 className="px-2"><b>GUÍA PARA ENVIAR LA CONFIRMACIÓN POR EMAIL</b></h5>
                             <ul>
                                 <li className="app-p"><h5>Escriba el cuerpo del email.</h5></li>
                                 <li className="app-p"><h5>Verifique los correos a los que se enviará el email, es posible añadir o quitar correos de la lista separandolos por coma (,)</h5></li>
@@ -987,11 +998,17 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                     refreshCurrentItem={loadData}
                                     attachs={true}
                                 />
-                                 <div className="col-6">
-                                    <PQRS_ID_CONFIRM
-                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                <div className="row justify-content-center">
+                                    <div className="col-4 mx-auto">
+                                        <PQRS_ID_CONFIRM
+                                        translation={translation} 
+                                        swaMsg={swaMsg} 
+                                        globals={globals}
                                         currentItem={currentItem}
-                                    />
+                                        requestUpdate={loadData}
+                                        idCUBxVr={idCUBxVr}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </Collapsible>
@@ -1200,6 +1217,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                     retrieveItem={loadData}
                                     refreshList={refreshList}
                                     hardReset
+                                    requestUpdate={loadData}
+                                    idCUBxVr={idCUBxVr2}
                                 />
                             </div>
                         </Collapsible>
@@ -1279,10 +1298,10 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                 </>
                     : <fieldset className="p-3" id="fung_0">
-                        <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORACION, INTENTELO NUEVAMENTE</h3></div>
+                        <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORMACIÓN, INTENTELO NUEVAMENTE</h3></div>
                     </fieldset>}
             </> : <fieldset className="p-3" id="fung_0">
-                <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
+                <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
             </fieldset>
             }
             <PQRS_MODULE_NAV

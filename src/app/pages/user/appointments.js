@@ -312,12 +312,12 @@ class Appointments extends Component {
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u5}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
-                    <div className="col-lg-10 col-md-10">
+                    <div className="col-lg-12 col-md-10">
                         <h1 className="text-center my-4">CALENDARIO DE CITAS</h1>
                         <hr />
 
                         <div className="text-center">
-                            <h2 className="text-center my-4">Citas Para Hoy</h2>
+                            <h2 className="text-center my-4">Citas para hoy</h2>
                             {isLoaded ? (
                                 <DataTable
                                     paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -362,7 +362,7 @@ class Appointments extends Component {
                         </div>
                         <hr />
                         <div className="text-center">
-                            <h2 className="text-center my-4">Citas Pasadas</h2>
+                            <h2 className="text-center my-4">Citas pasadas</h2>
                             <Collapsible trigger={<><label className="m-2"> </label>
                                 <button className="btn btn-warning btn-sm my-2"><i class="fas fa-plus"></i> Ver Lista</button></>}>
                                 {isLoaded ? (
@@ -424,7 +424,7 @@ class Appointments extends Component {
                                                                 <td><label className="fw-bold">{globals.form_type_id[currentItem.type_id]}</label></td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label>Numero de Documento</label></td>
+                                                                <td><label>Número de Documento</label></td>
                                                                 <td><label className="fw-bold">{currentItem.number_id}</label></td>
                                                             </tr>
                                                             <tr>
@@ -432,7 +432,7 @@ class Appointments extends Component {
                                                                 <td><label className="fw-bold">{currentItem.email}</label></td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label>Numero de Contacto</label></td>
+                                                                <td><label>Número de Contacto</label></td>
                                                                 <td><label className="fw-bold">{currentItem.number_mobile}</label></td>
                                                             </tr>
                                                             <tr>
@@ -526,7 +526,7 @@ class Appointments extends Component {
                                                 <td><label className="fw-bold">{globals.form_type_id[currentItem.type_id]}</label></td>
                                             </tr>
                                             <tr>
-                                                <td><label>Numero de Documento</label></td>
+                                                <td><label>Número de Documento</label></td>
                                                 <td><label className="fw-bold">{currentItem.number_id}</label></td>
                                             </tr>
                                             <tr>
@@ -534,7 +534,7 @@ class Appointments extends Component {
                                                 <td><label className="fw-bold">{currentItem.email}</label></td>
                                             </tr>
                                             <tr>
-                                                <td><label>Numero de Contacto</label></td>
+                                                <td><label>Número de Contacto</label></td>
                                                 <td><label className="fw-bold">{currentItem.number_mobile}</label></td>
                                             </tr>
                                             <tr>

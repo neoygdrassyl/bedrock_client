@@ -4,7 +4,8 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import ReactTagInput from '@pathofdev/react-tag-input';
-import moment from 'moment';
+
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 class FUN_0_RECIPE extends Component {
     constructor(props) {
@@ -146,24 +147,31 @@ class FUN_0_RECIPE extends Component {
             let rules = currentItem.rules ? currentItem.rules.split(';') : [];
             return <>
                 <div className="row mb-2">
-                    <div className="col-6">
-                        <label>Categorización de la Solicitud {currentItem.type ? "" : <label className="text-danger fw-bold">NO ESTA CATEGORIZADO</label>}</label>
-                        <select class="form-select" id="fun_0_cats" defaultValue={currentItem.type}>
-                            <option value="0">Sin Categorizar</option>
-                            <option value="i">Categoria I</option>
-                            <option value="ii">Categoria II</option>
-                            <option value="iii">Categoria III</option>
-                            <option value="iv">Categoria IV</option>
-                            <option value="oa">Otra Actuación</option>
-                        </select>
-                    </div>
+
+                    {_GLOBAL_ID == "cp1" ?
+                        <input type='hidden' value={'iv'} id="fun_0_cats" />
+                        : <>
+                            <div className="col-6">
+                                <label>Categorización de la Solicitud {currentItem.type ? "" : <label className="text-danger fw-bold">NO ESTA CATEGORIZADO</label>}</label>
+                                <select class="form-select" id="fun_0_cats" defaultValue={currentItem.type}>
+                                    <option value="0">Sin Categorizar</option>
+                                    <option value="i">Categoria I</option>
+                                    <option value="ii">Categoria II</option>
+                                    <option value="iii">Categoria III</option>
+                                    <option value="iv">Categoria IV</option>
+                                    <option value="oa">Otra Actuación</option>
+                                </select>
+                            </div>
+                        </>}
+
+
                     <div className="col-6">
                         <label>Modelo de Solicitud</label>
-                        <select class="form-select" id="fun_0_model" defaultValue={currentItem.model ?? moment().format('YYYY')}>
+                        <select class="form-select" id="fun_0_model" defaultValue={currentItem.model ?? 2023}>
                             <option value="0">Sin modelo</option>
                             <option value={2021}>Res. 463 / 17</option>
                             <option value={2022}>Res. 1026 / 21 (2022)</option>
-                            <option value={2023}>Res. 1026 / 21 (2023+)</option>
+                            <option value={2023} selected>Res. 1026 / 21 (2023+)</option>
                         </select>
                     </div>
                 </div>
@@ -512,7 +520,7 @@ class FUN_0_RECIPE extends Component {
             let rules = [];
             for (let i = 0; i < rules_html.length; i++) {
                 const rule = rules_html[i];
-                rules.push(rule.checked ? 1: 0);
+                rules.push(rule.checked ? 1 : 0);
             }
 
             formData0.set('rules', rules.join(';'));

@@ -25,7 +25,7 @@ class PQRS_COMPONENT_SOLICITORS extends Component {
                         <lavel className="fw-bold">Tipo Documento</lavel>
                     </div>
                     <div className="col-3">
-                        <lavel className="fw-bold">Numero Documento</lavel>
+                        <lavel className="fw-bold">Número Documento</lavel>
                     </div>
                 </div>
             </>)

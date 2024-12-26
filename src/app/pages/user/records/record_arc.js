@@ -672,7 +672,7 @@ class RECORD_ARC extends Component {
                                     />
                                 </fieldset>
 
-                                {NAV_FUNA(_GET_CHILD_1())}
+                                {/* {NAV_FUNA(_GET_CHILD_1())} */}
                             </> : <>
 
                                 <fieldset className="p-3">

@@ -164,7 +164,7 @@ class FUN_6_VIEW extends Component {
                             globals={globals}
                             fun6={row} />
                         {readOnly ? '' :
-                            window.user.id == 1 || window.user.roleId == 3 ?
+                            window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
                                 <>
                                     <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 ms-1">
                                         <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => set_edit_6(row)}>

@@ -3,7 +3,7 @@ import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBPopover, MDBPopoverBody } from 'mdb-react-ui-kit';
-import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isOA_3, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST, _SET_PRIORITY } from '../../../../components/customClasses/typeParse';
+import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isOA_3, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST, _SET_PRIORITY, formsParser1 } from '../../../../components/customClasses/typeParse';
 import FUN_CHART_MACRO_GRANTT from './charts_components.js/chart_macroGant.component';
 import { nomens } from '../../../../components/jsons/vars';
 
@@ -14,6 +14,7 @@ export default function FUN_DAILY_COMPONENT(props) {
     const moment = require('moment');
     const defaultData = {
         inc: [],
+        other: [],
         law: [],
         arc: [],
         eng: [],
@@ -518,6 +519,7 @@ export default function FUN_DAILY_COMPONENT(props) {
 
             if (row.state >= 100) return;
 
+           
 
             let con1 = row.state >= 5 && row.state < 100
             let con2 = row.rec_review != 1 && (row.rec_review_2 != 1 || row.rec_review_2 == 2)
@@ -527,6 +529,8 @@ export default function FUN_DAILY_COMPONENT(props) {
             let con10 = !row.clock_license_2;
             let conOA = regexChecker_isOA_2(row)
             let conRevPro = regexChecker_isOA_3(row)
+
+            
 
             let worker_law = row.asign_law_worker_name ?? row.asign_ph_law_worker_name ?? '';
             let worker_arc = row.asign_arc_worker_name ?? row.asign_ph_arc_worker_name ?? '';
@@ -544,8 +548,16 @@ export default function FUN_DAILY_COMPONENT(props) {
             if (row.state < 100) _datac.gen.push({ ...rowDataen })
 
             let rules = row.rules ? row.rules.split(';') : [];
-            if (conRevPro) return;
 
+            if(conRevPro && (row.state == 1 || row.state == 5)) {
+                let days_rad = 30 - dateParser_timePassed(row.clock_payment)
+                let revColor = 'primary';
+                if (row.state == 5) {
+                    revColor = 'warning';
+                    days_rad = 30 - dateParser_timePassed(row.clock_date)
+                }
+                return _datac.other.push({ ...row, contextTest: days_rad, color:revColor }) /** OTHER */
+            }
             if (con1 && !con3) {
                 let rowCon_law = _con_law(row, 'law')
                 let rowCon_arc = _con_arc(row, 'arc')
@@ -911,6 +923,13 @@ export default function FUN_DAILY_COMPONENT(props) {
                 </div>
                 <div className="col text-center m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
+                        btnChildren={<h6 className='m-0 p-0 text-dark'>OTROS ({datac.other.length})</h6>} >
+                        {_INFO_POP('OTROS', 'Revalidaciones',
+                            { })}
+                    </MDBPopover>
+                </div>
+                <div className="col text-center m-0 p-0">
+                    <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
                         btnChildren={<h6 className='m-0 p-0 text-dark'>JURÍDICO ({datac.law.length})</h6>} >
                         {_INFO_POP('JURÍDICO', 'Solicitudes programadas para revisión y/o asignadas (Clave de revisor y tiempo)',
                             { success: 'VERDE = Observaciones / Primera Revisión', dark: 'NEGRO = Solicitud Incompleta', warning: 'AMARILLO = Asistencia técnica', primary: 'AZUL = Entrega de correciones' })}
@@ -1047,6 +1066,24 @@ export default function FUN_DAILY_COMPONENT(props) {
                     </div>
                 </div>
             </div>
+
+            <div className="col">
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Revalidaciones - Inncompleta ({datas.other.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.other.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}  {/** rev - inc */}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Revalidaciones - LyDF ({datas.other.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.other.filter(item => _filter(item)).filter(item => item.color == 'warning'))}  {/** rev - lydf */}
+                    </div>
+                </div>
+
+
+            </div>
+
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">

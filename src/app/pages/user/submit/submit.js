@@ -182,8 +182,8 @@ class SUBMIT extends Component {
             content: {
                 position: 'absolute',
                 top: '40px',
-                left: '20%',
-                right: '20%',
+                left: '5%',
+                right: '5%',
                 bottom: '40px',
                 border: '1px solid #ccc',
                 overflow: 'auto',
@@ -347,8 +347,8 @@ class SUBMIT extends Component {
                                                 <i class="fas fa-info-circle"></i>
                                             </span>
                                             <select class="form-select" id="submit_search_0" required>
-                                                <option value="1">Numero de radicado VR</option>
-                                                <option value="2">Numero de Licencia / Solicitud</option>
+                                                <option value="1">Número de radicado VR</option>
+                                                <option value="2">Número de Licencia / Solicitud</option>
                                                 <option value="3">Propietario</option>
                                                 <option value="4">Persona que Entrega</option>
                                                 <option value="5">C.C Persona que Entrega</option>
@@ -417,7 +417,7 @@ class SUBMIT extends Component {
                                     />
                                 ) : (
                                     <div className="text-center">
-                                        <h4 className="fw-bold">CARGANDO INFORMACION...</h4>
+                                        <h4 className="fw-bold">CARGANDO INFORMACIÓN...</h4>
                                     </div>)}
                             </div>
 

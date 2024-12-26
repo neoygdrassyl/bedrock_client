@@ -118,12 +118,12 @@ export default function PROFESIONALS(props) {
     {
       name: 'ACCIÓN',
       center: true,
-      omit: window.user.id != 1 && window.user.roleId != 3,
+      omit: window.user.id != 1 && window.user.roleId != 3 || window.user.roleId != 2,
       cell: row => <>
         <MDBTooltip title='Modificar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
           <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => { setId(row.id); setModal(true) }}><i class="fas fa-edit"></i></MDBBtn>
         </MDBTooltip>
-        {window.user.id == 1 || window.user.roleId == 3 ?
+        {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
           <MDBTooltip title='Eliminar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
             <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => { eliminate(row.id); }}><i class="far fa-trash-alt"></i></MDBBtn>
           </MDBTooltip>
