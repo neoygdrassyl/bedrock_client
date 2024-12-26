@@ -46,7 +46,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                 });
             });
 
-    }    
+    }
     const UPDATE_PQRS = () => {
         var form = new FormData();
 
@@ -56,35 +56,35 @@ export const PQRS_ID_CONFIRM = (props) => {
 
         createVRxCUB_relation(id_confirm)
         PQRS_Service.update(currentItem.id, form)
-        .then(response => {
-            if (response.data === 'OK') {
-                MySwal.fire({
-                    title: swaMsg.publish_success_title,
-                    text: swaMsg.publish_success_text,
-                    footer: swaMsg.text_footer,
-                    icon: 'success',
-                    confirmButtonText: swaMsg.text_btn,
-                });
-            } else if (response.data === 'ERROR_DUPLICATE') {
-                MySwal.fire({
-                    title: "ERROR DE DUPLICACION",
-                    text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
-            }
-            else {
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
-            }
-        })
-        .catch(e => {
-            console.log(e);
-        });
+            .then(response => {
+                if (response.data === 'OK') {
+                    MySwal.fire({
+                        title: swaMsg.publish_success_title,
+                        text: swaMsg.publish_success_text,
+                        footer: swaMsg.text_footer,
+                        icon: 'success',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                } else if (response.data === 'ERROR_DUPLICATE') {
+                    MySwal.fire({
+                        title: "ERROR DE DUPLICACION",
+                        text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        icon: 'error',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+                else {
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+            })
+            .catch(e => {
+                console.log(e);
+            });
     }
 
     let createVRxCUB_relation = (cub_selected) => {
@@ -95,67 +95,40 @@ export const PQRS_ID_CONFIRM = (props) => {
         formatData.set('vr', vr);
         formatData.set('cub', cub);
         formatData.set('process', 'ENVIAR CONFIRMACION POR EMAIL');
-        formatData.set('pqrs',1);
-        
+        formatData.set('pqrs', 1);
+
         let desc = "Email"
         formatData.set('desc', desc);
         formatData.set('date', new Date().toISOString().slice(0, 10));
 
-        /*
-        let date = document.getElementById('geng_date_doc').value;
-        formatData.set('date', date);
-        */
-
-            // Mostrar mensaje inicial de espera
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
-        
-            // Crear relación
-            CubXVrDataService.createCubXVr(formatData)
+        if (props.idCUBxVr) {
+            CubXVrDataService.updateCubVr(props.idCUBxVr, formatData)
                 .then((response) => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
-                            title: swaMsg.publish_success_title,
-                            text: swaMsg.publish_success_text,
-                            footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
                         // Refrescar la UI
-                        props.requestUpdate(currentItem.id, true);
-                    } else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
-                            title: "ERROR DE DUPLICACIÓN",
-                            text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
-                    } else {
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
+                        this.props.requestUpdate(currentItem.id, true);
                     }
                 })
                 .catch((error) => {
                     console.error(error);
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
                 });
-                
-        };
-    
-    
+        } else {
+            // Crear relación
+            CubXVrDataService.createCubXVr(formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        // Refrescar la UI
+                        props.requestUpdate(currentItem.id, true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
+    };
+
+
 
     return (
         <div className="text-center">
@@ -169,11 +142,11 @@ export const PQRS_ID_CONFIRM = (props) => {
                 <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
             </div>
             <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-success btn-lg shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
-                        GUARDAR
-                    </button>
+                <button type="button" class="btn btn-success btn-lg shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
+                    GUARDAR
+                </button>
             </div>
         </div>
-        
+
     )
 }

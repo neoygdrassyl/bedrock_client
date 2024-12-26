@@ -77,8 +77,8 @@ class FUN_ALERT extends Component {
     async retrieveCubXvrs(id_public) {
         const response = await CubXVrDataService.getByFUN(id_public)
         const data = response.data.find(item => item.process === 'PUBLICIDAD COMUNICACION A VECINOS')
-        data && this.setState({ vr: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
-        console.log(data)
+        
+        if (data) this.setState({ vr: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
     }
     SET_DEFAULT_OBJECT() {
         let _CHILD = this.state.currentItem.fun_3s[0];
@@ -796,47 +796,16 @@ class FUN_ALERT extends Component {
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'PUBLICIDAD COMUNICACION A VECINOS');
 
-            // let desc = document.getElementById('geng_type').value;
-            // formatData.set('desc', desc);
-            // let date = document.getElementById('geng_date_doc').value;
-            // formatData.set('date', date);
             if (this.state.idCUBxVr) {
                 CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                         }
                     })
                     .catch((error) => {
                         console.error(error);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
                     });
             }
             else {
@@ -844,39 +813,12 @@ class FUN_ALERT extends Component {
                 CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                         }
                     })
                     .catch((error) => {
                         console.error(error);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
                     });
             }
         }
