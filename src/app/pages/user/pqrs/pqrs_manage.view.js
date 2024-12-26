@@ -26,6 +26,7 @@ import { SEEN_COMPONENT_FORM } from './components/pqrs.senn.component';
 import { PQRS_SEND_DATE } from './components/pqrs_send_date.component';
 import { HISTORY_PQRS_INFO } from './components/pqrs_histoy.component';
 import { PQRS_ID_CONFIRM } from './components/pqrs_id_confitm.component';
+import cubXvrService from '../../../services/cubXvr.service';
 
 const moment = require('moment');
 
@@ -46,6 +47,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
     var [users_list, SetUsers_list] = useState({})
     var [stateadd, setStateadd] = useState(0);
     var [stateadd2, setStateadd2] = useState(0);
+    var [idCUBxVr, setIdCUBxVr] = useState(null);
+    var [idCUBxVr2, setIdCUBxVr2] = useState(null);
     const editor = useRef(null)
     const [content, setContent] = useState('')
     //const [state, setState] = useState({ attachs: 0 })
@@ -89,6 +92,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         PQRS_Service.get(currentId)
             .then(response => {
                 setCurrentItem(response.data);
+                loadVRs(response.data.id_global)
                 setLoad(true);
             })
             .catch(e => {
@@ -117,6 +121,13 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             });
     }
 
+    const loadVRs = async (id_global) => {
+        const response = await cubXvrService.getByVR(id_global)
+        const data = response.data.find(item => item.process === 'ENVIAR CONFIRMACION POR EMAIL')
+        const data2 = response.data.find(item => item.process === 'RESPUESTA FORMAL DE LA PETICION')
+        if (data) setIdCUBxVr(data.id)
+        if (data2) setIdCUBxVr2(data2.id)
+    }
 
     const refreshList = () => {
         props.refreshList()
@@ -995,6 +1006,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         globals={globals}
                                         currentItem={currentItem}
                                         requestUpdate={loadData}
+                                        idCUBxVr={idCUBxVr}
                                         />
                                     </div>
                                 </div>
@@ -1206,6 +1218,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                     refreshList={refreshList}
                                     hardReset
                                     requestUpdate={loadData}
+                                    idCUBxVr={idCUBxVr2}
                                 />
                             </div>
                         </Collapsible>

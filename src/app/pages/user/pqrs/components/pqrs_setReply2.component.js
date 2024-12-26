@@ -180,7 +180,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 array_solicitor.push(currentItem.pqrs_solocitors[i].name)
             }
             formData.set('solicitors_name', array_solicitor.join());
-            
+
             createVRxCUB_relation(new_id);
             PQRS_Service.formalReply(formData)
                 .then(response => {
@@ -273,56 +273,34 @@ export const PQRS_SET_REPLY1 = (props) => {
         formatData.set('process', 'RESPUESTA FORMAL DE LA PETICION');
         // let desc = document.getElementById('geng_type').value;
         // formatData.set('desc', desc);
-        formatData.set('pqrs',1);
+        formatData.set('pqrs', 1);
         let date = document.getElementById('pqrs_reply_time_formalReply').value;
         formatData.set('date', date);
-        
-        // Mostrar mensaje inicial de espera
-        // MySwal.fire({
-        //     title: swaMsg.title_wait,
-        //     text: swaMsg.text_wait,
-        //     icon: 'info',
-        //     showConfirmButton: false,
-        // });
+
         // Crear relación
-        CubXVrDataService.createCubXVr(formatData)
-            .then((response) => {
-                if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                    // Refrescar la UI
-                    this.props.requestUpdate(currentItem.id, true);
-                } else if (response.data === 'ERROR_DUPLICATE') {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACIÓN",
-                        text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
+        if (props.idCUBxVr) {
+            CubXVrDataService.updateCubVr(props.idCUBxVr, formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
                 });
-            });
-            
+        } else {
+            CubXVrDataService.createCubXVr(formatData)
+                .then((response) => {
+                    if (response.data === 'OK') {
+                        // Refrescar la UI
+                        this.props.requestUpdate(currentItem.id, true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
 
     };
     var validar = currentItem.pqrs_time ? currentItem.pqrs_time.reply_doc_date : null

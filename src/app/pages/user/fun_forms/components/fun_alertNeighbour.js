@@ -20,6 +20,9 @@ class FUN_ALERT_NEIGHBOUR extends Component {
     componentDidMount() {
         this.retrieveItem();
     }
+    componentDidUpdate(){
+        if(this.props.vr) document.getElementById("vr_selected").value = this.props.vr 
+    }
     retrieveItem() {
         SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
             this.setState({ vrsRelated: response.data })

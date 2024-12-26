@@ -131,7 +131,11 @@ class RECORD_REVIEW extends Component {
         console.log(id_public)
         const response = await CubXVrDataService.getByFUN(id_public)
         const data = response.data.find(item => item.process === 'OBSERVACIONES Y CORRECIONES')
-        data && this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+
+        if(data) {
+            document.getElementById("vr_selected11").value = data.vr
+            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+        }
     }
     async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
         let swaMsg = this.props.swaMsg;
@@ -1070,6 +1074,7 @@ class RECORD_REVIEW extends Component {
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group">
                             <select class="form-select"  id="vr_selected11" defaultValue={this.state.vrSelected || ""}>
+                                <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
@@ -1824,7 +1829,6 @@ class RECORD_REVIEW extends Component {
         }
         let createVRxCUB_relation = () => {
             let vr = document.getElementById("vr_selected11").value;
-            console.log(vr)
             let cub = document.getElementById("rev_cub").value;
             let formatData = new FormData();
 
@@ -1838,90 +1842,28 @@ class RECORD_REVIEW extends Component {
             let date = document.getElementById('record_review_2').value;
             formatData.set('date', date);
 
-
-            // Mostrar mensaje inicial de espera
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
             if (this.state.idCUBxVr) {
                 CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
+                        } 
                     })
                     .catch((error) => {
                         console.error(error);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
                     });
             } else {
                 // Crear relación
                 CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
+                        } 
                     })
                     .catch((error) => {
                         console.error(error);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
                     });
             }
         };

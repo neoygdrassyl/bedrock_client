@@ -40,11 +40,9 @@ class RECORD_PH_REVIEW extends Component {
             })
             const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'DOCUMENTOS PH / CITACIÓN PARA NOTIFICACIÓN');
-            data && this.setState({ cubSelected: data.cub, idCUBxVr: data.id })
+            this.setState({ cubSelected: data.cub, idCUBxVr: data.id })
             const data_ph = responseCubXVr.data.find(item => item.process === 'PROPIEDAD HORIZONTAL');
-            data_ph && this.setState({ cubSelected_ph: data_ph.cub, idCUBxVr_ph: data_ph.id })
-            console.log(data_ph)    
-
+            this.setState({ cubSelected_ph: data_ph.cub, idCUBxVr_ph: data_ph.id })
         } catch (error) {
             console.log(error);
         }
@@ -1241,43 +1239,15 @@ class RECORD_PH_REVIEW extends Component {
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'PROPIEDAD HORIZONTAL');
 
-            let desc = document.getElementById('type_not').value;
-            formatData.set('desc', desc);
+            // formatData.set('desc', desc);
 
             // Mostrar mensaje inicial de espera
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
             if (this.state.idCUBxVr_ph) {
                 CubXVrDataService.updateCubVr(this.state.idCUBxVr_ph, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                         }
                     })
                     .catch((error) => {
@@ -1295,41 +1265,12 @@ class RECORD_PH_REVIEW extends Component {
                 CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-
                             this.props.requestUpdateRecord(currentItem.id);
                             this.props.requestUpdate(currentItem.id);
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                        else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
                     });
             }
         };
@@ -1462,51 +1403,16 @@ class RECORD_PH_REVIEW extends Component {
             let date = document.getElementById('phnot_date_doc').value;
             formatData.set('date', date);
 
-
-            // Mostrar mensaje inicial de espera
-            MySwal.fire({
-                title: swaMsg.title_wait,
-                text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
-            });
             if (this.state.idCUBxVr) {
                 CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: `El consecutivo ya existe, debe de elegir un consecutivo nuevo`,
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
+                        } 
                     })
                     .catch((error) => {
                         console.error(error);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
                     });
             }
             else {
@@ -1514,41 +1420,12 @@ class RECORD_PH_REVIEW extends Component {
                 CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-
                             this.props.requestUpdateRecord(currentItem.id);
                             this.props.requestUpdate(currentItem.id);
-                        } else if (response.data === 'ERROR_DUPLICATE') {
-                            MySwal.fire({
-                                title: "ERROR DE DUPLICACIÓN",
-                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                                icon: 'error',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                        else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        MySwal.fire({
-                            title: swaMsg.generic_eror_title,
-                            text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
-                        });
                     });
             }
         };
