@@ -41,10 +41,14 @@ class EXP_1 extends Component {
             const data2 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
             
             if (data1) document.getElementById("vr_selected").value = data1.vr
-            if (data2) document.getElementById("vr_selected1").value = data2.vr
+
+            if (data2 && document.getElementById("vr_selected1")) {
+                document.getElementById("vr_selected1").value = data2.vr
+                this.setState({ vrSelected2: data2.vr, cubSelected2: data2.cub, idCUBxVr2: data2.id })
+            }
 
             this.setState({ vrSelected1: data1.vr, cubSelected1: data1.cub, idCUBxVr1: data1.id })
-            this.setState({ vrSelected2: data2.vr, cubSelected2: data2.cub, idCUBxVr2: data2.id })
+           
 
         } catch (error) {
             console.log(error);
@@ -652,10 +656,10 @@ class EXP_1 extends Component {
             let cub1 = cub_selected;
             let cub2 = cub_selected1;
             let vr1 = document.getElementById("vr_selected").value;
-            let vr2 = document.getElementById("vr_selected1").value;
+            let vr2 = document.getElementById("vr_selected1") ?  document.getElementById("vr_selected1").value: null;
 
             let date1 = document.getElementById('expedition_1').value;
-            let date2 = document.getElementById('expedition_10').value;
+            let date2 = document.getElementById("vr_selected1") ? document.getElementById('expedition_10').value: null;
 
             if (cub1 && vr1) {
                 let formatData1 = new FormData();
