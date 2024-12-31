@@ -1077,12 +1077,15 @@ export default function FUN_REPORT_GEN(props) {
         "Predial",
         "Matricula",
         "Propietario",
+        "Ejecutoria",
     ];
 
     let report_data_10 = (v) => {
         let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic };
         let isPH = regexChecker_isPh(_CHILD_1, true);
         let reso = getJSONFull(v.reso);
+        let is_neg =  _GET_STATE_STR(v.state).includes('DESISTIDO')
+        let neg_clock = v.clock_neg_5 || v.clock_neg_4 || v.clock_neg_3 || v.clock_neg_2 || v.clock_neg_1
 
         return [
             { value: isPH ? v.id_public_ph : v.id_public }, // No Licencia
@@ -1095,6 +1098,7 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.catastral_2 || v.catastral }, // Predial
             { value: v.matricula }, // Matricula
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // Propietario
+            { value: isPH ? v.clock_license_ph : is_neg ? neg_clock : v.clock_license }, // Ejecutoria   
         ]
     };
 
