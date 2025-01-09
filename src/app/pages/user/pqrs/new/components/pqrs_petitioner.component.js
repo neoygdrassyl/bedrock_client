@@ -19,9 +19,9 @@ const PetitionerComponent = ({formData,onChange}) => {
                 <div className="col-md-4">
                     <label className="form-label">Tipo</label>
                     <select
-                        name="type"
+                        name="document_type"
                         className="form-select"
-                        value={formData.type}
+                        value={formData.document_type}
                         onChange={onChange}
                     >
                         <option>C.C.</option>
@@ -33,9 +33,9 @@ const PetitionerComponent = ({formData,onChange}) => {
                     <label className="form-label">Número</label>
                     <input
                         type="text"
-                        name="number"
+                        name="document_number"
                         className="form-control"
-                        value={formData.number}
+                        value={formData.document_number}
                         onChange={onChange}
                         placeholder="Sin dato"
                     />
@@ -80,10 +80,10 @@ const PetitionerComponent = ({formData,onChange}) => {
                 <div className="form-check">
                     <input
                         type="checkbox"
-                        name="identified"
+                        name="legally_identified"
                         className="form-check-input"
                         id="identified"
-                        checked={formData.identified}
+                        checked={formData.legally_identified}
                         onChange={onChange}
                     />
                     <label className="form-check-label" htmlFor="identified">

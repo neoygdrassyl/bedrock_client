@@ -17,7 +17,7 @@ const ClasificationTermComponent = () => {
                             <th className="text-center">Dirigida</th>
                             <th className="text-center">Día Hábil</th>
                             <th className="text-center">Fecha</th>
-                            <th className="text-center">Usar</th>
+                            <th className="text-center">Usar Acción</th>
                             <th className="text-center">CUB No.</th>
                             <th className="text-center">Fecha</th>
                             <th className="text-center">Día Hábil</th>

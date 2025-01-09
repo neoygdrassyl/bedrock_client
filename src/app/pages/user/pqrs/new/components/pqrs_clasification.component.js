@@ -45,8 +45,8 @@ const ClasificationComponent = ({ formData, onChange }) => {
                                     type="radio"
                                     className="form-check-input"
                                     name="aforegoing"
-                                    value="nueva"
-                                    checked={formData.aforegoing === "nueva"}
+                                    value={"false"}
+                                    checked={formData.aforegoing === "false"}
                                     onChange={onChange}
                                 />
                             </td>
@@ -55,8 +55,8 @@ const ClasificationComponent = ({ formData, onChange }) => {
                                     type="radio"
                                     className="form-check-input"
                                     name="aforegoing"
-                                    value="reitera"
-                                    checked={formData.aforegoing === "reitera"}
+                                    value={"true"}
+                                    checked={formData.aforegoing === "true"}
                                     onChange={onChange}
                                 />
                             </td>

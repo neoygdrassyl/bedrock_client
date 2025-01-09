@@ -19,7 +19,7 @@ export default function ProcessControl({formData,onChange}) {
               <th></th>
               <th></th>
               <th>Inicial</th>
-              <th>Fecha 1</th>
+              <th>ReasignaciónVal</th>
               <th>Final</th>
               <th>Cumple</th>
             </tr>

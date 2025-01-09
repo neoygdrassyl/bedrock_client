@@ -13,11 +13,11 @@ const TranslationComponent = ({ formData, onChange }) => {
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" className="form-control form-control-sm" name="entity_translate" value={formData.entity_translate} onChange={onChange} /></td>
-                        <td><input type="text" className="form-control form-control-sm" name="officer_translate" value={formData.officer_translate} onChange={onChange} /></td>
-                        <td><input type="text" className="form-control form-control-sm" name="charge_translate" value={formData.charge_translate} onChange={onChange} /></td>
+                        <td><input type="text" className="form-control form-control-sm" name="entity" value={formData.entity} onChange={onChange} /></td>
+                        <td><input type="text" className="form-control form-control-sm" name="officer" value={formData.officer} onChange={onChange} /></td>
+                        <td><input type="text" className="form-control form-control-sm" name="charge" value={formData.charge} onChange={onChange} /></td>
                         <td><input type="text" className="form-control form-control-sm" name="email_translate" value={formData.email_translate} onChange={onChange} /></td>
-                        <td><input type="text" className="form-control form-control-sm" name="reason_translate" value={formData.reason_translate} onChange={onChange} /></td>
+                        <td><input type="text" className="form-control form-control-sm" name="reason" value={formData.reason} onChange={onChange} /></td>
                     </tr>
                 </tbody>
             </table>

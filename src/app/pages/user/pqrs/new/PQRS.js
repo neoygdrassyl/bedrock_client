@@ -5,10 +5,12 @@ import ValidationComponent from "./components/pqrs_validation.component";
 import ProcessControl from "./components/pqrs_management.component";
 import ClasificationComponent from "./components/pqrs_clasification.component";
 import ClasificationTermComponent from "./components/pqrs_clasification_2.component";
+import new_pqrsService from "../../../../services/new_pqrs.service";
 
 const PQRS = () => {
     const [currentItem, setCurrentItem] = useState()
     const [formData, setFormData] = useState({
+        document_type: "C.C."
     });
     useEffect(() => {
         // pqrs_mainService.get()
@@ -20,10 +22,16 @@ const PQRS = () => {
             [name]: type === "checkbox" ? checked : value,
         }));
     };
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Form Data:", formData);
-        // Lógica para enviar datos al backend
+        let data = new FormData()
+        Object.keys(formData).forEach((key) => {
+            data.append(key, formData[key]);
+        });
+        const res = await new_pqrsService.create(data)
+        alert("Registro exitoso")
+        console.log(res)
     };
 
     // const [pqrs, setPqrs] = useState([])
