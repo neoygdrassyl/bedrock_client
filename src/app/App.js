@@ -67,6 +67,7 @@ import GUIDE_USER from './pages/user/guide_user/guide_user.page';
 import { infoCud } from './components/jsons/vars';
 import NORMS from './pages/user/norms/norms.page';
 import CERTIFICATE_WORKER from './pages/user/certifications/certification.page';
+import PQRS from './pages/user/pqrs/new/PQRS';
 
 
 const MySwal = withReactContent(Swal);
@@ -135,6 +136,11 @@ export default function App() {
                               swaMsg={t("swa_messages", { returnObjects: true })}
                               breadCrums={t("breadCrums", { returnObjects: true })}
                             />
+                          )}
+                        />
+                        <Route path='/new_pqrs'
+                          render={(props) => (
+                            <PQRS/>
                           )}
                         />
 
@@ -494,7 +500,7 @@ function LoginPage() {
           <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
           <div className="d-flex justify-content-center mt-5">
             <div className="w-75 rounded">
-              <div class="card-body" style={{backgroundColor: '#d3d3d3'}}>
+              <div class="card-body" style={{ backgroundColor: '#d3d3d3' }}>
                 <form onSubmit={handleSubmit}>
                   <div class="mb-3">
                     <label for="email" class="form-label text-black">{t('login.str_user')}</label>
