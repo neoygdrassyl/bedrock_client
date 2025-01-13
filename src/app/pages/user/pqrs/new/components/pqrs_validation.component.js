@@ -28,7 +28,6 @@ const RadioGroup = ({ name, options, value, onChange }) => (
 const ValidationItem = ({ label, name, value, onChange }) => (
   <div className="d-flex justify-content-between align-items-center mb-2">
     <span className="text-truncate me-2">{label}</span>
-    {console.log(value)}
     <RadioGroup
       name={name}
       options={["1", "0"]}

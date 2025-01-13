@@ -6,12 +6,14 @@ import ProcessControl from "./components/pqrs_management.component";
 import ClasificationComponent from "./components/pqrs_clasification.component";
 import ClasificationTermComponent from "./components/pqrs_clasification_2.component";
 import new_pqrsService from "../../../../services/new_pqrs.service";
+import useProcessControl from "./hooks/useProccesControl";
 
 const PQRS = () => {
     const [currentItem, setCurrentItem] = useState()
     const [formData, setFormData] = useState({
         document_type: "C.C."
     });
+    const { control, handleControlChange, processControlData } = useProcessControl();
     useEffect(() => {
         // pqrs_mainService.get()
     }, [])
@@ -24,17 +26,21 @@ const PQRS = () => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Data:", formData);
+        const controlData = processControlData();
+        const combinedData = { ...formData, controlData };
+        console.log("Form Data:", combinedData);
+
         let data = new FormData()
         Object.keys(formData).forEach((key) => {
             data.append(key, formData[key]);
         });
+        data.append('controlData', JSON.stringify(controlData));
+        
+        console.log(data)
         const res = await new_pqrsService.create(data)
         alert("Registro exitoso")
         console.log(res)
     };
-
-    // const [pqrs, setPqrs] = useState([])
 
 
     return (
@@ -78,6 +84,16 @@ const PQRS = () => {
                                 onChange={handleChange}
                             />
                         </div>
+                        <div className="mb-3">
+                            <label className="form-label">Peticiones</label>
+                            <textarea
+                                name="petition"
+                                className="form-control"
+                                rows={3}
+                                value={formData.petition}
+                                onChange={handleChange}
+                            />
+                        </div>
                     </div>
 
                     {/* Validation Section */}
@@ -91,7 +107,7 @@ const PQRS = () => {
                     </div>
                     <ClasificationComponent formData={formData} onChange={handleChange} />
                     <ClasificationTermComponent formData={formData} onChange={handleChange} />
-                    <ProcessControl formData={formData} onChange={handleChange} />
+                    <ProcessControl formData={control} onChange={handleControlChange} />
                     <pre>{JSON.stringify(formData, null, 2)}</pre>
 
                     <button type="submit" className="btn btn-primary">Enviar</button>

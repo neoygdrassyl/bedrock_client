@@ -122,7 +122,8 @@ const ClasificationTermComponent = () => {
                 </table>
             </div>
             <div className="small text-muted mb-2">
-                Confirmación de radicación -CRAD-, Aclaración a la petición-ACLP- Traslado por Competencia-TPCO-, Comunicación Traslado por Competencia -CTPCO- Ampliación del Termino-AMPT-, Resolución Petición-REPET-
+                Confirmación de radicación <b>-CRAD-</b>, Aclaración a la petición <b>-ACLP-</b> Traslado por Competencia <b>-TPCO-</b>,
+                Comunicación Traslado por Competencia <b>-CTPCO-</b> Ampliación del Termino<b>-AMPT-</b>, Resolución Petición <b>-REPET-</b>
             </div>
         </div>
     )
