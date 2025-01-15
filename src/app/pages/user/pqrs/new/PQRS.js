@@ -14,9 +14,6 @@ const PQRS = () => {
         document_type: "C.C."
     });
     const { control, handleControlChange, processControlData } = useProcessControl();
-    useEffect(() => {
-        // pqrs_mainService.get()
-    }, [])
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prevData) => ({
@@ -44,7 +41,7 @@ const PQRS = () => {
 
 
     return (
-        <form className="container my-4" onSubmit={handleSubmit}>
+        <form className="my-4" onSubmit={handleSubmit}>
             <div className="card">
                 {/* Header Section */}
                 <div className="card-header p-4 bg-primary text-white">

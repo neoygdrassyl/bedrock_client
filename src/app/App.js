@@ -67,7 +67,7 @@ import GUIDE_USER from './pages/user/guide_user/guide_user.page';
 import { infoCud } from './components/jsons/vars';
 import NORMS from './pages/user/norms/norms.page';
 import CERTIFICATE_WORKER from './pages/user/certifications/certification.page';
-import PQRS from './pages/user/pqrs/new/PQRS';
+import PQRSDashboard from './pages/user/pqrs/new/pqrs_dashboard';
 
 
 const MySwal = withReactContent(Swal);
@@ -140,7 +140,9 @@ export default function App() {
                         />
                         <Route path='/new_pqrs'
                           render={(props) => (
-                            <PQRS/>
+                            <PQRSDashboard
+                              breadCrums={t("breadCrums", { returnObjects: true })}
+                            />
                           )}
                         />
 
