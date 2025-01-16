@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getManagementSteps } from "../utils/steps";
+import { getManagementSteps } from "../utils/helpers/steps";
 
 const useProcessControl = () => {
   const [control, setControl] = useState({});

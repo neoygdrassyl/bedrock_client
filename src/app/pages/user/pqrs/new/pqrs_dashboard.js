@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 import new_pqrsService from '../../../../services/new_pqrs.service';
 import DataTable from 'react-data-table-component';
 import  Modal  from 'react-modal';
-import PQRS from './PQRS'
+import PqrsForm from './components/forms/pqrs_form';
 import { modalStyles } from './utils/styles/modalStyles';
 
 const PQRSDashboard = (props) => {
@@ -151,7 +151,7 @@ const PQRSDashboard = (props) => {
                     <div className='btn-close' color='none' onClick={() => handleClose()}></div>
                 </div>
                 <hr />
-                <PQRS/>
+                <PqrsForm/>
                 <hr />
                 <div className="text-end py-4 mt-3">
                     <button className="btn btn-lg btn-info" onClick={() => handleClose()}><i class="fas fa-times-circle"></i> CERRAR </button>

@@ -1,4 +1,4 @@
-import { getManagementSteps } from "../utils/steps";
+import { getManagementSteps } from "../utils/helpers/steps";
 
 export default function ProcessControl({ formData, onChange }) {
   return (

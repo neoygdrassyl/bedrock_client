@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import TranslationComponent from "./components/pqrs_translation.component";
-import PetitionerComponent from "./components/pqrs_petitioner.component";
-import ValidationComponent from "./components/pqrs_validation.component";
-import ProcessControl from "./components/pqrs_management.component";
-import ClasificationComponent from "./components/pqrs_clasification.component";
-import ClasificationTermComponent from "./components/pqrs_clasification_2.component";
-import new_pqrsService from "../../../../services/new_pqrs.service";
-import useProcessControl from "./hooks/useProccesControl";
+import {  useState } from "react";
+import TranslationComponent from "../pqrs_translation.component";
+import PetitionerComponent from "../pqrs_petitioner.component";
+import ValidationComponent from "../pqrs_validation.component";
+import ProcessControl from "../pqrs_management.component";
+import ClasificationComponent from "../pqrs_clasification.component";
+import ClasificationTermComponent from "../pqrs_clasification_2.component";
+import new_pqrsService from "../../../../../../services/new_pqrs.service";
+import useProcessControl from "../../hooks/useProcessControl";
 
-const PQRS = () => {
+const PqrsForm = () => {
     const [currentItem, setCurrentItem] = useState()
     const [formData, setFormData] = useState({
         document_type: "C.C."
@@ -114,5 +114,5 @@ const PQRS = () => {
         </form>
     )
 }
-export default PQRS
+export default PqrsForm
 
