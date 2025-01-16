@@ -19,20 +19,28 @@ import {
 import { Link } from "react-router-dom";
 import new_pqrsService from '../../../../services/new_pqrs.service';
 import DataTable from 'react-data-table-component';
-import  Modal  from 'react-modal';
-import PqrsForm from './components/forms/pqrs_form';
-import { modalStyles } from './utils/styles/modalStyles';
+import Modal from 'react-modal';
+import PqrsForm from './forms/pqrs_form';
+import { modalStyles, pqrsFormStyles, pqrsRequestStyles } from './utils/styles/modalStyles';
+import PqrsBreadcrumb from './components/pqrs_dashboard/pqrs_breadcrumbs.component';
+import PqrsStats from './components/pqrs_dashboard/pqrs_stadistics.component';
+import PqrsDataRequest from './forms/pqrs_data_request';
 
 const PQRSDashboard = (props) => {
+    //pqrs
     const [pqrs, setPQRS] = useState([]);
+
+    //Table management
     const [selectedRow, setSelectedRow] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [activeTab, setActiveTab] = useState('all');
 
-    const [modalOpen, setModalOpen] = useState(false);
+    //Modals
+    const [pqrsRequest, setPqrsRequest] = useState(false);
+    const [pqrsNewModal, setPqrsNewModal] = useState(false);
 
-
+    //api call
     useEffect(() => {
         const loadPQRS = () => {
             new_pqrsService.getAll()
@@ -43,7 +51,7 @@ const PQRSDashboard = (props) => {
         };
         loadPQRS();
     }, []);
-    
+
     //filter
     const filteredPQRS = pqrs.filter(pqrs => {
         const matchesSearch = pqrs.id_public?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -53,7 +61,7 @@ const PQRSDashboard = (props) => {
 
         return matchesSearch && matchesStatus;
     });
-
+    //visual
     const handleTabClick = (tabId) => {
         if (activeTab !== tabId) {
             setActiveTab(tabId);
@@ -111,90 +119,78 @@ const PQRSDashboard = (props) => {
                             <i className="fas fa-edit"></i>
                         </MDBBtn>
                     </MDBTooltip>
-                    <MDBTooltip tag="span" title="Eliminar">
+                    {/* <MDBTooltip tag="span" title="Eliminar">
                         <MDBBtn color="link" onClick={() => handleDelete(row.id)}>
                             <i className="fas fa-trash-alt"></i>
                         </MDBBtn>
-                    </MDBTooltip>
+                    </MDBTooltip> */}
                 </div>
             )
         }
     ];
 
-    // Function for handling edit action
-    const handleEdit = (id) => {
-        setModalOpen(true); // Open the modal
-    };
+    // Actions
 
-    // Function for handling delete action
-    const handleDelete = (id) => {
-        console.log("Deleting PQRS with ID:", id);
-    };
-    const handleClose = () => {
-        setModalOpen(false);
+    //initial data to pqrs_form
+    const [data, setData] = useState({})
+    const handleOpenRequest = () => {
+        setPqrsRequest((status) => !status); // Open the modal
+    }
+    const handleNewPqrs = () => {
+        setPqrsNewModal((status) => !status); // Open the modal
+        setPqrsRequest(false); // Close the modal
     }
 
+    const handleEdit = (id) => {
+        console.log(id)
+    };
     const rowSelectedStyle = {
         backgroundColor: 'rgba(0, 123, 255, 0.1)',
     };
-
+    // ---- //
     return (
         <div className="container mt-5">
+            {/* Modals */}
+            {/* 1 STEP */}
             <Modal contentLabel="GENERAR SOLCITUD PQRS"
-                isOpen={modalOpen}
-                style={modalStyles}
+                isOpen={pqrsRequest}
+                style={pqrsRequestStyles}
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
                     <h2>CREAR NUEVA PETICIÓN</h2>
 
-                    <div className='btn-close' color='none' onClick={() => handleClose()}></div>
+                    <div className='btn-close' color='none' onClick={() => handleOpenRequest()}></div>
                 </div>
                 <hr />
-                <PqrsForm/>
+                <PqrsDataRequest continueToForm={handleNewPqrs} setData={setData} />
                 <hr />
                 <div className="text-end py-4 mt-3">
-                    <button className="btn btn-lg btn-info" onClick={() => handleClose()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                    <button className="btn btn-lg btn-info" onClick={() => handleOpenRequest()}><i class="fas fa-times-circle"></i> CERRAR </button>
                 </div>
             </Modal>
-            <MDBBreadcrumb className="mx-5">
-                <MDBBreadcrumbItem>
-                    <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{props.breadCrums.bc_01}</label></Link>
-                </MDBBreadcrumbItem>
-                <MDBBreadcrumbItem>
-                    <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{props.breadCrums.bc_u1}</label></Link>
-                </MDBBreadcrumbItem>
-                <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{props.breadCrums.bc_u7}</label></MDBBreadcrumbItem>
-            </MDBBreadcrumb>
+            {/* PQRS FORM */}
 
-            <MDBRow className="mb-4">
-                <MDBCol md="4">
-                    <MDBCard>
-                        <MDBCardBody>
-                            <MDBCardTitle>Total PQRS</MDBCardTitle>
-                            <MDBTypography tag="h2">{pqrs.length}</MDBTypography>
-                        </MDBCardBody>
-                    </MDBCard>
-                </MDBCol>
-                <MDBCol md="4">
-                    <MDBCard>
-                        <MDBCardBody>
-                            <MDBCardTitle>PQRS Abiertos</MDBCardTitle>
-                            <MDBTypography tag="h2">
-                                {pqrs.filter(p => p.status === 'ABIERTA').length}
-                            </MDBTypography>
-                        </MDBCardBody>
-                    </MDBCard>
-                </MDBCol>
-                <MDBCol md="4">
-                    <MDBCard>
-                        <MDBCardBody>
-                            <MDBCardTitle>Eficiencia Promedio</MDBCardTitle>
-                            <MDBTypography tag="h2">0.85</MDBTypography>
-                        </MDBCardBody>
-                    </MDBCard>
-                </MDBCol>
-            </MDBRow>
+            <Modal contentLabel="GENERAR SOLCITUD PQRS"
+                isOpen={pqrsNewModal}
+                style={pqrsFormStyles}
+                ariaHideApp={false}
+            >
+                <div className="my-4 d-flex justify-content-between">
+                    <h2>CREAR NUEVA PETICIÓN</h2>
+
+                    <div className='btn-close' color='none' onClick={() => handleNewPqrs()}></div>
+                </div>
+                <hr />
+                <PqrsForm />
+                <hr />
+                <div className="text-end py-4 mt-3">
+                    <button className="btn btn-lg btn-info" onClick={() => handleNewPqrs()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                </div>
+            </Modal>
+
+            <PqrsBreadcrumb breadCrums={props.breadCrums} />
+            <PqrsStats pqrs={pqrs} />
 
             <MDBCard className="mb-4">
                 <MDBCardBody>
@@ -210,7 +206,7 @@ const PQRSDashboard = (props) => {
                         </MDBCol>
                         <MDBCol md="6" className="d-flex justify-content-end">
                             <MDBTooltip tag="span" title="Agregar nuevo PQRS">
-                                <MDBBtn color="primary">
+                                <MDBBtn color="primary" onClick={() => handleOpenRequest()}>
                                     <i className="fas fa-plus me-2"></i> Nuevo PQRS
                                 </MDBBtn>
                             </MDBTooltip>
