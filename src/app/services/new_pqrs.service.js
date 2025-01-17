@@ -9,5 +9,8 @@ class New_Pqrs_Service {
     getAll(){
         return http.get(`/${route}`,);
     }
+    getById(id){
+        return http.get(`/${route}/${id}`,);
+    }
 }
 export default new New_Pqrs_Service();

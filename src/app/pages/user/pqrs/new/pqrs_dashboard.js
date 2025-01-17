@@ -29,7 +29,8 @@ import PqrsDataRequest from './forms/pqrs_data_request';
 const PQRSDashboard = (props) => {
     //pqrs
     const [pqrs, setPQRS] = useState([]);
-
+    // itemSelected
+    const [currentItem, setCurrentItem] = useState(null)
     //Table management
     const [selectedRow, setSelectedRow] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -141,7 +142,9 @@ const PQRSDashboard = (props) => {
         setPqrsRequest(false); // Close the modal
     }
 
-    const handleEdit = (id) => {
+    const handleEdit = async(id) => {
+        setCurrentItem(id)
+        setPqrsNewModal((status) => !status)
         console.log(id)
     };
     const rowSelectedStyle = {
@@ -177,12 +180,13 @@ const PQRSDashboard = (props) => {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <h2>CREAR NUEVA PETICIÓN</h2>
-
+                    {
+                        data.id ? <h2>GESTIONAR SOLICITUD PQRS</h2> : <h2>CREAR NUEVA PETICIÓN</h2>
+                    }
                     <div className='btn-close' color='none' onClick={() => handleNewPqrs()}></div>
                 </div>
                 <hr />
-                <PqrsForm />
+                <PqrsForm id={currentItem} />
                 <hr />
                 <div className="text-end py-4 mt-3">
                     <button className="btn btn-lg btn-info" onClick={() => handleNewPqrs()}><i class="fas fa-times-circle"></i> CERRAR </button>

@@ -12,9 +12,9 @@ import {
 
 export default function PQRSMiniForm({continueToForm , setData}) {
     const [formData, setFormData] = useState({
-        vr: '',
+        id_public: '',
         canalIngreso: '',
-        fechaRadicacion: ''
+        date: ''
     });
 
     const handleInputChange = (e) => {
@@ -45,8 +45,8 @@ export default function PQRSMiniForm({continueToForm , setData}) {
                                 label='VR (Ventanilla de Radicación)'
                                 id='vr'
                                 type='text'
-                                name='vr'
-                                value={formData.vr}
+                                name='id_public'
+                                value={formData.id_public}
                                 onChange={handleInputChange}
                                 required
                             />
@@ -66,10 +66,10 @@ export default function PQRSMiniForm({continueToForm , setData}) {
                                     required
                                 >
                                     <option value="" disabled>Seleccione un canal</option>
-                                    <option value="1">Correo Electrónico</option>
-                                    <option value="2">Ventanilla</option>
-                                    <option value="3">Teléfono</option>
-                                    <option value="4">Sitio Web</option>
+                                    <option value="Correo Electrónico">Correo Electrónico</option>
+                                    <option value="Ventanilla">Ventanilla</option>
+                                    <option value="Teléfono">Teléfono</option>
+                                    <option value="Sitio Web">Sitio Web</option>
                                 </select>
                             </div>
                         </MDBCol>
@@ -81,8 +81,8 @@ export default function PQRSMiniForm({continueToForm , setData}) {
                             <MDBInput
                                 id='fechaRadicacion'
                                 type='date'
-                                name='fechaRadicacion'
-                                value={formData.fechaRadicacion}
+                                name='date'
+                                value={formData.date}
                                 onChange={handleInputChange}
                                 required
                             />
@@ -90,7 +90,7 @@ export default function PQRSMiniForm({continueToForm , setData}) {
                     </MDBRow>
 
                     <MDBBtn type='submit' className='mb-4' block>
-                        Enviar
+                        Siguiente
                     </MDBBtn>
                 </form>
             </MDBCardBody>

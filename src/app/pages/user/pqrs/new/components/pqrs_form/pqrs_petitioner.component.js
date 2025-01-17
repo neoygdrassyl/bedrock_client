@@ -10,7 +10,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                     type="text"
                     name="name"
                     className="form-control"
-                    value={formData.name}
+                    defaultValue={formData.name}
                     onChange={onChange}
                 />
             </div>
@@ -21,7 +21,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                     <select
                         name="document_type"
                         className="form-select"
-                        value={formData.document_type}
+                        defaultValue={formData.document_type}
                         onChange={onChange}
                     >
                         <option>C.C.</option>
@@ -35,7 +35,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         type="text"
                         name="document_number"
                         className="form-control"
-                        value={formData.document_number}
+                        defaultValue={formData.document_number}
                         onChange={onChange}
                         placeholder="Sin dato"
                     />
@@ -46,7 +46,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         type="tel"
                         name="phone"
                         className="form-control"
-                        value={formData.phone}
+                        defaultValue={formData.phone}
                         onChange={onChange}
                         placeholder="Sin dato"
                     />
@@ -60,7 +60,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         type="email"
                         name="email"
                         className="form-control"
-                        value={formData.email}
+                        defaultValue={formData.email}
                         onChange={onChange}
                     />
                 </div>
@@ -70,7 +70,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         type="text"
                         name="address"
                         className="form-control"
-                        value={formData.address}
+                        defaultValue={formData.address}
                         onChange={onChange}
                     />
                 </div>
@@ -83,7 +83,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         name="legally_identified"
                         className="form-check-input"
                         id="identified"
-                        checked={formData.legally_identified}
+                        defaultChecked={formData.legally_identified}
                         onChange={onChange}
                     />
                     <label className="form-check-label" htmlFor="identified">
@@ -96,7 +96,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         name="anonymous"
                         className="form-check-input"
                         id="anonymous"
-                        checked={formData.anonymous}
+                        defaultChecked={formData.anonymous}
                         onChange={onChange}
                     />
                     <label className="form-check-label" htmlFor="anonymous">
