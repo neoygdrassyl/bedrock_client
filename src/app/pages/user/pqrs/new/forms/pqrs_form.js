@@ -8,34 +8,48 @@ import ClasificationTermComponent from "../components/pqrs_form/pqrs_clasificati
 import new_pqrsService from "../../../../../services/new_pqrs.service";
 import useProcessControl from "../hooks/useProcessControl";
 
-const PqrsForm = ({ id }) => {
+const PqrsForm = ({ id, creationData }) => {
 
-    const [isLoaded, setLoading] = useState(false)
-    const [initialData, setInitialData] = useState({})
+    const [isLoaded, setIsLoaded] = useState(false)
+    const [initialData, setInitialData] = useState(null)
     useEffect(() => {
-        const getData = async (id) => {
+        const getData = async () => {
             try {
-                const res = await new_pqrsService.getById(id);
-                if (res) {
-                    setInitialData(res.data);
-                    setLoading(true);
+                if (id) {
+                    const res = await new_pqrsService.getById(id);
+                    if (res?.data) {
+                        setInitialData(res.data);
+                    }
+                } else {
+                    console.log(creationData);
+                    setInitialData(creationData);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
-                setLoading(true)
+            } finally {
+                setIsLoaded(true); // Ensure loading is stopped after fetch
             }
         };
-        getData(id);
-    }, [id]);
+
+        getData();
+    }, [id, creationData]);
     console.log(initialData)
-    const [formData, setFormData] = useState({
-        // extract all the data
-        document_type: "C.C.",
-        status: initialData.status ?? "ABIERTO",
-        date: initialData.date,
-        id_public: initialData.id_public,
-        canalIngreso: initialData.canalIngreso,
-    });
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData({
+                document_type: "C.C.",
+                status: initialData.status ?? "ABIERTA",
+                creation_date: initialData.date,
+                id_public: initialData.id_public,
+                canalIngreso: initialData.canalIngreso,
+                desc: initialData.desc ?? "",
+                petition: initialData.petition ?? ""
+            });
+        }
+    }, [initialData]); // Se ejecuta cuando initialData cambia
+
+    const [formData, setFormData] = useState({});
 
     const { control, handleControlChange, processControlData } = useProcessControl();
 
@@ -124,7 +138,7 @@ const PqrsForm = ({ id }) => {
                             </div>
 
                             {/* Validation Section */}
-                            <ValidationComponent formData={formData} onChange={handleChange} />
+                            <ValidationComponent initialData={initialData.new_pqrs_evaluation} formData={formData} onChange={handleChange} />
 
                             <div className="mb-4">
                                 <h5 className="border p-2">

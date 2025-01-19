@@ -186,7 +186,7 @@ const PQRSDashboard = (props) => {
                     <div className='btn-close' color='none' onClick={() => handleNewPqrs()}></div>
                 </div>
                 <hr />
-                <PqrsForm id={currentItem} />
+                <PqrsForm id={currentItem} creationData={data} />
                 <hr />
                 <div className="text-end py-4 mt-3">
                     <button className="btn btn-lg btn-info" onClick={() => handleNewPqrs()}><i class="fas fa-times-circle"></i> CERRAR </button>

@@ -38,7 +38,7 @@ export default function ProcessControl({ initialData, formData, onChange }) {
     }
     return cumple;
   }
-  const data = mapNewPqrsToControl(initialData);
+  let data = initialData ? mapNewPqrsToControl(initialData) : '';
 
   return (
     <div className="container-fluid p-2">
@@ -78,7 +78,7 @@ export default function ProcessControl({ initialData, formData, onChange }) {
                   <td><input type="date" className="form-control form-control-sm" name={`fechaInicial_${sectionIndex}_${actividadIndex}`} defaultValue={data[`fechaInicial_${sectionIndex}_${actividadIndex}`] || (formData[`fechaInicial_${sectionIndex}_${actividadIndex}`] || '')} onChange={onChange} /></td>
                   <td><input type="date" className="form-control form-control-sm" name={`fecha1_${sectionIndex}_${actividadIndex}`} defaultValue={data[`fecha1_${sectionIndex}_${actividadIndex}`] || (formData[`fecha1_${sectionIndex}_${actividadIndex}`] || '')} onChange={onChange} /></td>
                   <td><input type="date" className="form-control form-control-sm" name={`fechaFinal_${sectionIndex}_${actividadIndex}`} defaultValue={data[`fechaFinal_${sectionIndex}_${actividadIndex}`] || (formData[`fechaFinal_${sectionIndex}_${actividadIndex}`] || '')} onChange={onChange} /></td>
-                  <td className={`${data[`cumple_${sectionIndex}_${actividadIndex}`] === "Sí" ? "bg-success" : "bg-warning"}`}>
+                  <td className={`${data[`cumple_${sectionIndex}_${actividadIndex}`] === "Sí" ? "text-success" : "text-danger"}`}>
                     <p className="text-center">
                       {data[`cumple_${sectionIndex}_${actividadIndex}`] || 'NO APLICA'}
                     </p>

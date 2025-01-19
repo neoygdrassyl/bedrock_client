@@ -10,8 +10,8 @@ const RadioGroup = ({ name, options, value, onChange }) => (
           name={name}
           id={`${name}${index}`}
           autoComplete="off"
-          value={option}
-          checked={value === option}
+          defaultValue={option}
+          defaultChecked={value === option}
           onChange={onChange}
         />
         <label
@@ -37,7 +37,8 @@ const ValidationItem = ({ label, name, value, onChange }) => (
   </div>
 );
 
-const ValidationComponent = ({ formData, onChange }) => {
+const ValidationComponent = ({ initialData, formData, onChange }) => {
+  console.log(initialData)
   const formalAspects = [
     "Está dirigida a la entidad CUB1. Art16/1755/2015",
     "Es claro el objeto de la petición. Art16/1755/2015",
@@ -53,6 +54,16 @@ const ValidationComponent = ({ formData, onChange }) => {
     "Recursos de reposición y/o subsidio de apelación",
   ];
 
+  // parsing Data
+  formData = initialData
+    ? {
+        ...Object.keys(initialData).reduce((acc, key) => {
+          acc[key] = initialData[key] ? "1" : "0";
+          return acc;
+        }, {}),
+      }
+    : {};
+    console.log(formData);
   return (
     <div className="mb-4">
       <h4 className=" border-bottom p-2">
@@ -98,5 +109,7 @@ const ValidationComponent = ({ formData, onChange }) => {
     </div>
   );
 };
+
+
 
 export default ValidationComponent;

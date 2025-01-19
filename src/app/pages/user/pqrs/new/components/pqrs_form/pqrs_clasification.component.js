@@ -23,13 +23,24 @@ const ClasificationComponent = ({ formData, onChange }) => {
                     <tbody>
                         <tr>
                             <td>
-                                <input
+                                <select
                                     type="text"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-select-sm"
                                     name="petition_type"
                                     value={formData.petition_type}
                                     onChange={onChange}
-                                />
+                                    defaultValue={""}
+                                >
+                                    <option value="" disabled>Seleccione una opción</option>
+                                    <option value="Petición">Petición</option>
+                                    <option value="Queja">Queja</option>
+                                    <option value="Reclamo">Reclamo</option>
+                                    <option value="Sugerencia">Sugerencia</option>
+                                    <option value="Denuncia">Denuncia</option>
+                                    <option value="Consulta">Solicitud De Documentos y/o información</option>
+                                    <option value="Consulta">Solicitud De Documentos y/o información</option>
+
+                                </select >
                             </td>
                             <td>
                                 <input
