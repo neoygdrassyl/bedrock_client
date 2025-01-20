@@ -16,7 +16,6 @@ import {
     MDBTabsContent,
     MDBTypography
 } from 'mdb-react-ui-kit';
-import { Link } from "react-router-dom";
 import new_pqrsService from '../../../../services/new_pqrs.service';
 import DataTable from 'react-data-table-component';
 import Modal from 'react-modal';
@@ -140,6 +139,7 @@ const PQRSDashboard = (props) => {
     const handleNewPqrs = () => {
         setPqrsNewModal((status) => !status); // Open the modal
         setPqrsRequest(false); // Close the modal
+        if(currentItem) setCurrentItem(null)
     }
 
     const handleEdit = async(id) => {

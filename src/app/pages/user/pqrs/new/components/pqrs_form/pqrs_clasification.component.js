@@ -38,7 +38,6 @@ const ClasificationComponent = ({ formData, onChange }) => {
                                     <option value="Sugerencia">Sugerencia</option>
                                     <option value="Denuncia">Denuncia</option>
                                     <option value="Consulta">Solicitud De Documentos y/o información</option>
-                                    <option value="Consulta">Solicitud De Documentos y/o información</option>
 
                                 </select >
                             </td>

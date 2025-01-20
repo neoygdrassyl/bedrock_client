@@ -25,8 +25,12 @@ const PqrsStats = ({ pqrs }) => {
             <MDBCol md="4">
                 <MDBCard>
                     <MDBCardBody>
-                        <MDBCardTitle>Eficiencia Promedio</MDBCardTitle>
-                        <MDBTypography tag="h2">0.85</MDBTypography>
+                        <MDBCardTitle>Proximo PQRS a vencer</MDBCardTitle>
+                        <MDBTypography tag="h2">
+                            {pqrs.length > 0 ? new Date(
+                                pqrs.reduce((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? a : b)).createdAt
+                            ).toLocaleDateString() : "No hay datos"}
+                        </MDBTypography>
                     </MDBCardBody>
                 </MDBCard>
             </MDBCol>

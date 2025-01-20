@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 
 const RadioGroup = ({ name, options, value, onChange }) => (
   <div className="d-flex gap-2">
@@ -10,8 +10,8 @@ const RadioGroup = ({ name, options, value, onChange }) => (
           name={name}
           id={`${name}${index}`}
           autoComplete="off"
-          defaultValue={option}
-          defaultChecked={value === option}
+          value={option} 
+          checked={value === option}  
           onChange={onChange}
         />
         <label
@@ -37,8 +37,9 @@ const ValidationItem = ({ label, name, value, onChange }) => (
   </div>
 );
 
-const ValidationComponent = ({ initialData, formData, onChange }) => {
-  console.log(initialData)
+const ValidationComponent = ({ initialData, onChange }) => {
+  console.log(initialData);
+  
   const formalAspects = [
     "Está dirigida a la entidad CUB1. Art16/1755/2015",
     "Es claro el objeto de la petición. Art16/1755/2015",
@@ -54,16 +55,33 @@ const ValidationComponent = ({ initialData, formData, onChange }) => {
     "Recursos de reposición y/o subsidio de apelación",
   ];
 
-  // parsing Data
-  formData = initialData
-    ? {
-        ...Object.keys(initialData).reduce((acc, key) => {
-          acc[key] = initialData[key] ? "1" : "0";
+  // Parsing Data
+  const [localFormData, setLocalFormData] = useState({});
+
+  useEffect(() => {
+    if (initialData) {
+      setLocalFormData(
+        Object.keys(initialData).reduce((acc, key) => {
+          acc[key] = initialData[key] ? "1" : "0"; // Aseguramos que los valores sean "1" o "0"
           return acc;
-        }, {}),
-      }
-    : {};
-    console.log(formData);
+        }, {})
+      );
+    }
+  }, [initialData]); // Solo se ejecuta si initialData cambia
+
+  const handleRadioChange = (e) => {
+    const { name, value } = e.target;
+    setLocalFormData((prevData) => ({
+      ...prevData,
+      [name]: value, // Actualizamos el valor con el radio seleccionado
+    }));
+
+    // Llamamos a onChange para propagar el cambio
+    if (onChange) {
+      onChange(e);
+    }
+  };
+
   return (
     <div className="mb-4">
       <h4 className=" border-bottom p-2">
@@ -79,8 +97,8 @@ const ValidationComponent = ({ initialData, formData, onChange }) => {
               key={index}
               label={label}
               name={`formal${index}`}
-              value={formData[`formal${index}`] || ""}
-              onChange={onChange}
+              value={localFormData[`formal${index}`] || ""}
+              onChange={handleRadioChange} // Pasamos la nueva función de manejo
             />
           ))}
         </div>
@@ -93,23 +111,21 @@ const ValidationComponent = ({ initialData, formData, onChange }) => {
               key={index}
               label={label}
               name={`competence${index}`}
-              value={formData[`competence${index}`] || ""}
-              onChange={onChange}
+              value={localFormData[`competence${index}`] || ""}
+              onChange={handleRadioChange} // Pasamos la nueva función de manejo
             />
           ))}
           <h6 className="mt-4 mb-3">Relación de la Petición con otras entidades</h6>
           <ValidationItem
             label="Requiere intervención de otras entidades. (En caso positivo identifíquelas (1))"
             name="otherEntities"
-            value={formData.otherEntities || ""}
-            onChange={onChange}
+            value={localFormData.otherEntities || ""}
+            onChange={handleRadioChange} // Pasamos la nueva función de manejo
           />
         </div>
       </div>
     </div>
   );
 };
-
-
 
 export default ValidationComponent;

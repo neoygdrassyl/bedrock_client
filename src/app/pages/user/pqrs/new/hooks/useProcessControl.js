@@ -32,6 +32,7 @@ const useProcessControl = () => {
         }
       }
     }
+    console.log(data)
     return data;
   };
 
