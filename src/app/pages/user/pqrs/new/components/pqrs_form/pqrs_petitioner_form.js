@@ -7,11 +7,7 @@ const PetitionerForm = ({ setFormData, loadedPetitioners }) => {
         const initialPetitioners = loadedPetitioners?.map((p) => ({
             id: p.document_number,
             data: p
-        })) || [];
-        // put one if there's none
-        if (initialPetitioners.length === 0) {
-            initialPetitioners.push({ id: Date.now(), data: {} });
-        }
+        })) || [{ id: Date.now(), data: {} }];
         return initialPetitioners;
     });
 

@@ -16,8 +16,7 @@ const ClasificationComponent = ({ formData, onChange }) => {
                             <th></th>
                             <th>Nueva</th>
                             <th>Reitera</th>
-                            <th>Identificar</th>
-                            <th>Estado</th>
+                            <th>Identificar Número</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -71,26 +70,13 @@ const ClasificationComponent = ({ formData, onChange }) => {
                                 />
                             </td>
                             <td className="text-center">
-                                <select
-                                    className="form-select form-select-sm"
-                                    name="actuacionIdentificar"
-                                    value={formData.actuacionIdentificar || "no"}
+                                <input
+                                    type="text"
+                                    className="form-control form-control-sm"
+                                    name="modality"
+                                    value={formData.id_publico}
                                     onChange={onChange}
-                                >
-                                    <option value="si">Sí</option>
-                                    <option value="no">No</option>
-                                </select>
-                            </td>
-                            <td className="text-center">
-                                <select
-                                    className="form-select form-select-sm"
-                                    name="actuacionEstado"
-                                    value={formData.actuacionEstado || "no"}
-                                    onChange={onChange}
-                                >
-                                    <option value="si">Sí</option>
-                                    <option value="no">No</option>
-                                </select>
+                                />
                             </td>
                         </tr>
                     </tbody>

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import TranslationComponent from "../components/pqrs_form/pqrs_translation.component";
 // import PetitionerComponent from "../components/pqrs_form/pqrs_petitioner.component";
 import ValidationComponent from "../components/pqrs_form/pqrs_validation.component";
 import ProcessControl from "../components/pqrs_form/pqrs_management.component";
@@ -8,7 +7,7 @@ import ClasificationTermComponent from "../components/pqrs_form/pqrs_clasificati
 import new_pqrsService from "../../../../../services/new_pqrs.service";
 import useProcessControl from "../hooks/useProcessControl";
 import PetitionerForm from "../components/pqrs_form/pqrs_petitioner_form";
-import TranslationForm from "../components/pqrs_form/pqrs_translation_form";
+import TransferForm from "../components/pqrs_form/pqrs_transfer_form";
 
 const PqrsForm = ({ id, creationData }) => {
 
@@ -56,6 +55,8 @@ const PqrsForm = ({ id, creationData }) => {
     const { control, handleControlChange, processControlData } = useProcessControl();
     //data from petitioners
     const [petitioners , setPetitioners] = useState({});
+    //data from translations
+    const [transfers , setTranfers] = useState({});
 
 
     const handleChange = (e) => {
@@ -75,11 +76,13 @@ const PqrsForm = ({ id, creationData }) => {
         });
         data.append('controlData', JSON.stringify(controlData));
         data.append('petitioners', JSON.stringify(petitioners));
+        data.append('transfers', JSON.stringify(transfers));
 
-        console.log(data)
-        const res = await new_pqrsService.create(data)
+
+        console.log(data.get('transfers'));
+        // const res = await new_pqrsService.create(data)
         alert("Registro exitoso")
-        console.log(res)
+        // console.log(res)
     };
 
 
@@ -147,7 +150,7 @@ const PqrsForm = ({ id, creationData }) => {
                                 <h5 className="border p-2">
                                     Art 21. Ley 1755/2015. Funcionario sin competencia. Entidades a las que se hace el traslado (1). Correspondencia se debe enviar dentro de los 5 días siguientes a radicación
                                 </h5>
-                                <TranslationForm setFormData={setFormData} loadedTranslations={initialData.new_pqrs_translation}/>
+                                <TransferForm setFormData={setTranfers} loadedTranslations={initialData.new_pqrs_translation}/>
                                 {/* <TranslationComponent formData={formData} onChange={handleChange} /> */}
                             </div>
                             <ClasificationComponent formData={formData} onChange={handleChange} />
