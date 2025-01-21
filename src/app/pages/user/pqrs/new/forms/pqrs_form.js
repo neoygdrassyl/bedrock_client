@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 // import PetitionerComponent from "../components/pqrs_form/pqrs_petitioner.component";
 import ValidationComponent from "../components/pqrs_form/pqrs_validation.component";
 import ProcessControl from "../components/pqrs_form/pqrs_management.component";
@@ -8,8 +8,31 @@ import new_pqrsService from "../../../../../services/new_pqrs.service";
 import useProcessControl from "../hooks/useProcessControl";
 import PetitionerForm from "../components/pqrs_form/pqrs_petitioner_form";
 import TransferForm from "../components/pqrs_form/pqrs_transfer_form";
+import Collapsible from 'react-collapsible';
+import JoditEditor from "jodit-pro-react";
+
 
 const PqrsForm = ({ id, creationData }) => {
+    // overall data
+    const [formData, setFormData] = useState({});
+    //data from management
+    const { control, handleControlChange, processControlData } = useProcessControl();
+    //data from petitioners
+    const [petitioners, setPetitioners] = useState({});
+    //data from translations
+    const [transfers, setTranfers] = useState({});
+    //data from Jodit Editor (responses)
+    const [editorContent, setEditorContent] = useState({
+        response_curator: "",
+        response_legal: "",
+        response_arquitecture: "",
+        response_structure: "",
+        response_archive: ""
+    });
+    // editor refs 
+    const editor1 = useRef(null);
+    const editor2 = useRef(null);
+    const editor3 = useRef(null);
 
     const [isLoaded, setIsLoaded] = useState(false)
     const [initialData, setInitialData] = useState(null)
@@ -47,16 +70,14 @@ const PqrsForm = ({ id, creationData }) => {
                 desc: initialData.desc ?? "",
                 petition: initialData.petition ?? ""
             });
+            // responses for editor
+            setEditorContent({
+                // response1: initialData.new_pqrs_responses.response1 ?? "",
+                // response2: initialData.new_pqrs_responses.response2 ?? "",
+                // response3: initialData.new_pqrs_responses.response3 ?? "",
+            });
         }
-    }, [initialData]); 
-    // overall data
-    const [formData, setFormData] = useState({});
-    //data from management
-    const { control, handleControlChange, processControlData } = useProcessControl();
-    //data from petitioners
-    const [petitioners , setPetitioners] = useState({});
-    //data from translations
-    const [transfers , setTranfers] = useState({});
+    }, [initialData]);
 
 
     const handleChange = (e) => {
@@ -65,6 +86,9 @@ const PqrsForm = ({ id, creationData }) => {
             ...prevData,
             [name]: type === "checkbox" ? checked : value,
         }));
+    };
+    const handleJoditChange = (key, value) => {
+        setEditorContent((prev) => ({ ...prev, [key]: value }));
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -77,9 +101,10 @@ const PqrsForm = ({ id, creationData }) => {
         data.append('controlData', JSON.stringify(controlData));
         data.append('petitioners', JSON.stringify(petitioners));
         data.append('transfers', JSON.stringify(transfers));
+        data.append("responses", JSON.stringify(editorContent));
 
 
-        console.log(data.get('transfers'));
+        console.log(data.get('responses'));
         // const res = await new_pqrsService.create(data)
         alert("Registro exitoso")
         // console.log(res)
@@ -116,7 +141,7 @@ const PqrsForm = ({ id, creationData }) => {
                         <div className="card-body">
                             {/* Petitioner Information Section */}
                             {/* <PetitionerComponent formData={formData} onChange={handleChange} /> */}
-                            <PetitionerForm setFormData={setPetitioners} loadedPetitioners={initialData.new_pqrs_petitioners}/>
+                            <PetitionerForm setFormData={setPetitioners} loadedPetitioners={initialData.new_pqrs_petitioners} />
 
                             {/* Description Section */}
                             <div className="mb-4">
@@ -150,13 +175,33 @@ const PqrsForm = ({ id, creationData }) => {
                                 <h5 className="border p-2">
                                     Art 21. Ley 1755/2015. Funcionario sin competencia. Entidades a las que se hace el traslado (1). Correspondencia se debe enviar dentro de los 5 días siguientes a radicación
                                 </h5>
-                                <TransferForm setFormData={setTranfers} loadedTranslations={initialData.new_pqrs_translation}/>
+                                <TransferForm setFormData={setTranfers} loadedTranslations={initialData.new_pqrs_translation} />
                                 {/* <TranslationComponent formData={formData} onChange={handleChange} /> */}
                             </div>
                             <ClasificationComponent formData={formData} onChange={handleChange} />
                             <ClasificationTermComponent formData={formData} onChange={handleChange} />
                             <ProcessControl initialData={initialData.new_pqrs_controls} formData={control} onChange={handleControlChange} />
                             <pre>{JSON.stringify(formData, null, 2)}</pre>
+                            <div >
+                                <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">Respuestas</label></>}>
+                                    <div className="p-3">
+                                        <h5 className="my-4 bg-info p-1">Respuesta Curador</h5>
+                                        <JoditEditor ref={editor1} value={editorContent.response_curator} onChange={(value) => handleJoditChange("response_curator", value)} />
+
+                                        <h5 className="my-4 bg-info p-1">Respuesta Legal</h5>
+                                        <JoditEditor ref={editor2} value={editorContent.response_legal} onChange={(value) => handleJoditChange("response_legal", value)} />
+
+                                        <h5 className="my-4 bg-info p-1">Respuesta Arquitectura</h5>
+                                        <JoditEditor ref={editor3} value={editorContent.response_arquitecture} onChange={(value) => handleJoditChange("response_arquitecture", value)} />
+
+                                        <h5 className="my-4 bg-info p-1">Respuesta Estructura</h5>
+                                        <JoditEditor ref={editor3} value={editorContent.response_structure} onChange={(value) => handleJoditChange("response_structure", value)} />
+
+                                        <h5 className="my-4 bg-info p-1">Respuesta Archivo</h5>
+                                        <JoditEditor ref={editor3} value={editorContent.response_archive} onChange={(value) => handleJoditChange("response_archive", value)} />
+                                    </div>
+                                </Collapsible>
+                            </div>
 
                             <button type="submit" className="btn btn-primary">Enviar</button>
 
