@@ -97,7 +97,7 @@ const PQRSDashboard = (props) => {
         },
         {
             name: 'Fecha',
-            selector: row => row.createdAt,
+            selector: row => row.creation_date,
             sortable: true
         },
         {

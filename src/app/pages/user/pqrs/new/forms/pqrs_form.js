@@ -211,23 +211,42 @@ const PqrsForm = ({ id, creationData }) => {
                             <ProcessControl initialData={initialData.new_pqrs_controls} formData={control} onChange={handleControlChange} />
                             <pre>{JSON.stringify(formData, null, 2)}</pre>
                             <div >
-                                <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">Respuestas</label></>}>
+                                <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-info text-center' trigger={<><label className="fw-normal text-light text-center">Respuestas</label></>}>
                                     <div className="p-3">
                                         <h5 className="my-4 bg-info p-1">Respuesta Curador</h5>
-                                        <JoditEditor config={config}
-                                            ref={editor1} value={editorContent.response_curator} onBlur={(value) => handleJoditChange("response_curator", value)} />
+                                        <JoditEditor
+                                            config={config}
+                                            ref={editor1}
+                                            value={editorContent.response_curator}
+                                            onBlur={(value) => handleJoditChange("response_curator", value)} />
 
                                         <h5 className="my-4 bg-info p-1">Respuesta Legal</h5>
-                                        <JoditEditor ref={editor2} value={editorContent.response_legal} onBlur={(value) => handleJoditChange("response_legal", value)} />
+                                        <JoditEditor
+                                            config={config}
+                                            ref={editor2}
+                                            value={editorContent.response_legal}
+                                            onBlur={(value) => handleJoditChange("response_legal", value)} />
 
                                         <h5 className="my-4 bg-info p-1">Respuesta Arquitectura</h5>
-                                        <JoditEditor ref={editor3} value={editorContent.response_arquitecture} onBlur={(value) => handleJoditChange("response_arquitecture", value)} />
+                                        <JoditEditor
+                                            config={config}
+                                            ref={editor3}
+                                            value={editorContent.response_arquitecture}
+                                            onBlur={(value) => handleJoditChange("response_arquitecture", value)} />
 
                                         <h5 className="my-4 bg-info p-1">Respuesta Estructura</h5>
-                                        <JoditEditor ref={editor4} value={editorContent.response_structure} onBlur={(value) => handleJoditChange("response_structure", value)} />
+                                        <JoditEditor
+                                            config={config}
+                                            ref={editor4}
+                                            value={editorContent.response_structure}
+                                            onBlur={(value) => handleJoditChange("response_structure", value)} />
 
                                         <h5 className="my-4 bg-info p-1">Respuesta Archivo</h5>
-                                        <JoditEditor ref={editor5} value={editorContent.response_archive} onBlur={(value) => handleJoditChange("response_archive", value)} />
+                                        <JoditEditor
+                                            config={config}
+                                            ref={editor5}
+                                            value={editorContent.response_archive}
+                                            onBlur={(value) => handleJoditChange("response_archive", value)} />
                                     </div>
                                 </Collapsible>
                             </div>
