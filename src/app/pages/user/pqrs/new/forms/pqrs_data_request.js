@@ -14,7 +14,7 @@ export default function PQRSMiniForm({continueToForm , setData}) {
     const [formData, setFormData] = useState({
         id_public: '',
         canalIngreso: '',
-        date: ''
+        creation_date: ''
     });
 
     const handleInputChange = (e) => {
@@ -82,8 +82,8 @@ export default function PQRSMiniForm({continueToForm , setData}) {
                             <MDBInput
                                 id='fechaRadicacion'
                                 type='date'
-                                name='date'
-                                value={formData.date}
+                                name='creation_date'
+                                value={formData.creation_date}
                                 onChange={handleInputChange}
                                 required
                             />

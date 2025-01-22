@@ -33,6 +33,29 @@ const PqrsForm = ({ id, creationData }) => {
     const editor1 = useRef(null);
     const editor2 = useRef(null);
     const editor3 = useRef(null);
+    const editor4 = useRef(null);
+    const editor5 = useRef(null);
+    // config to enable all features in the jodit editor
+    const config = {
+        readonly: false, // all options from https://xdsoft.net/jodit/doc/,
+        uploader: {
+            url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
+        },
+        filebrowser: {
+            ajax: {
+                url: 'https://xdsoft.net/jodit/finder/'
+            },
+            height: 580,
+        },
+        language: 'es',
+        "readonly": false,
+        controls: {
+            lineHeight: {
+                list: ([0.5, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 2, 3, 3.5])
+
+            }
+        }
+    }
 
     const [isLoaded, setIsLoaded] = useState(false)
     const [initialData, setInitialData] = useState(null)
@@ -71,11 +94,15 @@ const PqrsForm = ({ id, creationData }) => {
                 petition: initialData.petition ?? ""
             });
             // responses for editor
-            setEditorContent({
-                // response1: initialData.new_pqrs_responses.response1 ?? "",
-                // response2: initialData.new_pqrs_responses.response2 ?? "",
-                // response3: initialData.new_pqrs_responses.response3 ?? "",
-            });
+            if (initialData?.new_pqrs_response) {
+                setEditorContent({
+                    response_curator: initialData.new_pqrs_response.response_curator ?? "",
+                    response_archive: initialData.new_pqrs_response.response_archive ?? "",
+                    response_arquitecture: initialData.new_pqrs_response.response_arquitecture ?? "",
+                    response_legal: initialData.new_pqrs_response.response_legal ?? "",
+                    response_structure: initialData.new_pqrs_response.response_structure ?? "",
+                });
+            }
         }
     }, [initialData]);
 
@@ -102,10 +129,11 @@ const PqrsForm = ({ id, creationData }) => {
         data.append('petitioners', JSON.stringify(petitioners));
         data.append('transfers', JSON.stringify(transfers));
         data.append("responses", JSON.stringify(editorContent));
+        console.log(editorContent.response_curator)
 
 
         console.log(data.get('responses'));
-        // const res = await new_pqrsService.create(data)
+        const res = await new_pqrsService.create(data)
         alert("Registro exitoso")
         // console.log(res)
     };
@@ -186,19 +214,20 @@ const PqrsForm = ({ id, creationData }) => {
                                 <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">Respuestas</label></>}>
                                     <div className="p-3">
                                         <h5 className="my-4 bg-info p-1">Respuesta Curador</h5>
-                                        <JoditEditor ref={editor1} value={editorContent.response_curator} onChange={(value) => handleJoditChange("response_curator", value)} />
+                                        <JoditEditor config={config}
+                                            ref={editor1} value={editorContent.response_curator} onBlur={(value) => handleJoditChange("response_curator", value)} />
 
                                         <h5 className="my-4 bg-info p-1">Respuesta Legal</h5>
-                                        <JoditEditor ref={editor2} value={editorContent.response_legal} onChange={(value) => handleJoditChange("response_legal", value)} />
+                                        <JoditEditor ref={editor2} value={editorContent.response_legal} onBlur={(value) => handleJoditChange("response_legal", value)} />
 
                                         <h5 className="my-4 bg-info p-1">Respuesta Arquitectura</h5>
-                                        <JoditEditor ref={editor3} value={editorContent.response_arquitecture} onChange={(value) => handleJoditChange("response_arquitecture", value)} />
+                                        <JoditEditor ref={editor3} value={editorContent.response_arquitecture} onBlur={(value) => handleJoditChange("response_arquitecture", value)} />
 
                                         <h5 className="my-4 bg-info p-1">Respuesta Estructura</h5>
-                                        <JoditEditor ref={editor3} value={editorContent.response_structure} onChange={(value) => handleJoditChange("response_structure", value)} />
+                                        <JoditEditor ref={editor4} value={editorContent.response_structure} onBlur={(value) => handleJoditChange("response_structure", value)} />
 
                                         <h5 className="my-4 bg-info p-1">Respuesta Archivo</h5>
-                                        <JoditEditor ref={editor3} value={editorContent.response_archive} onChange={(value) => handleJoditChange("response_archive", value)} />
+                                        <JoditEditor ref={editor5} value={editorContent.response_archive} onBlur={(value) => handleJoditChange("response_archive", value)} />
                                     </div>
                                 </Collapsible>
                             </div>
