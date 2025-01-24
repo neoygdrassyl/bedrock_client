@@ -1,28 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { defaultTableData } from "../../utils/helpers/times";
 
 const ClasificationTermComponent = ({ initalData, setFormData }) => {
-    // eficency will be the number of days delayed 
+        // eficency will be the number of days delayed 
     // divided by the number of days setted before
+    const [tableData, setTableData] = useState(initalData || defaultTableData);
 
+    // Actualiza setFormData solo cuando tableData cambia
     useEffect(() => {
-        if (initalData) {
-            setTableData(initalData);
-        }else {
-            setTableData(defaultTableData)
-        }
-    }, [initalData])
+        setFormData(tableData);
+    }, [tableData, setFormData]);
 
-    const [tableData, setTableData] = useState([])
-
-    // Función para actualizar un campo específico
-    const handleInputChange = (index, field, value) => {
-        const newData = [...tableData];
-        newData[index] = { ...newData[index], [field]: value };
-        setTableData(newData);
-        setFormData(newData)
-        console.log(tableData)
-    };
+    // useCallBack to avoid re-renders
+    const handleInputChange = useCallback((index, field, value) => {
+        setTableData(prevData => {
+            const newData = [...prevData];
+            newData[index] = { ...newData[index], [field]: value };
+            return newData;
+        });
+    }, []);
 
     return (
         <div className="container-fluid p-2">
@@ -59,29 +55,99 @@ const ClasificationTermComponent = ({ initalData, setFormData }) => {
                         {tableData.map((row, index) => (
                             <tr key={index}>
                                 <td>{row.action}</td>
-                                <td><input type="text" value={row.repeat} onChange={(e) => handleInputChange(index, "repeat", e.target.value)} className="form-control form-control-sm" /></td>
-                                <td><input type="text" value={row.directedTo} onChange={(e) => handleInputChange(index, "directedTo", e.target.value)} className="form-control form-control-sm" /></td>
-                                <td><input type="number" value={row.day_available} onChange={(e) => handleInputChange(index, "day_available", e.target.value)} className="form-control form-control-sm" /></td>
-                                <td><input type="date" value={row.date_set} onChange={(e) => handleInputChange(index, "date_set", e.target.value)} className="form-control form-control-sm" /></td>
                                 <td>
-                                    <select value={row.useAction} onChange={(e) => handleInputChange(index, "useAction", e.target.value)} className="form-control form-control-sm">
+                                    <input
+                                        type="text"
+                                        defaultValue={row.repeat}
+                                        onBlur={(e) => handleInputChange(index, "repeat", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        defaultValue={row.directedTo}
+                                        onBlur={(e) => handleInputChange(index, "directedTo", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        type="number"
+                                        defaultValue={row.day_available}
+                                        onBlur={(e) => handleInputChange(index, "day_available", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        type="date"
+                                        defaultValue={row.date_set}
+                                        onBlur={(e) => handleInputChange(index, "date_set", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    />
+                                </td>
+                                <td>
+                                    <select
+                                        defaultValue={row.useAction}
+                                        onBlur={(e) => handleInputChange(index, "useAction", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    >
                                         <option value={true}>SI</option>
                                         <option value={false}>NO</option>
                                     </select>
                                 </td>
-                                <td><input type="text" value={row.cub} onChange={(e) => handleInputChange(index, "cub", e.target.value)} className="form-control form-control-sm" /></td>
-                                <td><input type="date" value={row.date_end} onChange={(e) => handleInputChange(index, "date_end", e.target.value)} className="form-control form-control-sm" /></td>
-                                <td><input type="number" value={row.day_end} onChange={(e) => handleInputChange(index, "day_end", e.target.value)} className="form-control form-control-sm" /></td>
                                 <td>
-                                    <select value={row.isSentVerified} onChange={(e) => handleInputChange(index, "isSentVerified", e.target.value)} className="form-control form-control-sm">
+                                    <input
+                                        type="text"
+                                        defaultValue={row.cub}
+                                        onBlur={(e) => handleInputChange(index, "cub", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        type="date"
+                                        defaultValue={row.date_end}
+                                        onBlur={(e) => handleInputChange(index, "date_end", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        type="number"
+                                        defaultValue={row.day_end}
+                                        onBlur={(e) => handleInputChange(index, "day_end", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    />
+                                </td>
+                                <td>
+                                    <select
+                                        defaultValue={row.isSentVerified}
+                                        onBlur={(e) => handleInputChange(index, "isSentVerified", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    >
                                         <option value={true}>SI</option>
                                         <option value={false}>NO</option>
                                     </select>
                                 </td>
-                                <td><input type="text" value={row.indicadorProceso} onChange={(e) => handleInputChange(index, "indicadorProceso", e.target.value)} className="form-control form-control-sm" /></td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        defaultValue={row.indicadorProceso}
+                                        onBlur={(e) => handleInputChange(index, "indicadorProceso", e.target.value)}
+                                        className="form-control form-control-sm"
+                                    />
+                                </td>
                                 <td>{row.terminoResolver}</td>
                                 <td>
-                                    <input type="date" value={row.date_setResolver} onChange={(e) => handleInputChange(index, "date_setResolver", e.target.value)} className="form-control form-control-sm" style={{ backgroundColor: "#ffa500" }} />
+                                    <input
+                                        type="date"
+                                        defaultValue={row.date_setResolver}
+                                        onBlur={(e) => handleInputChange(index, "date_setResolver", e.target.value)}
+                                        className="form-control form-control-sm"
+                                        style={{ backgroundColor: "#ffa500" }}
+                                    />
                                 </td>
                             </tr>
                         ))}
