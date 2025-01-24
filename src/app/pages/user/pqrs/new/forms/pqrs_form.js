@@ -206,7 +206,7 @@ const PqrsForm = ({ id, creationData }) => {
                                 <h5 className="border p-2">
                                     Art 21. Ley 1755/2015. Funcionario sin competencia. Entidades a las que se hace el traslado (1). Correspondencia se debe enviar dentro de los 5 días siguientes a radicación
                                 </h5>
-                                <TransferForm setFormData={setTranfers} loadedTranslations={initialData.new_pqrs_translation} />
+                                <TransferForm setFormData={setTranfers} loadedTranslations={initialData.new_pqrs_translations} />
                                 {/* <TranslationComponent formData={formData} onChange={handleChange} /> */}
                             </div>
                             <ClasificationComponent formData={formData} onChange={handleChange} />
