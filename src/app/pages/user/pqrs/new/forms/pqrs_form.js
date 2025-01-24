@@ -29,6 +29,8 @@ const PqrsForm = ({ id, creationData }) => {
         response_structure: "",
         response_archive: ""
     });
+    //data from control_times
+    const [control_times, setControlTimes] = useState({})
     // editor refs 
     const editor1 = useRef(null);
     const editor2 = useRef(null);
@@ -129,7 +131,8 @@ const PqrsForm = ({ id, creationData }) => {
         data.append('petitioners', JSON.stringify(petitioners));
         data.append('transfers', JSON.stringify(transfers));
         data.append("responses", JSON.stringify(editorContent));
-        console.log(editorContent.response_curator)
+        data.append("times", JSON.stringify(control_times));
+        console.log(control_times)
 
 
         console.log(data.get('responses'));
@@ -181,7 +184,7 @@ const PqrsForm = ({ id, creationData }) => {
                                         className="form-control"
                                         rows={4}
                                         defaultValue={initialData.desc ?? formData.desc}
-                                        onChange={handleChange}
+                                        onBlur={handleChange}
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -191,7 +194,7 @@ const PqrsForm = ({ id, creationData }) => {
                                         className="form-control"
                                         rows={3}
                                         defaultValue={initialData.petition ?? formData.petition}
-                                        onChange={handleChange}
+                                        onBlur={handleChange}
                                     />
                                 </div>
                             </div>
@@ -207,7 +210,10 @@ const PqrsForm = ({ id, creationData }) => {
                                 {/* <TranslationComponent formData={formData} onChange={handleChange} /> */}
                             </div>
                             <ClasificationComponent formData={formData} onChange={handleChange} />
-                            <ClasificationTermComponent formData={formData} onChange={handleChange} />
+                            {
+                                console.log(initialData.new_pqrs_times)
+                            }
+                            <ClasificationTermComponent initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
                             <ProcessControl initialData={initialData.new_pqrs_controls} formData={control} onChange={handleControlChange} />
                             <pre>{JSON.stringify(formData, null, 2)}</pre>
                             <div >

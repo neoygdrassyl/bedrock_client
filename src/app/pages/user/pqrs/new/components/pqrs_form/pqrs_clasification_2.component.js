@@ -1,104 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { defaultTableData } from "../../utils/helpers/times";
 
-const ClasificationTermComponent = () => {
-    const [tableData, setTableData] = useState([
-        {
-            accion: "CRAD",
-            vez: "1",
-            dirigida: "Peticionario",
-            diaHabil: "1",
-            fecha: "2024/11/27",
-            usarAccion: "SI",
-            cub: "CUB24-0000",
-            seguimientoFecha: "",
-            seguimientoDiaHabil: "1",
-            envioVerificado: "NO",
-            indicadorProceso: "",
-            terminoResolver: "Fecha de inicio",
-            fechaResolver: "2024/11/27",
-        },
-        {
-            accion: "ACLP",
-            vez: "",
-            dirigida: "Peticionario",
-            diaHabil: "5",
-            fecha: "2024/12/02",
-            usarAccion: "NO",
-            cub: "CUB24-0000",
-            seguimientoFecha: "",
-            seguimientoDiaHabil: "",
-            envioVerificado: "",
-            indicadorProceso: "",
-            terminoResolver: "Fecha máxima",
-            fechaResolver: "2024/12/11",
-        },
-        {
-            accion: "TPCO",
-            vez: "1",
-            dirigida: "Entidades",
-            diaHabil: "5",
-            fecha: "2024/12/02",
-            usarAccion: "NO",
-            cub: "CUB24-0000",
-            seguimientoFecha: "",
-            seguimientoDiaHabil: "",
-            envioVerificado: "",
-            indicadorProceso: "",
-            terminoResolver: "Fecha envió respuesta",
-            fechaResolver: "",
-        },
-        {
-            accion: "CTPC",
-            vez: "",
-            dirigida: "Entidades",
-            diaHabil: "5",
-            fecha: "2024/12/02",
-            usarAccion: "NO",
-            cub: "CUB24-0000",
-            seguimientoFecha: "",
-            seguimientoDiaHabil: "",
-            envioVerificado: "",
-            indicadorProceso: "",
-            terminoResolver: "Número de días",
-            fechaResolver: "",
-        },
-        {
-            accion: "AMPT",
-            vez: "",
-            dirigida: "Peticionario",
-            diaHabil: "10",
-            fecha: "2024/12/12",
-            usarAccion: "NO",
-            cub: "CUB24-0000",
-            seguimientoFecha: "",
-            seguimientoDiaHabil: "",
-            envioVerificado: "",
-            indicadorProceso: "",
-            terminoResolver: "Eficiencia",
-            fechaResolver: "0,80<1",
-        },
-        {
-            accion: "REPT",
-            vez: "1",
-            dirigida: "Peticionario",
-            diaHabil: "15",
-            fecha: "2024/12/11",
-            usarAccion: "SI",
-            cub: "CUB24-0000",
-            seguimientoFecha: "",
-            seguimientoDiaHabil: "15",
-            envioVerificado: "",
-            indicadorProceso: "ABIERTA",
-            terminoResolver: "EFICIENTE",
-            fechaResolver: "",
-        },
-    ]);
+const ClasificationTermComponent = ({ initalData, setFormData }) => {
+    // eficency will be the number of days delayed 
+    // divided by the number of days setted before
+
+    useEffect(() => {
+        if (initalData) {
+            setTableData(initalData);
+        }else {
+            setTableData(defaultTableData)
+        }
+    }, [initalData])
+
+    const [tableData, setTableData] = useState([])
 
     // Función para actualizar un campo específico
     const handleInputChange = (index, field, value) => {
         const newData = [...tableData];
         newData[index] = { ...newData[index], [field]: value };
         setTableData(newData);
+        setFormData(newData)
         console.log(tableData)
     };
 
@@ -136,30 +58,30 @@ const ClasificationTermComponent = () => {
                     <tbody className="text-center align-middle">
                         {tableData.map((row, index) => (
                             <tr key={index}>
-                                <td>{row.accion}</td>
-                                <td><input type="text" value={row.vez} onChange={(e) => handleInputChange(index, "vez", e.target.value)} className="form-control" /></td>
-                                <td><input type="text" value={row.dirigida} onChange={(e) => handleInputChange(index, "dirigida", e.target.value)} className="form-control" /></td>
-                                <td><input type="number" value={row.diaHabil} onChange={(e) => handleInputChange(index, "diaHabil", e.target.value)} className="form-control" /></td>
-                                <td><input type="date" value={row.fecha} onChange={(e) => handleInputChange(index, "fecha", e.target.value)} className="form-control" /></td>
+                                <td>{row.action}</td>
+                                <td><input type="text" value={row.repeat} onChange={(e) => handleInputChange(index, "repeat", e.target.value)} className="form-control form-control-sm" /></td>
+                                <td><input type="text" value={row.directedTo} onChange={(e) => handleInputChange(index, "directedTo", e.target.value)} className="form-control form-control-sm" /></td>
+                                <td><input type="number" value={row.day_available} onChange={(e) => handleInputChange(index, "day_available", e.target.value)} className="form-control form-control-sm" /></td>
+                                <td><input type="date" value={row.date_set} onChange={(e) => handleInputChange(index, "date_set", e.target.value)} className="form-control form-control-sm" /></td>
                                 <td>
-                                    <select value={row.usarAccion} onChange={(e) => handleInputChange(index, "usarAccion", e.target.value)} className="form-control">
-                                        <option value="SI">SI</option>
-                                        <option value="NO">NO</option>
+                                    <select value={row.useAction} onChange={(e) => handleInputChange(index, "useAction", e.target.value)} className="form-control form-control-sm">
+                                        <option value={true}>SI</option>
+                                        <option value={false}>NO</option>
                                     </select>
                                 </td>
-                                <td><input type="text" value={row.cub} onChange={(e) => handleInputChange(index, "cub", e.target.value)} className="form-control" /></td>
-                                <td><input type="date" value={row.seguimientoFecha} onChange={(e) => handleInputChange(index, "seguimientoFecha", e.target.value)} className="form-control" /></td>
-                                <td><input type="number" value={row.seguimientoDiaHabil} onChange={(e) => handleInputChange(index, "seguimientoDiaHabil", e.target.value)} className="form-control" /></td>
+                                <td><input type="text" value={row.cub} onChange={(e) => handleInputChange(index, "cub", e.target.value)} className="form-control form-control-sm" /></td>
+                                <td><input type="date" value={row.date_end} onChange={(e) => handleInputChange(index, "date_end", e.target.value)} className="form-control form-control-sm" /></td>
+                                <td><input type="number" value={row.day_end} onChange={(e) => handleInputChange(index, "day_end", e.target.value)} className="form-control form-control-sm" /></td>
                                 <td>
-                                    <select value={row.envioVerificado} onChange={(e) => handleInputChange(index, "envioVerificado", e.target.value)} className="form-control">
-                                        <option value="SI">SI</option>
-                                        <option value="NO">NO</option>
+                                    <select value={row.isSentVerified} onChange={(e) => handleInputChange(index, "isSentVerified", e.target.value)} className="form-control form-control-sm">
+                                        <option value={true}>SI</option>
+                                        <option value={false}>NO</option>
                                     </select>
                                 </td>
-                                <td><input type="text" value={row.indicadorProceso} onChange={(e) => handleInputChange(index, "indicadorProceso", e.target.value)} className="form-control" /></td>
+                                <td><input type="text" value={row.indicadorProceso} onChange={(e) => handleInputChange(index, "indicadorProceso", e.target.value)} className="form-control form-control-sm" /></td>
                                 <td>{row.terminoResolver}</td>
                                 <td>
-                                    <input type="date" value={row.fechaResolver} onChange={(e) => handleInputChange(index, "fechaResolver", e.target.value)} className="form-control" style={{ backgroundColor: "#ffa500" }} />
+                                    <input type="date" value={row.date_setResolver} onChange={(e) => handleInputChange(index, "date_setResolver", e.target.value)} className="form-control form-control-sm" style={{ backgroundColor: "#ffa500" }} />
                                 </td>
                             </tr>
                         ))}
