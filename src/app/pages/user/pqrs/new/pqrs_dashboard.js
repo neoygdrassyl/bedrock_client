@@ -153,6 +153,9 @@ const PQRSDashboard = (props) => {
     // ---- //
     return (
         <div className="container mt-5">
+            {
+                console.log(window.user)
+            }
             {/* Modals */}
             {/* 1 STEP */}
             <Modal contentLabel="GENERAR SOLCITUD PQRS"

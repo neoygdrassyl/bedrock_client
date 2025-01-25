@@ -138,14 +138,11 @@ export default function App() {
                             />
                           )}
                         />
-                        <Route path='/new_pqrs'
-                          render={(props) => (
-                            <PQRSDashboard
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          )}
-                        />
-
+                        <PrivateRoute path='/new_pqrs'>
+                          <PQRSDashboard
+                            breadCrums={t("breadCrums", { returnObjects: true })}
+                          />
+                        </PrivateRoute>
 
                         <PrivateRoute path='/dashboard'>
                           <Dashboard translation={t("title", { returnObjects: true })}
@@ -202,6 +199,11 @@ export default function App() {
                             swaMsg={t("swa_messages", { returnObjects: true })}
                             breadCrums={t("breadCrums", { returnObjects: true })}
                             translation_form={t("transparency.pqrs_form", { returnObjects: true })}
+                          />
+                        </PrivateRoute>
+                        <PrivateRoute path='/pqrsadmin'>
+                          <PQRSDashboard
+                            breadCrums={t("breadCrums", { returnObjects: true })}
                           />
                         </PrivateRoute>
                         <PrivateRoute path='/osha'>
@@ -317,7 +319,7 @@ export default function App() {
           </ThemeProvider>
         </ThemeProvider>
       </Router>
-    </ProvideAuth>
+    </ProvideAuth >
   );
 }
 
