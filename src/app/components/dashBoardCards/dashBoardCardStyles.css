@@ -37,3 +37,19 @@
 .dashboard-card:active {
   transform: translate(0em, 0.2em);
 }
+/* new */
+.dashboard-new {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 3rem;
+  height: 1.5rem;
+  border-radius: 20px;
+  background-color: #ef4444;
+  color: #ffffff;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}

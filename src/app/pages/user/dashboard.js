@@ -80,6 +80,9 @@ class Dashboard extends Component {
                                     <DashBoardCard title="Normas Urbanas" image="fas fa-home fa-3x" link={"/norms"} imageColor=" darkcyan" />
                                     : null}
                             </MDBCol>
+                            <MDBCol className={classnameCards}>
+                                <DashBoardCard title="Peticiones PQRS" image="fas fa-file-invoice fa-3x" link={"/new_pqrs"} imageColor=" MediumPurple" isNew={true} />
+                            </MDBCol>
                         </div>
 
                         <div className="d-flex justify-content-around">
