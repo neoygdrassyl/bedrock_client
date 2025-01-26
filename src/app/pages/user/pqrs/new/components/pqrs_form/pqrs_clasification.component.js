@@ -1,4 +1,15 @@
-const ClasificationComponent = ({ formData, onChange }) => {
+import { useState } from "react";
+
+const ClasificationComponent = ({ initialData , formData, onChange }) => {
+    // useState for the checkbox
+    const [isTrue, setIsTrue] = useState(initialData ? initialData[0].aforegoing : '' );
+
+    const handleRadioChange = (e) => {
+        const { value } = e.target;
+        setIsTrue(value === "true"); 
+        onChange(e); 
+    };
+
     return (
         <div className="mb-4">
             <h4 className="border-bottom p-2">CLASIFICACION Y TERMINO PARA RESOLVER DE LA PQRS</h4>
@@ -37,8 +48,7 @@ const ClasificationComponent = ({ formData, onChange }) => {
                                     <option value="Sugerencia">Sugerencia</option>
                                     <option value="Denuncia">Denuncia</option>
                                     <option value="Consulta">Solicitud De Documentos y/o información</option>
-
-                                </select >
+                                </select>
                             </td>
                             <td>
                                 <input
@@ -54,9 +64,9 @@ const ClasificationComponent = ({ formData, onChange }) => {
                                     type="radio"
                                     className="form-check-input"
                                     name="aforegoing"
-                                    value={"false"}
-                                    checked={formData.aforegoing === "false"}
-                                    onChange={onChange}
+                                    value="false"
+                                    checked={isTrue === false}
+                                    onChange={handleRadioChange}
                                 />
                             </td>
                             <td className="text-center">
@@ -64,16 +74,16 @@ const ClasificationComponent = ({ formData, onChange }) => {
                                     type="radio"
                                     className="form-check-input"
                                     name="aforegoing"
-                                    value={"true"}
-                                    checked={formData.aforegoing === "true"}
-                                    onChange={onChange}
+                                    value="true"
+                                    checked={isTrue === true}
+                                    onChange={handleRadioChange}
                                 />
                             </td>
                             <td className="text-center">
                                 <input
                                     type="text"
                                     className="form-control form-control-sm"
-                                    name="modality"
+                                    name="id_publico"
                                     value={formData.id_publico}
                                     onChange={onChange}
                                 />

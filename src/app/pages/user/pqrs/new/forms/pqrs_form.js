@@ -14,7 +14,7 @@ import JoditEditor from "jodit-pro-react";
 
 const PqrsForm = ({ id, creationData }) => {
     // overall data
-    const [formData, setFormData] = useState({});
+    const formData = useRef({});
     //data from management
     const { control, handleControlChange, processControlData } = useProcessControl();
     //data from petitioners
@@ -86,15 +86,13 @@ const PqrsForm = ({ id, creationData }) => {
     useEffect(() => {
         console.log("entra")
         if (initialData) {
-            setFormData({
+                formData.current ={
                 document_type: "C.C.",
                 status: initialData.status ?? "ABIERTA",
                 creation_date: initialData.creation_date,
                 id_public: initialData.id_public,
                 canalIngreso: initialData.canalIngreso,
-                desc: initialData.desc ?? "",
-                petition: initialData.petition ?? ""
-            });
+            };
             // responses for editor
             if (initialData?.new_pqrs_response) {
                 setEditorContent({
@@ -111,21 +109,19 @@ const PqrsForm = ({ id, creationData }) => {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: type === "checkbox" ? checked : value,
-        }));
+        formData.current[name] = type === "checkbox" ? checked : value;
+
     };
     const handleJoditChange = (key, value) => {
         setEditorContent((prev) => ({ ...prev, [key]: value }));
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(formData.current) 
         const controlData = processControlData();
-
         let data = new FormData()
-        Object.keys(formData).forEach((key) => {
-            data.append(key, formData[key]);
+        Object.keys(formData.current).forEach((key) => {
+            data.append(key, formData.current[key]);
         });
         data.append('controlData', JSON.stringify(controlData));
         data.append('petitioners', JSON.stringify(petitioners));
@@ -136,7 +132,11 @@ const PqrsForm = ({ id, creationData }) => {
 
 
         console.log(data.get('responses'));
-        const res = await new_pqrsService.create(data)
+        if (id) {
+            const res_update = await new_pqrsService.update(id, data)
+        } else {
+            const res_create = await new_pqrsService.create(data)
+        }
         alert("Registro exitoso")
         // console.log(res)
     };
@@ -151,20 +151,20 @@ const PqrsForm = ({ id, creationData }) => {
                         <div className="card-header p-4 bg-primary text-white">
                             <div className="row">
                                 <div className="col-md-8">
-                                    <h4 className="mb-0">CONTROL ADMINISTRATIVO A LA PQRS- {formData.id_public}</h4>
+                                    <h4 className="mb-0">CONTROL ADMINISTRATIVO A LA PQRS- {formData.current.id_public}</h4>
                                 </div>
                                 <div className="col-md-4 text-md-end">
-                                    <span className="badge bg-success fs-6">{formData.status}</span>
+                                    <span className="badge bg-success fs-6">{formData.current.status}</span>
                                 </div>
                             </div>
                             <div className="row mt-3">
                                 <div className="col-md-6">
-                                    <small>Informe No: 1</small><br />
-                                    <small>Canal de Ingreso / Presentación: {formData.canalIngreso}</small>
+                                    <small>Informe No: 1</small><br />  
+                                    <small>Canal de Ingreso / Presentación: {formData.current.canalIngreso}</small>
                                 </div>
                                 <div className="col-md-6 text-md-end">
                                     <small>Fecha de actualización: DD/MM/AA</small><br />
-                                    <small>Fecha de radicación: {formData.creation_date}</small>
+                                    <small>Fecha de radicación: {formData.current.creation_date}</small>
                                 </div>
                             </div>
                         </div>
@@ -183,8 +183,8 @@ const PqrsForm = ({ id, creationData }) => {
                                         name="desc"
                                         className="form-control"
                                         rows={4}
-                                        defaultValue={initialData.desc ?? formData.desc}
-                                        onBlur={handleChange}
+                                        defaultValue={initialData.desc}
+                                        onChange={handleChange}
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -193,8 +193,8 @@ const PqrsForm = ({ id, creationData }) => {
                                         name="petition"
                                         className="form-control"
                                         rows={3}
-                                        defaultValue={initialData.petition ?? formData.petition}
-                                        onBlur={handleChange}
+                                        defaultValue={initialData.petition}
+                                        onChange={handleChange}
                                     />
                                 </div>
                             </div>
@@ -209,10 +209,7 @@ const PqrsForm = ({ id, creationData }) => {
                                 <TransferForm setFormData={setTranfers} loadedTranslations={initialData.new_pqrs_translations} />
                                 {/* <TranslationComponent formData={formData} onChange={handleChange} /> */}
                             </div>
-                            <ClasificationComponent formData={formData} onChange={handleChange} />
-                            {
-                                console.log(initialData.new_pqrs_times)
-                            }
+                            <ClasificationComponent initialData={initialData.new_pqrs_clasifications} formData={formData} onChange={handleChange} />
                             <ClasificationTermComponent initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
                             <ProcessControl initialData={initialData.new_pqrs_controls} formData={control} onChange={handleControlChange} />
                             <pre>{JSON.stringify(formData, null, 2)}</pre>

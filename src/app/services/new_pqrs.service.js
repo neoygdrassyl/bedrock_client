@@ -12,5 +12,8 @@ class New_Pqrs_Service {
     getById(id){
         return http.get(`/${route}/${id}`,);
     }
+    update(id, data){
+        return http.put(`/${route}/${id}`, data);
+    }
 }
 export default new New_Pqrs_Service();

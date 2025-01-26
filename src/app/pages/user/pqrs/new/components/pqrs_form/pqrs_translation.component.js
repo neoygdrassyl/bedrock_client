@@ -13,11 +13,11 @@ const TranslationComponent = ({ formData, onChange }) => {
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" className="form-control form-control-sm" name="entity" defaultValue={formData.entity} onChange={onChange} /></td>
-                        <td><input type="text" className="form-control form-control-sm" name="officer" defaultValue={formData.officer} onChange={onChange} /></td>
-                        <td><input type="text" className="form-control form-control-sm" name="charge" defaultValue={formData.charge} onChange={onChange} /></td>
-                        <td><input type="text" className="form-control form-control-sm" name="email_translate" defaultValue={formData.email_translate} onChange={onChange} /></td>
-                        <td><input type="text" className="form-control form-control-sm" name="reason" defaultValue={formData.reason} onChange={onChange} /></td>
+                        <td><input type="text" className="form-control form-control-sm" name="entity" defaultValue={formData.entity} onBlur={onChange} /></td>
+                        <td><input type="text" className="form-control form-control-sm" name="officer" defaultValue={formData.officer} onBlur={onChange} /></td>
+                        <td><input type="text" className="form-control form-control-sm" name="charge" defaultValue={formData.charge} onBlur={onChange} /></td>
+                        <td><input type="text" className="form-control form-control-sm" name="email_transfer" defaultValue={formData.email_transfer} onBlur={onChange} /></td>
+                        <td><input type="text" className="form-control form-control-sm" name="reason" defaultValue={formData.reason} onBlur={onChange} /></td>
                     </tr>
                 </tbody>
             </table>
