@@ -11,7 +11,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                     name="name"
                     className="form-control"
                     defaultValue={formData.name}
-                    onChange={onChange}
+                    onBlur={onChange}
                 />
             </div>
 
@@ -22,7 +22,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         name="document_type"
                         className="form-select"
                         defaultValue={formData.document_type}
-                        onChange={onChange}
+                        onBlur={onChange}
                     >
                         <option>C.C.</option>
                         <option>C.E.</option>
@@ -36,7 +36,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         name="document_number"
                         className="form-control"
                         defaultValue={formData.document_number}
-                        onChange={onChange}
+                        onBlur={onChange}
                         placeholder="Sin dato"
                     />
                 </div>
@@ -47,7 +47,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         name="phone"
                         className="form-control"
                         defaultValue={formData.phone}
-                        onChange={onChange}
+                        onBlur={onChange}
                         placeholder="Sin dato"
                     />
                 </div>
@@ -61,7 +61,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         name="email"
                         className="form-control"
                         defaultValue={formData.email}
-                        onChange={onChange}
+                        onBlur={onChange}
                     />
                 </div>
                 <div className="col-md-6">
@@ -71,7 +71,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         name="address"
                         className="form-control"
                         defaultValue={formData.address}
-                        onChange={onChange}
+                        onBlur={onChange}
                     />
                 </div>
             </div>

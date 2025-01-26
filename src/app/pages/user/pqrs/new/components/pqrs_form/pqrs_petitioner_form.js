@@ -13,11 +13,9 @@ const PetitionerForm = ({ setFormData, loadedPetitioners }) => {
 
     // save data
     const updateFormData = useCallback(() => {
-        const petitioners_data = petitioners.map((p) => p.data);
-        setFormData(
-            petitioners_data
-        );
+        setFormData(petitioners.map((p) => p.data));
     }, [petitioners, setFormData]);
+
 
     useEffect(() => {
         updateFormData();

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { getManagementSteps } from "../../utils/helpers/steps";
 
 export default function ProcessControl({ initialData, formData, onChange }) {
@@ -38,7 +39,7 @@ export default function ProcessControl({ initialData, formData, onChange }) {
     }
     return cumple;
   }
-  let data = initialData ? mapNewPqrsToControl(initialData) : '';
+  const data = useMemo(() => initialData ? mapNewPqrsToControl(initialData) : {}, [initialData]);
 
   return (
     <div className="container-fluid p-2">

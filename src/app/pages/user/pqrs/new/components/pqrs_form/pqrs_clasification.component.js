@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const ClasificationComponent = ({ initialData , formData, onChange }) => {
+const ClasificationComponent = ({ initialData, setTime, onChange }) => {
     // useState for the checkbox
-    const [isTrue, setIsTrue] = useState(initialData ? initialData[0].aforegoing : '' );
-
+    const [isTrue, setIsTrue] = useState(initialData && initialData[0] ? initialData[0].aforegoing : '');
+    useEffect(() => {
+        if (initialData && initialData[0]) {
+            setTime(initialData[0]?.petition_type || "");
+        }
+    }, [initialData, setTime]);
     const handleRadioChange = (e) => {
         const { value } = e.target;
-        setIsTrue(value === "true"); 
-        onChange(e); 
+        setIsTrue(value === "true");
+        onChange(e);
     };
 
     return (
@@ -37,9 +41,12 @@ const ClasificationComponent = ({ initialData , formData, onChange }) => {
                                     type="text"
                                     className="form-select form-select-sm"
                                     name="petition_type"
-                                    value={formData.petition_type}
-                                    onChange={onChange}
-                                    defaultValue={""}
+                                    defaultValue={initialData && initialData[0] ? initialData[0]?.petition_type: ""}
+                                    onChange={(e) => {
+                                        setTime(e.target.value);
+                                        onChange(e);
+                                    }
+                                    }
                                 >
                                     <option value="" disabled>Seleccione una opción</option>
                                     <option value="Petición">Petición</option>
@@ -55,7 +62,7 @@ const ClasificationComponent = ({ initialData , formData, onChange }) => {
                                     type="text"
                                     className="form-control form-control-sm"
                                     name="modality"
-                                    value={formData.modality}
+                                    value={initialData && initialData[0] ? initialData[0].modality : ''}
                                     onChange={onChange}
                                 />
                             </td>
@@ -84,7 +91,7 @@ const ClasificationComponent = ({ initialData , formData, onChange }) => {
                                     type="text"
                                     className="form-control form-control-sm"
                                     name="id_publico"
-                                    value={formData.id_publico}
+                                    value={initialData && initialData[0] ? initialData[0].id_public : ''}
                                     onChange={onChange}
                                 />
                             </td>
@@ -92,7 +99,7 @@ const ClasificationComponent = ({ initialData , formData, onChange }) => {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     );
 };
 

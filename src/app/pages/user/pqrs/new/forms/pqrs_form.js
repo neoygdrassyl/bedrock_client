@@ -10,6 +10,7 @@ import PetitionerForm from "../components/pqrs_form/pqrs_petitioner_form";
 import TransferForm from "../components/pqrs_form/pqrs_transfer_form";
 import Collapsible from 'react-collapsible';
 import JoditEditor from "jodit-pro-react";
+import {config} from "../utils/joditConfig"
 
 
 const PqrsForm = ({ id, creationData }) => {
@@ -30,34 +31,16 @@ const PqrsForm = ({ id, creationData }) => {
         response_archive: ""
     });
     //data from control_times
+    const [time, setTime] = useState();
+
     const [control_times, setControlTimes] = useState({})
+
     // editor refs 
     const editor1 = useRef(null);
     const editor2 = useRef(null);
     const editor3 = useRef(null);
     const editor4 = useRef(null);
     const editor5 = useRef(null);
-    // config to enable all features in the jodit editor
-    const config = {
-        readonly: false, // all options from https://xdsoft.net/jodit/doc/,
-        uploader: {
-            url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
-        },
-        filebrowser: {
-            ajax: {
-                url: 'https://xdsoft.net/jodit/finder/'
-            },
-            height: 580,
-        },
-        language: 'es',
-        "readonly": false,
-        controls: {
-            lineHeight: {
-                list: ([0.5, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 2, 3, 3.5])
-
-            }
-        }
-    }
 
     const [isLoaded, setIsLoaded] = useState(false)
     const [initialData, setInitialData] = useState(null)
@@ -86,7 +69,7 @@ const PqrsForm = ({ id, creationData }) => {
     useEffect(() => {
         console.log("entra")
         if (initialData) {
-                formData.current ={
+            formData.current = {
                 document_type: "C.C.",
                 status: initialData.status ?? "ABIERTA",
                 creation_date: initialData.creation_date,
@@ -106,7 +89,6 @@ const PqrsForm = ({ id, creationData }) => {
         }
     }, [initialData]);
 
-
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         formData.current[name] = type === "checkbox" ? checked : value;
@@ -117,7 +99,7 @@ const PqrsForm = ({ id, creationData }) => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData.current) 
+        console.log(formData.current)
         const controlData = processControlData();
         let data = new FormData()
         Object.keys(formData.current).forEach((key) => {
@@ -159,7 +141,7 @@ const PqrsForm = ({ id, creationData }) => {
                             </div>
                             <div className="row mt-3">
                                 <div className="col-md-6">
-                                    <small>Informe No: 1</small><br />  
+                                    <small>Informe No: 1</small><br />
                                     <small>Canal de Ingreso / Presentación: {formData.current.canalIngreso}</small>
                                 </div>
                                 <div className="col-md-6 text-md-end">
@@ -200,7 +182,7 @@ const PqrsForm = ({ id, creationData }) => {
                             </div>
 
                             {/* Validation Section */}
-                            <ValidationComponent initialData={initialData.new_pqrs_evaluation} formData={formData} onChange={handleChange} />
+                            <ValidationComponent initialData={initialData.new_pqrs_evaluation} onChange={handleChange} />
 
                             <div className="mb-4">
                                 <h5 className="border p-2">
@@ -209,10 +191,9 @@ const PqrsForm = ({ id, creationData }) => {
                                 <TransferForm setFormData={setTranfers} loadedTranslations={initialData.new_pqrs_translations} />
                                 {/* <TranslationComponent formData={formData} onChange={handleChange} /> */}
                             </div>
-                            <ClasificationComponent initialData={initialData.new_pqrs_clasifications} formData={formData} onChange={handleChange} />
-                            <ClasificationTermComponent initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
+                            <ClasificationComponent setTime={setTime} initialData={initialData.new_pqrs_clasifications} onChange={handleChange} />
+                            <ClasificationTermComponent time={time} initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
                             <ProcessControl initialData={initialData.new_pqrs_controls} formData={control} onChange={handleControlChange} />
-                            <pre>{JSON.stringify(formData, null, 2)}</pre>
                             <div >
                                 <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-info text-center' trigger={<><label className="fw-normal text-light text-center">Respuestas</label></>}>
                                     <div className="p-3">

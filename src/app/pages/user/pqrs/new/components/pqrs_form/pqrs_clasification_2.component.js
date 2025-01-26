@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { defaultTableData } from "../../utils/helpers/times";
+import petitionToTime from "../../utils/helpers/setPQRSTime";
 
-const ClasificationTermComponent = ({ initalData, setFormData }) => {
-        // eficency will be the number of days delayed 
+const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
+    // eficency will be the number of days delayed 
     // divided by the number of days setted before
     const [tableData, setTableData] = useState(initalData || defaultTableData);
 
@@ -27,7 +28,7 @@ const ClasificationTermComponent = ({ initalData, setFormData }) => {
                     <thead>
                         <tr>
                             <th colSpan={7} className="text-center" style={{ backgroundColor: "#f5f5f5" }}>
-                                Programación y control de proceso de Respuesta. Se programa para un ciclo de 10 días hábiles
+                                Programación y control de proceso de Respuesta. Se programa para un ciclo de {petitionToTime(time)} días hábiles
                             </th>
                             <th colSpan={3} className="text-center">Seguimiento/ Cumplimiento</th>
                             <th className="text-center"></th>
