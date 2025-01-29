@@ -62,7 +62,7 @@ const ClasificationComponent = ({ initialData, setTime, onChange }) => {
                                     type="text"
                                     className="form-control form-control-sm"
                                     name="modality"
-                                    value={initialData && initialData[0] ? initialData[0].modality : ''}
+                                    defaultValue={initialData && initialData[0] ? initialData[0].modality : ''}
                                     onChange={onChange}
                                 />
                             </td>
@@ -91,7 +91,7 @@ const ClasificationComponent = ({ initialData, setTime, onChange }) => {
                                     type="text"
                                     className="form-control form-control-sm"
                                     name="id_publico"
-                                    value={initialData && initialData[0] ? initialData[0].id_public : ''}
+                                    defaultValue={initialData && initialData[0] ? initialData[0].id_public : ''}
                                     onChange={onChange}
                                 />
                             </td>

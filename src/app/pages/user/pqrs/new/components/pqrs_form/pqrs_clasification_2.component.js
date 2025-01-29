@@ -74,7 +74,7 @@ const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
                                 </td>
                                 <td>
                                     <input
-                                        type="number"
+                                        type="date"
                                         defaultValue={row.day_available}
                                         onBlur={(e) => handleInputChange(index, "day_available", e.target.value)}
                                         className="form-control form-control-sm"
@@ -108,7 +108,7 @@ const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
                                 </td>
                                 <td>
                                     <input
-                                        type="date"
+                                        type="text"
                                         defaultValue={row.date_end}
                                         onBlur={(e) => handleInputChange(index, "date_end", e.target.value)}
                                         className="form-control form-control-sm"
@@ -116,7 +116,7 @@ const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
                                 </td>
                                 <td>
                                     <input
-                                        type="number"
+                                        type="text"
                                         defaultValue={row.day_end}
                                         onBlur={(e) => handleInputChange(index, "day_end", e.target.value)}
                                         className="form-control form-control-sm"
