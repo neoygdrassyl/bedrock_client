@@ -1,22 +1,23 @@
-const PetitionerComponent = ({formData,onChange}) => {
-   
+const PetitionerComponent = ({ formData, onChange }) => {
+
     return (
         <div className="mb-4">
             <h4 className="p-2 border-bottom" >DATOS DEL PETICIONARIO / NOTIFICACION</h4>
 
-            <div className="mb-3">
-                <label className="form-label">Nombre</label>
-                <input
-                    type="text"
-                    name="name"
-                    className="form-control"
-                    defaultValue={formData.name}
-                    onBlur={onChange}
-                />
-            </div>
-
             <div className="row mb-3">
-                <div className="col-md-4">
+                <div className="col-md-5">
+                    <label className="form-label">Nombre</label>
+                    <input
+                        type="text"
+                        name="name"
+                        className="form-control"
+                        defaultValue={formData.name}
+                        onBlur={onChange}
+                    />
+                </div>
+
+
+                <div className="col-md-3">
                     <label className="form-label">Tipo</label>
                     <select
                         name="document_type"
@@ -40,6 +41,8 @@ const PetitionerComponent = ({formData,onChange}) => {
                         placeholder="Sin dato"
                     />
                 </div>
+            </div>
+            <div className="row mb-3">
                 <div className="col-md-4">
                     <label className="form-label">Teléfono</label>
                     <input
@@ -51,10 +54,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         placeholder="Sin dato"
                     />
                 </div>
-            </div>
-
-            <div className="row mb-3">
-                <div className="col-md-6">
+                <div className="col-md-4">
                     <label className="form-label">Correo electrónico</label>
                     <input
                         type="email"
@@ -64,7 +64,7 @@ const PetitionerComponent = ({formData,onChange}) => {
                         onBlur={onChange}
                     />
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-4">
                     <label className="form-label">Dirección Física</label>
                     <input
                         type="text"
