@@ -141,6 +141,7 @@ export default function App() {
                         <PrivateRoute path='/new_pqrs'>
                           <PQRSDashboard
                             breadCrums={t("breadCrums", { returnObjects: true })}
+                            swaMsg={t("swa_messages", { returnObjects: true })}
                           />
                         </PrivateRoute>
 

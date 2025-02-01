@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 
 const ClasificationComponent = ({ initialData, setTime, onChange }) => {
     // useState for the checkbox
-    const [isTrue, setIsTrue] = useState(initialData && initialData[0] ? initialData[0].aforegoing : '');
+    const [isTrue, setIsTrue] = useState(initialData && initialData ? initialData.aforegoing : '');
     useEffect(() => {
-        if (initialData && initialData[0]) {
-            setTime(initialData[0]?.petition_type || "");
+        if (initialData) {
+            setTime(initialData?.petition_type || "");
         }
     }, [initialData, setTime]);
     const handleRadioChange = (e) => {
@@ -41,7 +41,7 @@ const ClasificationComponent = ({ initialData, setTime, onChange }) => {
                                     type="text"
                                     className="form-select form-select-sm"
                                     name="petition_type"
-                                    defaultValue={initialData && initialData[0] ? initialData[0]?.petition_type: ""}
+                                    defaultValue={initialData && initialData ? initialData?.petition_type: ""}
                                     onChange={(e) => {
                                         setTime(e.target.value);
                                         onChange(e);
@@ -62,7 +62,7 @@ const ClasificationComponent = ({ initialData, setTime, onChange }) => {
                                     type="text"
                                     className="form-control form-control-sm"
                                     name="modality"
-                                    defaultValue={initialData && initialData[0] ? initialData[0].modality : ''}
+                                    defaultValue={initialData && initialData ? initialData.modality : ''}
                                     onChange={onChange}
                                 />
                             </td>
@@ -91,7 +91,7 @@ const ClasificationComponent = ({ initialData, setTime, onChange }) => {
                                     type="text"
                                     className="form-control form-control-sm"
                                     name="id_publico"
-                                    defaultValue={initialData && initialData[0] ? initialData[0].id_public : ''}
+                                    defaultValue={initialData && initialData ? initialData.id_public : ''}
                                     onChange={onChange}
                                 />
                             </td>

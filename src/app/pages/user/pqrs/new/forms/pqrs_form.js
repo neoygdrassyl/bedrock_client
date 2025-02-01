@@ -11,9 +11,11 @@ import TransferForm from "../components/pqrs_form/pqrs_transfer_form";
 import Collapsible from 'react-collapsible';
 import JoditEditor from "jodit-pro-react";
 import { config } from "../utils/joditConfig"
+// modal loader 'swal'
+import Swal from 'sweetalert2'
+import withReactContent from "sweetalert2-react-content";
 
-
-const PqrsForm = ({ id, creationData }) => {
+const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
     // overall data
     const formData = useRef({});
     //data from management
@@ -44,6 +46,7 @@ const PqrsForm = ({ id, creationData }) => {
 
     const [isLoaded, setIsLoaded] = useState(false)
     const [initialData, setInitialData] = useState(null)
+    const MySwal = withReactContent(Swal);
     useEffect(() => {
         const getData = async () => {
             try {
@@ -79,22 +82,22 @@ const PqrsForm = ({ id, creationData }) => {
                 petition: initialData.petition,
                 // data from others
                 //evaluation
-                aforegoing: initialData?.new_pqrs_clasifications.aforegoing,
-                modality: initialData?.new_pqrs_clasifications.modality,
-                petition_type: initialData?.new_pqrs_clasifications.petition_type,
+                aforegoing: initialData?.new_pqrs_clasification?.aforegoing ?? '',
+                modality: initialData?.new_pqrs_clasification?.modality ?? '',
+                petition_type: initialData?.new_pqrs_clasification?.petition_type ?? '',
                 //clasification
                 //this id must be needed to know which clasification are we referencing
-                id: initialData?.new_pqrs_evaluation.id,
-                competence0: initialData?.new_pqrs_evaluation.competence0,
-                competence1: initialData?.new_pqrs_evaluation.competence1,
-                competence2: initialData?.new_pqrs_evaluation.competence2,
-                formal0: initialData?.new_pqrs_evaluation.formal0,
-                formal1: initialData?.new_pqrs_evaluation.formal1,
-                formal2: initialData?.new_pqrs_evaluation.formal2,
-                formal3: initialData?.new_pqrs_evaluation.formal3,
-                formal4: initialData?.new_pqrs_evaluation.formal4,
-                formal5: initialData?.new_pqrs_evaluation.formal5,
-                otherEntities: initialData?.new_pqrs_evaluation.otherEntities
+                id: initialData?.new_pqrs_evaluation?.id ?? '',
+                competence0: initialData?.new_pqrs_evaluation?.competence0 ?? '',
+                competence1: initialData?.new_pqrs_evaluation?.competence1 ?? '',
+                competence2: initialData?.new_pqrs_evaluation?.competence2 ?? '',
+                formal0: initialData?.new_pqrs_evaluation?.formal0 ?? '',
+                formal1: initialData?.new_pqrs_evaluation?.formal1 ?? '',
+                formal2: initialData?.new_pqrs_evaluation?.formal2 ?? '',
+                formal3: initialData?.new_pqrs_evaluation?.formal3 ?? '',
+                formal4: initialData?.new_pqrs_evaluation?.formal4 ?? '',
+                formal5: initialData?.new_pqrs_evaluation?.formal5 ?? '',
+                otherEntities: initialData?.new_pqrs_evaluation?.otherEntities ?? ''
             };
             // responses for editor
             if (initialData?.new_pqrs_response) {
@@ -125,15 +128,6 @@ const PqrsForm = ({ id, creationData }) => {
         Object.keys(formData.current).forEach((key) => {
             data.append(key, formData.current[key]);
         });
-        console.log([
-            {
-                controlData: controlData,
-                petitioners: petitioners,
-                transfers: transfers,
-                responses: editorContent,
-                times: control_times,
-            }
-        ])
         data.append('controlData', JSON.stringify(controlData));
         data.append('petitioners', JSON.stringify(petitioners));
         data.append('transfers', JSON.stringify(transfers));
@@ -143,12 +137,50 @@ const PqrsForm = ({ id, creationData }) => {
 
 
         console.log(data.get('responses'));
+        MySwal.fire({
+            title: swaMsg.title_wait,
+            text: swaMsg.text_wait,
+            icon: 'info',
+            showConfirmButton: false,
+        });
         if (id) {
             const res_update = await new_pqrsService.update(id, data)
+            if (res_update) {
+                MySwal.fire({
+                    title: swaMsg.generic_success_title,
+                    text: swaMsg.generic_success_text,
+                    icon: 'success',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            } else {
+                MySwal.fire({
+                    title: swaMsg.generic_error_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'error',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            }
+
         } else {
             const res_create = await new_pqrsService.create(data)
+            if (res_create) {
+                MySwal.fire({
+                    title: swaMsg.generic_success_title,
+                    text: swaMsg.generic_success_text,
+                    icon: 'success',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            } else {
+                MySwal.fire({
+                    title: swaMsg.generic_error_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'error',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            }
         }
-        alert("Registro exitoso")
+        closeModal(true)
+        // alert("Registro exitoso")
         // console.log(res)
     };
 
@@ -182,7 +214,6 @@ const PqrsForm = ({ id, creationData }) => {
 
                         <div className="card-body">
                             {/* Petitioner Information Section */}
-                            {/* <PetitionerComponent formData={formData} onChange={handleChange} /> */}
                             <PetitionerForm setFormData={setPetitioners} loadedPetitioners={initialData.new_pqrs_petitioners} />
 
                             {/* Description Section */}
@@ -221,7 +252,7 @@ const PqrsForm = ({ id, creationData }) => {
                                 <TransferForm setFormData={setTranfers} loadedTranslations={initialData.new_pqrs_translations} />
                                 {/* <TranslationComponent formData={formData} onChange={handleChange} /> */}
                             </div>
-                            <ClasificationComponent setTime={setTime} initialData={initialData.new_pqrs_clasifications} onChange={handleChange} />
+                            <ClasificationComponent setTime={setTime} initialData={initialData.new_pqrs_clasification} onChange={handleChange} />
                             <ClasificationTermComponent time={time} initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
                             <ProcessControl initialData={initialData.new_pqrs_controls} formData={control} onChange={handleControlChange} />
                             <div >

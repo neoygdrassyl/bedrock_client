@@ -4,9 +4,6 @@ import {
     MDBCol,
     MDBCard,
     MDBCardBody,
-    MDBCardTitle,
-    MDBBreadcrumb,
-    MDBBreadcrumbItem,
     MDBTooltip,
     MDBBtn,
     MDBTabs,
@@ -14,18 +11,17 @@ import {
     MDBTabsLink,
     MDBTabsPane,
     MDBTabsContent,
-    MDBTypography
 } from 'mdb-react-ui-kit';
 import new_pqrsService from '../../../../services/new_pqrs.service';
 import DataTable from 'react-data-table-component';
 import Modal from 'react-modal';
 import PqrsForm from './forms/pqrs_form';
-import { modalStyles, pqrsFormStyles, pqrsRequestStyles } from './utils/styles/modalStyles';
+import { pqrsFormStyles, pqrsRequestStyles } from './utils/styles/modalStyles';
 import PqrsBreadcrumb from './components/pqrs_dashboard/pqrs_breadcrumbs.component';
 import PqrsStats from './components/pqrs_dashboard/pqrs_stadistics.component';
 import PqrsDataRequest from './forms/pqrs_data_request';
 
-const PQRSDashboard = (props) => {
+const PQRSDashboard = ({breadCrums , swaMsg}) => {
     //pqrs
     const [pqrs, setPQRS] = useState([]);
     // itemSelected
@@ -77,7 +73,7 @@ const PQRSDashboard = (props) => {
         },
         {
             name: 'Tipo',
-            selector: row => row.new_pqrs_clasifications[0]?.petition_type,
+            selector: row => row.new_pqrs_clasification?.petition_type,
             sortable: true
         },
         {
@@ -189,14 +185,14 @@ const PQRSDashboard = (props) => {
                     <div className='btn-close' color='none' onClick={() => handleNewPqrs()}></div>
                 </div>
                 <hr />
-                <PqrsForm id={currentItem} creationData={data} />
+                <PqrsForm closeModal={handleNewPqrs} swaMsg={swaMsg} id={currentItem} creationData={data} />
                 <hr />
                 <div className="text-end py-4 mt-3">
                     <button className="btn btn-lg btn-info" onClick={() => handleNewPqrs()}><i class="fas fa-times-circle"></i> CERRAR </button>
                 </div>
             </Modal>
 
-            <PqrsBreadcrumb breadCrums={props.breadCrums} />
+            <PqrsBreadcrumb breadCrums={breadCrums} />
             <PqrsStats pqrs={pqrs} />
 
             <MDBCard className="mb-4">

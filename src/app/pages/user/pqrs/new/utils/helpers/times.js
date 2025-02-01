@@ -94,7 +94,7 @@ export const defaultTableData = (initialData, time) => {
         },
     ];
     return initialData ? baseData.map((defaultItem) => {
-        const foundItem = initialData.find((item) => item.action === defaultItem.action && item.action);
+        const foundItem = initialData?.find(item => item.action === defaultItem.action) || {};
         return {
             ...defaultItem,
             ...foundItem,

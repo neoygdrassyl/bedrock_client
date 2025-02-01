@@ -5,11 +5,12 @@ import petitionToTime from "../../utils/helpers/setPQRSTime";
 const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
     // eficency will be the number of days delayed 
     // divided by the number of days setted before
-    const [tableData, setTableData] = useState(defaultTableData(initalData, petitionToTime(time)));
+    const [tableData, setTableData] = useState(defaultTableData(initalData || [], petitionToTime(time)));
     // useEffect for time change
     useEffect(() => {
+        console.log(initalData)
         console.log("Updating tableData with new time:", time);
-        const newData = defaultTableData(initalData, petitionToTime(time));
+        const newData = defaultTableData(initalData || [], petitionToTime(time));
         setTableData([...newData]);
     }, [initalData, time]);
     

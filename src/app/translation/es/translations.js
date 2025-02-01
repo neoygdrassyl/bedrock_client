@@ -87,7 +87,7 @@ export const TRANSLATIONS_ES = {
       text_error: 'Se han presentado errores en el procesamiento del formulario, inténtelo nuevamente más tarde.',
       text_footer: 'Gracias por su atencion',
       generic_success_title: '<h2>ACCION REALIZADA CON EXITO</h2>',
-      generic_success_text: 'Esta operacion fue ralizada correctamente.',
+      generic_success_text: 'Esta operacion fue realizada correctamente.',
       generic_eror_title: '<h2>SE HAN PRESENTADO ERRORES</h2>',
       generic_error_text: 'Al parece hubo errores en el procesamiento de esta accion.',
       pqrs_success_title: '<h2>FORMATO PQRS ENVIADO CORRECTAMENTE</h2>',
