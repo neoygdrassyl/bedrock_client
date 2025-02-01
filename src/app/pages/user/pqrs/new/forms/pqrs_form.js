@@ -10,7 +10,7 @@ import PetitionerForm from "../components/pqrs_form/pqrs_petitioner_form";
 import TransferForm from "../components/pqrs_form/pqrs_transfer_form";
 import Collapsible from 'react-collapsible';
 import JoditEditor from "jodit-pro-react";
-import {config} from "../utils/joditConfig"
+import { config } from "../utils/joditConfig"
 
 
 const PqrsForm = ({ id, creationData }) => {
@@ -75,6 +75,26 @@ const PqrsForm = ({ id, creationData }) => {
                 creation_date: initialData.creation_date,
                 id_public: initialData.id_public,
                 canalIngreso: initialData.canalIngreso,
+                desc: initialData.desc,
+                petition: initialData.petition,
+                // data from others
+                //evaluation
+                aforegoing: initialData?.new_pqrs_clasifications.aforegoing,
+                modality: initialData?.new_pqrs_clasifications.modality,
+                petition_type: initialData?.new_pqrs_clasifications.petition_type,
+                //clasification
+                //this id must be needed to know which clasification are we referencing
+                id: initialData?.new_pqrs_evaluation.id,
+                competence0: initialData?.new_pqrs_evaluation.competence0,
+                competence1: initialData?.new_pqrs_evaluation.competence1,
+                competence2: initialData?.new_pqrs_evaluation.competence2,
+                formal0: initialData?.new_pqrs_evaluation.formal0,
+                formal1: initialData?.new_pqrs_evaluation.formal1,
+                formal2: initialData?.new_pqrs_evaluation.formal2,
+                formal3: initialData?.new_pqrs_evaluation.formal3,
+                formal4: initialData?.new_pqrs_evaluation.formal4,
+                formal5: initialData?.new_pqrs_evaluation.formal5,
+                otherEntities: initialData?.new_pqrs_evaluation.otherEntities
             };
             // responses for editor
             if (initialData?.new_pqrs_response) {
@@ -105,6 +125,15 @@ const PqrsForm = ({ id, creationData }) => {
         Object.keys(formData.current).forEach((key) => {
             data.append(key, formData.current[key]);
         });
+        console.log([
+            {
+                controlData: controlData,
+                petitioners: petitioners,
+                transfers: transfers,
+                responses: editorContent,
+                times: control_times,
+            }
+        ])
         data.append('controlData', JSON.stringify(controlData));
         data.append('petitioners', JSON.stringify(petitioners));
         data.append('transfers', JSON.stringify(transfers));
@@ -167,6 +196,7 @@ const PqrsForm = ({ id, creationData }) => {
                                         rows={4}
                                         defaultValue={initialData.desc}
                                         onChange={handleChange}
+                                    // onLoad={}
                                     />
                                 </div>
                                 <div className="mb-3">

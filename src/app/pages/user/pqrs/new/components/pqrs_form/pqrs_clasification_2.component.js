@@ -5,8 +5,11 @@ import petitionToTime from "../../utils/helpers/setPQRSTime";
 const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
     // eficency will be the number of days delayed 
     // divided by the number of days setted before
-    const [tableData, setTableData] = useState(initalData || defaultTableData);
-
+    const [tableData, setTableData] = useState(defaultTableData(initalData,petitionToTime(time)));
+    // useEffect for time change
+    useEffect(() => {
+        setTableData(defaultTableData(inital,petitionToTime(time)))
+    },[time])
     // Actualiza setFormData solo cuando tableData cambia
     useEffect(() => {
         setFormData(tableData);
@@ -28,7 +31,7 @@ const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
                     <thead>
                         <tr>
                             <th colSpan={7} className="text-center" style={{ backgroundColor: "#f5f5f5" }}>
-                                Programación y control de proceso de Respuesta. Se programa para un ciclo de {petitionToTime(time)} días hábiles
+                                Programación y control de proceso de Respuesta. Se programa para un ciclo de {petitionToTime(time)?.days} días hábiles
                             </th>
                             <th colSpan={3} className="text-center">Seguimiento/ Cumplimiento</th>
                             <th className="text-center"></th>
@@ -73,12 +76,7 @@ const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
                                     />
                                 </td>
                                 <td>
-                                    <input
-                                        type="date"
-                                        defaultValue={row.day_available}
-                                        onBlur={(e) => handleInputChange(index, "day_available", e.target.value)}
-                                        className="form-control form-control-sm"
-                                    />
+                                    {row.day_available}
                                 </td>
                                 <td>
                                     <input
@@ -108,7 +106,7 @@ const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
                                 </td>
                                 <td>
                                     <input
-                                        type="text"
+                                        type="date"
                                         defaultValue={row.date_end}
                                         onBlur={(e) => handleInputChange(index, "date_end", e.target.value)}
                                         className="form-control form-control-sm"
