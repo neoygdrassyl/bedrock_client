@@ -5,16 +5,19 @@ import petitionToTime from "../../utils/helpers/setPQRSTime";
 const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
     // eficency will be the number of days delayed 
     // divided by the number of days setted before
-    const [tableData, setTableData] = useState(defaultTableData(initalData,petitionToTime(time)));
+    const [tableData, setTableData] = useState(defaultTableData(initalData, petitionToTime(time)));
     // useEffect for time change
     useEffect(() => {
-        setTableData(defaultTableData(inital,petitionToTime(time)))
-    },[time])
-    // Actualiza setFormData solo cuando tableData cambia
+        console.log("Updating tableData with new time:", time);
+        const newData = defaultTableData(initalData, petitionToTime(time));
+        setTableData([...newData]);
+    }, [initalData, time]);
+    
     useEffect(() => {
-        setFormData(tableData);
+        console.log("Updating formData because tableData changed");
+        setFormData([...tableData]);
     }, [tableData, setFormData]);
-
+    
     // useCallBack to avoid re-renders
     const handleInputChange = useCallback((index, field, value) => {
         setTableData(prevData => {
@@ -50,7 +53,7 @@ const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
                             <th className="text-center">Fecha</th>
                             <th className="text-center">Día Hábil</th>
                             <th className="text-center">Envió verificado</th>
-                            <th className="text-center">Indicador Proceso</th>
+                            {/* <th className="text-center">Indicador Proceso</th> */}
                             <th className="text-center">Días Hábiles (10)</th>
                             <th className="text-center">Hábiles desde radicación</th>
                         </tr>
@@ -130,14 +133,14 @@ const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
                                         <option value={false}>NO</option>
                                     </select>
                                 </td>
-                                <td>
+                                {/* <td>
                                     <input
                                         type="text"
                                         defaultValue={row.indicadorProceso}
                                         onBlur={(e) => handleInputChange(index, "indicadorProceso", e.target.value)}
                                         className="form-control form-control-sm"
                                     />
-                                </td>
+                                </td> */}
                                 <td>{row.terminoResolver}</td>
                                 <td>
                                     <input

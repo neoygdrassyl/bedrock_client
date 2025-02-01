@@ -97,8 +97,8 @@ export const defaultTableData = (initialData, time) => {
         const foundItem = initialData.find((item) => item.action === defaultItem.action && item.action);
         return {
             ...defaultItem,
-            day_available: time && time[defaultItem.action] ? time[defaultItem.action] : defaultItem.day_available,
             ...foundItem,
+            day_available: time && time[defaultItem.action] ? time[defaultItem.action] : defaultItem.day_available,
         };
     }) : baseData;;
 }
