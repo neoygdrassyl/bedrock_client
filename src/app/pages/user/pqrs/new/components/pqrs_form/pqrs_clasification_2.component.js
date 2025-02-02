@@ -8,14 +8,14 @@ const ClasificationTermComponent = ({ time, initalData, setFormData }) => {
     const [tableData, setTableData] = useState(defaultTableData(initalData || [], petitionToTime(time)));
     // useEffect for time change
     useEffect(() => {
-        console.log(initalData)
-        console.log("Updating tableData with new time:", time);
+        // console.log(initalData)
+        // console.log("Updating tableData with new time:", time);
         const newData = defaultTableData(initalData || [], petitionToTime(time));
         setTableData([...newData]);
     }, [initalData, time]);
     
     useEffect(() => {
-        console.log("Updating formData because tableData changed");
+        // console.log("Updating formData because tableData changed");
         setFormData([...tableData]);
     }, [tableData, setFormData]);
     

@@ -52,7 +52,7 @@ const timesForPQRS = {
         "TPCO": 5,
         "CTPC": 5,
         "AMPT": 10,
-        "REPT": 30
+        "REPT": 20
     }
 }
 const petitionToTime = (petition) => {
