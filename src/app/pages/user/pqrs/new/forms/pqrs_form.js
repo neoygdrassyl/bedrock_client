@@ -18,8 +18,8 @@ import withReactContent from "sweetalert2-react-content";
 const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
     // overall data
     const formData = useRef({});
-    //data from management
-    const { control, handleControlChange, processControlData } = useProcessControl();
+    // data for control
+    const [controlData, setControlData] = useState();
     //data from petitioners
     const [petitioners, setPetitioners] = useState({});
     //data from translations
@@ -68,6 +68,8 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
 
         getData();
     }, [id, creationData]);
+    //data from management
+    const { control, handleControlChange, users } = useProcessControl(controlData);
     //setData
     useEffect(() => {
         console.log("entra")
@@ -109,6 +111,9 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
                     response_structure: initialData.new_pqrs_response.response_structure ?? "",
                 });
             }
+            if (initialData?.new_pqrs_controls) {
+                setControlData(initialData.new_pqrs_controls)
+            }
         }
     }, [initialData]);
 
@@ -123,7 +128,7 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData.current)
-        const controlData = processControlData();
+        const controlData = control;
         let data = new FormData()
         Object.keys(formData.current).forEach((key) => {
             data.append(key, formData.current[key]);
@@ -134,7 +139,7 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
         data.append("responses", JSON.stringify(editorContent));
         data.append("times", JSON.stringify(control_times));
         console.log(control_times)
-
+        console.log(controlData);
 
         console.log(data.get('responses'));
         MySwal.fire({
@@ -254,7 +259,7 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
                             </div>
                             <ClasificationComponent setTime={setTime} initialData={initialData.new_pqrs_clasification} onChange={handleChange} />
                             <ClasificationTermComponent time={time} initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
-                            <ProcessControl initialData={initialData.new_pqrs_controls} formData={control} onChange={handleControlChange} />
+                            <ProcessControl control={control} handleControlChange={handleControlChange} users={users} />
                             <div >
                                 <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-info text-center' trigger={<><label className="fw-normal text-light text-center">Respuestas</label></>}>
                                     <div className="p-3">

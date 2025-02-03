@@ -1,42 +1,76 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getManagementSteps } from "../utils/helpers/steps";
+import UserslDataService from "../../../../../services/users.service";
 
-const useProcessControl = () => {
-  const [control, setControl] = useState({});
+const useProcessControl = (initialData) => {
+  const [control, setControl] = useState([]);
+  const [users, setUsers] = useState([]);
 
-  const handleControlChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setControl((prevData) => ({
-      ...prevData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const processControlData = () => {
-    let data = [];
-    const activities = getManagementSteps();
-    console.log(activities);
-    for (let sectionIndex = 0; sectionIndex < 4; sectionIndex++) {
-      for (let actividadIndex = 0; actividadIndex < 10; actividadIndex++) {
-        const active = control[`responsable_${sectionIndex}_${actividadIndex}`] || '';
-        console.log(active);
-        if (active) {
-          data.push({
-            activity: activities[sectionIndex].actividades[actividadIndex],
-            responsable: control[`responsable_${sectionIndex}_${actividadIndex}`] || '',
-            responsable_2: control[`responsable_2_${sectionIndex}_${actividadIndex}`] || '',
-            init_time: control[`fechaInicial_${sectionIndex}_${actividadIndex}`] || null,
-            time_1: control[`fecha1_${sectionIndex}_${actividadIndex}`] || null,
-            final_time: control[`fechaFinal_${sectionIndex}_${actividadIndex}`] || null,
-          });
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await UserslDataService.getAll();
+        if (res?.data?.length > 0) {
+          setUsers(res.data);
         }
+      } catch (error) {
+        console.error("Error fetching users:", error);
       }
+    };
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    if (initialData && Array.isArray(initialData)) {
+      setControl(processPqrsControlData(initialData));
+    } else {
+      setControl(processPqrsControlData([]));
     }
-    console.log(data)
-    return data;
+  }, [initialData]);
+
+  const processPqrsControlData = (newPqrsControls) => {
+    console.log(newPqrsControls)
+    return getManagementSteps().flatMap((step, sectionIndex) =>
+      step.actividades.map((actividad) => {
+        const pqrsItem = newPqrsControls.find((item) => item.activity === actividad) || {};
+        if (pqrsItem) {
+          return {
+            id:pqrsItem.id,
+            paso: sectionIndex,
+            activity: actividad,
+            responsable: pqrsItem.responsable || "",
+            responsable_2: pqrsItem.responsable_2 || "",
+            init_time: pqrsItem.init_time || null,
+            time_1: pqrsItem.time_1 || null,
+            final_time: pqrsItem.final_time || null,
+            cumple: isOnTime(pqrsItem) ? "Sí" : "No",
+          };
+        }
+      })
+    );
   };
 
-  return { control, handleControlChange, processControlData };
+  const isOnTime = (pqrsItem) => {
+    const fechaInicial = pqrsItem.init_time ? new Date(pqrsItem.init_time) : null;
+    const fecha1 = pqrsItem.time_1 ? new Date(pqrsItem.time_1) : null;
+    const fechaFinal = pqrsItem.final_time ? new Date(pqrsItem.final_time) : null;
+
+    let fechaInicio = fecha1 || fechaInicial;
+    return fechaInicio && fechaFinal ? (fechaFinal - fechaInicio) / (1000 * 60 * 60 * 24) <= 10 : false;
+  };
+
+  const handleControlChange = (e, actividad) => {
+    const { name, value } = e.target;
+    console.log(name, value , actividad);
+
+    setControl((prev) =>
+      prev.map((item) =>
+        item.activity === actividad ? { ...item, [name]: value } : item
+      )
+    );
+  };
+
+  return { control, users, handleControlChange };
 };
 
 export default useProcessControl;
