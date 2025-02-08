@@ -1,4 +1,4 @@
-import { getManagementSteps } from "../../utils/helpers/steps";
+import { getManagementSteps } from "../../utils/constant/steps";
 
 export default function ProcessControl({ control, users, handleControlChange }) {
   return (

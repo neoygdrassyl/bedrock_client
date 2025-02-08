@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getManagementSteps } from "../utils/helpers/steps";
+import { getManagementSteps } from "../utils/constant/steps";
 import UserslDataService from "../../../../../services/users.service";
 
 const useProcessControl = (initialData) => {

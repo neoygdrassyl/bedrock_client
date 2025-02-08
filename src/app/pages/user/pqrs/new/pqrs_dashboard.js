@@ -20,6 +20,7 @@ import { pqrsFormStyles, pqrsRequestStyles } from './utils/styles/modalStyles';
 import PqrsBreadcrumb from './components/pqrs_dashboard/pqrs_breadcrumbs.component';
 import PqrsStats from './components/pqrs_dashboard/pqrs_stadistics.component';
 import PqrsDataRequest from './forms/pqrs_data_request';
+import { getTimeDiff } from './utils/helpers/useTimes';
 
 const PQRSDashboard = ({breadCrums , swaMsg}) => {
     //pqrs
@@ -98,12 +99,12 @@ const PQRSDashboard = ({breadCrums , swaMsg}) => {
         },
         {
             name: 'Día Hábil',
-            selector: row => row.diaHabil,
+            selector: row => `${getTimeDiff(row.creation_date,new Date())} / ${10}`, //10 as a pre-seted day
             sortable: true
         },
         {
             name: 'Eficiencia',
-            selector: row => row.efficiency,
+            selector: row => row.new_pqrs_times[4]?.processIndicator ?? "",
             sortable: true
         },
         {

@@ -1,3 +1,4 @@
+import moment from "moment";
 
 const timesForPQRS = {
     "Petición": {
@@ -58,6 +59,21 @@ const timesForPQRS = {
 const petitionToTime = (petition) => {
     return timesForPQRS[petition];
 }
-export default petitionToTime;
+const getFinalTime = (initTime, daysToAdd) => {
+    return moment(initTime).add(daysToAdd, 'days').format("YYYY-MM-DD");
+
+}
+
+const getTimeDiff = (fechaInicio, fechaEnvioRespuesta) => {
+    console.log(fechaInicio);
+    console.log(fechaEnvioRespuesta);    
+    let numeroDeDias = "";
+    if (fechaInicio && fechaEnvioRespuesta) {
+        numeroDeDias = moment(fechaEnvioRespuesta).diff(moment(fechaInicio), "days");
+    }
+    return numeroDeDias;
+
+}
+export { petitionToTime, getFinalTime , getTimeDiff};
 
 

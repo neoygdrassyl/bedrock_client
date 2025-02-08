@@ -10,7 +10,7 @@ import PetitionerForm from "../components/pqrs_form/pqrs_petitioner_form";
 import TransferForm from "../components/pqrs_form/pqrs_transfer_form";
 import Collapsible from 'react-collapsible';
 import JoditEditor from "jodit-pro-react";
-import { config } from "../utils/joditConfig"
+import { config } from "../utils/config/joditConfig"
 // modal loader 'swal'
 import Swal from 'sweetalert2'
 import withReactContent from "sweetalert2-react-content";
@@ -144,7 +144,7 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
         console.log(data.get('responses'));
         MySwal.fire({
             title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
+            text: swaMsg.text_wait, 
             icon: 'info',
             showConfirmButton: false,
         });
@@ -258,7 +258,7 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
                                 {/* <TranslationComponent formData={formData} onChange={handleChange} /> */}
                             </div>
                             <ClasificationComponent setTime={setTime} initialData={initialData.new_pqrs_clasification} onChange={handleChange} />
-                            <ClasificationTermComponent time={time} initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
+                            <ClasificationTermComponent day_seted={initialData.creation_date} time={time} initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
                             <ProcessControl control={control} handleControlChange={handleControlChange} users={users} />
                             <div >
                                 <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-info text-center' trigger={<><label className="fw-normal text-light text-center">Respuestas</label></>}>

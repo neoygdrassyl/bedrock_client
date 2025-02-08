@@ -1,21 +1,20 @@
+import { getFinalTime, getTimeDiff } from "./useTimes";
 
-export const defaultTableData = (initialData, time) => {
-
+export const defaultTableData = (initialData, time, day_seted, day_done, FINAL) => {
     const baseData = [
         {
             action: "CRAD",
-            repeat: "1",
+            repeat: "",
             directedTo: "Peticionario",
             day_available: "",
             date_set: null,
             useAction: true,
             cub: "",
             date_end: null,
-            day_end: "1",
+            day_end: "",
             isSentVerified: false,
-            indicadorProceso: "",
             terminoResolver: "Fecha de inicio",
-            date_setResolver: "",
+            processIndicator: day_seted,
         },
         {
             action: "ACLP",
@@ -28,13 +27,12 @@ export const defaultTableData = (initialData, time) => {
             date_end: null,
             day_end: "",
             isSentVerified: true,
-            indicadorProceso: "",
             terminoResolver: "Fecha máxima",
-            date_setResolver: "",
+            processIndicator: FINAL ?? "",
         },
         {
             action: "TPCO",
-            repeat: "1",
+            repeat: "",
             directedTo: "Entidades",
             day_available: "",
             date_set: null,
@@ -43,9 +41,8 @@ export const defaultTableData = (initialData, time) => {
             date_end: null,
             day_end: "",
             isSentVerified: true,
-            indicadorProceso: "",
             terminoResolver: "Fecha envió respuesta",
-            date_setResolver: "",
+            processIndicator: day_done,
         },
         {
             action: "CTPC",
@@ -58,9 +55,8 @@ export const defaultTableData = (initialData, time) => {
             date_end: null,
             day_end: "",
             isSentVerified: true,
-            indicadorProceso: "",
             terminoResolver: "Número de días",
-            date_setResolver: "",
+            processIndicator: "",
         },
         {
             action: "AMPT",
@@ -73,24 +69,22 @@ export const defaultTableData = (initialData, time) => {
             date_end: null,
             day_end: "",
             isSentVerified: false,
-            indicadorProceso: "",
             terminoResolver: "Eficiencia",
-            date_setResolver: "",
+            processIndicator: (getTimeDiff(day_seted, day_done) / (time?.days ?? 1)).toFixed(2),
         },
         {
             action: "REPT",
-            repeat: "1",
+            repeat: "",
             directedTo: "Peticionario",
             day_available: "",
             date_set: null,
             useAction: true,
             cub: "",
             date_end: null,
-            day_end: "15",
+            day_end: "",
             isSentVerified: false,
-            indicadorProceso: "ABIERTA",
             terminoResolver: "EFICIENTE",
-            date_setResolver: "",
+            processIndicator: (getTimeDiff(day_seted, day_done) / (time?.days ?? 1)) <= 1 ? "SI" : "NO",
         },
     ];
     return initialData ? baseData.map((defaultItem) => {
@@ -99,6 +93,8 @@ export const defaultTableData = (initialData, time) => {
             ...defaultItem,
             ...foundItem,
             day_available: time && time[defaultItem.action] ? time[defaultItem.action] : defaultItem.day_available,
+            date_set: time && time[defaultItem.action] ? getFinalTime(day_seted, time[defaultItem.action]) : defaultItem.date_set,
+            processIndicator: defaultItem.terminoResolver === "Número de días" ? getTimeDiff(day_seted, day_done) : defaultItem.processIndicator,
         };
-    }) : baseData;;
-}
+    }) : baseData;
+}   
