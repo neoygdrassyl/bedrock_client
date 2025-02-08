@@ -64,9 +64,7 @@ const getFinalTime = (initTime, daysToAdd) => {
 
 }
 
-const getTimeDiff = (fechaInicio, fechaEnvioRespuesta) => {
-    console.log(fechaInicio);
-    console.log(fechaEnvioRespuesta);    
+const getTimeDiff = (fechaInicio, fechaEnvioRespuesta) => { 
     let numeroDeDias = "";
     if (fechaInicio && fechaEnvioRespuesta) {
         numeroDeDias = moment(fechaEnvioRespuesta).diff(moment(fechaInicio), "days");

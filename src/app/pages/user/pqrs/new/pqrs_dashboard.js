@@ -69,7 +69,7 @@ const PQRSDashboard = ({breadCrums , swaMsg}) => {
     const columnsSearch = [
         {
             name: 'ID',
-            selector: row => row.id,
+            selector: row => row.id_public,
             sortable: true
         },
         {

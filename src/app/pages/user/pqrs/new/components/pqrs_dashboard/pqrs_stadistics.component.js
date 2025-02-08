@@ -27,9 +27,9 @@ const PqrsStats = ({ pqrs }) => {
                     <MDBCardBody>
                         <MDBCardTitle>Proximo PQRS a vencer</MDBCardTitle>
                         <MDBTypography tag="h2">
-                            {pqrs.length > 0 ? new Date(
-                                pqrs.reduce((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? a : b)).createdAt
-                            ).toLocaleDateString() : "No hay datos"}
+                            {pqrs.length > 0 ? (
+                                pqrs.reduce((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? a : b)).id_public
+                            ) : "No hay datos"}
                         </MDBTypography>
                     </MDBCardBody>
                 </MDBCard>
