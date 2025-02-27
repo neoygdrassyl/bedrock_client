@@ -9,8 +9,9 @@ import {
     MDBBtn,
     MDBTypography
 } from 'mdb-react-ui-kit';
+import { _GET_LAST_ID } from '../utils/helpers/verifyVR';
 
-export default function PQRSMiniForm({continueToForm , setData}) {
+export default function PQRSMiniForm({ continueToForm, setData }) {
     const [formData, setFormData] = useState({
         id_public: '',
         canalIngreso: '',
@@ -41,17 +42,30 @@ export default function PQRSMiniForm({continueToForm , setData}) {
                 <form onSubmit={handleSubmit}>
                     <MDBRow className='mb-4'>
                         <MDBCol>
-                            <label className='form-label' htmlFor='fechaRadicacion'>Número</label>
-                            <MDBInput
-                                label='VR (Ventanilla de Radicación)'
-                                id='vr'
-                                type='text'
-                                name='id_public'
-                                value={formData.id_public}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <label className='form-label' htmlFor='vr'>Número</label>
+                            <div className='d-flex w-100 gap-2'>
+                                <div className="flex-grow-1">
+                                    <MDBInput
+                                        label='VR (Ventanilla de Radicación)'
+                                        id='vr'
+                                        type='text'
+                                        name='id_public'
+                                        value={formData.id_public}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    className="btn btn-info shadow-none"
+                                    style={{ whiteSpace: "nowrap" }}
+                                    onClick={() => _GET_LAST_ID(setFormData)}
+                                >
+                                    GENERAR
+                                </button>
+                            </div>
                         </MDBCol>
+
                     </MDBRow>
 
                     <MDBRow className='mb-4'>
@@ -86,6 +100,7 @@ export default function PQRSMiniForm({continueToForm , setData}) {
                                 value={formData.creation_date}
                                 onChange={handleInputChange}
                                 required
+                                min={new Date().toLocaleDateString('en-CA')} // past disabled
                             />
                         </MDBCol>
                     </MDBRow>
