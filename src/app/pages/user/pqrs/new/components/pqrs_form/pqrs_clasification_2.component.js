@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { defaultTableData } from "../../utils/helpers/generateTableData";
-import { getFinalTime, petitionToTime } from "../../utils/helpers/useTimes";
+import { getFinalTime, getTimeDiff, petitionToTime } from "../../utils/helpers/useTimes";
 
 const ClasificationTermComponent = ({ day_seted, time, initalData, setFormData }) => {
     const [day_done, setDay_Done] = useState(initalData?.[2]?.processIndicator ?? "");
@@ -16,6 +16,7 @@ const ClasificationTermComponent = ({ day_seted, time, initalData, setFormData }
     // useEffect for table data change
     useEffect(() => {
         const newData = defaultTableData(initalData || [], petitionToTime(time) || {}, day_seted, day_done, getFinalTime(day_seted, petitionToTime(time)?.days));
+        console.log(newData);
         setTableData(newData);
     }, [day_seted, initalData, time, day_done]);
 
@@ -29,6 +30,9 @@ const ClasificationTermComponent = ({ day_seted, time, initalData, setFormData }
         setTableData(prevData => {
             const newData = [...prevData];
             newData[index] = { ...newData[index], [field]: value };
+            if (field === "date_end" && newData[index].date_set) {
+                newData[index].day_end = getTimeDiff(newData[index].date_set, value)+1;
+            }
             return newData;
         });
     }, []);
@@ -119,12 +123,7 @@ const ClasificationTermComponent = ({ day_seted, time, initalData, setFormData }
                                     />
                                 </td>
                                 <td>
-                                    <input
-                                        type="text"
-                                        value={row.day_end}
-                                        onChange={(e) => handleInputChange(index, "day_end", e.target.value)}
-                                        className="form-control form-control-sm"
-                                    />
+                                    {row.day_end}
                                 </td>
                                 <td>
                                     <select

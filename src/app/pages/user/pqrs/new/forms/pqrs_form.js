@@ -75,9 +75,10 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
         console.log("entra")
         if (initialData) {
             formData.current = {
-                document_type: "C.C.",
-                status: initialData.status ?? "ABIERTA",
+                document_type: 'C.C.',
+                status: initialData.status ?? 'ABIERTA',
                 creation_date: initialData.creation_date,
+                update_date:initialData.updatedAt ?? '',
                 id_public: initialData.id_public,
                 canalIngreso: initialData.canalIngreso,
                 desc: initialData.desc,
@@ -211,7 +212,7 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
                                     <small>Canal de Ingreso / Presentación: {formData.current.canalIngreso}</small>
                                 </div>
                                 <div className="col-md-6 text-md-end">
-                                    <small>Fecha de actualización: DD/MM/AA</small><br />
+                                    <small>Fecha de actualización: {new Date(formData.current.update_date).toISOString().split("T")[0]}</small><br />
                                     <small>Fecha de radicación: {formData.current.creation_date}</small>
                                 </div>
                             </div>

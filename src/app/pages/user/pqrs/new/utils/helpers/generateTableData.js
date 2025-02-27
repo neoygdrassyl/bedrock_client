@@ -87,14 +87,25 @@ export const defaultTableData = (initialData, time, day_seted, day_done, FINAL) 
             processIndicator: (getTimeDiff(day_seted, day_done) / (time?.days ?? 1)) <= 1 ? "SI" : "NO",
         },
     ];
-    return initialData ? baseData.map((defaultItem) => {
+    return initialData
+    ? baseData.map((defaultItem) => {
         const foundItem = initialData?.find(item => item.action === defaultItem.action) || {};
+        
+        const updatedDateSet = time && time[defaultItem.action] 
+          ? getFinalTime(day_seted, time[defaultItem.action]) 
+          : defaultItem.date_set;
+          
+        const updatedDateEnd = foundItem.date_end ?? defaultItem.date_end;
+        console.log("- ",updatedDateSet,updatedDateEnd)
         return {
-            ...defaultItem,
-            ...foundItem,
-            day_available: time && time[defaultItem.action] ? time[defaultItem.action] : defaultItem.day_available,
-            date_set: time && time[defaultItem.action] ? getFinalTime(day_seted, time[defaultItem.action]) : defaultItem.date_set,
-            processIndicator: defaultItem.terminoResolver === "Número de días" ? getTimeDiff(day_seted, day_done) : defaultItem.processIndicator,
+          ...defaultItem,
+          ...foundItem,
+          day_available: time && time[defaultItem.action] ? time[defaultItem.action] : defaultItem.day_available,
+          date_set: updatedDateSet,
+          date_end: updatedDateEnd,
+          processIndicator: defaultItem.terminoResolver === "Número de días" ? getTimeDiff(day_seted, day_done) : defaultItem.processIndicator,
         };
-    }) : baseData;
+      })
+    : baseData;
+  
 }   
