@@ -21,8 +21,9 @@ import PqrsBreadcrumb from './components/pqrs_dashboard/pqrs_breadcrumbs.compone
 import PqrsStats from './components/pqrs_dashboard/pqrs_stadistics.component';
 import PqrsDataRequest from './forms/pqrs_data_request';
 import { getTimeDiff } from './utils/helpers/useTimes';
+import PqrsResponseBox from './components/pqrs_dashboard/response/pqrs_response_box.component';
 
-const PQRSDashboard = ({breadCrums , swaMsg}) => {
+const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     //pqrs
     const [pqrs, setPQRS] = useState([]);
     // itemSelected
@@ -99,7 +100,7 @@ const PQRSDashboard = ({breadCrums , swaMsg}) => {
         },
         {
             name: 'Día Hábil',
-            selector: row => `${getTimeDiff(row.creation_date,new Date())} / ${10}`, //10 as a pre-seted day
+            selector: row => `${getTimeDiff(row.creation_date, new Date())} / ${10}`, //10 as a pre-seted day
             sortable: true
         },
         {
@@ -136,10 +137,10 @@ const PQRSDashboard = ({breadCrums , swaMsg}) => {
     const handleNewPqrs = () => {
         setPqrsNewModal((status) => !status); // Open the modal
         setPqrsRequest(false); // Close the modal
-        if(currentItem) setCurrentItem(null)
+        if (currentItem) setCurrentItem(null)
     }
 
-    const handleEdit = async(id) => {
+    const handleEdit = async (id) => {
         setCurrentItem(id)
         setPqrsNewModal((status) => !status)
         console.log(id)
@@ -194,6 +195,7 @@ const PQRSDashboard = ({breadCrums , swaMsg}) => {
             </Modal>
 
             <PqrsBreadcrumb breadCrums={breadCrums} />
+            <PqrsResponseBox pqrs={pqrs} user={window.user}/>
             <PqrsStats pqrs={pqrs} />
 
             <MDBCard className="mb-4">
@@ -273,6 +275,8 @@ const PQRSDashboard = ({breadCrums , swaMsg}) => {
                 </MDBCardBody>
             </MDBCard>
         </div>
+
+
     );
 };
 

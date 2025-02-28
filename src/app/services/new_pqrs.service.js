@@ -15,5 +15,8 @@ class New_Pqrs_Service {
     update(id, data){
         return http.put(`/${route}/${id}`, data);
     }
+    updateResponse(id, data){
+        return http.put(`/${route}/response/${id}`, data);
+    }
 }
 export default new New_Pqrs_Service();
