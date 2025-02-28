@@ -39,21 +39,21 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     const [pqrsNewModal, setPqrsNewModal] = useState(false);
 
     //api call
+    const loadPQRS = () => {
+        new_pqrsService.getAll()
+            .then(response => {
+                console.log(response.data);
+                setPQRS(response.data);
+            });
+    };
     useEffect(() => {
-        const loadPQRS = () => {
-            new_pqrsService.getAll()
-                .then(response => {
-                    console.log(response.data);
-                    setPQRS(response.data);
-                });
-        };
         loadPQRS();
     }, []);
 
     //filter
     const filteredPQRS = pqrs.filter(pqrs => {
         const matchesSearch = pqrs.id_public?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            pqrs.subject?.toLowerCase().includes(searchTerm.toLowerCase());
+            pqrs.petition?.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || pqrs.status.toLowerCase() === statusFilter.toLowerCase();
 
@@ -187,7 +187,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
                     <div className='btn-close' color='none' onClick={() => handleNewPqrs()}></div>
                 </div>
                 <hr />
-                <PqrsForm closeModal={handleNewPqrs} swaMsg={swaMsg} id={currentItem} creationData={data} />
+                <PqrsForm reload={loadPQRS} closeModal={handleNewPqrs} swaMsg={swaMsg} id={currentItem} creationData={data} />
                 <hr />
                 <div className="text-end py-4 mt-3">
                     <button className="btn btn-lg btn-info" onClick={() => handleNewPqrs()}><i class="fas fa-times-circle"></i> CERRAR </button>

@@ -15,7 +15,7 @@ import { config } from "../utils/config/joditConfig"
 import Swal from 'sweetalert2'
 import withReactContent from "sweetalert2-react-content";
 
-const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
+const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
     // overall data
     const formData = useRef({});
     // data for control
@@ -186,6 +186,7 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
             }
         }
         closeModal(true)
+        reload()
         // alert("Registro exitoso")
         // console.log(res)
     };
@@ -203,7 +204,7 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
                                     <h4 className="mb-0">CONTROL ADMINISTRATIVO A LA PQRS- {formData.current.id_public}</h4>
                                 </div>
                                 <div className="col-md-4 text-md-end">
-                                    <span className="badge bg-success fs-6">{formData.current.status}</span>
+                                    <span className={`badge ${formData.current.status === "ABIERTA" ? "bg-success" : "bg-danger"} fs-6`}>{formData.current.status}</span>
                                 </div>
                             </div>
                             <div className="row mt-3">
@@ -212,7 +213,7 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
                                     <small>Canal de Ingreso / Presentación: {formData.current.canalIngreso}</small>
                                 </div>
                                 <div className="col-md-6 text-md-end">
-                                    <small>Fecha de actualización: {formData.current.update_datee && new Date(formData.current.update_date).toISOString().split("T")[0]}</small><br />
+                                    <small>Fecha de actualización: {formData.current.update_date && new Date(formData.current.update_date).toISOString().split("T")[0]}</small><br />
                                     <small>Fecha de radicación: {formData.current.creation_date}</small>
                                 </div>
                             </div>
@@ -301,8 +302,17 @@ const PqrsForm = ({ closeModal, swaMsg, id, creationData }) => {
                                     </div>
                                 </Collapsible>
                             </div>
-
-                            <button type="submit" className="btn btn-primary">Enviar</button>
+                            <footer className="d-flex flex-row justify-content-center p-3">
+                                <button type="submit" className="btn btn-primary">{id ? "Actualizar" : "Crear"}</button>
+                                {
+                                    id ?
+                                        <button onClick={() => formData.current = {
+                                            ...formData.current,
+                                            status: "CERRADA"
+                                        }} className="btn btn-danger ms-2">Actualizar y cerrar</button>
+                                        : ""
+                                }
+                            </footer>
 
                         </div>
                     </div>
