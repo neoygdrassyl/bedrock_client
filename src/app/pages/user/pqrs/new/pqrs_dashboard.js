@@ -182,7 +182,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
             >
                 <div className="my-4 d-flex justify-content-between">
                     {
-                        data.id ? <h2>GESTIONAR SOLICITUD PQRS</h2> : <h2>CREAR NUEVA PETICIÓN</h2>
+                        currentItem ? <h2>GESTIONAR SOLICITUD PQRS</h2> : <h2>CREAR NUEVA PETICIÓN</h2>
                     }
                     <div className='btn-close' color='none' onClick={() => handleNewPqrs()}></div>
                 </div>
@@ -195,7 +195,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
             </Modal>
 
             <PqrsBreadcrumb breadCrums={breadCrums} />
-            <PqrsResponseBox pqrs={pqrs} user={window.user}/>
+            <PqrsResponseBox pqrs={pqrs} user={window.user} reload={loadPQRS} swaMsg={swaMsg} />
             <PqrsStats pqrs={pqrs} />
 
             <MDBCard className="mb-4">

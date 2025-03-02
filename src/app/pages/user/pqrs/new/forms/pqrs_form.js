@@ -138,11 +138,7 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
         data.append('petitioners', JSON.stringify(petitioners));
         data.append('transfers', JSON.stringify(transfers));
         data.append("responses", JSON.stringify(editorContent));
-        data.append("times", JSON.stringify(control_times));
-        console.log(control_times)
-        console.log(controlData);
-
-        console.log(data.get('responses'));
+        data.append("times", JSON.stringify(control_times));        
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,

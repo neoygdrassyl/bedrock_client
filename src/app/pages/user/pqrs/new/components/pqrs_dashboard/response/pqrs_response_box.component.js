@@ -7,7 +7,7 @@ import {
   MDBCollapse,
 } from 'mdb-react-ui-kit';
 import PqrsResponseModal from "./pqrs_response_modal.component";
-const PqrsResponseBox = ({ user, pqrs }) => {
+const PqrsResponseBox = ({ user, pqrs, reload, swaMsg }) => {
   const [filteredPqrs, setFilteredPqrs] = useState([]);
   const [isBoxOpen, setOpenBox] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -78,7 +78,9 @@ const PqrsResponseBox = ({ user, pqrs }) => {
           responseType={getRole(user.roleId).field}
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
-          selectedPqrs={selectedPqrs} />
+          selectedPqrs={selectedPqrs}
+          reload={reload}
+          swaMsg={swaMsg} />
       }
 
     </div >

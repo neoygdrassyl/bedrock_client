@@ -4,9 +4,13 @@ import { configForUniqueResponse } from '../../../utils/config/joditConfig';
 import JoditEditor from "jodit-pro-react";
 import new_Pqrs_Service from "../../../../../../../services/new_pqrs.service"
 import { useRef, useState } from 'react';
-const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs }) => {
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content';
+
+const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs, reload, swaMsg }) => {
     const editorRef = useRef(null)
     const [responseData, setResponseData] = useState('')
+    const MySwal = withReactContent(Swal);
 
     const handleSubmit = async () => {
         if (responseData === '') {
@@ -19,11 +23,29 @@ const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs
             data.append('response_name', responseType);
             data.append('data', responseData);
             const res = await new_Pqrs_Service.updateResponse(selectedPqrs.id, data);
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
             if (res) {
-                console.log(res)
+                MySwal.fire({
+                    title: swaMsg.generic_success_title,
+                    text: swaMsg.generic_success_text,
+                    icon: 'success',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            } else {
+                MySwal.fire({
+                    title: swaMsg.generic_error_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'error',
+                    confirmButtonText: swaMsg.text_btn,
+                });
             }
-            alert("Respuesta enviada con éxito.");
             setModalOpen(false); // Close modal after submission
+            reload();
         } catch (error) {
             console.error("Error al enviar la respuesta:", error);
             alert("Hubo un error al enviar la respuesta.");

@@ -5,7 +5,7 @@ const PetitionerForm = ({ setFormData, loadedPetitioners }) => {
     // Estado inicial con datos existentes
     const [petitioners, setPetitioners] = useState(() => {
         const initialPetitioners = loadedPetitioners?.map((p) => ({
-            id: p.document_number,
+            id: p.document_number ?? Date.now(),
             data: p
         })) || [{ id: Date.now(), data: {} }];
         return initialPetitioners;

@@ -64,7 +64,7 @@ const ClasificationTermComponent = ({ day_seted, petition, initalData, setFormDa
                             <th className="text-center">Fecha</th>
                             <th className="text-center">Día Hábil</th>
                             <th className="text-center">Envió verificado</th>
-                            <th className="text-center">Días Hábiles {infoCud.pqrs_config.time_reply}</th>
+                            <th className="text-center">Días Hábiles ({infoCud.pqrs_config.time_reply})</th>
                             <th className="text-center">Hábiles desde radicación</th>
                         </tr>
                     </thead>

@@ -9,7 +9,7 @@ import {
     MDBBtn,
     MDBTypography
 } from 'mdb-react-ui-kit';
-import { _GET_LAST_ID } from '../utils/helpers/verifyVR';
+// import { _GET_LAST_ID } from '../utils/helpers/verifyVR';
 
 export default function PQRSMiniForm({ continueToForm, setData }) {
     const [formData, setFormData] = useState({
@@ -42,11 +42,12 @@ export default function PQRSMiniForm({ continueToForm, setData }) {
                 <form onSubmit={handleSubmit}>
                     <MDBRow className='mb-4'>
                         <MDBCol>
-                            <label className='form-label' htmlFor='vr'>Número</label>
+                            <label className='form-label' htmlFor='vr'>Número de identificación</label>
                             <div className='d-flex w-100 gap-2'>
                                 <div className="flex-grow-1">
                                     <MDBInput
-                                        label='VR (Ventanilla de Radicación)'
+                                        label='Ingrese VR'
+                                        placeholder='VR25-0000'
                                         id='vr'
                                         type='text'
                                         name='id_public'
@@ -55,14 +56,14 @@ export default function PQRSMiniForm({ continueToForm, setData }) {
                                         required
                                     />
                                 </div>
-                                <button
+                                {/* <button
                                     type="button"
                                     className="btn btn-info shadow-none"
                                     style={{ whiteSpace: "nowrap" }}
                                     onClick={() => _GET_LAST_ID(setFormData)}
                                 >
                                     GENERAR
-                                </button>
+                                </button> */}
                             </div>
                         </MDBCol>
 
