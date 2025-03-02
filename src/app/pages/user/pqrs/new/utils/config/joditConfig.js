@@ -1,6 +1,6 @@
 // config to enable all features in the jodit editor
     export const config = {
-        readonly: false, // all options from https://xdsoft.net/jodit/doc/,
+        readonly: true, // all options from https://xdsoft.net/jodit/doc/,
         uploader: {
             url: 'https://xdsoft.net/jodit/finder/?action=fileUpload'
         },

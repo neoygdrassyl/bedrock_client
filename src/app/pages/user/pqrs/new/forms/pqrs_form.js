@@ -33,7 +33,7 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
         response_archive: ""
     });
     //data from control_times
-    const [time, setTime] = useState();
+    const [petitionType, setPetitionType] = useState();
 
     const [control_times, setControlTimes] = useState({})
 
@@ -259,8 +259,8 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
                                 <TransferForm setFormData={setTranfers} loadedTranslations={initialData.new_pqrs_translations} />
                                 {/* <TranslationComponent formData={formData} onChange={handleChange} /> */}
                             </div>
-                            <ClasificationComponent setTime={setTime} initialData={initialData.new_pqrs_clasification} onChange={handleChange} />
-                            <ClasificationTermComponent day_seted={initialData.creation_date} time={time} initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
+                            <ClasificationComponent setPetitionType={setPetitionType} initialData={initialData.new_pqrs_clasification} onChange={handleChange} />
+                            <ClasificationTermComponent day_seted={initialData.creation_date} petition={petitionType} initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
                             <ProcessControl control={control} handleControlChange={handleControlChange} users={users} />
                             <div >
                                 <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-info text-center' trigger={<><label className="fw-normal text-light text-center">Respuestas</label></>}>
@@ -309,7 +309,7 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
                                         <button onClick={() => formData.current = {
                                             ...formData.current,
                                             status: "CERRADA"
-                                        }} className="btn btn-danger ms-2">Actualizar y cerrar</button>
+                                        }} className="btn btn-danger ms-2">Cerrar</button>
                                         : ""
                                 }
                             </footer>

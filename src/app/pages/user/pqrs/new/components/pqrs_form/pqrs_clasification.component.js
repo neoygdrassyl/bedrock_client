@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-const ClasificationComponent = ({ initialData, setTime, onChange }) => {
+const ClasificationComponent = ({ initialData, setPetitionType, onChange }) => {
     // useState for the checkbox
     const [isTrue, setIsTrue] = useState(initialData && initialData ? initialData.aforegoing : '');
     useEffect(() => {
         if (initialData) {
-            setTime(initialData?.petition_type || "");
+            setPetitionType(initialData?.petition_type || "");
         }
-    }, [initialData, setTime]);
+    }, [initialData, setPetitionType]);
     const handleRadioChange = (e) => {
         const { value } = e.target;
         setIsTrue(value === "true");
@@ -41,7 +41,7 @@ const ClasificationComponent = ({ initialData, setTime, onChange }) => {
                                     type="text"
                                     className="form-select form-select-sm"
                                     name="petition_type"
-                                    defaultValue={initialData && initialData ? initialData?.petition_type: ""}
+                                    defaultValue={initialData && initialData ? initialData?.petition_type : ""}
                                     onChange={(e) => {
                                         setTime(e.target.value);
                                         onChange(e);

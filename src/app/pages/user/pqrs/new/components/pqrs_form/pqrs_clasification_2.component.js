@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { defaultTableData } from "../../utils/helpers/generateTableData";
 import { getFinalTime, getTimeDiff, petitionToTime } from "../../utils/helpers/useTimes";
+import { infoCud } from "../../../../../../components/jsons/vars";
 
-const ClasificationTermComponent = ({ day_seted, time, initalData, setFormData }) => {
+const ClasificationTermComponent = ({ day_seted, petition, initalData, setFormData }) => {
     const [day_done, setDay_Done] = useState(initalData?.[2]?.processIndicator ?? "");
 
     // tableData 
     const memoizedTableData = useMemo(() => {
-        const timeData = petitionToTime(time) || {};
+        const timeData = petitionToTime(petition) || {};
         return defaultTableData(initalData || [], timeData, day_seted, day_done, getFinalTime(day_seted, timeData?.days));
     }, [initalData, time, day_seted, day_done]);
 
@@ -59,11 +60,11 @@ const ClasificationTermComponent = ({ day_seted, time, initalData, setFormData }
                             <th className="text-center">Día Hábil</th>
                             <th className="text-center">Fecha</th>
                             <th className="text-center">Usar Acción</th>
-                            <th className="text-center">CUB No.</th>
+                            <th className="text-center">{infoCud.serials.end} No.</th>
                             <th className="text-center">Fecha</th>
                             <th className="text-center">Día Hábil</th>
                             <th className="text-center">Envió verificado</th>
-                            <th className="text-center">Días Hábiles (10)</th>
+                            <th className="text-center">Días Hábiles {infoCud.pqrs_config.time_reply}</th>
                             <th className="text-center">Hábiles desde radicación</th>
                         </tr>
                     </thead>

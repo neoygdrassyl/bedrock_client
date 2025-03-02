@@ -40,25 +40,28 @@ const info = {
         axisTable: [1000, 2500, 2000, 3000, 2000, 3000, 2000],
         // CHECKS THE % OF THE TAX, GIVEN THE SELECTED VALUE, DEFAULT 0.1
         zonesVar: ["N/A", "Centro", "Norte"],
-        zonesTable : [0.1, 0.05, 0.05],
+        zonesTable: [0.1, 0.05, 0.05],
         pot: '11/2014',
         sign: {
             text: 'Todo el interesado en formular objeciones a la expedición de una licencia, podrá hacerse parte en el trámite desde la fecha de la radicación de la solicitud hasta antes de la expedición del acto administrativo que la resuelve. Dicho acto solo podrá ser expedido una vez haya transcurrido un término de (5) días hábiles, contados a partir del día siguiente a la fecha de la citación a los vecinos colindantes.(Decreto 1077/2015 y decreto que lo modifique).'
         },
         serials: {
-            start:'VR',
+            start: 'VR',
             end: 'CUB',
         },
-        exp_rules : ['Exp. Variables', 'Imp. Minicipal'],
-        res_extras : {
-            art1p : ""
+        exp_rules: ['Exp. Variables', 'Imp. Minicipal'],
+        res_extras: {
+            art1p: ""
         },
         other_entities: [
-            {id: "Planeación", name: "Secretaria de planeación Municipio de Bucaramanga", official: "Arq. LYDA XIMENA RODRIGUEZ ACEVEDO", job: "Secretaria Municipal", email: "secretariaplaneacion@bucaramanga.gov.co", other: "H2/P2"},
-            {id: "CDMB", name: "Corporación autónoma de la Meseta de Bucaramanga", official: "Dr. JUAN CARLOS REEYES NOVA", job: "Director CDMB", email: "info@cdmb.gov.co", other: "H2/P2"},
-            {id: "UNGR", name: "Unidad Nacional para la Gestión del Riesgo", official: "Dr. OLMEDO DE JESUS LOPEZ MARTINEZ", job: "Director general", email: "correspondedncia@gestiondelriesgo.gov.co", other: "H2/P2"},
-            {id: "INGEOMINAS", name: "INGEOMINAS", official: "Dr. HÉCTOR JULIO FIERRO MORALEES", job: "Director general", email: "relacionciudadana@sgc.gov.co", other: "H2/P2"},
-        ]
+            { id: "Planeación", name: "Secretaria de planeación Municipio de Bucaramanga", official: "Arq. LYDA XIMENA RODRIGUEZ ACEVEDO", job: "Secretaria Municipal", email: "secretariaplaneacion@bucaramanga.gov.co", other: "H2/P2" },
+            { id: "CDMB", name: "Corporación autónoma de la Meseta de Bucaramanga", official: "Dr. JUAN CARLOS REEYES NOVA", job: "Director CDMB", email: "info@cdmb.gov.co", other: "H2/P2" },
+            { id: "UNGR", name: "Unidad Nacional para la Gestión del Riesgo", official: "Dr. OLMEDO DE JESUS LOPEZ MARTINEZ", job: "Director general", email: "correspondedncia@gestiondelriesgo.gov.co", other: "H2/P2" },
+            { id: "INGEOMINAS", name: "INGEOMINAS", official: "Dr. HÉCTOR JULIO FIERRO MORALEES", job: "Director general", email: "relacionciudadana@sgc.gov.co", other: "H2/P2" },
+        ],
+        pqrs_config: {
+            time_reply: 10
+        }
     },
     'cp1': {
         name: 'CURADURIA URBANA 1',
@@ -83,20 +86,23 @@ const info = {
         axisVar: ["Zona Piedecuesta"],
         axisTable: [3000],
         zonesVar: ["N/A",],
-        zonesTable : [0.1,],
+        zonesTable: [0.1,],
         pot: '11/2003',
         sign: {
             text: 'Esta valla advierte a terceros sobre la iniciación del trámite administrativo correspondiente. Toda persona interesada en formular objeciones a la expedición de una licencia urbanística podrá hacerse parte del trámite administrativo desde la fecha de la radicación de la solicitud hasta antes de la expedición del acto administrativo que resuelve la solicitud. Dicho acto sólo podrá ser expedido una vez haya transcurrido un término mínimo de cinco (5) días hábiles, contados a partir del día siguiente a la fecha de la citación a los vecinos colindantes o de la publicación cuando este fuere necesaria y, en el caso de los demás terceros, a partir del día siguiente a la fecha en que se radique la fotografía donde conste la instalación de la valla o aviso (Artículo 2.2.6.1.2.2.2 Decreto 1077 de 2015).'
         },
         serials: {
-            start:'VR',
+            start: 'VR',
             end: 'OE',
         },
-        exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
-        res_extras : {
-            art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
+        exp_rules: ['Exp. Variables', 'Imp. Delineacion'],
+        res_extras: {
+            art1p: "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
         },
         other_entities: false,
+        pqrs_config: {
+            time_reply: 10
+        }
     },
     'fl2': {
         name: 'CURADURIA URBANA 2',
@@ -121,20 +127,23 @@ const info = {
         axisVar: ["Zona Floridablanca"],
         axisTable: [3000],
         zonesVar: ["N/A",],
-        zonesTable : [0.1,],
+        zonesTable: [0.1,],
         pot: '11/2003',
         sign: {
             text: 'Esta valla advierte a terceros sobre la iniciación del trámite administrativo correspondiente. Toda persona interesada en formular objeciones a la expedición de una licencia urbanística podrá hacerse parte del trámite administrativo desde la fecha de la radicación de la solicitud hasta antes de la expedición del acto administrativo que resuelve la solicitud. Dicho acto sólo podrá ser expedido una vez haya transcurrido un término mínimo de cinco (5) días hábiles, contados a partir del día siguiente a la fecha de la citación a los vecinos colindantes o de la publicación cuando este fuere necesaria y, en el caso de los demás terceros, a partir del día siguiente a la fecha en que se radique la fotografía donde conste la instalación de la valla o aviso (Artículo 2.2.6.1.2.2.2 Decreto 1077 de 2015).'
         },
         serials: {
-            start:'VR',
+            start: 'VR',
             end: 'OE',
         },
-        exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
-        res_extras : {
-            art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
+        exp_rules: ['Exp. Variables', 'Imp. Delineacion'],
+        res_extras: {
+            art1p: "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
         },
         other_entities: false,
+        pqrs_config: {
+            time_reply: 10
+        }
     },
 }
 
@@ -161,7 +170,7 @@ export const domains_number = <>
     <option value={info[process.env.REACT_APP_GLOBAL_ID].nomens}>{info[process.env.REACT_APP_GLOBAL_ID].name}</option>
 </>
 export const axisTable = info[process.env.REACT_APP_GLOBAL_ID].axisTable
-export const axisVar =info[process.env.REACT_APP_GLOBAL_ID].axisVar
+export const axisVar = info[process.env.REACT_APP_GLOBAL_ID].axisVar
 
 export const axis = <>
     {axisVar.map((value, index) => <option value={index}>{value}</option>)}
