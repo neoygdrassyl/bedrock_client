@@ -52,8 +52,8 @@ const timesForPQRS = {
         "ACLP": 5,
         "TPCO": 5,
         "CTPC": 5,
-        "AMPT": 10,
-        "REPT": 20
+        "AMPT": 8,
+        "REPT": 10
     }
 }
 const petitionToTime = (petition) => {
@@ -61,7 +61,6 @@ const petitionToTime = (petition) => {
 }
 const getFinalTime = (initTime, daysToAdd) => {
     return moment(initTime).add(daysToAdd, 'days').format("YYYY-MM-DD");
-
 }
 
 const getTimeDiff = (fechaInicio, fechaEnvioRespuesta) => { 

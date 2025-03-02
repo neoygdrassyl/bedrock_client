@@ -10,16 +10,16 @@ const ClasificationTermComponent = ({ day_seted, petition, initalData, setFormDa
     const memoizedTableData = useMemo(() => {
         const timeData = petitionToTime(petition) || {};
         return defaultTableData(initalData || [], timeData, day_seted, day_done, getFinalTime(day_seted, timeData?.days));
-    }, [initalData, time, day_seted, day_done]);
+    }, [initalData, petition, day_seted, day_done]);
 
     const [tableData, setTableData] = useState(memoizedTableData);
 
     // useEffect for table data change
     useEffect(() => {
-        const newData = defaultTableData(initalData || [], petitionToTime(time) || {}, day_seted, day_done, getFinalTime(day_seted, petitionToTime(time)?.days));
+        const newData = defaultTableData(initalData || [], petitionToTime(petition) || {}, day_seted, day_done, getFinalTime(day_seted, petitionToTime(petition)?.days));
         console.log(newData);
         setTableData(newData);
-    }, [day_seted, initalData, time, day_done]);
+    }, [day_seted, initalData, petition, day_done]);
 
     // useEffect for formData when tableData changes
     useEffect(() => {
@@ -45,7 +45,7 @@ const ClasificationTermComponent = ({ day_seted, petition, initalData, setFormDa
                     <thead>
                         <tr>
                             <th colSpan={7} className="text-center" style={{ backgroundColor: "#f5f5f5" }}>
-                                Programación y control de proceso de Respuesta. Se programa para un ciclo de {petitionToTime(time)?.days || '"x"'} días hábiles
+                                Programación y control de proceso de Respuesta. Se programa para un ciclo de {petitionToTime(petition)?.days || '"x"'} días hábiles
                             </th>
                             <th colSpan={3} className="text-center">Seguimiento/ Cumplimiento</th>
                             <th className="text-center"></th>

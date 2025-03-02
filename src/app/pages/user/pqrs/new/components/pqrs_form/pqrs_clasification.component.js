@@ -43,7 +43,7 @@ const ClasificationComponent = ({ initialData, setPetitionType, onChange }) => {
                                     name="petition_type"
                                     defaultValue={initialData && initialData ? initialData?.petition_type : ""}
                                     onChange={(e) => {
-                                        setTime(e.target.value);
+                                        setPetitionType(e.target.value);
                                         onChange(e);
                                     }
                                     }
