@@ -11,7 +11,7 @@ const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs
     const editorRef = useRef(null)
     const [responseData, setResponseData] = useState('')
     const MySwal = withReactContent(Swal);
-
+    console.log(window.user, "ssdsd")
     const handleSubmit = async () => {
         if (responseData === '') {
             alert("Por favor, escribe una respuesta antes de enviar.");

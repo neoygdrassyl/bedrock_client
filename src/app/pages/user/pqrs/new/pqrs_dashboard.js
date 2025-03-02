@@ -195,7 +195,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
             </Modal>
 
             <PqrsBreadcrumb breadCrums={breadCrums} />
-            <PqrsResponseBox pqrs={pqrs} user={window.user} reload={loadPQRS} swaMsg={swaMsg} />
+            <PqrsResponseBox pqrs={pqrs} reload={loadPQRS} swaMsg={swaMsg} />
             <PqrsStats pqrs={pqrs} />
 
             <MDBCard className="mb-4">

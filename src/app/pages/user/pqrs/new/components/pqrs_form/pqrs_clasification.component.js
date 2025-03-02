@@ -90,8 +90,8 @@ const ClasificationComponent = ({ initialData, setPetitionType, onChange }) => {
                                 <input
                                     type="text"
                                     className="form-control form-control-sm"
-                                    name="id_publico"
-                                    defaultValue={initialData && initialData ? initialData.id_public : ''}
+                                    name="id_related"
+                                    defaultValue={initialData && initialData ? initialData.id_related : ''}
                                     onChange={onChange}
                                 />
                             </td>

@@ -88,9 +88,8 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
                 aforegoing: initialData?.new_pqrs_clasification?.aforegoing ?? '',
                 modality: initialData?.new_pqrs_clasification?.modality ?? '',
                 petition_type: initialData?.new_pqrs_clasification?.petition_type ?? '',
+                id_related: initialData?.new_pqrs_clasification?.id_related ?? '',
                 //clasification
-                //this id must be needed to know which clasification are we referencing
-                id: initialData?.new_pqrs_evaluation?.id ?? '',
                 competence0: initialData?.new_pqrs_evaluation?.competence0 ?? '',
                 competence1: initialData?.new_pqrs_evaluation?.competence1 ?? '',
                 competence2: initialData?.new_pqrs_evaluation?.competence2 ?? '',
@@ -138,7 +137,7 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
         data.append('petitioners', JSON.stringify(petitioners));
         data.append('transfers', JSON.stringify(transfers));
         data.append("responses", JSON.stringify(editorContent));
-        data.append("times", JSON.stringify(control_times));        
+        data.append("times", JSON.stringify(control_times));
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -299,17 +298,23 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
                                 </Collapsible>
                             </div>
                             <footer className="d-flex flex-row justify-content-center p-3">
-                                <button type="submit" className="btn btn-primary">{id ? "Actualizar" : "Crear"}</button>
-                                {
-                                    id ?
-                                        <button onClick={() => formData.current = {
-                                            ...formData.current,
-                                            status: "CERRADA"
-                                        }} className="btn btn-danger ms-2">Cerrar</button>
-                                        : ""
-                                }
-                            </footer>
+                                {formData.current.status === "ABIERTA" && (
+                                    <>
+                                        <button type="submit" className="btn btn-primary">
+                                            {id ? "Actualizar" : "Crear"}
+                                        </button>
 
+                                        {id && window.user.roleId === 5 && (
+                                            <button
+                                                onClick={() => formData.current = { ...formData.current, status: "CERRADA" }}
+                                                className="btn btn-danger ms-2"
+                                            >
+                                                Cerrar
+                                            </button>
+                                        )}
+                                    </>
+                                )}
+                            </footer>
                         </div>
                     </div>
                 </form>
