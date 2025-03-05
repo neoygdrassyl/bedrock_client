@@ -40,14 +40,15 @@ class EXP_1 extends Component {
             const data1 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
             const data2 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
             
-            if (data1) document.getElementById("vr_selected").value = data1.vr
-
+            if (data1) {
+                this.setState({ vrSelected1: data1.vr, cubSelected1: data1.cub, idCUBxVr1: data1.id })
+                document.getElementById("vr_selected").value = data1.vr
+            }
             if (data2 && document.getElementById("vr_selected1")) {
                 document.getElementById("vr_selected1").value = data2.vr
                 this.setState({ vrSelected2: data2.vr, cubSelected2: data2.cub, idCUBxVr2: data2.id })
             }
 
-            this.setState({ vrSelected1: data1.vr, cubSelected1: data1.cub, idCUBxVr1: data1.id })
            
 
         } catch (error) {

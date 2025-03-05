@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD } from '../../../../components/customClasses/typeParse';
+import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-import Series from '../../../../components/jsons/funCodes.json';
+
 
 const MySwal = withReactContent(Swal);
 
@@ -166,6 +166,8 @@ class RECORD_ENG_DESC extends Component {
             let _CHILD = _GET_CHILD_1();
             let _SERIE = _GET_SERIE_COD(_CHILD);
             let _SUBSERIE = _GET_SUBSERIE_COD(_CHILD);
+             let _SERIE_STR = _GET_SERIE_STR(_CHILD)
+            let _SUBSERIE_STR = _GET_SUBSERIE_STR(_CHILD);
             return <>
                 <div className="row my-2">
                     <div className="col-3">
@@ -175,7 +177,7 @@ class RECORD_ENG_DESC extends Component {
                         <label className='fw-bold'>{_SERIE}</label>
                     </div>
                     <div className="col">
-                        <label className='fw-bold'>{Series[_SERIE] ?? <label className='text-danger'>No se encuentra Serie</label>}</label>
+                        <label className='fw-bold'>{_SERIE_STR[0] ?? <label className='text-danger'>No se encuentra Serie</label>}</label>
                     </div>
                 </div>
 
@@ -187,7 +189,7 @@ class RECORD_ENG_DESC extends Component {
                         <label className='fw-bold'>{_SUBSERIE}</label>
                     </div>
                     <div className="col">
-                        <label className='fw-bold'>{Series[_SUBSERIE] ?? <label className='text-danger'>No se encuentra Subserie</label>}</label>
+                        <label className='fw-bold'>{_SUBSERIE_STR[0] ?? <label className='text-danger'>No se encuentra Subserie</label>}</label>
                     </div>
                 </div>
             </>

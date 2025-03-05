@@ -604,6 +604,7 @@ class SUBMIT_MANAGE extends Component {
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
                                     refreshList={this.refreshList}
+                                    refreshItem={this.refreshItem}
                                 />
                             </fieldset>
                         </>
