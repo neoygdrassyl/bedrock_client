@@ -34,12 +34,12 @@ const customStylesForModal = {
 };
 const CURRENT_YEAR = moment().format('YYYY')
 
-
+const SMMV = 1423500
 const PORUIS_DATA = {
     name: 'Estampilla PRO-UIS',
     subrules: [
-        { name: 'Estrao 3 y 4', mult: 1300, round: true, },
-        { name: 'Estrao 5 y 6', mult: 2600, round: true, },
+        { name: 'Estrao 3 y 4', mult: 1423.5, round: true, },
+        { name: 'Estrao 5 y 6', mult: 2847, round: true, },
     ]
 }
 const cur_matrix = [
@@ -172,17 +172,17 @@ const rules_matrix = () => {
         {
             name: 'Construcción obra nueva',
             subrules: [
-                { name: 'Residencial estrato 1 y otras modalidades', mult: 2353.25, preFix: '2002', },
-                { name: 'Residencial estrato 2 y otras modalidades', mult: 3294.55, preFix: '2002', },
-                { name: 'Residencial estrato 3 y otras modalidades', mult: 4235.85, preFix: '2003', },
-                { name: 'Residencial estrato 4 y otras modalidades', mult: 6589.10, preFix: '2004', },
-                { name: 'Residencial estrato 5 y otras modalidades', mult: 10824.95, preFix: '2005', },
-                { name: 'Residencial estrato 6 y otras modalidades', mult: 14119.50, preFix: '2006', },
-                { name: 'Construcción obra nueva uso comercio o servicios en sector urbano y otras modalidades', mult: 10824.95, preFix: '2007', },
-                { name: 'Construcción obra nueva uso comercio o servicios en suelo rural, suburbano y expansion urbana, y otras modalidades', mult: 21179.25, preFix: '2007', },
-                { name: 'Construcción obra nueva uso institucional o dotacional y otras modalidades', mult: 8471.70, preFix: '2007', },
-                { name: 'Construcción obra nueva uso industrial y otras modalidades', mult: 18826.00, preFix: '2007', },
-                { name: 'Licencia de cerramiento por metro lineal', mult: 4706.50, preFix: '2015', },
+                { name: 'Residencial estrato 1 y otras modalidades', mult: 2489.95, preFix: '2002', },
+                { name: 'Residencial estrato 2 y otras modalidades', mult: 3485.93, preFix: '2002', },
+                { name: 'Residencial estrato 3 y otras modalidades', mult: 4484.91, preFix: '2003', },
+                { name: 'Residencial estrato 4 y otras modalidades', mult: 6971.86, preFix: '2004', },
+                { name: 'Residencial estrato 5 y otras modalidades', mult: 11453.77, preFix: '2005', },
+                { name: 'Residencial estrato 6 y otras modalidades', mult: 114939.70, preFix: '2006', },
+                { name: 'Construcción obra nueva uso comercio o servicios en sector urbano y otras modalidades', mult: 11453.77, preFix: '2007', },
+                { name: 'Construcción obra nueva uso comercio o servicios en suelo rural, suburbano y expansion urbana, y otras modalidades', mult: 22409.55, preFix: '2007', },
+                { name: 'Construcción obra nueva uso institucional o dotacional y otras modalidades', mult: 8963.82, preFix: '2007', },
+                { name: 'Construcción obra nueva uso industrial y otras modalidades', mult: 19919.60, preFix: '2007', },
+                { name: 'Licencia de cerramiento por metro lineal', mult: 4979.90, preFix: '2015', },
 
             ]
         },

@@ -3,80 +3,72 @@ import { MDBBtn } from 'mdb-react-ui-kit';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-
-import Series from '../../../../components/jsons/funCodes.json';
 import Codes from '../../../../components/jsons/fun6DocsList.json';
-import { SERIES_DOCS, SERIES_MODULES_RELATION, SUBSERIES_MODULES_RELATION, WORKER_NEEDED_FOR_MODULE, _GET_SERIE_COD, _GET_SUBSERIE_COD } from '../../../../components/customClasses/typeParse';
+import { SERIES_DOCS, _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 
 const MySwal = withReactContent(Swal);
 class FUN_D_CONTROL extends Component {
     constructor(props) {
         super(props);
+        this._GET_CHILD_1 = this._GET_CHILD_1.bind(this);
         this.state = {
         };
     }
     componentDidMount() {
         let SERIE = document.getElementById('fun_doc_control_0').value;
+        let _CHILD = this._GET_CHILD_1();
         if (!SERIE) SERIE = 0;
-        let str = Series[SERIE];
+        let str = _GET_SERIE_STR(_CHILD)
         document.getElementById('fun_doc_control_1').value = str;
 
         SERIE = document.getElementById('fun_doc_control_2').value;
         if (!SERIE) SERIE = 0;
-        str = Series[SERIE];
+        str = _GET_SUBSERIE_STR(_CHILD);
         document.getElementById('fun_doc_control_3').value = str;
     }
-    componentDidUpdate(prevState) {
-        if (prevState.serie_str != this.state.serie_str && this.state.serie_str != null) {
-            let str = Series[this.state.serie_str];
-            document.getElementById('fun_doc_control_1').value = str;
+    _GET_CHILD_1 = () => {
+        var _CHILD = this.props.currentItem.fun_1s;
+        var _CURRENT_VERSION = this.props.currentVersion - 1;
+        var _CHILD_VARS = {
+            item_0: "",
+            item_1: "",
+            item_2: "",
+            item_3: "",
+            item_4: "",
+            item_5: "",
+            item_6: "",
+            item_7: "",
+            item_8: "",
+            item_9: "",
+            item_101: "",
+            item_102: "",
         }
-        if (prevState.subserie_str != this.state.subserie_str && this.state.subserie_str != null) {
-            let str = Series[this.state.subserie_str];
-            document.getElementById('fun_doc_control_3').value = str;
+        if (_CHILD) {
+            if (_CHILD[_CURRENT_VERSION] != null) {
+                _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id;
+                _CHILD_VARS.item_1 = _CHILD[_CURRENT_VERSION].tipo ? _CHILD[_CURRENT_VERSION].tipo : "";
+                _CHILD_VARS.item_2 = _CHILD[_CURRENT_VERSION].tramite ? _CHILD[_CURRENT_VERSION].tramite : "";
+                _CHILD_VARS.item_3 = _CHILD[_CURRENT_VERSION].m_urb ? _CHILD[_CURRENT_VERSION].m_urb : "";
+                _CHILD_VARS.item_4 = _CHILD[_CURRENT_VERSION].m_sub ? _CHILD[_CURRENT_VERSION].m_sub : "";
+                _CHILD_VARS.item_5 = _CHILD[_CURRENT_VERSION].m_lic ? _CHILD[_CURRENT_VERSION].m_lic : "";
+                _CHILD_VARS.item_6 = _CHILD[_CURRENT_VERSION].usos ? _CHILD[_CURRENT_VERSION].usos : "";
+                _CHILD_VARS.item_7 = _CHILD[_CURRENT_VERSION].area ? _CHILD[_CURRENT_VERSION].area : "";
+                _CHILD_VARS.item_8 = _CHILD[_CURRENT_VERSION].vivienda ? _CHILD[_CURRENT_VERSION].vivienda : "";
+                _CHILD_VARS.item_9 = _CHILD[_CURRENT_VERSION].cultural ? _CHILD[_CURRENT_VERSION].cultural : "";
+                _CHILD_VARS.item_101 = _CHILD[_CURRENT_VERSION].regla_1 ? _CHILD[_CURRENT_VERSION].regla_1 : "";
+                _CHILD_VARS.item_102 = _CHILD[_CURRENT_VERSION].regla_2 ? _CHILD[_CURRENT_VERSION].regla_2 : "";
+            }
         }
+        return _CHILD_VARS;
     }
+
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
         const { } = this.state;
         let sumPages = 0;
         const _SERIES_DOCS = SERIES_DOCS
         // DATA GETTERS
-        let _GET_CHILD_1 = () => {
-            var _CHILD = currentItem.fun_1s;
-            var _CURRENT_VERSION = currentVersion - 1;
-            var _CHILD_VARS = {
-                item_0: "",
-                item_1: "",
-                item_2: "",
-                item_3: "",
-                item_4: "",
-                item_5: "",
-                item_6: "",
-                item_7: "",
-                item_8: "",
-                item_9: "",
-                item_101: "",
-                item_102: "",
-            }
-            if (_CHILD) {
-                if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id;
-                    _CHILD_VARS.item_1 = _CHILD[_CURRENT_VERSION].tipo ? _CHILD[_CURRENT_VERSION].tipo : "";
-                    _CHILD_VARS.item_2 = _CHILD[_CURRENT_VERSION].tramite ? _CHILD[_CURRENT_VERSION].tramite : "";
-                    _CHILD_VARS.item_3 = _CHILD[_CURRENT_VERSION].m_urb ? _CHILD[_CURRENT_VERSION].m_urb : "";
-                    _CHILD_VARS.item_4 = _CHILD[_CURRENT_VERSION].m_sub ? _CHILD[_CURRENT_VERSION].m_sub : "";
-                    _CHILD_VARS.item_5 = _CHILD[_CURRENT_VERSION].m_lic ? _CHILD[_CURRENT_VERSION].m_lic : "";
-                    _CHILD_VARS.item_6 = _CHILD[_CURRENT_VERSION].usos ? _CHILD[_CURRENT_VERSION].usos : "";
-                    _CHILD_VARS.item_7 = _CHILD[_CURRENT_VERSION].area ? _CHILD[_CURRENT_VERSION].area : "";
-                    _CHILD_VARS.item_8 = _CHILD[_CURRENT_VERSION].vivienda ? _CHILD[_CURRENT_VERSION].vivienda : "";
-                    _CHILD_VARS.item_9 = _CHILD[_CURRENT_VERSION].cultural ? _CHILD[_CURRENT_VERSION].cultural : "";
-                    _CHILD_VARS.item_101 = _CHILD[_CURRENT_VERSION].regla_1 ? _CHILD[_CURRENT_VERSION].regla_1 : "";
-                    _CHILD_VARS.item_102 = _CHILD[_CURRENT_VERSION].regla_2 ? _CHILD[_CURRENT_VERSION].regla_2 : "";
-                }
-            }
-            return _CHILD_VARS;
-        }
+    
         let _SET_CHILD_REVIEW = () => {
             var _CHILD = currentItem.fun_rs;
             var _CURRENT_VERSION = currentVersion - 1;
@@ -121,7 +113,7 @@ class FUN_D_CONTROL extends Component {
         }
         // COMPONENT JSX
         let _GET_SERIES = () => {
-            let _CHILD = _GET_CHILD_1();
+            let _CHILD = this._GET_CHILD_1();
             let _SERIE = _GET_SERIE_COD(_CHILD);
             let _SUBSERIE = _GET_SUBSERIE_COD(_CHILD);
             return <>
@@ -130,14 +122,10 @@ class FUN_D_CONTROL extends Component {
                         <label className="fw-bold ms-4">Series Documental:</label>
                     </div>
                     <div className="col-3">
-                        <select class="form-select" id="fun_doc_control_0"
-                            onChange={(e) => this.setState({ serie_str: e.target.value })}>
-                            {_SERIE.map((value) => <option>{value}</option>)}
-                        </select>
+                        <input class="form-control me-1" id="fun_doc_control_0" defaultValue={_SERIE[0]}  disabled />
                     </div>
                     <div className="col-6">
-                        <input type="text" class="form-control me-1" id="fun_doc_control_1" disabled
-                            defaultValue={''} />
+                        <input type="text" class="form-control me-1" id="fun_doc_control_1" disabled defaultValue={''} />
                     </div>
                 </div>
 
@@ -146,10 +134,8 @@ class FUN_D_CONTROL extends Component {
                         <label className="fw-bold ms-4">Subseries Documental:</label>
                     </div>
                     <div className="col-3">
-                        <select class="form-select" id="fun_doc_control_2"
-                            onChange={(e) => this.setState({ subserie_str: e.target.value })}>
-                            {_SUBSERIE.map((value) => <option>{value}</option>)}
-                        </select>
+                        <input class="form-control me-1" id="fun_doc_control_2" defaultValue={_SUBSERIE[0]}  disabled  />
+                         
                     </div>
                     <div className="col-6">
                         <input type="text" class="form-control me-1 text-uppercase" id="fun_doc_control_3" disabled
@@ -200,7 +186,7 @@ class FUN_D_CONTROL extends Component {
             </>
         }
         let _COMPONENT_LIST = () => {
-            let _CHILD = _GET_CHILD_1();
+            let _CHILD = this._GET_CHILD_1();
             let _SERIE = _GET_SERIE_COD(_CHILD);
             let _SUBSERIE = _GET_SUBSERIE_COD(_CHILD);
             let _LIST = [];

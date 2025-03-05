@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY } from '../../../components/customClasses/typeParse';
+import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
 import { MDBBadge, MDBBtn, MDBCollapse, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from 'mdb-react-ui-kit';
 import ReactTagInput from "@pathofdev/react-tag-input";
 import Collapsible from 'react-collapsible';
@@ -184,8 +184,12 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 const list = _list[i];
                 let con1 = (regexChecker_isOA(list) || regexChecker_isPh(list, true)) && !list.tipo.includes('D')
                 let con2 = list.state < 100
+                let isProrroga = regexChecker_isOA_2(list)
+                let isRevalidacion = regexChecker_isOA_3(list)
+                if (isProrroga  || isRevalidacion) console.log(list)
                 if (con1) { list_oa_f.push(list); }
                 if (con1 && con2) { list_oa.push(list); continue; }
+                if (isProrroga  || isRevalidacion) { list_oa.push(list); continue; }
                 if (list.state < 100) list_f.push(list);
             }
         }

@@ -1585,11 +1585,11 @@ export default function FUN_REPORT_GEN(props) {
         var auditoria = [];
         _data.map(v => {
             dataResume.push(report_data_10(v));
-            auditoria.push(report_data_13(v));
+            // auditoria.push(report_data_13(v));
 
         })
         setDataResume(dataResume);
-        setDataAuditoria(auditoria);
+        // setDataAuditoria(auditoria);
     }
 
     let _SET_DATA_MONEY = (_data) => {
@@ -1616,6 +1616,7 @@ export default function FUN_REPORT_GEN(props) {
         var dataIga = [];
         var notaria = [];
         var FPDM = [];
+        var auditoria = [];
 
 
         _data.map(v => {
@@ -1630,6 +1631,7 @@ export default function FUN_REPORT_GEN(props) {
             dataCon2.push(report_data_9(v));
             dataIga.push(report_data_11(v));
             notaria.push(report_data_12(v));
+            auditoria.push(report_data_13(v));
             FPDM.push(report_data_14(v));
         })
 
@@ -1644,6 +1646,7 @@ export default function FUN_REPORT_GEN(props) {
         setDataPlan2(dataPlan2);
         setDataIgac(dataIga);
         setDataNotaria(notaria);
+        setDataAuditoria(auditoria);
         setDataFDPM(FPDM);
 
     }

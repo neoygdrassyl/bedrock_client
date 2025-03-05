@@ -1070,7 +1070,9 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                     {REVIEW_LAW()}
                 </div>
                 <div className='row'>
-                    {REVIEW_ARC()}
+                {!regexChecker_isOA_2(loadItem)?
+                    REVIEW_ARC()
+                    : ''}
                 </div>
                 {!regexChecker_isPh(loadItem, true) && !regexChecker_isOA_2(loadItem) && rules[1] != 1 ?
                     <div className='row'>
