@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import TranslationComponent from "./pqrs_translation.component";
+import { AddButton, RemoveButton } from "./ui/pqrs_button";
 
 const TransferForm = ({ setFormData, loadedTranslations }) => {
     // Initialize state with loaded data or a default empty entry
@@ -51,17 +52,14 @@ const TransferForm = ({ setFormData, loadedTranslations }) => {
                 </div>
             ))}
 
-            <div className="d-flex justify-content-end">
+            <div className="d-flex justify-content-end align-items-center gap-2">
                 {
                     translations.length > 1 && (
-                        <button type="button" className="btn btn-danger" onClick={removeLastTranslation}>
-                            ❌
-                        </button>
+                        <RemoveButton onClick={removeLastTranslation} />
                     )
                 }
-                <button type="button" className="btn btn-primary" onClick={addTranslation}>
-                    ➕
-                </button>
+
+                <AddButton onClick={addTranslation} />
             </div>
         </div>
     );

@@ -69,7 +69,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
 
     const columnsSearch = [
         {
-            name: 'ID',
+            name: 'Radicado',
             selector: row => row.id_public,
             sortable: true
         },
@@ -94,7 +94,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
             )
         },
         {
-            name: 'Fecha',
+            name: 'Fecha Radicación',
             selector: row => row.creation_date,
             sortable: true
         },
@@ -244,6 +244,8 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Página:', rangeSeparatorText: 'de' }}
                                 noDataComponent="No hay mensajes"
                                 striped
+                                defaultSortFieldId={1}
+                                defaultSortAsc={false}
                                 columns={columnsSearch}
                                 data={filteredPQRS} // Pass filtered data instead of full data
                                 highlightOnHover

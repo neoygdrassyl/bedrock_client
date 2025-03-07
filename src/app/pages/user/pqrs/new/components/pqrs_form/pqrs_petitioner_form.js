@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PetitionerComponent from "./pqrs_petitioner.component";
+import { AddButton, RemoveButton } from "./ui/pqrs_button";
 
 const PetitionerForm = ({ setFormData, loadedPetitioners }) => {
     // Estado inicial con datos existentes
@@ -48,9 +49,7 @@ const PetitionerForm = ({ setFormData, loadedPetitioners }) => {
                     {
                         petitioners.length > 1 &&
                         <div className="d-flex justify-content-end">
-                            <button type="button" className="btn btn-danger mt-2" onClick={() => removePetitioner(id)}>
-                                -
-                            </button>
+                            <RemoveButton onClick={() => removePetitioner(id)} />
                         </div>
 
                     }
@@ -58,9 +57,7 @@ const PetitionerForm = ({ setFormData, loadedPetitioners }) => {
             ))}
 
             <div className="d-flex justify-content-end">
-                <button type="button" className="btn btn-primary" onClick={addPetitioner}>
-                    ➕
-                </button>
+                <AddButton onClick={addPetitioner} />
             </div>
         </div>
     );
