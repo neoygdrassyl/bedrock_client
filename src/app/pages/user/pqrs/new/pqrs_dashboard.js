@@ -22,6 +22,7 @@ import PqrsStats from './components/pqrs_dashboard/pqrs_stadistics.component';
 import PqrsDataRequest from './forms/pqrs_data_request';
 import { getTimeDiff } from './utils/helpers/useTimes';
 import PqrsResponseBox from './components/pqrs_dashboard/response/pqrs_response_box.component';
+import UserslDataService from "../../../../services/users.service";
 
 const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     //pqrs
@@ -37,6 +38,8 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     //Modals
     const [pqrsRequest, setPqrsRequest] = useState(false);
     const [pqrsNewModal, setPqrsNewModal] = useState(false);
+    //curatorship users
+    const [users, setUsers] = useState([])
 
     //api call
     const loadPQRS = () => {
@@ -46,8 +49,19 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
                 setPQRS(response.data);
             });
     };
+    const fetchUsers = async () => {
+        try {
+            const res = await UserslDataService.getAll();
+            if (res?.data?.length > 0) {
+                setUsers(res.data);
+            }
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
     useEffect(() => {
         loadPQRS();
+        fetchUsers();
     }, []);
 
     //filter
@@ -187,7 +201,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
                     <div className='btn-close' color='none' onClick={() => handleNewPqrs()}></div>
                 </div>
                 <hr />
-                <PqrsForm reload={loadPQRS} closeModal={handleNewPqrs} swaMsg={swaMsg} id={currentItem} creationData={data} />
+                <PqrsForm reload={loadPQRS} closeModal={handleNewPqrs} swaMsg={swaMsg} id={currentItem} creationData={data} users={users} />
                 <hr />
                 <div className="text-end py-4 mt-3">
                     <button className="btn btn-lg btn-info" onClick={() => handleNewPqrs()}><i class="fas fa-times-circle"></i> CERRAR </button>
@@ -205,7 +219,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
                             <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Buscar por ID o asunto..."
+                                placeholder="Buscar por Radicado o asunto..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />

@@ -15,7 +15,7 @@ import { config } from "../utils/config/joditConfig"
 import Swal from 'sweetalert2'
 import withReactContent from "sweetalert2-react-content";
 
-const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
+const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData , users }) => {
     // overall data
     const formData = useRef({});
     // data for control
@@ -36,7 +36,6 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
     const [petitionType, setPetitionType] = useState();
 
     const [control_times, setControlTimes] = useState({})
-
     // editor refs 
     const editor1 = useRef(null);
     const editor2 = useRef(null);
@@ -44,6 +43,7 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
     const editor4 = useRef(null);
     const editor5 = useRef(null);
 
+    // control vars
     const [isLoaded, setIsLoaded] = useState(false)
     const [initialData, setInitialData] = useState(null)
     const MySwal = withReactContent(Swal);
@@ -69,7 +69,7 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData }) => {
         getData();
     }, [id, creationData]);
     //data from management
-    const { control, handleControlChange, users } = useProcessControl(controlData);
+    const { control, handleControlChange } = useProcessControl(controlData);
     //setData
     useEffect(() => {
         console.log("entra")

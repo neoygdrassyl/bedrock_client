@@ -1,25 +1,8 @@
 import { useState, useEffect } from "react";
 import { getManagementSteps } from "../utils/constant/steps";
-import UserslDataService from "../../../../../services/users.service";
 
 const useProcessControl = (initialData) => {
   const [control, setControl] = useState([]);
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await UserslDataService.getAll();
-        if (res?.data?.length > 0) {
-          setUsers(res.data);
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-    fetchUsers();
-  }, []);
-
   useEffect(() => {
     if (initialData && Array.isArray(initialData)) {
       setControl(processPqrsControlData(initialData));
@@ -35,7 +18,7 @@ const useProcessControl = (initialData) => {
         const pqrsItem = newPqrsControls.find((item) => item.activity === actividad) || {};
         if (pqrsItem) {
           return {
-            id:pqrsItem.id,
+            id: pqrsItem.id,
             paso: sectionIndex,
             activity: actividad,
             responsable: pqrsItem.responsable || "",
@@ -61,7 +44,7 @@ const useProcessControl = (initialData) => {
 
   const handleControlChange = (e, actividad) => {
     const { name, value } = e.target;
-    console.log(name, value , actividad);
+    console.log(name, value, actividad);
 
     setControl((prev) =>
       prev.map((item) =>
@@ -70,7 +53,7 @@ const useProcessControl = (initialData) => {
     );
   };
 
-  return { control, users, handleControlChange };
+  return { control, handleControlChange };
 };
 
 export default useProcessControl;
