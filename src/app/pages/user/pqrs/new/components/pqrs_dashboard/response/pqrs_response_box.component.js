@@ -33,7 +33,6 @@ const PqrsResponseBox = ({ pqrs, reload, swaMsg }) => {
                     size="sm"
                     onClick={() => {
                       setOpenBox((open) => !open)
-                      console.log("isBoxOpen:", !isBoxOpen);
                     }
 
                     }

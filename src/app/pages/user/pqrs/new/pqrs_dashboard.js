@@ -48,7 +48,6 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     const loadPQRS = () => {
         new_pqrsService.getAll()
             .then(response => {
-                console.log(response.data);
                 setPQRS(response.data);
             });
         getPendingResponses();
@@ -56,7 +55,6 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     const getPendingResponses = () => {
         new_pqrsService.getPending(window.user.name_short, getRole(window.user?.roleId).field)
             .then(response => {
-                console.log(response.data);
                 setPQRSPending(response.data);
             });
     }
@@ -169,7 +167,6 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     const handleEdit = async (id) => {
         setCurrentItem(id)
         setPqrsNewModal((status) => !status)
-        console.log(id)
     };
     const rowSelectedStyle = {
         backgroundColor: 'rgba(0, 123, 255, 0.1)',

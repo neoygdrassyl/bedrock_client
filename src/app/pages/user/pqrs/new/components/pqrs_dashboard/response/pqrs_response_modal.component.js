@@ -17,12 +17,10 @@ const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs
             return;
         }
         try {
-            console.log(responseData, responseType, selectedPqrs.id)
             const data = new FormData()
             data.append('response_name', responseType);
             data.append('data', responseData);
             const res = await new_Pqrs_Service.updateResponse(selectedPqrs.id, data);
-            console.log(res)
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
@@ -48,7 +46,6 @@ const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs
             reload();
         } catch (error) {
             console.error("Error al enviar la respuesta:", error);
-            alert("Hubo un error al enviar la respuesta.");
         }
     };
     return (

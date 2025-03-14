@@ -96,7 +96,6 @@ export const defaultTableData = (initialData, time, day_seted, day_done, FINAL) 
           : defaultItem.date_set;
           
         const updatedDateEnd = foundItem.date_end ?? defaultItem.date_end;
-        console.log("- ",updatedDateSet,updatedDateEnd)
         return {
           ...defaultItem,
           ...foundItem,

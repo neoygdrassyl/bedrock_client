@@ -49,13 +49,11 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
         const getData = async () => {
             try {
                 if (id) {
-                    console.log(id, "id")
                     const res = await new_pqrsService.getById(id);
                     if (res?.data) {
                         setInitialData(res.data);
                     }
                 } else {
-                    console.log(creationData);
                     setInitialData(creationData);
                 }
             } catch (error) {
@@ -71,7 +69,6 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
     const { control, handleControlChange } = useProcessControl(controlData);
     //setData
     useEffect(() => {
-        console.log("entra")
         if (initialData) {
             formData.current = {
                 document_type: 'C.C.',
@@ -125,7 +122,6 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData.current)
         const controlData = control;
         let data = new FormData()
         Object.keys(formData.current).forEach((key) => {
@@ -180,8 +176,6 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
         }
         closeModal(true)
         reload()
-        // alert("Registro exitoso")
-        // console.log(res)
     };
 
 

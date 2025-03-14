@@ -12,7 +12,6 @@ const useProcessControl = (initialData) => {
   }, [initialData]);
 
   const processPqrsControlData = (newPqrsControls) => {
-    console.log(newPqrsControls)
     return getManagementSteps().flatMap((step, sectionIndex) =>
       step.actividades.map((actividad) => {
         const pqrsItem = newPqrsControls.find((item) => item.activity === actividad) || {};
@@ -44,7 +43,6 @@ const useProcessControl = (initialData) => {
 
   const handleControlChange = (e, actividad) => {
     const { name, value } = e.target;
-    console.log(name, value, actividad);
 
     setControl((prev) =>
       prev.map((item) =>

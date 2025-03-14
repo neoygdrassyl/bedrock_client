@@ -26,6 +26,5 @@ export const _GET_LAST_ID = (setFormData) => {
         })
         .catch(e => {
             console.log(e);
-            // Handle error (e.g., show alert)
         });
 };

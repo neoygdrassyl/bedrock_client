@@ -29,7 +29,6 @@ export default function PQRSMiniForm({ continueToForm, setData }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         continueToForm();
-        console.log(formData);
         setData(formData);
     };
 

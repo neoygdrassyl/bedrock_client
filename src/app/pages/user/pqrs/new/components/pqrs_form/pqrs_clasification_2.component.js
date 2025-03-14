@@ -17,7 +17,6 @@ const ClasificationTermComponent = ({ day_seted, petition, initalData, setFormDa
     // useEffect for table data change
     useEffect(() => {
         const newData = defaultTableData(initalData || [], petitionToTime(petition) || {}, day_seted, day_done, getFinalTime(day_seted, petitionToTime(petition)?.days));
-        console.log(newData);
         setTableData(newData);
     }, [day_seted, initalData, petition, day_done]);
 
