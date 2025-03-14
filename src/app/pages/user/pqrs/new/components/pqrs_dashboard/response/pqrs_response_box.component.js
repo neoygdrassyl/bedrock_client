@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { getRole } from "../../../utils/constant/response_roles";
+import { useState } from "react";
 import {
   MDBTooltip,
   MDBBtn,
@@ -7,35 +6,20 @@ import {
   MDBCollapse,
 } from 'mdb-react-ui-kit';
 import PqrsResponseModal from "./pqrs_response_modal.component";
+import { getRole } from "../../../utils/constant/response_roles";
 const PqrsResponseBox = ({ pqrs, reload, swaMsg }) => {
-  const [filteredPqrs, setFilteredPqrs] = useState([]);
   const [isBoxOpen, setOpenBox] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPqrs, setSelectedPqrs] = useState(null);
-
-  useEffect(() => {
-    const role = getRole(window.user?.roleId);
-
-    if (!role || !role.field) {
-      console.error("Role or field is undefined:", role);
-      return;
-    }
-
-    const filteredPqrs = pqrs?.filter(pqr => pqr.status === "ABIERTA")
-      ?.filter(pqr => pqr.new_pqrs_response?.[role.field] === "");
-    setFilteredPqrs(filteredPqrs);
-
-  }, [pqrs]);
 
   const handleResponseClick = (pqr) => {
     setSelectedPqrs(pqr);
     setModalOpen(true);
   };
-
   return (
     <>
       {
-        filteredPqrs.length > 0 &&
+        pqrs.length > 0 &&
         <div>
           <MDBTypography note noteColor="warning">
             <div className="row">
@@ -63,12 +47,16 @@ const PqrsResponseBox = ({ pqrs, reload, swaMsg }) => {
               <div className="row">
                 <div className="col-10">
                   <ul className="space-y-2">
-                    {filteredPqrs.map((pqr) => (
+                    {pqrs.map((pqr) => (
                       <li key={pqr.id} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                        <span className="text-[#2c3e50]">{pqr.id_public}</span>
-                        <MDBBtn className="ms-2" size="sm" outline color="primary" onClick={() => handleResponseClick(pqr)}>
-                          <i class="fas fa-solid fa-reply"></i>
-                        </MDBBtn>
+                        <span className="text-[#2c3e50]">{pqr.pqrs_to_answer}</span>
+                        {
+                          pqr.needsResponse === 1 && (
+                            <MDBBtn className="ms-2" size="sm" outline color="primary" onClick={() => handleResponseClick(pqr)}>
+                              <i class="fas fa-solid fa-reply"></i>
+                            </MDBBtn>
+                          )
+                        }
                       </li>
                     ))}
                   </ul>
@@ -95,6 +83,7 @@ const PqrsResponseBox = ({ pqrs, reload, swaMsg }) => {
 };
 
 export default PqrsResponseBox;
+
 
 
 

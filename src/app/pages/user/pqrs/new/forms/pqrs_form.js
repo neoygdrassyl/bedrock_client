@@ -26,7 +26,6 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
     const [transfers, setTranfers] = useState({});
     //data from Jodit Editor (responses)
     const [editorContent, setEditorContent] = useState({
-        response_curator: "",
         response_legal: "",
         response_arquitecture: "",
         response_structure: "",
@@ -37,7 +36,6 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
 
     const [control_times, setControlTimes] = useState({})
     // editor refs 
-    const editor1 = useRef(null);
     const editor2 = useRef(null);
     const editor3 = useRef(null);
     const editor4 = useRef(null);
@@ -105,7 +103,6 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
             // responses for editor
             if (initialData?.new_pqrs_response) {
                 setEditorContent({
-                    response_curator: initialData.new_pqrs_response.response_curator ?? "",
                     response_archive: initialData.new_pqrs_response.response_archive ?? "",
                     response_arquitecture: initialData.new_pqrs_response.response_arquitecture ?? "",
                     response_legal: initialData.new_pqrs_response.response_legal ?? "",
@@ -261,13 +258,6 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
                             <div >
                                 <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-info text-center' trigger={<><label className="fw-normal text-light text-center">Respuestas</label></>}>
                                     <div className="p-3">
-                                        <h5 className="my-4 bg-info p-1">Respuesta Curador</h5>
-                                        <JoditEditor
-                                            config={config}
-                                            ref={editor1}
-                                            value={editorContent.response_curator}
-                                            onBlur={(value) => handleJoditChange("response_curator", value)} />
-
                                         <h5 className="my-4 bg-info p-1">Respuesta Legal</h5>
                                         <JoditEditor
                                             config={config}

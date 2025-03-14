@@ -18,5 +18,8 @@ class New_Pqrs_Service {
     updateResponse(id, data){
         return http.put(`/${route}/response/${id}`, data);
     }
+    getPending(user,response_field){
+        return http.get(`/${route}/pqrs_pending/${user}/${response_field}`);
+    }
 }
 export default new New_Pqrs_Service();

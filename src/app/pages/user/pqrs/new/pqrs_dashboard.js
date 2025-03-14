@@ -23,10 +23,13 @@ import PqrsDataRequest from './forms/pqrs_data_request';
 import { getTimeDiff } from './utils/helpers/useTimes';
 import PqrsResponseBox from './components/pqrs_dashboard/response/pqrs_response_box.component';
 import UserslDataService from "../../../../services/users.service";
+import { getRole } from './utils/constant/response_roles';
 
 const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     //pqrs
     const [pqrs, setPQRS] = useState([]);
+    //pqrs_pending
+    const [pqrs_pending, setPQRSPending] = useState([]);
     // itemSelected
     const [currentItem, setCurrentItem] = useState(null)
     //Table management
@@ -48,7 +51,15 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
                 console.log(response.data);
                 setPQRS(response.data);
             });
+        getPendingResponses();
     };
+    const getPendingResponses = () => {
+        new_pqrsService.getPending(window.user.name_short, getRole(window.user?.roleId).field)
+            .then(response => {
+                console.log(response.data);
+                setPQRSPending(response.data);
+            });
+    }
     const fetchUsers = async () => {
         try {
             const res = await UserslDataService.getAll();
@@ -166,9 +177,6 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     // ---- //
     return (
         <div className="container mt-5">
-            {
-                console.log(window.user)
-            }
             {/* Modals */}
             {/* 1 STEP */}
             <Modal contentLabel="GENERAR SOLCITUD PQRS"
@@ -210,7 +218,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
             </Modal>
 
             <PqrsBreadcrumb breadCrums={breadCrums} />
-            <PqrsResponseBox pqrs={pqrs} reload={loadPQRS} swaMsg={swaMsg} />
+            <PqrsResponseBox pqrs={pqrs_pending} reload={loadPQRS} swaMsg={swaMsg} />
             <PqrsStats pqrs={pqrs} />
 
             <MDBCard className="mb-4">

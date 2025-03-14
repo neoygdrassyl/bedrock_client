@@ -11,7 +11,6 @@ const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs
     const editorRef = useRef(null)
     const [responseData, setResponseData] = useState('')
     const MySwal = withReactContent(Swal);
-    console.log(window.user, "ssdsd")
     const handleSubmit = async () => {
         if (responseData === '') {
             alert("Por favor, escribe una respuesta antes de enviar.");
@@ -23,6 +22,7 @@ const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs
             data.append('response_name', responseType);
             data.append('data', responseData);
             const res = await new_Pqrs_Service.updateResponse(selectedPqrs.id, data);
+            console.log(res)
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
