@@ -15,7 +15,7 @@ import { config } from "../utils/config/joditConfig"
 import Swal from 'sweetalert2'
 import withReactContent from "sweetalert2-react-content";
 
-const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData , users }) => {
+const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
     // overall data
     const formData = useRef({});
     // data for control
@@ -51,6 +51,7 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData , users }) => {
         const getData = async () => {
             try {
                 if (id) {
+                    console.log(id, "id")
                     const res = await new_pqrsService.getById(id);
                     if (res?.data) {
                         setInitialData(res.data);
@@ -300,17 +301,23 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData , users }) => {
                             <footer className="d-flex flex-row justify-content-center p-3">
                                 {formData.current.status === "ABIERTA" && (
                                     <>
-                                        <button type="submit" className="btn btn-primary">
-                                            {id ? "Actualizar" : "Crear"}
-                                        </button>
-
-                                        {id && window.user.roleId === 5 && (
-                                            <button
-                                                onClick={() => formData.current = { ...formData.current, status: "CERRADA" }}
-                                                className="btn btn-danger ms-2"
-                                            >
-                                                Cerrar
+                                        {!id ? (
+                                            <button type="submit" className="btn btn-primary">
+                                                Crear
                                             </button>
+                                        ) : (window.user.roleId === 5 || window.user.roleId === 2) && (
+                                            <>
+                                                <button type="submit" className="btn btn-primary">
+                                                    Actualizar
+                                                </button>
+
+                                                <button
+                                                    onClick={() => (formData.current = { ...formData.current, status: "CERRADA" })}
+                                                    className="btn btn-danger ms-2"
+                                                >
+                                                    Cerrar
+                                                </button>
+                                            </>
                                         )}
                                     </>
                                 )}

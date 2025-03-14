@@ -73,6 +73,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
 
         return matchesSearch && matchesStatus;
     });
+
     //visual
     const handleTabClick = (tabId) => {
         if (activeTab !== tabId) {
@@ -84,22 +85,22 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     const columnsSearch = [
         {
             name: 'Radicado',
-            selector: row => row.id_public,
+            selector: row => row.id_public ?? '',
             sortable: true
         },
         {
             name: 'Tipo',
-            selector: row => row.new_pqrs_clasification?.petition_type,
+            selector: row => row.petition_type ?? '',
             sortable: true
         },
         {
             name: 'Asunto',
-            selector: row => row.petition,
+            selector: row => row.petition ?? '',
             sortable: true
         },
         {
             name: 'Estado',
-            selector: row => row.status,
+            selector: row => row.status ?? '',
             sortable: true,
             cell: row => (
                 <span className={`badge ${row.status === 'ABIERTA' ? 'bg-success' : 'bg-secondary'}`}>
@@ -109,17 +110,17 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
         },
         {
             name: 'Fecha Radicación',
-            selector: row => row.creation_date,
+            selector: row => row.creation_date ?? '',
             sortable: true
         },
         {
             name: 'Día Hábil',
-            selector: row => `${getTimeDiff(row.creation_date, new Date())} / ${10}`, //10 as a pre-seted day
+            selector: row => `${getTimeDiff(row.creation_date, new Date())} / ${10}` ?? '', //10 as a pre-seted day
             sortable: true
         },
         {
             name: 'Eficiencia',
-            selector: row => row.new_pqrs_times[4]?.processIndicator ?? "",
+            selector: row => row.efficiency ?? '',
             sortable: true
         },
         {
