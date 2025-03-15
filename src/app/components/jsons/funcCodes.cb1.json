@@ -1,0 +1,180 @@
+{
+    "OLD": {
+        "1100-190": "100.20",
+        "1100-190.01": "100.20.01",
+        "1100-190.02": "100.20.01",
+        "1100-190.03": "100.20.01",
+        "1100-190.04": "100.20.01",
+        "1100-190.05": "100.20.01",
+        "1100-190.06": "100.20.01",
+        "1100-190.07": "100.20.01",
+        "1100-190.08": "100.20.01",
+        "1100-190.09": "100.20.01",
+        "1100-190.10": "100.20.01",
+        "1100-190.11": "100.20.01",
+        "1100-190.12": "100.20.01",
+        "1100-190.13": "100.20.01",
+        "1100-190.14": "100.20.01",
+        "1100-190.15": "100.20.01",
+        "1100-190.16": "100.20.01",
+        "1100-190.17": "100.20.01",
+        "1100-190.18": "100.20.01",
+        "1100-190.19": "100.20.01",
+        "1100-190.20": "100.20.01",
+        "1100-190.21": "100.20.01",
+        "1100-190.22": "100.20.01",
+        "1100-190.23": "100.20.03",
+        "1100-190.24": "100.20.03",
+        "1100-190.25": "100.20.03",
+        "1100-190.26": "100.20.04",
+        "1100-190.27": "100.20.04",
+        "1100-190.28": "100.20.04",
+        "1100-190.29": "100.20.02",
+        "1100-190.30": "100.20.05",
+        "1100-190.31": "100.20.01",
+        "1100-190.32": "100.20.01",
+        "1100-190.33": "100.20.01",
+        "1100-190.34": "100.20.01",
+        "1100-190.35": "100.20.01",
+        "1100-190.36": "100.20.01",
+        "1100-190.37": "100.20.01",
+        "1100-190.38": "100.20.01",
+        "1100-190.39": "100.20.01",
+        "1100-190.40": "100.20.01",
+    
+        "1100-220": false,
+    
+        "1100-250": false,
+        "1100-250.01": false,
+        "1100-250.02": false,
+    
+        "1100-260": "100.05",
+        "1100-260.00": "100.05.01",
+        "1100-260.01": "100.05.01",
+        "1100-260.02": "100.05.01",
+        "1100-260.03": "100.05.01",
+        "1100-260.04": "100.05.01",
+        "1100-260.05": "100.05.01",
+        "1100-260.06": "100.05.01",
+        "1100-260.07": "100.05.01",
+        "1100-260.08": "100.05.01",
+        "1100-260.09": "100.05.01",
+        "1100-260.10": "100.05.01",
+        "1100-260.11": "100.05.01",
+        "1100-260.12": "100.05.01",
+        "1100-260.13": "100.05.01",
+        "1100-260.14": "100.05.01",
+        "1100-260.15": "100.05.01",
+        "1100-260.16": "100.05.01",
+        "1100-260.17": "100.05.01",
+        "1100-260.18": "100.05.01",
+        "1100-260.19": "100.05.01",
+        "1100-260.20": "100.05.01",
+        "1100-260.21": "100.05.01",
+        "1100-260.22": "100.05.01",
+        "1100-260.23": "100.05.01",
+        
+        "1100-40.01": "100.06.01",
+        "1100-40.02": "100.05.01",
+        "1100-40.03": "100.06.04",
+        "1100-40.04": "100.05.02",
+        "1100-40.05": "100.06.02",
+        "1100-40.06": "Bienes",
+        "1100-40.07": "100.06.03"
+    },
+    "NEW": {
+        "100.01": "ACCIONES CONSTITUCIONALES",
+        "100.01.01": "Acciones de cumplimiento",
+        "100.01.02": "Acciones de Grupo",
+        "100.01.03": "Acciones de Nulidad",
+        "100.01.04": "Acciones de Tutela",
+        "100.01.05": "Acciones Populares",
+
+        "100.02": "ACTAS",
+        "100.02.01": "Actas de Comité Interno de Archivo",
+        "100.02.02": "Actas de Eliminación Documental",
+        "100.02.03": "Actas de Comité Prioritario de Salud y Seguridad en el Trabajo - COPASST",
+
+        "100.03": "ACTOS ADMINISTRATIVOS",
+        "100.03.01": "Resoluciones",
+
+        "100.04": "ACTOS DE RECONOCIMIENTO",
+        
+        "100.05": "APROBACIONES",
+        "100.05.01": "Aprobaciones de Planos y Propiedad Horizontal",
+        "100.05.02": "Aprobaciones de Piscinas",
+
+        "100.06": "AUTORIZACIONES",
+        "100.06.01": "Autorizaciones de Ajuste de Cotas y Áreas",
+        "100.06.02": "Autorizaciones de modificación de planos urbanísticos, de legalización y demás planos que aprobaron desarrollos o asentamientos",
+        "100.06.03": "Autorizaciones de Revisiones Independientes de los Diseños Estructurales",
+        "100.06.04": "Autorización de Movimientos de Tierra",
+
+        "100.07": "COMPROBANTES CONTABLES",
+        "100.07.01": "Comprobantes Contables de Egreso",
+        "100.07.02": "Comprobantes Contables de Ingreso",
+
+        "100.08": "CONCEPTOS",
+        "100.08.01": "Conceptos de Norma Urbanística",
+        "100.08.02": "Conceptos de Uso de Suelos",
+        "100.08.03": "Conceptos Jurídicos",
+
+        "100.09": "CONDICIONALES BANCARIAS",
+
+        "100.10": "CONSECUTIVOS DE COMUNICACIONES OFICIALES",
+        "100.10.01": "Consecutivos de comunicaciones oficiales enviadas",
+        "100.10.02": "Consecutivos de comunicaciones oficiales",
+
+        "100.11": "CONTRATOS",
+        "100.11.01": "Contratos de Arrendamiento",
+        "100.11.02": "Contrato de Prestación de Servicios",
+        
+        "100.12": "DECLARACIONES TRIBUTARIAS",
+
+        "100.13": "DERECHOS DE PETICIÓN",
+
+        "100.14": "ESTADOS FINANCIEROS",
+
+        "100.15": "HISTORIAS LABORALES",
+
+        "100.16": "INFORMES",
+        "100.16.01": "Informes de Auditorias Financieras y Presupuestales",
+        "100.16.02": "Informes de Auditorias Gubernamentales",
+        "100.16.03": "Informes de Entes de Control",
+        "100.16.04": "Informes de Auditorias del Sistema de Gestión y Calidad",
+        "100.16.05": "Informes Trimestrales del Comité de Convivencia laboral",
+        
+        "100.17": "INSTRUMENTOS ARCHIVÍSTICOS",
+        "100.17.01": "Bancos Terminológicos de series y subseries documentales",
+        "100.17.02": "Cuadros de Clasificación Documental - CCD",
+        "100.17.03": "Inventarios Documentales de Archivo Central",
+        "100.17.04": "Tablas de Retención Documental - TRD",
+        "100.17.05": "Tablas de Valoración Documental - TVD",
+    
+        "100.18": "LIBROS CONTABLES AUXILIARES",
+        
+        "100.19": "LIBROS CONTABLES PRINCIPALES",
+        "100.19.01": "Libro Diario",
+        "100.19.02": "Libro Mayor",
+        
+        "100.20": "LICENCIAS URBANÍSTICAS",
+        "100.20.01": "Licencias Urbanísticas de Construcción",
+        "100.20.02": "Licencias Urbanísticas de Parcelación",
+        "100.20.03": "Licencias Urbanísticas de Subdivisión",
+        "100.20.04": "Licencias Urbanísticas de Urbanización",
+
+        "100.21": "MANUALES",
+        "100.21.01": "Manuales de Procesos y Procedimientos",
+
+        "100.22": "NÓMINA",
+
+        "100.23": "PLANES",
+        "100.23.01": "Planes de Trabajo Anual del Sistema de Gestión de Seguridad y Salud en el Trabajo - SG SST",
+        "100.23.02": "Planes de Seguridad y Privacidad de la Información",
+
+        "100.24": "REGLAMENTOS",
+        "100.24.01": "Reglamentos Internos del Trabajo",
+
+        "100.25": "Solicitudes de Licencias Urbanísticas Desistidas"
+    }
+}
