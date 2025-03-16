@@ -105,7 +105,8 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
         {
             name: 'Asunto',
             selector: row => row.petition ?? '',
-            sortable: true
+            sortable: true,
+            maxWidth: "200px"
         },
         {
             name: 'Estado',
@@ -288,7 +289,6 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
                                             fontWeight: 'bold',
                                             fontSize: '14px'
                                         }
-
                                     }
                                 }}
                             />
