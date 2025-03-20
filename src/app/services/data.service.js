@@ -9,6 +9,9 @@ class DataService {
     getRoleName() {
         return window.user.role
     }
+    getRolId(){
+        return window.user.roleId;
+    }
     getRoleDesc() {
         return window.user.roleDesc
     }

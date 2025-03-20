@@ -23,6 +23,7 @@ import PqrsDataRequest from './forms/pqrs_data_request';
 import { getTimeDiff } from './utils/helpers/useTimes';
 import PqrsResponseBox from './components/pqrs_dashboard/response/pqrs_response_box.component';
 import UserslDataService from "../../../../services/users.service";
+import DataService from "../../../../services/data.service";
 import { getRole } from './utils/constant/response_roles';
 
 const PQRSDashboard = ({ breadCrums, swaMsg }) => {
@@ -52,12 +53,21 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
             });
         getPendingResponses();
     };
-    const getPendingResponses = () => {
-        new_pqrsService.getPending(window.user.name_short, getRole(window.user?.roleId).field)
-            .then(response => {
-                setPQRSPending(response.data);
-            });
-    }
+    const getPendingResponses = async () => {
+        try {
+            const role = getRole(DataService.getRolId());
+            if (!role) return;
+            
+            const response = await new_pqrsService.getPending(
+                DataService.getFullName(),
+                role.field
+            );
+            
+            setPQRSPending(response.data);
+        } catch (error) {
+            console.error("Error fetching pending PQRS:", error);
+        }
+    };
     const fetchUsers = async () => {
         try {
             const res = await UserslDataService.getAll();
