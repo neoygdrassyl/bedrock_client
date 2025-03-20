@@ -7,10 +7,14 @@ import { useRef, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content';
 
-const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs, reload, swaMsg }) => {
+const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs, setSelectedPqrs ,reload, swaMsg }) => {
     const editorRef = useRef(null)
-    const [responseData, setResponseData] = useState('')
+    const [responseData, setResponseData] = useState(selectedPqrs[responseType])
     const MySwal = withReactContent(Swal);
+    const handleClose = () => {
+        setModalOpen(false);
+        setSelectedPqrs(null);
+    }
     const handleSubmit = async () => {
         if (responseData === '') {
             alert("Por favor, escribe una respuesta antes de enviar.");
@@ -57,11 +61,12 @@ const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs
 
                 <h2>RESPONDER SOLICITUD PQRS {selectedPqrs.id_public}</h2>
 
-                <div className='btn-close' color='none' onClick={() => setModalOpen(false)}></div>
+                <div className='btn-close' color='none' onClick={() => handleClose()}></div>
             </div>
             <JoditEditor
                 config={configForUniqueResponse}
                 ref={editorRef}
+                value={responseData}
                 onBlur={(value) => setResponseData(value)}
 
             />
@@ -75,7 +80,7 @@ const PqrsResponseModal = ({ responseType, modalOpen, setModalOpen, selectedPqrs
                 <button className="btn btn-lg btn-success me-2" onClick={handleSubmit}>
                     <i className="fas fa-paper-plane"></i> ENVIAR RESPUESTA
                 </button>
-                <button className="btn btn-lg btn-info" onClick={() => setModalOpen(false)}><i class="fas fa-times-circle"></i> CERRAR </button>
+                <button className="btn btn-lg btn-info" onClick={() => handleClose()}><i class="fas fa-times-circle"></i> CERRAR </button>
             </div>
         </Modal>
 

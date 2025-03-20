@@ -49,13 +49,9 @@ const PqrsResponseBox = ({ pqrs, reload, swaMsg }) => {
                     {pqrs.map((pqr) => (
                       <li key={pqr.id} className="flex items-center justify-between bg-gray-50 p-2 rounded">
                         <span className="text-[#2c3e50]">{pqr.pqrs_to_answer}</span>
-                        {
-                          pqr.needsResponse === 1 && (
                             <MDBBtn className="ms-2" size="sm" outline color="primary" onClick={() => handleResponseClick(pqr)}>
                               <i class="fas fa-solid fa-reply"></i>
                             </MDBBtn>
-                          )
-                        }
                       </li>
                     ))}
                   </ul>
@@ -70,6 +66,7 @@ const PqrsResponseBox = ({ pqrs, reload, swaMsg }) => {
               modalOpen={modalOpen}
               setModalOpen={setModalOpen}
               selectedPqrs={selectedPqrs}
+              setSelectedPqrs={setSelectedPqrs}
               reload={reload}
               swaMsg={swaMsg} />
           }
