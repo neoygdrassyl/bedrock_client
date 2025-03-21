@@ -10,10 +10,12 @@ import PetitionerForm from "../components/pqrs_form/pqrs_petitioner_form";
 import TransferForm from "../components/pqrs_form/pqrs_transfer_form";
 import Collapsible from 'react-collapsible';
 import JoditEditor from "jodit-pro-react";
-import { config } from "../utils/config/joditConfig"
+import { config, configForUniqueResponse } from "../utils/config/joditConfig"
 // modal loader 'swal'
 import Swal from 'sweetalert2'
 import withReactContent from "sweetalert2-react-content";
+import PqrsResponses from "../components/pqrs_form/pqrs_responses";
+import PqrsFinalReply from "../components/pqrs_form/pqrs_final_reply";
 
 const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
     // overall data
@@ -35,11 +37,6 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
     const [petitionType, setPetitionType] = useState();
 
     const [control_times, setControlTimes] = useState({})
-    // editor refs 
-    const editor2 = useRef(null);
-    const editor3 = useRef(null);
-    const editor4 = useRef(null);
-    const editor5 = useRef(null);
 
     // control vars
     const [isLoaded, setIsLoaded] = useState(false)
@@ -250,37 +247,19 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
                             <ClasificationTermComponent day_seted={initialData.creation_date} petition={petitionType} initalData={initialData.new_pqrs_times} setFormData={setControlTimes} />
                             <ProcessControl control={control} handleControlChange={handleControlChange} users={users} />
                             <div >
-                                <Collapsible className='bg-primary border border-info text-center' openedClassName='bg-info text-center' trigger={<><label className="fw-normal text-light text-center">Respuestas</label></>}>
-                                    <div className="p-3">
-                                        <h5 className="my-4 bg-info p-1">Respuesta Legal</h5>
-                                        <JoditEditor
-                                            config={config}
-                                            ref={editor2}
-                                            value={editorContent.response_legal}
-                                            onBlur={(value) => handleJoditChange("response_legal", value)} />
+                                {
+                                    formData.current.status === "CERRADA" ?
+                                    <PqrsFinalReply
+                                    config={configForUniqueResponse}
+                                    currentItem={initialData}
+                                    />
+                                    :     
+                                    <PqrsResponses 
+                                    config={config} 
+                                    editorContent={editorContent}
+                                    handleJoditChange={handleJoditChange}/>
+                                }
 
-                                        <h5 className="my-4 bg-info p-1">Respuesta Arquitectura</h5>
-                                        <JoditEditor
-                                            config={config}
-                                            ref={editor3}
-                                            value={editorContent.response_arquitecture}
-                                            onBlur={(value) => handleJoditChange("response_arquitecture", value)} />
-
-                                        <h5 className="my-4 bg-info p-1">Respuesta Estructura</h5>
-                                        <JoditEditor
-                                            config={config}
-                                            ref={editor4}
-                                            value={editorContent.response_structure}
-                                            onBlur={(value) => handleJoditChange("response_structure", value)} />
-
-                                        <h5 className="my-4 bg-info p-1">Respuesta Archivo</h5>
-                                        <JoditEditor
-                                            config={config}
-                                            ref={editor5}
-                                            value={editorContent.response_archive}
-                                            onBlur={(value) => handleJoditChange("response_archive", value)} />
-                                    </div>
-                                </Collapsible>
                             </div>
                             <footer className="d-flex flex-row justify-content-center p-3">
                                 {formData.current.status === "ABIERTA" && (
