@@ -8,8 +8,6 @@ import new_pqrsService from "../../../../../services/new_pqrs.service";
 import useProcessControl from "../hooks/useProcessControl";
 import PetitionerForm from "../components/pqrs_form/pqrs_petitioner_form";
 import TransferForm from "../components/pqrs_form/pqrs_transfer_form";
-import Collapsible from 'react-collapsible';
-import JoditEditor from "jodit-pro-react";
 import { config, configForUniqueResponse } from "../utils/config/joditConfig"
 // modal loader 'swal'
 import Swal from 'sweetalert2'

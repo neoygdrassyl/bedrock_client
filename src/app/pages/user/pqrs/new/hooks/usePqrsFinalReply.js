@@ -28,7 +28,7 @@ const usePqrsFinalReply = (currentItem) => {
       .join(", ");
   };
 
-  const fontSize = "font-size: 12px !important;";
+  const fontSize = "font-size: 14px !important;";
 
   const textdefauld = (conten) => `
     <p style="margin-left: 150px; line-height: 1.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize}"><br></span></p> 
@@ -45,7 +45,7 @@ const usePqrsFinalReply = (currentItem) => {
       </p>` : ""}
   
     ${get_email() ? `
-      <p style="margin-left: 80px; line-height: 1.5;">
+      <p style="margin-left: 80px; line-height: 0.5;">
         <span style="font-family: arial, helvetica, sans-serif; ${fontSize}; color: #0077cc;">
           <strong style="text-decoration: underline;">${get_email()}</strong>
         </span>
@@ -90,9 +90,9 @@ const usePqrsFinalReply = (currentItem) => {
       </tr>
     </table>
   
-    <br/>
-    <br/>
-    <p style="margin-left: 80px; line-height: 0.5; ${fontSize}"">Cordial saludo,</p>
+    <p style="margin-left: 80px; line-height: 0.5;"><br></strong></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><br></strong></p>
+    <p style="margin-left: 80px; line-height: 0.5; font-family: arial, helvetica, sans-serif; ${fontSize}">Cordial saludo,</p>
     <p style="margin-left: 80px; line-height: 0.5;"><strong><br></strong></p>
     <p style="margin-left: 80px; line-height: 0.5; font-family: arial, helvetica, sans-serif; ${fontSize}">${conten}</p>
     <p><br></p>
@@ -130,10 +130,12 @@ const usePqrsFinalReply = (currentItem) => {
     Object.entries(responseTitles).forEach(([key, title]) => {
       if (new_pqrs_response[key]) {
         htmlContent += `
-          <div style="margin-left: 80px; font-family: arial,helvetica, sans-serif; line-height: 1.5;">
-            <h4 style="margin-bottom: 5px; font-weight: bold; color: #333;${fontSize};">${title}</h4>
+          <div style="margin-left: 80px; font-family: Arial, Helvetica, sans-serif; line-height: 1.5;">
+            <h4 style="margin-bottom: 5px; font-weight: bold; color: #333; font-size: 12px;">${title}</h4>
             <div style="padding: 10px;">
-              ${new_pqrs_response[key]}
+              <div style="${fontSize}; font-family: Arial, Helvetica, sans-serif; line-height: 1.5;">
+                ${new_pqrs_response[key]}
+              </div>
             </div>
           </div>
         `;

@@ -36,5 +36,10 @@
                 list: ([0.5, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 2, 3, 3.5])
 
             }
-        }
+        },
+        style: {
+            'font-family': 'Arial, Helvetica, sans-serif',
+            'font-size': '14px',  
+            'line-height': '0.5', 
+          }
     }

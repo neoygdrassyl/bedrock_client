@@ -58,12 +58,12 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
         try {
             const role = getRole(DataService.getRolId());
             if (!role) return;
-            
+
             const response = await new_pqrsService.getPending(
                 DataService.getFullName(),
                 role.field
             );
-            
+
             setPQRSPending(response.data);
         } catch (error) {
             console.error("Error fetching pending PQRS:", error);
@@ -207,7 +207,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
             </Modal>
             {/* PQRS FORM */}
 
-            <Modal contentLabel="GENERAR SOLCITUD PQRS"
+            <Modal contentLabel={`${currentItem ? 'GESTIONAR SOLICITUD PQRS' : 'GENERAR SOLCITUD PQRS'}`}
                 isOpen={pqrsNewModal}
                 style={pqrsFormStyles}
                 ariaHideApp={false}
