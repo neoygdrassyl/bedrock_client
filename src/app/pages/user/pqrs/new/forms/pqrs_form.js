@@ -14,8 +14,8 @@ import { config, configForUniqueResponse } from "../utils/config/joditConfig"
 // modal loader 'swal'
 import Swal from 'sweetalert2'
 import withReactContent from "sweetalert2-react-content";
-import PqrsResponses from "../components/pqrs_form/pqrs_responses";
-import PqrsFinalReply from "../components/pqrs_form/pqrs_final_reply";
+import PqrsResponses from "../components/pqrs_form/responses/pqrs_responses";
+import PqrsFinalReply from "../components/pqrs_form/responses/pqrs_final_reply";
 
 const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
     // overall data

@@ -1,4 +1,4 @@
-import usePqrsFinalReply from "../../hooks/usePqrsFinalReply";
+import usePqrsFinalReply from "../../../hooks/usePqrsFinalReply";
 import Collapsible from "react-collapsible";
 import JoditEditor from "jodit-pro-react";
 const PqrsFinalReply = ({ config, currentItem }) => {

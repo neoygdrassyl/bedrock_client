@@ -49,6 +49,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
     const loadPQRS = () => {
         new_pqrsService.getAll()
             .then(response => {
+                console.log(response.data)
                 setPQRS(response.data);
             });
         getPendingResponses();
