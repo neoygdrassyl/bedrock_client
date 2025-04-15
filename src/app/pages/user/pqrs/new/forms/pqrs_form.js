@@ -14,6 +14,7 @@ import Swal from 'sweetalert2'
 import withReactContent from "sweetalert2-react-content";
 import PqrsResponses from "../components/pqrs_form/responses/pqrs_responses";
 import PqrsFinalReply from "../components/pqrs_form/responses/pqrs_final_reply";
+import LockComponent from "../components/pqrs_form/pqrs_lock/pqrs_lock.component";
 
 const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
     // overall data
@@ -40,26 +41,26 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
     const [isLoaded, setIsLoaded] = useState(false)
     const [initialData, setInitialData] = useState(null)
     const MySwal = withReactContent(Swal);
-    useEffect(() => {
-        const getData = async () => {
-            try {
-                if (id) {
-                    const res = await new_pqrsService.getById(id);
-                    if (res?.data) {
-                        setInitialData(res.data);
-                    }
-                } else {
-                    setInitialData(creationData);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setIsLoaded(true); // Ensure loading is stopped after fetch
-            }
-        };
 
-        getData();
-    }, [id, creationData]);
+    const getData = async (id) => {
+        try {
+            if (id) {
+                const res = await new_pqrsService.getById(id);
+                if (res?.data) {
+                    setInitialData(res.data);
+                }
+            } else {
+                setInitialData(creationData);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setIsLoaded(true); // Ensure loading is stopped after fetch
+        }
+    };
+    useEffect(() => {
+        getData(id);
+    }, []);
     //data from management
     const { control, handleControlChange } = useProcessControl(controlData);
     //setData
@@ -247,20 +248,19 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
                             <div >
                                 {
                                     formData.current.status === "CERRADA" ?
-                                    <PqrsFinalReply
-                                    config={configForUniqueResponse}
-                                    currentItem={initialData}
-                                    />
-                                    :     
-                                    <PqrsResponses 
-                                    config={config} 
-                                    editorContent={editorContent}
-                                    handleJoditChange={handleJoditChange}/>
+                                        <PqrsFinalReply
+                                            config={configForUniqueResponse}
+                                            currentItem={initialData}
+                                        />
+                                        :
+                                        <PqrsResponses
+                                            config={config}
+                                            editorContent={editorContent}
+                                            handleJoditChange={handleJoditChange} />
                                 }
-
                             </div>
                             <footer className="d-flex flex-row justify-content-center p-3">
-                                {formData.current.status === "ABIERTA" && (
+                                {formData.current.status === "ABIERTA" ? (
                                     <>
                                         {!id ? (
                                             <button type="submit" className="btn btn-primary">
@@ -281,7 +281,12 @@ const PqrsForm = ({ reload, closeModal, swaMsg, id, creationData, users }) => {
                                             </>
                                         )}
                                     </>
-                                )}
+                                ) :
+                                    <LockComponent
+                                        swaMsg={swaMsg}
+                                        currentItem={initialData}
+                                        reloadPQR={getData} />
+                                }
                             </footer>
                         </div>
                     </div>

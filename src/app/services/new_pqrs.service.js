@@ -21,5 +21,8 @@ class New_Pqrs_Service {
     getPending(user,response_field){
         return http.get(`/${route}/pqrs_pending/${user}/${response_field}`);
     }
+    close(data){
+        return http.post(`/${route}/close`, data)
+    }
 }
 export default new New_Pqrs_Service();

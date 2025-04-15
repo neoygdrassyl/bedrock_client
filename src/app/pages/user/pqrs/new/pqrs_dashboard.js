@@ -101,6 +101,11 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
             setStatusFilter(tabId);
         }
     };
+    const badgeColors = {
+        ABIERTA: 'bg-success',
+        ARCHIVADA: 'bg-dark',
+        CERRADA: 'bg-secondary',
+    };
 
     const columnsSearch = [
         {
@@ -124,7 +129,7 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
             selector: row => row.status ?? '',
             sortable: true,
             cell: row => (
-                <span className={`badge ${row.status === 'ABIERTA' ? 'bg-success' : 'bg-secondary'}`}>
+                <span className={`badge ${badgeColors[row.status] || 'bg-dark'}`}>
                     {row.status}
                 </span>
             )
@@ -267,10 +272,15 @@ const PQRSDashboard = ({ breadCrums, swaMsg }) => {
                                 Cerrada
                             </MDBTabsLink>
                         </MDBTabsItem>
+                        <MDBTabsItem>
+                            <MDBTabsLink onClick={() => handleTabClick('archivada')} active={activeTab === 'archivada'}>
+                                Archivada
+                            </MDBTabsLink>
+                        </MDBTabsItem>
                     </MDBTabs>
 
                     <MDBTabsContent>
-                        <MDBTabsPane show={activeTab === 'all' || activeTab === 'abierta' || activeTab === 'cerrada'}>
+                        <MDBTabsPane show={activeTab === 'all' || activeTab === 'abierta' || activeTab === 'cerrada' || activeTab === 'archivada'}>
                             <DataTable
                                 title="TABLA DE BÚSQUEDA"
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Página:', rangeSeparatorText: 'de' }}
