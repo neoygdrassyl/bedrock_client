@@ -31,6 +31,7 @@ import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../../../services/fun.service';
+import { ENG_MANPOSTERIA } from './eng/recprd_eng_mamporteria';
 
 // RECORDS
 
@@ -163,23 +164,28 @@ class RECORD_ENG extends Component {
         const { loaded, currentRecord, currentVersionR, currentItem, arcSteps } = this.state;
         const title = { 0: '', 1: 'ESTUDIO', 2: 'CERTIFICACIÓN' }
         var formData = new FormData();
-        const STEP_PROVIDER = [
-            { 'Estudio Geotécnico / Suelos': 1 },
-            { 'Peritaje Estructural': 1 },
-            { 'Paso 1: Pre dimensionamiento y coordinación con otros profesionales': 1 },
-            { 'Paso 2: Evaluación de las solicitudes definitivas': 1 },
-            { 'Paso 3: Obtención del nivel de amenaza sísmica y valores de Aa y Av': 1 },
-            { 'Paso 4: Movimiento sísmicos de diseño': 1 },
-            { 'Paso 5: Características de la estructuración y del material estructural empleado': 1 },
-            { 'Paso 6: Grado de irregularidad de la estructura y procedimiento de análisis': 1 },
-            { 'Paso 7: Determinación de las fuerzas sísmicas': 1 },
-            { 'Paso 8: Análisis sísmico de la estructura. Aplicación de los movimientos sísmicos de diseño (Cap. A.3)': 1 },
-            { 'Paso 9: Desplazamientos horizontales. Se evalúan los desplazamientos horizontales': 1 },
-            { 'Paso 10: Verificación de las derivas. Comprobar que las derivas no excedan los límites del (Cap. A.6)': 1 },
-            { 'Paso 11: Combinación de las diferentes solicitudes': 1 },
-            { 'Paso 12: Diseño de los elementos estructurales': 1 },
-            { 'Planos Estructurales': 1 },
-        ]
+        const STEP_PROVIDER = () => {
+            let steps = [
+                { 'Estudio Geotécnico / Suelos': 1 },
+                { 'Peritaje Estructural': 1 },
+                { 'Paso 1: Pre dimensionamiento y coordinación con otros profesionales': 1 },
+                { 'Paso 2: Evaluación de las solicitudes definitivas': 1 },
+                { 'Paso 3: Obtención del nivel de amenaza sísmica y valores de Aa y Av': 1 },
+                { 'Paso 4: Movimiento sísmicos de diseño': 1 },
+                { 'Paso 5: Características de la estructuración y del material estructural empleado': 1 },
+                { 'Paso 6: Grado de irregularidad de la estructura y procedimiento de análisis': 1 },
+                { 'Paso 7: Determinación de las fuerzas sísmicas': 1 },
+                { 'Paso 8: Análisis sísmico de la estructura. Aplicación de los movimientos sísmicos de diseño (Cap. A.3)': 1 },
+                { 'Paso 9: Desplazamientos horizontales. Se evalúan los desplazamientos horizontales': 1 },
+                { 'Paso 10: Verificación de las derivas. Comprobar que las derivas no excedan los límites del (Cap. A.6)': 1 },
+                { 'Paso 11: Combinación de las diferentes solicitudes': 1 },
+                { 'Paso 12: Diseño de los elementos estructurales': 1 },
+            ];
+            if (currentRecord.category === 3) steps.push({ 'Paso 13: Revisión de los elementos de concreto contra la resistencia al fuego': 1 });
+            steps.push({ 'Planos Estructurales': 1 });
+            if (currentRecord.category === 3) steps.push({ 'Edificaciones de Mamposterías Titulo E': 1 });
+            return steps
+        }
 
 
         let _GET_CHILD_1 = () => {
@@ -289,7 +295,7 @@ class RECORD_ENG extends Component {
                 currentRules[1] = 1;
                 value = 0;
             }
-             else currentRules[1] = 0;
+            else currentRules[1] = 0;
             formData0.set('rules', currentRules.join(';'));
 
             funService.update(currentItem.id, formData0).then(response => {
@@ -297,35 +303,35 @@ class RECORD_ENG extends Component {
             });
 
             formData.set('category', value);
-                RECORD_ENG_SERVICE.update(currentRecord.id, formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            MySwal.fire({
-                                title: swaMsg.publish_success_title,
-                                text: swaMsg.publish_success_text,
-                                footer: swaMsg.text_footer,
-                                icon: 'success',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                            this.requestUpdateRecord(currentItem.id)
-                        } else {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
+            RECORD_ENG_SERVICE.update(currentRecord.id, formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        MySwal.fire({
+                            title: swaMsg.publish_success_title,
+                            text: swaMsg.publish_success_text,
+                            footer: swaMsg.text_footer,
+                            icon: 'success',
+                            confirmButtonText: swaMsg.text_btn,
+                        });
+                        this.requestUpdateRecord(currentItem.id)
+                    } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
                     });
+                });
 
         }
         let selectSubCategory = (useSwal) => {
@@ -369,22 +375,23 @@ class RECORD_ENG extends Component {
         let PARENT_STEP_PROVIDER = () => {
             const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
             return <div className="p-2">
-                {STEP_PROVIDER.map((value, index) => {
+                {STEP_PROVIDER().map((value, index) => {
                     let cbdv = SUBCATEGORIES[index] == '1' ?? true;
                     return <div className="row border">
-                        <div className="col-10">
-                            <div class="input-group">
-                                <label className="fw-bold">{Object.keys(value)}</label>
-                            </div>
-                        </div>
-                        <div className="col-2">
+                        <div className="col-1">
                             <div class="custom-control custom-switch">
-                                <div class="form-check form-switch">
+                                <div class="form-check form-switch text-end">
                                     <input class="form-check-input" type="checkbox" defaultChecked={cbdv}
                                         name={'subcategory_check'} onChange={() => selectSubCategory(false)} />
                                 </div>
                             </div>
                         </div>
+                        <div className="col">
+                            <div class="input-group">
+                                <label className="fw-bold">{Object.keys(value)}</label>
+                            </div>
+                        </div>
+
                     </div>
                 })}
             </div>
@@ -491,6 +498,10 @@ class RECORD_ENG extends Component {
                                             <option value="rule">NO REQUIERE ESTUDIO</option>
                                             <option value="2">CERTIFICACIÓN</option>
                                             <option value="1">ESTUDIO</option>
+                                           
+                                            {
+                                                //  <option value="3">ESTUDIO 2.0</option>
+                                            }
                                         </select>
                                     </div>
                                 </div>
@@ -610,9 +621,6 @@ class RECORD_ENG extends Component {
                                                     requestUpdate={this.requestUpdate}
                                                     requestUpdateRecord={this.requestUpdateRecord}
                                                 />
-
-
-
                                                 <RECORD_ENG_STEP_4323
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                                     currentItem={currentItem}
@@ -622,6 +630,7 @@ class RECORD_ENG extends Component {
                                                     requestUpdate={this.requestUpdate}
                                                     requestUpdateRecord={this.requestUpdateRecord}
                                                 />
+
                                                 <RECORD_ENG_SISMIC
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                                     currentItem={currentItem}
@@ -653,6 +662,114 @@ class RECORD_ENG extends Component {
                                                     requestUpdate={this.requestUpdate}
                                                     requestUpdateRecord={this.requestUpdateRecord}
                                                 />
+                                            </>
+                                            : ""}
+
+                                        {currentRecord.category == 3
+                                            ?
+                                            <>
+
+                                                <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_43">
+                                                    <label className="app-p lead fw-normal text-uppercase">4.3 REVISIÓN DEL PROYECTO</label>
+                                                </legend>
+                                                {PARENT_STEP_PROVIDER()}
+
+                                                <RECORD_ENG_STEP_431
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={this.requestUpdate}
+                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                {
+                                                    // 4.3.2 Peritaje Estructural
+                                                }
+                                                <RECORD_ENG_STEP_433P
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={this.requestUpdate}
+                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                />
+
+                                                {
+                                                    // Paso 1
+                                                    // Paso 2
+                                                }
+                                                <RECORD_ENG_STEP_432
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={this.requestUpdate}
+                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                {
+                                                    // Paso 3
+                                                    // Paso 4
+                                                    // Paso 5
+                                                    // Paso 6
+                                                    // Paso 7
+                                                }
+                                                <RECORD_ENG_STEP_4323
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={this.requestUpdate}
+                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                {
+                                                    // Paso 8
+                                                }
+                                                <RECORD_ENG_SISMIC
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={this.requestUpdate}
+                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                {
+                                                    // 4.3.3 Planos Estructurales
+                                                }
+                                                <RECORD_ENG_STEP_433
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={this.requestUpdate}
+                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                <ENG_MANPOSTERIA
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={this.requestUpdate}
+                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    version={2}
+                                                />
+
                                             </>
                                             : ""}
 

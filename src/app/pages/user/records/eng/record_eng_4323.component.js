@@ -225,8 +225,17 @@ class RECORD_ENG_STEP_4323 extends Component {
             'Pórtico arriostrados de acero con diagonales': [0.073, 0.75],
             'Muros concreto y mampostería estructural': [0.049, 0.75],
             'Sistema de muros reforzados o mampostería': [0, 1],
-            'Mampostería estructural': ['0,0062/(Cw)^0,5', 1],
+            'Mampostería estructural': [0, 1],
             'No': [0, 0],
+        }
+
+        const ro_values = {
+            'Muros de cargar A.3.2.1.1': 7,
+            'Pórticos A.3.2.1.3': 7,
+            'Combinado A.3.2.1.2': 7,
+            'Combinado A.3.2.1.3': 7,
+            'Sistema Dual A.3.2.1.4': 8,
+            'No': 2,
         }
         // FUNCTIONS & VARIABLES
         let _set_step4_values = (value) => {
@@ -285,7 +294,7 @@ class RECORD_ENG_STEP_4323 extends Component {
             if (e61 == 'ALTA') op = 'DES';
             else if (e61 == 'BAJA') op = 'DMI';
             else op = 'DMO';
-           
+
             if (document.getElementById('h137')) document.getElementById('h137').value = op;
         }
         let _set_h156 = () => {
@@ -309,10 +318,15 @@ class RECORD_ENG_STEP_4323 extends Component {
             if (document.getElementById('h157')) document.getElementById('h157').value = op;
         }
         let _set_e1712 = () => {
-            let h143 = document.getElementById('h143') ? document.getElementById('h143').value : 'No';
-            const newValue = step07_1[h143];
-            if (document.getElementById('e171')) document.getElementById('e171').value = newValue[0];
-            if (document.getElementById('e172')) document.getElementById('e172').value = newValue[1];
+            let h143 = (document.getElementById('h143') ? document.getElementById('h143').value : 'No');
+            const newValue = { ...step07_1 };
+            if (document.getElementById('e171')) document.getElementById('e171').value = newValue[h143][0];
+            if (document.getElementById('e172')) document.getElementById('e172').value = newValue[h143][1];
+        }
+        let _set_h149 = () => {
+            let sistema_est = (document.getElementById('sistema_est') ? document.getElementById('sistema_est').value : 'No');
+            const ro_value = { ...ro_values };
+            if (document.getElementById('h149')) document.getElementById('h149').value = ro_value[sistema_est];
         }
         let _set_j175 = () => {
             let e172 = document.getElementById('e172') ? document.getElementById('e172').value : 0;
@@ -400,7 +414,7 @@ class RECORD_ENG_STEP_4323 extends Component {
             let j66 = _GET_STEP_TYPE_INDEX('s4313', 'value', 20) ?? 0;
 
             let op = 0.48 * (j60 * j66) / (e66 * e60);
-           
+
             op = Number(op).toFixed(3)
             if (document.getElementById('j186')) document.getElementById('j186').value = op
         }
@@ -497,6 +511,7 @@ class RECORD_ENG_STEP_4323 extends Component {
         let update_values = () => {
             _set_h137();
             _set_h137_2();
+            _set_h149();
             _set_h156();
             _set_h157();
             _set_e1712();
@@ -562,7 +577,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s4233" id='e126' onBlur={()=> manage_step_4323()}
+                            className="form-control" name="recprd_eng_s4233" id='e126' onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4233', 'value', 0) ?? _GET_STEP_TYPE_INDEX('s4313', 'value', 9) ?? ''} />
                     </div>
                     <div className="col-3">
@@ -570,12 +585,12 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s4233" id='i126'  onBlur={()=> manage_step_4323()}
+                            className="form-control" name="recprd_eng_s4233" id='i126' onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4233', 'value', 1) ?? _GET_STEP_TYPE_INDEX('s4313', 'value', 10) ?? ''} />
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4233', 'check', 0) ?? 1)}
-                            name="recprd_eng_s4233_check"  onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4233_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4233', 'check', 0) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -588,21 +603,27 @@ class RECORD_ENG_STEP_4323 extends Component {
                         <label>Zona amenaza sísmica (A.2.3)</label>
                     </div>
                     <div className="col-2">
-                        <input type="text"
-                            className="form-control" name="recprd_eng_s4233" id='e127' onChange={() => update_values()} onBlur={()=> manage_step_4323()}
-                            defaultValue={_GET_STEP_TYPE_INDEX('s4233', 'value', 2) ?? _GET_STEP_TYPE_INDEX('s4313', 'value', 11) ?? 'ALTA'} />
+                        <select className="form-control form-select"
+                            name="recprd_eng_s4233" id='e127' onChange={() => update_values()} onBlur={() => manage_step_4323()}
+                            defaultValue={_GET_STEP_TYPE_INDEX('s4233', 'value', 2) ?? _GET_STEP_TYPE_INDEX('s4313', 'value', 11) ?? 'ALTA'} >
+                            <option>ALTA</option>
+                            <option>MEDIA</option>
+                            <option>BAJA</option>
+                        </select>
                     </div>
+
+
                     <div className="col-3">
                         <label>Ae Vel reducida (A.10.3)</label>
                     </div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s4233" id='i126' onBlur={()=> manage_step_4323()}
+                            className="form-control" name="recprd_eng_s4233" id='i126' onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4233', 'value', 3) ?? _GET_STEP_TYPE_INDEX('s4313', 'value', 12) ?? ''} />
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4233', 'check', 1) ?? 1)}
-                            name="recprd_eng_s4233_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4233_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4233', 'check', 1) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -618,12 +639,12 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s4233" id='i126' onBlur={()=> manage_step_4323()}
+                            className="form-control" name="recprd_eng_s4233" id='i126' onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4233', 'value', 4) ?? _GET_STEP_TYPE_INDEX('s4313', 'value', 13) ?? ''} />
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4233', 'check', 2) ?? 1)}
-                            name="recprd_eng_s4233_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4233_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4233', 'check', 2) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -640,7 +661,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-3">
                         <select className='form-select'
-                            name="recprd_eng_s4234_value" onChange={(e) => _set_step4_values(e.target.value)} onBlur={()=> manage_step_4323()}
+                            name="recprd_eng_s4234_value" onChange={(e) => _set_step4_values(e.target.value)} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4234', 'value', 0) ?? 'Ocupación normal'}>
                             <option>Ocupación normal</option>
                             <option>Ocupación especial</option>
@@ -650,7 +671,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4234', 'check', 0) ?? 1)}
-                            name="recprd_eng_s4234_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4234_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4234', 'check', 0) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -669,7 +690,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4234', 'check', 1) ?? 1)}
-                            name="recprd_eng_s4234_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4234_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4234', 'check', 1) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -687,7 +708,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4234', 'check', 2) ?? 1)}
-                            name="recprd_eng_s4234_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4234_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4234', 'check', 2) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -706,7 +727,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4234', 'check', 3) ?? 1)}
-                            name="recprd_eng_s4234_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4234_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4234', 'check', 3) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -723,7 +744,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-3">
                         <select className='form-select'
-                            name="recprd_eng_s4235_value" onChange={() => update_values()} onBlur={()=> manage_step_4323()}
+                            name="recprd_eng_s4235_value" id="sistema_est" onChange={() => update_values()} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4235', 'value', 0) ?? 'Muros de cargar A.3.2.1.1'}>
                             <option>Muros de cargar A.3.2.1.1</option>
                             <option>Pórticos A.3.2.1.3</option>
@@ -735,7 +756,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4235', 'check', 0) ?? 1)}
-                            name="recprd_eng_s4235_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4235_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4235', 'check', 0) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -749,7 +770,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-3">
                         <select className='form-select'
-                            name="recprd_eng_s4235_value" id='h143' onChange={() => update_values()} onBlur={()=> manage_step_4323()}
+                            name="recprd_eng_s4235_value" id='h143' onChange={() => update_values()} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4235', 'value', 1) ?? 'Concreto estructural reforzado'}>
                             <option>Concreto estructural reforzado</option>
                             <option>Estructuras Metálicas sin diagonales</option>
@@ -774,12 +795,12 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2"></div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s4236_value" id='h149' onChange={() => update_values()} onBlur={()=> manage_step_4323()}
+                            className="form-control" name="recprd_eng_s4236_value" id='h149' onChange={() => update_values()} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'value', 0) ?? ''} />
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4236', 'check', 0) ?? 1)}
-                            name="recprd_eng_s4236_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'check', 0) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -802,7 +823,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className='form-select'
-                            name="recprd_eng_s4236_value" onChange={(e) => _set_irregPlanta(e.target.value)} onBlur={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_value" onChange={(e) => _set_irregPlanta(e.target.value)} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'value', 1) ?? 'No'}>
                             <option>1aP = 0.90</option>
                             <option>1bP = 0.80</option>
@@ -820,7 +841,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4236', 'check', 1) ?? 1)}
-                            name="recprd_eng_s4236_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'check', 1) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -834,7 +855,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className='form-select'
-                            name="recprd_eng_s4236_value" onChange={(e) => _set_irreAltura(e.target.value)} onBlur={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_value" onChange={(e) => _set_irreAltura(e.target.value)} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'value', 3) ?? 'No'}>
                             <option>1aA= 0.90</option>
                             <option>1bA= 0.80</option>
@@ -852,7 +873,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4236', 'check', 2) ?? 1)}
-                            name="recprd_eng_s4236_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'check', 2) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -867,7 +888,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className='form-select'
-                            name="recprd_eng_s4236_value" onChange={(e) => _set_irreRedundancia_1(e.target.value)} onBlur={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_value" onChange={(e) => _set_irreRedundancia_1(e.target.value)} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'value', 5) ?? 'No'}>
                             <option>2R</option>
                             <option>3R</option>
@@ -881,7 +902,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4236', 'check', 3) ?? 1)}
-                            name="recprd_eng_s4236_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'check', 3) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -895,7 +916,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className='form-select'
-                            name="recprd_eng_s4236_value" onChange={(e) => _set_irreRedundancia_2(e.target.value)} onBlur={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_value" onChange={(e) => _set_irreRedundancia_2(e.target.value)} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'value', 7) ?? 'No'}>
                             <option>2R</option>
                             <option>3R</option>
@@ -909,7 +930,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4236', 'check', 4) ?? 1)}
-                            name="recprd_eng_s4236_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'check', 4) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -949,7 +970,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-4">
                         <select className='form-select' id='f159'
-                            name="recprd_eng_s4236_value" onChange={(e) => _set_analSismic(e.target.value)} onBlur={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_value" onChange={(e) => _set_analSismic(e.target.value)} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'value', 11) ?? 'No'}>
                             <option>Fuerza horizontal equivalente</option>
                             <option>Análisis dinámico elástico</option>
@@ -960,7 +981,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4236', 'check', 5) ?? 1)}
-                            name="recprd_eng_s4236_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s4236_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4236', 'check', 5) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -986,10 +1007,10 @@ class RECORD_ENG_STEP_4323 extends Component {
 
                 <div className="row mb-1">
                     <div className="col-3">
-                        <label>Valor  Ct</label>
+                        <label>Valor Ct</label>
                     </div>
                     <div className="col-2">
-                        <input type="number" step="0.01"
+                        <input step="0.01"
                             className="form-control" name="recprd_eng_s07" id='e171' disabled
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 0) ?? ''} />
                     </div>
@@ -997,7 +1018,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2"> </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4237', 'check', 0) ?? 1)}
-                            name="recprd_eng_s07_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s07_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'check', 0) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -1010,7 +1031,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                         <label>Valor de α</label>
                     </div>
                     <div className="col-2">
-                        <input type="number" step="0.01"
+                        <input step="0.01"
                             className="form-control" name="recprd_eng_s07" id='e172' disabled
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 1) ?? ''} />
                     </div>
@@ -1018,7 +1039,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2"> </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4237', 'check', 1) ?? 1)}
-                            name="recprd_eng_s07_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s07_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'check', 1) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -1032,14 +1053,14 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s07" id='e173' onChange={() => update_values()} onBlur={()=> manage_step_4323()}
+                            className="form-control" name="recprd_eng_s07" id='e173' onChange={() => update_values()} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 2) ?? ''} />
                     </div>
                     <div className="col-3"></div>
                     <div className="col-2"> </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4237', 'check', 2) ?? 1)}
-                            name="recprd_eng_s07_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s07_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'check', 2) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -1053,14 +1074,14 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s07" id='e174' onChange={() => update_values()} onBlur={()=> manage_step_4323()}
+                            className="form-control" name="recprd_eng_s07" id='e174' onChange={() => update_values()} onBlur={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 3) ?? ''} />
                     </div>
                     <div className="col-3"></div>
                     <div className="col-2"> </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4237', 'check', 3) ?? 1)}
-                            name="recprd_eng_s07_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s07_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'check', 3) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -1078,7 +1099,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                         defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 4) ?? ''} /></div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4237', 'check', 4) ?? 1)}
-                            name="recprd_eng_s07_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s07_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'check', 4) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -1119,7 +1140,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4237', 'check', 5) ?? 1)}
-                            name="recprd_eng_s07_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s07_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'check', 5) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -1138,7 +1159,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4237', 'check', 6) ?? 1)}
-                            name="recprd_eng_s07_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s07_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'check', 6) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -1157,7 +1178,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     </div>
                     <div className="col-2">
                         <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4237', 'check', 7) ?? 1)}
-                            name="recprd_eng_s07_check" onChange={()=> manage_step_4323()}
+                            name="recprd_eng_s07_check" onChange={() => manage_step_4323()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'check', 7) ?? 1}>
                             <option value="0" className="text-danger">NO CUMPLE</option>
                             <option value="1" className="text-success">CUMPLE</option>
@@ -1283,8 +1304,8 @@ class RECORD_ENG_STEP_4323 extends Component {
                 <div className="row mb-1">
                     <div className="col-3"><label>Espectro de aceleraciones (A.2.6.1)</label></div>
                     <div className="col-2"><label>Sa =</label></div>
-                    <div className="col-3"><input type="text" name="recprd_eng_s07" className="form-control" id='h196' disabled 
-                      defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 19) ?? ''}/></div>
+                    <div className="col-3"><input type="text" name="recprd_eng_s07" className="form-control" id='h196' disabled
+                        defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 19) ?? ''} /></div>
                     <div className="col-2">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_s07" id='j196' disabled style={{ background: 'DarkKhaki' }}
@@ -1311,13 +1332,13 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Fundaciones</label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'c</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='e202' onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='e202' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 0) ?? 21} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Placas y vigas</label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'c</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='k202'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='k202' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 1) ?? 21} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                 </div>
@@ -1325,13 +1346,13 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Columnas</label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'c</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='e203'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='e203' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 2) ?? 21} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Muros estructurales</label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'c</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='k203'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='k203' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 3) ?? 21} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                 </div>
@@ -1344,13 +1365,13 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Longitudinal   ≥  3/8"</label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'y</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='e206'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='e206' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 4) ?? 420} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Secundario (Estri/temp)</label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'yt</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='k206'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='k206' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 5) ?? 420} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                 </div>
@@ -1363,13 +1384,13 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">A compresión </label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'm</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='e209'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='e209' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 6) ?? ''} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">A compresión  unitaria</label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'm</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='k209'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='k209' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 7) ?? ''} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                 </div>
@@ -1377,13 +1398,13 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Mortero de pega</label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'cp</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='e210'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='e210' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 8) ?? ''} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Mortero de relleno</label></div>
                     <div className="col border border-dark px-2 text-center"><label>f'cp</label></div>
                     <div className="col border border-dark px-2">  <input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='k210'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='k210' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 9) ?? ''} /></div>
                     <div className="col border border-dark px-2 text-center"><label>MPa</label></div>
                 </div>
@@ -1396,7 +1417,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Platinas</label></div>
                     <div className="col border border-dark px-2 text-center"><label>ASTM</label></div>
                     <div className="col border border-dark px-2"><input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='e213'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='e213' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 10) ?? ''} /></div>
                     <div className="col border border-dark px-2 text-center"></div>
                     <div className="col-6"></div>
@@ -1405,7 +1426,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Perfiles</label></div>
                     <div className="col border border-dark px-2 text-center"><label>ASTM</label></div>
                     <div className="col border border-dark px-2"><input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='e214'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='e214' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 11) ?? ''} /></div>
                     <div className="col border border-dark px-2 text-center"></div>
                     <div className="col-6"></div>
@@ -1414,7 +1435,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Pernos</label></div>
                     <div className="col border border-dark px-2 text-center"><label>ASTM</label></div>
                     <div className="col border border-dark px-2"><input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='e215'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='e215' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 12) ?? ''} /></div>
                     <div className="col border border-dark px-2 text-center"></div>
                     <div className="col-6"></div>
@@ -1423,7 +1444,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                     <div className="col-2 border border-dark px-2"><label className="fw-bold">Soldaduras</label></div>
                     <div className="col border border-dark px-2 text-center"><label>ASTM</label></div>
                     <div className="col border border-dark px-2"><input type="number" step="0.01"
-                        className="form-control my-1" name="recprd_eng_s0m" id='e216'onBlur={()=> manage_step_4323()}
+                        className="form-control my-1" name="recprd_eng_s0m" id='e216' onBlur={() => manage_step_4323()}
                         defaultValue={_GET_STEP_TYPE_INDEX('s423m', 'value', 13) ?? ''} /></div>
                     <div className="col border border-dark px-2 text-center"></div>
                     <div className="col-6"></div>
@@ -1434,7 +1455,7 @@ class RECORD_ENG_STEP_4323 extends Component {
         //var formData = new FormData();
 
         let manage_step_4323 = (e) => {
-            if(e) e.preventDefault();
+            if (e) e.preventDefault();
 
             // s4233
 
@@ -1643,33 +1664,33 @@ class RECORD_ENG_STEP_4323 extends Component {
 
         return (
             <div className="record_eng_desc container">
+                <hr />
+                {SUBCATEGORIES[4] == 1 ? <>
+                    <label className="app-p fw-bold text-uppercase my-2">Paso 3: Obtención del nivel de amenaza sísmica y valores de Aa y Av.  Consiste en ubicar el lugar de la edificación dentro de los mapas de zonificación sísmica, (Cap. A-2), y determinar los valores de Aa y Av para determinar la amenaza sísmica, según sea (Alta, intermedia y baja). </label>
+                    <label className="app-p fw-bold my-2">Características sísmicas</label>
+                    {COMPONENT_STEP_03()}
                     <hr />
-                    {SUBCATEGORIES[4] == 1 ? <>
-                        <label className="app-p fw-bold text-uppercase my-2">Paso 3: Obtención del nivel de amenaza sísmica y valores de Aa y Av.  Consiste en ubicar el lugar de la edificación dentro de los mapas de zonificación sísmica, (Cap. A-2), y determinar los valores de Aa y Av para determinar la amenaza sísmica, según sea (Alta, intermedia y baja). </label>
-                        <label className="app-p fw-bold my-2">Características sísmicas</label>
-                        {COMPONENT_STEP_03()}
-                        <hr />
-                    </> : ""}
-                    {SUBCATEGORIES[5] == 1 ? <>
-                        <label className="app-p fw-bold text-uppercase my-2">Paso 4: Movimiento sísmicos de diseño. Debe tomarse en cuenta, la amenaza sísmica para el lugar determinado, parámetros Aa y Av, las características de la estratificación del suelo coeficientes Fa y Fv., la importancia del edificio para la recuperación por la comunidad con posterioridad a la ocurrencia de un sismo, Coeficiente de importancia.</label>
-                        {COMPONENT_STEP_04()}
-                        <hr />
-                    </> : ""}
-                    {SUBCATEGORIES[6] == 1 ? <>
-                        <label className="app-p fw-bold text-uppercase my-2">Paso 5: Características de la estructuración y del material estructural empleado. </label>
-                        {COMPONENT_STEP_05()}
-                        <hr />
-                    </> : ""}
-                    {SUBCATEGORIES[7] == 1 ? <>
-                        <label className="app-p fw-bold text-uppercase my-2">Paso 6, Grado de irregularidad de la estructura y procedimiento de análisis. Se realiza la revisión de los factores de irregularidad para determinar el método de análisis sísmico.</label>
-                        {COMPONENT_STEP_06()}
-                        <hr />
-                    </> : ""}
-                    {SUBCATEGORIES[8] == 1 ? <>
-                        <label className="app-p fw-bold text-uppercase my-2">Paso 7, Determinación de las fuerzas sísmicas. El valor de las fuerzas sísmicas, en base a los parámetros sísmicos del paso 4.</label>
-                        {COMPONENT_STEP_07()}
-                        {COMPONENT_STEP_MATERIALS()}
-                    </> : ""}
+                </> : ""}
+                {SUBCATEGORIES[5] == 1 ? <>
+                    <label className="app-p fw-bold text-uppercase my-2">Paso 4: Movimiento sísmicos de diseño. Debe tomarse en cuenta, la amenaza sísmica para el lugar determinado, parámetros Aa y Av, las características de la estratificación del suelo coeficientes Fa y Fv., la importancia del edificio para la recuperación por la comunidad con posterioridad a la ocurrencia de un sismo, Coeficiente de importancia.</label>
+                    {COMPONENT_STEP_04()}
+                    <hr />
+                </> : ""}
+                {SUBCATEGORIES[6] == 1 ? <>
+                    <label className="app-p fw-bold text-uppercase my-2">Paso 5: Características de la estructuración y del material estructural empleado. </label>
+                    {COMPONENT_STEP_05()}
+                    <hr />
+                </> : ""}
+                {SUBCATEGORIES[7] == 1 ? <>
+                    <label className="app-p fw-bold text-uppercase my-2">Paso 6, Grado de irregularidad de la estructura y procedimiento de análisis. Se realiza la revisión de los factores de irregularidad para determinar el método de análisis sísmico.</label>
+                    {COMPONENT_STEP_06()}
+                    <hr />
+                </> : ""}
+                {SUBCATEGORIES[8] == 1 ? <>
+                    <label className="app-p fw-bold text-uppercase my-2">Paso 7, Determinación de las fuerzas sísmicas. El valor de las fuerzas sísmicas, en base a los parámetros sísmicos del paso 4.</label>
+                    {COMPONENT_STEP_07()}
+                    {COMPONENT_STEP_MATERIALS()}
+                </> : ""}
             </div >
         );
     }

@@ -2,6 +2,7 @@ import Logo1 from '../../img/logo.png'
 import Logo2 from '../../img/logo2.png'
 import Logo3 from '../../img/logogov.png'
 import LogoFl from '../../img/logo3.png'
+import LogoLbj from '../../img/lbj.png'
 import IMG1 from '../../img/slider/img1.jpg'
 import IMG2 from '../../img/slider/img2.jpg'
 import IMG3 from '../../img/slider/img3.jpg'
@@ -133,6 +134,44 @@ const info = {
         exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
         res_extras : {
             art1p : "en concordancia con el Acuerdo Municipal 028 del 2003 - P.B.O.T. del Municipio de Piedecuesta,"
+        },
+        other_entities: false,
+    },
+    'lbj': {
+        name: 'ALCALDIA DE LEBRIJA',
+        dir: 'ALEXANDER MARTINEZ MENDOZA',
+        title: '',
+        job: 'JEFE OFICINA ASESOR DE PLANEACION',
+        titles: '',
+        city: 'Lebrija',
+        state: 'SANTANDER',
+        nomen: '',
+        nomens: '',
+        address: '', // FALTA
+        web: 'https://www.lebrija-santander.gov.co/Paginas/Inicio.aspx',
+        number1: '607 685 49 00 EXT 127',
+        number2: '(+57)318 36 09 271',
+        email1: 'planeacion@lebrija-santander.gov.co',
+        email2: '',
+        nit: '8902012220',
+        schedule: 'Lunes a Jueves: 07:00 - 12:00pm y 2:00pm - 6:00pm y Viernes 07:00 - 12:00pm y 2:00pm - 5:00pm',
+        icon: LogoLbj,
+        m: 1,
+        axisVar: ["Zona Lebrija"],
+        axisTable: [3000],
+        zonesVar: ["N/A",],
+        zonesTable : [0.1,],
+        pot: '11/2003',
+        sign: {
+            text: 'Esta valla advierte a terceros sobre la iniciación del trámite administrativo correspondiente. Toda persona interesada en formular objeciones a la expedición de una licencia urbanística podrá hacerse parte del trámite administrativo desde la fecha de la radicación de la solicitud hasta antes de la expedición del acto administrativo que resuelve la solicitud. Dicho acto sólo podrá ser expedido una vez haya transcurrido un término mínimo de cinco (5) días hábiles, contados a partir del día siguiente a la fecha de la citación a los vecinos colindantes o de la publicación cuando este fuere necesaria y, en el caso de los demás terceros, a partir del día siguiente a la fecha en que se radique la fotografía donde conste la instalación de la valla o aviso (Artículo 2.2.6.1.2.2.2 Decreto 1077 de 2015).'
+        },
+        serials: {
+            start:'VR',
+            end: 'OE',
+        },
+        exp_rules : ['Exp. Variables', 'Imp. Delineacion'],
+        res_extras : {
+            art1p : "en revisión excepcional 010 de 2011,"
         },
         other_entities: false,
     },

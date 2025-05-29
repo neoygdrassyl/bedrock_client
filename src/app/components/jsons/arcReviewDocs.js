@@ -182,7 +182,7 @@ export const REVIEW_DOCS = [
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_11', rtype: ['con', 'col',], title: 'Cuadro Nrs10',
+        v: 0, c: 0, pid: 'rar_11', rtype: ['con', 'col',], title: 'Cuadro NSR-10',
         items: [
             { v: 1, c: 1, rtype: ['con', 'col',], name: 'Grupo de ocupación', },
             { v: 2, c: 2, rtype: ['con', 'col',], name: 'Subgrupo de ocupación', },

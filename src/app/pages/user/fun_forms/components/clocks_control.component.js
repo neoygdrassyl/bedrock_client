@@ -156,7 +156,7 @@ class CLOCKS_CONTROL extends Component {
             { state: -1, version: false, desc: false, name: 'INCOMPLETO', limit: [3, false, 30], icon: <i class="far fa-dot-circle"></i>, optional: true, },
             { state: stepsToCheck, version: -1, optional: true, icon: <i class="far fa-dot-circle text-danger"></i> },
             { state: 4, version: false, desc: "Vencimiento Licencia Inicial", name: 'VENCIMIENTO LICENCIA INICIAL', icon: <i class="fas fa-file-alt text-success"></i>,  optional: regexChecker_isOA_2(_GET_CHILD_1()) ? false: true,},
-            { state: 5, version: false, desc: false, name: 'LEGAL Y DEBIDA FORMA', limit: regexChecker_isOA_2(_GET_CHILD_1()) ?  [4, false, -30]:  [3, false, 30], icon: <i class="far fa-check-circle text-success"></i>, },
+            { state: 5, version: false, desc: false, name: 'LEGAL Y DEBIDA FORMA', limit: regexChecker_isOA_2(_GET_CHILD_1()) ?  [4, false, -30] : [3, false, 30], icon: <i class="far fa-check-circle text-success"></i>, },
 
             ...extraClocks(),
 
@@ -310,7 +310,6 @@ class CLOCKS_CONTROL extends Component {
                 }
 
             }
-
             return <>
                 <div className="row">
                     <div className="col border">

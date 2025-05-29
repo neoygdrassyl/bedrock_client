@@ -318,6 +318,7 @@ class RECORD_REVIEW extends Component {
                 version: 1,
                 check: "",
                 check_2: "",
+                check_3: "",
                 date: "",
                 desc: '',
                 detail: '',
@@ -327,6 +328,7 @@ class RECORD_REVIEW extends Component {
                 worker_name: '',
                 check_context: '',
                 check_2_cotext: '',
+                check_3_cotext: '',
             }
             if (_CHILD) {
                 for (let i = 0; i < _CHILD.length; i++) {
@@ -336,6 +338,7 @@ class RECORD_REVIEW extends Component {
                         _CHILD_VARS.version = element.version;
                         _CHILD_VARS.check = element.check;
                         _CHILD_VARS.check_2 = element.check_2;
+                        _CHILD_VARS.check_3 = element.check_3;
                         _CHILD_VARS.date = element.date ?? "";
                         _CHILD_VARS.desc = element.desc ?? "";
                         _CHILD_VARS.detail = element.detail ?? "";
@@ -345,6 +348,7 @@ class RECORD_REVIEW extends Component {
                         _CHILD_VARS.worker_name = element.worker_name ?? "";
                         _CHILD_VARS.check_context = element.check_context ?? "";
                         _CHILD_VARS.check_2_cotext = element.check_2_cotext ?? "";
+                        _CHILD_VARS.check_3_cotext = element.check_3_cotext ?? "";
                     }
                 }
             }
@@ -517,8 +521,10 @@ class RECORD_REVIEW extends Component {
 
             document.getElementById('record_pdf_check_1_v_eng').value = _reviews[i].check == 1 ? 'VIABLE' : 'NO VIABLE';
             document.getElementById('record_pdf_check_2_v_eng').value = _reviews[i].check2 == 1 ? 'VIABLE' : _reviews[i].check2 == 2 ? 'NO APLICA' : 'NO VIABLE';
+            document.getElementById('record_pdf_check_3_v_eng').value = _reviews[i].check3 == 1 ? 'VIABLE' : _reviews[i].check3 == 2 ? 'NO APLICA' : 'NO VIABLE';
             document.getElementById('record_pdf_check_1_c_eng').value = _reviews[i].c1;
             document.getElementById('record_pdf_check_2_c_eng').value = _reviews[i].c2;
+            document.getElementById('record_pdf_check_3_c_eng').value = _reviews[i].c3;
         }
         // COMPONENT JSX
         let _NOTY_TYPE_COMPONENENT = () => {
@@ -806,10 +812,10 @@ class RECORD_REVIEW extends Component {
             let _REVIEWS_DATES_ENG = _GET_CLOCK_STATE_VERSION(12, 200).date_start ? _GET_CLOCK_STATE_VERSION(12, 200).date_start.split(';') : [];
             let _REVIEWS_DESC_ENG = _GET_CLOCK_STATE_VERSION(12, 200).desc ? _GET_CLOCK_STATE_VERSION(12, 200).desc.split(';') : [];
             let reviews_eng = [
-                { worker: '', check: 0, check2: 0, c1: '', c2: '', date: '', },
-                { worker: '', check: 0, check2: 0, c1: '', c2: '', date: '', },
-                { worker: '', check: 0, check2: 0, c1: '', c2: '', date: '', },
-                { worker: '', check: 0, check2: 0, c1: '', c2: '', date: '', },
+                { worker: '', check: 0, check2: 0, check3: 0, c1: '', c2: '', c3: '', date: '', },
+                { worker: '', check: 0, check2: 0, check3: 0, c1: '', c2: '', c3: '', date: '', },
+                { worker: '', check: 0, check2: 0, check3: 0, c1: '', c2: '', c3: '', date: '', },
+                { worker: '', check: 0, check2: 0, check3: 0, c1: '', c2: '', c3: '', date: '', },
             ]
             // ************************************** // 
             for (let i = 0; i < CLOCKS_R.length; i++) {
@@ -827,9 +833,11 @@ class RECORD_REVIEW extends Component {
                     reviews_eng[i].worker = _REVIEW_ENG_WORER;
                     reviews_eng[i].check = _REVIEW_ENG_DELTA.check || (eng_checks[0] ? eng_checks[0] : 0);
                     reviews_eng[i].check2 = _REVIEW_ENG_DELTA.check_2 || (eng_checks[1] ? eng_checks[1] : 0);
+                    reviews_eng[i].check3 = _REVIEW_ENG_DELTA.check_3 || (eng_checks[2] ? eng_checks[2] : 0);
                     reviews_eng[i].date = _REVIEW_ENG_DELTA.date || (_REVIEWS_DATES_ENG[i] ? _REVIEWS_DATES_ENG[i] : '');
                     reviews_eng[i].c1 = _REVIEW_ENG_DELTA.check_context || (eng_checks_desc[0] ? eng_checks_desc[0] : '');
                     reviews_eng[i].c2 = _REVIEW_ENG_DELTA.check_2_cotext || (eng_checks_desc[1] ? eng_checks_desc[1] : '');
+                    reviews_eng[i].c3 = _REVIEW_ENG_DELTA.check_3_cotext || (eng_checks_desc[2] ? eng_checks_desc[2] : '');
                 } else {
                     reviews_law[i].worker = _REVIEW_LAW_WORER;
                     reviews_law[i].check = _REVIEWS_LAW[i] ? _REVIEWS_LAW[i] : 0;
@@ -842,9 +850,11 @@ class RECORD_REVIEW extends Component {
                     reviews_eng[i].worker = _REVIEW_ENG_WORER;
                     reviews_eng[i].check = eng_checks[0] ? eng_checks[0] : 0;
                     reviews_eng[i].check2 = (eng_checks[1] ? eng_checks[1] : 0);
+                    reviews_eng[i].check3 = (eng_checks[2] ? eng_checks[2] : 0);
                     reviews_eng[i].date = _REVIEWS_DATES_ENG[i] ? _REVIEWS_DATES_ENG[i] : '';
                     reviews_eng[i].c1 = (eng_checks_desc[0] ? eng_checks_desc[0] : '');
                     reviews_eng[i].c2 = (eng_checks_desc[1] ? eng_checks_desc[1] : '');
+                    reviews_eng[i].c3 = (eng_checks_desc[2] ? eng_checks_desc[2] : '');
                 }
             }
             return <>
@@ -995,6 +1005,14 @@ class RECORD_REVIEW extends Component {
                     <div className="col">
                         <h5 className='fw-normal'>Resultado 2:</h5>
                         <input className='form-control form-control-sm' id={"record_pdf_check_2_v_eng"} disabled defaultValue={reviews_eng[0].check2 == 1 ? 'VIABLE' : reviews_eng[0].check2 == 2 ? 'NO APLICA' : 'NO VIABLE'} />
+                    </div>
+                    <div className="col">
+                        <h5 className='fw-normal'>Resultado 3 Contexto:</h5>
+                        <input className='form-control form-control-sm' id={"record_pdf_check_3_c_eng"} disabled defaultValue={reviews_eng[0].c3} />
+                    </div>
+                    <div className="col">
+                        <h5 className='fw-normal'>Resultado 3:</h5>
+                        <input className='form-control form-control-sm' id={"record_pdf_check_3_v_eng"} disabled defaultValue={reviews_eng[0].check3 == 1 ? 'VIABLE' : reviews_eng[0].check3 == 2 ? 'NO APLICA' : 'NO VIABLE'} />
                     </div>
                 </div>
 
@@ -1616,11 +1634,16 @@ class RECORD_REVIEW extends Component {
             formData.set('r_check_eng', r_check_eng);
             let r_check_2_eng = document.getElementById("record_pdf_check_2_v_eng").value;
             formData.set('r_check_2_eng', r_check_2_eng);
+            let r_check_3_eng = document.getElementById("record_pdf_check_3_v_eng").value;
+            formData.set('r_check_3_eng', r_check_3_eng);
+
 
             let r_check_c_eng = document.getElementById("record_pdf_check_1_c_eng").value;
             formData.set('r_check_c_eng', r_check_c_eng);
             let r_check_2_c_eng = document.getElementById("record_pdf_check_2_c_eng").value;
             formData.set('r_check_2_c_eng', r_check_2_c_eng);
+            let r_check_3_c_eng = document.getElementById("record_pdf_check_3_c_eng").value;
+            formData.set('r_check_3_c_eng', r_check_3_c_eng);
 
             let r_eng_diagnostic = document.getElementById("record_eng_diagnostic").checked;
             formData.set('r_eng_diagnostic', r_eng_diagnostic);

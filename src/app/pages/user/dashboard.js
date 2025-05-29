@@ -106,8 +106,7 @@ class Dashboard extends Component {
                                 <DashBoardCard title="Base de Datos Profesionales" image="fas fa-hard-hat fa-3x" link={"/profesionals"} imageColor=" Black" />
                             </MDBCol>
                         </div>
-                        <div className="d-flex justify-content-center py-3"
-                            lassName="px-3">
+                        <div className="d-flex justify-content-center py-3">
                             <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Historial de Profesionales" image="fas fa-address-book fa-4x" link={"/certs"} imageColor=" MediumSeaGreen" />
                             </MDBCol>

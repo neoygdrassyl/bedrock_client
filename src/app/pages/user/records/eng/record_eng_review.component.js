@@ -154,7 +154,7 @@ class RECORD_ENG_REVIEW extends Component {
         let pageCount = pdfDoc.getPageCount();
 
         for (let i = 0; i < pageCount; i++) {
-            if (Number(model) == 2021 || i > 0){
+            if (Number(model) == 2021 || i > 0) {
                 page = pdfDoc.getPage(i);
                 page.moveTo(215, 783)
                 page.drawText(_number, { size: 14 })
@@ -162,7 +162,7 @@ class RECORD_ENG_REVIEW extends Component {
                 page.drawText(_city, { size: 9 })
                 page.moveTo(420, 830)
                 page.drawText(id_public, { size: 14 })
-            } 
+            }
 
             // THIS IS DONE BECAUSE THE SIZE OF THE PAGES ARE DIFERENT, ONE IS LETTER, OTHER IS LEGAL
             if (Number(model) >= 2022 && i == 0) {
@@ -240,6 +240,7 @@ class RECORD_ENG_REVIEW extends Component {
                 version: 1,
                 check: "",
                 check_2: "",
+                check_3: "",
                 date: "",
                 desc: '',
                 detail: '',
@@ -249,6 +250,7 @@ class RECORD_ENG_REVIEW extends Component {
                 worker_name: '',
                 check_context: '',
                 check_2_cotext: '',
+                check_3_cotext: '',
             }
             if (_CHILD) {
                 for (let i = 0; i < _CHILD.length; i++) {
@@ -258,6 +260,7 @@ class RECORD_ENG_REVIEW extends Component {
                         _CHILD_VARS.version = element.version;
                         _CHILD_VARS.check = element.check;
                         _CHILD_VARS.check_2 = element.check_2;
+                        _CHILD_VARS.check_3 = element.check_3;
                         _CHILD_VARS.date = element.date ?? "";
                         _CHILD_VARS.desc = element.desc ?? "";
                         _CHILD_VARS.detail = element.detail ?? "";
@@ -267,6 +270,7 @@ class RECORD_ENG_REVIEW extends Component {
                         _CHILD_VARS.worker_name = element.worker_name ?? "";
                         _CHILD_VARS.check_context = element.check_context ?? "";
                         _CHILD_VARS.check_2_cotext = element.check_2_cotext ?? "";
+                        _CHILD_VARS.check_3_cotext = element.check_3_cotext ?? "";
                     }
                 }
             }
@@ -383,9 +387,9 @@ class RECORD_ENG_REVIEW extends Component {
                             <label>Observaciones</label>
                         </div>
                     </div>
-                    <textarea className="input-group" maxLength="8000" id="record_eng_detail_2" rows="4"
+                    <textarea className="input-group" maxLength="15000" id="record_eng_detail_2" rows="4"
                         defaultValue={_CHILD.detail_2} onBlur={() => save_item()}></textarea>
-                    <label> (máximo 8000 caracteres)</label>
+                    <label> (máximo 15000 caracteres)</label>
                 </div>
             </div>
         }
@@ -447,6 +451,7 @@ class RECORD_ENG_REVIEW extends Component {
                     let rev = _REVIEWS[i] ? _REVIEWS[i].split(',') : [];
                     let ireview = i == 0 ? (_CHILD.check ?? rev[0]) : rev[0];
                     let ireview2 = i == 0 ? (_CHILD.check_2 ?? rev[1]) : rev[1];
+                    let ireview3 = i == 0 ? (_CHILD.check_3 ?? rev[2]) : rev[2];
 
                     let idate = i == 0 ? (_CHILD.date ?? _REVIEWS_DATES[i]) : _REVIEWS_DATES[i];
                     let iworker = _PRIMAL_ASIGN.worker_name || _CHILD.worker_name || '';
@@ -454,9 +459,10 @@ class RECORD_ENG_REVIEW extends Component {
                     let desc = _REVIEWS_DESC[i] ? _REVIEWS_DESC[i].split('&&') : [];
                     let idesc1 = i == 0 ? (_CHILD.check_context ?? desc[0] ?? '') : desc[0] ?? '';
                     let idesc2 = i == 0 ? (_CHILD.check_2_cotext ?? desc[1] ?? '') : desc[1] ?? '';
+                    let idesc3 = i == 0 ? (_CHILD.check_3_cotext ?? desc[2] ?? '') : desc[2] ?? '';
 
                     let isPrimal = i == 0;
-                    let allowReview = iasing != null && iasing != undefined && iasing != '';
+                    let allowReview = (iasing != null && iasing != undefined && iasing != '') || window.user.roleId === 1;
 
                     return <>
                         <div className="row border">
@@ -548,6 +554,29 @@ class RECORD_ENG_REVIEW extends Component {
                                 </div>
                                 <div className="col"></div>
                             </div>
+                            <div className="row border mx-2">
+                                <div className="col">
+                                    <label>Resultado 3:</label>
+                                </div>
+                                <div className="col-6">
+                                    {this.state['REW' + i]
+                                        ? <input type="text" class="form-control me-1" id={"r_l_review_60_" + i}
+                                            defaultValue={idesc3} />
+                                        : <label>{idesc3}</label>
+                                    }
+                                </div>
+                                <div className="col-3 text-center">
+                                    {this.state['REW' + i]
+                                        ? <select className="form-select form-control form-control-sm" defaultValue={ireview3} id={"r_l_review_70_" + i}>
+                                            <option value="0" className="text-danger">NO ES VIABLE</option>
+                                            {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
+                                            <option value="2" className="text-success">NO APLICA</option>
+                                        </select>
+                                        : <label>{REW_STR[ireview3] ?? ''}</label>
+                                    }
+                                </div>
+                                <div className="col"></div>
+                            </div>
                         </div>
                     </>
                 })}
@@ -623,10 +652,10 @@ class RECORD_ENG_REVIEW extends Component {
             CLOCKS_R = _RR.check == 0 ? ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Acta Correcciones',] : ['Acta Observaciones',]
 
             let reviews = [
-                { worker: '', check: 0, check2: 0, c1: '', c2: '', date: '', },
-                { worker: '', check: 0, check2: 0, c1: '', c2: '', date: '', },
-                { worker: '', check: 0, check2: 0, c1: '', c2: '', date: '', },
-                { worker: '', check: 0, check2: 0, c1: '', c2: '', date: '', },
+                { worker: '', check: 0, check2: 0, check3: 0, c1: '', c2: '', c3: '', date: '', },
+                { worker: '', check: 0, check2: 0, check3: 0, c1: '', c2: '', c3: '', date: '', },
+                { worker: '', check: 0, check2: 0, check3: 0, c1: '', c2: '', c3: '', date: '', },
+                { worker: '', check: 0, check2: 0, check3: 0, c1: '', c2: '', c3: '', date: '', },
             ]
 
             for (let i = 0; i < CLOCKS_R.length; i++) {
@@ -637,16 +666,20 @@ class RECORD_ENG_REVIEW extends Component {
                     reviews[i].worker = _WORKER_NAME;
                     reviews[i].check = _CHILD.check ?? (checks[0] ? checks[0] : 0);
                     reviews[i].check2 = _CHILD.check_2 ?? (checks[1] ? checks[1] : 0);
+                    reviews[i].check3 = _CHILD.check_3 ?? (checks[2] ? checks[2] : 0);
                     reviews[i].date = _CHILD.date ?? (_REVIEWS_DATES[i] ? _REVIEWS_DATES[i] : '');
                     reviews[i].c1 = _CHILD.check_context ?? (checks_desc[0] ? checks_desc[0] : '');
                     reviews[i].c2 = _CHILD.check_2_cotext ?? (checks_desc[1] ? checks_desc[1] : '');
+                    reviews[i].c3 = _CHILD.check_3_cotext ?? (checks_desc[2] ? checks_desc[2] : '');
                 } else {
                     reviews[i].worker = _WORKER_NAME;
                     reviews[i].check = checks[0] ? checks[0] : 0;
                     reviews[i].check2 = (checks[1] ? checks[1] : 0);
+                    reviews[i].check3 = (checks[2] ? checks[2] : 0);
                     reviews[i].date = _REVIEWS_DATES[i] ? _REVIEWS_DATES[i] : '';
                     reviews[i].c1 = (checks_desc[0] ? checks_desc[0] : '');
                     reviews[i].c2 = (checks_desc[1] ? checks_desc[1] : '');
+                    reviews[i].c3 = (checks_desc[2] ? checks_desc[2] : '');
                 }
             }
 
@@ -658,8 +691,10 @@ class RECORD_ENG_REVIEW extends Component {
 
                 document.getElementById('record_pdf_check_1_v').value = reviews[i].check == 1 ? 'VIABLE' : 'NO VIABLE';
                 document.getElementById('record_pdf_check_2_v').value = reviews[i].check2 == 1 ? 'VIABLE' : reviews[i].check2 == 2 ? 'NO APLICA' : 'NO VIABLE';
+                document.getElementById('record_pdf_check_3_v').value = reviews[i].check3 == 1 ? 'VIABLE' : reviews[i].check3 == 2 ? 'NO APLICA' : 'NO VIABLE';
                 document.getElementById('record_pdf_check_1_c').value = reviews[i].c1;
                 document.getElementById('record_pdf_check_2_c').value = reviews[i].c2;
+                document.getElementById('record_pdf_check_3_c').value = reviews[i].c3;
             }
 
             return <div className='row'>
@@ -745,6 +780,14 @@ class RECORD_ENG_REVIEW extends Component {
                         <div className="col">
                             <label>Resultado 2:</label>
                             <input className='form-control' id={"record_pdf_check_2_v"} disabled defaultValue={reviews[0].check2 == 1 ? 'VIABLE' : reviews[0].check2 == 2 ? 'NO APLICA' : 'NO VIABLE'} />
+                        </div>
+                        <div className="col">
+                            <label>Resultado 3 Contexto:</label>
+                            <input className='form-control' id={"record_pdf_check_3_c"} disabled defaultValue={reviews[0].c3} />
+                        </div>
+                        <div className="col">
+                            <label>Resultado 3:</label>
+                            <input className='form-control' id={"record_pdf_check_3_v"} disabled defaultValue={reviews[0].check3 == 1 ? 'VIABLE' : reviews[0].check3 == 2 ? 'NO APLICA' : 'NO VIABLE'} />
                         </div>
                     </div>
                     <div className="row mb-3 text-center">
@@ -878,10 +921,14 @@ class RECORD_ENG_REVIEW extends Component {
                 formData.set('check', check);
                 let check_2 = document.getElementById("r_l_review_30" + i).value;
                 formData.set('check_2', check_2);
+                let check_3 = document.getElementById("r_l_review_70" + i).value;
+                formData.set('check_3', check_3);
                 let check_context = document.getElementById("r_l_review_40" + i).value;
                 formData.set('check_context', check_context);
                 let check_2_cotext = document.getElementById("r_l_review_50" + i).value;
                 formData.set('check_2_cotext', check_2_cotext);
+                let check_3_cotext = document.getElementById("r_l_review_60" + i).value;
+                formData.set('check_3_cotext', check_3_cotext);
 
                 formData.set('worker_id', window.user.id);
                 manage_review(true);
@@ -987,12 +1034,14 @@ class RECORD_ENG_REVIEW extends Component {
             let date = document.getElementById("r_l_review_date" + i).value;
             let review_1 = document.getElementById("r_l_review_20" + i).value;
             let review_2 = document.getElementById("r_l_review_30" + i).value;
+            let review_3 = document.getElementById("r_l_review_70" + i).value;
             let desc_1 = review_1 == 1 ? "CUMPLE" : "NO CUMPLE";
             let desc_2 = review_2 == 1 ? "CUMPLE" : "NO CUMPLE";
+            let desc_3 = review_3 == 1 ? "CUMPLE" : "NO CUMPLE";
 
             formDataClock.set('date_start', date);
             formDataClock.set('name', "Revision ESTRUCTURAL, revision " + currentVersionR);
-            formDataClock.set('desc', `Resultado 1: ${desc_1}, Resultado 2: ${desc_2} por ${worker}`);
+            formDataClock.set('desc', `Resultado 1: ${desc_1}, Resultado 2: ${desc_2}, Resultado 3: ${desc_3} por ${worker}`);
             formDataClock.set('state', state);
             formDataClock.set('version', currentVersionR);
 
@@ -1009,7 +1058,8 @@ class RECORD_ENG_REVIEW extends Component {
             let desct = [desc_1, desc_2].join('&&');
             let review_1 = document.getElementById("r_l_review_20" + j).value;
             let review_2 = document.getElementById("r_l_review_30" + j).value;
-            let review = [review_1, review_2].join(',')
+            let review_3 = document.getElementById("r_l_review_70" + j).value;
+            let review = [review_1, review_2, review_3].join(',')
             let date = document.getElementById("r_l_review_date" + j).value;
             let asign_length = _CLOCK_ASIGN ? _CLOCK_ASIGN.date_start ? _CLOCK_ASIGN.date_start.split(';').length : 0 : 0;
 
@@ -1149,11 +1199,15 @@ class RECORD_ENG_REVIEW extends Component {
             formData.set('r_check', r_check);
             let r_check_2 = document.getElementById("record_pdf_check_2_v").value;
             formData.set('r_check_2', r_check_2);
+            let r_check_3 = document.getElementById("record_pdf_check_3_v").value;
+            formData.set('r_check_3', r_check_3);
 
             let r_check_c = document.getElementById("record_pdf_check_1_c").value;
             formData.set('r_check_c', r_check_c);
             let r_check_2_c = document.getElementById("record_pdf_check_2_c").value;
             formData.set('r_check_2_c', r_check_2_c);
+            let r_check_3_c = document.getElementById("record_pdf_check_3_c").value;
+            formData.set('r_check_3_c', r_check_3_c);
 
             MySwal.fire({
                 title: swaMsg.title_wait,

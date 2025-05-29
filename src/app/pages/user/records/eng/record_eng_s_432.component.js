@@ -13,7 +13,7 @@ class RECORD_ENG_STEP_432 extends Component {
     }
 
     render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version } = this.props;
         const { } = this.state;
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
         //  CONST
@@ -22,6 +22,101 @@ class RECORD_ENG_STEP_432 extends Component {
             'Coherencia técnica entre el estudio de suelos y el diseño estructural.',
             'Columna fuerte / Viga debil.',
         ]
+
+        const STEEL_DECK = [
+            { i: 0, name: 'hcresta (m)', default: 0.05, disabled: false, },
+            { i: 1, name: 'htotal (m)', default: 0.16, disabled: false, },
+            { i: 2, name: 'wcresta (m)', default: 0.12, disabled: false, },
+            { i: 3, name: 'wvalle (m)', default: 0.15, disabled: false, },
+            { i: 4, name: 'dcresta (m)', default: 0.31, disabled: false, },
+            { i: 5, name: 'Wplaca (kN/m2)', default: 2.62, disabled: true, },
+            { i: 6, name: 'Wmetaldeck (kN/m2)', default: 0.15, disabled: true, },
+            { i: 7, name: 'Wconc (kN/m2)', default: 0.55, disabled: true, },
+            { i: 8, name: 'Wtotal (kN/m2)', default: 3.32, disabled: true, },
+        ]
+
+        const CARGA_VIVA_USOS = [
+            {
+                i: 1, name: 'RESIDENCIAL Y PARQUEADEROS', usos: [
+                    { i: 0, name: 'Cuartos', default: 1.8 },
+                    { i: 1, name: 'Balcones', default: 5.0 },
+                    { i: 2, name: 'Escaleras', default: 3.0 },
+                    { i: 3, name: 'Parqueaderos', default: 2.5 },
+                    { i: 4, name: 'Cubierta', default: 0.5 },
+                ]
+            },
+            {
+                i: 2, name: 'REUNIÓN', usos: [
+                    { i: 0, name: 'Silleteria fija', default: 3.0 },
+                    { i: 1, name: 'Silleteria móvil', default: 5.0 },
+                    { i: 2, name: 'Gimnacios', default: 5.0 },
+                    { i: 3, name: 'Vestibulos', default: 5.0 },
+                    { i: 4, name: 'Áreas recreativas', default: 5.0 },
+                    { i: 5, name: 'Plataformas', default: 5.0 },
+                    { i: 6, name: 'Escenarios', default: 7.5 },
+                ]
+            },
+            {
+                i: 3, name: 'INSTITUCIONAL', usos: [
+                    { i: 0, name: 'Cuartos de cirugía, laboratorios', default: 4.0 },
+                    { i: 1, name: 'Cuartos privados', default: 2.0 },
+                    { i: 2, name: 'Corredores y escaleras', default: 5.0 },
+                ]
+            },
+            {
+                i: 4, name: 'OFICINAS', usos: [
+                    { i: 0, name: 'Corredores y escaleras', default: 3.0 },
+                    { i: 1, name: 'Oficinas', default: 2.0 },
+                    { i: 2, name: 'Restaurantes', default: 5.0 },
+                ]
+            },
+            {
+                i: 5, name: 'EDUCATIVOS', usos: [
+                    { i: 0, name: 'Salones de clase', default: 2.0 },
+                    { i: 1, name: 'Corredores y escaleras', default: 5.0 },
+                    { i: 2, name: 'Bibliotecas', default: null },
+                    { i: 3, name: 'Salonesd de lectura', default: 2.0 },
+                    { i: 4, name: 'Estanterías', default: 7.0 },
+                ]
+            },
+            {
+                i: 6, name: 'FÁBRICAS', usos: [
+                    { i: 0, name: 'Industrias livianas', default: 5.0 },
+                    { i: 1, name: 'Industrias pesadas', default: 10.0 },
+                ]
+            },
+            {
+                i: 7, name: 'COMERCIO', usos: [
+                    { i: 0, name: 'Minorista', default: 5.0 },
+                    { i: 1, name: 'Mayorista', default: 6.0 },
+                ]
+            },
+            {
+                i: 8, name: 'ALMACIENAMIENTO', usos: [
+                    { i: 0, name: 'Liviano', default: 6.0 },
+                    { i: 1, name: 'Mayorista', default: 12.0 },
+                ]
+            },
+            {
+                i: 9, name: 'GARAJES', usos: [
+                    { i: 0, name: 'Automoviles de pasajeros', default: 2.5 },
+                    { i: 1, name: 'capacidad de carga hasta 2ton', default: 5.0 },
+                ]
+            },
+            {
+                i: 10, name: 'COLISEOS Y ESTADIOS', usos: [
+                    { i: 0, name: 'Graderias', default: 5.0 },
+                    { i: 1, name: 'Escaleras', default: 5.0 },
+                ]
+            },
+            {
+                i: 0, name: 'NA', usos: []
+            },
+        ];
+
+        // Orden de los indexes
+        const CARGA_VIVA = [0, 1, 2];
+
 
         // FUNCTIONS & VARIABLES
         let var_e85 = () => document.getElementById('e85') ? document.getElementById('e85').value : 0;
@@ -225,15 +320,15 @@ class RECORD_ENG_STEP_432 extends Component {
 
         let _setStyles = () => {
             let activeColor = 'LightCoral'
-            document.getElementById('e85').style.backgroundColor = var_e85() > 0 ? activeColor : '';
-            document.getElementById('e86').style.backgroundColor = var_e86() > 0 ? activeColor : '';
-            document.getElementById('e87').style.backgroundColor = var_e87() > 0 ? activeColor : '';
-            document.getElementById('e88').style.backgroundColor = var_e88() > 0 ? activeColor : '';
+            if (document.getElementById('e85')) document.getElementById('e85').style.backgroundColor = var_e85() > 0 ? activeColor : '';
+            if (document.getElementById('e86')) document.getElementById('e86').style.backgroundColor = var_e86() > 0 ? activeColor : '';
+            if (document.getElementById('e87')) document.getElementById('e87').style.backgroundColor = var_e87() > 0 ? activeColor : '';
+            if (document.getElementById('e88')) document.getElementById('e88').style.backgroundColor = var_e88() > 0 ? activeColor : '';
 
-            document.getElementById('f85').style.backgroundColor = var_f85() > 0 ? activeColor : '';
-            document.getElementById('f86').style.backgroundColor = var_f86() > 0 ? activeColor : '';
-            document.getElementById('f87').style.backgroundColor = var_f87() > 0 ? activeColor : '';
-            document.getElementById('f88').style.backgroundColor = var_f88() > 0 ? activeColor : '';
+            if (document.getElementById('f85')) document.getElementById('f85').style.backgroundColor = var_f85() > 0 ? activeColor : '';
+            if (document.getElementById('f86')) document.getElementById('f86').style.backgroundColor = var_f86() > 0 ? activeColor : '';
+            if (document.getElementById('f87')) document.getElementById('f87').style.backgroundColor = var_f87() > 0 ? activeColor : '';
+            if (document.getElementById('f88')) document.getElementById('f88').style.backgroundColor = var_f88() > 0 ? activeColor : '';
         }
 
         let update_values = () => {
@@ -256,6 +351,83 @@ class RECORD_ENG_STEP_432 extends Component {
             //_set_def116();
             _set_def119();
             _setStyles();
+        }
+
+        let set_steel_deck = () => {
+            let hcresta = Number(document.getElementById('steel_deck_0').value);
+            let htotal = Number(document.getElementById('steel_deck_1').value);
+            let wcresta = Number(document.getElementById('steel_deck_2').value);
+            let wvalle = Number(document.getElementById('steel_deck_3').value);
+            let dcresta = Number(document.getElementById('steel_deck_4').value);
+
+            let Wplaca = (hcresta * htotal) / 24;
+            let Wmetaldeck = 0.15;
+            let Wconc = ((wcresta + (dcresta - wvalle)) * hcresta / 2) * 24 / dcresta;
+            let Wtotal = Wplaca + Wmetaldeck + Wconc;
+
+            document.getElementById('steel_deck_5').value = (Wplaca).toFixed(2);
+            document.getElementById('steel_deck_6').value = (Wmetaldeck).toFixed(2);
+            document.getElementById('steel_deck_7').value = (Wconc).toFixed(2);
+            document.getElementById('steel_deck_8').value = (Wtotal).toFixed(2);
+
+            var formData = new FormData();
+            let values = STEEL_DECK.map(item => document.getElementById('steel_deck_' + item.i).value)
+
+            formData.set('value', values.join(';'));
+            formData.set('version', currentVersionR);
+            formData.set('recordEngId', currentRecord.id);
+            formData.set('id_public', 'steel_deck');
+            save_step('steel_deck', false, formData);
+        }
+
+        let set_steel_deck_use = () => {
+            let check = document.getElementById('steel_deck_use').value
+            let formData = new FormData();
+            formData.set('check', check);
+            formData.set('version', currentVersionR);
+            formData.set('recordEngId', currentRecord.id);
+            formData.set('id_public', 'steel_deck');
+            save_step('steel_deck', false, formData);
+        }
+
+        let set_carga_vida = () => {
+            CARGA_VIVA.map(i => {
+                let id_public = 'carga_vida_' + i 
+                let selected_uso = document.getElementById("carga_vida_use_" + i).value;
+                let carga = CARGA_VIVA_USOS.find(c => c.i == selected_uso);
+                let values = carga.usos.map(uso => {
+                    let id = 'carga_vida_' + i + "_" + uso.i;
+                    if (document.getElementById(id)) return document.getElementById(id).value;
+                    return null
+                })
+                let formData = new FormData();
+                formData.set('value', values.join(';'));
+                formData.set('version', currentVersionR);
+                formData.set('recordEngId', currentRecord.id);
+                formData.set('id_public', id_public);
+                save_step(id_public, false, formData);
+            })
+        }
+
+
+        let set_carga_vida_use = () => {
+            let value = [];
+            value = CARGA_VIVA.map(i => document.getElementById("carga_vida_use_" + i).value);
+            let formData = new FormData();
+            formData.set('value', value.join(';'));
+            formData.set('version', currentVersionR);
+            formData.set('recordEngId', currentRecord.id);
+            formData.set('id_public', 'carga_vida_use');
+            save_step('carga_vida_use', false, formData);
+
+            CARGA_VIVA.map(i => {
+                let selected_uso = document.getElementById("carga_vida_use_" + i).value;
+                let carga = CARGA_VIVA_USOS.find(c => c.i == selected_uso);
+                carga.usos.map(uso => {
+                    let id = 'carga_vida_' + i + "_" + uso.i;
+                    if (document.getElementById(id)) document.getElementById(id).value = _GET_STEP_TYPE_INDEX('carga_vida_' + i, 'value', uso.i) || uso.default;
+                })
+            })
         }
         // DATA GETTERS
         let LOAD_STEP = (_id_public) => {
@@ -498,11 +670,11 @@ class RECORD_ENG_STEP_432 extends Component {
                     <label className="fw-bold my-2">ANÁLISIS DE CARGAS</label>
                 </div>
                 <div className="row">
-                    <div className="col-7">
+                    <div className="col-8">
                         {COMPONENT_TABLE_LIGHT()}
                     </div>
                     <div className="col-4">
-
+                        {version === 2 ? COMPONENT_TABLE_SEETL_DECK() : null}
                     </div>
                 </div>
                 <div className="row">
@@ -513,6 +685,12 @@ class RECORD_ENG_STEP_432 extends Component {
                         {COMPONENT_TABLE_ALIVE()}
                     </div>
                 </div>
+                {version === 2 ? <div className="row">
+                    <div className="col">
+                        {COMPONENT_TABLE_ALIVE_2()}
+                    </div>
+                </div> : null}
+
             </>
         }
         let COMPONENT_TABLE_LIGHT = () => {
@@ -840,15 +1018,15 @@ class RECORD_ENG_STEP_432 extends Component {
         }
         let COMPONENT_TABLE_ALIVE = () => {
             return <>
-                <div className="row border border-dark text-center">
+                <div className={version >= 2 ? "" : "row border border-dark text-center"} hidden={version >= 2}>
                     <div className="col">
                         <label className="fw-bold">CARGA VIVA</label>
                     </div>
                 </div>
-                <div className="row border border-dark text-center">
+                <div className={version >= 2 ? "" : "row border border-dark text-center"} hidden={version >= 2}>
                     <div className="col"><label></label></div>
                 </div>
-                <div className="row text-center">
+                <div className="row text-center" hidden={version >= 2}>
                     <div className="col border border-dark" style={{ background: 'lightgray' }}>
                         <label className="fw-bold">USO</label>
                     </div>
@@ -858,72 +1036,164 @@ class RECORD_ENG_STEP_432 extends Component {
                 </div>
 
                 <div className="row text-center">
-                    <div className="col border border-dark">
-                        <label >Cuartos</label>
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <label hidden={version >= 2}>Cuartos</label>
                     </div>
-                    <div className="col border border-dark">
-                        <input type="number" step="0.01" id='i113' onChange={() => update_values()} onBlur={() => manage_step_432()}
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <input type={version >= 2 ? "hidden" : "number"} step="0.01" id='i113' onChange={() => update_values()} onBlur={() => manage_step_432()}
                             className="form-control my-1" name="recprd_eng_s4322"
                             defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 32) ?? 1.8} />
                     </div>
                 </div>
 
                 <div className="row text-center">
-                    <div className="col border border-dark">
-                        <label >Balcones</label>
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <label hidden={version >= 2}>Balcones</label>
                     </div>
-                    <div className="col border border-dark">
-                        <input type="number" step="0.01" id='i114' onChange={() => update_values()} onBlur={() => manage_step_432()}
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <input type={version >= 2 ? "hidden" : "number"} step="0.01" id='i114' onChange={() => update_values()} onBlur={() => manage_step_432()}
                             className="form-control my-1" name="recprd_eng_s4322"
                             defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 33) ?? 5} />
                     </div>
                 </div>
 
-                <div className="row text-center">
-                    <div className="col border border-dark">
-                        <label >Escaleras</label>
+                <div className={version >= 2 ? "" : "col border border-dark"}>
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <label hidden={version >= 2}>Escaleras</label>
                     </div>
-                    <div className="col border border-dark">
-                        <input type="number" step="0.01" id='i115' onChange={() => update_values()} onBlur={() => manage_step_432()}
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <input type={version >= 2 ? "hidden" : "number"} step="0.01" id='i115' onChange={() => update_values()} onBlur={() => manage_step_432()}
                             className="form-control my-1" name="recprd_eng_s4322"
                             defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 34) ?? 3} />
                     </div>
                 </div>
 
-                <div className="row text-center">
-                    <div className="col border border-dark">
-                        <label >Parqueaderos</label>
+                <div className={version >= 2 ? "" : "col border border-dark"}>
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <label hidden={version >= 2}>Parqueaderos</label>
                     </div>
-                    <div className="col border border-dark">
-                        <input type="number" step="0.01" id='i116' onChange={() => update_values()} onBlur={() => manage_step_432()}
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <input type={version >= 2 ? "hidden" : "number"} step="0.01" id='i116' onChange={() => update_values()} onBlur={() => manage_step_432()}
                             className="form-control my-1" name="recprd_eng_s4322"
                             defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 35) ?? 2.5} />
                     </div>
                 </div>
 
-                <div className="row text-center">
-                    <div className="col border border-dark">
-                        <label >Cubierta</label>
+                <div className={version >= 2 ? "" : "col border border-dark"}>
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <label hidden={version >= 2}>Cubierta</label>
                     </div>
-                    <div className="col border border-dark">
-                        <input type="number" step="0.01" id='i117' onChange={() => update_values()} onBlur={() => manage_step_432()}
+                    <div className={version >= 2 ? "" : "col border border-dark"}>
+                        <input type={version >= 2 ? "hidden" : "number"} step="0.01" id='i117' onChange={() => update_values()} onBlur={() => manage_step_432()}
                             className="form-control my-1" name="recprd_eng_s4322"
                             defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 36) ?? 0.5} />
                     </div>
                 </div>
-                <div className="row  my-2">
 
+                <div className="row  my-2">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <label class="input-group-text" for="inputGroupSelect01">Es cubierta Ligera</label>
+                            <label class="input-group-text" for="inputGroupSelect01" hidden={version >= 2}>Es cubierta Ligera</label>
                         </div>
-                        <select class="form-select" id="lcs" name="recprd_eng_s4322" onChange={() => update_values()}  onBlur={() => manage_step_432()}
-                            defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 37) ?? 0} >
+                        {version >= 2
+                            ? <input type="hidden" id='lcs' name="recprd_eng_s4322" defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 37) ?? 0} />
+                            : <select class="form-select" id="lcs" name="recprd_eng_s4322" onChange={() => update_values()} onBlur={() => manage_step_432()}
+                                defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 37) ?? 0} >
+                                <option value="0">NO</option>
+                                <option value="1">SI</option>
+                            </select>}
+
+                    </div>
+                </div>
+            </>
+        }
+        let COMPONENT_TABLE_ALIVE_2 = () => {
+            return <>
+                <div className="row border border-dark text-center mt-2">
+                    <div className="col">
+                        <label className="fw-bold">CARGA VIVA</label>
+                    </div>
+                </div>
+                <div className="row">
+                    {CARGA_VIVA.map(i => <div className='col-4'>
+
+                        <div className="row  my-2">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="inputGroupSelect01" >USO {i + 1}</label>
+                                </div>
+                                <select class="form-select" id={"carga_vida_use_" + i} name="carga_vida_use" onChange={() => set_carga_vida_use()}
+                                    defaultValue={_GET_STEP_TYPE_INDEX('carga_vida_use', 'value', i) ?? 0} >
+                                    {CARGA_VIVA_USOS.map(carga => <option value={carga.i}>{carga.name}</option>)}
+                                </select>
+
+                            </div>
+                        </div>
+                        <div className="row text-center">
+                            <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                                <label className="fw-bold">USO</label>
+                            </div>
+                            <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                                <label className="fw-bold">(kN/m2)</label>
+                            </div>
+                        </div>
+
+                        {CARGA_VIVA_USOS.find(carga => carga.i == (_GET_STEP_TYPE_INDEX('carga_vida_use', 'value', i) ?? 0)).usos.map(uso =>
+                            <>
+                                <div className="row text-center">
+                                    <div className="col border border-dark">
+                                        <label >{uso.name}</label>
+                                    </div>
+                                    <div className="col border border-dark">
+                                        <input type="number" step="0.01" id={'carga_vida_' + i + "_" + uso.i}
+                                            className="form-control my-1" name="carga_vida" onBlur={() => set_carga_vida()}
+                                            defaultValue={_GET_STEP_TYPE_INDEX('carga_vida_' + i, 'value', uso.i) ?? uso.default} />
+                                    </div>
+                                </div>
+                            </>
+
+                        )}
+                    </div>)}
+                </div>
+            </>
+        }
+
+        let COMPONENT_TABLE_SEETL_DECK = () => {
+            return <>
+
+                <div className="row  my-2">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="inputGroupSelect01" >Usar Steel Deck</label>
+                        </div>
+                        <select class="form-select" id="steel_deck_use" name="steel_deck_use" onChange={() => set_steel_deck_use()}
+                            defaultValue={_GET_STEP_TYPE_INDEX('steel_deck', 'check', 0) ?? 0} >
                             <option value="0">NO</option>
                             <option value="1">SI</option>
                         </select>
+
                     </div>
                 </div>
+                {_GET_STEP_TYPE_INDEX('steel_deck', 'check', 0) == 1 ?
+                    <>
+                        <div className="row border border-dark text-center">
+                            <div className="col">
+                                <label className="fw-bold">STEEL DECK</label>
+                            </div>
+                        </div>
+                        {STEEL_DECK.map(item => <div className="row text-center">
+                            <div className="col border border-dark">
+                                <label >{item.name}</label>
+                            </div>
+                            <div className="col border border-dark">
+                                <input type="number" step="0.01" id={'steel_deck_' + item.i} onBlur={() => set_steel_deck()}
+                                    className="form-control my-1" name="steel_deck" disabled={item.disabled}
+                                    defaultValue={_GET_STEP_TYPE_INDEX('steel_deck', 'value', item.i) ?? item.default} />
+                            </div>
+                        </div>)}
+                    </> : null}
+
+
             </>
         }
 
