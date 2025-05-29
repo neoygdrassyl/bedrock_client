@@ -1,5 +1,7 @@
 import moment from 'moment'
 import { infoCud } from '../jsons/vars'
+import SERIES_CB1 from "../jsons/funcCodes.cb1.json"
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 export const SERIES_DOCS = {
     // i count = 86
@@ -651,8 +653,6 @@ export function regexChecker_isOA_2(input) {
     let modalidad = input.tramite;
     if (!modalidad) return false;
     let isPro = modalidad.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes('prorroga');
-    let tipo = input.tipo;
-    if (!tipo) tipo = "";
     if (modalidad == 'B' || isPro) return true;
     return false;
 }
@@ -882,15 +882,28 @@ export function _GET_SERIE_COD(_CHILD) {
         if (SERIES_MODULES_RELATION[ITEM].includes(_CONDITONS.join(','))) isFounded = true;
         if (isFounded) _SERIES.push(ITEM)
     }
+    if (infoCud.codeDictionary) {
+        let new_SERIES = []
+        if (_GLOBAL_ID == "cb1") {
+            _SERIES.map(serie => {
+                if (SERIES_CB1.OLD[serie]) new_SERIES.push(SERIES_CB1.OLD[serie])
+            })
+        }
+        if (new_SERIES.length) return new_SERIES
+    }
     return _SERIES;
 }
 export function _GET_SERIE_STR(_CHILD) {
     let _SERIES = _GET_SERIE_COD(_CHILD);
-    var COD_SERIES = require('../jsons/funCodes.json');
+    let COD_SERIES = require('../jsons/funCodes.json');
     let _SERIES_STR = [];
     for (var i = 0; i < _SERIES.length; i++) {
-        _SERIES_STR.push(COD_SERIES[_SERIES[i]])
+        if (infoCud.codeDictionary) {
+            if (_GLOBAL_ID == "cb1")  _SERIES_STR.push(SERIES_CB1.NEW[_SERIES[i]])
+        }
+        else _SERIES_STR.push(COD_SERIES[_SERIES[i]])
     }
+
     return _SERIES_STR;
 }
 export function _GET_SUBSERIE_COD(_CHILD) {
@@ -900,8 +913,12 @@ export function _GET_SUBSERIE_COD(_CHILD) {
     for (var ITEM in SUBSERIES_MODULES_RELATION) {
         let isFounded = false;
         if (SUBSERIES_MODULES_RELATION[ITEM].join('') === _CONDITONS.join('')) isFounded = true;
-        if (isFounded) _SUBSERIES.push(ITEM)
+        if (isFounded)
+            if (infoCud.codeDictionary) {
+                if (_GLOBAL_ID == "cb1") _SUBSERIES.push(SERIES_CB1.OLD[ITEM])
+            } else _SUBSERIES.push(ITEM)
     }
+
     return _SUBSERIES;
     // 1100-70.01 1100-70.02 1100-70.03 1100-70.04
 }
@@ -910,7 +927,10 @@ export function _GET_SUBSERIE_STR(_CHILD) {
     var COD_SERIES = require('../jsons/funCodes.json');
     let _SERIES_STR = [];
     for (var i = 0; i < _SERIES.length; i++) {
-        _SERIES_STR.push(COD_SERIES[_SERIES[i]])
+        if (infoCud.codeDictionary) {
+            if (_GLOBAL_ID == "cb1")  _SERIES_STR.push(SERIES_CB1.NEW[_SERIES[i]])
+        }
+        else _SERIES_STR.push(COD_SERIES[_SERIES[i]])
     }
     return _SERIES_STR;
 }

@@ -44,22 +44,23 @@ class EXP_AREAS extends Component {
         record_arcService.getRecord(id || this.props.currentItem.id)
             .then(response => {
                 let record_arc = response.data.record_arc
-                record_arc.record_arc_steps = response.data.record_arc_steps;
-                record_arc.record_arc_33_areas = response.data.record_arc_33_areas;
-                record_arc.record_arc_34_ks = response.data.record_arc_34_ks;
-                record_arc.record_arc_34_gens = response.data.record_arc_34_gens;
-                record_arc.record_arc_35_parkings = response.data.record_arc_35_parkings;
-                record_arc.record_arc_36_infos = response.data.record_arc_36_infos;
-                record_arc.record_arc_37s = response.data.record_arc_37s;
-                record_arc.record_arc_35_locations = response.data.record_arc_35_locations;
-                record_arc.record_arc_38s = response.data.record_arc_38s;
-
-                this.setState({
-                    currentRecordArc: record_arc,
-                    currentVersionRArc: record_arc.version,
-                    loaded: true,
-                });
-
+                if (record_arc){
+                    record_arc.record_arc_steps = response.data.record_arc_steps;
+                    record_arc.record_arc_33_areas = response.data.record_arc_33_areas;
+                    record_arc.record_arc_34_ks = response.data.record_arc_34_ks;
+                    record_arc.record_arc_34_gens = response.data.record_arc_34_gens;
+                    record_arc.record_arc_35_parkings = response.data.record_arc_35_parkings;
+                    record_arc.record_arc_36_infos = response.data.record_arc_36_infos;
+                    record_arc.record_arc_37s = response.data.record_arc_37s;
+                    record_arc.record_arc_35_locations = response.data.record_arc_35_locations;
+                    record_arc.record_arc_38s = response.data.record_arc_38s;
+    
+                    this.setState({
+                        currentRecordArc: record_arc,
+                        currentVersionRArc: record_arc.version,
+                        loaded: true,
+                    });
+                }
             })
             .catch(e => {
                 console.log(e);

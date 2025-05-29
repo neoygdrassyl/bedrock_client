@@ -1,0 +1,443 @@
+[
+  {
+    "Ciudades": "NO",
+    "Código Municipio": 0,
+    "Aa": "0,00",
+    "Av": "0,00",
+    "Amenaza sísmica": "-",
+    "Ae": "0,00",
+    "Ad": "0,00"
+  },
+  {
+    "Ciudades": "Aratoca",
+    "Código Municipio": 68051,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,11",
+    "Ad": "0,07"
+  },
+  {
+    "Ciudades": "Arauca",
+    "Código Municipio": 81001,
+    "Aa": "0,15",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,10",
+    "Ad": "0,04"
+  },
+  {
+    "Ciudades": "Armenia",
+    "Código Municipio": 63001,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,20",
+    "Ad": "0,10"
+  },
+  {
+    "Ciudades": "Barbosa",
+    "Código Municipio": 68077,
+    "Aa": "0,15",
+    "Av": "0,20",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,06",
+    "Ad": "0,04"
+  },
+  {
+    "Ciudades": "Barrancabermeja",
+    "Código Municipio": 68081,
+    "Aa": "0,15",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,06",
+    "Ad": "0,04"
+  },
+  {
+    "Ciudades": "Barranquilla",
+    "Código Municipio": 8001,
+    "Aa": "0,10",
+    "Av": "0,10",
+    "Amenaza sísmica": "Baja",
+    "Ae": "0,05",
+    "Ad": "0,03"
+  },
+  {
+    "Ciudades": "Bogotá",
+    "Código Municipio": 11001,
+    "Aa": "0,15",
+    "Av": "0,20",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,13",
+    "Ad": "0,06"
+  },
+  {
+    "Ciudades": "Bolívar",
+    "Código Municipio": 68101,
+    "Aa": "0,15",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,07",
+    "Ad": "0,04"
+  },
+  {
+    "Ciudades": "Bucaramanga",
+    "Código Municipio": 68001,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,15",
+    "Ad": "0,09"
+  },
+  {
+    "Ciudades": "Cali",
+    "Código Municipio": 76001,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,15",
+    "Ad": "0,09"
+  },
+  {
+    "Ciudades": "Cartagena",
+    "Código Municipio": 13001,
+    "Aa": "0,10",
+    "Av": "0,10",
+    "Amenaza sísmica": "Baja",
+    "Ae": "0,05",
+    "Ad": "0,03"
+  },
+  {
+    "Ciudades": "Charta",
+    "Código Municipio": 68169,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,09",
+    "Ad": "0,06"
+  },
+  {
+    "Ciudades": "Cúcuta",
+    "Código Municipio": 54001,
+    "Aa": "0,35",
+    "Av": "0,30",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,25",
+    "Ad": "0,10"
+  },
+  {
+    "Ciudades": "El Carmen de Chucuri",
+    "Código Municipio": 68235,
+    "Aa": "0,15",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,17",
+    "Ad": "0,08"
+  },
+  {
+    "Ciudades": "Florencia",
+    "Código Municipio": 18001,
+    "Aa": "0,20",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,10",
+    "Ad": "0,05"
+  },
+  {
+    "Ciudades": "Florián",
+    "Código Municipio": 68271,
+    "Aa": "0,15",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,12",
+    "Ad": "0,07"
+  },
+  {
+    "Ciudades": "Floridablanca",
+    "Código Municipio": 68276,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,13",
+    "Ad": "0,08"
+  },
+  {
+    "Ciudades": "Girón",
+    "Código Municipio": 68307,
+    "Aa": "0,20",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,18",
+    "Ad": "0,10"
+  },
+  {
+    "Ciudades": "Ibagué",
+    "Código Municipio": 73001,
+    "Aa": "0,20",
+    "Av": "0,20",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,15",
+    "Ad": "0,08"
+  },
+  {
+    "Ciudades": "La Belleza",
+    "Código Municipio": 68377,
+    "Aa": "0,15",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,16",
+    "Ad": "0,07"
+  },
+  {
+    "Ciudades": "Leticia",
+    "Código Municipio": 91001,
+    "Aa": "0,05",
+    "Av": "0,05",
+    "Amenaza sísmica": "Baja",
+    "Ae": "0,04",
+    "Ad": "0,02"
+  },
+  {
+    "Ciudades": "Málaga",
+    "Código Municipio": 68432,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,12",
+    "Ad": "0,06"
+  },
+  {
+    "Ciudades": "Manizales",
+    "Código Municipio": 17001,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,20",
+    "Ad": "0,10"
+  },
+  {
+    "Ciudades": "Medellín",
+    "Código Municipio": 5001,
+    "Aa": "0,15",
+    "Av": "0,20",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,13",
+    "Ad": "0,07"
+  },
+  {
+    "Ciudades": "Mitú",
+    "Código Municipio": 97001,
+    "Aa": "0,05",
+    "Av": "0,05",
+    "Amenaza sísmica": "Baja",
+    "Ae": "0,04",
+    "Ad": "0,02"
+  },
+  {
+    "Ciudades": "Mocoa",
+    "Código Municipio": 86001,
+    "Aa": "0,30",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,20",
+    "Ad": "0,10"
+  },
+  {
+    "Ciudades": "Montería",
+    "Código Municipio": 23001,
+    "Aa": "0,10",
+    "Av": "0,20",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,07",
+    "Ad": "0,04"
+  },
+  {
+    "Ciudades": "Neiva",
+    "Código Municipio": 41001,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,20",
+    "Ad": "0,08"
+  },
+  {
+    "Ciudades": "Palmas del socorro",
+    "Código Municipio": 68524,
+    "Aa": "0,15",
+    "Av": "0,20",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,11",
+    "Ad": "0,08"
+  },
+  {
+    "Ciudades": "Pasto",
+    "Código Municipio": 52001,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,15",
+    "Ad": "0,08"
+  },
+  {
+    "Ciudades": "Pereira",
+    "Código Municipio": 66001,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,20",
+    "Ad": "0,10"
+  },
+  {
+    "Ciudades": "Piedecuesta",
+    "Código Municipio": 68547,
+    "Aa": "0,25",
+    "Av": "0,25",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,11",
+    "Ad": "0,07"
+  },
+  {
+    "Ciudades": "Popayán",
+    "Código Municipio": 19001,
+    "Aa": "0,25",
+    "Av": "0,20",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,15",
+    "Ad": "0,08"
+  },
+  {
+    "Ciudades": "Puerto Carreño",
+    "Código Municipio": 99001,
+    "Aa": "0,05",
+    "Av": "0,05",
+    "Amenaza sísmica": "Baja",
+    "Ae": "0,04",
+    "Ad": "0,02"
+  },
+  {
+    "Ciudades": "Puerto Inírida",
+    "Código Municipio": 94001,
+    "Aa": "0,05",
+    "Av": "0,05",
+    "Amenaza sísmica": "Baja",
+    "Ae": "0,04",
+    "Ad": "0,02"
+  },
+  {
+    "Ciudades": "Puerto Wilches",
+    "Código Municipio": 68575,
+    "Aa": "0,15",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,04",
+    "Ad": "0,03"
+  },
+  {
+    "Ciudades": "Quibdó",
+    "Código Municipio": 27001,
+    "Aa": "0,35",
+    "Av": "0,35",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,25",
+    "Ad": "0,13"
+  },
+  {
+    "Ciudades": "Riohacha",
+    "Código Municipio": 44001,
+    "Aa": "0,10",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,07",
+    "Ad": "0,04"
+  },
+  {
+    "Ciudades": "San Andrés, isla",
+    "Código Municipio": 88001,
+    "Aa": "0,10",
+    "Av": "0,10",
+    "Amenaza sísmica": "Baja",
+    "Ae": "0,05",
+    "Ad": "0,03"
+  },
+  {
+    "Ciudades": "San José del Guaviare",
+    "Código Municipio": 95001,
+    "Aa": "0,05",
+    "Av": "0,05",
+    "Amenaza sísmica": "Baja",
+    "Ae": "0,04",
+    "Ad": "0,02"
+  },
+  {
+    "Ciudades": "Santa Marta",
+    "Código Municipio": 47001,
+    "Aa": "0,15",
+    "Av": "0,10",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,10",
+    "Ad": "0,04"
+  },
+  {
+    "Ciudades": "Sincelejo",
+    "Código Municipio": 70001,
+    "Aa": "0,10",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,07",
+    "Ad": "0,04"
+  },
+  {
+    "Ciudades": "Tunja",
+    "Código Municipio": 15001,
+    "Aa": "0,20",
+    "Av": "0,20",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,15",
+    "Ad": "0,07"
+  },
+  {
+    "Ciudades": "Valledupar",
+    "Código Municipio": 20001,
+    "Aa": "0,10",
+    "Av": "0,10",
+    "Amenaza sísmica": "Baja",
+    "Ae": "0,05",
+    "Ad": "0,03"
+  },
+  {
+    "Ciudades": "Vélez",
+    "Código Municipio": 68861,
+    "Aa": "0,15",
+    "Av": "0,15",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,15",
+    "Ad": "0,08"
+  },
+  {
+    "Ciudades": "Villavicencio",
+    "Código Municipio": 50001,
+    "Aa": "0,25",
+    "Av": "0,30",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,20",
+    "Ad": "0,07"
+  },
+  {
+    "Ciudades": "Yopal",
+    "Código Municipio": 85001,
+    "Aa": "0,30",
+    "Av": "0,20",
+    "Amenaza sísmica": "Alta",
+    "Ae": "0,15",
+    "Ad": "0,06"
+  },
+  {
+    "Ciudades": "Zapatoca",
+    "Código Municipio": 68895,
+    "Aa": "0,20",
+    "Av": "0,20",
+    "Amenaza sísmica": "Intermedia",
+    "Ae": "0,20",
+    "Ad": "0,10"
+  }
+]
