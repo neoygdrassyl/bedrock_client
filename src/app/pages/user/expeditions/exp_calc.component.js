@@ -38,8 +38,8 @@ const CURRENT_YEAR = moment().format('YYYY')
 const PORUIS_DATA = {
     name: 'Estampilla PRO-UIS',
     subrules: [
-        { name: 'Estrao 3 y 4', mult: 1300, round: true, },
-        { name: 'Estrao 5 y 6', mult: 2600, round: true, },
+        { name: 'Estrao 3 y 4', mult: 1423.5, round: true, },
+        { name: 'Estrao 5 y 6', mult: 2847, round: true, },
     ]
 }
 const cur_matrix = [

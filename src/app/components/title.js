@@ -40,7 +40,7 @@ class Title extends Component {
                         </div>
                         <div class="col-lg-4 col-md-2 mb-4 mt-3 mb-md-0">
                             <h3 class="text-uppercase text-center pb-0" >{infoCud.titles} {infoCud.dir}</h3>
-                            <h3 class="text-uppercase text-center pb-0" >CURADOR URBANO N°{infoCud.nomens} DE {infoCud.city}</h3>
+                            <h3 class="text-uppercase text-center pb-0" >{infoCud.job} DE {infoCud.city}</h3>
                         </div>
                         {/*  <div class="col-lg-12 col-md-8 mb-0 mt-0 mb-md-0 d-flex justify-content-center">
                             <span className='col-lg-12 bg-white col-mb-8 text-center  mx-0 px-0 py-2'>

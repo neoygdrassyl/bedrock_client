@@ -148,7 +148,6 @@ class RECORD_LAW_DOCSCHECK extends Component {
             if (row.value == -1 || row.value == null) bg = { color: 'dark', text: 'SIN DEFINIR', value: 1 }
             if (row.value == 0) {
                 let VR = _FIND_IN_VRDOCS(row.code);
-                console.log(row.code, " - ", VR)
                 if (VR) bg = { color: 'success', text: 'APORTO', value: 2 }
                 else bg = { color: 'danger', text: 'NO APORTO', value: 1 }
             }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
+import Estudios_Simico from '../../../../components/jsons/estudio_eng.json'
 
 const MySwal = withReactContent(Swal);
 
@@ -37,7 +38,7 @@ class RECORD_ENG_STEP_431 extends Component {
 
     }
     render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP } = this.props;
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP, version } = this.props;
         const { } = this.state;
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
         //  CONST
@@ -115,25 +116,29 @@ class RECORD_ENG_STEP_431 extends Component {
                 su: 'F4 Arcillas Blandas H=36m.',
             },
         }
-        const H2221 = [
-            'Nombre, plano de localización, objetivo del estudio, descripción general, sistema estructural y evaluación de cargas.',
-            'Resumen del reconocimiento de campo, morfología del terreno, origen geológico, características físico mecánicas y descripción de los niveles freáticos o aguas subterráneas',
-            'De cada unidad geológica o de suelo, se hará su identificación, su espesor, su distribución y los parámetros obtenidos en las pruebas y ensayos de campo',
-            'Cumple el número de unidades de construcción a la cual se le realiza la exploración geotécnica',
-            '¿Se presenta la clasificación de la edificación de acuerdo a su categoría?',
-            '¿Presenta la localización, número y profundidad de los sondeos realizados?',
-            'Registro de los sondeos',
-            '¿Presenta la clasificación del tipo de suelo? (A.2.4.4)',
-            '¿Presenta los parámetros de diseño sísmico?',
-            '¿Presenta la caracterización del suelo? (A.2.4.4)',
-            '¿Realiza el cálculo de capacidad de carga del suelo?',
-            '¿Presenta la recomendación de tipo de cimentación y profundidad?',
-            '¿Se realizó el análisis de estabilidad de taludes?',
-            '¿Se realizó el cálculo de asentamientos?',
-            '¿Incluye recomendaciones proceso constructivo?',
-            '¿Incluye recomendaciones protección de edificaciones vecinas?',
-            '¿Incluye anexos, ensayos, laboratorios, etc?'
-        ]
+        const H2221 = () => {
+            let steps = [
+                'Nombre, plano de localización, objetivo del estudio, descripción general, sistema estructural y evaluación de cargas.',
+                'Resumen del reconocimiento de campo, morfología del terreno, origen geológico, características físico mecánicas y descripción de los niveles freáticos o aguas subterráneas',
+                'De cada unidad geológica o de suelo, se hará su identificación, su espesor, su distribución y los parámetros obtenidos en las pruebas y ensayos de campo',
+                'Cumple el número de unidades de construcción a la cual se le realiza la exploración geotécnica',
+                '¿Se presenta la clasificación de la edificación de acuerdo a su categoría?',
+                '¿Presenta la localización, número y profundidad de los sondeos realizados?',
+                'Registro de los sondeos',
+                '¿Presenta la clasificación del tipo de suelo? (A.2.4.4)',
+                '¿Presenta los parámetros de diseño sísmico?',
+                '¿Presenta la caracterización del suelo? (A.2.4.4)',
+                '¿Realiza el cálculo de capacidad de carga del suelo?',
+                '¿Presenta la recomendación de tipo de cimentación y profundidad?',
+                '¿Se realizó el análisis de estabilidad de taludes?',
+                '¿Se realizó el cálculo de asentamientos?',
+                '¿Incluye recomendaciones proceso constructivo?',
+                '¿Incluye recomendaciones protección de edificaciones vecinas?',
+                '¿Incluye anexos, ensayos, laboratorios, etc?',
+            ]
+            if (version === 2) steps.push('¿Concluye respecto a la posibilidad de colapsabilidad y licuación del suelo estudiado?')
+            return steps
+        }
         const _gravity = 9.80665;
         const _golpie_matrix_base = [
             [0.6, 1.69],
@@ -208,6 +213,17 @@ class RECORD_ENG_STEP_431 extends Component {
             _set_e56();
             _set_i56();
             _set_i57();
+        }
+
+        let _set_ubicacion = (ubicacion) => {
+            let find_ubicacion = Estudios_Simico.find(i => i.Ciudades === ubicacion);
+            if (find_ubicacion) {
+                document.getElementById('e60').value = Number(find_ubicacion.Aa.replace(/,/g, '.'));
+                document.getElementById('j60').value = Number(find_ubicacion.Av.replace(/,/g, '.'));
+                document.getElementById('j61').value = Number(find_ubicacion.Ae.replace(/,/g, '.'));
+                document.getElementById('j62').value = Number(find_ubicacion.Ad.replace(/,/g, '.'));
+            }
+            manage_step_01();
         }
         // DATA GETTERS
         let LOAD_STEP = (_id_public) => {
@@ -373,7 +389,7 @@ class RECORD_ENG_STEP_431 extends Component {
         }
         let COMPONENT_02 = () => {
             return <>
-                {H2221.map((value, i) => (
+                {H2221().map((value, i) => (
                     <div className="row border my-0">
                         <div className="col-10">
                             <div class="input-group my-0">
@@ -491,6 +507,22 @@ class RECORD_ENG_STEP_431 extends Component {
                 <label className="app-p fw-bold my-2">Características sísmicas</label>
 
                 <div className="row mb-1">
+                    {version === 2 ? <>    <div className="col-2">Ubicación</div>
+                        <div className="col-3">
+                            <select className='form-select form-control form-control-sm'
+                                id='recprd_eng_s03_01' onChange={(e) => _set_ubicacion(e.target.value)}
+                                defaultValue={_GET_STEP_TYPE_INDEX('s4313', 'value', 21) ?? ''}>
+                                {Estudios_Simico.map(item => <option>{item.Ciudades}</option>)}
+                            </select>
+                        </div>
+                        <div className="col-3"></div>
+                        <div className="col-2"></div>
+                        <div className="col-2"></div>
+                    </> : null}
+
+                </div>
+
+                <div className="row mb-1">
                     <div className="col-3">
                         <label>Aa Acele. pico efectiva (A.2.2)</label>
                     </div>
@@ -523,9 +555,9 @@ class RECORD_ENG_STEP_431 extends Component {
                         <label>Zona amenaza sísmica (A.2.3)</label>
                     </div>
                     <div className="col-2">
-                        <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('s4313', 'value', 1) ?? 'ALTA')}
+                        <select className="form-control form-select"
                             name="recprd_eng_s03" id='e61' onChange={() => manage_step_01()}
-                            defaultValue={_GET_STEP_TYPE_INDEX('s4313', 'value', 0) ?? 1}>
+                            defaultValue={_GET_STEP_TYPE_INDEX('s4313', 'value', 11) ?? 'ALTA'}>
                             <option>ALTA</option>
                             <option>MEDIA</option>
                             <option>BAJA</option>
@@ -571,6 +603,15 @@ class RECORD_ENG_STEP_431 extends Component {
                         </select>
                     </div>
                 </div>
+
+                <div className="row mb-1" hidden>
+                    <div className="col-2"><strong>T / seg</strong></div>
+                    <div className="col-3"></div>
+                    <div className="col-2"><strong>Sa / %g</strong></div>
+                    <div className="col-3"></div>
+                    <div className="col-2"></div>
+                </div>
+
 
                 <label className="app-p fw-bold my-2">Tipo perfil</label>
 
@@ -731,6 +772,7 @@ class RECORD_ENG_STEP_431 extends Component {
             for (var i = 0; i < values_2.length; i++) {
                 values.push(values_2[i].value)
             }
+            if (document.getElementById("recprd_eng_s03_01")) values.push(document.getElementById("recprd_eng_s03_01").value)
             formData.set('value', values.join(';'));
 
 
@@ -746,7 +788,7 @@ class RECORD_ENG_STEP_431 extends Component {
             formData.set('id_public', 's4313d');
             formData.set('version', currentVersionR);
             formData.set('recordEngId', currentRecord.id);
-            if (detail)   save_step('s4313d', false, formData);
+            if (detail) save_step('s4313d', false, formData);
         }
         let save_step = (_id_public, useSwal, formData) => {
             var STEP = LOAD_STEP(_id_public);
