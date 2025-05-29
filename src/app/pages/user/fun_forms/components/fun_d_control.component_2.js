@@ -1,11 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { MDBBtn } from 'mdb-react-ui-kit';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import Series from '../../../../components/jsons/funCodes.json';
-import Codes from '../../../../components/jsons/fun6DocsList.json';
-import { SERIES_DOCS, _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../components/customClasses/typeParse';
+import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../components/customClasses/typeParse';
 
 const MySwal = withReactContent(Swal);
 export default function FUN_D_CONTROL_2(props) {

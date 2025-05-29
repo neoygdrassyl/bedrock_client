@@ -7,11 +7,13 @@ import SERVICE_CUSTOM from '../../services/custom.service';
 import { formsParser1 } from '../../components/customClasses/typeParse';
 import TIPOLOGIA from '../../components/jsons/fun6DocsList.json'
 import SERIES from '../../components/jsons/funCodes.json'
+import SERIES_CB1 from '../../components/jsons/funcCodes.cb1.json'
 import { MDBPageItem, MDBPageNav } from 'mdbreact';
 import DataTable from 'react-data-table-component';
 import VIZUALIZER from '../../components/vizualizer.component';
+import { infoCud } from '../../components/jsons/vars';
 
-
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 export default function DICTIONARY(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
 
@@ -321,11 +323,14 @@ export default function DICTIONARY(props) {
 
 
     let _COMPONENT_LIST_A = () => {
-
-        let ELEMENTS = [];
-        for (const key in SERIES) {
-            if (Object.hasOwnProperty.call(SERIES, key)) {
-                const element = SERIES[key];
+        let _SERIES = SERIES
+        if (infoCud.codeDictionary){
+            if (_GLOBAL_ID == "cb1") _SERIES = SERIES_CB1.NEW
+        }
+        let ELEMENTS = [];  
+        for (const key in _SERIES) {
+            if (Object.hasOwnProperty.call(_SERIES, key)) {
+                const element = _SERIES[key];
                 ELEMENTS.push({ element: element, key: key })
             }
         }

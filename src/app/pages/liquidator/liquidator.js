@@ -799,67 +799,67 @@ class Liquidator extends Component {
                 <tr>
                   <td>Residencial</td>
                   <td>1</td>
-                  <td>$461</td>
+                  <td>$530</td>
                 </tr>
                 <tr>
                   <td>Residencial</td>
                   <td>2</td>
-                  <td>$687</td>
+                  <td>$790</td>
                 </tr>
                 <tr>
                   <td>Residencial</td>
                   <td>3</td>
-                  <td>$908</td>
+                  <td>$1044</td>
                 </tr>
                 <tr>
                   <td>Residencial</td>
                   <td>4</td>
-                  <td>$1.372</td>
+                  <td>$1577</td>
                 </tr>
                 <tr>
                   <td>Residencial</td>
                   <td>5</td>
-                  <td>$1.989</td>
+                  <td>$2287</td>
                 </tr>
                 <tr>
                   <td>Residencial</td>
                   <td>6</td>
-                  <td>$2.974</td>
+                  <td>$3420</td>
                 </tr>
                 <tr>
                   <td>Industrial</td>
                   <td>7</td>
-                  <td>$908</td>
+                  <td>$1044</td>
                 </tr>
                 <tr>
                   <td>Comercio y servicios</td>
                   <td>8</td>
-                  <td>$1.600</td>
+                  <td>$1838</td>
                 </tr>
                 <tr>
                   <td>Institucional</td>
                   <td>9</td>
-                  <td>$1.600</td>
+                  <td>$1838</td>
                 </tr>
                 <tr>
                   <td>Area sub-urbana </td>
                   <td>10</td>
-                  <td>$908</td>
+                  <td>$1044</td>
                 </tr>
                 <tr>
                   <td>Area Rural</td>
                   <td>11</td>
-                  <td>$461</td>
+                  <td>$530</td>
                 </tr>
                 <tr>
                   <td>Zona centro</td>
                   <td></td>
-                  <td>$90</td>
+                  <td>$102</td>
                 </tr>
                 <tr>
                   <td>Zona norte</td>
                   <td></td>
-                  <td>$182</td>
+                  <td>$210</td>
                 </tr>
                 <tr>
                   <td colSpan={3}></td>

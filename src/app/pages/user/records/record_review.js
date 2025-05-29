@@ -132,7 +132,7 @@ class RECORD_REVIEW extends Component {
         const response = await CubXVrDataService.getByFUN(id_public)
         const data = response.data.find(item => item.process === 'OBSERVACIONES Y CORRECIONES')
 
-        if(data) {
+        if (data) {
             document.getElementById("vr_selected11").value = data.vr
             this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
         }
@@ -538,6 +538,7 @@ class RECORD_REVIEW extends Component {
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
+                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
                     {this.state.tn == 2 || this.state.tn == 3 ?
@@ -550,6 +551,20 @@ class RECORD_REVIEW extends Component {
                             <div className="col-4">
                                 <div class="input-group my-1">
                                     <input type="text" class="form-control" id="type_not_email" placeholder='Correo Notificación' />
+                                </div>
+                            </div>
+                        </>
+                        : ''}
+                    {this.state.tn == 4 ?
+                        <>
+                         <div className="col-4">
+                                <div class="input-group my-1">
+                                    <label>Fecha Comunicación: </label>
+                                </div>
+                            </div>
+                            <div className="col-4">
+                                <div class="input-group my-1">
+                                    <input type="date" class="form-control" id="type_not_name" placeholder='Fecha' />
                                 </div>
                             </div>
                         </>
@@ -1085,13 +1100,13 @@ class RECORD_REVIEW extends Component {
                         <div class="input-group">
                             <input type="text" class="form-control" id="rev_cub"
                                 defaultValue={this.state.cubSelected || currentRecord.id_public || ""} />
-                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
+                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
                         </div>
                     </div>
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group">
-                            <select class="form-select"  id="vr_selected11" defaultValue={this.state.vrSelected || ""}>
+                            <select class="form-select" id="vr_selected11" defaultValue={this.state.vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -1100,8 +1115,8 @@ class RECORD_REVIEW extends Component {
                                 ))}
                             </select>
                         </div>
-                    
-                        
+
+
                     </div>
                 </div>
             </>
@@ -1871,7 +1886,7 @@ class RECORD_REVIEW extends Component {
                         if (response.data === 'OK') {
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } 
+                        }
                     })
                     .catch((error) => {
                         console.error(error);
@@ -1883,7 +1898,7 @@ class RECORD_REVIEW extends Component {
                         if (response.data === 'OK') {
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } 
+                        }
                     })
                     .catch((error) => {
                         console.error(error);
