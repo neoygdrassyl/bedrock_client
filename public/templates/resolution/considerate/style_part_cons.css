@@ -1,0 +1,203 @@
+/* #isNotSub-second-section{
+  background-color: red;  
+} */
+
+.responsive-table-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0 auto;
+}
+
+.responsive-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(10px, 1vw, 14px); /* Autoajuste entre 10px y 14px */
+}
+
+.responsive-table-container th,
+.responsive-table-container td {
+  word-break: break-word;
+  padding: 4px;
+}
+
+
+#art-4-tables-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+td, th {
+  font-size: 11pt !important;
+}
+
+/* Estilos generales para todas las tablas involucradas */
+#determinates-table-1,
+#determinates-table-33,
+#determinates-table-34,
+#areas-table-container {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11pt !important;
+}
+
+/* Ajustes específicos para determinates-table-33 */
+#determinates-table-33 table,
+#determinates-table-34 table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11pt !important;
+  text-align: center;
+}
+
+/* Bordes y padding unificados */
+#determinates-table-1 th,
+#determinates-table-1 td,
+#determinates-table-33 th,
+#determinates-table-33 td,
+#determinates-table-34 th,
+#determinates-table-34 td,
+#areas-table-container th,
+#areas-table-container td {
+  border: 1px solid #000;
+  /*padding: 4px;*/
+}
+
+/* Padding especial para celdas de datos (no encabezados) */
+#determinates-table-33 td,
+#determinates-table-34 td,
+#areas-table-container td {
+  padding: 0 0 0 4px !important;
+  text-align: center;
+}
+
+/* Encabezados */
+#determinates-table-1 th,
+#determinates-table-33 th,
+#determinates-table-34 th,
+#areas-table-container th {
+  text-align: center;
+  background-color: #e0e0e0;
+}
+
+/* Ajuste específico */
+#determinates-table-33 {
+  padding-right: 0.4rem;
+}
+
+
+.table-title {
+  background-color: #c0c0c0;
+}
+
+.bg-table{
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.text-left{
+  text-align: left;
+}
+
+.d-flex.column.space-between {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+
+.inline-section {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.table-title{
+  background-color: #c0c0c0;
+}
+
+.bold { font-weight: bold !important; }
+
+.document{
+  font-size: 14pt !important;
+  font-family: Helvetica, Arial, sans-serif;
+}
+.document p{
+  font-size: 14pt !important;
+  font-family: Helvetica, Arial, sans-serif;
+}
+body{
+  font-size: 14pt !important;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+
+#tabla-f2 th{
+  background-color: #c0c0c0;
+}
+
+#table-geo-info td{
+  border: none !important;
+  text-align: left !important;
+  padding: 0 !important;
+}
+
+#f52-table th, #table-f51 th{
+  text-align: center !important;
+  padding: 0 0 0 8px !important;
+  background-color: #c0c0c0;
+}
+
+.custom-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.custom-table td, .custom-table th {
+  border: 1px solid #444;
+  padding: 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.custom-table th {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+
+.small-col {
+  width: 7%;
+}
+
+.dynamic-col {
+  width: auto;
+}
+.table-visible {
+  display: table !important;
+}
+
+.table-visible {
+  display: table !important;
+}
+
+/* Evita que un bloque se divida */
+.avoid-break {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Si es muy grande y no cabe en la página actual, se irá a la siguiente */
+.keep-together {
+  display: block;
+  page-break-before: auto;
+  page-break-after: auto;
+  break-inside: avoid;
+  break-before: auto;
+  break-after: auto;
+  overflow: visible;
+}
+
