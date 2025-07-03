@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from "react";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -11,12 +11,13 @@ import { cities, domains_number, infoCud, zonesTable } from '../../../components
 import { MDBBtn } from 'mdb-react-ui-kit';
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
+import EXP_RES_2 from './exp_res_2.component';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-
 export default function EXP_RES(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
+    const [resDocData, setResDocData] = useState(null);
 
     // ***************************  DATA GETTERS *********************** //
     let _GET_EXPEDITION_JSON = (field) => {
@@ -3285,8 +3286,15 @@ export default function EXP_RES(props) {
 
             </div>
             <div className="row text-center">
-                <div className="col">
-                    <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                <div className="col d-flex justify-content-center">
+                    <div className="d-flex gap-3"> {/* Espaciado entre botones */}
+                    <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
+                        <i className="far fa-file-pdf"></i> GENERAR PDF
+                    </MDBBtn>
+                    <MDBBtn className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
+                        <i className="fas fa-edit"></i> EDITAR PDF
+                    </MDBBtn>
+                    </div>
                 </div>
             </div>
         </>
@@ -3383,7 +3391,7 @@ export default function EXP_RES(props) {
     }
     // ******************************* APIS **************************** // 
     var formData = new FormData();
-    let pdf_gen_res = () => {
+    let pdf_gen_res = (editDocument = null) => {
         formData = new FormData();
 
         formData.set('type_not', document.getElementById("type_not").value);
@@ -3589,9 +3597,16 @@ export default function EXP_RES(props) {
         });
         EXPEDITION_SERVICE.gen_doc_res(formData)
             .then(response => {
-                if (response.data === 'OK') {
-                    MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
+                // console.log(response.data);
+                if (response.data.status  === 'OK') {
+                    if (editDocument) {
+                        setResDocData(response.data); 
+                        MySwal.close();
+                    }
+                    else{
+                        MySwal.close();
+                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
+                    }
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,
@@ -3857,11 +3872,16 @@ export default function EXP_RES(props) {
     }
     return (
         <div>
-            {_MODEL_SELECTOR()}
-            <form id="form_expedition_4" onSubmit={save_exp_res}>
-                {_COMPONENT_DOC_RES()}
-                {_COMPONENT_DOC_RES_PDF()}
-            </form>
-        </div >
+            <div>
+                {_MODEL_SELECTOR()}
+                <form id="form_expedition_4" onSubmit={save_exp_res}>
+                    {_COMPONENT_DOC_RES()}
+                    {_COMPONENT_DOC_RES_PDF()}
+                </form>
+            </div>
+            <div>
+                {resDocData && <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} />} {/* Renderiza EXP_RES_2 solo si hay datos */}
+            </div>
+        </div>
     );
 }
