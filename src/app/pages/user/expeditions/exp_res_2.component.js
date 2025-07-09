@@ -109,7 +109,7 @@ export default function EXP_RES_2(props) {
       const editorHTML = editor.current?.value;
 
       const response = await fetch(
-        `${process.env.REACT_APP_PUPPETEER_SERVICE_URL}/pdf-generate/generate-pdf`,
+        `${process.env.REACT_APP_API_URL}/pdf-generate/generate-pdf`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
