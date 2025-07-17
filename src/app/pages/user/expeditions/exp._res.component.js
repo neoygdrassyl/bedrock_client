@@ -3385,7 +3385,7 @@ export default function EXP_RES(props) {
     var formData = new FormData();
     let pdf_gen_res = () => {
         formData = new FormData();
-
+        console.log("Here 1")
         formData.set('type_not', document.getElementById("type_not").value);
 
         let date_payment = _GET_CLOCK_STATE(3).date_start || '';

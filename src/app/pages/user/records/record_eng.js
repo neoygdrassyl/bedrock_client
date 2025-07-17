@@ -32,6 +32,7 @@ import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../../../services/fun.service';
 import { ENG_MANPOSTERIA } from './eng/recprd_eng_mamporteria';
+import { ENG_FUEGO } from './eng/record_eng_fuego.component';
 
 // RECORDS
 
@@ -183,7 +184,11 @@ class RECORD_ENG extends Component {
             ];
             if (currentRecord.category === 3) steps.push({ 'Paso 13: Revisión de los elementos de concreto contra la resistencia al fuego': 1 });
             steps.push({ 'Planos Estructurales': 1 });
-            if (currentRecord.category === 3) steps.push({ 'Edificaciones de Mamposterías Titulo E': 1 });
+            if (currentRecord.category === 3) {
+                steps.push({ 'Edificaciones de Mamposterías Titulo E': 1 });
+                steps.push({ 'Procedimiento de diseño de resistencia al fuego de los elementos estructurales': 1 });
+            }
+
             return steps
         }
 
@@ -498,9 +503,8 @@ class RECORD_ENG extends Component {
                                             <option value="rule">NO REQUIERE ESTUDIO</option>
                                             <option value="2">CERTIFICACIÓN</option>
                                             <option value="1">ESTUDIO</option>
-                                           
                                             {
-                                                //  <option value="3">ESTUDIO 2.0</option>
+                                               // <option value="3">ESTUDIO 2.0</option>
                                             }
                                         </select>
                                     </div>
@@ -760,6 +764,17 @@ class RECORD_ENG extends Component {
                                                 />
 
                                                 <ENG_MANPOSTERIA
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={this.requestUpdate}
+                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                  <ENG_FUEGO
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                                     currentItem={currentItem}
                                                     currentVersion={currentVersion}
