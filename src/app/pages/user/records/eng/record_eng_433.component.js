@@ -19,12 +19,99 @@ class RECORD_ENG_STEP_433 extends Component {
 
         // FUNCTIONS & VARIABLES
         // DATA GETTERS
+        let _GET_CHILD_SISMIC = () => {
+            var _CHILD = currentRecord.record_eng_sismics;
+            var _LIST = [];
+            if (_CHILD) {
+                _LIST = _CHILD;
+            }
+            return _LIST;
+        }
+
+        let _GET_PESOPLAC_VALUE = (row) => {
+            if (!row.area || !row.name) return '';
+            let area = row.area;
+            let denplac = row.denplac;
+            return Number(area * denplac).toFixed(2);
+        }
+        let _get_COLPAN_VALUE = (row) => {
+            let wc = _GET_STEP_TYPE_INDEX('sis_wc', 'value', 0) ?? 24;
+            let column;
+            column = JSON.parse(row.column);
+            column = JSON.parse(column);
+            if (!column) column = { n: 9, c1: 0.3, c2: 0.3 }
+            return Number(row.height * column.c1 * column.c2 * column.n * wc).toFixed(2);
+        }
+        let _get_VIGA = (height) => {
+            let wc = _GET_STEP_TYPE_INDEX('sis_wc', 'value', 0) ?? 24;
+            return Number(height * 0.3 * 0.3 * 9 * wc * 0.85).toFixed(2);
+        }
+
+
+        let _get_TOT = (row) => {
+            let pesoplac = _GET_PESOPLAC_VALUE(row);
+            let colpan = _get_COLPAN_VALUE(row)
+            let viga = _get_VIGA(row.height)
+            let esca = row.esca;
+            let sum = Number(pesoplac) + Number(colpan) + Number(viga) + Number(esca);
+            return (sum).toFixed(2)
+        }
+
         let LOAD_STEP = (_id_public) => {
             var _CHILD = currentRecord.record_eng_steps;
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
             return []
+        }
+
+        let _GET_TOTAL = () => {
+            var _LIST = _GET_CHILD_SISMIC();
+            // let d237 = _GET_STEP_TYPE_INDEX('sis_wc', 'value', 0) || 24;
+            // let d236 = _GET_STEP_TYPE_INDEX('s4238', 'value', 3) || 1;
+
+            var _TOTALES = {
+                height: 0,
+                pesoplac: 0,
+                colpan: 0,
+                viga: 0,
+                esca: 0,
+                wihik: 0,
+                cvi: 0,
+                f_x: 0,
+                f_y: 0,
+                tot: 0,
+            }
+            for (var i = 0; i < _LIST.length; i++) {
+                let condition = _LIST[i].pos == 1
+                if (condition) continue;
+                let floor = _LIST[i].name ? _LIST[i].name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
+                let con_down = (floor).includes('sotano') || (floor).includes('semisotano');
+                _TOTALES.height += Math.abs(Number(con_down ? 0 : _LIST[i].height));
+                // _TOTALES.pesoplac += Number(this._GET_PESOPLAC_VALUE(_LIST[i]));
+                // _TOTALES.colpan += Number(this._get_COLPAN_VALUE(_LIST[i]));
+                // _TOTALES.viga += Number(this._get_VIGA(Math.abs(_LIST[i].height)));
+                // _TOTALES.esca += Number(_LIST[i].esca);
+                // _TOTALES.wihik += Number(this._get_WIHIK(_LIST[i]));
+                _TOTALES.tot += Number(_get_TOT(_LIST[i]));
+            }
+
+            // THIS IS DONE IN ORDER TO PREVENT RECURSION
+            /*
+            for (var i = 0; i < _LIST.length; i++) {
+                let condition = _LIST[i].pos == 1;
+                if (condition) continue;
+                let d231 = this._GET_STEP_TYPE_INDEX('s4237', 'value', 20) || 1
+    
+                let cvi = Number(this._get_WIHIK(_LIST[i])) / Number(_TOTALES.wihik);
+                _TOTALES.cvi += cvi
+                _TOTALES.f_x += cvi * Number(this.get_d236());
+                _TOTALES.f_y += cvi * Number(this.get_d236()) * 0.3;
+            }
+                */
+
+
+            return _TOTALES;
         }
 
         // DATA CONVERTERS
@@ -410,6 +497,216 @@ class RECORD_ENG_STEP_433 extends Component {
             return (0.3 * G520 * Math.max(G491, G492) * 1000 * F52 / F55 * (G502 * Math.pow(1000, 2) / G526 - 1)).toFixed(2)
         }
 
+        let get_G547 = () => {
+            // SUM(F268:F295)*1000 
+            let h = Number(_GET_TOTAL().height) * 1000
+            return h
+        }
+
+        let get_G548 = () => {
+            // M296/G550
+            let M296 = Number(_GET_TOTAL().tot)
+            let G550 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 10) || document.getElementById("estructural_p3_10")?.value || 0);
+            return Number(M296 / G550).toFixed(4)
+        }
+
+        let get_G549 = () => {
+            // 4700*SQRT(L52)
+            let L52 = Number(_GET_STEP_TYPE_INDEX('s423m', 'value', 3) ?? 21)
+            return Number(4700 * Math.sqrt(L52)).toFixed(4)
+        }
+
+        let get_G553 = () => {
+            // G551*G540/1000/G550
+            let G551 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 11) || document.getElementById("estructural_p3_11")?.value || 0);
+            let G540 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 0) || document.getElementById("estructural_p3_0")?.value || 0);
+            let G550 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 10) || document.getElementById("estructural_p3_10")?.value || 0);
+            return Number(G551 * G540 / 1000 / G550).toFixed(4)
+        }
+
+        let get_G554 = () => {
+            // G552*G540/1000/G550
+            let G552 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 12) || document.getElementById("estructural_p3_12")?.value || 0);
+            let G540 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 0) || document.getElementById("estructural_p3_0")?.value || 0);
+            let G550 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 10) || document.getElementById("estructural_p3_10")?.value || 0);
+            return Number(G552 * G540 / 1000 / G550).toFixed(4)
+        }
+
+        let get_G555 = () => {
+            // 2,5*1000
+            return 2.5 * 1000
+        }
+
+        let get_G556 = () => {
+            // G555/G540
+            let G540 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 0) || document.getElementById("estructural_p3_0")?.value || 0);
+            let G555 = get_G555()
+            return Number(G555 / G540).toFixed(4)
+        }
+
+        let get_G557 = () => {
+            // G547/G541
+            let G547 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 0) || document.getElementById("estructural_p3_0")?.value || 0);
+            let G541 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 1) || document.getElementById("estructural_p3_1")?.value || 0);
+            return Number(G547 / G541).toFixed(4)
+        }
+
+        let get_G560 = () => {
+            // MAX(
+            // 0,2*K230*(G547/G541)*SQRT(G548/(G549*1000*G553*G555/1000))*G555/G547
+            // 0,007)
+            let K230 = Number(_GET_STEP_TYPE_INDEX('s4237', 'value', 20) || 0);
+            let G547 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 0) || document.getElementById("estructural_p3_0")?.value || 0);
+            let G541 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 1) || document.getElementById("estructural_p3_1")?.value || 0);
+            let G548 = get_G548();
+            let G549 = get_G549();
+            let G553 = get_G553();
+            let G555 = get_G555();
+            let value = 0.2 * K230 * (G547 / G541) * Math.sqrt(G548 / (G549 * 1000 * G553 * G555 / 1000)) * G555 / G547;
+            return Math.max(value, 0.007)
+        }
+
+        let get_G561 = () => {
+            // MAX(
+            // 0,2*K230*(G547/G541)*SQRT(G548/(G549*1000*G554*G555/1000))*G555/G547
+            // 0,007)
+            let K230 = Number(_GET_STEP_TYPE_INDEX('s4237', 'value', 20) || 0);
+            let G547 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 0) || document.getElementById("estructural_p3_0")?.value || 0);
+            let G541 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 1) || document.getElementById("estructural_p3_1")?.value || 0);
+            let G548 = get_G548();
+            let G549 = get_G549();
+            let G554 = get_G554();
+            let G555 = get_G555();
+            let value = 0.2 * K230 * (G547 / G541) * Math.sqrt(G548 / (G549 * 1000 * G554 * G555 / 1000)) * G555 / G547;
+            return Math.max(value, 0.007)
+        }
+
+        let get_G562 = () => {
+            // G541/(600*G560)
+            let G541 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 1) || document.getElementById("estructural_p3_1")?.value || 0);
+            let G560 = get_G560();
+            return Number(G541 / (600 * G560)).toFixed(4)
+        }
+
+        let get_G563 = () => {
+            // G541/(600*G561)
+            let G541 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 1) || document.getElementById("estructural_p3_1")?.value || 0);
+            let G561 = get_G561();
+            return Number(G541 / (600 * G561)).toFixed(4)
+        }
+
+        let get_G564 = () => {
+            // IF(
+            // SI
+            // NO
+            let G558 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 18) || document.getElementById("estructural_p3_18")?.value || 0);
+            let G563 = get_G563();
+            if (G558 >= G563) return 'SI'
+            return 'NO'
+        }
+
+        let get_G569 = () => {
+            // IF((G558-(0,1*G541))<0
+            // ;"N.A"
+            // ;G558-(0,1*G541))
+            let G558 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 18) || document.getElementById("estructural_p3_18")?.value || 0);
+            let G541 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 1) || document.getElementById("estructural_p3_1")?.value || 0);
+            let value = (G558 - (0.1 * G541));
+            if (value < 0) return "NA";
+            return Number(value).toFixed(4);
+        }
+
+        let get_G570 = () => {
+            // G558/2
+            let G558 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 18) || document.getElementById("estructural_p3_18")?.value || 0);
+            return Number(G558 / 2).toFixed(4);
+        }
+
+        let get_G571 = () => {
+            // 300
+            return 300
+        }
+
+        let get_G576 = () => {
+            // G542/3
+            let G542 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 2) || document.getElementById("estructural_p3_2")?.value || 0);
+            return Number(G542 / 3).toFixed(4);
+        }
+
+        let get_G577 = () => {
+            // 6*G546
+            let G546 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 6) || document.getElementById("estructural_p3_6")?.value || 0);
+            return Number(6 * G546).toFixed(4);
+        }
+
+        let get_G578 = () => {
+            // MIN(
+            //      MAX(
+            //      100-(350-G543)/3
+            //      100)
+            // 150)
+            let G543 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 3) || document.getElementById("estructural_p3_3")?.value || 0);
+            let value = Number(100 - (350 - G543) / 3).toFixed(4);
+            return Math.min(Math.max(value, 100), 150)
+        }
+
+        let get_G583 = () => {
+            // 0,09*G544*G542*L52/L55
+            let G544 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 4) || document.getElementById("estructural_p3_4")?.value || 0);
+            let G542 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 2) || document.getElementById("estructural_p3_2")?.value || 0);
+            let L52 = Number(_GET_STEP_TYPE_INDEX('s423m', 'value', 3) ?? 21);
+            let L55 = Number(_GET_STEP_TYPE_INDEX('s423m', 'value', 5) ?? 420);
+            return Number(0.09 * G544 * G542 * L52 / L55).toFixed(4)
+        }
+
+        let get_G588 = () => {
+            // PI /4*G587^2
+            let G587 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 32) || document.getElementById("estructural_p3_32")?.value || 0);
+            return Number(Math.PI / 4 * G587 ^ 2).toFixed(4)
+        }
+
+        let get_G589 = () => {
+            // G588/G586/G540*2
+            let G540 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 0) || document.getElementById("estructural_p3_0")?.value || 0);
+            let G586 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 31) || document.getElementById("estructural_p3_31")?.value || 0);
+            let G588 = get_G588();
+            return Number(G588 / G586 / G540 * 2).toFixed(4);
+        }
+
+        let get_G590 = () => {
+            // 200
+            return 200;
+        }
+
+        let get_G591 = () => {
+            // 0.0025
+            return 0.0025;
+        }
+
+        let get_G596 = () => {
+            // PI /4*G595^2
+            let G595 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 38) || document.getElementById("estructural_p3_38")?.value || 0);
+            return Number(Math.PI / 4 * G595 ^ 2).toFixed(4)
+        }
+
+        let get_G597 = () => {
+            //G596/G594/G540*2
+            let G540 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 0) || document.getElementById("estructural_p3_0")?.value || 0);
+            let G594 = Number(_GET_STEP_TYPE_INDEX('estructural_p3', 'value', 37) || document.getElementById("estructural_p3_37")?.value || 0);
+            let G596 = get_G596();
+            return Number(G596 / G594 / G540 * 2).toFixed(4);
+        }
+
+        let get_G598 = () => {
+            // 450
+            return 450;
+        }
+
+        let get_G599 = () => {
+            // 0.0025
+            return 0.0025;
+        }
+
         const PASO_10_VERSION_2 = [
             { i: 0, c: 0, name: "Deriva admisible (A.6.4 NSR-10) (m)", },
             { i: 1, c: 1, name: "Deriva máxima (cm)", },
@@ -433,12 +730,12 @@ class RECORD_ENG_STEP_433 extends Component {
             { i: 10, c: 7, name: "C = 1  (m) - Dimension de Columna medida en dirección de la luz para la cual se determinan los momentos", name2: "NSR 10 C.21.6.1.1", calc: null, open: true },
             { i: 11, name: "C = 2 (m)", name2: "NSR 10 C.21.6.1.2", calc: null, open: true },
             { name: "Revision de cuantias", calc: null, bold: true, },
-            { i: 12, name: "diámetro de varilla 1 (mm)", calc: get_G462, i2: 29, i3: 30, cacl3: get_H462 },
+            { i: 12, name: "diámetro de varilla 1 (mm2)", calc: get_G462, i2: 29, i3: 30, cacl3: get_H462 },
             { i: 13, name: "cantidad de verillas 1 ", calc: null, open: true },
-            { i: 14, name: "diámetro de varilla 2 (mm)", calc: get_G464, i2: 31, i3: 32, cacl3: get_H464 },
+            { i: 14, name: "diámetro de varilla 2 (mm2)", calc: get_G464, i2: 31, i3: 32, cacl3: get_H464 },
             { i: 15, name: "cantidad de verillas 2", calc: null, open: true },
             { name: "", calc: null },
-            { i: 16, name: "Acero planteado (mm^2)", calc: get_G467, },
+            { i: 16, name: "Acero planteado (mm2)", calc: get_G467, },
             { i: 17, c: 8, name: "d (Distancia desde el centroide del refuerzo a la fibra superior a compresión) (m)", name2: "NSR 10 C.10.5.1, si no cumple revisar C.10.5.3", calc: get_G468, },
             { i: 18, c: 9, name: "ρmin Cuantia mínima", name2: "NSR 10 C.10.5.1", calc: get_G470, },
             { i: 19, c: 10, name: "ρ Cuantia actual", calc: get_G471, },
@@ -448,13 +745,13 @@ class RECORD_ENG_STEP_433 extends Component {
             { i: 33, name: "ESTRIBOS", calc: null, options: OPS_ESTRIBOS_SELECT },
             { i: 21, name: "Longitud mínima de la zona confinada (m)", calc: get_G477, },
             { i: 22, name: "Separación de estribos en la zona confinada (mm)", name2: "NSR 10 C.21.5.3.2", calc: null, open: true },
-            { i: 23, name: "Separación de estribos requerida en la zona confinada 1 (m)", calc: get_G479, },
-            { i: 24, name: "Separación de estribos requerida en la zona confinada 2 (m)", calc: get_G480, },
-            { i: 25, name: "Separación de estribos requerida en la zona confinada 3 (m)", calc: get_G481, },
-            { i: 26, name: "Separación de estribos requerida en la zona confinada 4 (m)", calc: get_G482, },
+            { i: 23, name: "Separación de estribos requerida en la zona confinada 1 (mm)", calc: get_G479, },
+            { i: 24, name: "Separación de estribos requerida en la zona confinada 2 (mm)", calc: get_G480, },
+            { i: 25, name: "Separación de estribos requerida en la zona confinada 3 (mm)", calc: get_G481, },
+            { i: 26, name: "Separación de estribos requerida en la zona confinada 4 (mm)", calc: get_G482, },
             { name: "ZONA NO CONFINADA", calc: null, bold: true, },
             { i: 27, name: "Separación de estribos en la zona no confinada (mm)", name2: "NSR 10 C.21.5.3.4", calc: null, open: true },
-            { i: 28, name: "Separación de estribos requerida en la zona no confinada (m)", calc: get_G485, },
+            { i: 28, name: "Separación de estribos requerida en la zona no confinada (mm)", calc: get_G485, },
         ]
 
         const ESTRUCTURAL_P2 = [
@@ -503,58 +800,57 @@ class RECORD_ENG_STEP_433 extends Component {
         ]
 
         const ESTRUCTURAL_P3 = [
-            { i: 0, name: "t - espesor del muro (mm)", calc: () => null, open: true },
-            { i: 1, name: "Lw - Longitud del muro (mm)", calc: () => null, open: true },
-            { i: 2, name: "b - ancho elemento de borde (mm)", calc: () => null, open: true },
-            { i: 3, name: "hx - Separacion maxima entre estribos en elemento de borde (mm)", calc: () => null, open: true },
-            { i: 4, name: "s - Separacion estribos elementos de borde (mm)", calc: () => null, open: true },
-            { i: 5, name: "Av - Area resistente de estribos y ganchos en elemento de borde (mm^2)", calc: () => null, open: true },
-            { i: 6, name: "db - Diametro de barras longitudinales ne leemntos de borde (mm)", calc: () => 0, },
-            { i: 7, name: "hw (mm)", calc: () => 0, },
-            { i: 8, name: "wd (kN/m^2)", calc: () => 0, },
-            { i: 9, name: "Ec (Mpa)", calc: () => 0, },
-            { i: 10, name: "Aplanta (mm^2)", calc: () => null, open: true },
-            { i: 11, name: "Lx (m)", calc: () => null, open: true },
-            { i: 12, name: "Ly (m)", calc: () => null, open: true },
-            { i: 13, name: "pwx", calc: () => 0, },
-            { i: 14, name: "pwy", calc: () => 0, },
-            { i: 15, name: "hs (mm)", calc: () => 0, },
-            { i: 16, name: "hs/t - mayor a 20 se considera esbelto , lo ideal es que sea menor a 16 ", calc: () => 0, },
-            { i: 17, name: "hw/lw", calc: () => 0, },
-            { i: 18, name: "c - según el diseño estructural (mm)", calc: () => null, open: true },
-            { name: "C.21.9.6.4", calc: () => null, },
-            { i: 19, name: "δu/hw_x - C.21.4.4.1 (%)", calc: () => 0, },
-            { i: 20, name: "δu/hw_y - C.21.4.4.1 (%)", calc: () => 0, },
-            { name: "", calc: () => null, },
-            { i: 21, name: "Lw /(600*(δu/hw))_x (mm)", calc: () => 0, },
-            { i: 22, name: "Lw /(600*(δu/hw))_y (mm)", calc: () => 0, },
-            { i: 23, name: "requiere elemento de borde", calc: () => 0, },
-            { name: "Chequeo elementos de borde en muros ", calc: () => null, bold: true, },
-            { i: 24, name: "bmin1 (mm)", calc: () => 0, },
-            { i: 25, name: "bmin2 (mm)", calc: () => 0, },
-            { i: 26, c: 0, name: "bmin3 (mm)", calc: () => 0, },
-            { name: "Espaciamiento en elementos de borde ", calc: () => null, bold: true, },
-            { i: 27, name: "Sconfi1 (mm)", calc: () => 0, },
-            { i: 28, name: "Sconfi2 (mm)", calc: () => 0, },
-            { i: 29, c: 1, name: "Sconfi3 (mm)", calc: () => 0, },
-            { name: "Refuerzo tranversal en elemento de borde", calc: () => null, bold: true, },
-            { i: 30, c: 2, name: "Ash (mm^2)", calc: () => 0, },
-            { name: "Cuantia mínima transversal en el alma de muro ", calc: () => null, bold: true, },
-            { i: 31, name: "s - Seapracion de barras a a corte en alma de muro (mm)", calc: () => null, open: true },
-            { i: 32, name: "db - diametro de barras efectivas a corte en centro de muro  (mm)", calc: () => null, open: true },
-            { i: 32, name: "Ab (mm^2)", calc: () => 0, },
-            { i: 33, name: "pt Cuantia de acero en el alma", calc: () => 0, },
-            { i: 34, c: 3, name: "smax (mm)", calc: () => 0, },
-            { i: 35, c: 4, name: "Pt_min", calc: () => 0, },
-            { name: "Cuantia mínima longitudinal en el alma de muro", calc: () => null, bold: true, },
-            { i: 36, name: "s - Seapracion de barras a a corte en alma de muro (mm)", calc: () => null, open: true },
-            { i: 37, name: "db - diametro de barras efectivas a corte en centro de muro  (mm)", calc: () => null, open: true },
-            { i: 38, name: "Ab (mm^2)", calc: () => 0, },
-            { i: 39, name: "pl Cuantia de acero en el alma", calc: () => 0, },
-            { i: 40, c: 5, name: "smax (mm)", calc: () => 0, },
-            { i: 41, c: 6, name: "Pl_min", calc: () => 0, },
+            { i: 0, name: "t - espesor del muro (mm)", calc: null, open: true },
+            { i: 1, name: "Lw - Longitud del muro (mm)", calc: null, open: true },
+            { i: 2, name: "b - ancho elemento de borde (mm)", calc: null, open: true },
+            { i: 3, name: "hx - Separacion maxima entre estribos en elemento de borde (mm)", calc: null, open: true },
+            { i: 4, name: "s - Separacion estribos elementos de borde (mm)", calc: null, open: true },
+            { i: 5, name: "Av - Area resistente de estribos y ganchos en elemento de borde (mm^2)", calc: null, open: true },
+            { i: 6, name: "db - Diametro de barras longitudinales ne leemntos de borde (mm)", calc: null, open: true, },
+            { i: 7, name: "hw (mm)", calc: get_G547, },
+            { i: 8, name: "wd (kN/m^2)", calc: get_G548, },
+            { i: 9, name: "Ec (Mpa)", calc: get_G549, },
+            { i: 10, name: "Aplanta (mm^2)", calc: null, open: true },
+            { i: 11, name: "Lx (m)", calc: null, open: true },
+            { i: 12, name: "Ly (m)", calc: null, open: true },
+            { i: 13, name: "pwx", calc: get_G553, },
+            { i: 14, name: "pwy", calc: get_G554, },
+            { i: 15, name: "hs (mm)", calc: get_G555, },
+            { i: 16, name: "hs/t - mayor a 20 se considera esbelto , lo ideal es que sea menor a 16 ", calc: get_G556, },
+            { i: 17, name: "hw/lw", calc: get_G557, },
+            { i: 18, name: "c - según el diseño estructural (mm)", calc: null, open: true },
+            { name: "C.21.9.6.4", calc: null, },
+            { i: 19, name: "δu/hw_x - C.21.4.4.1 (%)", calc: get_G560, },
+            { i: 20, name: "δu/hw_y - C.21.4.4.1 (%)", calc: get_G561, },
+            { name: "", calc: null, },
+            { i: 21, name: "Lw /(600*(δu/hw))_x (mm)", calc: get_G562, },
+            { i: 22, name: "Lw /(600*(δu/hw))_y (mm)", calc: get_G563, },
+            { i: 23, name: "requiere elemento de borde", calc: get_G564, },
+            { name: "Chequeo elementos de borde en muros ", calc: null, bold: true, },
+            { i: 24, name: "bmin1 (mm)", calc: get_G569, },
+            { i: 25, name: "bmin2 (mm)", calc: get_G570, },
+            { i: 26, c: 0, name: "bmin3 (mm)", calc: get_G571, },
+            { name: "Espaciamiento en elementos de borde ", calc: null, bold: true, },
+            { i: 27, name: "Sconfi1 (mm)", calc: get_G576, },
+            { i: 28, name: "Sconfi2 (mm)", calc: get_G577, },
+            { i: 29, c: 1, name: "Sconfi3 (mm)", calc: get_G578, },
+            { name: "Refuerzo tranversal en elemento de borde", calc: null, bold: true, },
+            { i: 30, c: 2, name: "Ash (mm^2)", calc: get_G583, },
+            { name: "Cuantia mínima transversal en el alma de muro ", calc: null, bold: true, },
+            { i: 31, name: "s - Seapracion de barras a a corte en alma de muro (mm)", calc: null, open: true },
+            { i: 32, name: "db - diametro de barras efectivas a corte en centro de muro  (mm)", calc: null, open: true },
+            { i: 33, name: "Ab (mm^2)", calc: get_G588, },
+            { i: 34, name: "pt Cuantia de acero en el alma", calc: get_G589, },
+            { i: 35, c: 3, name: "smax (mm)", calc: get_G590, },
+            { i: 36, c: 4, name: "Pt_min", calc: get_G591, },
+            { name: "Cuantia mínima longitudinal en el alma de muro", calc: null, bold: true, },
+            { i: 37, name: "s - Seapracion de barras a a corte en alma de muro (mm)", calc: null, open: true },
+            { i: 38, name: "db - diametro de barras efectivas a corte en centro de muro  (mm)", calc: null, open: true },
+            { i: 39, name: "Ab (mm^2)", calc: get_G596, },
+            { i: 40, name: "pl Cuantia de acero en el alma", calc: get_G597, },
+            { i: 41, c: 5, name: "smax (mm)", calc: get_G598, },
+            { i: 42, c: 6, name: "Pl_min", calc: get_G599, },
         ]
-
 
 
         // COMPONENT JSX
@@ -566,7 +862,7 @@ class RECORD_ENG_STEP_433 extends Component {
                         <div className='col'>
                             <select className={"form-control form-control-sm form-select"}
                                 name={id} id={id + "_" + + item.i2}
-                                defaultValue={_GET_STEP_TYPE_INDEX(id, 'check', item.i2) ?? "N3"} onChange={() => save()} >
+                                defaultValue={_GET_STEP_TYPE_INDEX(id, 'value', item.i2) ?? "N3"} onChange={() => save()} >
                                 {OPS_VARILLAS_SELECT.map(o => <option>{o}</option>)}
                             </select>
                         </div>
@@ -576,7 +872,7 @@ class RECORD_ENG_STEP_433 extends Component {
                         {item.options ?
                             <select className={"form-control form-control-sm form-select"}
                                 name={id} id={id + "_" + + item.i}
-                                defaultValue={_GET_STEP_TYPE_INDEX(id, 'check', item.i) ?? item.options[0]} onChange={() => save()} >
+                                defaultValue={_GET_STEP_TYPE_INDEX(id, 'value', item.i) ?? item.options[0]} onChange={() => save()} >
                                 {item.options.map(o => <option>{o}</option>)}
                             </select> :
                             <input type={item.open ? "number" : "text"} step={item.open ? false : "0.01"}
@@ -1200,6 +1496,7 @@ class RECORD_ENG_STEP_433 extends Component {
 
             let max_i = 0
             ESTRUCTURAL_P1.map(paso => {
+                if (document.getElementById('estructural_p1_c_' + paso.c)) checks.push(document.getElementById('estructural_p1_c_' + paso.c).value)
                 if (paso.i) {
                     if (paso.calc) document.getElementById('estructural_p1_' + paso.i).value = paso.calc()
                     max_i += 1
@@ -1213,9 +1510,9 @@ class RECORD_ENG_STEP_433 extends Component {
                 }
             })
 
-            for (let i = 0; i < max_i; i++) {
+            for (let i = 0; i <= max_i; i++) {
                 if (document.getElementById('estructural_p1_' + i)) values.push(document.getElementById('estructural_p1_' + i).value)
-                if (document.getElementById('estructural_p1_c_' + i)) checks.push(document.getElementById('estructural_p1_c_' + i).value)
+
             }
 
             formData.set('value', values.join(';'));
@@ -1237,6 +1534,7 @@ class RECORD_ENG_STEP_433 extends Component {
 
             let max_i = 0
             ESTRUCTURAL_P2.map(paso => {
+                if (document.getElementById('estructural_p2_c_' + paso.c)) checks.push(document.getElementById('estructural_p2_c_' + paso.c).value)
                 if (paso.i) {
                     if (paso.calc) document.getElementById('estructural_p2_' + paso.i).value = paso.calc()
                     max_i += 1
@@ -1248,7 +1546,6 @@ class RECORD_ENG_STEP_433 extends Component {
 
             for (let i = 0; i < max_i; i++) {
                 if (document.getElementById('estructural_p2_' + i)) values.push(document.getElementById('estructural_p2_' + i).value)
-                if (document.getElementById('estructural_p2_c_' + i)) checks.push(document.getElementById('estructural_p2_c_' + i).value)
             }
 
             formData.set('value', values.join(';'));
@@ -1269,7 +1566,8 @@ class RECORD_ENG_STEP_433 extends Component {
             formData = new FormData();
 
             let max_i = 0
-            ESTRUCTURAL_P2.map(paso => {
+            ESTRUCTURAL_P3.map(paso => {
+                if (document.getElementById('estructural_p3_c_' + paso.c)) checks.push(document.getElementById('estructural_p3_c_' + paso.c).value)
                 if (paso.i) {
                     if (paso.calc) document.getElementById('estructural_p3_' + paso.i).value = paso.calc()
                     max_i += 1
@@ -1278,7 +1576,6 @@ class RECORD_ENG_STEP_433 extends Component {
 
             for (let i = 0; i < max_i; i++) {
                 if (document.getElementById('estructural_p3_' + i)) values.push(document.getElementById('estructural_p3_' + i).value)
-                if (document.getElementById('estructural_p3_c_' + i)) checks.push(document.getElementById('estructural_p3_c_' + i).value)
             }
 
             formData.set('value', values.join(';'));

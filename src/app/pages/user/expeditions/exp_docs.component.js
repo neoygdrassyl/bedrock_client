@@ -39,8 +39,11 @@ class EXP_DOCS extends Component {
             const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
 
-            if (data) document.getElementById("vr_selected33").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            if (data) {
+                document.getElementById("vr_selected33").value = data.vr
+                this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            }
+            else this.setState({ vrSelected: null, cubSelected: null, idCUBxVr: null })
         } catch (error) {
             console.log(error);
         }
@@ -1111,8 +1114,8 @@ class EXP_DOCS extends Component {
         }
 
         let createVRxCUB_relation = (cub_selected) => {
-            let vr = document.getElementById("vr_selected33").value;
-            
+            let vr = document.getElementById("vr_selected33") ? document.getElementById("vr_selected33").value : null;
+
             let cub = cub_selected;
             let formatData = new FormData();
 
@@ -1127,7 +1130,7 @@ class EXP_DOCS extends Component {
             let date = document.getElementById('exodfb_date_doc').value;
             formatData.set('date', date);
 
-            
+
             if (this.state.idCUBxVr) {
                 CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
                     .then((response) => {
@@ -1146,7 +1149,7 @@ class EXP_DOCS extends Component {
                         if (response.data === 'OK') {
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } 
+                        }
                     })
                     .catch((error) => {
                         console.error(error);

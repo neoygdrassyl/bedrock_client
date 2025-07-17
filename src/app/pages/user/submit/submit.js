@@ -279,12 +279,21 @@ class SUBMIT extends Component {
                 'Fecha y hora de ingreso',
                 'Propietario',
                 'Persona que entrega',
+                'Número de Folios',
             ];
 
             rows.push(headRows);
             _data.map(d => {
                 let id = d.id_public;
                 let con = limit_1 <= id && id <= limit_2;
+                let folios = 0
+                if (d.sub_lists && d.sub_lists.length){
+                    for (let i = 0; i < d.sub_lists.length; i++) {
+                        const element = d.sub_lists[i].list_pages;
+                        var pages = element ? element.split(",") : [];
+                        pages.map(p => folios += Number(p));
+                    }
+                }
                 if (con) {
                     let row = [];
                     row.push(d.id_public);
@@ -294,7 +303,7 @@ class SUBMIT extends Component {
                     row.push(`${d.date} - ${d.time ?? ''}`);
                     row.push(d.owner);
                     row.push(d.name_retriever);
-
+                    row.push(folios > 0 ? folios : ""); 
                     rows.push(row)
                 }
             })

@@ -308,8 +308,8 @@ export default function FUN_CLOCK_EVENTS(props) {
 
             conditionalRowStyles={[
                 {
-                    when: row => (row.name.split(';')[1]).includes(window.user.name) &&
-                        (row.name.split(';')[1]).includes(window.user.surname),
+                    when: row =>  row.name && row.name.split(';')[1] && (row.name.split(';')[1]).includes(window.user.name) &&
+                        (row.name && row.name.split(';')[1]).includes(window.user.surname),
                     style: {
                         backgroundColor: 'Skyblue',
                     },
