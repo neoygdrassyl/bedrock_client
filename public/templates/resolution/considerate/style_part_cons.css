@@ -1,7 +1,21 @@
-/* #isNotSub-second-section{
-  background-color: red;  
-} */
+/* Justificación solo fuera de tablas */
+body,
+.document,
+.document p {
+  font-size: 14pt !important;
+  font-family: Helvetica, Arial, sans-serif;
+  text-align: justify;
+}
 
+/* Tablas sin justificación forzada */
+td, th {
+  font-size: 11pt !important;
+  word-break: break-word;
+  padding: 4px;
+  text-align: left;
+}
+
+/* Tablas responsivas */
 .responsive-table-container {
   width: 100%;
   max-width: 100%;
@@ -12,27 +26,10 @@
 .responsive-table-container table {
   width: 100%;
   border-collapse: collapse;
-  font-size: clamp(10px, 1vw, 14px); /* Autoajuste entre 10px y 14px */
+  font-size: clamp(10px, 1vw, 14px);
 }
 
-.responsive-table-container th,
-.responsive-table-container td {
-  word-break: break-word;
-  padding: 4px;
-}
-
-
-#art-4-tables-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-td, th {
-  font-size: 11pt !important;
-}
-
-/* Estilos generales para todas las tablas involucradas */
+/* Agrupación de tablas */
 #determinates-table-1,
 #determinates-table-33,
 #determinates-table-34,
@@ -42,16 +39,7 @@ td, th {
   font-size: 11pt !important;
 }
 
-/* Ajustes específicos para determinates-table-33 */
-#determinates-table-33 table,
-#determinates-table-34 table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11pt !important;
-  text-align: center;
-}
-
-/* Bordes y padding unificados */
+/* Celdas con bordes */
 #determinates-table-1 th,
 #determinates-table-1 td,
 #determinates-table-33 th,
@@ -61,43 +49,64 @@ td, th {
 #areas-table-container th,
 #areas-table-container td {
   border: 1px solid #000;
-  /*padding: 4px;*/
 }
 
-/* Padding especial para celdas de datos (no encabezados) */
+/* Padding para datos */
 #determinates-table-33 td,
 #determinates-table-34 td,
 #areas-table-container td {
   padding: 0 0 0 4px !important;
-  text-align: center;
 }
 
-/* Encabezados */
+/* Encabezados con fondo gris */
 #determinates-table-1 th,
 #determinates-table-33 th,
 #determinates-table-34 th,
-#areas-table-container th {
-  text-align: center;
-  background-color: #e0e0e0;
+#areas-table-container th,
+#tabla-f2 th,
+#f52-table th,
+#table-f51 th {
+  text-align: center !important;
+  padding: 0 0 0 8px !important;
+  background-color: #c0c0c0;
 }
 
-/* Ajuste específico */
+/* Ajuste visual específico */
 #determinates-table-33 {
   padding-right: 0.4rem;
 }
 
-
-.table-title {
-  background-color: #c0c0c0;
+/* Tabla sin bordes especiales */
+#table-geo-info td {
+  border: none !important;
+  text-align: left !important;
+  padding: 0 !important;
 }
 
-.bg-table{
+/* Contenedor de secciones en columna */
+#art-4-tables-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Utilidades */
+.text-left {
+  text-align: left;
+}
+
+.bold {
+  font-weight: bold !important;
+}
+
+.bg-table {
   background-color: #e0e0e0;
   font-weight: bold;
 }
 
-.text-left{
-  text-align: left;
+.table-title {
+  background-color: #c0c0c0;
+  font-weight: bold;
 }
 
 .d-flex.column.space-between {
@@ -107,7 +116,6 @@ td, th {
   align-items: flex-start;
 }
 
-
 .inline-section {
   display: flex;
   gap: 0.5rem;
@@ -115,58 +123,24 @@ td, th {
   flex-wrap: wrap;
 }
 
-.table-title{
-  background-color: #c0c0c0;
-}
-
-.bold { font-weight: bold !important; }
-
-.document{
-  font-size: 14pt !important;
-  font-family: Helvetica, Arial, sans-serif;
-}
-.document p{
-  font-size: 14pt !important;
-  font-family: Helvetica, Arial, sans-serif;
-}
-body{
-  font-size: 14pt !important;
-  font-family: Helvetica, Arial, sans-serif;
-}
-
-
-#tabla-f2 th{
-  background-color: #c0c0c0;
-}
-
-#table-geo-info td{
-  border: none !important;
-  text-align: left !important;
-  padding: 0 !important;
-}
-
-#f52-table th, #table-f51 th{
-  text-align: center !important;
-  padding: 0 0 0 8px !important;
-  background-color: #c0c0c0;
-}
-
+/* Tablas personalizadas */
 .custom-table {
   border-collapse: collapse;
   width: 100%;
   margin-top: 20px;
 }
 
-.custom-table td, .custom-table th {
+.custom-table td,
+.custom-table th {
   border: 1px solid #444;
   padding: 6px;
-  text-align: center;
   vertical-align: middle;
+  text-align: center;
 }
 
 .custom-table th {
-  font-weight: bold;
   background-color: #f0f0f0;
+  font-weight: bold;
 }
 
 .small-col {
@@ -176,28 +150,32 @@ body{
 .dynamic-col {
   width: auto;
 }
-.table-visible {
-  display: table !important;
-}
 
 .table-visible {
   display: table !important;
 }
 
-/* Evita que un bloque se divida */
+/* Control de saltos de página */
 .avoid-break {
   page-break-inside: avoid;
   break-inside: avoid;
 }
 
-/* Si es muy grande y no cabe en la página actual, se irá a la siguiente */
 .keep-together {
   display: block;
   page-break-before: auto;
   page-break-after: auto;
   break-inside: avoid;
-  break-before: auto;
-  break-after: auto;
   overflow: visible;
+}
+
+#table-341 th,
+#table-341 td,
+#table-3342 th, 
+#table-3342 td, 
+#table-3343 th, 
+#table-3343 td {
+  text-align: center;
+  vertical-align: middle;
 }
 
