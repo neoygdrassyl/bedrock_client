@@ -98,7 +98,6 @@ export class TemplateModifier {
             }
     
             if(_CHECK_ARRAY_34[4] != '2'){
-                alert('El semisótano no se encuentra implementado en esta versión.');
                 this.showDiv('table-334-semisotano','table-row');
                 this.setText('table-334-semisotano-norma', VV(_VALUE_ARRAY_34[18]));
                 this.setText('table-334-semisotano-proyecto', VV(_VALUE_ARRAY_34[19]));
@@ -997,7 +996,6 @@ export class TemplateModifier {
 
         //doc.on('pageAdded', () => { return false });
         if (_DATA.reso.art_1_cb_tb == 'true') {
-            alert("caso contraio")
             this.F2_TABLE_MANUAL(_DATA.reso.art_1_txt_tb);
         } else this.TABLE_F2();
       
