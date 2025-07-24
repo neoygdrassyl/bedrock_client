@@ -1,8 +1,8 @@
 <custom-header>
-    <div class="header-container" style="display: flex; padding-left: 0; justify-content: space-between; align-items: center; width: 100%; font-size: 11pt !important;">
+    <div class="header-container" style="display: flex; padding-left: 0; align-items: left; width: 100%; font-size: 11pt !important;">
       <!-- Contenedor tabla alineado completamente a la izquierda -->
       <div style="flex-grow: 1; margin: 0; padding: 0;">
-        <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse; width: 90%; margin: 0; padding: 0;">
+        <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse; width: 75% !important; margin: 0; padding: 0;">
           <!-- Fila 1: Título principal y Estado -->
           <tr>
             <th colspan="3" style="text-align:center;">
@@ -21,31 +21,33 @@
   
           <!-- Fila 3: Resolución, ID y POT -->
           <tr>
-            <td style="text-align:center;">
+            <td style="text-align:center; width: 36%;">
               RESOLUCIÓN 0275 DEL 29 DE NOVIEMBRE DE 2024
             </td>
-            <td colspan="2" style="padding:0;">
+            <td colspan="2" style="padding:0; width: 44%;">
               <table cellpadding="2" cellspacing="0" style="width:100%; border-collapse: collapse; border: none;">
                 <tr>
-                  <th id="header-id-cod" colspan="3" style="text-align:center; border: 1px solid black; border-width: 0 0 1px 0;">
-                    
+                  <th id="header-id-cod" colspan="2" style="text-align:center; border: 1px solid black; border-width: 0 0 1px 0;">
+                    <!-- Código aquí -->
                   </th>
                 </tr>
                 <tr>
-                  <td style="text-align:left; border: 1px solid black; border-width: 1px 0 0 0; " rowspan="2">Fecha</td>
-                  <td style="text-align:left; border: 1px solid black;">Radicación</td>
-                  <td style="text-align:left; border: 1px solid black; border-width: 1px 0 1px 1px;">Legal y debida forma<br></td>
+                  <td style="text-align:center; border: 1px solid black; border-width: 1px 1px 1px 0; width: 43%;">Radicación</td>
+                  <td style="text-align:center; border: 1px solid black; border-width: 1px 0 1px 1px; width: 57%;">
+                    Legal y debida forma
+                  </td>
                 </tr>
                 <tr>
-                    <td id="date-header" style="text-align:left; white-space: nowrap; border: 1px solid black; border-width: 1px 1px 0 1px;">2024/05/02</td>
-                    <td id="legal-date-header" style="text-align:left; white-space: nowrap; border: 1px solid black; border-width: 1px 0 0 1px;">2024/06/04</td>
-                  </tr>                  
+                  <td id="date-header" style="text-align:center; white-space: nowrap; border: 1px solid black; border-width: 1px 1px 0 0;">2024/05/02</td>
+                  <td id="legal-date-header" style="text-align:center; white-space: nowrap; border: 1px solid black; border-width: 1px 0 0 1px;">2024/06/04</td>
+                </tr>
               </table>
             </td>
-            <td id="info-pot-header" rowspan="2" style="text-align:center; vertical-align:middle;">
+            <td id="info-pot-header" rowspan="2" style="text-align:center; vertical-align:middle; width: 20%;">
               Conforme al<br>POT Acuerdo<br>011/2014
             </td>
           </tr>
+
   
           <!-- Fila 4: Licencia y número de radicación -->
           <tr>
@@ -56,9 +58,9 @@
       </div>
   
       <!-- Logo a la derecha, centrado verticalmente -->
-      <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; margin-left: 10px;">
+      <!-- <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; margin-left: 10px;">
         <img src="https://assets.onecompiler.app/43kp82whv/43mkk8hxu/logo.8340fc36.png" alt="Logo" style="width:60px; height:auto;">
-      </div>
+      </div> -->
     </div>
   </custom-header>
   
