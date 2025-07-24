@@ -268,6 +268,8 @@ class SUBMIT extends Component {
                 'RADICACIÓN SOLICITUD',
                 'ASESORÍA TÉCNICA',
                 'CORRECCIONES SOLICITUD',
+                'TRAMITE',
+                'PQRS',
             ]
             const rows = [];
 
@@ -299,7 +301,7 @@ class SUBMIT extends Component {
                     row.push(d.id_public);
                     row.push(d.id_related);
                     row.push(d.type);
-                    row.push(state[d.list_type] ?? '');
+                    row.push(state[d.list_type] ?? ''); 
                     row.push(`${d.date} - ${d.time ?? ''}`);
                     row.push(d.owner);
                     row.push(d.name_retriever);
