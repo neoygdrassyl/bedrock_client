@@ -168,7 +168,8 @@ td, th {
   break-inside: avoid;
   overflow: visible;
 }
-
+#table-331 th, 
+#table-331 td,
 #table-341 th,
 #table-341 td,
 #table-3342 th, 
