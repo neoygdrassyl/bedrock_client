@@ -93,6 +93,9 @@ class UserslDataService {
   reportsResume(date_start, date_end) {
     return http.get(`/${route}/reports_resume/${date_start}&${date_end}`);
   }
+  reportsData_2(date_start, date_end) {
+    return http.get(`/${route}/reports_2/${date_start}&${date_end}`);
+  }
   reportsPublicData(id_start, id_end) {
     return http.get(`/${route}/reports_public/${id_start}&${id_end}`);
   }

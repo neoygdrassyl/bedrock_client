@@ -51,6 +51,7 @@ export default function FUN_REPORT_GEN(props) {
     var [dataNotaria, setDataNotaria] = useState([]);
     var [dataAuditoria, setDataAuditoria] = useState([]);
     var [dataFDPM, setDataFDPM] = useState([]);
+    var [dataSuperInt, setDataSuperInt] = useState([]);
 
     var [load, setLoad] = useState(0);
     var [preview, setPre] = useState(false);
@@ -1096,12 +1097,12 @@ export default function FUN_REPORT_GEN(props) {
             { value: isPH ? v.id_public_ph : v.exp_id }, // No Expedicion
             { value: reso.state || _GET_STATE_STR(v.state) }, // Estado
             { value: v.clock_payment }, // Fecha De Solicitud
-            { value: v.clock_license || v.clock_license_ph }, // Fecha De Expedicion
+            { value: reso.date || v.clock_license_ph }, // Fecha De Expedicion
             { value: (v.direccion ?? '').toUpperCase() }, // Dirección
             { value: v.catastral_2 || v.catastral }, // Predial
             { value: v.matricula }, // Matricula
             { value: _JOIN_FIELDS(v, ['names51', 'surnames51'], true) }, // Propietario
-            { value: v.name53 + " " +  v.surname53}, // Titular
+            { value: v.name53 + " " + v.surname53 }, // Titular
             { value: vig != 0 && vig != 1 ? vig : "" }, // Vigencia
             { value: isPH ? v.clock_license_ph : is_neg ? neg_clock : v.clock_license }, // Ejecutoria   
         ]
@@ -1524,11 +1525,51 @@ export default function FUN_REPORT_GEN(props) {
         ]
     };
 
+    const header_15 = [
+        "NÚMERO DE RADICADO",
+        "MODALIDAD",
+        "ESTADO",
+        "FECHA DE RADICACIÓN",
+        "LEGAL Y DEBIDA FORMA",
+        "FECHA ACTA",
+        "FECHA VIABILIDAD",
+        "FECHA PAGOS",
+        "FECHA RADUCACION PAGOS",
+        "NÚMERO DE RESOLUCIÓN",
+        "FECHA DE RESOLUCIÓN",
+        "FECHA NOTIFICACIÓN RESOLUCIÓN",
+        "FECHA DE EJECUTORIA",
+    ];
+    let report_data_15 = (v) => {
+        // var regex = /[.,\s]/g;
+        let _CHILD_1 = { tipo: v.tipo, tramite: v.tramite, m_urb: v.m_urb, m_sub: v.m_sub, m_lic: v.m_lic, usos: v.usos };
+        let isPH = regexChecker_isPh(_CHILD_1, true);
+        let taxes = getJSONFull(v.taxes);
+        let reso = getJSONFull(v.reso);
+        // let tmp = getJSONFull(v.tmp);
+        return [
+            { value: v.id_public }, // NÚMERO DE RADICADO
+            { value: formsParser1(_CHILD_1, true) }, // MODALIDAD
+            { value: reso.state || _GET_STATE_STR(v.state) }, // ESTADO
+            { value: v.clock_payment }, // FECHA DE RADICACIÓN
+            { value: v.clock_ldf }, // LEGAL Y DEBIDA FORMA
+            { value: v.clocl_acta_1 }, // FECHA ACTA
+            { value: v.clock_viabilidad || v.clock_viabilidad_2}, // FECHA VIABILIDAD
+            { value: taxes.id_payment_1_date }, // FECHA PAGOS
+            { value: v.clock_payment_2 }, // FECHA RADUCACION PAGOS
+            { value: isPH ? v.id_public_ph : v.exp_id }, // NÚMERO DE RESOLUCIÓN
+            { value: isPH ? v.clock_license_ph : v.clock_res_date }, // FECHA DE RESOLUCIÓN
+            { value: v.clock_res_not_1 || v.clock_res_not_2 }, // FECHA NOTIFICACIÓN RESOLUCIÓN
+            { value: isPH ? v.clock_license_ph : v.clock_license }, // FECHA DE EJECUTORIA
+        ]
+    };
+
     useEffect(() => {
         if (load == 0) {
             _GET_DATA();
             _GET_DATA_MONEY();
             _GET_DATA_RESUME();
+            _GET_DATA_RESUME_NEG();
         }
     }, [load]);
 
@@ -1584,6 +1625,16 @@ export default function FUN_REPORT_GEN(props) {
                 console.log(e);
             });
     }
+      let _GET_DATA_RESUME_NEG = () => {
+        FUNService.reportsData_2(date_1, date_2)
+            .then(response => {
+                _SET_DATA_FINISHED_NEG(response.data)
+                setLoad(1)
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
 
     let _SET_DATA_RESUME = (_data) => {
         var dataResume = [];
@@ -1599,14 +1650,11 @@ export default function FUN_REPORT_GEN(props) {
 
     let _SET_DATA_MONEY = (_data) => {
         var dataMon = [];
-
         _data.map(v => {
             dataMon.push(report_data_6(v));
 
-
         })
         setDataMoney(dataMon);
-
     }
     let _SET_DATA_FINISHED = (_data) => {
         var dataCon = [];
@@ -1622,6 +1670,7 @@ export default function FUN_REPORT_GEN(props) {
         var notaria = [];
         var FPDM = [];
         var auditoria = [];
+        var superint = [];
 
 
         _data.map(v => {
@@ -1638,6 +1687,7 @@ export default function FUN_REPORT_GEN(props) {
             notaria.push(report_data_12(v));
             auditoria.push(report_data_13(v));
             FPDM.push(report_data_14(v));
+            // superint.push(report_data_15(v));
         })
 
         setDataCon(dataCon);
@@ -1653,6 +1703,16 @@ export default function FUN_REPORT_GEN(props) {
         setDataNotaria(notaria);
         setDataAuditoria(auditoria);
         setDataFDPM(FPDM);
+        // setDataSuperInt(superint);
+
+    }
+
+    let _SET_DATA_FINISHED_NEG = (_data) => {
+        var superint = [];
+        _data.map(v => {
+           superint.push(report_data_15(v));
+        })
+        setDataSuperInt(superint);
 
     }
     // *************************  DATA CONVERTERS ********************** //
@@ -2006,6 +2066,18 @@ export default function FUN_REPORT_GEN(props) {
             {preview['pre_14'] ? <div className='row container-sh'>
                 <Spreadsheet data={dataFDPM} columnLabels={header_14} />
             </div> : ''}
+
+            <div className='row my-2'>
+                <div className='col'>
+                    <label className='fw-bold'>INFORME SUPERINTENDENCIA - <MDBBtn floating tag='a' color='success' size='sm' outline onClick={() => generateCVS(header_15, dataSuperInt, 'INFORME SUPERINTENDENCIA')}>
+                        <MDBIcon fas icon='download' /></MDBBtn> <MDBBtn floating tag='a' color='primary' size='sm' outline={!preview['pre_15']} onClick={() => setPre({ ['pre_15']: !preview['pre_15'] })} >
+                            <MDBIcon fas icon='eye' /></MDBBtn></label>
+                </div>
+            </div>
+            {preview['pre_15'] ? <div className='row container-sh'>
+                <Spreadsheet data={dataSuperInt} columnLabels={header_15} />
+            </div> : ''}
+
 
 
             <div className='row my-2'>
