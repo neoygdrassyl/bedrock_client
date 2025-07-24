@@ -273,138 +273,122 @@ export class TemplateModifier {
     }
 
     TABLE_AREAS(filter = []) {
-        const VV = (val, df) => {
-            if (val === 'NO') return '';
-            if (val) return val;
-            if (df) return df;
-            return ''
-        }
-        const CV = (val, dv) => {
-            if (val == '0') return 'NO';
-            if (val == '1') return 'SI';
-            if (val == '2') return 'NA';
-            if (dv != undefined || dv != null) {
-                if (dv == '0') return 'NO';
-                if (dv == '1') return 'SI';
-                if (dv == '2') return 'NA';
-            }
-            return '';
-        }
-    
-        const CV3 = (val,) => {
-            if (val == '0') return 'CON R.';
-            if (val == '1') return 'SIN R.';
-            return '';
-        }
-    
-        const CV2 = val => {
-            if (val == 0) return 'NO CUMPLE';
-            if (val == 1) return 'CUMPLE';
-            if (val == 2) return 'NO APLICA';
-            return ''
-        }
+    const SHOW = val => {
+        if (val === 'NO') return '';
+        if (val == undefined || val == null || val.toString().trim() === '') return '-';
+        return val;
+    }
 
-        
-        // 1) Mostrar el contenedor
-        this.showDiv('areas-table-container', 'block');
-      
-        // 2) Referencias al DOM
-        const container    = this.tempDiv.querySelector('#areas-table-container');
-        const subHeaderRow = this.tempDiv.querySelector('#heads_table_3_1');
-        const urbanTh      = this.tempDiv.querySelector('#head_urban_3_1');
-        const grpTh1       = this.tempDiv.querySelector('#table_colspan1_3_1');
-        const tbody        = this.tempDiv.querySelector('#table-body-areas');
-        if (!subHeaderRow || !urbanTh || !grpTh1 || !tbody) return;
-      
-        // 3) Limpiar dinámicos previos
-        subHeaderRow.querySelectorAll('th.dynamic').forEach(th => th.remove());
-        tbody.querySelectorAll('tr.dynamic-row, tr.dynamic-total').forEach(tr => tr.remove());
-      
-        // 7) Insertar cada etiqueta justo tras "Escala Urbana"
-        let texts = this.data._areas_table?.dinmanicHeaders
-        let insertAfter = urbanTh;
-        texts.forEach(text => {
-          const th = document.createElement('th');
-          th.classList.add('dynamic');
-          th.textContent     = text.text;
-          th.style.cssText   = 'border:1px solid #000; padding:4px; text-align:center; font-weight:bold;';
-          insertAfter.insertAdjacentElement('afterend', th);
-          insertAfter = th;
-        });
+    const VV = (val, df) => {
+        if (val === 'NO') return '';
+        if (val) return val;
+        if (df) return df;
+        return ''
+    }
 
-        const newColspan = 3 + texts.length;
-        grpTh1.colSpan = newColspan;
+    const CV = (val, dv) => {
+        if (val == '0') return 'NO';
+        if (val == '1') return 'SI';
+        if (val == '2') return 'NA';
+        if (dv != undefined || dv != null) {
+            if (dv == '0') return 'NO';
+            if (dv == '1') return 'SI';
+            if (dv == '2') return 'NA';
+        }
+        return '';
+    }
 
-        // 4) Insertar filas de contenido this.data.table_use_rows
-        let useRows = this.data._areas_table?.table_use_rows;
-        if (!useRows) useRows = [];
-        else if (typeof useRows === 'string') {
-          try {
+    const CV3 = (val) => {
+        if (val == '0') return 'CON R.';
+        if (val == '1') return 'SIN R.';
+        return '-';
+    }
+
+    const CV2 = val => {
+        if (val == 0) return 'NO CUMPLE';
+        if (val == 1) return 'CUMPLE';
+        if (val == 2) return 'NO APLICA';
+        return '-';
+    }
+
+    this.showDiv('areas-table-container', 'block');
+
+    const container = this.tempDiv.querySelector('#areas-table-container');
+    const subHeaderRow = this.tempDiv.querySelector('#heads_table_3_1');
+    const urbanTh = this.tempDiv.querySelector('#head_urban_3_1');
+    const grpTh1 = this.tempDiv.querySelector('#table_colspan1_3_1');
+    const tbody = this.tempDiv.querySelector('#table-body-areas');
+    if (!subHeaderRow || !urbanTh || !grpTh1 || !tbody) return;
+
+    subHeaderRow.querySelectorAll('th.dynamic').forEach(th => th.remove());
+    tbody.querySelectorAll('tr.dynamic-row, tr.dynamic-total').forEach(tr => tr.remove());
+
+    let texts = this.data._areas_table?.dinmanicHeaders
+    let insertAfter = urbanTh;
+    texts.forEach(text => {
+        const th = document.createElement('th');
+        th.classList.add('dynamic');
+        th.textContent = SHOW(text.text);
+        th.style.cssText = 'border:1px solid #000; padding:4px; text-align:center; font-weight:bold;';
+        insertAfter.insertAdjacentElement('afterend', th);
+        insertAfter = th;
+    });
+
+    const newColspan = 3 + texts.length;
+    grpTh1.colSpan = newColspan;
+
+    let useRows = this.data._areas_table?.table_use_rows;
+    if (!useRows) useRows = [];
+    else if (typeof useRows === 'string') {
+        try {
             useRows = JSON.parse(useRows);
-          } catch(e) {
+        } catch (e) {
             console.error('No se pudo parsear table_use_rows:', e);
             useRows = [];
-          }
         }
-      
-        if (!Array.isArray(useRows)) {
-          console.warn('table_use_rows no es un array, convirtiendo con Object.values');
-          useRows = Object.values(useRows);
-        }
-      
-        // 2) Insertar cada fila en el tbody
-        useRows.forEach((row, rowIndex) => {
-          // row podría no ser array: lo convertimos
-          let cells = Array.isArray(row)
-            ? row
-            : Object.values(row);
-      
-          const tr = document.createElement('tr');
-          tr.classList.add('dynamic-row');
-      
-          cells.forEach(cell => {
+    }
+
+    if (!Array.isArray(useRows)) {
+        console.warn('table_use_rows no es un array, convirtiendo con Object.values');
+        useRows = Object.values(useRows);
+    }
+
+    useRows.forEach((row, rowIndex) => {
+        let cells = Array.isArray(row) ? row : Object.values(row);
+        const tr = document.createElement('tr');
+        tr.classList.add('dynamic-row');
+
+        cells.forEach(cell => {
             const td = document.createElement('td');
-            td.textContent = cell.text ?? '';
-      
-            // estilos
+            td.textContent = SHOW(cell.text);
+
             td.style.border = '1px solid #000';
             td.style.padding = '4px';
             td.style.textAlign = cell.config?.align || 'center';
             td.style.verticalAlign = cell.config?.valign ? 'middle' : 'baseline';
-      
+
             if (cell.w) {
-              td.style.width = `${cell.w}%`;
+                td.style.width = `${cell.w}%`;
             }
-      
+
             tr.appendChild(td);
-          });
-      
-          tbody.appendChild(tr);
         });
-      
-        let raw = this.data._areas_table?.table_total_rows || [];
 
-        // 2) Si raw[0] tiene .text, significa que raw es la fila única de celdas:
-        //    envuélvelo en otro array para que totalRows sea [ raw ]
-        let totalRows = Array.isArray(raw)
-        && raw.length > 0
-        && raw[0].text !== undefined
-            ? [ raw ]
-            : raw;
+        tbody.appendChild(tr);
+    });
 
-        // 3) Ahora totalRows es siempre un array de “filas”
-        totalRows.forEach(row => {
-        // row es un array de celdas
+    let raw = this.data._areas_table?.table_total_rows || [];
+    let totalRows = Array.isArray(raw) && raw.length > 0 && raw[0].text !== undefined ? [raw] : raw;
+
+    totalRows.forEach(row => {
         const tr = document.createElement('tr');
         tr.classList.add('dynamic-total');
 
         row.forEach((cell, idx) => {
             const td = document.createElement('td');
-            td.textContent = cell.text;        // solo el texto
+            td.textContent = SHOW(cell.text);
+            if (idx === 0) td.colSpan = 3;
 
-            if (idx === 0) {
-            td.colSpan = 3;                  // primera celda ocupa 3 columnas
-            }
             td.style.border = '1px solid #000';
             td.style.padding = '4px';
             td.style.textAlign = cell.config?.align || 'center';
@@ -414,145 +398,112 @@ export class TemplateModifier {
         });
 
         tbody.appendChild(tr);
-        });
-        // Incluir filas de contenido this.data.table_use_rows
+    });
 
-        // Incluir filas de totales this.data.table_total_rows
+    this.showDiv('determinates-table-2', 'block');
+    let table33 = this.data._areas_table?.table_3_3;
 
-        // Tablas 3.3
-        // Tabla 3.3.1
-        this.showDiv('determinates-table-2', 'block');
+    this.setText('table-331-ficha', SHOW(table33?._JSON_STEP.ficha));
+    this.setText('table-331-estrato', SHOW(this.data?.f2.estrato));
+    this.setText('table-331-sector', SHOW(table33?._JSON_STEP.sector));
+    this.setText('table-331-zgu', SHOW(table33?._JSON_STEP.zgu));
+    this.setText('table-331-subsector', SHOW(table33?._JSON_STEP.subsector));
+    this.setText('table-331-zugm', SHOW(table33?._JSON_STEP.zugm));
 
-        let table33 = this.data._areas_table?.table_3_3;
+    this.setText('table-333-restriccion-title', "Zona de restricción: " + SHOW(table33?._VALUE_ARRAY[6]));
+    this.setText('table-333-restriccion', CV3(table33?._CHECK_ARRAY[6]));
 
-        this.setText('table-331-ficha', table33?._JSON_STEP.ficha || '');
-        this.setText('table-331-estrato', this.data?.f2.estrato || '');
-        this.setText('table-331-sector', table33?._JSON_STEP.sector || '');
-        this.setText('table-331-zgu', table33?._JSON_STEP.zgu || '');
-        this.setText('table-331-subsector', table33?._JSON_STEP.subsector || '');
-        this.setText('table-331-zugm', table33?._JSON_STEP.zugm || '');
+    this.setText('table-333-amenaza-title', "Amenaza y Riesgo: " + SHOW(table33?._VALUE_ARRAY[8]));
+    this.setText('table-333-amenaza', CV3(table33?._CHECK_ARRAY[8]));
 
-        this.setText('table-333-restriccion-title', "Zona de restricción: " + VV(table33?._VALUE_ARRAY[6] || ''));
-        this.setText('table-333-restriccion', CV3(table33?._CHECK_ARRAY[6] || ''));
+    this.setText('table-333-utilidad-title', "Utilidad Pública: " + SHOW(table33?._VALUE_ARRAY[7]));
+    this.setText('table-333-utilidad', CV3(table33?._CHECK_ARRAY[7]));
 
-        this.setText('table-333-amenaza-title', "Amenaza y Riesgo: " + VV(table33?._VALUE_ARRAY[8] || ''));
-        this.setText('table-333-amenaza', CV3(table33?._CHECK_ARRAY[8] || ''));
-        
-        this.setText('table-333-utilidad-title', "Utilidad Pública: " + VV(table33?._VALUE_ARRAY[7] || ''));
-        this.setText('table-333-utilidad', CV3(table33?._CHECK_ARRAY[7] || ''));
+    this.setText('table-333-n-title', SHOW(table33?._VALUE_ARRAY[9]));
+    this.setText('table-333-n', CV3(table33?._CHECK_ARRAY[9]));
 
-        this.setText('table-333-n-title', VV(table33?._VALUE_ARRAY[9] || ''));
-        this.setText('table-333-n', CV3(table33?._CHECK_ARRAY[9] || ''));
+    this.setText('table-334-suelo', SHOW(table33?._VALUE_ARRAY[0]));
+    this.setText('table-334-tratamiento', SHOW(table33?._VALUE_ARRAY[2]));
+    this.setText('table-334-area', SHOW(table33?._VALUE_ARRAY[4]));
+    this.setText('table-334-unidad', SHOW(table33?._VALUE_ARRAY[3]));
 
-        this.setText('table-334-suelo', VV(table33?._VALUE_ARRAY[0] || ''));
-        this.setText('table-334-tratamiento', VV(table33?._VALUE_ARRAY[2] || ''));
-        this.setText('table-334-area', VV(table33?._VALUE_ARRAY[4] || ''));
-        this.setText('table-334 -unidad', VV(table33?._VALUE_ARRAY[3] || ''));
+    const { headers = [], perfiles = [] } = this.data._areas_table?.table_3_5;
+    if (!headers.length) return;
 
+    const table = this.tempDiv.querySelector('#perfil-vial');
+    const thead3_5 = table.querySelector('#perfil-vial-head');
+    const tbody3_5 = table.querySelector('#perfil-vial-body');
 
+    const trTitle = document.createElement('tr');
+    const thMainTitle = document.createElement('th');
+    thMainTitle.textContent = '3.3.5 Perfil via';
+    thMainTitle.colSpan = 1 + headers.length * 2;
+    thMainTitle.classList.add('bg-table');
+    thMainTitle.style.textAlign = 'left';
+    thMainTitle.style.fontWeight = 'bold';
+    trTitle.appendChild(thMainTitle);
+    thead3_5.appendChild(trTitle);
 
-        const { headers = [], perfiles = [] } = this.data._areas_table?.table_3_5;
-        if (!headers.length) return;
-    
-        const table    = this.tempDiv.querySelector('#perfil-vial');
-        const thead3_5 = table.querySelector('#perfil-vial-head');
-        const tbody3_5 = table.querySelector('#perfil-vial-body');
-        
-        // fila principal de título
-        const trTitle = document.createElement('tr');
-        const thMainTitle = document.createElement('th');
+    const trGroup = document.createElement('tr');
+    const thTitle = document.createElement('th');
+    thTitle.textContent = 'Perfil vial';
+    thTitle.rowSpan = 2;
+    thTitle.classList.add('bg-table');
+    thTitle.style.textAlign = 'center';
+    trGroup.appendChild(thTitle);
 
-        // columnas totales: 1 + headers.length * 2
-        const totalColumns = 1 + headers.length * 2;
+    headers.forEach(dir => {
+        const th = document.createElement('th');
+        th.textContent = SHOW(dir);
+        th.colSpan = 2;
+        th.style.background = 'silver';
+        th.style.textAlign = 'center';
+        trGroup.appendChild(th);
+    });
+    thead3_5.appendChild(trGroup);
 
-        thMainTitle.textContent = '3.3.5 Perfil via';
-        thMainTitle.colSpan = totalColumns;
-        thMainTitle.classList.add('bg-table');
-        thMainTitle.style.textAlign = 'left';
-        thMainTitle.style.fontWeight = 'bold';
-
-        trTitle.appendChild(thMainTitle);
-        thead3_5.appendChild(trTitle);
-    
-        // 1) fila agrupadora: "Perfil vial" con rowspan=2, y cada dirección colspan=2
-        const trGroup = document.createElement('tr');
-        
-        const thTitle = document.createElement('th');
-        thTitle.textContent    = 'Perfil vial';
-        thTitle.rowSpan        = 2;
-        thTitle.classList.add('bg-table');
-        thTitle.style.textAlign  = 'center';
-        trGroup.appendChild(thTitle);
-    
-        headers.forEach(dir => {
-          const th = document.createElement('th');
-          th.textContent    = dir;
-          th.colSpan        = 2;
-          th.style.background = 'silver';
-          th.style.textAlign  = 'center';
-          trGroup.appendChild(th);
-        });
-        thead3_5.appendChild(trGroup);
-    
-        // 2) fila sub‑encabezados N/P (sin th vacíos al inicio, ya cubiertos por rowspan)
-        const trSub = document.createElement('tr');
-        headers.forEach(() => {
-          ['N','P'].forEach(letter => {
+    const trSub = document.createElement('tr');
+    headers.forEach(() => {
+        ['N', 'P'].forEach(letter => {
             const th = document.createElement('th');
-            th.textContent    = letter;
+            th.textContent = letter;
             th.style.background = 'gainsboro';
-            th.style.textAlign  = 'center';
+            th.style.textAlign = 'center';
             trSub.appendChild(th);
-          });
         });
-        thead3_5.appendChild(trSub);
-    
-        // 3) filas de datos
-        perfiles.forEach(p => {
-          const tr = document.createElement('tr');
-    
-          // nombre del perfil en primera celda
-          const tdName = document.createElement('td');
-          tdName.textContent     = p.name || '';
-          tdName.style.fontWeight= 'bold';
-          tdName.style.textAlign = 'center';
-          tr.appendChild(tdName);
-    
-          // ahora, por cada header, una celda N y otra P
-          headers.forEach((_, i) => {
+    });
+    thead3_5.appendChild(trSub);
+
+    perfiles.forEach(p => {
+        const tr = document.createElement('tr');
+        const tdName = document.createElement('td');
+        tdName.textContent = SHOW(p.name);
+        tdName.style.fontWeight = 'bold';
+        tdName.style.textAlign = 'center';
+        tr.appendChild(tdName);
+
+        headers.forEach((_, i) => {
             const tdN = document.createElement('td');
-            tdN.textContent    = p.norm?.[i]    || '';
-            tdN.style.textAlign= 'center';
+            tdN.textContent = SHOW(p.norm?.[i]);
+            tdN.style.textAlign = 'center';
             tr.appendChild(tdN);
-    
+
             const tdP = document.createElement('td');
-            tdP.textContent    = p.project?.[i] || '';
-            tdP.style.textAlign= 'center';
+            tdP.textContent = SHOW(p.project?.[i]);
+            tdP.style.textAlign = 'center';
             tr.appendChild(tdP);
-          });
-    
-          tbody3_5.appendChild(tr);
         });
 
-        // 3.4 Edificabilidad y volumetría
+        tbody3_5.appendChild(tr);
+    });
 
-        this.renderEdificabilidad(CV2, VV);
+    this.renderEdificabilidad(CV2, SHOW);
+    this.renderVolumen(CV2, SHOW);
+    this.renderAislamientos(CV2, SHOW);
+    this.renderExcepciones();
+    this.renderParkings();
+}
 
-        // 3.4.2 Volumen
-
-        this.renderVolumen(CV2,VV);
-
-        // 3.4.3 Aislamientos
-
-        this.renderAislamientos(CV2, VV);
-
-        // 3.4.4 Excepciones
-        this.renderExcepciones();
-
-        // 3.4.5 Parqueaderos
-        this.renderParkings();
-
-    }
 
     F2_TABLE_MANUAL(text) {
         const container = this.tempDiv.querySelector("#manualTableContainer");
@@ -1045,7 +996,6 @@ export class TemplateModifier {
 
         //doc.on('pageAdded', () => { return false });
         if (_DATA.reso.art_1_cb_tb == 'true') {
-            alert("caso contraio")
             this.F2_TABLE_MANUAL(_DATA.reso.art_1_txt_tb);
         } else this.TABLE_F2();
       

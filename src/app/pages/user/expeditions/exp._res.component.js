@@ -3291,9 +3291,11 @@ export default function EXP_RES(props) {
                     <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
                         <i className="far fa-file-pdf"></i> GENERAR PDF
                     </MDBBtn>
+                    {process.env.REACT_APP_GLOBAL_ID == 'cb1' && (
                     <MDBBtn className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
                         <i className="fas fa-edit"></i> EDITAR PDF
                     </MDBBtn>
+                    )}
                     </div>
                 </div>
             </div>
@@ -3880,7 +3882,9 @@ export default function EXP_RES(props) {
                 </form>
             </div>
             <div>
-                {resDocData && <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} />} {/* Renderiza EXP_RES_2 solo si hay datos */}
+                {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
+                    <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} />
+                )}
             </div>
         </div>
     );
