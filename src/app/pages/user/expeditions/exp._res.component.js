@@ -3275,15 +3275,36 @@ export default function EXP_RES(props) {
                         <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_right" defaultValue={1.7} />
                     </div>
                 </div>
-                {process.env.REACT_APP_GLOBAL_ID == 'cb1' ? <div className="col d-flex justify-content-center">
-                    <div class="input-group-sm my-1">
-                        <label class="form-check-label">Saltos entre parrafos</label>
-                        <input type="number" min={1} step={1} class="form-control-sm" id="record_page_step" defaultValue={1} />
+                {process.env.REACT_APP_GLOBAL_ID == 'cb1' ? (
+                <>
+                    <div className="col d-flex justify-content-center">
+                    <div className="input-group-sm my-1">
+                        <label className="form-check-label">Saltos entre párrafos</label>
+                        <input
+                        type="number"
+                        min={1}
+                        step={1}
+                        className="form-control-sm"
+                        id="record_page_step"
+                        defaultValue={1}
+                        />
+                    </div>
                     </div>
                     <div className="col d-flex justify-content-center">
+                    <div className="input-group-sm my-1">
+                        <label className="form-check-label">Espaciado encabezado</label>
+                        <input
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        className="form-control-sm"
+                        id="record_header_spacing"
+                        defaultValue={6}
+                        />
                     </div>
-                </div> : null}
-
+                    </div>
+                </>
+                ) : null}
             </div>
             <div className="row text-center">
                 <div className="col d-flex justify-content-center">
@@ -3417,6 +3438,7 @@ export default function EXP_RES(props) {
         formData.set('m_left', document.getElementById('record_maring_left').value ? document.getElementById("record_maring_left").value : 1.7);
         formData.set('m_right', document.getElementById('record_maring_right').value ? document.getElementById("record_maring_right").value : 1.7);
         formData.set('r_pages', document.getElementById('record_page_step') ? document.getElementById("record_page_step").value : 1);
+        formData.set('record_header_spacing', document.getElementById('record_header_spacing').value ? document.getElementById("record_header_spacing").value : 6);
 
 
         formData.set('date_payment', date_payment);
