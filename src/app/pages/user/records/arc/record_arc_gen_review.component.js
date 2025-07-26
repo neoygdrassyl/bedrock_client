@@ -5,16 +5,19 @@ import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 
 const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 export default function RECORD_ARC_GEN_REVIEW(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
     var _SAVE_STEPS = 0;
-    const REVIEWS_TYPES = [
+    let REVIEWS_TYPES = [
         { name: 'CONSTRUCCIÓN', id: 'con' },
         { name: 'LOTEO, PARCELACIÓN, SUBDIVISIÓN Y URBANISMO', id: 'sub' },
         { name: 'CERRAMIENTO', id: 'cer' },
         { name: 'CONSTRUCCIÓN + LOTEO', id: 'col' },
     ]
+
+    // if (_GLOBAL_ID == 'fl2') REVIEWS_TYPES.push({ name: 'CONSTRUCCIÓN / RECONOCIMIENTO', id: 'cre' })
     const REVIEW = REVIEW_DOCS;
     // ******************* DATA GETERS ********************* //
     let LOAD_STEP = (_id_public) => {
@@ -89,7 +92,7 @@ export default function RECORD_ARC_GEN_REVIEW(props) {
                                             <label className={it.className ?? ''}>{it.name}</label>
                                             {_check[it.c] == 0
                                                 ? <input type="text" defaultValue={_context[it.v]} name={'rar_context_' + re.pid} id={'rar_context_' + re.pid + '_' + it.v}
-                                                    class="form-control form-control-sm" onBlur={() => manage_rar_context()} style={{backgroundColor: 'LightPink'}} />
+                                                    class="form-control form-control-sm" onBlur={() => manage_rar_context()} style={{ backgroundColor: 'LightPink' }} />
                                                 : <input type='hidden' value={''} name={'rar_context_' + re.pid} id={'rar_context_' + re.pid + '_' + it.v} />
                                             }
                                         </div>
