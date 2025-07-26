@@ -13,10 +13,12 @@ export default function EXP_RES_2(props) {
   data.reso_tipo = _DATA.reso?.tipo;
 
   const margins = {
-    top: parseFloat(_DATA.reso?.m_top) || 70,
-    bottom: parseFloat(_DATA.reso?.m_bot) || 10,
-    left: parseFloat(_DATA.reso?.m_left) || 10,
-    right: parseFloat(_DATA.reso?.m_right) || 10
+    top: parseFloat(_DATA.reso?.m_top) || 7,
+    bottom: parseFloat(_DATA.reso?.m_bot) || 1,
+    left: parseFloat(_DATA.reso?.m_left) || 1,
+    right: parseFloat(_DATA.reso?.m_right) || 1,
+    topHeader: parseFloat(_DATA.reso?.record_header_spacing) || 6,
+    r_pagesn: parseFloat(_DATA.reso?.r_pages) || 1,
   };
   
 
