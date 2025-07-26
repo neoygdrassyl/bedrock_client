@@ -53,21 +53,28 @@ export class TemplateModifier {
         let con_edif = _CHECK_ARRAY_34[1] != '2' || _CHECK_ARRAY_34[2] != '2';
         let con_volumen = this.data._areas_table?.table_3_4.con_volumen || false;
         let excs = this.data._areas_table?.table_3_4?.excs || [''];
-
+        let content = 0;
         if (con_edif){
             this.showDiv('table-334-1aa','table-row');
+            content++;
         }
         if (_CHECK_ARRAY_34[1] != '2'){
             this.setText('table-334-ocupacion-dato', VV(_VALUE_ARRAY_34[6]));
             this.setText('table-334-ocupacion-norma', VV(_VALUE_ARRAY_34[3]));
             this.setText('table-334-ocupacion-proyecto', VV(_VALUE_ARRAY_34[4]));
             this.setText('table-334-ocupacion-eval', _VALUE_ARRAY_34[5] == 'NO' ? CV2(_CHECK_ARRAY_34[1]) : (excs[_VALUE_ARRAY_34[5]] || 'Excep.'));
+            content++;
         }
         if (_CHECK_ARRAY_34[1] != '2'){
             this.setText('table-334-construccion-dato', VV(_VALUE_ARRAY_34[10]));
             this.setText('table-334-construccion-norma', VV(_VALUE_ARRAY_34[7]));
             this.setText('table-334-construccion-proyecto', VV(_VALUE_ARRAY_34[8]));
             this.setText('table-334-construccion-eval', _VALUE_ARRAY_34[9] == 'NO' ? CV2(_CHECK_ARRAY_34[2]) : (excs[_VALUE_ARRAY_34[9]] || 'Excep.'));
+            content++;
+        }
+
+        if (!content){
+            this.showDiv('table-341','none');
         }
     }
 
@@ -160,18 +167,29 @@ export class TemplateModifier {
     renderAislamientos(CV2, VV) {
         const chk = this.data._areas_table.table_3_4._CHECK_ARRAY;
         const val = this.data._areas_table.table_3_4._VALUE_ARRAY;
+        let rowsAdded = 0;
 
-        // Llamadas agrupadas
-        if (chk[6] !== '2') this.addAislamientoRow(CV2, VV,'table-3343', 6, 69, 26, 27, 62);
-        if (chk[7] !== '2') this.addAislamientoRow(CV2, VV,'table-3343', 7, 70, 30, 31, 63);
-        if (chk[8] !== '2') this.addAislamientoRow(CV2, VV,'table-3343', 8, 71, 34, 35, 64);
-        if (chk[9] !== '2') this.addAislamientoRow(CV2, VV,'table-3343', 9, 72, 38, 39, 65);
-        if (chk[11] !== '2') this.addAislamientoRow(CV2, VV,'table-3343', 11, 74, 46, 47, 66);
-        // Antejardines (evIdx = null)
-        if (chk[12] !== '2') this.addAislamientoRow(CV2, VV,'table-3343', 12, 75, 50, 51, null);
-        if (chk[13] !== '2') this.addAislamientoRow(CV2, VV,'table-3343', 13, 76, 54, 55, null);
-        if (chk[14] !== '2') this.addAislamientoRow(CV2, VV,'table-3343', 14, 77, 58, 59, null);
-        if (chk[15] !== '2') this.addAislamientoRow(CV2, VV,'table-3343', 15, 78, 82, 79, null);
+        const tryAdd = (...args) => {
+            const [tableId, chkIdx] = args;
+            if (chk[chkIdx] !== '2') {
+            this.addAislamientoRow(CV2, VV, ...args);
+            rowsAdded++;
+            }
+        };
+
+        tryAdd('table-3343', 6, 69, 26, 27, 62);
+        tryAdd('table-3343', 7, 70, 30, 31, 63);
+        tryAdd('table-3343', 8, 71, 34, 35, 64);
+        tryAdd('table-3343', 9, 72, 38, 39, 65);
+        tryAdd('table-3343', 11, 74, 46, 47, 66);
+        tryAdd('table-3343', 12, 75, 50, 51, null);
+        tryAdd('table-3343', 13, 76, 54, 55, null);
+        tryAdd('table-3343', 14, 77, 58, 59, null);
+        tryAdd('table-3343', 15, 78, 82, 79, null);
+
+        if (rowsAdded === 0) {
+            this.showDiv('table-3343', 'none');
+        }
     }
 
     renderExcepciones() {
@@ -273,236 +291,246 @@ export class TemplateModifier {
     }
 
     TABLE_AREAS(filter = []) {
-    const SHOW = val => {
-        if (val === 'NO') return '';
-        if (val == undefined || val == null || val.toString().trim() === '') return '-';
-        return val;
-    }
-
-    const VV = (val, df) => {
-        if (val === 'NO') return '';
-        if (val) return val;
-        if (df) return df;
-        return ''
-    }
-
-    const CV = (val, dv) => {
-        if (val == '0') return 'NO';
-        if (val == '1') return 'SI';
-        if (val == '2') return 'NA';
-        if (dv != undefined || dv != null) {
-            if (dv == '0') return 'NO';
-            if (dv == '1') return 'SI';
-            if (dv == '2') return 'NA';
+        const SHOW = val => {
+            if (val === 'NO') return '';
+            if (val == undefined || val == null || val.toString().trim() === '') return '-';
+            return val;
         }
-        return '';
-    }
 
-    const CV3 = (val) => {
-        if (val == '0') return 'CON R.';
-        if (val == '1') return 'SIN R.';
-        return '-';
-    }
-
-    const CV2 = val => {
-        if (val == 0) return 'NO CUMPLE';
-        if (val == 1) return 'CUMPLE';
-        if (val == 2) return 'NO APLICA';
-        return '-';
-    }
-
-    this.showDiv('areas-table-container', 'block');
-
-    const container = this.tempDiv.querySelector('#areas-table-container');
-    const subHeaderRow = this.tempDiv.querySelector('#heads_table_3_1');
-    const urbanTh = this.tempDiv.querySelector('#head_urban_3_1');
-    const grpTh1 = this.tempDiv.querySelector('#table_colspan1_3_1');
-    const tbody = this.tempDiv.querySelector('#table-body-areas');
-    if (!subHeaderRow || !urbanTh || !grpTh1 || !tbody) return;
-
-    subHeaderRow.querySelectorAll('th.dynamic').forEach(th => th.remove());
-    tbody.querySelectorAll('tr.dynamic-row, tr.dynamic-total').forEach(tr => tr.remove());
-
-    let texts = this.data._areas_table?.dinmanicHeaders
-    let insertAfter = urbanTh;
-    texts.forEach(text => {
-        const th = document.createElement('th');
-        th.classList.add('dynamic');
-        th.textContent = SHOW(text.text);
-        th.style.cssText = 'border:1px solid #000; padding:4px; text-align:center; font-weight:bold;';
-        insertAfter.insertAdjacentElement('afterend', th);
-        insertAfter = th;
-    });
-
-    const newColspan = 3 + texts.length;
-    grpTh1.colSpan = newColspan;
-
-    let useRows = this.data._areas_table?.table_use_rows;
-    if (!useRows) useRows = [];
-    else if (typeof useRows === 'string') {
-        try {
-            useRows = JSON.parse(useRows);
-        } catch (e) {
-            console.error('No se pudo parsear table_use_rows:', e);
-            useRows = [];
+        const VV = (val, df) => {
+            if (val === 'NO') return '';
+            if (val) return val;
+            if (df) return df;
+            return ''
         }
-    }
 
-    if (!Array.isArray(useRows)) {
-        console.warn('table_use_rows no es un array, convirtiendo con Object.values');
-        useRows = Object.values(useRows);
-    }
-
-    useRows.forEach((row, rowIndex) => {
-        let cells = Array.isArray(row) ? row : Object.values(row);
-        const tr = document.createElement('tr');
-        tr.classList.add('dynamic-row');
-
-        cells.forEach(cell => {
-            const td = document.createElement('td');
-            td.textContent = SHOW(cell.text);
-
-            td.style.border = '1px solid #000';
-            td.style.padding = '4px';
-            td.style.textAlign = cell.config?.align || 'center';
-            td.style.verticalAlign = cell.config?.valign ? 'middle' : 'baseline';
-
-            if (cell.w) {
-                td.style.width = `${cell.w}%`;
+        const CV = (val, dv) => {
+            if (val == '0') return 'NO';
+            if (val == '1') return 'SI';
+            if (val == '2') return 'NA';
+            if (dv != undefined || dv != null) {
+                if (dv == '0') return 'NO';
+                if (dv == '1') return 'SI';
+                if (dv == '2') return 'NA';
             }
+            return '';
+        }
 
-            tr.appendChild(td);
-        });
+        const CV3 = (val) => {
+            if (val == '0') return 'CON R.';
+            if (val == '1') return 'SIN R.';
+            return '-';
+        }
 
-        tbody.appendChild(tr);
-    });
+        const CV2 = val => {
+            if (val == 0) return 'NO CUMPLE';
+            if (val == 1) return 'CUMPLE';
+            if (val == 2) return 'NO APLICA';
+            return '-';
+        }
 
-    let raw = this.data._areas_table?.table_total_rows || [];
-    let totalRows = Array.isArray(raw) && raw.length > 0 && raw[0].text !== undefined ? [raw] : raw;
+        this.showDiv('areas-table-container', 'block');
 
-    totalRows.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.classList.add('dynamic-total');
+        const container = this.tempDiv.querySelector('#areas-table-container');
+        const subHeaderRow = this.tempDiv.querySelector('#heads_table_3_1');
+        const urbanTh = this.tempDiv.querySelector('#head_urban_3_1');
+        const grpTh1 = this.tempDiv.querySelector('#table_colspan1_3_1');
+        const tbody = this.tempDiv.querySelector('#table-body-areas');
+        if (!subHeaderRow || !urbanTh || !grpTh1 || !tbody) return;
 
-        row.forEach((cell, idx) => {
-            const td = document.createElement('td');
-            td.textContent = SHOW(cell.text);
-            if (idx === 0) td.colSpan = 3;
+        subHeaderRow.querySelectorAll('th.dynamic').forEach(th => th.remove());
+        tbody.querySelectorAll('tr.dynamic-row, tr.dynamic-total').forEach(tr => tr.remove());
 
-            td.style.border = '1px solid #000';
-            td.style.padding = '4px';
-            td.style.textAlign = cell.config?.align || 'center';
-            td.style.verticalAlign = cell.config?.valign ? 'middle' : 'baseline';
-
-            tr.appendChild(td);
-        });
-
-        tbody.appendChild(tr);
-    });
-
-    this.showDiv('determinates-table-2', 'block');
-    let table33 = this.data._areas_table?.table_3_3;
-
-    this.setText('table-331-ficha', SHOW(table33?._JSON_STEP.ficha));
-    this.setText('table-331-estrato', SHOW(this.data?.f2.estrato));
-    this.setText('table-331-sector', SHOW(table33?._JSON_STEP.sector));
-    this.setText('table-331-zgu', SHOW(table33?._JSON_STEP.zgu));
-    this.setText('table-331-subsector', SHOW(table33?._JSON_STEP.subsector));
-    this.setText('table-331-zugm', SHOW(table33?._JSON_STEP.zugm));
-
-    this.setText('table-333-restriccion-title', "Zona de restricción: " + SHOW(table33?._VALUE_ARRAY[6]));
-    this.setText('table-333-restriccion', CV3(table33?._CHECK_ARRAY[6]));
-
-    this.setText('table-333-amenaza-title', "Amenaza y Riesgo: " + SHOW(table33?._VALUE_ARRAY[8]));
-    this.setText('table-333-amenaza', CV3(table33?._CHECK_ARRAY[8]));
-
-    this.setText('table-333-utilidad-title', "Utilidad Pública: " + SHOW(table33?._VALUE_ARRAY[7]));
-    this.setText('table-333-utilidad', CV3(table33?._CHECK_ARRAY[7]));
-
-    this.setText('table-333-n-title', SHOW(table33?._VALUE_ARRAY[9]));
-    this.setText('table-333-n', CV3(table33?._CHECK_ARRAY[9]));
-
-    this.setText('table-334-suelo', SHOW(table33?._VALUE_ARRAY[0]));
-    this.setText('table-334-tratamiento', SHOW(table33?._VALUE_ARRAY[2]));
-    this.setText('table-334-area', SHOW(table33?._VALUE_ARRAY[4]));
-    this.setText('table-334-unidad', SHOW(table33?._VALUE_ARRAY[3]));
-
-    const { headers = [], perfiles = [] } = this.data._areas_table?.table_3_5;
-    if (!headers.length) return;
-
-    const table = this.tempDiv.querySelector('#perfil-vial');
-    const thead3_5 = table.querySelector('#perfil-vial-head');
-    const tbody3_5 = table.querySelector('#perfil-vial-body');
-
-    const trTitle = document.createElement('tr');
-    const thMainTitle = document.createElement('th');
-    thMainTitle.textContent = '3.3.5 Perfil via';
-    thMainTitle.colSpan = 1 + headers.length * 2;
-    thMainTitle.classList.add('bg-table');
-    thMainTitle.style.textAlign = 'left';
-    thMainTitle.style.fontWeight = 'bold';
-    trTitle.appendChild(thMainTitle);
-    thead3_5.appendChild(trTitle);
-
-    const trGroup = document.createElement('tr');
-    const thTitle = document.createElement('th');
-    thTitle.textContent = 'Perfil vial';
-    thTitle.rowSpan = 2;
-    thTitle.classList.add('bg-table');
-    thTitle.style.textAlign = 'center';
-    trGroup.appendChild(thTitle);
-
-    headers.forEach(dir => {
-        const th = document.createElement('th');
-        th.textContent = SHOW(dir);
-        th.colSpan = 2;
-        th.style.background = 'silver';
-        th.style.textAlign = 'center';
-        trGroup.appendChild(th);
-    });
-    thead3_5.appendChild(trGroup);
-
-    const trSub = document.createElement('tr');
-    headers.forEach(() => {
-        ['N', 'P'].forEach(letter => {
+        let texts = this.data._areas_table?.dinmanicHeaders
+        let insertAfter = urbanTh;
+        texts.forEach(text => {
             const th = document.createElement('th');
-            th.textContent = letter;
-            th.style.background = 'gainsboro';
+            th.classList.add('dynamic');
+            th.textContent = SHOW(text.text);
+            th.style.cssText = 'border:1px solid #000; padding:4px; text-align:center; font-weight:bold;';
+            insertAfter.insertAdjacentElement('afterend', th);
+            insertAfter = th;
+        });
+
+        const newColspan = 3 + texts.length;
+        grpTh1.colSpan = newColspan;
+
+        let useRows = this.data._areas_table?.table_use_rows;
+        if (!useRows) useRows = [];
+        else if (typeof useRows === 'string') {
+            try {
+                useRows = JSON.parse(useRows);
+            } catch (e) {
+                console.error('No se pudo parsear table_use_rows:', e);
+                useRows = [];
+            }
+        }
+
+        if (!Array.isArray(useRows)) {
+            console.warn('table_use_rows no es un array, convirtiendo con Object.values');
+            useRows = Object.values(useRows);
+        }
+
+        useRows.forEach((row, rowIndex) => {
+            let cells = Array.isArray(row) ? row : Object.values(row);
+            const tr = document.createElement('tr');
+            tr.classList.add('dynamic-row');
+
+            cells.forEach(cell => {
+                const td = document.createElement('td');
+                td.textContent = SHOW(cell.text);
+
+                td.style.border = '1px solid #000';
+                td.style.padding = '4px';
+                td.style.textAlign = cell.config?.align || 'center';
+                td.style.verticalAlign = cell.config?.valign ? 'middle' : 'baseline';
+
+                if (cell.w) {
+                    td.style.width = `${cell.w}%`;
+                }
+
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+
+        let raw = this.data._areas_table?.table_total_rows || [];
+        let totalRows = Array.isArray(raw) && raw.length > 0 && raw[0].text !== undefined ? [raw] : raw;
+
+        totalRows.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.classList.add('dynamic-total');
+
+            row.forEach((cell, idx) => {
+                const td = document.createElement('td');
+                td.textContent = SHOW(cell.text);
+                if (idx === 0) td.colSpan = 3;
+
+                td.style.border = '1px solid #000';
+                td.style.padding = '4px';
+                td.style.textAlign = cell.config?.align || 'center';
+                td.style.verticalAlign = cell.config?.valign ? 'middle' : 'baseline';
+
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+
+       // this.showDiv('determinates-table-2', 'block');
+        let table33 = this.data._areas_table?.table_3_3;
+
+        this.setText('table-331-ficha', SHOW(table33?._JSON_STEP.ficha));
+        this.setText('table-331-estrato', SHOW(this.data?.f2.estrato));
+        this.setText('table-331-sector', SHOW(table33?._JSON_STEP.sector));
+        this.setText('table-331-zgu', SHOW(table33?._JSON_STEP.zgu));
+        this.setText('table-331-subsector', SHOW(table33?._JSON_STEP.subsector));
+        this.setText('table-331-zugm', SHOW(table33?._JSON_STEP.zugm));
+
+        this.setText('table-333-restriccion-title', "Zona de restricción: " + SHOW(table33?._VALUE_ARRAY[6]));
+        this.setText('table-333-restriccion', CV3(table33?._CHECK_ARRAY[6]));
+
+        this.setText('table-333-amenaza-title', "Amenaza y Riesgo: " + SHOW(table33?._VALUE_ARRAY[8]));
+        this.setText('table-333-amenaza', CV3(table33?._CHECK_ARRAY[8]));
+
+        this.setText('table-333-utilidad-title', "Utilidad Pública: " + SHOW(table33?._VALUE_ARRAY[7]));
+        this.setText('table-333-utilidad', CV3(table33?._CHECK_ARRAY[7]));
+
+        this.setText('table-333-n-title', SHOW(table33?._VALUE_ARRAY[9]));
+        this.setText('table-333-n', CV3(table33?._CHECK_ARRAY[9]));
+
+        this.setText('table-334-suelo', SHOW(table33?._VALUE_ARRAY[0]));
+        this.setText('table-334-tratamiento', SHOW(table33?._VALUE_ARRAY[2]));
+        this.setText('table-334-area', SHOW(table33?._VALUE_ARRAY[4]));
+        this.setText('table-334-unidad', SHOW(table33?._VALUE_ARRAY[3]));
+
+        const table3_5 = this.data._areas_table?.table_3_5;
+        const headers = (table3_5 && table3_5.headers) || [];
+        const perfiles = (table3_5 && table3_5.perfiles) || [];
+
+        if (!headers.length) return;
+
+
+        const table = this.tempDiv.querySelector('#perfil-vial');
+        const thead3_5 = table.querySelector('#perfil-vial-head');
+        const tbody3_5 = table.querySelector('#perfil-vial-body');
+
+        const trTitle = document.createElement('tr');
+        const thMainTitle = document.createElement('th');
+        thMainTitle.textContent = '3.3.5 Perfil via';
+        thMainTitle.colSpan = 1 + headers.length * 2;
+        thMainTitle.classList.add('bg-table');
+        thMainTitle.style.textAlign = 'left';
+        thMainTitle.style.fontWeight = 'bold';
+        trTitle.appendChild(thMainTitle);
+        thead3_5.appendChild(trTitle);
+
+        const trGroup = document.createElement('tr');
+        const thTitle = document.createElement('th');
+        thTitle.textContent = 'Perfil vial';
+        thTitle.rowSpan = 2;
+        thTitle.classList.add('bg-table');
+        thTitle.style.textAlign = 'center';
+        trGroup.appendChild(thTitle);
+
+        headers.forEach(dir => {
+            const th = document.createElement('th');
+            th.textContent = SHOW(dir);
+            th.colSpan = 2;
+            th.style.background = 'silver';
             th.style.textAlign = 'center';
-            trSub.appendChild(th);
+            trGroup.appendChild(th);
         });
-    });
-    thead3_5.appendChild(trSub);
+        thead3_5.appendChild(trGroup);
 
-    perfiles.forEach(p => {
-        const tr = document.createElement('tr');
-        const tdName = document.createElement('td');
-        tdName.textContent = SHOW(p.name);
-        tdName.style.fontWeight = 'bold';
-        tdName.style.textAlign = 'center';
-        tr.appendChild(tdName);
+        const trSub = document.createElement('tr');
+        headers.forEach(() => {
+            ['N', 'P'].forEach(letter => {
+                const th = document.createElement('th');
+                th.textContent = letter;
+                th.style.background = 'gainsboro';
+                th.style.textAlign = 'center';
+                trSub.appendChild(th);
+            });
+        });
+        thead3_5.appendChild(trSub);
 
-        headers.forEach((_, i) => {
-            const tdN = document.createElement('td');
-            tdN.textContent = SHOW(p.norm?.[i]);
-            tdN.style.textAlign = 'center';
-            tr.appendChild(tdN);
+        perfiles.forEach(p => {
+            const tr = document.createElement('tr');
+            const tdName = document.createElement('td');
+            tdName.textContent = SHOW(p.name);
+            tdName.style.fontWeight = 'bold';
+            tdName.style.textAlign = 'center';
+            tr.appendChild(tdName);
 
-            const tdP = document.createElement('td');
-            tdP.textContent = SHOW(p.project?.[i]);
-            tdP.style.textAlign = 'center';
-            tr.appendChild(tdP);
+            headers.forEach((_, i) => {
+                const tdN = document.createElement('td');
+                tdN.textContent = SHOW(p.norm?.[i]);
+                tdN.style.textAlign = 'center';
+                tr.appendChild(tdN);
+
+                const tdP = document.createElement('td');
+                tdP.textContent = SHOW(p.project?.[i]);
+                tdP.style.textAlign = 'center';
+                tr.appendChild(tdP);
+            });
+
+            tbody3_5.appendChild(tr);
         });
 
-        tbody3_5.appendChild(tr);
-    });
+        const ALLOW_REVIEWS = this.data._areas_table?.ALLOW_REVIEWS;
+        console.log(`ALLOW_REVIEWS: ${ALLOW_REVIEWS}`);
 
-    this.renderEdificabilidad(CV2, SHOW);
-    this.renderVolumen(CV2, SHOW);
-    this.renderAislamientos(CV2, SHOW);
-    this.renderExcepciones();
-    this.renderParkings();
-}
+        if (ALLOW_REVIEWS[0] == 1) {
+            this.showDiv('table-areas-33-34');
+            this.renderEdificabilidad(CV2, SHOW);
+            this.renderVolumen(CV2, SHOW);
+            this.renderAislamientos(CV2, SHOW);
+            this.renderExcepciones();
+            this.renderParkings();
+        }
+    }
 
 
     F2_TABLE_MANUAL(text) {
