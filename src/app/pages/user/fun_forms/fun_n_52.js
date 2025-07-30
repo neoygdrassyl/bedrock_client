@@ -11,6 +11,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import { Divider } from 'rsuite';
 import profesionalsService from '../../../services/profesionals.service';
 
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 const moment = require('moment');
 class FUNN51 extends Component {
@@ -60,6 +61,7 @@ class FUNN51 extends Component {
                 document.getElementById("f_52_113_edit").value = _array[2];
                 document.getElementById("f_52_114_edit").value = _array[3];
                 document.getElementById("f_52_115_edit").value = _array[4];
+                document.getElementById("f_52_116_edit").value = _array[5];
             }
 
         }
@@ -141,6 +143,13 @@ class FUNN51 extends Component {
                 <VIZUALIZER url={_FIND_6(_array[4]).path + "/" + _FIND_6(_array[4]).filename} apipath={'/files/'}
                     icon={'far fa-file-alt fa-2x'} color={'tomato'} />
                 : ""}</>)
+
+            _COMPONENT.push(<>{_array[5] > 0
+                ?
+                <VIZUALIZER url={_FIND_6(_array[5]).path + "/" + _FIND_6(_array[5]).filename} apipath={'/files/'}
+                    icon={'far fa-file-alt fa-2x'} color={'gray'} />
+                : ""}</>)
+
 
             return <>{_COMPONENT}</>
         }
@@ -313,12 +322,12 @@ class FUNN51 extends Component {
 
                 <div className="row mb-2">
                     <div className="col-6">
-                        <label>5.2.11.1 Relacionar Documento: Hoja de Vida y Certificados</label>
+                        <label>5.2.11.1 Relacionar Documento: Hoja de Vida</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_114">
+                            <select className='form-select' id="f_52_114" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -331,7 +340,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_111">
+                            <select className='form-select' id="f_52_111" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -344,7 +353,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_112">
+                            <select className='form-select' id="f_52_112" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -357,7 +366,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_113">
+                            <select className='form-select' id="f_52_113" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -370,7 +379,20 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_115">
+                            <select className='form-select' id="f_52_115" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
+                                <option value="-1">APORTADO FISICAMENTE</option>
+                                <option value="0">SIN DOCUMENTO</option>
+                                {_CHILD_6_SELECT()}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="col-6">
+                        <label>5.2.11.6 Relacionar Documento: Certificados</label>
+                        <div class="input-group my-1">
+                            <span class="input-group-text bg-info text-white">
+                                <i class="far fa-file"></i>
+                            </span>
+                            <select className='form-select' id="f_52_116" defaultValue={_GLOBAL_ID === 'cp1' ? "0" : "-1"}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -526,7 +548,7 @@ class FUNN51 extends Component {
 
                 <div className="row mb-2">
                     <div className="col-6">
-                        <label>5.2.11.1 Hoja de Vida y Certificados</label>
+                        <label>5.2.11.1 Hoja de Vida</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
@@ -590,7 +612,19 @@ class FUNN51 extends Component {
                             </select>
                         </div>
                     </div>
-
+                    <div className="col-6">
+                        <label>5.2.11.6 Relacionar Documento: Certificados</label>
+                        <div class="input-group my-1">
+                            <span class="input-group-text bg-info text-white">
+                                <i class="far fa-file"></i>
+                            </span>
+                            <select className='form-select' id="f_52_116_edit">
+                                <option value="-1">APORTADO FISICAMENTE</option>
+                                <option value="0">SIN DOCUMENTO</option>
+                                {_CHILD_6_SELECT()}
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </>
         }
@@ -675,7 +709,7 @@ class FUNN51 extends Component {
                     name: <label>DOCUMENTOS</label>,
                     button: true,
                     center: true,
-                    minWidth: '150px',
+                    minWidth: '190px',
                     cell: row => <>{_GET_DOCS_BTNS(row.docs)}</>
                 },
                 {
@@ -785,6 +819,7 @@ class FUNN51 extends Component {
             docs.push(document.getElementById("f_52_113").value);
             docs.push(document.getElementById("f_52_114").value);
             docs.push(document.getElementById("f_52_115").value);
+            docs.push(document.getElementById("f_52_116").value);
             formData.set('docs', docs.join());
 
             MySwal.fire({
@@ -867,6 +902,7 @@ class FUNN51 extends Component {
             docs.push(document.getElementById("f_52_113_edit").value);
             docs.push(document.getElementById("f_52_114_edit").value);
             docs.push(document.getElementById("f_52_115_edit").value);
+            docs.push(document.getElementById("f_52_116_edit").value);
             formData.set('docs', docs.join());
 
             MySwal.fire({
@@ -994,7 +1030,7 @@ class FUNN51 extends Component {
             let name_2 = _name.substring(_name.indexOf(' '), _name.length);
             formData.set('name', name.trim());
             formData.set('name_2', name_2.trim());
-            
+
             let _surname = document.getElementById("f_5212").value;
             _surname = _surname.trim();
             let surname = _surname.substring(0, _surname.indexOf(' '));
@@ -1021,7 +1057,7 @@ class FUNN51 extends Component {
             }
 
             let role_type = {
-                'URBANIZADOR/PARCELADOR' : 'oth',
+                'URBANIZADOR/PARCELADOR': 'oth',
                 'URBANIZADOR O CONSTRUCTOR RESPONSABLE': 'oth',
                 'DIRECTOR DE LA CONSTRUCCION': 'oth',
                 'ARQUITECTO PROYECTISTA': 'arq',
@@ -1036,12 +1072,12 @@ class FUNN51 extends Component {
             formData.set('active', 1);
 
             profesionalsService.createOrFind(formData)
-            .then(data => {
-                return
-            })
-            .catch((err) => {
-                console.log(err)
-            });;
+                .then(data => {
+                    return
+                })
+                .catch((err) => {
+                    console.log(err)
+                });;
         }
 
         let process_dataList = (inputText, dataList, _scope) => {
@@ -1119,8 +1155,9 @@ class FUNN51 extends Component {
                     <label className="me-2"><a><i class="far fa-id-card fa-2x" style={{ "color": "DeepSkyBlue" }}></i></a> : C.C.,</label>
                     <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "DarkOrchid" }}></i></a> : Matrícula,</label>
                     <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "GoldenRod" }}></i></a> : Vigencia Matricular,</label>
-                    <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida y Certificados</label>
+                    <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida</label>
                     <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "tomato" }}></i></a> : Estudios de postgrado</label>
+                     <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "gray" }}></i></a> : Certificados</label>
                 </div>
                 {this.state.edit
                     ? <form id="form_fun_52_edit" onSubmit={edit_52}>

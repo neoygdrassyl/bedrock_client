@@ -162,8 +162,8 @@ export default function RECORD_LAW_FUN_52(props) {
     }
     let _GET_DOCS_BTN = (_id, typeIndex) => {
         if (_id < 1 || _id == null || _id == undefined) return ''
-        let ColorIndex = ['DeepSkyBlue', 'DarkOrchid', 'GoldenRod', 'LimeGreen', 'tomato'];
-        let IconIndex = ['far fa-id-card fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x']
+        let ColorIndex = ['DeepSkyBlue', 'DarkOrchid', 'GoldenRod', 'LimeGreen', 'tomato', 'gray'];
+        let IconIndex = ['far fa-id-card fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x', 'far fa-file-alt fa-2x']
         return <VIZUALIZER url={_FIND_6(_id).path + "/" + _FIND_6(_id).filename} apipath={'/files/'}
             icon={IconIndex[typeIndex]} color={ColorIndex[typeIndex]} />
     }
@@ -358,7 +358,7 @@ export default function RECORD_LAW_FUN_52(props) {
                                     </div>
                                     <div className='row'>
                                         <div className='col'>
-                                            <label> Hoja de vida y Certificados</label>
+                                            <label> Hoja de vida</label>
                                         </div>
                                         <div className='col-2'>
                                             {_GET_DOCS_BTN(docsValues[3], 3)}
@@ -376,6 +376,17 @@ export default function RECORD_LAW_FUN_52(props) {
                                         </div>
                                         <div className='col'>
                                             <label className='fw-bold'>{docsValues[4] >= 1 || docsValues[4] == -1 ? 'SI APORTO' : 'NO APORTO'}</label>
+                                        </div>
+                                    </div>
+                                     <div className='row'>
+                                        <div className='col'>
+                                            <label> Certificados</label>
+                                        </div>
+                                        <div className='col-2'>
+                                            {_GET_DOCS_BTN(docsValues[5], 5)}
+                                        </div>
+                                        <div className='col'>
+                                            <label className='fw-bold'>{docsValues[5] >= 1 || docsValues[5] == -1 ? 'SI APORTO' : 'NO APORTO'}</label>
                                         </div>
                                     </div>
 
@@ -610,7 +621,7 @@ export default function RECORD_LAW_FUN_52(props) {
 
                 <div className="row mb-2">
                     <div className="col-6">
-                        <label>5.2.11.1 Hoja de Vida y Certificados</label>
+                        <label>5.2.11.1 Hoja de Vida</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
@@ -668,6 +679,19 @@ export default function RECORD_LAW_FUN_52(props) {
                                 <i class="far fa-file"></i>
                             </span>
                             <select className='form-select' id="f_52_115" defaultValue={docs[4]}>
+                                <option value="-1">APORTADO FISICAMENTE</option>
+                                <option value="0">SIN DOCUMENTO</option>
+                                {_CHILD_6_SELECT()}
+                            </select>
+                        </div>
+                    </div>
+                     <div className="col-6">
+                        <label>5.2.11.6 Relacionar Documento: Certificados</label>
+                        <div class="input-group my-1">
+                            <span class="input-group-text bg-info text-white">
+                                <i class="far fa-file"></i>
+                            </span>
+                            <select className='form-select' id="f_52_116" defaultValue={docs[5]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -829,6 +853,7 @@ export default function RECORD_LAW_FUN_52(props) {
         docs.push(document.getElementById("f_52_113").value);
         docs.push(document.getElementById("f_52_114").value);
         docs.push(document.getElementById("f_52_115").value);
+        docs.push(document.getElementById("f_52_116").value);
         formData.set('docs', docs.join());
 
         MySwal.fire({

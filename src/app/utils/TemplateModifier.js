@@ -522,7 +522,7 @@ export class TemplateModifier {
         const ALLOW_REVIEWS = this.data._areas_table?.ALLOW_REVIEWS;
         console.log(`ALLOW_REVIEWS: ${ALLOW_REVIEWS}`);
 
-        if (ALLOW_REVIEWS[0] == 1) {
+        if (ALLOW_REVIEWS && ALLOW_REVIEWS[0] == 1) {
             this.showDiv('table-areas-33-34');
             this.renderEdificabilidad(CV2, SHOW);
             this.renderVolumen(CV2, SHOW);
