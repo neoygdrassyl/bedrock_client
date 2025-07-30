@@ -3438,8 +3438,11 @@ export default function EXP_RES(props) {
         formData.set('m_left', document.getElementById('record_maring_left').value ? document.getElementById("record_maring_left").value : 1.7);
         formData.set('m_right', document.getElementById('record_maring_right').value ? document.getElementById("record_maring_right").value : 1.7);
         formData.set('r_pages', document.getElementById('record_page_step') ? document.getElementById("record_page_step").value : 1);
-        formData.set('record_header_spacing', document.getElementById('record_header_spacing').value ? document.getElementById("record_header_spacing").value : 6);
-
+        const spacingInput = document.getElementById("record_header_spacing");
+        formData.set(
+        "record_header_spacing",
+        spacingInput && spacingInput.value ? spacingInput.value : 6
+        );
 
         formData.set('date_payment', date_payment);
         formData.set('tipo', document.getElementById('expedition_doc_res_1').value);
