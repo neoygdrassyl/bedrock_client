@@ -17,7 +17,7 @@ export default function RECORD_ARC_GEN_REVIEW(props) {
         { name: 'CONSTRUCCIÓN + LOTEO', id: 'col' },
     ]
 
-    // if (_GLOBAL_ID == 'fl2') REVIEWS_TYPES.push({ name: 'CONSTRUCCIÓN / RECONOCIMIENTO', id: 'cre' })
+    if (_GLOBAL_ID == 'fl2') REVIEWS_TYPES.push({ name: 'CONSTRUCCIÓN / RECONOCIMIENTO', id: 'cre' })
     const REVIEW = REVIEW_DOCS;
     // ******************* DATA GETERS ********************* //
     let LOAD_STEP = (_id_public) => {
