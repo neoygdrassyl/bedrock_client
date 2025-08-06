@@ -1047,7 +1047,7 @@ export class TemplateModifier {
         // Coordenadas
         const geoDiv = this.tempDiv.querySelector('#geo-info');
         if (cur.id === 'cub1') {
-        const vals = this._GET_STEP_TYPE('geo', 'value', 'arc');
+        const vals = _DATA.info_geo_arq || [];
 
         this.setText('geo-cell-north', `Norte: ${vals?.[0] || '-'}`);
         this.setText('geo-cell-east',  `Este: ${vals?.[1] || '-'}`);
