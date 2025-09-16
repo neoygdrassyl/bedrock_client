@@ -8,37 +8,33 @@
 
 </head>
 <body>
-
     <div class="document">
         <custom-header></custom-header>
-
         <!-- Title document -->
-        <div class="document-title mt-5">
+        <div class="document-title">
             <!-- Cargo / dependencia -->
-            <p id="header-job" class="text-center m-0 p-0 text-base bold" style="font-size: 15;"></p>
+            <h3 id="header-job" class="text-center m-0 p-0 text-base bold"></h3>
             <!-- Título y máster en mayúsculas -->
-            <p id="header-title" class="text-center leading-none bold m-0 p-0" style="font-size: 14;"></p>
-            <!-- Línea de llamada más pequeña -->
-            <p id="header-call" class="text-center text-xs mt-1 mb-4 m-0 p-0" style="font-size: 9;"></p>
+            <h4 id="header-title" class="text-center leading-none bold m-0 p-0"></h4>
+            <!-- Línea de llamada más pequeña Arial narrow-->
+            <p id="header-call" class="text-center mt-1 mb-4 m-0 p-0 bold mx-auto" class="text-size-smaller" style="width: 50%;"></p>
         </div>
 
         <considerate-section></considerate-section>
         <resolutive-section></resolutive-section>
 
-        <div id="final-document" class="avoid-break" style="text-align: left; font-size: 11pt; line-height: 1.6;">
+        <div id="final-document" class="avoid-break text-size-small" style="text-align: left; line-height: 1.6;">
             <p id="document-issued" style="font-weight: bold;">Expedida en [CIUDAD] el [FECHA]</p>
             <p id="notify-text" style="font-weight: bold;">NOTIFÍQUESE Y CÚMPLASE,</p>
             
-            <br><br><br><br><br>
-            
-            <p id="signature-name" style="font-weight: bold; text-align: center; margin: 0;">
-            </p>
-            <p id="signature-job" style="font-weight: bold; text-align: center; margin: 0;">
-            </p>
+            <br><br><br><br>
+            <div style="margin:0;">
+                <div id="signature-name" style="font-weight:700;"></div>
+                <div id="signature-job" style="font-weight:700; margin:0 0 2% 0;"></div>
+                <div style="margin:1.2% 0 .5% 0;">Proyectado/revisado por:</div>
+                <div id="signature-name-law">Abg. XXXX</div>
+            </div>
         </div>
-          
-
-        <custom-footer></custom-footer>
     </div>
 
     <script>
