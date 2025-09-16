@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<body>
+    <div class="document">
+        <custom-header></custom-header>
+        <!-- Title document -->
+        <div class="document-title">
+            <!-- Cargo / dependencia -->
+            <h3 id="desist-act-header-job" class="text-center m-0 p-0 text-base bold"></h3>
+            <!-- Título y máster en mayúsculas -->
+            <h4 id="desist-act-header-title" class="text-center leading-none bold m-0 p-0"></h4>
+            <!-- Línea de llamada más pequeña Arial narrow-->
+            <p id="desist-act-header-call" class="text-center mt-1 mb-4 m-0 p-0 bold mx-auto" class="text-size-smaller" style="width: 50%;"></p>
+        </div>
+
+        <considerate-section></considerate-section>
+        <resolutive-section></resolutive-section>
+        
+        <signature-section>
+            <div style="width:100%; box-sizing:border-box;" class="avoid-break">
+
+                <!-- Firman; (centrado) -->
+                <div id="signature-common-des" style="margin:0 0 16px 0; display:none; text-align:start;">
+                Firman;<br><br>
+                </div>
+
+                <!-- Contenedor firmas: centrado en la página -->
+                <div
+                id="signature-delete"
+                style="
+                    display:none;              /* tu lógica lo muestra */
+                    width:100%;
+                    margin:0 auto;             /* centra el bloque general */
+                    box-sizing:border-box;
+
+                    flex-wrap:wrap;
+                    justify-content:center;    /* <-- centra las columnas */
+                    gap:48px 120px;            /* fila/columna: separaciones */
+                    padding:0;
+                "
+                class="avoid-break"
+                >
+                <!-- 1 (alineado a la izquierda dentro de la columna) -->
+                <div style="width:320px; margin:0; display:block; text-align:left;">
+                    <div style="width:60%; height:0; border-top:1px solid #000; margin:12px 0 6px 0;"></div>
+                    <div style="font-weight:700; letter-spacing:.03em;">ARQ. LUIS CARLOS PARRA SALAZAR</div>
+                    <div style="font-weight:700;">Curador Urbano Uno de Bucaramanga</div>
+                </div>
+
+                <!-- 2 -->
+                <div style="width:320px; margin:0; display:block; text-align:left;">
+                    <div style="width:60%; height:0; border-top:1px solid #000; margin:12px 0 6px 0;"></div>
+                    <div style="font-weight:700; letter-spacing:.03em;">MARIA MARGARITA JEREZ ARIAS</div>
+                    <div>Asesora Jurídica</div>
+                </div>
+
+                <!-- 3 -->
+                <div style="width:320px; margin:0; display:block; text-align:left;">
+                    <div style="width:60%; height:0; border-top:1px solid #000; margin:12px 0 6px 0;"></div>
+                    <div style="font-weight:700; letter-spacing:.03em;">JAVIER FERNANDO PARRA VILLALBA</div>
+                    <div>Coordinador Administrativo</div>
+                </div>
+
+                <!-- 4 -->
+                <div style="width:320px; margin:0; display:block; text-align:left;">
+                    <div style="width:60%; height:0; border-top:1px solid #000; margin:12px 0 6px 0;"></div>
+                    <div style="font-weight:700; letter-spacing:.03em;">ADRIANA SUAREZ ROJAS</div>
+                    <div>Archivo</div>
+                </div>
+                </div>
+
+
+                <!-- === Sección 2: Entrega / Recibe (alineado a la izquierda) === -->
+                <div id="signature-return" style="display:none; margin:0 0 3% 0;" class="avoid-break">
+                <div><span style="font-weight:700;">Entrega:</span> <span style="font-weight:700;">QUIEN SUSCRIBE.</span></div>
+                <div style="width:45%; height:0; border-top:1px solid #000; margin:2% 0 1% 0;"></div>
+                <div>Equipo de apoyo del curador urbano uno de Bucaramanga.</div>
+                </div>
+
+                <div id="signature-return-2" style="display:none; margin:0 0 3% 0;" class="avoid-break">
+                <div><span style="font-weight:700;">Recibe:</span> <span style="font-weight:700;">SOLICITANTE:</span></div>
+                <div style="width:45%; height:0; border-top:1px solid #000; margin:2% 0 1% 0;"></div>
+                <div>CC.</div>
+                </div>
+
+                <!-- === Sección 3: Responsable y Proyectado/revisado por === -->
+                <div id="signature-transfer" style="display:none; margin:0;" class="avoid-break">
+                    <div id="signature-name" style="font-weight:700;"></div>
+                    <div id="signature-job" style="font-weight:700; margin:0 0 2% 0;"></div>
+                    <div style="margin:1.2% 0 .5% 0;">Proyectado/revisado por:</div>
+                    <div id="signature-name-law">Abg. XXXX</div>
+                </div>
+
+            </div>
+        </signature-section>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Convertir a mayúsculas los elementos necesarios
+            document.getElementById("title").textContent = document.getElementById("title").textContent.toUpperCase();
+            document.getElementById("master").textContent = document.getElementById("master").textContent.toUpperCase();
+        });
+    </script>
+</body>
+</html>
+
+

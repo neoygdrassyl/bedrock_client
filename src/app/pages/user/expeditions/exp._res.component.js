@@ -3916,7 +3916,7 @@ export default function EXP_RES(props) {
             </div>
             <div>
                 {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
-                    <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} />
+                    <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model || 'open'}/>
                 )}
             </div>
         </div>

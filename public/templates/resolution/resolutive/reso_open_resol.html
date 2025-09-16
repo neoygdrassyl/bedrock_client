@@ -1,5 +1,5 @@
 <div>
-    <p style="text-align: center;" class="bold">PARTE RESOLUTIVA</p>
+    <p style="text-align: center;" class="bold" class="titles-general">PARTE RESOLUTIVA</p>
     <div id="resolutive-1-isSub" style="display: none;">
         <p><strong>ARTÍCULO 1:</strong> <span id="art-1-body"></span></p>
         <p><strong>PARÁGRAFO:</strong> <span id="art-1-paragraph"></span></p>
@@ -131,7 +131,7 @@
         </span>
       </p>
 
-      <ul id="art-4-list" class="list-none pl-4 text-sm mb-4" style="display: none;">
+      <ul id="art-4-list" class="list-none pl-4 text-sm mb-4" style="display: none; list-style-type: none;">
         <li id="art-4-1-container" class="mb-1">
           <strong>1. Antecedentes:</strong>
           <span id="body-art-4-1">No se presentaron antecedentes urbanísticos.</span>
@@ -145,7 +145,8 @@
           <span id="body-art-4-3"></span>
         </li>
       </ul>
-      <div id="areas-table-container" class="mb-2 responsive-table-container keep-together avoid-break" style="display: none; width: 100%;">
+
+      <div id="areas-table-container" class="responsive-table-container keep-together avoid-break" style="display: none; width: 100%; margin-bottom:1rem;">
         <table>
           <thead>
             <!-- Fila de encabezados agrupados -->
@@ -183,89 +184,188 @@
           </tbody>
         </table>
       </div>
-      
-      <div id="table-areas-33-34" class="d-flex flex-row mb-3 justify-content-between responsive-table-container keep-together avoid-break" style="display: none !important; width: 100%">
-        <!-- Columna izquierda -->
-        <div id="determinates-table-33" class="w-50 pr-2 pt-3">
-          <!-- Tabla 3.3.1 y 3.3.2 -->
-          <table border="1" id="table-331" cellspacing="0" cellpadding="4">
-            <colgroup>
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-            </colgroup>
-            <thead>
-              <tr>
-                <th colspan="4">3.3 Determinantes del predio</th>
-              </tr>
-              <tr>
-                <th colspan="2" class="bg-table">3.3.1 Norma Urbana</th>
-                <th colspan="2" class="bg-table">3.3.2 Socioeconómico</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="text-left">Ficha normativa</td>
-                <td id="table-331-ficha"></td>
-                <td class="text-left" >Estrato</td>
-                <td id="table-331-estrato"></td>
-              </tr>
-              <tr>
-                <td class="text-left">Sector</td>
-                <td id="table-331-sector"></td>
-                <td class="text-left">ZGU N°</td>
-                <td id="table-331-zgu"></td>
-              </tr>
-              <tr>
-                <td class="text-left">Subsector</td>
-                <td id="table-331-subsector"></td>
-                <td class="text-left"class="text-left">$m2 ZGU</td>
-                <td id="table-331-zugm"></td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Tabla 3.3.3 Restricciones -->
-          <table border="1" cellspacing="0" cellpadding="4" style="margin-top: 1rem; width: 100%; table-layout: fixed;">
-            <colgroup>
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-            </colgroup>
-            <thead>
-              <tr>
-                <th colspan="4" class="bg-table text-left">3.3.3 Restricciones/limitaciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colspan="3" id="table-333-restriccion-title" class="text-left"></td>
-                <td id="table-333-restriccion"></td>
-              </tr>
-              <tr>
-                <td colspan="3" id="table-333-amenaza-title" class="text-left"></td>
-                <td id="table-333-amenaza"></td>
-              </tr>
-              <tr>
-                <td colspan="3" id="table-333-utilidad-title" class="text-left"></td>
-                <td id="table-333-utilidad"></td>
-              </tr>
-              <tr>
-                <td colspan="3" id="table-333-n-title" class="text-left"></td>
-                <td id="table-333-n"></td>
-              </tr>
-            </tbody>
-          </table>
 
-          <table border="1" cellspacing="0" cellpadding="4" style="margin-top: 1rem; width: 100%; table-layout: fixed;">
+      <div id="table-areas-33-34-1" class="areas-table-container responsive-table-container keep-together avoid-break" style="display:none; width:100%; justify-content:space-between; gap:1rem; align-items:stretch;">
+        
+        <!-- Tabla 3.3.1 y 3.3.2 -->
+        <table border="1" id="table-331" cellspacing="0" cellpadding="4" 
+              style="flex:1; width:50%; table-layout:fixed;">
+          <colgroup>
+            <col style="width:25%;">
+            <col style="width:25%;">
+            <col style="width:25%;">
+            <col style="width:25%;">
+          </colgroup>
+          <thead style="height: 0;">
+            <tr>
+              <th colspan="4" style="text-align:center; vertical-align:middle;">
+                3.3 Determinantes del predio
+              </th>
+            </tr>
+            <tr>
+              <th colspan="2" class="bg-table">3.3.1 Norma Urbana</th>
+              <th colspan="2" class="bg-table">3.3.2 Socioeconómico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left">Ficha normativa</td>
+              <td id="table-331-ficha"></td>
+              <td class="text-left">Estrato</td>
+              <td id="table-331-estrato"></td>
+            </tr>
+            <tr>
+              <td class="text-left">Sector</td>
+              <td id="table-331-sector"></td>
+              <td class="text-left">ZGU N°</td>
+              <td id="table-331-zgu"></td>
+            </tr>
+            <tr>
+              <td class="text-left">Subsector</td>
+              <td id="table-331-subsector"></td>
+              <td class="text-left">$m2 ZGU</td>
+              <td id="table-331-zugm"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Tabla 3.4 Edificabilidad y volumetría -->
+        <table border="1" id="table-341" cellspacing="0" cellpadding="4" 
+              style="flex:1; width:50%; table-layout:fixed;">
+          <colgroup>
+            <col style="width:25%;">
+            <col style="width:18.75%;">
+            <col style="width:18.75%;">
+            <col style="width:18.75%;">
+            <col style="width:18.75%;">
+          </colgroup>
+          <thead style="height: 0;">
+            <tr>
+              <th colspan="5" 
+                  style="background-color:#fff; text-align:center; vertical-align:middle;">
+                3.4 Edificabilidad y volumetría
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="table-334-1aa" style="display:none;">
+              <td class="bg-table text-left">3.4.1 Índices</td>
+              <td class="bg-table">Dato</td>
+              <td class="bg-table">Norma</td>
+              <td class="bg-table">Proyecto</td>
+              <td class="bg-table">Eva/Excp</td>
+            </tr>
+            <tr>
+              <td class="text-left">Ocupación</td>
+              <td id="table-334-ocupacion-dato"></td>
+              <td id="table-334-ocupacion-norma"></td>
+              <td id="table-334-ocupacion-proyecto"></td>
+              <td id="table-334-ocupacion-eval"></td>
+            </tr>
+            <tr>
+              <td id="table-334-1ca" class="text-left">Construcción</td>
+              <td id="table-334-construccion-dato"></td>
+              <td id="table-334-construccion-norma"></td>
+              <td id="table-334-construccion-proyecto"></td>
+              <td id="table-334-construccion-eval"></td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+      <div id="table-areas-33-34-2" class="areas-table-container responsive-table-container keep-together avoid-break" style="display:none; width:100%; justify-content:space-between; gap:1rem; align-items:stretch;">
+
+        <!-- Tabla 3.3.3 Restricciones (50%) -->
+        <table border="1" cellspacing="0" cellpadding="4" id="table-333" style="margin-top: 1rem; flex:1; width:50%; table-layout:fixed;">
+          <colgroup>
+            <col style="width: 25%;">
+            <col style="width: 25%;">
+            <col style="width: 25%;">
+            <col style="width: 25%;">
+          </colgroup>
+          <thead style="height: 0;">
+            <tr>
+              <th colspan="4" class="bg-table text-left">3.3.3 Restricciones/limitaciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="3" id="table-333-restriccion-title" class="text-left"></td>
+              <td id="table-333-restriccion"></td>
+            </tr>
+            <tr>
+              <td colspan="3" id="table-333-amenaza-title" class="text-left"></td>
+              <td id="table-333-amenaza"></td>
+            </tr>
+            <tr>
+              <td colspan="3" id="table-333-utilidad-title" class="text-left"></td>
+              <td id="table-333-utilidad"></td>
+            </tr>
+            <tr>
+              <td colspan="3" id="table-333-n-title" class="text-left"></td>
+              <td id="table-333-n"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Tabla 3.4.2 Volumen -->
+        <table border="1" cellspacing="0" cellpadding="4" id="table-3342" style="margin-top: 1rem; flex:1; width:50%; table-layout:fixed;">
+          <colgroup>
+            <col style="width: 25%;">
+            <col style="width: 25%;">
+            <col style="width: 25%;">
+            <col style="width: 25%;">
+          </colgroup>
+          <thead style="height: 0;">
+            <tr>
+              <th style="text-align: left !important; vertical-align: middle !important;">3.4.2 Volumen</th>
+              <th>Norma</th>
+              <th>Proyecto</th>
+              <th>Eval. / Excep.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="table-334-tipo-edi" style="display: none;">
+              <td class="text-left">Tip. edific.</td>
+              <td id="table-334-tipo-edi-norma"></td>
+              <td id="table-334-tipo-edi-proyecto"></td>
+              <td id="table-334-tipo-edi-eval"></td>
+            </tr>
+            <tr id="table-334-pisos" style="display: none;">
+              <td class="text-left">Nr. de pisos</td>
+              <td id="table-334-pisos-norma"></td>
+              <td id="table-334-pisos-proyecto"></td>
+              <td id="table-334-pisos-eval"></td>
+            </tr>
+            <tr id="atable-334-semisotano" style="display: none;">
+              <td class="text-left">Semisótano</td>
+              <td id="table-334-semisotano-norma"></td>
+              <td id="table-334-semisotano-proyecto"></td>
+              <td id="table-334-semisotano-eval"></td>
+            </tr>
+            <tr id="atable-334-sotano" style="display: none;">
+              <td class="text-left">Sótanos</td>
+              <td id="table-334-sotano-norma"></td>
+              <td id="table-334-sotano-proyecto"></td>
+              <td id="table-334-sotano-eval"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+      <div id="table-areas-33-34-3" class="responsive-table-container keep-together avoid-break" style="margin-top: 1rem; display:none; width:100%; justify-content:space-between; gap:1rem;">
+        
+        <div id="determinates-table-33" style="flex:1; width:50%; display:flex; flex-direction:column; gap:1rem; align-items:stretch;">
+          <!-- Tabla 3.3.4 Suelo -->
+          <table border="1" cellspacing="0" cellpadding="4" style=" width:100%; table-layout:fixed;">
             <colgroup>
-              <col style="width: 20%;">
-              <col style="width: 10%;">
-              <col style="width: 30%;">
-              <col style="width: 20%;">
-              <col style="width: 20%;">
+              <col style="width:20%;">
+              <col style="width:10%;">
+              <col style="width:30%;">
+              <col style="width:20%;">
+              <col style="width:20%;">
             </colgroup>
             <thead>
               <tr>
@@ -292,155 +392,77 @@
             </tbody>
           </table>
 
-          <table id="perfil-vial" border="1" cellspacing="0" cellpadding="4" style="margin-top: 1rem; width:100%; table-layout: fixed;">
-            <!-- <colgroup>
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-            </colgroup> -->
-            <thead id="perfil-vial-head">
-              <!-- filas de encabezado -->
-            </thead>
-            <tbody id="perfil-vial-body">
-              <!-- filas de datos -->
-            </tbody>
+          <!-- Tabla 3.3.5 Perfil vial -->
+          <table id="perfil-vial" border="1" cellspacing="0" cellpadding="4" style=" width:100%; table-layout:fixed;">
+            <thead id="perfil-vial-head"></thead>
+            <tbody id="perfil-vial-body"></tbody>
           </table>
 
+          <!-- Bloque que ocupa todo el alto sobrante -->
+          <table style="
+            width:100%;
+            height:100%;
+            border-collapse:collapse;
+            table-layout:fixed;
+            border:1px solid #000;
+            flex:1;">
+            <tbody style="height:100%;">
+              <tr style="height:100%;">
+                <td style="
+                  height:100%;
+                  border:1px solid #000;
+                  text-align:center;
+                  vertical-align:middle;
+                  font-weight:bold;">
+                  En blanco
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      
-        <!-- Columna derecha -->
-        <div id="determinates-table-34" class="w-50 pl-2">
-          <!-- 3.4 Edificabilidad y volumetría -->
-          <table border="1" id="table-341" cellspacing="0" cellpadding="4" style="margin-top: 1rem; width:100%; table-layout: fixed;">
+
+        <!-- Contenedor de las tablas 3.4.2 y 3.4.3 (50%) -->
+        <div id="determinates-table-34" style="flex:1; width:50%; display:flex; flex-direction:column; gap:1rem; align-items:stretch;">
+          <!-- 3.4.3 Aislamientos -->
+          <table border="1" id="table-3343" cellspacing="0" cellpadding="4" style=" width:100%; table-layout:fixed;">
             <colgroup>
-              <col style="width: 25%;">
-              <col style="width: 18.75%;">
-              <col style="width: 18.75%;">
-              <col style="width: 18.75%;">
-              <col style="width: 18.75%;">
+              <col style="width:35%;">
+              <col style="width:20%;">
+              <col style="width:20%;">
+              <col style="width:25%;">
             </colgroup>
             <thead>
               <tr>
-                <th colspan="5" style="background-color: #fff;">3.4 Edificabilidad y volumetría</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr id="table-334-1aa" style="display: none;">
-                <td class="bg-table text-left">3.4.1 Índices </td>
-                <td class="bg-table">Dato</td>
-                <td class="bg-table">Norma</td>
-                <td class="bg-table">Proyecto</td>
-                <td class="bg-table">Eva/Excp</td>
-              </tr>
-              <tr>
-                <td class="text-left">Ocupacion</td>
-                <td id="table-334-ocupacion-dato"></td>
-                <td id="table-334-ocupacion-norma"></td>
-                <td id="table-334-ocupacion-proyecto"></td>
-                <td id="table-334-ocupacion-eval"></td>
-              </tr>
-              <tr>
-                <td id="table-334-1ca" class="text-left">Construcción</td>
-                <td id="table-334-construccion-dato"></td>
-                <td id="table-334-construccion-norma"></td>
-                <td id="table-334-construccion-proyecto"></td>
-                <td id="table-334-construccion-eval"></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- 3.4.2 Volumen -->
-
-          <table border="1" id="table-3342" cellspacing="0" cellpadding="4" style="margin-top: 1rem; width:100%; table-layout: fixed; ">
-            <colgroup>
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-              <col style="width: 25%;">
-            </colgroup>
-            <thead>
-              <tr>
-                <th style="text-align: left !important; vertical-align: left !important;">3.4.2 Volumen</th>
+                <th style="text-align:left; vertical-align:middle;">3.4.3 Aislamientos</th>
                 <th>Norma</th>
                 <th>Proyecto</th>
                 <th>Eval. / Excep.</th>
               </tr>
             </thead>
-            <tbody>
-              <tr id="table-334-tipo-edi" style="display: none;">
-                <td class="text-left">Tip. edific.</td>
-                <td id="table-334-tipo-edi-norma"></td>
-                <td id="table-334-tipo-edi-proyecto"></td>
-                <td id="table-334-tipo-edi-eval"></td>
-              </tr>
-              <tr id="table-334-pisos" style="display: none;">
-                <td class="text-left">Nr. de pisos</td>
-                <td id="table-334-pisos-norma"></td>
-                <td id="table-334-pisos-proyecto"></td>
-                <td id="table-334-pisos-eval"></td>
-              </tr>
-              <tr id="table-334-semisotano" style="display: none;">
-                <td class="text-left">Semisótano</td>
-                <td id="table-334-semisotano-norma"></td>
-                <td id="table-334-semisotano-proyecto"></td>
-                <td id="table-334-semisotano-eval"></td>
-              </tr>
-              <tr id="table-334-sotano" style="display: none;">
-                <td class="text-left ">Sótanos</td>
-                <td id="table-334-sotano-norma"></td>
-                <td id="table-334-sotano-proyecto"></td>
-                <td id="table-334-sotano-eval"></td>
-              </tr>
-            </tbody>
+            <tbody></tbody>
           </table>
 
-          <!-- 3.4.3 Volumen -->
-
-          <table border="1" id="table-3343" cellspacing="0" cellpadding="4" style="margin-top: 1rem; width:100%; table-layout: fixed; ">
-            <colgroup>
-              <col style="width: 35%;">
-              <col style="width: 20%;">
-              <col style="width: 20%;">
-              <col style="width: 25%;">
-            </colgroup>
+          <!-- 3.4.4 Excepciones -->
+          <table border="1" id="table-3344-excepciones" cellspacing="0" cellpadding="4" style="width:100%; table-layout:fixed;">
             <thead>
-              <tr>
-                <th style="text-align: left !important; vertical-align: left !important;">3.4.3 Aislamientos</th>
-                <th>Norma</th>
-                <th>Proyecto</th>
-                <th>Eval. / Excep.</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-
-          <!-- 2) Tabla de Excepciones -->
-          <table border="1" id="table-3344-excepciones" cellspacing="0" cellpadding="4"
-          style="margin-top: 1rem; width:100%; table-layout: fixed;">
-            <thead>
-              <tr style="background: silver; font-weight: bold;">
+              <tr style="background:silver; font-weight:bold;">
                 <th colspan="2">EXCEPCIONES</th>
               </tr>
-              <tr style="background: gainsboro; font-weight: bold;">
+              <tr style="background:gainsboro; font-weight:bold;">
                 <th>Código</th>
                 <th>Descripción</th>
               </tr>
             </thead>
-            <tbody>
-            <!-- aquí inyectas -->
-            </tbody>
+            <tbody></tbody>
           </table>
 
-          <!-- 3) Tabla de Parqueaderos -->
-          <table border="1" id="table-3344-parkings" cellspacing="0" cellpadding="4"
-          style="margin-top: 1rem; width:100%; table-layout: fixed;">
+          <!-- 3.4.4 Parqueaderos -->
+          <table border="1" id="table-3344-parkings" cellspacing="0" cellpadding="4" style=" width:100%; table-layout:fixed;">
             <thead>
-              <tr style="background: silver; font-weight: bold;">
+              <tr style="background:silver; font-weight:bold;">
                 <th colspan="7">3.4.4 Parqueaderos</th>
               </tr>
-              <tr style="background: gainsboro; font-weight: bold;">
+              <tr style="background:gainsboro; font-weight:bold;">
                 <th>Uso</th>
                 <th>U.U.</th>
                 <th class="dinamico">Visit</th>
@@ -451,9 +473,9 @@
               </tr>
             </thead>
             <tbody>
-            <!-- aquí inyectas -->
-              <tr style="font-weight: bold;">
-                <td style="text-align: right;" colspan="2">TOTALES:</td>
+              <!-- aquí inyectas -->
+              <tr style="font-weight:bold;">
+                <td style="text-align:right;" colspan="2">TOTALES:</td>
                 <td class="dinamico"></td>
                 <td class="dinamico"></td>
                 <td class="dinamico"></td>
@@ -463,11 +485,32 @@
             </tbody>
           </table>
 
+          <!-- Bloque que ocupa todo el alto sobrante -->
+          <table style="
+            width:100%;
+            height:100%;
+            border-collapse:collapse;
+            table-layout:fixed;
+            border:1px solid #000;
+            flex:1;">
+            <tbody style="height:100%;">
+              <tr style="height:100%;">
+                <td style="
+                  height:100%;
+                  border:1px solid #000;
+                  text-align:center;
+                  vertical-align:middle;
+                  font-weight:bold;">
+                  En blanco
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
       </div>
       
-      
+      <br>
       <!-- ARTÍCULO 5 -->
       <p class="text-justify text-sm mb-2">
         <strong>ARTÍCULO 5°.</strong>
@@ -516,8 +559,8 @@
           <strong>ARTÍCULO 8°.</strong>
           <span id="body-art-8"></span>
         </p>
-        <p id="body-art-8p1" class="text-justify text-sm mb-2 ml-4" style="display: none;"></p>
         <p id="body-art-8p2" class="text-justify text-sm mb-2 ml-4" style="display: none;"></p>
+        <p id="body-art-8p1" class="text-justify text-sm mb-2 ml-4" style="display: none;"></p>
       </div>
 
       <!-- ——— ARTÍCULO 9 (condicional) ——— -->
