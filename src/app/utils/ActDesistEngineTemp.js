@@ -3,6 +3,7 @@ import { BaseDocumentUtils } from './BaseDocumentUtils.js';
 export class ActDesistEngineTemp extends BaseDocumentUtils {
     constructor(data, htmlString) {
         super(data, htmlString);
+        this.desist_date = this.getDateByState(-6) || this.getDateByState(70) || "Fecha Inválida";
     }
 
     modifyTemplateContent() {
@@ -11,10 +12,10 @@ export class ActDesistEngineTemp extends BaseDocumentUtils {
         this.considerateSection();
         this.resolutiveSection();
 
-        this.setText("document-issued", `Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this._DATA.reso.reso_date_desist)}`);
+        this.setText("document-issued", `Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this.desist_date)}`);
         this.setText("signature-name", `${this.data.curaduriaInfo.title.toUpperCase()} ${this.data.curaduriaInfo.master.toUpperCase()}`);
         this.setText("signature-job", this.data.curaduriaInfo.job);
-        this.setText("signature-name-law", this.data.curaduriaInfo.law || "Abg. XXXX");
+        this.setText("signature-name-law", "Proyectado/revisado por: "+this.data.curaduriaInfo.law || "Proyectado/revisado por: Abg. XXXX");
 
         const normalizeStrong = s => s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
         this.tempDiv.innerHTML = normalizeStrong(this.tempDiv.innerHTML);
@@ -49,7 +50,7 @@ export class ActDesistEngineTemp extends BaseDocumentUtils {
         console.log("DATA RESO:", this._DATA.reso);
 
         let reso_id = this._DATA.reso.reso_id ? this._DATA.reso.reso_id.includes('-') ? this._DATA.reso.reso_id.split('-')[1] : this._DATA.reso.reso_id : '';
-        let txt_res = `RESOLUCIÓN\n${reso_id} DEL ${this.dateParser(this._DATA.reso.reso_date_desist).toUpperCase()}`;
+        let txt_res = `RESOLUCIÓN\n${reso_id} DEL ${this.dateParser(this.desist_date).toUpperCase()}`;
         this.setText("desist-act-reso-header", txt_res);
 
         this.setText("desist-act-reso-state-header", this._DATA.reso.reso_state );
@@ -57,9 +58,8 @@ export class ActDesistEngineTemp extends BaseDocumentUtils {
         this.setText("desist-act-info-pot-header", `Conforme al ${this.data.curaduriaInfo.pot.pot}\n Acuerdo ${this._DATA.reso.reso_pot}`);
         this.setText("desist-act-body_res", this.data._BODY || "");
 
-        let desist_header = this.getDateByState(-6) || this.getDateByState(70) || "Fecha Inválida";
-        let ejec_header   = this.getDateByState(-30) || "Fecha Inválida";
-        this.setText("act-desist-date-header", desist_header);
+        let ejec_header   = this.getDateByState(-30) || this.exec_date || "Fecha Inválida";
+        this.setText("act-desist-date-header", this.desist_date);
         this.setText("ejec-date-header", ejec_header);
 
     }
@@ -73,8 +73,13 @@ export class ActDesistEngineTemp extends BaseDocumentUtils {
         let reso_date = _DATA.reso.reso_date || this.getDateByState(70);
         console.log("Data: ", data);
 
-        const ownersText = (data.f51 || [])
-            .map(p => `${p.name} ${p.surname}`.toUpperCase())
+        // const ownersText = (data.f51 || [])
+        //     .map(p => `${p.name} ${p.surname}`.toUpperCase())
+        //     .join(", ");
+
+        const ownersText = (_DATA.fun_51s || [])
+            .map(p => ((p.surname) ? `**${(p.name).toUpperCase()} ${(p.surname).toUpperCase()}**` : 
+            ((p.name) ? `**${(p.name).toUpperCase()}**` : `**${(p.rep_name).toUpperCase()}**`)))
             .join(", ");
 
         const first_text_cons = `Que el ${this.dateParser(reso_date)} se expidió la 
@@ -125,8 +130,9 @@ export class ActDesistEngineTemp extends BaseDocumentUtils {
         const data = this.data;
         const _DATA = this._DATA;
         
-        const ownersText = (data.f51 || [])
-            .map(p => `${p.name} ${p.surname}`.toUpperCase())
+        const ownersText = (_DATA.fun_51s || [])
+            .map(p => ((p.surname) ? `**${(p.name).toUpperCase()} ${(p.surname).toUpperCase()}** identificado con **${p.id_number}**` : 
+            ((p.name) ? `**${(p.name).toUpperCase()}** identificado con **${p.id_number}**` : `**${(p.rep_name).toUpperCase()}** identificado con **${p.id_number}**`)))
             .join(", ");
 
         const delete_text = `**EFECTUAR** la eliminación de los documentos contentivos en el expediente 
@@ -137,7 +143,7 @@ export class ActDesistEngineTemp extends BaseDocumentUtils {
         lo contemplado en el ARTÍCULO 2.2.6.1.2.3.4 del Decreto 1077 de 2015. `;
 
         const return_text = `**ORDENAR** la devolución de los documentos contentivos en el expediente ${_DATA.fun.id_public},
-         descritos en la parte considerativa de esta acta, a **${ownersText}**, de conformidad 
+         descritos en la parte considerativa de esta acta, a ${ownersText}, de conformidad 
          con lo dispuesto en el paragrafo 2 del articulo 8 del Acuerdo 009 del 19 de diciembre de 2018, 
          expedido por el Consejo Directivo del Archivo General de la Nacion Jorge Palacios Preciado y lo 
          contemplado en el ARTÍCULO 2.2.6.1.2.3.4 del Decreto 1077 de 2015. `;

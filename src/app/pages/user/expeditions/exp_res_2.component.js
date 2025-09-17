@@ -27,7 +27,7 @@ export default function EXP_RES_2(props) {
     r_pagesn: parseFloat(_DATA.reso?.r_pages) || 1,
     distance_icon_x: parseFloat(_DATA.reso?.distance_icon_x) || 55,
     distance_icon_y: parseFloat(_DATA.reso?.distance_icon_y) || 66,
-    logo_pages: _DATA.reso?.logo_pages || 'impar',
+    logo_pages: _DATA.reso?.logo_pages || 'par',
     autenticidad: _DATA.reso?.autenticidad || 'Original',
     font_size_body: parseFloat(_DATA.reso?.font_size_body) || 14,
     font_size_header: parseFloat(_DATA.reso?.font_size_header) || 10,

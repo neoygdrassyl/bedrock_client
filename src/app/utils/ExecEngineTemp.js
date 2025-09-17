@@ -4,7 +4,6 @@ export class ExecEngineTemp extends BaseDocumentUtils {
     constructor(data, htmlString) {
         super(data, htmlString);
         this.state = '';
-        this.exec_date = this.getDateByState(99) || "";
         this.reso_date_exec = this.getDateByState(70) || this._DATA?.reso?.reso_date || "";
     }
 
@@ -30,7 +29,7 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         } else if (this.data.model === "eje_des") {
             this.state = "DESISTIDA";
             this.setText("exec-act-header-rad-state", "Desistida");
-            this.exec_date = this.getDateByState(-30) || "Fecha Inválida";
+            this.exec_date = this.getDateByState(-30) || this.getDateBussinesDaysCol(this.notify_date) || "Fecha Inválida";
             this.reso_date_exec = this.getDateByState(-6) || this.getDateByState(70) || "Fecha Inválida";
             this.setText("act-exec-date-header",this.reso_date_exec);
         } else {
@@ -77,7 +76,7 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         this.setText("document-issued", `Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this.exec_date)}.`);
         this.setText("signature-name", `${this.data.curaduriaInfo.title.toUpperCase()} ${this.data.curaduriaInfo.master.toUpperCase()}`);
         this.setText("signature-job", this.data.curaduriaInfo.job);
-        this.setText("signature-name-law", this.data.curaduriaInfo.law || "Abg. XXXX");
+        this.setText("signature-name-law", "Proyectado/revisado por: "+this.data.curaduriaInfo.law || "Proyectado/revisado por: Abg. XXXX");
     }
 
     bodySection(){
@@ -109,15 +108,18 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         const barrio     = f2?.barrio || "";
         const ciudad     = this._DATA?.reso?.ciudad || "";
 
+        console.log("DATOS DE TITULARES: ",_DATA.fun_51s);
+
         const ownersText = (_DATA.fun_51s || [])
-            .map(p => ((p.surname) ? `**${(p.name).toUpperCase()} ${(p.surname).toUpperCase()}** identificado con **${p.id_number}**` : `**${(p.name).toUpperCase()}** identificado con **${p.id_number}**`))
+            .map(p => ((p.surname) ? `**${(p.name).toUpperCase()} ${(p.surname).toUpperCase()}** identificado con **${p.id_number}**` : 
+            ((p.name) ? `**${(p.name).toUpperCase()}** identificado con **${p.id_number}**` : `**${(p.rep_name).toUpperCase()}** identificado con **${p.id_number}**`)))
             .join(", ");
 
         const body2 = `
         **${this.state}** la solicitud **${licType} ID ${_DATA.fun.id_public}**, para el inmueble identificado con el número predial **${numPredial}**, 
-        matrícula inmobiliaria **${matricula}** y nomenclatura **${direccion}** barrio **${barrio}** del municipio de **${ciudad}**.
+        matrícula inmobiliaria **${matricula}** y nomenclatura **${direccion}**${barrio ? ' barrio **'+barrio+'**' : ''} del municipio de **${ciudad}**.
         Solicitada por ${ownersText}. Actuando en calidad de propietario${(_DATA.fun_51s.length>1) ? 's' : ''} del inmueble, mediante 
-        la **${txt_res}** , la solicitud de **${licType}**, la cual se encuentra **EJECUTORIADA**, al haber concluido los términos de 
+        la **${txt_res}**, la solicitud de **${licType}**, la cual se encuentra **EJECUTORIADA**, al haber concluido los términos de 
         ley y agotarse los recursos el día ${this.dateParser(this.exec_date)}.
         `;
 

@@ -197,7 +197,7 @@ export default function EXP_EJEC(props) {
                 <div className="col">
                     <label className="mt-2">ACTO</label>
                     <div class="input-group">
-                        <select className="form-select" id="expedition_doc_eje_model" defaultValue={default_model} onChange={(e) => update_model_exec(e.target.value)}>
+                        <select className="form-select" id="expedition_doc_eje_model" defaultValue={default_model} onChange={(e) => {setResDocData(null); update_model_exec(e.target.value)}}>
                             {models.map(model => {
                                 if (model.omit) return ''
                                 if (model.group)
@@ -233,34 +233,12 @@ export default function EXP_EJEC(props) {
             </div>
             <div className="row">
                 <div className="col">
-                    <label className="mt-1">Fecha Vigencia</label>
-                    <div class="input-group">
-                        <input type="date" class="form-control" id="expedition_eje_date"
-                            defaultValue={reso_vig_date_dv} required />
-                    </div>
-                </div>
-                <div className="col">
                     <label className="mt-1">Consecutivo</label>
                     <div class="input-group">
                         <input type="text" class="form-control" disabled id="expedition_eje_id_res"
                             value={currentRecord.id_public} />
                     </div>
                 </div>
-                <div className="col">
-                    <label>Vigencia Tiempo</label>
-                    <div class="input-group my-1">
-                        <select class="form-select" id="expedition_eje_vign" defaultValue={reso_vig_n_dv}>
-                            <option value={0}>SIN VIGENCIA</option>
-                            <option value={12}>DOCE (12) MESES</option>
-                            <option value={24}>VEINTE Y CUATRO (24) MESES</option>
-                            <option value={36}>TREINTA Y SEIS (36) MESES</option>
-                            <option value={48}>CUARENTA Y OCHO (48) MESES</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div className="row">
                 <div className="col">
                     <label className="mt-1">POT</label>
                     <div class="input-group">
@@ -284,7 +262,6 @@ export default function EXP_EJEC(props) {
                     </div>
                 </div>
             </div>
-
 
             <hr />
             <div className="pdf-config clean-ui card p-3 shadow-sm pdf-edit">
@@ -370,9 +347,9 @@ export default function EXP_EJEC(props) {
                         <div className="field">
                             <label className="field_label">Mostrar logo</label>
                             <select size={1} className="form-select form-select-sm" id="logo_pages_exec">
-                                <option value="impar" selected>Pág Impares</option>
+                                <option value="impar">Pág Impares</option>
                                 <option value="par">Pág Pares</option>
-                                <option value="all">Todas las pág.</option>
+                                <option value="all" selected>Todas las pág.</option>
                                 <option value="none">No mostrar</option>
                             </select>
                         </div>
@@ -390,9 +367,9 @@ export default function EXP_EJEC(props) {
                         <div className="field">
                             <label className="field_label">Autenticidad</label>
                             <select size={1} className="form-select form-select-sm" id="autenticidad_exec">
-                                <option value="Original">Original</option>
+                                <option value="Original" selected>Original</option>
                                 <option value="Copia">Copia</option>
-                                <option value="Vacio" selected>Vacío</option>
+                                <option value="Vacio">Vacío</option>
                             </select>
                         </div>
                     </div>
@@ -426,6 +403,7 @@ export default function EXP_EJEC(props) {
 
     let save_eje = () => {
         formData = new FormData();
+        setResDocData(null);
 
         const reso = _GET_EXPEDITION_JSON('reso') || {};
         reso.vig = reso.vig || {};

@@ -1,3 +1,5 @@
+import { procesarFecha } from './BusinessDaysCol';
+
 export class BaseDocumentUtils {
   constructor(data, htmlString) {
     this.data = data;
@@ -7,8 +9,13 @@ export class BaseDocumentUtils {
     let tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlString;
     this.tempDiv = tempDiv;
-
     this.setAutenticidad();
+
+    this.notify_date = 
+      this.getDateByState(-21) || this.getDateByState(-22)  || this.getDateByState(-20)  || //Si hay recurso
+      this.getDateByState(-8) || this.getDateByState(-7)  || this.getDateByState(-5)  || //No hay recurso
+      "";
+    this.exec_date = this.getDateByState(99) || this.getDateBussinesDaysCol(this.notify_date) || "";
   }
 
   setAutenticidad(){
@@ -17,6 +24,25 @@ export class BaseDocumentUtils {
     if (autenticidad!='Vacio'){
       this.showDiv("autenticidad","inline");
       this.setText("autenticidad", autenticidad);
+    }
+  }
+
+  getDateBussinesDaysCol(date, days_after = 10) {
+    try {
+      const fecha = procesarFecha(date, days_after);
+      if (fecha == null) throw new Error('Resultado nulo/indefinido');
+      if (fecha instanceof Date) {
+        if (isNaN(fecha.getTime())) throw new Error('Date inválida');
+        return fecha;
+      }
+      if (typeof fecha === 'string') {
+        const d = new Date(fecha);
+        if (isNaN(d.getTime())) throw new Error('String de fecha inválido');
+        return fecha;
+      }
+      throw new Error('Tipo de dato inesperado');
+    } catch (_) {
+      return 'Fecha Inválida';
     }
   }
 
