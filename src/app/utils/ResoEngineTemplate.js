@@ -34,8 +34,7 @@ export class ResoEngineTemplate extends BaseDocumentUtils {
         this.setText("document-issued", `Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this._DATA.reso.reso_date)}`);
         this.setText("signature-name", `${this.data.curaduriaInfo.title.toUpperCase()} ${this.data.curaduriaInfo.master.toUpperCase()}`);
         this.setText("signature-job", this.data.curaduriaInfo.job);
-        this.setText("signature-name-law", this.data.curaduriaInfo.law || "Abg. XXXX");
-
+        this.setText("signature-name-law", "Proyectado/revisado por: "+this.data.curaduriaInfo.law || "Proyectado/revisado por: Abg. XXXX");
         return this.tempDiv.innerHTML;
     }
 

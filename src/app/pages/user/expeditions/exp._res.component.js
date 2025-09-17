@@ -3258,28 +3258,28 @@ export default function EXP_RES(props) {
                 <div className="col ">
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Margen Superior (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_top" defaultValue={2.5} />
+                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_top" defaultValue={1.2} />
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Margen Inferior (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_bot" defaultValue={2.5} />
+                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_bot" defaultValue={1.2} />
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Margen Izquierdo (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_left" defaultValue={1.7} />
+                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_left" defaultValue={1.9} />
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Margen Derecho (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_right" defaultValue={1.7} />
+                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_right" defaultValue={1.9} />
                     </div>
                 </div>
                 {process.env.REACT_APP_GLOBAL_ID == 'cb1' ? (

@@ -142,7 +142,7 @@ export default function EXP_ACT_DESIST(props) {
         show: true,
       }),
       ejecutoria: makeDoc("Ejecutoria de la Resolución de Desistimiento", {
-        date: _GET_CLOCK_STATE(-30).date_start || "",
+        date: _GET_CLOCK_STATE(99).date_start || _GET_CLOCK_STATE(-30).date_start || "",
         pages: "",
         show: true,
       }),
@@ -514,7 +514,7 @@ const restoreDocs = useCallback(() => {
         var _CHILD_1 = _GET_CHILD_1();
         let type = reso.type || _RES_PARSER_1(_CHILD_1);
 
-        const reso_date_dv = reso.reso_date_desist ?? ''
+        const reso_date_dv = _GET_CLOCK_STATE(-6).date_start || _GET_CLOCK_STATE(70).date_start;
         const reso_state_dv = reso.state ?? '';
         const reso_pot_dv = reso.pot ?? infoCud.pot;
 
@@ -529,18 +529,17 @@ const restoreDocs = useCallback(() => {
                 </div>
                 <div className="row">
                     <div className="col">
-                        <label className="mt-1">Fecha</label>
+                        <label className="mt-1">Fecha Radicación</label>
                         <div className="input-group">
                             <input type="date" className="form-control" id="expedition_doc_res_2_des"
-                                defaultValue={reso_date_dv} required />
+                                defaultValue={reso_date_dv} readOnly />
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Consecutivo</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_res_id"
-                                defaultValue={currentRecord.id_public} />
-                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</button>
+                                defaultValue={currentRecord.id_public} readOnly/>
                         </div>
                     </div>
                     <div className="col">
@@ -586,7 +585,9 @@ const restoreDocs = useCallback(() => {
                                     className="d-inline-flex align-items-center gap-2 me-2"
                                     >
                                     <i className={`fas ${showHiddenLD ? "fa-eye-slash" : "fa-eye"}`} />
-                                    <span className="d-none d-sm-inline">{showHiddenLD ? "Ocultar ocultos" : "Mostrar ocultos"}</span>
+                                    <span className="d-none d-sm-inline">
+                                        {showHiddenLD ? "Ocultar ocultos" : "Mostrar ocultos"}
+                                    </span>
                                     </MDBBtn>
 
                                     <MDBBtn
@@ -619,7 +620,18 @@ const restoreDocs = useCallback(() => {
                                         const uid = `new_${Date.now()}`;
                                         setListDocuments((prev) => [
                                         ...(prev || []),
-                                        { uid, id_public: "", date: "", time: "", name: "", category: "", page: "", pages: "", code: "", show: true },
+                                        {
+                                            uid,
+                                            id_public: "",
+                                            date: "",
+                                            time: "",
+                                            name: "",
+                                            category: "",
+                                            page: "",
+                                            pages: "",
+                                            code: "",
+                                            show: true,
+                                        },
                                         ]);
                                     }}
                                     title="Agregar documento"
@@ -630,37 +642,100 @@ const restoreDocs = useCallback(() => {
                                     </MDBBtn>
                                 </>
                                 ) : null}
-                                <i className={`fas fa-chevron-${listDocsOpen ? "up" : "down"} caret`} aria-hidden="true" />
+                                <i
+                                className={`fas fa-chevron-${listDocsOpen ? "up" : "down"} caret`}
+                                aria-hidden="true"
+                                />
                             </span>
                             </button>
 
-                            <div id="ldocsCollapse" className={`collapse ${listDocsOpen ? "show" : ""}`} style={{ overflowAnchor: "none" }}>
-                            <div className="table-responsive tableFixHead" style={{ maxHeight: "60vh", overflowY: "auto" }}>
+                            <div
+                            id="ldocsCollapse"
+                            className={`collapse ${listDocsOpen ? "show" : ""}`}
+                            style={{ overflowAnchor: "none" }}
+                            >
+                            <div
+                                className="table-responsive tableFixHead"
+                                style={{ maxHeight: "60vh", overflowY: "auto" }}
+                            >
                                 <table className="table table-sm table-hover table-bordered align-middle mb-0">
-                                <thead className="bg-light text-uppercase small" style={{ position: "sticky", top: 0, zIndex: 1 }}>
+                                <thead
+                                    className="bg-light text-uppercase small"
+                                    style={{ position: "sticky", top: 0, zIndex: 1 }}
+                                >
                                     <tr>
                                     <th style={{ width: "38%" }} className="text-start">
-                                        <button type="button" style={thBtn} onClick={() => setSortLD((s) => (s.key === "name" ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: "name", dir: "asc" }))}>
+                                        <button
+                                        type="button"
+                                        style={thBtn}
+                                        onClick={() =>
+                                            setSortLD((s) =>
+                                            s.key === "name"
+                                                ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" }
+                                                : { key: "name", dir: "asc" }
+                                            )
+                                        }
+                                        >
                                         Contenido {sortIcon(sortLD.key === "name", sortLD.dir)}
                                         </button>
                                     </th>
                                     <th style={{ width: "17%" }} className="text-center">
-                                        <button type="button" style={thBtn} onClick={() => setSortLD((s) => (s.key === "vr" ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: "vr", dir: "asc" }))}>
+                                        <button
+                                        type="button"
+                                        style={thBtn}
+                                        onClick={() =>
+                                            setSortLD((s) =>
+                                            s.key === "vr"
+                                                ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" }
+                                                : { key: "vr", dir: "asc" }
+                                            )
+                                        }
+                                        >
                                         VR {sortIcon(sortLD.key === "vr", sortLD.dir)}
                                         </button>
                                     </th>
                                     <th style={{ width: "18%" }} className="text-center">
-                                        <button type="button" style={thBtn} onClick={() => setSortLD((s) => (s.key === "date" ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: "date", dir: "asc" }))}>
+                                        <button
+                                        type="button"
+                                        style={thBtn}
+                                        onClick={() =>
+                                            setSortLD((s) =>
+                                            s.key === "date"
+                                                ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" }
+                                                : { key: "date", dir: "asc" }
+                                            )
+                                        }
+                                        >
                                         Fecha {sortIcon(sortLD.key === "date", sortLD.dir)}
                                         </button>
                                     </th>
                                     <th style={{ width: "12%" }} className="text-center">
-                                        <button type="button" style={thBtn} onClick={() => setSortLD((s) => (s.key === "pages" ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: "pages", dir: "asc" }))}>
+                                        <button
+                                        type="button"
+                                        style={thBtn}
+                                        onClick={() =>
+                                            setSortLD((s) =>
+                                            s.key === "pages"
+                                                ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" }
+                                                : { key: "pages", dir: "asc" }
+                                            )
+                                        }
+                                        >
                                         Folios {sortIcon(sortLD.key === "pages", sortLD.dir)}
                                         </button>
                                     </th>
                                     <th style={{ width: "15%" }} className="text-center">
-                                        <button type="button" style={thBtn} onClick={() => setSortLD((s) => (s.key === "show" ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: "show", dir: "desc" }))}>
+                                        <button
+                                        type="button"
+                                        style={thBtn}
+                                        onClick={() =>
+                                            setSortLD((s) =>
+                                            s.key === "show"
+                                                ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" }
+                                                : { key: "show", dir: "desc" }
+                                            )
+                                        }
+                                        >
                                         Mostrar {sortIcon(sortLD.key === "show", sortLD.dir)}
                                         </button>
                                     </th>
@@ -675,14 +750,20 @@ const restoreDocs = useCallback(() => {
                                         <tr key={id} className={isVisible ? "" : "row-muted"}>
                                         <td className="text-start p-1">
                                             <input
+                                            id={`ldoc_${id}_name`}
                                             type="text"
                                             className="form-control form-control-sm"
                                             aria-label="Nombre del documento"
                                             style={{ ...tightInput, textAlign: "left" }}
                                             value={row?.name ?? ""}
-                                            onChange={(e) =>
-                                                setListDocuments((prev) => prev.map((r) => (r.uid === id ? { ...r, name: e.target.value } : r)))
-                                            }
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setListDocuments((prev) =>
+                                                prev.map((r) =>
+                                                    r.uid === id ? { ...r, name: value } : r
+                                                )
+                                                );
+                                            }}
                                             />
                                             {/* {!isVisible && (
                                             <span className="ms-2 badge rounded-pill bg-secondary-subtle text-secondary border">oculto</span>
@@ -690,44 +771,65 @@ const restoreDocs = useCallback(() => {
                                         </td>
                                         <td className="text-center p-1">
                                             <input
+                                            id={`ldoc_${id}_vr`}
                                             type="text"
                                             className="form-control form-control-sm"
                                             aria-label="VR (id_public)"
                                             style={{ ...tightInput, textAlign: "center" }}
                                             value={row?.id_public ?? currentItem?.id_public ?? ""}
-                                            onChange={(e) =>
-                                                setListDocuments((prev) => prev.map((r) => (r.uid === id ? { ...r, id_public: e.target.value } : r)))
-                                            }
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setListDocuments((prev) =>
+                                                prev.map((r) =>
+                                                    r.uid === id ? { ...r, id_public: value } : r
+                                                )
+                                                );
+                                            }}
                                             />
                                         </td>
                                         <td className="text-center p-1">
                                             <input
+                                            id={`ldoc_${id}_fecha`}
                                             type="date"
                                             className="form-control form-control-sm"
                                             aria-label="Fecha del documento"
                                             style={{ ...tightInput, textAlign: "center" }}
                                             value={row?.date ?? ""}
-                                            onChange={(e) =>
-                                                setListDocuments((prev) => prev.map((r) => (r.uid === id ? { ...r, date: e.target.value } : r)))
-                                            }
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setListDocuments((prev) =>
+                                                prev.map((r) =>
+                                                    r.uid === id ? { ...r, date: value } : r
+                                                )
+                                                );
+                                            }}
                                             />
                                         </td>
                                         <td className="text-center p-1">
                                             <input
+                                            id={`ldoc_${id}_folios`}
                                             type="text"
                                             className="form-control form-control-sm"
                                             inputMode="numeric"
                                             aria-label="Número de folios"
                                             style={{ ...tightInput, textAlign: "center" }}
                                             value={row?.pages ?? row?.page ?? ""}
-                                            onChange={(e) =>
-                                                setListDocuments((prev) => prev.map((r) => (r.uid === id ? { ...r, pages: e.target.value, page: e.target.value } : r)))
-                                            }
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setListDocuments((prev) =>
+                                                prev.map((r) =>
+                                                    r.uid === id
+                                                    ? { ...r, pages: value, page: value }
+                                                    : r
+                                                )
+                                                );
+                                            }}
                                             />
                                         </td>
                                         <td className="text-center p-1">
                                             <div className="form-check d-inline-flex justify-content-center">
                                             <input
+                                                id={`ldoc_${id}_show`}
                                                 className="form-check-input"
                                                 type="checkbox"
                                                 aria-label="Mostrar documento"
@@ -735,7 +837,11 @@ const restoreDocs = useCallback(() => {
                                                 checked={!!isVisible}
                                                 onChange={(e) => {
                                                 const checked = e.target.checked;
-                                                setListDocuments((prev) => prev.map((r) => (r.uid === id ? { ...r, show: checked } : r)));
+                                                setListDocuments((prev) =>
+                                                    prev.map((r) =>
+                                                    r.uid === id ? { ...r, show: checked } : r
+                                                    )
+                                                );
                                                 }}
                                             />
                                             </div>
@@ -747,7 +853,8 @@ const restoreDocs = useCallback(() => {
                                 </table>
                             </div>
                             <div className="card-footer bg-white py-2 small text-muted">
-                                Usa el check (columna derecha) para mostrar/ocultar. Los demás cambios se guardarán al confirmar.
+                                Usa el check (columna derecha) para mostrar/ocultar. Los demás
+                                cambios se guardarán al confirmar.
                             </div>
                             </div>
                         </div>
@@ -782,7 +889,11 @@ const restoreDocs = useCallback(() => {
                                         title={showHiddenDocs ? "Ocultar ocultos" : "Mostrar ocultos"}
                                         className="d-inline-flex align-items-center gap-2 me-2"
                                     >
-                                        <i className={`fas ${showHiddenDocs ? "fa-eye-slash" : "fa-eye"}`} />
+                                        <i
+                                        className={`fas ${
+                                            showHiddenDocs ? "fa-eye-slash" : "fa-eye"
+                                        }`}
+                                        />
                                         <span className="d-none d-sm-inline">
                                         {showHiddenDocs ? "Ocultar ocultos" : "Mostrar ocultos"}
                                         </span>
@@ -810,27 +921,52 @@ const restoreDocs = useCallback(() => {
                                         <span className="d-none d-sm-inline">Restaurar</span>
                                     </MDBBtn>
 
-                                    <MDBBtn size="sm" color="primary" onClick={addNewDoc} title="Agregar documento" className="d-inline-flex align-items-center gap-2">
+                                    <MDBBtn
+                                        size="sm"
+                                        color="primary"
+                                        onClick={addNewDoc}
+                                        title="Agregar documento"
+                                        className="d-inline-flex align-items-center gap-2"
+                                    >
                                         <i className="fas fa-plus" />
                                         <span className="d-none d-sm-inline">Agregar</span>
                                     </MDBBtn>
                                     </>
                                 ) : null}
 
-                                <i className={`fas fa-chevron-${docsOpen ? "up" : "down"} caret`} aria-hidden="true" />
+                                <i
+                                    className={`fas fa-chevron-${docsOpen ? "up" : "down"} caret`}
+                                    aria-hidden="true"
+                                />
                                 </span>
                             </button>
 
-                            <div id="docsCollapse" className={`collapse ${docsOpen ? "show" : ""}`} style={{ overflowAnchor: "none" }}>
-                                <div className="table-responsive tableFixHead" style={{ maxHeight: "60vh", overflowY: "auto" }}>
+                            <div
+                                id="docsCollapse"
+                                className={`collapse ${docsOpen ? "show" : ""}`}
+                                style={{ overflowAnchor: "none" }}
+                            >
+                                <div
+                                className="table-responsive tableFixHead"
+                                style={{ maxHeight: "60vh", overflowY: "auto" }}
+                                >
                                 <table className="table table-sm table-hover table-bordered align-middle mb-0">
-                                    <thead className="bg-light text-uppercase small" style={{ position: "sticky", top: 0, zIndex: 1 }}>
+                                    <thead
+                                    className="bg-light text-uppercase small"
+                                    style={{ position: "sticky", top: 0, zIndex: 1 }}
+                                    >
                                     <tr>
                                         <th style={{ width: "45%" }} className="text-start">
                                         <button
                                             type="button"
                                             style={thBtn}
-                                            onClick={() => setSortDocs((s) => (s.key === "name" ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: "name", dir: "asc" }))}
+                                            onClick={() =>
+                                            setSortDocs((s) =>
+                                                s.key === "name"
+                                                ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" }
+                                                : { key: "name", dir: "asc" }
+                                            )
+                                            }
                                         >
                                             Contenido {sortIcon(sortDocs.key === "name", sortDocs.dir)}
                                         </button>
@@ -839,7 +975,13 @@ const restoreDocs = useCallback(() => {
                                         <button
                                             type="button"
                                             style={thBtn}
-                                            onClick={() => setSortDocs((s) => (s.key === "date" ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: "date", dir: "asc" }))}
+                                            onClick={() =>
+                                            setSortDocs((s) =>
+                                                s.key === "date"
+                                                ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" }
+                                                : { key: "date", dir: "asc" }
+                                            )
+                                            }
                                         >
                                             Fecha {sortIcon(sortDocs.key === "date", sortDocs.dir)}
                                         </button>
@@ -848,7 +990,13 @@ const restoreDocs = useCallback(() => {
                                         <button
                                             type="button"
                                             style={thBtn}
-                                            onClick={() => setSortDocs((s) => (s.key === "pages" ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: "pages", dir: "asc" }))}
+                                            onClick={() =>
+                                            setSortDocs((s) =>
+                                                s.key === "pages"
+                                                ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" }
+                                                : { key: "pages", dir: "asc" }
+                                            )
+                                            }
                                         >
                                             Folios {sortIcon(sortDocs.key === "pages", sortDocs.dir)}
                                         </button>
@@ -857,7 +1005,13 @@ const restoreDocs = useCallback(() => {
                                         <button
                                             type="button"
                                             style={thBtn}
-                                            onClick={() => setSortDocs((s) => (s.key === "show" ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" } : { key: "show", dir: "desc" }))}
+                                            onClick={() =>
+                                            setSortDocs((s) =>
+                                                s.key === "show"
+                                                ? { ...s, dir: s.dir === "asc" ? "desc" : "asc" }
+                                                : { key: "show", dir: "desc" }
+                                            )
+                                            }
                                         >
                                             Mostrar {sortIcon(sortDocs.key === "show", sortDocs.dir)}
                                         </button>
@@ -872,12 +1026,19 @@ const restoreDocs = useCallback(() => {
                                         <tr key={id} className={isVisible ? "" : "row-muted"}>
                                             <td className="fw-medium text-start py-1">
                                             <input
+                                                id={`doc_${id}_name`}
                                                 type="text"
                                                 className="form-control form-control-sm"
                                                 aria-label="Nombre del documento"
                                                 style={tightInput}
                                                 value={doc?.name ?? ""}
-                                                onChange={(e) => setDocuments((prev) => ({ ...(prev || {}), [id]: { ...(prev?.[id] || {}), name: e.target.value } }))}
+                                                onChange={(e) => {
+                                                const value = e.target.value;
+                                                setDocuments((prev) => ({
+                                                    ...(prev || {}),
+                                                    [id]: { ...(prev?.[id] || {}), name: value },
+                                                }));
+                                                }}
                                             />
                                             {/* {!isVisible && (
                                                 <span className="ms-2 badge rounded-pill bg-secondary-subtle text-secondary border">oculto</span>
@@ -886,24 +1047,38 @@ const restoreDocs = useCallback(() => {
 
                                             <td className="text-center py-1">
                                             <input
+                                                id={`doc_${id}_fecha`}
                                                 type="date"
                                                 className="form-control form-control-sm"
                                                 aria-label="Fecha del documento"
                                                 style={tightInput}
                                                 value={doc?.date ?? ""}
-                                                onChange={(e) => setDocuments((prev) => ({ ...(prev || {}), [id]: { ...(prev?.[id] || {}), date: e.target.value } }))}
+                                                onChange={(e) => {
+                                                const value = e.target.value;
+                                                setDocuments((prev) => ({
+                                                    ...(prev || {}),
+                                                    [id]: { ...(prev?.[id] || {}), date: value },
+                                                }));
+                                                }}
                                             />
                                             </td>
 
                                             <td className="text-center py-1">
                                             <input
+                                                id={`doc_${id}_folios`}
                                                 type="text"
                                                 className="form-control form-control-sm"
                                                 inputMode="numeric"
                                                 aria-label="Número de folios"
                                                 style={tightInput}
                                                 value={doc?.pages ?? ""}
-                                                onChange={(e) => setDocuments((prev) => ({ ...(prev || {}), [id]: { ...(prev?.[id] || {}), pages: e.target.value } }))}
+                                                onChange={(e) => {
+                                                const value = e.target.value;
+                                                setDocuments((prev) => ({
+                                                    ...(prev || {}),
+                                                    [id]: { ...(prev?.[id] || {}), pages: value },
+                                                }));
+                                                }}
                                             />
                                             </td>
 
@@ -917,7 +1092,10 @@ const restoreDocs = useCallback(() => {
                                                 checked={!!isVisible}
                                                 onChange={(e) => {
                                                     const checked = e.target.checked;
-                                                    setDocuments((prev) => ({ ...(prev || {}), [id]: { ...(prev?.[id] || {}), show: checked } }));
+                                                    setDocuments((prev) => ({
+                                                    ...(prev || {}),
+                                                    [id]: { ...(prev?.[id] || {}), show: checked },
+                                                    }));
                                                 }}
                                                 />
                                             </div>
@@ -930,7 +1108,8 @@ const restoreDocs = useCallback(() => {
                                 </div>
 
                                 <div className="card-footer bg-white py-2 small text-muted">
-                                Usa el check (columna derecha) para mostrar/ocultar. Los cambios se guardan al confirmar en la pantalla principal.
+                                Usa el check (columna derecha) para mostrar/ocultar. Los cambios se
+                                guardan al confirmar en la pantalla principal.
                                 </div>
                             </div>
                             </div>
@@ -938,12 +1117,13 @@ const restoreDocs = useCallback(() => {
                         </div>
                     ) : null}
                 </div>
+
                 
                 {/* {getModel(model)} */}
                 { canSave ?
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3"><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                            <button className="btn btn-success my-3" onClick={save_exp_res}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                         </div>
                     </div>
                     : ''}
@@ -1042,9 +1222,9 @@ let _COMPONENT_DOC_RES_PDF = () => {
                 <div className="field">
                     <label className="field_label">Mostrar logo</label>
                     <select size={1} className="form-select form-select-sm" id="logo_pages_desist">
-                        <option value="impar" selected>Pág Impares</option>
+                        <option value="impar">Pág Impares</option>
                         <option value="par">Pág Pares</option>
-                        <option value="all">Todas las pág.</option>
+                        <option value="all" selected>Todas las pág.</option>
                         <option value="none">No mostrar</option>
                     </select>
                 </div>
@@ -1109,7 +1289,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
                 <div className="col">
                     <label className="mt-2">ACTO</label>
                     <div class="input-group">
-                        <select className="form-select" id="expedition_doc_res_model" defaultValue={default_model} onChange={(e) => update_model(e.target.value)}>
+                        <select className="form-select" id="expedition_doc_res_model" defaultValue={default_model} onChange={(e) => {setResDocData(null); update_model(e.target.value)}}>
                             {models.map(model => {
                                 if (model.omit) return ''
                                 if (model.group)
@@ -1429,6 +1609,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
 
     let save_exp_res = (e) => {
         e.preventDefault();
+        setResDocData(null);
 
         var _CHILD_1 = _GET_CHILD_1();
 
