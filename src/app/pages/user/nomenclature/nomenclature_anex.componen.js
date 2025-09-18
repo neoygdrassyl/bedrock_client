@@ -269,7 +269,7 @@ class NOMENCLATURE_ANEX extends Component {
                         </div>
 
                         <div className="col-4">
-                            <label >Concetivo</label>
+                            <label >Consecutivo</label>
                             <div class="input-group mb-1">
                                 <span class="input-group-text bg-info text-white">
                                     <i class="fas fa-hashtag"></i>
