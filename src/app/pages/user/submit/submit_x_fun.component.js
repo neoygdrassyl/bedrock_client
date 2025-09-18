@@ -213,7 +213,7 @@ class SUBMIT_X_FUN extends Component {
             let _array_reviews = items.sreview ? items.sreview.split(',') : [];
             let bluePrints = false;
             _array_reviews.map((review, i) => {
-                if ((docs6ToCheck.includes(_array_codes[i]) || ((_array_names[i]).toLowerCase()).includes('plano')) && review == 'SI') {
+                if ((docs6ToCheck.includes(_array_codes[i]) || ((_array_names[i] || '').toLowerCase()).includes('plano')) && review == 'SI') {
                     bluePrints = true
                 }
             })

@@ -509,13 +509,28 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     <strong>TIPO DE NOTIFICACIÓN</strong>
 
                     <div className="col-4">
-                        <select className='form-select' id="type_not">
+                        <select className='form-select' id="type_not" onChange={(e) => this.setState({ 'tn': e.target.value })}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
+                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
+                    {this.state.tn == 4 ?
+                        <>
+                         <div className="col-4">
+                                <div class="input-group my-1">
+                                    <label>Fecha Comunicación: </label>
+                                </div>
+                            </div>
+                            <div className="col-4">
+                                <div class="input-group my-1">
+                                    <input type="date" class="form-control" id="type_not_name" placeholder='Fecha' />
+                                </div>
+                            </div>
+                        </>
+                        : ''}
                 </div>
             </>
         }
@@ -551,6 +566,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
             formData.set('type', type);
 
             formData.set('type_not', document.getElementById("type_not").value);
+            if(document.getElementById("type_not_name")) formData.set('type_not_name', document.getElementById("type_not_name").value);
 
             var _CHILD = currentItem.fun_cs;
             var _CURRENT_VERSION = currentItem.version - 1;
