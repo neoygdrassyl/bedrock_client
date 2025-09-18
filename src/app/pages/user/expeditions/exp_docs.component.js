@@ -10,6 +10,9 @@ import Collapsible from 'react-collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import moment from 'moment';
 import EXP_RES from './exp._res.component';
+import EXP_ACT_DESIST from './exp_act_desist.component';
+import EXP_RES_2 from './exp_res_2.component';
+import EXP_EJEC from './exp_eje.component';
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
 
@@ -187,9 +190,9 @@ class EXP_DOCS extends Component {
         }
         let _GET_CLOCK_STATE = (_state, _version) => {
             var _CLOCK = _GET_CLOCK();
-            if (_state == null) return false;
+            if (_state === null) return false;
             for (var i = 0; i < _CLOCK.length; i++) {
-                if (_CLOCK[i].state == _state) return _CLOCK[i];
+                if (_CLOCK[i].state === _state) return _CLOCK[i];
             }
             return false;
         }
@@ -200,7 +203,7 @@ class EXP_DOCS extends Component {
             let fun_51 = _GET_CHILD_51();
             for (let i = 0; i < fun_51.length; i++) {
                 const fun51 = fun_51[i];
-                if (fun51.role == _role) return fun51;
+                if (fun51.role === _role) return fun51;
             }
             return false;
         }
@@ -265,10 +268,10 @@ class EXP_DOCS extends Component {
         }
         let LOAD_STEP = (_id_public, _record) => {
             var _CHILD = [];
-            if (_record == 'arc') _CHILD = currentItem.record_arc_steps || [];
-            if (_record == 'eng') _CHILD = currentItem.record_eng_steps || [];
+            if (_record === 'arc') _CHILD = currentItem.record_arc_steps || [];
+            if (_record === 'eng') _CHILD = currentItem.record_eng_steps || [];
             for (var i = 0; i < _CHILD.length; i++) {
-                if (_CHILD[i].id_public == _id_public) return _CHILD[i]
+                if (_CHILD[i].id_public === _id_public) return _CHILD[i]
             }
             return []
         }
@@ -393,7 +396,7 @@ class EXP_DOCS extends Component {
             let _areas = _GET_CHILD_AREAS();
             let sum = 0;
             for (var i = 0; i < _areas.length; i++) {
-                if (_areas[i].payment == 0 || _areas[i].payment == 2) {
+                if (_areas[i].payment === 0 || _areas[i].payment === 2) {
                     sum += Number(_areas[i].charge)
                     _COMPONENT.push(<>
                         <div className="row mb-1">
@@ -555,7 +558,7 @@ class EXP_DOCS extends Component {
                 let sum = 0;
                 for (let i = 0; i < _areas.length; i++) {
                     const area = _areas[i];
-                    if (_areas[i].payment == 1 || _areas[i].payment == 2) {
+                    if (_areas[i].payment === 1 || _areas[i].payment === 2) {
                         sum += Number(area.area);
                     }
 
@@ -582,7 +585,7 @@ class EXP_DOCS extends Component {
             let value_total = (Number(value_deli) + Number(value_uso) + Number(value_emb)).toFixed(0)
 
             for (var i = 0; i < _areas.length; i++) {
-                if (_areas[i].payment == 1 || _areas[i].payment == 2) {
+                if (_areas[i].payment === 1 || _areas[i].payment === 2) {
                     taxCharge += _areas[i].charge;
                     _COMPONENT.push(<>
                         <div className="row mb-1">
@@ -1179,10 +1182,10 @@ class EXP_DOCS extends Component {
                 let sum = 0;
                 for (let i = 0; i < _areas.length; i++) {
                     const area = _areas[i];
-                    if (_areas[i].payment == 1 || _areas[i].payment == 2) {
-                        if (_GLOBAL_ID == "cb1") sum += Number(area.charge);
-                        if (_GLOBAL_ID == "cp1") sum += Number(area.area * area.charge);
-                        if (_GLOBAL_ID == "fl2") sum += Number(area.charge);
+                    if (_areas[i].payment === 1 || _areas[i].payment === 2) {
+                        if (_GLOBAL_ID === "cb1") sum += Number(area.charge);
+                        if (_GLOBAL_ID === "cp1") sum += Number(area.area * area.charge);
+                        if (_GLOBAL_ID === "fl2") sum += Number(area.charge);
 
                     }
 
@@ -1190,12 +1193,12 @@ class EXP_DOCS extends Component {
                 return Math.round(sum).toFixed(0)
             }
             for (var i = 0; i < _areas.length; i++) {
-                if (_areas[i].payment == 1 || _areas[i].payment == 2) {
+                if (_areas[i].payment === 1 || _areas[i].payment === 2) {
 
                     let axc = 0
-                    if (_GLOBAL_ID == "cb1") axc = Math.round((Number(_areas[i].charge) ?? 0))
-                    if (_GLOBAL_ID == "cp1") axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
-                    if (_GLOBAL_ID == "fl2") axc = Math.round((Number(_areas[i].charge) ?? 0))
+                    if (_GLOBAL_ID === "cb1") axc = Math.round((Number(_areas[i].charge) ?? 0))
+                    if (_GLOBAL_ID === "cp1") axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
+                    if (_GLOBAL_ID === "fl2") axc = Math.round((Number(_areas[i].charge) ?? 0))
 
                     _COMPONENT.push(<>
                         <div className="row mb-1">
@@ -1370,7 +1373,7 @@ class EXP_DOCS extends Component {
                 let sum = 0;
                 for (let i = 0; i < _areas.length; i++) {
                     const area = _areas[i];
-                    if (_areas[i].payment == 0 || _areas[i].payment == 2) {
+                    if (_areas[i].payment === 0 || _areas[i].payment === 2) {
                         sum += Number(area.area * area.charge);
                     }
 
@@ -1378,7 +1381,7 @@ class EXP_DOCS extends Component {
                 return Math.round(sum).toFixed(0)
             }
             for (var i = 0; i < _areas.length; i++) {
-                if (_areas[i].payment == 0 || _areas[i].payment == 2) {
+                if (_areas[i].payment === 0 || _areas[i].payment === 2) {
                     let axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
                     _COMPONENT.push(<>
                         <div className="row mb-1">
@@ -2787,10 +2790,33 @@ class EXP_DOCS extends Component {
                 </Collapsible>
 
                 <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">EJECUTORIA</label></>}>
-                    {_COMPONENT_EJE()}
+                    {_GLOBAL_ID === 'cb1' ?
+                    <EXP_EJEC
+                        translation={translation} swaMsg={swaMsg} globals={globals}
+                        currentItem={currentItem}
+                        currentVersion={currentVersion}
+                        currentRecord={currentRecord}
+                        currentVersionR={currentVersionR}
+                        requestUpdate={this.props.requestUpdate}
+                        requestUpdateRecord={this.props.requestUpdateRecord}
+                        recordArc={recordArc}
+                    /> : _COMPONENT_EJE()}
                 </Collapsible>
 
-
+                {_GLOBAL_ID === 'cb1' ? 
+                    <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">ACTUACIONES DE DESISTIMIENTO</label></>}>
+                        <EXP_ACT_DESIST
+                            translation={translation} swaMsg={swaMsg} globals={globals}
+                            currentItem={currentItem}
+                            currentVersion={currentVersion}
+                            currentRecord={currentRecord}
+                            currentVersionR={currentVersionR}
+                            requestUpdate={this.props.requestUpdate}
+                            requestUpdateRecord={this.props.requestUpdateRecord}
+                            recordArc={recordArc}
+                        />
+                    </Collapsible> : ''
+                }
             </div >
         );
     }

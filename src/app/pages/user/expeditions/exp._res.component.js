@@ -523,7 +523,14 @@ export default function EXP_RES(props) {
         const sexto_a2_dv = sexto_v[1] || _GET_CLOCK_STATE(65).date_start || ''
         const sexto_a3_dv = sexto_v[2] || duty.charge || '';
 
-        const sexto_b_dv = reso.sexto_b ?? 'De acuerdo con el área generadora para la actividad de comercio y las unidades de uso xxx en estrato xxx se requieren xx unidades de parqueo. El proyecto presenta 2 cupos en el sitio y queda por compensar 1. De esta obligación se notifica al titular del presente acto de reconocimiento para que dé cumplimiento en el momento procesal exigible, esto es como condición para poder desarrollar el uso del suelo (licencia de funcionamiento), por cuanto que para expedir la presente actuación se verificó el cumplimiento de la norma vigente de carácter municipal, art. 471 del POT. Lo anterior debe realizarse de conformidad con lo establecido en las normas vigentes (Acuerdo 065 de 2006 y del Decreto 0198 de 2015 que reglamenta los artículos 363 y 364 del POT).';
+        const sexto_b_dv_1 = reso.sexto_b ?? 'Deee acuerdo con el área generadora para la actividad de comercio y las unidades de uso xxx en estrato xxx se requieren xx unidades de parqueo. El proyecto presenta 2 cupos en el sitio y queda por compensar 1. De esta obligación se notifica al titular del presente acto de reconocimiento para que dé cumplimiento en el momento procesal exigible, esto es como condición para poder desarrollar el uso del suelo (licencia de funcionamiento), por cuanto que para expedir la presente actuación se verificó el cumplimiento de la norma vigente de carácter municipal, art. 471 del POT. Lo anterior debe realizarse de conformidad con lo establecido en las normas vigentes (Acuerdo 065 de 2006 y del Decreto 0198 de 2015 que reglamenta los artículos 363 y 364 del POT).';
+        
+        const data_sexto = ['xx', _CHILD_2.item_267 ?? 'xx', 'xx'];
+
+        let indice = 0;
+        const sexto_b_dv = sexto_b_dv_1.replace(/x{2,3}/g, () => {
+        return data_sexto[indice++] ?? 'xx';
+        });
 
 
         const sexto_c1_dv = currentItem.id_payment || sexto_v[3] || '';
@@ -3251,28 +3258,28 @@ export default function EXP_RES(props) {
                 <div className="col ">
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Margen Superior (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_top" defaultValue={2.5} />
+                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_top" defaultValue={1.2} />
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Margen Inferior (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_bot" defaultValue={2.5} />
+                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_bot" defaultValue={1.2} />
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Margen Izquierdo (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_left" defaultValue={1.7} />
+                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_left" defaultValue={1.9} />
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Margen Derecho (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_right" defaultValue={1.7} />
+                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_right" defaultValue={1.9} />
                     </div>
                 </div>
                 {process.env.REACT_APP_GLOBAL_ID == 'cb1' ? (
@@ -3627,6 +3634,7 @@ export default function EXP_RES(props) {
                 // console.log(response.data);
                 if (response.data.status  === 'OK') {
                     if (editDocument) {
+                        // console.log(response.data);
                         setResDocData(response.data); 
                         MySwal.close();
                     }
@@ -3908,7 +3916,7 @@ export default function EXP_RES(props) {
             </div>
             <div>
                 {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
-                    <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} />
+                    <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model || 'open'}/>
                 )}
             </div>
         </div>

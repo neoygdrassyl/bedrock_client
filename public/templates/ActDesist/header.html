@@ -1,0 +1,108 @@
+<custom-header>
+  <style>
+    /* Estilos para bordes en el diseño abierto */
+    .header-container table { border-collapse: collapse !important; }
+    .header-container table,
+    .header-container th,
+    .header-container td {
+      border: 1px solid #000 !important;
+    }
+    
+    /* Ajustes para la subtabla interna */
+    .header-container .inner-table {
+      width: 100% !important;
+      border: none !important;
+      border-collapse: collapse !important;
+    }
+    .header-container .inner-table th,
+    .header-container .inner-table td {
+      border: 1px solid #000 !important;
+    }
+    /* Eliminar bordes externos de la subtabla */
+    .header-container .inner-table tr:first-child > * { border-top: 0 !important; }
+    .header-container .inner-table tr:last-child  > * { border-bottom: 0 !important; }
+    .header-container .inner-table tr > :first-child { border-left: 0 !important; }
+    .header-container .inner-table tr > :last-child  { border-right: 0 !important; }
+  </style>
+
+  <div class="header-container" style="display: flex; padding-left: 0px; align-items: flex-start; width: 100%; font-size: 12pt !important; font-family: 'Arial Narrow', Arial, sans-serif; position: relative;">
+    <!-- Contenedor tabla alineado completamente a la izquierda -->
+    <div style="flex-grow: 1; margin: 0px; padding: 0px;">
+      <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse; width: 80% !important; margin: 0px; padding: 0px;">
+        <!-- Fila 1: Título principal y Estado -->
+        <tr>
+          <th colspan="3" style="text-align:center;">
+            Tipo y modalidad de licencia urbanística
+          </th>
+          <th style="text-align:center;">Estado</th>
+        </tr>
+
+        <!-- Fila 2: Descripción larga y OTORGADA -->
+        <tr>
+          <td colspan="3" style="text-align:center; font-weight:bold;">
+            {{ reso_tipo }}
+          </td>
+          <td id="desist-act-reso-state-header" style="text-align:center; font-weight:bold;">
+            DESISTIDA
+          </td>
+        </tr>
+
+        <!-- Fila 3: Resolución, subtabla y POT -->
+        <tr>
+          <!-- AUMENTADO a 40% (antes 38%) -->
+          <td style="text-align:center; width: 40%;" id="desist-act-reso-header">
+            RESOLUCIÓN 0275 DEL 29 DE NOVIEMBRE DE 2024
+          </td>
+          <!-- Se mantiene en 46% -->
+          <td colspan="2" style="padding:0px; width: 46%;">
+            <table class="inner-table" cellpadding="1" cellspacing="0">
+              <!-- Fila 1: Número único de radicación -->
+              <tr>
+                <th colspan="2" style="text-align:center;">
+                  Número único de radicación
+                </th>
+              </tr>
+              <!-- Fila 2: ID -->
+              <tr>
+                <th id="desist-act-header-id-cod" colspan="2" style="text-align:center;">
+                  <!-- Código aquí -->
+                </th>
+              </tr>
+              <!-- Fila 3: Radicación / Legal -->
+              <tr>
+                <td style="text-align:center; width: 50%;">
+                  Desistido
+                </td>
+                <td style="text-align:center; width: 50%;">
+                  Ejecutoria
+                </td>
+              </tr>
+            </table>
+          </td>
+          <!-- REDUCIDO a 14% (antes 16%) -->
+          <td id="info-pot-header" rowspan="2" style="text-align:center; vertical-align:middle; width: 14%; font-weight:bold;">
+            Conforme al<br>POT Acuerdo<br>011/2014
+          </td>
+        </tr>
+        <!-- Fila 4: Licencia + Fechas alineadas -->
+        <tr>
+          <!-- AUMENTADO a 40% (antes 38%) para alinear con la fila 3 -->
+          <td style="text-align:center; width:40%;">Actuacion urbanística.</td>
+          <td id="act-desist-date-header" style="text-align:center; width:23%; font-weight:bold;">
+            2025-04-04
+          </td>
+          <td id="ejec-date-header" style="text-align:center; width:23%; font-weight:bold;">
+            2025-05-19
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Texto agregado en el espacio derecho centrado verticalmente -->
+    <div style="position: absolute; left: 94%; bottom: 9px; transform: translateX(-50%);
+            font-size: 9pt !important; font-family: 'Arial Narrow', Arial, sans-serif;">
+      <p id="autenticidad" style="margin:0; display:none;">ORIGINAL</p>
+    </div>
+
+  </div>
+</custom-header>
