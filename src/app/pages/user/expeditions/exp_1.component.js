@@ -662,7 +662,7 @@ class EXP_1 extends Component {
             let date1 = document.getElementById('expedition_1').value;
             let date2 = document.getElementById("vr_selected1") ? document.getElementById('expedition_10').value: null;
 
-            if (cub1 && vr1) {
+            if (cub1) {
                 let formatData1 = new FormData();
                 formatData1.set('vr', vr1);
                 formatData1.set('cub', cub1);
@@ -672,7 +672,7 @@ class EXP_1 extends Component {
                 formatData1.set('date', date1);
                 sendDataToCreate(formatData1, 1);
             }
-            if (cub2 && vr2) {
+            if (cub2) {
                 let formatData2 = new FormData();
                 formatData2.set('vr', vr2);
                 formatData2.set('cub', cub2);

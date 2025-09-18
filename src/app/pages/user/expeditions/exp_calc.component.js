@@ -177,7 +177,7 @@ const rules_matrix = () => {
                 { name: 'Residencial estrato 3 y otras modalidades', mult: 4484.91, preFix: '2003', },
                 { name: 'Residencial estrato 4 y otras modalidades', mult: 6971.86, preFix: '2004', },
                 { name: 'Residencial estrato 5 y otras modalidades', mult: 11453.77, preFix: '2005', },
-                { name: 'Residencial estrato 6 y otras modalidades', mult: 114939.70, preFix: '2006', },
+                { name: 'Residencial estrato 6 y otras modalidades', mult: 14939.70, preFix: '2006', },
                 { name: 'Construcción obra nueva uso comercio o servicios en sector urbano y otras modalidades', mult: 11453.77, preFix: '2007', },
                 { name: 'Construcción obra nueva uso comercio o servicios en suelo rural, suburbano y expansion urbana, y otras modalidades', mult: 22409.55, preFix: '2007', },
                 { name: 'Construcción obra nueva uso institucional o dotacional y otras modalidades', mult: 8963.82, preFix: '2007', },

@@ -7,6 +7,7 @@ import { formsParser1, _ADDRESS_SET_FULL } from '../../../../components/customCl
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import SubmitService from '../../../../services/submit.service'
+import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
 
 
 const MySwal = withReactContent(Swal);
@@ -20,8 +21,8 @@ class FUN_ALERT_NEIGHBOUR extends Component {
     componentDidMount() {
         this.retrieveItem();
     }
-    componentDidUpdate(){
-        if(this.props.vr) document.getElementById("vr_selected").value = this.props.vr 
+    componentDidUpdate() {
+        if (this.props.vr) document.getElementById("vr_selected").value = this.props.vr
     }
     retrieveItem() {
         SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
@@ -43,6 +44,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 m_sub: [],
                 m_lic: [],
                 description: "",
+                usos: "",
             }
             if (_CHILD) {
                 if (_CHILD[_CURRENT_VERSION] != null) {
@@ -52,6 +54,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                     _CHILD_VARS.m_sub = _CHILD[_CURRENT_VERSION].m_sub;
                     _CHILD_VARS.m_lic = _CHILD[_CURRENT_VERSION].m_lic;
                     _CHILD_VARS.description = _CHILD[_CURRENT_VERSION].description;
+                    _CHILD_VARS.usos = _CHILD[_CURRENT_VERSION].usos;
                 }
             }
             return _CHILD_VARS;
@@ -185,7 +188,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                     <div className="col">
                         <label>2.1.3 Consecutivo de Salida</label>
                         <div class="input-group my-1">
-                            <input type="text" class="form-control" id="gen_alert_id_cub" 
+                            <input type="text" class="form-control" id="gen_alert_id_cub"
                                 defaultValue={_GET_CHILD_3_IDCUB_DEFAULT() || this.props.cubSelected || ""} />
                         </div>
                     </div>
@@ -200,7 +203,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                     <div className="col ms-auto" >
                         <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" id="vr_selected" defaultValue={this.props.vr || ""} onChange={(e) => {this.props.setVr(e.target.value)}}>
+                            <select class="form-select" id="vr_selected" defaultValue={this.props.vr || ""} onChange={(e) => { this.props.setVr(e.target.value) }}>
                                 <option value=''>Seleccione una opción</option>
                                 {this.state.vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -327,6 +330,9 @@ class FUN_ALERT_NEIGHBOUR extends Component {
             let address_n = _SET_CHILD_3()[address_i].direccion_2;
             formData.set('address_n', address_n);
 
+             let usos = _FUN_6_PARSER(_SET_CHILD_1().usos, true)
+            formData.set('usos', usos);
+
             formData.set('neighbour', _SET_CHILD_2().item_261);
 
             formData.set('address_multiple', _CHILD_3_ADDRESSES());
@@ -391,6 +397,8 @@ class FUN_ALERT_NEIGHBOUR extends Component {
             formData.set('matricula', matricula);
             let type = document.getElementById("gen_alert_type").value;
             formData.set('type', type);
+              let usos = _FUN_6_PARSER(_SET_CHILD_1().usos, true)
+            formData.set('usos', usos);
 
             formData.set('neighbour', _SET_CHILD_2().item_261);
 

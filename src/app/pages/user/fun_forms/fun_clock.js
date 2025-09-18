@@ -63,7 +63,7 @@ class FUNCLOCK extends Component {
     requestRefresh() {
         this.props.requesRefresh();
     }
-    setEmailUsers(_currentItem){
+    setEmailUsers(_currentItem) {
         let users = {
             f52_names: null, f52_surnames: null, f52_emails: null,
             f53_name: null, f53_surname: null, f53_email: null,
@@ -74,7 +74,7 @@ class FUNCLOCK extends Component {
         let fe = []
 
         _currentItem.fun_52s.map(item => {
-            if(!fe.includes(item.email)){
+            if (!fe.includes(item.email)) {
                 fn.push(item.name)
                 fs.push(item.surname)
                 fe.push(item.email)
@@ -85,14 +85,14 @@ class FUNCLOCK extends Component {
         users.f52_surnames = fs.join(';');
         users.f52_emails = fe.join(';');
 
-        if(_currentItem.fun_53s[0] && _currentItem.fun_53s[0].email){
-            users.f53_name =_currentItem.fun_53s[0].name;
+        if (_currentItem.fun_53s[0] && _currentItem.fun_53s[0].email) {
+            users.f53_name = _currentItem.fun_53s[0].name;
             users.f53_surname = _currentItem.fun_53s[0].surname;
             users.f53_email = _currentItem.fun_53s[0].email;
         }
 
-        this.setState({email_users: users})
-       
+        this.setState({ email_users: users })
+
     }
     render() {
         const { translation, swaMsg, globals, currentVersion } = this.props;
@@ -138,7 +138,8 @@ class FUNCLOCK extends Component {
                             requestRefresh={this.requestRefresh}
                         />
                     </fieldset>
-
+                    {
+                        /*
                     <EMAILS_COMPONENT  
                     translation={translation} 
                     swaMsg={swaMsg}
@@ -146,6 +147,9 @@ class FUNCLOCK extends Component {
                     process="lic" 
                     users={email_users}
                     />
+                        */
+                    }
+
 
                     <FUN_MODULE_NAV
                         translation={translation}

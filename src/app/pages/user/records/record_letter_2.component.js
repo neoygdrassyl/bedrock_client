@@ -433,7 +433,7 @@ class RECORD_DOC_LETTER_2 extends Component {
             let vr = document.getElementById("vr_selected1").value;
             let cub = cub_selected;
             let formatData = new FormData();
-            console.log(vr)
+            
 
             formatData.set('vr', vr);
             formatData.set('cub', cub);
