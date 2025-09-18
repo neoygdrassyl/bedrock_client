@@ -1,15 +1,28 @@
 /* Justificación solo fuera de tablas */
 body,
 .document,
-.document p {
-  font-size: 14pt !important;
-  font-family: Helvetica, Arial, sans-serif;
+.document p,
+.document strong {
+  font-size: 12pt;
+  font-family: "Arial Narrow", Arial, sans-serif;
   text-align: justify;
 }
+.titles-general{
+  font-size: 16pt;
+}
+.text-size-small{
+  font-size: 12pt;
+}
+.text-size-smaller{
+  font-size: 9pt;
+}
+.text-justify {
+    text-align: justify;
+  }
 
 /* Tablas sin justificación forzada */
 td, th {
-  font-size: 11pt !important;
+  font-size: 12pt;
   word-break: break-word;
   padding: 4px;
   text-align: left;
@@ -33,10 +46,11 @@ td, th {
 #determinates-table-1,
 #determinates-table-33,
 #determinates-table-34,
-#areas-table-container {
+#areas-table-container,
+.areas-table-container {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11pt !important;
+  font-size: 12pt !important;
 }
 
 /* Celdas con bordes */
@@ -47,14 +61,17 @@ td, th {
 #determinates-table-34 th,
 #determinates-table-34 td,
 #areas-table-container th,
-#areas-table-container td {
+#areas-table-container td,
+.areas-table-container th,
+.areas-table-container td {
   border: 1px solid #000;
 }
 
 /* Padding para datos */
 #determinates-table-33 td,
 #determinates-table-34 td,
-#areas-table-container td {
+#areas-table-container td 
+.areas-table-container td {
   padding: 0 0 0 4px !important;
 }
 
@@ -63,6 +80,7 @@ td, th {
 #determinates-table-33 th,
 #determinates-table-34 th,
 #areas-table-container th,
+.areas-table-container th,
 #tabla-f2 th,
 #f52-table th,
 #table-f51 th {
@@ -71,10 +89,28 @@ td, th {
   background-color: #c0c0c0;
 }
 
-/* Ajuste visual específico */
+#areas-table-container table,
+.areas-table-container table {
+  table-layout:fixed;              /* fija el ancho por columna */
+}
+#areas-table-container th,
+#areas-table-container td,
+.areas-table-container th,
+.areas-table-container td {
+  padding:4px !important;
+  text-align:center;
+  vertical-align:middle;
+  white-space:normal;              /* permite múltiples líneas */
+  overflow-wrap:break-word;        /* corta palabras largas */
+  word-break:break-word;           /* fallback */
+  hyphens:auto;                    /* guiones automáticos si procede */
+}
+
+
+/* Ajuste visual específico 
 #determinates-table-33 {
   padding-right: 0.4rem;
-}
+}*/
 
 /* Tabla sin bordes especiales */
 #table-geo-info td {
@@ -180,3 +216,108 @@ td, th {
   vertical-align: middle;
 }
 
+.relleno-balance {
+  width: 100%;
+  background: #f9f9f9;
+  border: 1px dashed #ccc;
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  display: none; /* Oculto por defecto */
+}
+
+
+.inline-text-strong,
+.inline-text {
+  display: inline;
+  margin: 0;
+}
+
+.inline-text  {
+  margin-left: 1px; /* pequeño espacio tras el strong */
+}
+
+.considerative-list {
+  margin-top: 8px;
+}
+
+.considerative-item, .considerative-subitem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.label, .sublabel {
+  width: 40px; /* ancho fijo para alinear */
+  flex-shrink: 0;
+}
+
+.text, .subtext {
+  flex: 1;
+}
+
+.considerative-subitem {
+  padding-left: 20px; /* segunda indentación */
+}
+
+/* Estilo para el contenedor principal */
+#isNotSub-sixth-section {
+    /* font-family: Arial, sans-serif; */
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+/* Estilo para la lista principal */
+.list-container p {
+    margin: 5px 0;
+    text-indent: -20px;
+    padding-left: 20px;
+}
+
+/* Estilo para la sublista */
+.sublist-container p {
+    margin: 5px 0;
+    text-indent: -30px;
+    padding-left: 35px;
+}
+
+/* Estilo para las secciones abiertas */
+.open-sections-container div {
+    margin: 10px 0;
+}
+
+/* Estilo para los títulos de las secciones abiertas */
+.open-sections-container strong {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Estilo para los párrafos de las secciones abiertas */
+.open-sections-container p {
+    margin: 5px 0;
+    text-indent: -20px;
+    padding-left: 20px;
+}
+
+
+
+
+.considerative-item, .considerative-subitem {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 4px;
+}
+
+.label, .sublabel {
+    width: 25px; /* ancho fijo para alinear */
+    flex-shrink: 0;
+}
+
+.text, .subtext {
+    flex: 1;
+}
+
+.considerative-subitem {
+    padding-left: 20px; /* segunda indentación */
+}
