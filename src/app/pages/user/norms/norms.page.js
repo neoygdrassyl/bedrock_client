@@ -294,8 +294,8 @@ export default function NORMS(props) {
         <>
 
             <div className="Publish container">
-                <div className="row my-4 d-flex justify-content-center">
-                    <MDBBreadcrumb className="mx-5">
+                <div className="col-12 d-flex justify-content-start p-0">
+                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
                             <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
@@ -304,6 +304,8 @@ export default function NORMS(props) {
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem active><i class="fas fa-home"></i>  <label className="text-uppercase">NORMAS URBANAS</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
+                </div>
+                <div className="row my-4 d-flex justify-content-center">
                     <div className="col-lg-11 col-md-12">
                         <h1 className="text-center my-4">NORMAS URBANAS</h1>
                         <hr />

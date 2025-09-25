@@ -40,8 +40,8 @@ export default function GUIDE_USER(props) {
     // ***************************  JXS *********************** //
     let _HEADER_COMPONENET = () => {
         return <>
-            <div className="row my-4 d-flex justify-content-center">
-                <MDBBreadcrumb className="mx-5">
+            <div className="col-12 d-flex justify-content-start p-0">
+                <MDBBreadcrumb className="mb-0 p-0 ms-0">
                     <MDBBreadcrumbItem>
                         <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                     </MDBBreadcrumbItem>
@@ -50,6 +50,8 @@ export default function GUIDE_USER(props) {
                     </MDBBreadcrumbItem>
                     <MDBBreadcrumbItem active><i class="fas fa-atlas"></i>  <label className="text-uppercase">MANUAL DEL USUARIO</label></MDBBreadcrumbItem>
                 </MDBBreadcrumb>
+            </div>
+            <div className="row mb-4 d-flex justify-content-center">
                 <div className="col-lg-11 col-md-12">
                     <h2 className='text-center text-danger'>EN CONSTRUCCIÓN...</h2>
                     <h1 className="text-center my-4">MANUAL DEL USUARIO</h1>

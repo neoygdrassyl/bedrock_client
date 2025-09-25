@@ -892,135 +892,144 @@ export default function FUN_DAILY_COMPONENT(props) {
         return component;
     }
     let TABLE_BTNS = (datas) => {
-        return <div className='row'>
-            {datas.map(btn => {
-                return <>
-                    <div className='col-4 mx-0 px-0' style={{ marginTop: '1px' }}>
-                        <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
-                            outline={selectedBtn != btn.id_public}
-                            btnChildren={<>
-                                {text_context_btn(btn)}
-                                <h6 className={selectedBtn != btn.id_public ? ('text-dark fw-normal my-0 py-0') : 'text-light my-0 py-0'}>{(btn.id_public).slice(-7)}</h6>
-                            </>}
-                            onClick={() => setSbtn(btn.id_public)}>
-                            {_MODULE_BTN_POP(btn)}
-                        </MDBPopover>
-                    </div>
-                </>
-            })}
-        </div>
-    }
+        return (
+            <div className="btn-grid">
+            {datas.map(btn => (
+                <MDBPopover
+                key={btn.id_public}
+                size="sm"
+                color={btn.color ?? 'primary'}
+                placement="bottom"
+                dismiss
+                rounded
+                outline={selectedBtn != btn.id_public}
+                btnClassName="table-popover-btn"
+                btnChildren={<>
+                    {text_context_btn(btn)}
+                    <h6 className={selectedBtn != btn.id_public ? 'text-dark fw-normal my-0 py-0' : 'text-light my-0 py-0'}>
+                    {(btn.id_public).slice(-7)}
+                    </h6>
+                </>}
+                onClick={() => setSbtn(btn.id_public)}
+                >
+                {_MODULE_BTN_POP(btn)}
+                </MDBPopover>
+            ))}
+            </div>
+        );
+        }
+
     const TABLE_HEADER = () => {
         return <>
 
-            <div className="row border bg-info py-1 text-white fw-bold" style={{ position: 'sticky', top: 0 }} >
+            <div className="row border mx-1 py-1 text-white fw-bold header-bg-primary" style={{ position: 'sticky', top: 0 }} >
                 <div className="col text-center m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>RADICACIÓN ({datac.inc.length})</h6>} >
+                        btnChildren={<h6 className='m-0 p-0 text-white'>RADICACIÓN ({datac.inc.length})</h6>} >
                         {_INFO_POP('RADICACIÓN', 'Solicitudes radicadas, incompletas con termino para estar en LyDF',
                             { primary: 'AZUL = Término mayor a 10 días', warning: 'AMARILLO = A 10 días habiles de terminar', danger: 'ROJO = Sin fecha de pago' })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>OTROS ({datac.other.length})</h6>} >
+                        btnChildren={<h6 className='m-0 p-0 text-white'>OTROS ({datac.other.length})</h6>} >
                         {_INFO_POP('OTROS', 'Revalidaciones',
                             { })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>JURÍDICO ({datac.law.length})</h6>} >
+                        btnChildren={<h6 className='m-0 p-0 text-white'>JURÍDICO ({datac.law.length})</h6>} >
                         {_INFO_POP('JURÍDICO', 'Solicitudes programadas para revisión y/o asignadas (Clave de revisor y tiempo)',
                             { success: 'VERDE = Observaciones / Primera Revisión', dark: 'NEGRO = Solicitud Incompleta', warning: 'AMARILLO = Asistencia técnica', primary: 'AZUL = Entrega de correciones' })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark' >ARQUITECTÓNICO  ({datac.arc.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white' >ARQUITECTÓNICO  ({datac.arc.length})</h6>}>
                         {_INFO_POP('ARQUITECTÓNICO', 'Solicitudes en LyDF, programadas para revisión y/o asignadas (Clave de revisor y tiempo)',
                             { success: 'VERDE = Observaciones / Primera Revisión', dark: 'NEGRO = Solicitud Incompleta', warning: 'AMARILLO = Asistencia técnica', primary: 'AZUL = Entrega de correciones' })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>ESTRUCTURAL ({datac.eng.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>ESTRUCTURAL ({datac.eng.length})</h6>}>
                         {_INFO_POP('ESTRUCTURAL', 'Solicitudes en LyDF, programadas para revisión y/o asignadas (Clave de revisor y tiempo)',
                             { success: 'VERDE = Observaciones / Primera Revisión', dark: 'NEGRO = Solicitud Incompleta', warning: 'AMARILLO = Asistencia técnica', primary: 'AZUL = Entrega de correciones' })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>INFORMAR REVISIONES ({datac.check.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>INFORMAR REVISIONES ({datac.check.length})</h6>}>
                         {_INFO_POP('INFORMAR REVISIONES', 'Solicitudes con revision no viable y que no han sido informadas al solicitante. J = Juridico, A = Arquitectoico, E = Estructural',
                             { success: 'VERDE = Solicitud en LyDF', dark: 'NEGRO = Solicitud Incompleta', })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>ACTA DE OBSERVACIONES ({datac.rec.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>ACTA DE OBSERVACIONES ({datac.rec.length})</h6>}>
                         {_INFO_POP('ACTA DE OBSERVACIONES', 'Parte 1 Observaciones',
                             { success: 'VERDE = En proceso de notificación', primary: 'AZUL = Para generar, informes conciliados', })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>NOTIFICADO Y SUSPENDIDO (CORRECCIONES) ({datac.cor.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>NOTIFICADO Y SUSPENDIDO (CORRECCIONES) ({datac.cor.length})</h6>}>
                         {_INFO_POP('NOTIFICADO Y SUSPENDIDO (CORRECCIONES)', 'Solicitudes cuya Acta ya fue notificada y están en proceso de correcciones.',
                             { primary: 'AZUL = Término mayor a 10 días', warning: 'AMARILLO = A 10 días habiles de terminar', secondary: 'MORADO = A 5 días de cumplir termino y debe solicitar prorroga' })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>ACTO DE VIABILIDAD ({datac.pay.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>ACTO DE VIABILIDAD ({datac.pay.length})</h6>}>
                         {_INFO_POP('ACTO DE VIABILIDAD', 'Acta de correcciones - liquidación',
                             { primary: 'AZUL = Sin generar acta de viabilidad', success: 'VERDE = En proceso de notificación del acta', })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>NOTIFICADO Y SUSPENDIDO (PAGOS) ({datac.pay2.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>NOTIFICADO Y SUSPENDIDO (PAGOS) ({datac.pay2.length})</h6>}>
                         {_INFO_POP('NOTIFICADO Y SUSPENDIDO (PAGOS)', 'Solicitudes con viabilidad notificada y en espera de radicación de pagos',
                             { primary: 'AZUL = Término mayor a 10 días', warning: 'AMARILLO = A 10 días habiles de terminar', })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>RESOLUCIÓN (CONCEDE) ({datac.res.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>RESOLUCIÓN (CONCEDE) ({datac.res.length})</h6>}>
                         {_INFO_POP('RESOLUCIÓN  (CONCEDE)', '',
                             { success: 'VERDE = Resolución generada y en proceso de notificacion', secondary: 'MORADO = Generada y notificada', primary: 'AZUL = Resolucion sin generar' })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>RESOLUCIÓN (NEGADO) ({datac.rsc2.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>RESOLUCIÓN (NEGADO) ({datac.rsc2.length})</h6>}>
                         {_INFO_POP('RESOLUCIÓN (NEGADO)', '',
                             { success: 'VERDE = Resolución generada y en proceso de notificacion', secondary: 'MORADO = Generada y notificada', primary: 'AZUL = Resolucion sin generar' })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>RESOLUCIÓN (DESISTIDO)   ({datac.neg.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>RESOLUCIÓN (DESISTIDO)   ({datac.neg.length})</h6>}>
                         {_INFO_POP('RESOLUCIÓN (DESISTIDO) ', 'Solicitudes que han sido declaradas como desistidas, estan en proceso de desistimiento o cumplen los requisitos para desistir.',
                             { primary: 'AZUL = Resolución generada y en proceso de notificacion', secondary: 'MORADO = Generada y notificada', warning: 'AMARILLO = Cumplen requisitos para desistir de forma voluntaria, no radicó los pagos, Su resultado no subsanó las observaciones, no radicó en LyDF, no radicó fotografia valla ', danger: 'ROJO = En proceso de desistimiento' })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>RECURSO  ({datac.rsc.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>RECURSO  ({datac.rsc.length})</h6>}>
                         {_INFO_POP('RECURSO ', 'Recursos en tramite, con notificacion de la resolucion y aun en 60 dias calendario.',
                             { primary: 'AZUL = En 60 dias calendario', warning: 'AMARILLO = Fuera de los 60 dias calendario' })}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>EJECUTORIA (LICENCIA) ({datac.lic.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>EJECUTORIA (LICENCIA) ({datac.lic.length})</h6>}>
                         {_INFO_POP('EJECUTORIA (LICENCIA)', 'Cuando queda en firme la resolución. (10 días después de la notificación, publicación, renuncia de terminos o recurso resuelto)',)}
                     </MDBPopover>
                 </div>
                 <div className="col text-center  m-0 p-0">
                     <MDBPopover size='sm' color={'link'} placement='top' dismiss rounded
-                        btnChildren={<h6 className='m-0 p-0 text-dark'>ENTREGA DE LICENCIA ({datac.lic2.length})</h6>}>
+                        btnChildren={<h6 className='m-0 p-0 text-white'>ENTREGA DE LICENCIA ({datac.lic2.length})</h6>}>
                         {_INFO_POP('ENTREGA DE LICENCIA', 'Solicitudes que YA se expidió la ejecutoria y NO se han entregado los documentos.',
                             { success: 'VERDE = Con documentos entregados y en espera de cerrar/archivar el proceso', primary: 'AZUL = Por entregar documentos', })}
                     </MDBPopover>
@@ -1045,7 +1054,7 @@ export default function FUN_DAILY_COMPONENT(props) {
     }
 
     const TABLE_BODY = (datas) => {
-        return <div className="row  px-1 ">
+        return <div className="row mx-1 px-1 ">
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
@@ -1404,7 +1413,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 {load2 ?
                     <>
                         <div className='chart-clock'>
-                            <div className='row mx-1  px-1' style={{ width: '3500px', maxHeight: '500px', minHeight: '100px' }} >
+                            <div className='row   px-1' style={{ width: '3500px', maxHeight: '500px', minHeight: '100px' }} >
                                 {TABLE(datac)}
                             </div>
                         </div>
