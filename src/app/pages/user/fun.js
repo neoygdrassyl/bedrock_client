@@ -9,6 +9,7 @@ import IMG_SEARCH_ICON from '../../img/pqrs/Buscaricono-01.png'
 
 // SERVICES
 import FUNService from '../../services/fun.service'
+import USER_SERVICE from '../../services/users.service';
 
 // FUN FAMILY!
 import FUNC from './fun_forms/fun_c'
@@ -32,6 +33,8 @@ import EXPEDITION from './expeditions/expedition.page';
 import FUN_REPORT_GEN from './fun_forms/fun_reports/fun_gen.report';
 import { nomens } from '../../components/jsons/vars';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
+import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
+
 
 // JSONS
 const moment = require('moment');
@@ -55,6 +58,7 @@ class FUN extends Component {
             isLoaded: false,
             isLoadedSearch: false,
             currentItem: null,
+            currentItemAsignProf: null,
             currentIndex: -1,
 
             modal: false,
@@ -71,6 +75,7 @@ class FUN extends Component {
             modal_exp: false,
             modal_macro: false,
             modal_report: false,
+            modal_asign_prof: false,
 
             items: [],
             currentMetaData: [],
@@ -91,12 +96,24 @@ class FUN extends Component {
             fillActive: '1',
             fillActive2: '1',
             clocks: [],
+
+            worker_list: [],
         };
     }
     componentDidMount() {
         this.retrievePublish();
         this.setSubtmitRows();
+        this.retrieveWorkers();
         if (this.props.urlParams) this.LOAD_BY_URL()
+    }
+    retrieveWorkers() {
+        USER_SERVICE.getAll()
+            .then(response => {
+                this.setState({ worker_list: response.data })
+            })
+            .catch(e => {
+                console.log(e);
+            });
     }
     componentDidUpdate(prevProps) {
         if (this.props.urlParams !== prevProps.urlParams && this.props.urlParams != null) {
@@ -123,10 +140,34 @@ class FUN extends Component {
         FUNService.get(id)
             .then(response => {
                 MySwal.close()
+
                 this.toggle_d(response.data);
             })
             .catch(e => {
                 MySwal.fire({
+                    title: this.props.swaMsg.generic_eror_title,
+                    text: this.props.swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: this.props.swaMsg.text_btn,
+                });
+                console.log(e);
+            });
+    }
+    retrieveMacroSingle(id) {
+        MySwal.fire({
+            title: this.props.swaMsg.title_wait,
+            text: this.props.swaMsg.text_wait,
+            icon: 'info',
+            showConfirmButton: false,
+        });
+        FUNService.loadMacroSingle(null, null, id)
+            .then(response => {
+                if (response.data.length) this.setState({ currentItemAsignProf: response.data, modal_asign_prof: true })
+                else this.setState({ currentItemAsignProf: null, modal_asign_prof: null })
+                MySwal.close();
+            })
+            .catch(e => {
+                  MySwal.fire({
                     title: this.props.swaMsg.generic_eror_title,
                     text: this.props.swaMsg.generic_error_text,
                     icon: 'warning',
@@ -532,23 +573,23 @@ class FUN extends Component {
         start_date = moment(start_date).format('YYYY-MM-DD');
 
         FUNService.loadSubmit2(start_date, end_date)
-        .then(response => {
-            if (response.data.length) {
-                this.setState({
-                    currentItems: response.data,
-                    load: true,
-                })
-                var submitItems = [];
-                for (var i = 0; i < response.data.length; i++) {
-                    submitItems.push(response.data[i].id)
+            .then(response => {
+                if (response.data.length) {
+                    this.setState({
+                        currentItems: response.data,
+                        load: true,
+                    })
+                    var submitItems = [];
+                    for (var i = 0; i < response.data.length; i++) {
+                        submitItems.push(response.data[i].id)
+                    }
+                    this.setState({ submitItems: submitItems })
                 }
-                this.setState({ submitItems: submitItems })
-            }
-        })
-        .catch(e => {
-            console.log(e);
-        });
-       
+            })
+            .catch(e => {
+                console.log(e);
+            });
+
     }
     _REGEX_MATCH_PH(_string) {
         let regex0 = /p\.\s+h/i;
@@ -560,9 +601,9 @@ class FUN extends Component {
     }
     render() {
         const { translation, swaMsg, globals, breadCrums } = this.props;
-        const { currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search } = this.state;
-       
-       const modalHeader = <div className="my-3 d-flex justify-content-between">
+        const { currentItemAsignProf, currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search, worker_list } = this.state;
+
+        const modalHeader = <div className="my-3 d-flex justify-content-between">
             <label>ULTIMA VERSIÓN :{this.state.currentLastVersion}</label>
         </div>
         let _GET_MISSING_CONTEXT = (state) => {
@@ -592,14 +633,14 @@ class FUN extends Component {
             if (state == '100') return isString ? 'ARCHIVADO' : <label className='fw-bold'>CERRADO</label>
             if (state == '101') return isString ? 'ARCHIVADO' : <label className='fw-bold text-primary'>ARCHIVADO</label>
             if (state == '200') {
-                if(isString){
-                    if(row.clock_close_6) return 'NEGADA'
-                    if(row.clock_close_5) return 'DESISTIDO (Voluntario)'
-                    if(row.clock_close_4) return 'DESISTIDO (No radicó pagos'
-                    if(row.clock_close_3) return 'DESISTIDO (No subsanó Acta)'
-                    if(row.clock_close_2) return 'DESISTIDO (No radicó valla)'
-                    if(row.clock_close_1) return 'DESISTIDO (Incompleto)'
-                }else return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
+                if (isString) {
+                    if (row.clock_close_6) return 'NEGADA'
+                    if (row.clock_close_5) return 'DESISTIDO (Voluntario)'
+                    if (row.clock_close_4) return 'DESISTIDO (No radicó pagos'
+                    if (row.clock_close_3) return 'DESISTIDO (No subsanó Acta)'
+                    if (row.clock_close_2) return 'DESISTIDO (No radicó valla)'
+                    if (row.clock_close_1) return 'DESISTIDO (Incompleto)'
+                } else return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
             }
             if (state == '201') return isString ? 'DESISTIDO (Incompleto)' : <label className='text-danger text-center'>DESISTIDO (Incompleto)</label>
             if (state == '202') return isString ? 'DESISTIDO (No radicó valla)' : <label className='text-danger text-center'>DESISTIDO (No radicó valla)</label>
@@ -926,7 +967,7 @@ class FUN extends Component {
                 center: true,
                 maxWidth: '90px',
                 cell: row => _fun_0_type[row.type]
-                
+
             },
             {
                 name: <label>ESTADO</label>,
@@ -935,7 +976,7 @@ class FUN extends Component {
                 filterable: true,
                 center: true,
                 cell: row => _GET_STATE_STR(row.state),
-                cvsCB: row =>  _GET_STATE_STR(row.state, true, row)
+                cvsCB: row => _GET_STATE_STR(row.state, true, row)
             },
             {
                 name: <label className="text-center">FECHA ARCHIVACIÓN</label>,
@@ -1135,6 +1176,9 @@ class FUN extends Component {
                                     <button type="button" onClick={() => this.toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICIÓN</button>
                                 </>}
                         </> : <></>}
+                    {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2 ? <>
+                        <button type="button" onClick={() => this.retrieveMacroSingle(row.id)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-user-clock"></i> ASIGNAR</button>
+                    </> : null}
                 </div>
             </MDBPopoverBody>
         }
@@ -1226,7 +1270,7 @@ class FUN extends Component {
 
         let generateCVS = (_data, _name) => {
             var rows = [];
-            
+
             let extraColumns = [
                 {
                     name: <label className="text-center">FECHA DE LICENCIA</label>,
@@ -1262,7 +1306,7 @@ class FUN extends Component {
         }
 
         return (
-            
+
             <div className="Publish container-fluid p-5">
                 <div className="row my-4 d-flex justify-content-center">
                     <MDBBreadcrumb className="mx-5">
@@ -1362,7 +1406,7 @@ class FUN extends Component {
                                     </MDBCardBody>
                                 </MDBCard>
                             </MDBCol>
-                        
+
                         </MDBRow>
                     </div>
                     {list_search.length > 0 ?
@@ -1544,10 +1588,10 @@ class FUN extends Component {
 
                         </MDBTabsPane>
                         <MDBTabsPane show={this.state.fillActive === '100'}>
-                            
-                        <div className='my-2'><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(this.state.list_archive, "LICENCIAS ARCHIVADAS") }}
-                                        ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
-                            
+
+                            <div className='my-2'><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(this.state.list_archive, "LICENCIAS ARCHIVADAS") }}
+                            ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1879,6 +1923,31 @@ class FUN extends Component {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_exp}>
+                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                        </MDBBtn>
+                    </div>
+                </Modal>
+
+                <Modal contentLabel="ASIGN PROFS"
+                    isOpen={this.state.modal_asign_prof}
+                    style={customStylesForModal()}
+                    ariaHideApp={false}
+                >
+                    <div className="my-4 d-flex justify-content-between">
+                        <label><i class="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {this.state.currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => this.setState({ modal_asign_prof: false })}></MDBBtn>
+                    </div>
+
+                    {currentItemAsignProf?.length ? <TABLE_COMPONENT_EXPANDED currentItem={{ ...currentItemAsignProf[0], rec_review: currentItemAsignProf[0].rec_review, rec_review_2: currentItemAsignProf[0].rec_rev_2 }}
+                        requestUpdate={null}
+                        translation={translation} swaMsg={swaMsg} globals={globals}
+                        worker_list={worker_list}
+                        lenghtL={currentItemAsignProf.length}
+                        dataL={currentItemAsignProf}
+                    /> : "Loading..."}
+
+                    <div className="text-end py-4 mt-3">
+                        <MDBBtn color='info' onClick={() => this.setState({ modal_asign_prof: false })}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>

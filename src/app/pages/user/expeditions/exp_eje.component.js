@@ -21,7 +21,6 @@ const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 export default function EXP_EJEC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
-    console.log(currentRecord);
 
     let _GET_EXPEDITION_JSON = (field) => {
                 let json = currentRecord[field];
@@ -475,8 +474,6 @@ export default function EXP_EJEC(props) {
             formData.set('m_right', getNumber('record_maring_right', 1.7));
 
             formData.set('r_pages',  getCheck('record_rew_pages')); // Si hay paginacion o no
-
-            console.log('[applyPdfFormData] formData final:', Array.from(formData.entries()));
         }
 
         applyPdfFormData(formData, 'exec');
@@ -550,8 +547,6 @@ export default function EXP_EJEC(props) {
             formData.set('m_right', getNumber('record_maring_right', 1.7));
 
             formData.set('r_pages',  getCheck('record_rew_pages')); // Si hay paginacion o no
-
-            console.log('[applyPdfFormData] formData final:', Array.from(formData.entries()));
         }
 
         applyPdfFormData(formData, 'exec');

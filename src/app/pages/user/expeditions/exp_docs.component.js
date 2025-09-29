@@ -396,7 +396,7 @@ class EXP_DOCS extends Component {
             let _areas = _GET_CHILD_AREAS();
             let sum = 0;
             for (var i = 0; i < _areas.length; i++) {
-                if (_areas[i].payment === 0 || _areas[i].payment === 2) {
+                if (_areas[i].payment == 0 || _areas[i].payment == 2) {
                     sum += Number(_areas[i].charge)
                     _COMPONENT.push(<>
                         <div className="row mb-1">
@@ -558,7 +558,7 @@ class EXP_DOCS extends Component {
                 let sum = 0;
                 for (let i = 0; i < _areas.length; i++) {
                     const area = _areas[i];
-                    if (_areas[i].payment === 1 || _areas[i].payment === 2) {
+                    if (_areas[i].payment == 1 || _areas[i].payment == 2) {
                         sum += Number(area.area);
                     }
 
@@ -585,7 +585,7 @@ class EXP_DOCS extends Component {
             let value_total = (Number(value_deli) + Number(value_uso) + Number(value_emb)).toFixed(0)
 
             for (var i = 0; i < _areas.length; i++) {
-                if (_areas[i].payment === 1 || _areas[i].payment === 2) {
+                if (_areas[i].payment == 1 || _areas[i].payment == 2) {
                     taxCharge += _areas[i].charge;
                     _COMPONENT.push(<>
                         <div className="row mb-1">
@@ -1182,7 +1182,7 @@ class EXP_DOCS extends Component {
                 let sum = 0;
                 for (let i = 0; i < _areas.length; i++) {
                     const area = _areas[i];
-                    if (_areas[i].payment === 1 || _areas[i].payment === 2) {
+                    if (_areas[i].payment == 1 || _areas[i].payment == 2) {
                         if (_GLOBAL_ID === "cb1") sum += Number(area.charge);
                         if (_GLOBAL_ID === "cp1") sum += Number(area.area * area.charge);
                         if (_GLOBAL_ID === "fl2") sum += Number(area.charge);
@@ -1193,7 +1193,7 @@ class EXP_DOCS extends Component {
                 return Math.round(sum).toFixed(0)
             }
             for (var i = 0; i < _areas.length; i++) {
-                if (_areas[i].payment === 1 || _areas[i].payment === 2) {
+                if (_areas[i].payment == 1 || _areas[i].payment == 2) {
 
                     let axc = 0
                     if (_GLOBAL_ID === "cb1") axc = Math.round((Number(_areas[i].charge) ?? 0))
@@ -1373,7 +1373,7 @@ class EXP_DOCS extends Component {
                 let sum = 0;
                 for (let i = 0; i < _areas.length; i++) {
                     const area = _areas[i];
-                    if (_areas[i].payment === 0 || _areas[i].payment === 2) {
+                    if (_areas[i].payment == 0 || _areas[i].payment == 2) {
                         sum += Number(area.area * area.charge);
                     }
 
@@ -1381,7 +1381,7 @@ class EXP_DOCS extends Component {
                 return Math.round(sum).toFixed(0)
             }
             for (var i = 0; i < _areas.length; i++) {
-                if (_areas[i].payment === 0 || _areas[i].payment === 2) {
+                if (_areas[i].payment == 0 || _areas[i].payment == 2) {
                     let axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
                     _COMPONENT.push(<>
                         <div className="row mb-1">
