@@ -36,7 +36,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         // HERE ADD UNITS AREAS
     ];
     const destory_check = ["Parqueaderos",
-        "Sesión Tipo B",
+        "Cesión Tipo B",
         "Cuartos Técnicos",
         "Tanques de agua",
         //"Pto Fijo. Ascensor",
@@ -102,7 +102,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         { n: 'Reconstruida', i: 'build_8', dv: '0', },
 
         { n: "Parqueaderos", i: 'destroy_0', dv: '0', },
-        { n: "Sesión Tipo B", i: 'destroy_1', dv: '0', },
+        { n: "Cesión Tipo B", i: 'destroy_1', dv: '0', },
         { n: "Cuartos Técnicos", i: 'destroy_2', dv: '0', },
         { n: "Tanques de agua", i: 'destroy_3', dv: '0', },
         //{ n: "Pto Fijo. Ascensor", i: 'destroy_4', dv: '0', },
@@ -177,7 +177,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         var _AREAS = [];
         if (_CHILD) {
             for (var i = 0; i < _CHILD.length; i++) {
-                if (_CHILD[i].type == "area") {
+                if (_CHILD[i].type === "area") {
                     _AREAS.push(_CHILD[i])
                 }
             }
@@ -187,7 +187,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
     let LOAD_STEP = (_id_public) => {
         var _CHILD = currentRecord.record_arc_steps;
         for (var i = 0; i < _CHILD.length; i++) {
-            if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
+            if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
         }
         return []
     }
@@ -282,7 +282,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
     let _GET_SUM_LEVEL_BY_FLOOR = (_floor) => {
         let DA_RULE = _GET_STEP_TYPE('a_config', 'check')[0];
         let floor_c = _floor ? String(_floor) : ' ';
-        let con = floor_c[0].toLowerCase() == 's';
+        let con = floor_c[0].toLowerCase() === 's';
         let firstFloorHeight = 0;
         let currentfloorName = (_floor || '').toLowerCase().includes('piso');
         let currentfloorNumber = (_floor || '').replace(/^\D+/g, '');
@@ -295,16 +295,16 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             floor = (floor).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             let floorName = (floor).includes('piso');
             let floorNumber = (floor).replace(/^\D+/g, '');
-            if (floorName && floorNumber == 1) firstFloorHeight = item.level ? Number(item.level.split('&')[1]) : 0;
+            if (floorName && floorNumber === 1) firstFloorHeight = item.level ? Number(item.level.split('&')[1]) : 0;
 
             if (con) {
-                let con2 = floor[0] == 's';
+                let con2 = floor[0] === 's';
                 return con2;
             } else {
                 let con1 = (floor).includes('cubierta');
                 let con3 = (floor).includes('piso');
                 let con4 = (floor).replace(/^\D+/g, '');
-                let con2 = floor[0] == 's';
+                let con2 = floor[0] === 's';
                 return !con2;
             }
         });
@@ -312,12 +312,12 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         let sum = 0;
         if (con) new_areas.reverse();
 
-        new_areas.map((item, i) => { if (_floor == item.floor) floor_index = i; })
+        new_areas.map((item, i) => { if (_floor === item.floor) floor_index = i; })
         if (floor_index != -1) {
-            if (DA_RULE == '1') {
+            if (DA_RULE === '1') {
                 let inferior_i = -1;
                 new_areas.map((item, i) => {
-                    if (_floor == item.floor) {
+                    if (_floor === item.floor) {
                         sum = item.level ? Number(item.level.split('&')[1]) : 0;
                         inferior_i = i + 1;
                     }
@@ -374,7 +374,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         let firstCheck = (buildingPriority[strPartB] ?? 0) - (buildingPriority[strPartA] ?? 0);
         if (firstCheck != 0) return firstCheck
         else {
-            if (strPartA[0] && strPartA[0].toLowerCase() == 's') {
+            if (strPartA[0] && strPartA[0].toLowerCase() === 's') {
                 if (nunPartA < nunPartB) { return -1; }
                 if (nunPartA > nunPartB) { return 1; }
             } else {
@@ -417,7 +417,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         var _AREAS = [];
         if (_LIST) {
             for (var i = 0; i < _LIST.length; i++) {
-                if (_LIST[i].type == "area") {
+                if (_LIST[i].type === "area") {
                     _AREAS.push(_LIST[i])
                 }
             }
@@ -504,21 +504,21 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
 
 
         destory_check.map((label, i) => {
-            if (destroy_cb[i] == 'true' && !_header.some(h => h == label)) {
+            if (destroy_cb[i] === 'true' && !_header.some(h => h === label)) {
                 _header.push(label)
                 _cells.push({ value: (v) => _CHECK_AREA_STR(v, 'destroy', i, ','), name: 'destroy_' + i, className: 'text-danger', color: 'red', id: (v) => v.id, },)
             }
         })
 
         units_check.map((label, i) => {
-            if (units_cb[i] == 'true' && !_header.some(h => h == label)) {
+            if (units_cb[i] === 'true' && !_header.some(h => h === label)) {
                 _header.push(label)
                 _cells.push({ value: (v) => _CHECK_AREA_STR(v, 'units', i, ';'), name: 'units_' + i, className: 'text-warning', color: 'blue', id: (v) => v.id, },)
             }
         })
 
         units_a_check.map((label, i) => {
-            if (units_a_cb[i] == 'true' && !_header.some(h => h == label)) {
+            if (units_a_cb[i] === 'true' && !_header.some(h => h === label)) {
                 _header.push(label)
                 _cells.push({ value: (v) => _CHECK_AREA_STR(v, 'units_a', i, ';'), name: 'units_a_' + i, className: 'text-primary', color: 'tomato', id: (v) => v.id, },)
             }
@@ -550,8 +550,8 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             let cell = [];
             _header.map((_h, i) => {
                 publicXindexName.map(hn => {
-                    let con_1 = _h == hn.n;
-                    let con_2 = _h.includes('*') && hn.n == '*';
+                    let con_1 = _h === hn.n;
+                    let con_2 = _h.includes('*') && hn.n === '*';
                     let con_3 = _h.includes('Empate:') && hn.n.includes('Empate:');
                     if (con_1 || con_2 || con_3) {
                         let cellObj = {};
@@ -814,7 +814,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
 
                         if (_h.includes('*')) {
                             tagsH.map((tag, i) => {
-                                if (_h == '*' + tag) {
+                                if (_h === '*' + tag) {
                                     cellObj.value = _GET_TOTAL_AREAS('historic_areas', i, ';').toFixed(2)
                                     cellObj.className = 'fw-bold text-dark';
                                     cellObj.color = 'green';
@@ -825,7 +825,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
 
                         if (_h.includes('Empate: ')) {
                             tagsE.map((tag, i) => {
-                                if (_h == 'Empate: ' + tag) {
+                                if (_h === 'Empate: ' + tag) {
                                     cellObj.value = _GET_TOTAL_AREAS('empate_h', i, ';').toFixed(2);
                                     cellObj.className = 'fw-bold text-dark';
                                     cellObj.color = 'green';
@@ -863,7 +863,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             c_tagsH.push({
                 name: <label>{tag}</label>,
                 cell: row => areas.reduce((p, n, j) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'historic_areas', i, ';')
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -875,7 +875,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Cerrada</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 9),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -886,7 +886,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Reconstruida</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 8),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -897,7 +897,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Reforzada</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 5),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -908,7 +908,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Restaurada</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 4),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -919,7 +919,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Modificada</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 3),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -930,7 +930,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Adecuación</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 2),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -941,7 +941,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Ampliada</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 1),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -952,7 +952,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Reconocida</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 10),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -963,7 +963,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Obra Nueva</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 0),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -974,7 +974,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Demolida parcial</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 7),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -985,7 +985,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             types.push({
                 name: <label>Demolida total</label>,
                 cell: row => areas.reduce((p, n, i) => {
-                    if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                    if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                         _CHECK_AREA_STR(n, 'build', 6),
                     )).toFixed(2)
                     else return Number(p).toFixed(2)
@@ -996,7 +996,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         totals.push({
             name: <label>A. total const.</label>,
             cell: row => areas.reduce((p, n, i) => {
-                if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                     _GET_TOTAL_AREA(n.build, n.historic_areas),
                 )).toFixed(2)
                 else return Number(p).toFixed(2)
@@ -1005,7 +1005,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         totals.push({
             name: <label>A. total desc.</label>,
             cell: row => areas.reduce((p, n, i) => {
-                if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                     _GET_TOTAL_DESTROY(n.destroy),
                 )).toFixed(2)
                 else return Number(p).toFixed(2)
@@ -1014,7 +1014,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         totals.push({
             name: <label>A. total neta</label>,
             cell: row => areas.reduce((p, n, i) => {
-                if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                     _GET_NET_INDEX(n.build, n.destroy, n.historic_areas),
                 )).toFixed(2)
                 else return Number(p).toFixed(2)
@@ -1023,7 +1023,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         totals.push({
             name: <label>A. total inte.</label>,
             cell: row => areas.reduce((p, n, i) => {
-                if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                     _ADD_AREAS(n.build),
                 )).toFixed(2)
                 else return Number(p).toFixed(2)
@@ -1033,7 +1033,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         au.push({
             name: <label>Unidades Nueva</label>,
             cell: row => areas.reduce((p, n, i) => {
-                if (String(n.use || '').toLowerCase().trim() == String(row.use || '').toLowerCase().trim() || row.use == 'total') return (Number(p) + Number(
+                if (String(n.use || '').toLowerCase().trim() === String(row.use || '').toLowerCase().trim() || row.use === 'total') return (Number(p) + Number(
                     _ADD_AREAS(n.units, ';'),
                 )).toFixed(2)
                 else return Number(p).toFixed(2)
@@ -1071,7 +1071,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
             let use = String(area.use || 'otro').toLowerCase().trim();
             let rowObjest = columns_archive.map(cl => cl.cell(area));
             let sumAreas = rowObjest.reduce((p, n) => Number(p) + (isNaN(n) ? 0 : Number(n)), 0)
-            let findUse = usesRows.find(row => String(row.use || '').toLowerCase().trim() == use);
+            let findUse = usesRows.find(row => String(row.use || '').toLowerCase().trim() === use);
             if (!findUse && sumAreas > 0) usesRows.push(area);
         })
 
