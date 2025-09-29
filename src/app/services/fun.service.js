@@ -49,10 +49,10 @@ class UserslDataService {
     return http.get(`/${route}/loadMacroSingle/${date_start}&${date_end}&${id}`);
   }
   loadMacroRange(id, id2) {
-    return http.get(`/${route}/loadMacroRange/${id}&${id2}}`);
+    return http.get(`/${route}/loadMacroRange/${id}&${id2}`);
   }
   loadMacroAsigns(id, id2) {
-    return http.get(`/${route}/loadMacroAsigns/${id}&${id2}}`);
+    return http.get(`/${route}/loadMacroAsigns/${id}&${id2}`);
   }
   loadMacronegative(date_start, date_end) {
     return http.get(`/${route}/loadMacronegative/${date_start}&${date_end}`);
