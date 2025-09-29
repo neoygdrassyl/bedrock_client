@@ -200,8 +200,8 @@ export default function CERTIFICATE_WORKER(props) {
 
     return (
         <div>
-            <div className="row my-4 d-flex justify-content-center">
-                <MDBBreadcrumb className="mx-5">
+            <div className="col-12 d-flex justify-content-start p-0">
+                <MDBBreadcrumb className="mb-0 p-0 ms-0">
                     <MDBBreadcrumbItem>
                         <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">INICIO</label></Link>
                     </MDBBreadcrumbItem>
@@ -210,7 +210,9 @@ export default function CERTIFICATE_WORKER(props) {
                     </MDBBreadcrumbItem>
                     <MDBBreadcrumbItem active><i class="fas fa-address-book"></i> <label className="text-uppercase">HISTORIAL PROFESIONALES</label></MDBBreadcrumbItem>
                 </MDBBreadcrumb>
+            </div>
 
+            <div className="row my-4 d-flex justify-content-center">
                 <div className="col-lg-8 col-md-12">
                     <h2 className="text-center my-2">CONSULTA DE HISTORIAL DE PROFESIONALES</h2>
                     <div className="d-flex justify-content-center">

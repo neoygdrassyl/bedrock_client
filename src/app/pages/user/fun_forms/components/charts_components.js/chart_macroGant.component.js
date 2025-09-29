@@ -12,7 +12,8 @@ import {
     YAxis,
     HorizontalBarSeries,
     HorizontalRectSeries,
-    MarkSeries
+    MarkSeries,
+    FlexibleXYPlot
 } from 'react-vis';
 import 'react-vis/dist/style.css';
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2 } from '../../../../../components/customClasses/typeParse';
@@ -438,6 +439,9 @@ class FUN_CHART_MACRO_GRANTT extends Component {
             list.map(v => sum += v.val)
             return sum
         }
+
+        const maxTick = Math.max(..._tickValues); 
+        
         return (
             <div >
                 <div className="row text-center my-2">
@@ -455,35 +459,31 @@ class FUN_CHART_MACRO_GRANTT extends Component {
                         </div>
                     </div>
                 </div>
-                <div className='row'>
-                    <div className="col d-flex justify-content-center chart-clock mx-1" style={{ width: '2500px' }}>
 
-                        <XYPlot width={2000} height={400} margin={margin}
-                            yPadding={20} xDomain={[0, 200]} yDomain={[0, 6]}>
 
-                            <VerticalGridLines
-                                tickValues={_tickValues}
-                                tickTotal={_tickValues.length}
-                            />
-                            <HorizontalGridLines
-                                tickValues={YtickValues}
-                                tickTotal={YtickValues.length}
-                            />
-
-                            <YAxis tickValues={[0.5, 1.5, 2.5, 3.5]} tickFormat={tick => {
-                                if (tick == 0.5) return ' IV '
-                                if (tick == 1.5) return ' III '
-                                if (tick == 2.5) return ' II '
-                                if (tick == 3.5) return ' I '
-                            }}
-                            />
-
-                            <XAxis tickFormat={function tickFormat(value) {
-                                return value + ' d';
-                            }}
-                                tickValues={_tickValues}
-                                style={{ fontSize: 12 }}
-                            />
+                <div className="row g-0">
+                    <div className="col-12 p-0">
+                        <div className="d-flex w-100"> 
+                            <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                                <FlexibleXYPlot
+                                    height={400}
+                                    margin={{ left: 36, right: 10, top: 10, bottom: 30 }}
+                                    yPadding={10}
+                                    xDomain={[0, 180]}
+                                    yDomain={[0, 6]}
+                                >
+                                <VerticalGridLines tickValues={_tickValues} tickTotal={_tickValues.length} />
+                                <HorizontalGridLines tickValues={YtickValues} tickTotal={YtickValues.length} />
+                                <YAxis
+                                    tickValues={[0.5, 1.5, 2.5, 3.5]}
+                                    tickFormat={t => (t===0.5?' IV ':t===1.5?' III ':t===2.5?' II ':t===3.5?' I ':'')}
+                                    style={{ text: { fontSize: 12 } }}
+                                />
+                                <XAxis
+                                    tickValues={_tickValues}
+                                    tickFormat={v => v}
+                                    style={{ text: { fontSize: 12 } }}
+                                />
 
 
                             {reviewTimes.map((v, i) => {
@@ -654,8 +654,8 @@ class FUN_CHART_MACRO_GRANTT extends Component {
                                     </div>
                                 </Hint>
                                 : null}
-                        </XYPlot>
-                    </div>
+                        </FlexibleXYPlot>
+                    </div></div></div>
                 </div>
                 <div className="row">
                     <div className="col d-flex justify-content-center">

@@ -48,14 +48,14 @@ export const GlobalStyles = createGlobalStyle`
     opacity: 1;
   }
   
-  .bg-image-gr {
-    background-image: 
-    linear-gradient(
-        ${({ theme }) => theme.bgImgGradient1}, 
-        ${({ theme }) => theme.bgImgGradient2},
-        ${({ theme }) => theme.bgImgGradient3}
-    ), url('../img/map.png');
-  }
+  // .bg-image-gr {
+  //   background-image: 
+  //   linear-gradient(
+  //       ${({ theme }) => theme.bgImgGradient1}, 
+  //       ${({ theme }) => theme.bgImgGradient2},
+  //       ${({ theme }) => theme.bgImgGradient3}
+  //   ), url('../img/map.png');
+  // }
 
   .Collapsible {
     background: ${({ theme }) => theme.bodySecondary};
