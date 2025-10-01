@@ -21,13 +21,19 @@ const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 export default function EXP_EJEC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
-    console.log(currentRecord);
+    // console.log(currentRecord);
+
+    useEffect(() => {
+        if (!currentRecord?.model_exec) {
+            update_model_exec('eje_open');
+        }
+    }, []);
 
     let _GET_EXPEDITION_JSON = (field) => {
-                let json = currentRecord[field];
-                if (!json) return {}
-                let object = JSON.parse(JSON.parse(json))
-                return object
+        let json = currentRecord[field];
+        if (!json) return {}
+        let object = JSON.parse(JSON.parse(json))
+        return object
     }
     let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -213,15 +219,43 @@ export default function EXP_EJEC(props) {
         </>
     }
 
+    let addMonths = (date, months) => {
+    let d = new Date(date), day = d.getDate();
+    d.setMonth(d.getMonth() + months, 1);
+    d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+    return d;
+    };
+
+    let parseLocalISO = (s) => new Date(`${s}T00:00:00`);
+
+    const formatYMD = (d) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+    };
+
     let _COMPONENT_EJE = () => {
         var reso = _GET_EXPEDITION_JSON('reso');
         var _CHILD_1 = _GET_CHILD_1();
         let type = reso.type || _RES_PARSER_1(_CHILD_1);
 
-        const reso_vig_date_dv = reso.vig ? reso.vig.date : '';
-        const reso_vig_n_dv = reso.vig ? reso.vig.n : '12';
-
         const reso_pot_dv = reso.pot ?? infoCud.pot;
+
+        const reso_vig_date_dv = reso?.vig?.date || '';
+        const reso_vig_n_dv   = reso?.vig?.n ? String(reso.vig.n) : '12';
+
+        const date_exec = _GET_CLOCK_STATE(70, false)?.date_start || "";
+        const hasExec = !!date_exec;
+        const baseDate = useMemo(
+            () => (hasExec ? parseLocalISO(date_exec) : null),
+            [hasExec, date_exec]
+        );
+        const [vigencia, setVigencia] = useState(reso_vig_n_dv);
+        const validoHasta = useMemo(
+            () => (hasExec && baseDate ? addMonths(baseDate, Number(vigencia)) : null),
+            [hasExec, baseDate, vigencia]
+        );
 
         return <>
             <div className="row">
@@ -232,6 +266,50 @@ export default function EXP_EJEC(props) {
                 </div>
             </div>
             <div className="row">
+                { (currentRecord.model_exec === 'eje_open') ? 
+                <>
+                    <div className="col">
+                    <label className="mt-1">Vigencia</label>
+                    <div className="input-group">
+                        <select
+                        id="expedition_eje_vign"
+                        className="form-control"
+                        value={vigencia}
+                        onChange={(e) => setVigencia(e.target.value)}
+                        disabled={!hasExec}
+                        >
+                        <option value="12">12 MESES</option>
+                        <option value="24">24 MESES</option>
+                        <option value="36">36 MESES</option>
+                        </select>
+                    </div>
+                    </div>
+
+                    <div className="col">
+                    <label className="mt-1">Válido hasta</label>
+                    <div className="input-group">
+                        <input
+                        type="text"
+                        className={`form-control ${!hasExec ? 'text-danger fw-semibold' : ''}`}
+                        id="expedition_eje_date_vig"
+                        value={
+                            hasExec && validoHasta
+                            ? formatYMD(validoHasta)
+                            : 'INVÁLIDO'
+                        }
+                        disabled
+                        readOnly
+                        />
+                    </div>
+                    {!hasExec && (
+                        <div className="form-text text-danger text-start">
+                            Registra fecha ejecutoria
+                        </div>
+                    )}
+                    </div>
+                </>
+                : ''}
+                
                 <div className="col">
                     <label className="mt-1">Consecutivo</label>
                     <div class="input-group">
@@ -250,8 +328,7 @@ export default function EXP_EJEC(props) {
                     <label className="mt-1">Estado</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="expedition_eje_state" disabled
-                            value={'EJECUTORIADA'} readOnly />
-
+                            value={'EJECUTORIA'} readOnly />
                     </div>
                 </div>
                 <div className="col">
@@ -573,6 +650,9 @@ export default function EXP_EJEC(props) {
             '48': 'CUARENTA Y OCHO (48) MESES',
         };
         formData.set('vn', vigs[vRaw] ?? vigs['12']);
+
+        const vig_date = document.getElementById('expedition_eje_date_vig')?.value ?? '';
+        formData.set('vig_date', vig_date);
 
         formData.set('reso_id',   document.getElementById('expedition_eje_id_res')?.value      ?? '');
         formData.set('id_public', document.getElementById('expedition_eje_id_public')?.value   ?? '');
