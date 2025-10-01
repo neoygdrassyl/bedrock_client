@@ -274,9 +274,6 @@ body.sidebar-expanded .app-main{ margin-left: var(--sidebar-width-expanded); }
   box-sizing: border-box;
 }
 
-/* Medios responsivos para no empujar ancho */
-img, svg, video, canvas { max-width: 100%; height: auto; }
-
 /* Bloques muy anchos: scroll interno (no de la página) */
 .app-main .table-responsive,
 .app-main .overflow-x-auto,
