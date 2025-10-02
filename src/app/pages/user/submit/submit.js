@@ -325,8 +325,8 @@ class SUBMIT extends Component {
         }
         return (
             <div className="submit  container">
-                <div className="row my-4 d-flex justify-content-center">
-                    <MDBBreadcrumb className="mx-5">
+                <div className="col-12 d-flex justify-content-start p-0">
+                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
                             <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>

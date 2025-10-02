@@ -1306,18 +1306,23 @@ class FUN extends Component {
         }
 
         return (
+            
+            <div className="Publish container-fluid p-0 mb-4">
+                <div className="row d-flex p-0">
 
-            <div className="Publish container-fluid p-5">
-                <div className="row my-4 d-flex justify-content-center">
-                    <MDBBreadcrumb className="mx-5">
-                        <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">RADICACIÓN DE SOLICITUDES</label></MDBBreadcrumbItem>
-                    </MDBBreadcrumb>
+                        <div className="col-12 d-flex justify-content-start p-0">
+                            <MDBBreadcrumb className="mb-0 p-0 ms-0">
+                                <MDBBreadcrumbItem>
+                                <Link to="/home"><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                                </MDBBreadcrumbItem>
+                                <MDBBreadcrumbItem>
+                                <Link to="/dashboard"><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                                </MDBBreadcrumbItem>
+                                <MDBBreadcrumbItem active>
+                                <i className="fas fa-file-alt"></i> <label className="text-uppercase">RADICACIÓN DE SOLICITUDES</label>
+                                </MDBBreadcrumbItem>
+                            </MDBBreadcrumb>
+                        </div>
                     <div className="col-lg-11 col-md-12">
                         <h1 className="text-center my-4">RADICACIÓN DE SOLICITUDES</h1>
                         <hr />

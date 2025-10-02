@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem } from 'mdb-react-ui-kit';
-import { Link } from "react-router-dom";
+import { Link, Route } from "react-router-dom";
 import { DashBoardCard } from '../../components/dashBoardCards/dashBoardCard.js';
+import Title from '../../components/title';
+
+import { withTranslation } from "react-i18next";
 
 import LOGO_LIGHT_THEME from '../../img/beckrock/Grises_logo.png'
 import LOGO_DARK_THEME from '../../img/beckrock/Claros_logo.png'
@@ -13,26 +16,20 @@ class Dashboard extends Component {
 
     render() {
         const { translation, breadCrums } = this.props;
+        const { t } = this.props;
         return (
-            <div className="Dashboard container">
+            <div className="Dashboard container container-fluid p-0">
 
-                <div className="row my-4 d-flex justify-content-center">
-                    <MDBBreadcrumb className="mx-5">
+                <div className="col-12 d-flex justify-content-start p-0">
+                    <MDBBreadcrumb className="">
                         <MDBBreadcrumbItem>
                             <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem active><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
+                </div>
 
-                    <div className="row d-flex justify-content-center">
-                        <div className="col-4 text-end">
-                            {this.props.theme == 'light'
-                                ? <img src={LOGO_LIGHT_THEME} class="d-block w-100" alt="..." />
-                                : <img src={LOGO_DARK_THEME} class="d-block w-100" alt="..." />}
-                            <sup className="me-5">Beta {pjson.version}</sup>
-                        </div>
-
-                    </div>
+                <div className="row mb-2 d-flex justify-content-center">
 
                     <div className="col-lg-10 col-md-12">
                         <h1 className="text-center my-4">Panel de Control</h1>
@@ -60,10 +57,10 @@ class Dashboard extends Component {
                         </div>
                         <div className="d-flex justify-content-around py-3">
 
-                            <MDBCol className={classnameCards}>
+                            {/* <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Nomenclaturas" image="fas fa-signature fa-3x" link={"/nomenclature"} imageColor=" Plum" />
 
-                            </MDBCol>
+                            </MDBCol> */}
 
                             <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Archivo" image="fas fa-folder-open fa-3x" link={"/archive"} imageColor=" LightSeaGreen" />
@@ -118,4 +115,4 @@ class Dashboard extends Component {
     }
 }
 
-export default Dashboard;
+export default withTranslation()(Dashboard);
