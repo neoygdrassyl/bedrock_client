@@ -26,6 +26,13 @@ export class ExecEngineTemp extends BaseDocumentUtils {
             this.state = "OTORGADA";
             this.setText("exec-act-header-rad-state", "Otorgada");
             this.setText("act-exec-date-header", this.reso_date_exec);
+            this.showDiv("vig-exec-o");
+            let vig_text = `Con fundamento en el artículo 2.2.6.1.2.4.1 del Decreto 1077 
+            de 2015 se concede una vigencia de ${this._DATA.reso.vn} para ejecutar las 
+            obras autorizadas en la licencia de construcción en la(s) precitada(s) modalidad(es) 
+            que acompaña(n) el reconocimiento, los cuales van DESDE EL 
+            ${this.dateParser(this.exec_date).toUpperCase()} HASTA EL ${this.dateParser(this._DATA.reso.vig_date).toUpperCase()}.`;
+            this.setText("exec-act-body-vig", vig_text);
         } else if (this.data.model === "eje_des") {
             this.state = "DESISTIDA";
             this.setText("exec-act-header-rad-state", "Desistida");
@@ -125,7 +132,9 @@ export class ExecEngineTemp extends BaseDocumentUtils {
 
         this.setText("exec-act-body-2", body2);
 
+        //exec-act-body-vig
 
+        
     }
 
 }
