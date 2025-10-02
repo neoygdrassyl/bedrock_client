@@ -67,7 +67,7 @@ export default function RECORD_ARC_AREAS(props) {
         { n: 'Reconocida', i: 'build_10', dv: '0', },
 
         { n: "Parqueaderos", i: 'destroy_0', dv: '0', },
-        { n: "Sesión Tipo B", i: 'destroy_1', dv: '0', },
+        { n: "Cesión Tipo B", i: 'destroy_1', dv: '0', },
         { n: "Cuartos Técnicos", i: 'destroy_2', dv: '0', },
         { n: "Tanques de agua", i: 'destroy_3', dv: '0', },
         //{ n: "Pto Fijo. Ascensor", i: 'destroy_4', dv: '0', },
@@ -111,7 +111,7 @@ export default function RECORD_ARC_AREAS(props) {
         'Reconstruida',
     ]
     const destory_check = ["Parqueaderos",
-        "Sesión Tipo B",
+        "Cesión Tipo B",
         "Cuartos Técnicos",
         "Tanques de agua",
         //"Pto Fijo. Ascensor",
@@ -192,7 +192,7 @@ export default function RECORD_ARC_AREAS(props) {
         var _AREAS = [];
         if (_CHILD) {
             for (var i = 0; i < _CHILD.length; i++) {
-                if (_CHILD[i].type == "area") {
+                if (_CHILD[i].type === "area") {
                     _AREAS.push(_CHILD[i])
                 }
             }
@@ -202,7 +202,7 @@ export default function RECORD_ARC_AREAS(props) {
     let LOAD_STEP = (_id_public) => {
         var _CHILD = currentRecord.record_arc_steps;
         for (var i = 0; i < _CHILD.length; i++) {
-            if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
+            if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
         }
         return []
     }
@@ -283,7 +283,7 @@ export default function RECORD_ARC_AREAS(props) {
     let _GET_SUM_LEVEL_BY_FLOOR = (_floor) => {
         let DA_RULE = _GET_STEP_TYPE('a_config', 'check')[0];
         let floor_c = _floor ? String(_floor) : ' ';
-        let con = floor_c[0].toLowerCase() == 's';
+        let con = floor_c[0].toLowerCase() === 's';
         let firstFloorHeight = 0;
         let currentfloorName = (_floor || '').toLowerCase().includes('piso');
         let currentfloorNumber = (_floor || '').replace(/^\D+/g, '');
@@ -295,17 +295,17 @@ export default function RECORD_ARC_AREAS(props) {
             let floor = item.floor ? item.floor : ' ';
             let floorName = (floor).toLowerCase().includes('piso');
             let floorNumber = (floor).replace(/^\D+/g, '');
-            if (floorName && floorNumber == 1) firstFloorHeight = item.level ? Number(item.level.split('&')[1]) : 0;
+            if (floorName && floorNumber === 1) firstFloorHeight = item.level ? Number(item.level.split('&')[1]) : 0;
 
             if (con) {
-                let con2 = floor[0].toLowerCase() == 's';
+                let con2 = floor[0].toLowerCase() === 's';
                 if (con2) return true;
                 return false
             } else {
                 let con1 = (floor).toLowerCase().includes('cubierta');
                 let con3 = (floor).toLowerCase().includes('piso');
                 let con4 = (floor).replace(/^\D+/g, '');
-                let con2 = floor[0].toLowerCase() == 's';
+                let con2 = floor[0].toLowerCase() === 's';
                 if (con2) return false;
                 return true
             }
@@ -314,12 +314,12 @@ export default function RECORD_ARC_AREAS(props) {
         let sum = 0;
         if (con) new_areas.reverse();
 
-        new_areas.map((item, i) => { if (_floor == item.floor) floor_index = i; })
+        new_areas.map((item, i) => { if (_floor === item.floor) floor_index = i; })
         if (floor_index != -1) {
-            if (DA_RULE == '1') {
+            if (DA_RULE === '1') {
                 let inferior_i = -1;
                 new_areas.map((item, i) => {
-                    if (_floor == item.floor) {
+                    if (_floor === item.floor) {
                         sum = item.level ? Number(item.level.split('&')[1]) : 0;
                         inferior_i = i + 1;
                     }
@@ -372,7 +372,7 @@ export default function RECORD_ARC_AREAS(props) {
         let firstCheck = (buildingPriority[strPartB] ?? 0) - (buildingPriority[strPartA] ?? 0);
         if (firstCheck != 0) return firstCheck
         else {
-            if (strPartA[0] && strPartA[0].toLowerCase() == 's') {
+            if (strPartA[0] && strPartA[0].toLowerCase() === 's') {
                 if (nunPartA < nunPartB) { return -1; }
                 if (nunPartA > nunPartB) { return 1; }
             } else {
@@ -415,7 +415,7 @@ export default function RECORD_ARC_AREAS(props) {
         var _AREAS = [];
         if (_LIST) {
             for (var i = 0; i < _LIST.length; i++) {
-                if (_LIST[i].type == "area") {
+                if (_LIST[i].type === "area") {
                     _AREAS.push(_LIST[i])
                 }
             }
@@ -502,21 +502,21 @@ export default function RECORD_ARC_AREAS(props) {
 
 
         destory_check.map((label, i) => {
-            if (destroy_cb[i] == 'true' && !_header.includes(label)) {
+            if (destroy_cb[i] === 'true' && !_header.includes(label)) {
                 _header.push(label)
                 _cells.push({ value: (v) => _CHECK_AREA_STR(v, 'destroy', i, ','), name: 'destroy_' + i, className: 'text-danger' },)
             }
         })
 
         units_check.map((label, i) => {
-            if (units_cb[i] == 'true' && !_header.includes(label)) {
+            if (units_cb[i] === 'true' && !_header.includes(label)) {
                 _header.push(label)
                 _cells.push({ value: (v) => _CHECK_AREA_STR(v, 'units', i, ';'), name: 'units_' + i, className: 'text-warning' },)
             }
         })
 
         units_a_check.map((label, i) => {
-            if (units_a_cb[i] == 'true' && !_header.includes(label)) {
+            if (units_a_cb[i] === 'true' && !_header.includes(label)) {
                 _header.push(label)
                 _cells.push({ value: (v) => _CHECK_AREA_STR(v, 'units_a', i, ';'), name: 'units_a_' + i, className: 'text-primary' },)
             }
@@ -737,7 +737,7 @@ export default function RECORD_ARC_AREAS(props) {
 
                         if (_h.includes('*')) {
                             tagsH.map((tag, i) => {
-                                if (_h == '*' + tag) {
+                                if (_h === '*' + tag) {
                                     cellObj.value = _GET_TOTAL_AREAS('historic_areas', i, ';').toFixed(2)
                                     cellObj.className = 'fw-bold text-dark'
                                 }
@@ -747,7 +747,7 @@ export default function RECORD_ARC_AREAS(props) {
 
                         if (_h.includes('Empate: ')) {
                             tagsE.map((tag, i) => {
-                                if (_h == 'Empate: ' + tag) {
+                                if (_h === 'Empate: ' + tag) {
                                     cellObj.value = _GET_TOTAL_AREAS('empate_h', i, ';').toFixed(2)
                                     cellObj.className = 'fw-bold text-dark'
                                 }
@@ -831,7 +831,7 @@ export default function RECORD_ARC_AREAS(props) {
         if (en < 0) en = st + 1;
 
         let del = en - st;
-        if (del == 0) del = 1;
+        if (del === 0) del = 1;
         let newData = Array.from(data);;
         newData.splice(st, del)
 
@@ -859,10 +859,10 @@ export default function RECORD_ARC_AREAS(props) {
                             onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</MDBBtn>
                     </div>
                     <div>
-                        {saving == 0 ?
+                        {saving === 0 ?
                             <label className='fw-bold'>GUARDANDO...</label>
                             : ''}
-                        {saving == 1 ?
+                        {saving === 1 ?
                             <label className='fw-bold text-success'>DATOS GUARDADOS</label>
                             : ''}
                     </div>
@@ -948,7 +948,7 @@ export default function RECORD_ARC_AREAS(props) {
                                 return <>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input my-0" type="checkbox" name="destroy_cb"
-                                            defaultChecked={destroy_cb[i] == 'true'} onChange={() => manage_step()} />
+                                            defaultChecked={destroy_cb[i] === 'true'} onChange={() => manage_step()} />
                                         <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
@@ -960,7 +960,7 @@ export default function RECORD_ARC_AREAS(props) {
                                 return <>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input my-0" type="checkbox" name="units_cb"
-                                            defaultChecked={units_cb[i] == 'true'} onChange={() => manage_step()} />
+                                            defaultChecked={units_cb[i] === 'true'} onChange={() => manage_step()} />
                                         <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
@@ -972,7 +972,7 @@ export default function RECORD_ARC_AREAS(props) {
                                 return <>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input my-0" type="checkbox" name="units_a_cb"
-                                            defaultChecked={units_a_cb[i] == 'true'} onChange={() => manage_step()} />
+                                            defaultChecked={units_a_cb[i] === 'true'} onChange={() => manage_step()} />
                                         <h5 class="form-check-label fw-normal" for="inlineCheckbox1">{val}</h5>
                                     </div>
                                 </>
@@ -1010,7 +1010,7 @@ export default function RECORD_ARC_AREAS(props) {
                         </div>
                         <div className='col'>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="cb_level_rule" onChange={() => manage_step()} defaultChecked={LEVEL_RULE[0] == '1'} />
+                                <input type="checkbox" class="form-check-input" id="cb_level_rule" onChange={() => manage_step()} defaultChecked={LEVEL_RULE[0] === '1'} />
                                 <label class="form-check-label fw-bold" for="cb_level_rule">Usar nivel m aditivo</label>
                             </div>
                         </div>
@@ -1030,8 +1030,8 @@ export default function RECORD_ARC_AREAS(props) {
         let originalAreas = _GET_CHILD_33_AREAS();
         let getCellByName = (_cells, _name) => {
             let find = _cells.find(c => {
-                if (c == undefined) return undefined;
-                return c.name == _name
+                if (c === undefined) return undefined;
+                return c.name === _name
             });
             if (find) return (find.value ?? '').replaceAll(',', '.');
             else return undefined;
@@ -1111,14 +1111,14 @@ export default function RECORD_ARC_AREAS(props) {
             if (i < finish_flag + 1) {
                 let _id = d[0].value ?? d[0].id;
                 if (_id) {
-                    if (originalAreas.some(a => a.id == _id)) updateCells.push(d);
+                    if (originalAreas.some(a => a.id === _id)) updateCells.push(d);
                 }
                 if (!_id) { newCells.push(d); }
             }
         })
 
         originalAreas.map(a => {
-            if (!data.find(d => d[0].id == a.id)) delCells.push([{ id: a.id }])
+            if (!data.find(d => d[0].id === a.id)) delCells.push([{ id: a.id }])
 
         })
 
@@ -1158,7 +1158,7 @@ export default function RECORD_ARC_AREAS(props) {
                         confirmButtonText: swaMsg.text_btn,
                     });
                     saveCounter++;
-                    if (saveCounter == fg) {
+                    if (saveCounter === fg) {
                         props.requestUpdateRecord(currentItem.id);
                         setSaving(1);
                     }
@@ -1199,7 +1199,7 @@ export default function RECORD_ARC_AREAS(props) {
                         confirmButtonText: swaMsg.text_btn,
                     });
                     saveCounter++;
-                    if (saveCounter == fg) {
+                    if (saveCounter === fg) {
                         props.requestUpdateRecord(currentItem.id);
                         setSaving(1);
                     }
@@ -1234,7 +1234,7 @@ export default function RECORD_ARC_AREAS(props) {
                         confirmButtonText: swaMsg.text_btn,
                     });
                     saveCounter++;
-                    if (saveCounter == fg) {
+                    if (saveCounter === fg) {
                         props.requestUpdateRecord(currentItem.id);
                         setSaving(1);
                     }
@@ -1278,7 +1278,7 @@ export default function RECORD_ARC_AREAS(props) {
         value = []
         checkbox = document.getElementsByName("type_cb");
         for (var i = 0; i < 10; i++) {
-            if (i == 3) continue;
+            if (i === 3) continue;
             if (checkbox[i].checked) {
                 value.push(F1A[i])
             }
@@ -1294,7 +1294,7 @@ export default function RECORD_ARC_AREAS(props) {
         }
         if (checkbox[3].checked) {
             const index = value.indexOf('F');
-            if (index == -1) {
+            if (index === -1) {
                 value.push('F');
             }
             value.sort()
@@ -1369,11 +1369,11 @@ export default function RECORD_ARC_AREAS(props) {
         let json = STEP ? STEP.json ?? {} : {};
         json = getJSON_Simple(json)
 
-        if (type == 'f1') manage_fun_1();
-        if (type == 'h') json.tagh = tags.join(';');
+        if (type === 'f1') manage_fun_1();
+        if (type === 'h') json.tagh = tags.join(';');
         else json.tagh = json.tagh;
 
-        if (type == 'e') json.tage = tags.join(';');
+        if (type === 'e') json.tage = tags.join(';');
         else json.tage = json.tage;
 
         let check = [];
