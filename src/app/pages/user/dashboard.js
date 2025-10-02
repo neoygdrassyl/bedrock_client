@@ -57,10 +57,9 @@ class Dashboard extends Component {
                         </div>
                         <div className="d-flex justify-content-around py-3">
 
-                            {/* <MDBCol className={classnameCards}>
+                            <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Nomenclaturas" image="fas fa-signature fa-3x" link={"/nomenclature"} imageColor=" Plum" />
-
-                            </MDBCol> */}
+                            </MDBCol>
 
                             <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Archivo" image="fas fa-folder-open fa-3x" link={"/archive"} imageColor=" LightSeaGreen" />
