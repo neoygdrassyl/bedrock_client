@@ -31,7 +31,7 @@ export class ResoEngineTemplate extends BaseDocumentUtils {
             console.warn("[TemplateModifier] Modelo no es 'open'. No se aplicaron cambios.");
         }
 
-        this.setText("document-issued", `Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this._DATA.reso.reso_date)}`);
+        this.setText("document-issued", `Notifíquese y cumplase, Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this._DATA.reso.reso_date)}`);
         this.setText("signature-name", `${this.data.curaduriaInfo.title.toUpperCase()} ${this.data.curaduriaInfo.master.toUpperCase()}`);
         this.setText("signature-job", this.data.curaduriaInfo.job);
         this.setText("signature-name-law", "Proyectado/revisado por: "+this.data.curaduriaInfo.law || "Proyectado/revisado por: Abg. XXXX");
