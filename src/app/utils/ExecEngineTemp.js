@@ -80,7 +80,7 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         this.setText("exec-act-header-id-cod", `ID ${this._DATA.fun.id_public}`);
         this.setText("exec-act-info-pot-header", `Conforme al ${this.data.curaduriaInfo.pot.pot}\n Acuerdo ${this._DATA.reso.reso_pot}`);
 
-        this.setText("document-issued", `Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this.exec_date)}.`);
+        this.setText("document-issued", `Notifíquese y cumplase, Expedida en ${this._DATA.reso.ciudad} el ${this.dateParser(this.exec_date)}.`);
         this.setText("signature-name", `${this.data.curaduriaInfo.title.toUpperCase()} ${this.data.curaduriaInfo.master.toUpperCase()}`);
         this.setText("signature-job", this.data.curaduriaInfo.job);
         this.setText("signature-name-law", "Proyectado/revisado por: "+this.data.curaduriaInfo.law || "Proyectado/revisado por: Abg. XXXX");
@@ -100,8 +100,6 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         2015 y sus decretos modificatorios que reglamenta el sector de vivienda, ciudad y territorio y en particular aquellos que establecen las condiciones para el estudio y expedición 
         de la licencias urbanísticas; Decreto 926 de 2010 y sus decretos modificatorios del Reglamento Colombiano de Construcción Sismorresistente NSR-10 y el Acuerdo Municipal 
         ${cudaduria_info.pot.n} de ${cudaduria_info.pot.yy} mediante el cual se adoptó el ${cudaduria_info.pot.pot} del municipio de ${_DATA.reso.ciudad},`.replace(/[\n\r]+ */g, ' ');
-
-        //${action_word}: ${_DATA.reso.tipo}, decisión soportada en los siguientes elementos:
 
         this.setText("exec-act-body_res", _BODY_2 || "");
 
