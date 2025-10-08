@@ -98,7 +98,7 @@ class PQRS_SET_REPLY extends Component {
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACION",
-                                text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                                text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                                 icon: 'error',
                                 confirmButtonText: swaMsg.text_btn,
                             });
@@ -117,8 +117,8 @@ class PQRS_SET_REPLY extends Component {
                     });
             } else {
                 MySwal.fire({
-                    title: "NO HAY CONCECUTIVO DE SALIDA",
-                    text: "Se debe de espeficiar primero el concecutivo de Salida.",
+                    title: "NO HAY CONSECUTIVO DE SALIDA",
+                    text: "Se debe de espeficiar primero el consecutivo de Salida.",
                     icon: 'error',
                 });
             }
@@ -152,7 +152,7 @@ class PQRS_SET_REPLY extends Component {
                     console.log(e);
                     MySwal.fire({
                         title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el concecutivo, intentelo nuevamnte.",
+                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
                         confirmButtonText: this.props.swaMsg.text_btn,
                     });
@@ -165,7 +165,7 @@ class PQRS_SET_REPLY extends Component {
 
                     <div className="row">
                         <div className="col-6">
-                            <label className='text-start'>Concecutivo de Salida</label>
+                            <label className='text-start'>consecutivo de Salida</label>
                             <div class="input-group my-1">
                                 <span class="input-group-text bg-info text-white">
                                     <i class="fas fa-hashtag"></i>

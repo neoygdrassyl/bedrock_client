@@ -119,7 +119,7 @@ class FUN_0_RECIPE extends Component {
                         </select>
                     </div>
                     <div className="col-3">
-                        <label>Concecutivo de Recibo</label>
+                        <label>consecutivo de Recibo</label>
                         <div class="input-group">
                             <input type="text" class="form-control me-1" id="fun_c_payment_2"
                                 defaultValue={currentItem.id_payment} />

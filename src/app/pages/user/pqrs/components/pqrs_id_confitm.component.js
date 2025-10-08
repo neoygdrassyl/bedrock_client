@@ -40,7 +40,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                 console.log(e);
                 MySwal.fire({
                     title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar el concecutivo, intentelo nuevamnte.",
+                    text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                     icon: 'error',
                     confirmButtonText: props.swaMsg.text_btn,
                 });
@@ -68,7 +68,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                 } else if (response.data === 'ERROR_DUPLICATE') {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });
