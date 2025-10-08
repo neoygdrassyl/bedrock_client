@@ -175,7 +175,7 @@ class RECORD_PH_REVIEW extends Component {
                     console.log(e);
                     MySwal.fire({
                         title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el concecutivo, intentelo nuevamnte.",
+                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
                         confirmButtonText: this.props.swaMsg.text_btn,
                     });

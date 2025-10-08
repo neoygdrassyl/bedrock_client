@@ -1963,7 +1963,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
                 } else if (response.data === 'ERROR_DUPLICATE') {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo CUB de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });

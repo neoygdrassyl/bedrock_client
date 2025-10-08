@@ -191,7 +191,7 @@ export default function Navbar1(props) {
         )}
 
         {/* NAVBAR superior (siempre visible) */}
-        <Navbar {...props} className="app-navbar">
+        <Navbar {...props} className="app-navbar" style={{ backgroundColor: '##F7F7FA' }}>
           {/* MUY IMPORTANTE: evitar <a> para no anidar con Title */}
           <Navbar.Brand as="div"
             style={{
