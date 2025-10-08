@@ -207,7 +207,7 @@ html, body, #root, .App { overflow-x: clip; }
   border-bottom:1px solid #dee2e6;
   box-shadow:0 2px 4px rgba(0,0,0,.1);
   height:100%;
-  padding-inline:.9375rem !important;
+  padding-inline:0 !important;
   padding-left: 0 !important;
 }
 .app-navbar .rs-navbar-brand{ margin-left:.60rem; }

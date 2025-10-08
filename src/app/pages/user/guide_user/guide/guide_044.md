@@ -23,7 +23,7 @@ Esta sección inicial contiene información que permite clasificar la licenia de
 
 Los valores del formulario se definen asi:
 * **Relacionar Documento:** Relación del documento de pagos de expensas fijas.
-* **Concecutivo de Recibo:** El identificador del pago de las expensas fijas.
+* **consecutivo de Recibo:** El identificador del pago de las expensas fijas.
 * **Fecha de Recibo:** La fecha de pago de las expensas fijas. **DATO MUY IMPORTANTE**. Este dato debe ser definido para que pueda ser procesaso por el sistema de forma correcta.
 * **Categorización de la Solicitud :** La categoría de la Licencia, (los valores posibles son I, II, III, IV y OA ), esta es una categorización basada en la normativa (TODO fuente), esta categorización es una buena practica para la gestión de las licencias que internamente define los días disponibles para evaluar la licencia cuando esta sea declara en Legal y Debida forma. A partir del 2022 esta practica ha sido declarada obsoleta y se recomienda usar la categoría III por defecto para todas las licencias, sin embargo Dovela puede seguir usando todas las categorías para cualquier licencia.
 * **Modelo de Solicitud:** Modelo del FUN, esto definirá cual PDF será usado por DEVOLA para generar la radicación.

@@ -46,7 +46,7 @@ class RECORD_ARC_38 extends Component {
                     let review = valuej.list_review ? valuej.list_review.split(",") : []
 
                     review.map((valuek, k) => {
-                        if (valuek == 'SI') newList.push({
+                        if (valuek === 'SI') newList.push({
                             id_public: value.id_public,
                             date: value.date,
                             time: value.time,
@@ -84,7 +84,7 @@ class RECORD_ARC_38 extends Component {
         });
 
         var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
-        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
+        if (Number(model) === 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
         if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra2022";
 
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
@@ -104,7 +104,7 @@ class RECORD_ARC_38 extends Component {
         let pageCount = pdfDoc.getPageCount();
 
         for (let i = 0; i < pageCount; i++) {
-            if (Number(model) == 2021 || i > 0) {
+            if (Number(model) === 2021 || i > 0) {
                 page = pdfDoc.getPage(i);
                 page.moveTo(215, 783)
                 page.drawText(_number, { size: 14 })
@@ -115,7 +115,7 @@ class RECORD_ARC_38 extends Component {
             }
 
             // THIS IS DONE BECAUSE THE SIZE OF THE PAGES ARE DIFERENT, ONE IS LETTER, OTHER IS LEGAL
-            if (Number(model) >= 2022 && i == 0) {
+            if (Number(model) >= 2022 && i === 0) {
                 page = pdfDoc.getPage(i);
                 page.moveTo(200, 783 - 150)
                 page.drawText(_number, { size: 14 })
@@ -224,7 +224,7 @@ class RECORD_ARC_38 extends Component {
             var _ROLEID = window.user.roleId;
             return window.user.name + " " + window.user.surname
             //THIS ROLES ARE PROGRAMER MASTER, CURATOR AND ARCHITEC
-            if (_ROLEID == 1 || _ROLEID == 2 || _ROLEID == 6) {
+            if (_ROLEID === 1 || _ROLEID === 2 || _ROLEID === 6) {
                 return window.user.name + " " + window.user.surname
             } else {
                 return "NO ESTA AUTORIZADO A REALIZAR ESTA ACCION"
@@ -280,34 +280,34 @@ class RECORD_ARC_38 extends Component {
                 let r_i = R_CODES.findIndex(r => r.includes(c));
                 //if (!R) return true;
                 let eva = R ? R.split('&') : [];
-                if (CHECK[r_i] == 2) return true;
+                if (CHECK[r_i] === 2) return true;
                 let vr = _FIND_IN_VRDOCS(R);
-                let cond1 = eva[1] == 1 || eva[1] == 2;
-                let cond2 = CHECK[r_i] == 1 || CHECK[r_i] == 2 || vr;
+                let cond1 = eva[1] === 1 || eva[1] === 2;
+                let cond2 = CHECK[r_i] === 1 || CHECK[r_i] === 2 || vr;
                 return cond1 && cond2;
             })
             return _ALLOW;
         }
         let _GET_CLOCK_STATE = (_state, _version) => {
             var _CLOCK = _GET_CLOCK();
-            if (_state == null) return false;
+            if (_state === null) return false;
             for (var i = 0; i < _CLOCK.length; i++) {
-                if (_CLOCK[i].state == _state && _CLOCK[i].version == _version) return _CLOCK[i];
+                if (_CLOCK[i].state === _state && _CLOCK[i].version === _version) return _CLOCK[i];
             }
             return false;
         }
         let _GET_CLOCK_STATE_VERSION = (_state, version) => {
             var _CLOCK = _GET_CLOCK();
-            if (_state == null) return false;
+            if (_state === null) return false;
             for (var i = 0; i < _CLOCK.length; i++) {
-                if (_CLOCK[i].state == _state && _CLOCK[i].version == version) return _CLOCK[i];
+                if (_CLOCK[i].state === _state && _CLOCK[i].version === version) return _CLOCK[i];
             }
             return false;
         }
         let LOAD_STEP = (_id_public) => {
             var _CHILD = currentRecord.record_arc_steps;
             for (var i = 0; i < _CHILD.length; i++) {
-                if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
+                if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
             }
             return []
         }
@@ -356,7 +356,7 @@ class RECORD_ARC_38 extends Component {
                     if (_value[0] != 'false') _RESUME += ` - ${_value[0]}\n`
                     _check.map((c, i) => {
                         {
-                            if (c == 0 && _context[i] && i != 0) {
+                            if (c === 0 && _context[i] && i != 0) {
                                 _RESUME += `${nomen}. ${_context[i]}\n`;
                                 nomen++;
                             }
@@ -404,7 +404,7 @@ class RECORD_ARC_38 extends Component {
             let _REVIEWS_DATES = _GET_CLOCK_STATE_VERSION(13, 200).date_start ? _GET_CLOCK_STATE_VERSION(13, 200).date_start.split(';') : [];
 
             let CLOCKS_R;
-            CLOCKS_R = _RR.check == 0 ? ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Acta Correcciones',] : ['Acta Observaciones',]
+            CLOCKS_R = _RR.check === 0 ? ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Acta Correcciones',] : ['Acta Observaciones',]
 
             const REW_STR = [<label className='text-danger fw-bold'>NO ES VIABLE</label>,
             <label className='text-success fw-bold'>SI ES VIABLE</label>,
@@ -437,12 +437,12 @@ class RECORD_ARC_38 extends Component {
                     </div>
                 </div>
                 {CLOCKS_R.map((value, i) => {
-                    let iasing = i == 0 ? (_PRIMAL_ASIGN.date_asign ?? _ASIGNS[i]) : _ASIGNS[i];
-                    let ireview = i == 0 ? (_CHILD.check ?? _REVIEWS[i]) : _REVIEWS[i];
-                    let idate = i == 0 ? (_CHILD.date ?? _REVIEWS_DATES[i]) : _REVIEWS_DATES[i];
+                    let iasing = i === 0 ? (_PRIMAL_ASIGN.date_asign ?? _ASIGNS[i]) : _ASIGNS[i];
+                    let ireview = i === 0 ? (_CHILD.check ?? _REVIEWS[i]) : _REVIEWS[i];
+                    let idate = i === 0 ? (_CHILD.date ?? _REVIEWS_DATES[i]) : _REVIEWS_DATES[i];
                     let iworker = _PRIMAL_ASIGN.worker_name || _CHILD.worker_name || '';
 
-                    let isPrimal = i == 0;
+                    let isPrimal = i === 0;
                     let allowReview = iasing != null && iasing != undefined && iasing != '';
 
                     return <>
@@ -511,7 +511,7 @@ class RECORD_ARC_38 extends Component {
             let _REVIEWS_DATES = _GET_CLOCK_STATE_VERSION(13, 200).date_start ? _GET_CLOCK_STATE_VERSION(13, 200).date_start.split(';') : [];
 
             let CLOCKS_R;
-            CLOCKS_R = _RR.check == 0 ? ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Acta Correcciones',] : ['Acta Observaciones',]
+            CLOCKS_R = _RR.check === 0 ? ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Acta Correcciones',] : ['Acta Observaciones',]
 
             let reviews = [
                 { worker: '', check: 0, date: '', },
@@ -522,7 +522,7 @@ class RECORD_ARC_38 extends Component {
 
             for (let i = 0; i < CLOCKS_R.length; i++) {
                 const clock = CLOCKS_R[i];
-                if (i == 0) {
+                if (i === 0) {
                     reviews[i].worker = _WORKER_NAME;
                     reviews[i].check = _CHILD.check ?? (_REVIEWS[i] ? _REVIEWS[i] : 0);
                     reviews[i].date = _CHILD.date ?? (_REVIEWS_DATES[i] ? _REVIEWS_DATES[i] : '');
@@ -534,10 +534,10 @@ class RECORD_ARC_38 extends Component {
             }
 
             let _CHANGE_VALUES = (i) => {
-                if (i == 3) document.getElementById('record_version').value = 2
+                if (i === 3) document.getElementById('record_version').value = 2
                 else document.getElementById('record_version').value = 1
                 document.getElementById('record_pdf_worker_name').value = reviews[i].worker;
-                document.getElementById('record_pdf_check').value = reviews[i].check == 1 ? 'VIABLE' : 'NO VIABLE';
+                document.getElementById('record_pdf_check').value = reviews[i].check === 1 ? 'VIABLE' : 'NO VIABLE';
                 document.getElementById('record_pdf_date').value = reviews[i].date;
             }
             return <div className='row'>
@@ -596,7 +596,7 @@ class RECORD_ARC_38 extends Component {
                         <div className="col">
                             <label>Resultado</label>
                             <div class="input-group my-1">
-                                <input className='form-control' id={"record_pdf_check"} disabled defaultValue={reviews[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
+                                <input className='form-control' id={"record_pdf_check"} disabled defaultValue={reviews[0].check === 1 ? 'VIABLE' : 'NO VIABLE'} />
                             </div>
                         </div>
                         <div className="col">
@@ -954,7 +954,7 @@ class RECORD_ARC_38 extends Component {
             let worker = document.getElementById("r_a_38_2" + i).value;
             let date = document.getElementById("r_a_38_4" + i).value;
             let review = document.getElementById("r_a_38_3" + i).value;
-            let desc = review == 1 ? "SI ES VIABLE" : "NO ES VIABLE"
+            let desc = review === 1 ? "SI ES VIABLE" : "NO ES VIABLE"
 
             formDataclock.set('date_start', date);
             formDataclock.set('name', "Revision ARQUITECTONICA, revision " + currentVersionR);
@@ -978,8 +978,8 @@ class RECORD_ARC_38 extends Component {
             for (let i = 0; i < asign_length; i++) {
                 date_start[i] = date_start[i] ?? '';
                 resolver_context[i] = resolver_context[i] ?? '';
-                if (index == i) date_start[i] = date;
-                if (index == i) resolver_context[i] = review;
+                if (index === i) date_start[i] = date;
+                if (index === i) resolver_context[i] = review;
             }
 
             let formDataClock = new FormData();
