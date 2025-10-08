@@ -80,7 +80,7 @@ export default function NORM_ELEMENT(props) {
                 if (e.response.data.message == "Validation error") {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });
@@ -131,7 +131,7 @@ export default function NORM_ELEMENT(props) {
                 if (e.response.data.message == "Validation error") {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });

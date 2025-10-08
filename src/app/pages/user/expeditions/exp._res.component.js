@@ -3265,7 +3265,7 @@ export default function EXP_RES(props) {
                 <div className="col d-flex justify-content-center">
                     <div class="input-group-sm my-1">
                         <label class="form-check-label">Margen Inferior (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_bot" defaultValue={1.2} />
+                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_bot" defaultValue={1.5} />
                     </div>
                 </div>
 
@@ -3881,7 +3881,7 @@ export default function EXP_RES(props) {
                 } else if (response.data === 'ERROR_DUPLICATE') {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo CUB de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });

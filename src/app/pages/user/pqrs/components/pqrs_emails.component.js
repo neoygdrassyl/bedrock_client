@@ -424,7 +424,7 @@ class PQRS_EMAILS extends Component {
                 } else if (response.data === 'ERROR_DUPLICATE') {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });

@@ -40,7 +40,7 @@ class EXP_2 extends Component {
                     console.log(e);
                     MySwal.fire({
                         title: "ERROR AL CARGAR",
-                        text: "No ha sido posible cargar el concecutivo, intentelo nuevamnte.",
+                        text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
                         confirmButtonText: this.props.swaMsg.text_btn,
                     });
@@ -426,7 +426,7 @@ class EXP_2 extends Component {
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         if (useMySwal) MySwal.fire({
                             title: "ERROR DE DUPLICACION",
-                            text: "El concecutivo CUB de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                            text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
                             icon: 'error',
                             confirmButtonText: swaMsg.text_btn,
                         });
