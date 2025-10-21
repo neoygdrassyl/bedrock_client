@@ -27,7 +27,7 @@ export class BaseDocumentUtils {
     }
   }
 
-  getDateBussinesDaysCol(date, days_after = 10) {
+  getDateBussinesDaysCol(date, days_after = 11) {
     try {
       const fecha = procesarFecha(date, days_after);
       if (fecha == null) throw new Error('Resultado nulo/indefinido');
