@@ -1,17 +1,35 @@
 import React, { Component } from 'react';
 
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
+import EXP_CLOCKS from '../../expeditions/exp_clocks.component';
+import FUN_CLOCK_CHART from './func_clock_chart';
 
 class CLOCKS_CONTROL extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            activeTab: 'principal'
+        };
     }
+
+    requestUpdate = (id) => {
+        // Propagar el requestUpdate al componente padre si existe
+        if (this.props.requestUpdate) {
+            this.props.requestUpdate(id);
+        }
+    }
+
+    handleTabChange = (tabName) => {
+        this.setState({ activeTab: tabName });
+    }
+
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion, secondary } = this.props;
+        const { activeTab } = this.state;
         const stepsToCheck = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
         const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
+        
         // DATA GETTERS
-
         let _GET_CHILD_CLOCK = () => {
             var _CHILD = currentItem.fun_clocks;
             var _LIST = [];
@@ -59,6 +77,7 @@ class CLOCKS_CONTROL extends Component {
             }
             return false;
         }
+        
         let _GET_CLOCK_STATE = (_state) => {
             var _CLOCK = _GET_CHILD_CLOCK();
             if (_state == null) return false;
@@ -67,6 +86,7 @@ class CLOCKS_CONTROL extends Component {
             }
             return false;
         }
+        
         let _GET_TIME_FOR_NEGATIVE_PROCESS = (_clock) => {
             let time = 0
             let date = _clock.date_start
@@ -134,7 +154,7 @@ class CLOCKS_CONTROL extends Component {
                 { state: 33, name: 'Notificación por aviso (Observaciones)', limit: [31, false, 10], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
     
                 { state: 34, name: 'Prórroga correcciones', optional: true, limit: [[33, 32], false, [30, 30]], icon: <i class="far fa-dot-circle"></i>, },
-                { state: 35, name: 'Correcciones', optional: !requereCorr(), limit: [[33, 32], false, [35, 35, 40]], limitValues: presentExt() ? 45 : 30, icon: <i class="fas fa-file-alt"></i>, },
+                { state: 35, name: 'Radicación de Correcciones', optional: !requereCorr(), limit: [[33, 32], false, [35, 35, 40]], limitValues: presentExt() ? 45 : 30, icon: <i class="fas fa-file-alt"></i>, },
     
                 { state: stepsToCheck, version: -3, optional: true, icon: <i class="far fa-dot-circle text-danger"></i> },
     
@@ -147,9 +167,10 @@ class CLOCKS_CONTROL extends Component {
                 { state: 56, name: 'Notificación (Viabilidad)', limit: [55, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
                 { state: 57, name: 'Notificación por aviso (Viabilidad)', limit: [55, false, 10], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
     
-                { state: 69, name: 'Radicaciones de pagos', limit: false, icon: <i class="fas fa-comment-dollar text-warning"></i>, },
+                { state: 69, name: 'Radicacion de último pago', limit: false, icon: <i class="fas fa-comment-dollar text-warning"></i>, },
             ]
         } 
+        
         const clocks = [
             { state: false, version: false, desc: "Tiempo de Creacion en el sistema", name: 'RADICACIÓN', date: currentItem.date, icon: <i class="far fa-dot-circle"></i>, },
             { state: 3, version: false, desc: "Las fechas se calculan a partir de este momento", name: 'PAGO EXPENSAS FIJAS', icon: <i class="fas fa-comment-dollar text-warning"></i>, },
@@ -168,22 +189,22 @@ class CLOCKS_CONTROL extends Component {
 
             { state: 74, name: 'Recurso Resolución', limit: [71, false, 15], optional: true, icon: <i class="far fa-dot-circle"></i>, },
             { state: 75, name: 'Respuesta Recurso Resolución', limit: [74, false, 30], optional: true, icon: <i class="far fa-dot-circle"></i>, },
-            //{ state: 80, name: 'Certificación de Ejecutoria', icon: <i class="fas fa-file-alt text-success"></i>, },
-            { state: 99, name: 'Licencia', icon: <i class="fas fa-file-alt text-success"></i>, },
+            { state: 99, name: 'Ejecutoria', icon: <i class="fas fa-file-alt text-success"></i>, },
             { state: 101, name: 'Archivo', icon: <i class="fas fa-lock text-info"></i>, },
         ]
 
-
         // COMPONENTS JSX
+        // Recorre cada uno de los states y en caso de ser un arreglo, recorre uno por uno según el estado
         let _COMPONENT_CLOCK_LIST = () => {
-            return clocks.map((value) => {
+            return clocks.map((value, index) => {
                 if (Array.isArray(value.state)) {
-                    return value.state.map(valuej => _ROW_COMPONENT({ ...value, state: valuej, }))
+                    return value.state.map((valuej, j) => _ROW_COMPONENT({ ...value, state: valuej, }, false, `${index}-${j}`))
                 } else {
-                    return _ROW_COMPONENT(value)
+                    return _ROW_COMPONENT(value, false, index)
                 }
             })
         }
+        
         let _COMPONENT_SECONDARY = () => {
             var secondaryClocks = [];
 
@@ -209,16 +230,11 @@ class CLOCKS_CONTROL extends Component {
             let asignExist = false;
             _CLOCK.map(value => { if (value.version == 100) asignExist = true });
 
-
             _CLOCK.map(value => {
                 if (value.state > 10 && value.state < 15) {
                     if (asignExist) {
                         if (value.version == 200) {
-                            //var clocks_asign = _GET_CLOCK_STATE_VERSION(state, 100);
                             var clocks_reviews = value;
-
-                            //var asigns = clocks_asign.date_start ? clocks_asign.date_start.split(';') : [];
-
                             var reviews_date = clocks_reviews.date_start ? clocks_reviews.date_start.split(';') : [];
                             var reviews_check = clocks_reviews.resolver_context ? clocks_reviews.resolver_context.split(';') : [];
                             var state = value.state;
@@ -260,7 +276,6 @@ class CLOCKS_CONTROL extends Component {
                         date: value.date_start,
                         icon: <i class="fas fa-check text-success"></i>,
                     })
-
                 }
             })
 
@@ -284,15 +299,15 @@ class CLOCKS_CONTROL extends Component {
                 })
             })
 
-
-            return secondaryClocks.map(value => _ROW_COMPONENT(value, true))
+            return secondaryClocks.map((value, index) => _ROW_COMPONENT(value, true, `sec-${index}`))
         }
+        
         // FUNCTIONS AND WORKING ENGINES
-        let _ROW_COMPONENT = (value, hideLimit) => {
+        let _ROW_COMPONENT = (value, hideLimit, key) => {
             var clock;
             if (value.version) clock = _GET_CLOCK_STATE_VERSION(value.state, value.version)
             else clock = _GET_CLOCK_STATE(value.state)
-            if (!clock && value.optional) return;
+            if (!clock && value.optional) return null;
 
             var limit_clock;
             if (value.limit) {
@@ -308,16 +323,15 @@ class CLOCKS_CONTROL extends Component {
                     if (value.limit[1]) limit_clock = _GET_CLOCK_STATE_VERSION(value.limit[0], value.limit[1])
                     else limit_clock = _GET_CLOCK_STATE(value.limit[0])
                 }
-
             }
 
-            return <>
-                <div className="row">
+            return (
+                <div className="row" key={key}>
                     <div className="col border">
                         <label className="fw-bold text-uppercase">{value.icon} {value.name ?? clock.name ?? ''}</label>
                     </div>
                     {hideLimit ?
-                        ''
+                        null
                         : <div className="col-2 border py-1 text-center">
                             {limit_clock
                                 ? dateParser_finalDate(limit_clock.date_start, value.limitValues || value.limit[2])
@@ -326,7 +340,6 @@ class CLOCKS_CONTROL extends Component {
                                     : ''}
                         </div>
                     }
-
                     <div className="col-2 border py-1 text-center">
                         <label> {value.date ?? clock.date_start ?? ''}</label>
                     </div>
@@ -334,50 +347,116 @@ class CLOCKS_CONTROL extends Component {
                         <label> {value.desc ?? clock.desc ?? ''}</label>
                     </div>
                 </div>
-
-            </>
+            )
         }
-        const HEAD = <div className="row text-light">
-            <div className="col border bg-info text-center">
-                <label className="fw-bold text-uppercase">Control Proceso</label>
+        
+        const HEAD = (
+            <div className="row text-light">
+                <div className="col border bg-info text-center">
+                    <label className="fw-bold text-uppercase">Control Proceso</label>
+                </div>
+                <div className="col-2 border bg-info py-1 text-center">
+                    <label className="fw-bold text-uppercase">Fecha límite términos y plazos</label>
+                </div>
+                <div className="col-2 border bg-info py-1 text-center">
+                    <label className="fw-bold text-uppercase">Fecha ejecución proceso</label>
+                </div>
+                <div className="col border bg-info text-center">
+                    <label className="fw-bold text-uppercase">Observaciones</label>
+                </div>
             </div>
-            <div className="col-2 border bg-info py-1 text-center">
-                <label className="fw-bold text-uppercase">Fecha límite términos y plazos</label>
+        );
+        
+        const HEAD2 = (
+            <div className="row text-light">
+                <div className="col border bg-info text-center">
+                    <label className="fw-bold text-uppercase">EVENTOS SECUNDARIOS</label>
+                </div>
             </div>
-            <div className="col-2 border bg-info py-1 text-center">
-                <label className="fw-bold text-uppercase">Fecha ejecución proceso</label>
+        );
+        
+        const HEAD3 = (
+            <div className="row text-light">
+                <div className="col border bg-info text-center">
+                    <label className="fw-bold text-uppercase">Control Proceso términos y plazos</label>
+                </div>
+                <div className="col-2 border bg-info py-1 text-center">
+                    <label className="fw-bold text-uppercase">Fecha ejecución proceso</label>
+                </div>
+                <div className="col border bg-info text-center">
+                    <label className="fw-bold text-uppercase">Observaciones</label>
+                </div>
             </div>
-            <div className="col border bg-info text-center">
-                <label className="fw-bold text-uppercase">Observaciones</label>
-            </div>
-        </div>
-        const HEAD2 = <div className="row text-light">
-            <div className="col border bg-info text-center">
-                <label className="fw-bold text-uppercase">EVENTOS SECUNDARIOS</label>
-            </div>
-        </div>
-        const HEAD3 = <div className="row text-light">
-            <div className="col border bg-info text-center">
-                <label className="fw-bold text-uppercase">Control Proceso términos y plazos</label>
-            </div>
-            <div className="col-2 border bg-info py-1 text-center">
-                <label className="fw-bold text-uppercase">Fecha ejecución proceso</label>
-            </div>
-            <div className="col border bg-info text-center">
-                <label className="fw-bold text-uppercase">Observaciones</label>
-            </div>
-        </div>
+        );
+
         return (
-            <div className="row">
-                {HEAD}
-                {_COMPONENT_CLOCK_LIST()}
-                {secondary ?
-                    <>
-                        {HEAD2}
-                        {HEAD3}
-                        {_COMPONENT_SECONDARY()}
-                    </>
-                    : ''}
+            <div className="row mb-5">
+                {/* Tabs Navigation */}
+                <ul className="nav nav-tabs mb-3">
+                    <li className="nav-item">
+                        <a 
+                            className={`nav-link ${activeTab === 'principal' ? 'active' : ''}`}
+                            onClick={() => this.handleTabChange('principal')}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            Control Principal
+                        </a>
+                    </li>
+                    {secondary && (
+                        <li className="nav-item">
+                            <a 
+                                className={`nav-link ${activeTab === 'secundario' ? 'active' : ''}`}
+                                onClick={() => this.handleTabChange('secundario')}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                Eventos Secundarios
+                            </a>
+                        </li>
+                    )}
+                    <li className="nav-item">
+                        <a 
+                            className={`nav-link ${activeTab === 'expedicion' ? 'active' : ''}`}
+                            onClick={() => this.handleTabChange('expedicion')}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            Tiempos Expedición
+                        </a>
+                    </li>
+                </ul>
+
+                {/* Tab Content */}
+                <div className="tab-content">
+                    {activeTab === 'principal' && (
+                        <div className="tab-pane active">
+                            {HEAD}
+                            {_COMPONENT_CLOCK_LIST()}
+                        </div>
+                    )}
+                    
+                    {activeTab === 'secundario' && secondary && (
+                        <div className="tab-pane active">
+                            {HEAD2}
+                            {HEAD3}
+                            {_COMPONENT_SECONDARY()}
+                        </div>
+                    )}
+
+                    {activeTab === 'expedicion' && (
+                        <div className="tab-pane active">
+                            <EXP_CLOCKS 
+                                translation={translation}
+                                swaMsg={swaMsg}
+                                globals={globals}
+                                currentItem={currentItem}
+                                currentVersion={currentVersion}
+                                currentRecord={this.props.currentRecord}
+                                currentVersionR={this.props.currentVersionR}
+                                outCodes={this.props.outCodes || []}
+                                requestUpdate={this.requestUpdate}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
         );
     }
