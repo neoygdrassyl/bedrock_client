@@ -93,6 +93,10 @@ export default function EXP_RES_2(props) {
         },
         height: 1000,
     },
+    cleanHTML: {
+      removeEmptyElements: false,
+      fillEmptyParagraph: false
+    }
   };
 
   const handleDownloadPDFv2 = async () => {

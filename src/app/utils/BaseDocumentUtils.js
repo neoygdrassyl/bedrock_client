@@ -583,8 +583,7 @@ export class BaseDocumentUtils {
   TABLE_AREAS(filter = []) {
     const SHOW = (val) => {
       if (val === "NO") return "";
-      if (val == undefined || val == null || val.toString().trim() === "")
-        return "-";
+      if (val == undefined || val == null || val.toString().trim() === "") return "-";
       return val;
     };
 
@@ -616,30 +615,32 @@ export class BaseDocumentUtils {
     if (!subHeaderRow || !urbanTh || !grpTh1 || !tbody) return;
 
     subHeaderRow.querySelectorAll("th.dynamic").forEach((th) => th.remove());
-    tbody
-      .querySelectorAll("tr.dynamic-row, tr.dynamic-total")
-      .forEach((tr) => tr.remove());
+    tbody.querySelectorAll("tr.dynamic-row, tr.dynamic-total").forEach((tr) => tr.remove());
 
-    let texts = this.data._areas_table?.dinmanicHeaders;
+    let texts = this.data._areas_table?.dinmanicHeaders || [];
+    console.log("Texts:", texts);
     let insertAfter = urbanTh;
     texts.forEach((text) => {
       const th = document.createElement("th");
       th.classList.add("dynamic");
-      th.textContent = SHOW(text.text);
+      th.textContent = SHOW(text?.text ?? text);
       th.style.cssText =
         "border:1px solid #000; padding:4px; text-align:center; font-weight:bold;";
       insertAfter.insertAdjacentElement("afterend", th);
       insertAfter = th;
     });
 
-    const newColspan = 3 + texts.length;
+    const newColspan = 3 + (Array.isArray(texts) ? texts.length : 0);
     grpTh1.colSpan = newColspan;
 
     this.setEqualColumnWidths(table_1);
 
+    // --- Normalización robusta de table_use_rows ---
     let useRows = this.data._areas_table?.table_use_rows;
-    if (!useRows) useRows = [];
-    else if (typeof useRows === "string") {
+
+    if (!useRows) {
+      useRows = [];
+    } else if (typeof useRows === "string") {
       try {
         useRows = JSON.parse(useRows);
       } catch (e) {
@@ -649,27 +650,59 @@ export class BaseDocumentUtils {
     }
 
     if (!Array.isArray(useRows)) {
-      console.warn(
-        "table_use_rows no es un array, convirtiendo con Object.values"
-      );
-      useRows = Object.values(useRows);
+      if (useRows && typeof useRows === "object") {
+        try {
+          useRows = Object.values(useRows);
+        } catch (e) {
+          console.warn("table_use_rows no convertible con Object.values:", e);
+          useRows = [];
+        }
+      } else {
+        useRows = [];
+      }
     }
 
-    useRows.forEach((row, rowIndex) => {
-      let cells = Array.isArray(row) ? row : Object.values(row);
+    console.log("useRows:", useRows);
+
+    useRows.forEach((row) => {
+      if (row == null) return;
+
+      let cells;
+      if (Array.isArray(row)) {
+        cells = row;
+      } else if (typeof row === "object") {
+        try {
+          cells = Object.values(row);
+        } catch {
+          cells = [];
+        }
+      } else {
+        cells = [{ text: String(row) }];
+      }
+
+      if (!cells.length) return;
+
       const tr = document.createElement("tr");
       tr.classList.add("dynamic-row");
 
-      cells.forEach((cell) => {
+      console.log("cells:", cells);
+
+      cells.forEach((rawCell) => {
+        const cell =
+          rawCell && typeof rawCell === "object"
+            ? rawCell
+            : { text: rawCell != null ? String(rawCell) : "" };
+
         const td = document.createElement("td");
-        td.textContent = SHOW(cell.text);
+        const text = cell.text ?? cell.value ?? cell.label ?? "";
+        td.textContent = SHOW(text);
 
         td.style.border = "1px solid #000";
         td.style.padding = "4px";
-        td.style.textAlign = cell.config?.align || "center";
-        td.style.verticalAlign = cell.config?.valign ? "middle" : "baseline";
+        td.style.textAlign = cell?.config?.align || "center";
+        td.style.verticalAlign = cell?.config?.valign ? "middle" : "baseline";
 
-        if (cell.w) {
+        if (cell?.w) {
           td.style.width = `${cell.w}%`;
         }
 
@@ -679,25 +712,49 @@ export class BaseDocumentUtils {
       tbody.appendChild(tr);
     });
 
-    let raw = this.data._areas_table?.table_total_rows || [];
-    let totalRows =
-      Array.isArray(raw) && raw.length > 0 && raw[0].text !== undefined
-        ? [raw]
-        : raw;
+    // --- Totales robustos (soporta array, objeto o valor suelto) ---
+    let raw = this.data._areas_table?.table_total_rows;
+    let totalRows = [];
+
+    if (Array.isArray(raw)) {
+      // Si ya es array, úsalo tal cual
+      totalRows = raw;
+      // Compatibilidad con el caso "una sola fila como array de celdas"
+      if (raw.length > 0 && raw[0]?.text !== undefined) {
+        totalRows = [raw];
+      }
+    } else if (raw && typeof raw === "object") {
+      // Objeto -> fila única con sus values
+      try {
+        totalRows = [Object.values(raw)];
+      } catch {
+        totalRows = [];
+      }
+    } else if (raw != null) {
+      // Primitivo -> una fila, una celda
+      totalRows = [[{ text: String(raw) }]];
+    }
 
     totalRows.forEach((row) => {
+      if (!Array.isArray(row)) return;
+
       const tr = document.createElement("tr");
       tr.classList.add("dynamic-total");
 
-      row.forEach((cell, idx) => {
+      row.forEach((rawCell, idx) => {
+        const cell =
+          rawCell && typeof rawCell === "object"
+            ? rawCell
+            : { text: rawCell != null ? String(rawCell) : "" };
+
         const td = document.createElement("td");
-        td.textContent = SHOW(cell.text);
+        td.textContent = SHOW(cell.text ?? cell.value ?? cell.label ?? "");
         if (idx === 0) td.colSpan = 3;
 
         td.style.border = "1px solid #000";
         td.style.padding = "4px";
-        td.style.textAlign = cell.config?.align || "center";
-        td.style.verticalAlign = cell.config?.valign ? "middle" : "baseline";
+        td.style.textAlign = cell?.config?.align || "center";
+        td.style.verticalAlign = cell?.config?.valign ? "middle" : "baseline";
 
         tr.appendChild(td);
       });
@@ -708,38 +765,38 @@ export class BaseDocumentUtils {
     // this.showDiv('determinates-table-2', 'block');
     let table33 = this.data._areas_table?.table_3_3;
 
-    this.setText("table-331-ficha", SHOW(table33?._JSON_STEP.ficha));
-    this.setText("table-331-estrato", SHOW(this.data?.f2.estrato));
-    this.setText("table-331-sector", SHOW(table33?._JSON_STEP.sector));
-    this.setText("table-331-zgu", SHOW(table33?._JSON_STEP.zgu));
-    this.setText("table-331-subsector", SHOW(table33?._JSON_STEP.subsector));
-    this.setText("table-331-zugm", SHOW(table33?._JSON_STEP.zugm));
+    this.setText("table-331-ficha", SHOW(table33?._JSON_STEP?.ficha));
+    this.setText("table-331-estrato", SHOW(this.data?.f2?.estrato));
+    this.setText("table-331-sector", SHOW(table33?._JSON_STEP?.sector));
+    this.setText("table-331-zgu", SHOW(table33?._JSON_STEP?.zgu));
+    this.setText("table-331-subsector", SHOW(table33?._JSON_STEP?.subsector));
+    this.setText("table-331-zugm", SHOW(table33?._JSON_STEP?.zugm));
 
     this.setText(
       "table-333-restriccion-title",
-      "Zona de restricción: " + SHOW(table33?._VALUE_ARRAY[6])
+      "Zona de restricción: " + SHOW(table33?._VALUE_ARRAY?.[6])
     );
-    this.setText("table-333-restriccion", CV3(table33?._CHECK_ARRAY[6]));
+    this.setText("table-333-restriccion", CV3(table33?._CHECK_ARRAY?.[6]));
 
     this.setText(
       "table-333-amenaza-title",
-      "Amenaza y Riesgo: " + SHOW(table33?._VALUE_ARRAY[8])
+      "Amenaza y Riesgo: " + SHOW(table33?._VALUE_ARRAY?.[8])
     );
-    this.setText("table-333-amenaza", CV3(table33?._CHECK_ARRAY[8]));
+    this.setText("table-333-amenaza", CV3(table33?._CHECK_ARRAY?.[8]));
 
     this.setText(
       "table-333-utilidad-title",
-      "Utilidad Pública: " + SHOW(table33?._VALUE_ARRAY[7])
+      "Utilidad Pública: " + SHOW(table33?._VALUE_ARRAY?.[7])
     );
-    this.setText("table-333-utilidad", CV3(table33?._CHECK_ARRAY[7]));
+    this.setText("table-333-utilidad", CV3(table33?._CHECK_ARRAY?.[7]));
 
-    this.setText("table-333-n-title", SHOW(table33?._VALUE_ARRAY[9]));
-    this.setText("table-333-n", CV3(table33?._CHECK_ARRAY[9]));
+    this.setText("table-333-n-title", SHOW(table33?._VALUE_ARRAY?.[9]));
+    this.setText("table-333-n", CV3(table33?._CHECK_ARRAY?.[9]));
 
-    this.setText("table-334-suelo", SHOW(table33?._VALUE_ARRAY[0]));
-    this.setText("table-334-tratamiento", SHOW(table33?._VALUE_ARRAY[2]));
-    this.setText("table-334-area", SHOW(table33?._VALUE_ARRAY[4]));
-    this.setText("table-334-unidad", SHOW(table33?._VALUE_ARRAY[3]));
+    this.setText("table-334-suelo", SHOW(table33?._VALUE_ARRAY?.[0]));
+    this.setText("table-334-tratamiento", SHOW(table33?._VALUE_ARRAY?.[2]));
+    this.setText("table-334-area", SHOW(table33?._VALUE_ARRAY?.[4]));
+    this.setText("table-334-unidad", SHOW(table33?._VALUE_ARRAY?.[3]));
 
     const table3_5 = this.data._areas_table?.table_3_5;
     const headers = (table3_5 && table3_5.headers) || [];
@@ -798,19 +855,19 @@ export class BaseDocumentUtils {
     perfiles.forEach((p) => {
       const tr = document.createElement("tr");
       const tdName = document.createElement("td");
-      tdName.textContent = SHOW(p.name);
+      tdName.textContent = SHOW(p?.name);
       tdName.style.fontWeight = "bold";
       tdName.style.textAlign = "center";
       tr.appendChild(tdName);
 
       headers.forEach((_, i) => {
         const tdN = document.createElement("td");
-        tdN.textContent = SHOW(p.norm?.[i]);
+        tdN.textContent = SHOW(p?.norm?.[i]);
         tdN.style.textAlign = "center";
         tr.appendChild(tdN);
 
         const tdP = document.createElement("td");
-        tdP.textContent = SHOW(p.project?.[i]);
+        tdP.textContent = SHOW(p?.project?.[i]);
         tdP.style.textAlign = "center";
         tr.appendChild(tdP);
       });
@@ -821,7 +878,7 @@ export class BaseDocumentUtils {
     const ALLOW_REVIEWS = this.data._areas_table?.ALLOW_REVIEWS;
     console.log(`ALLOW_REVIEWS: ${ALLOW_REVIEWS}`);
 
-    if (ALLOW_REVIEWS[0] == 1) {
+    if (ALLOW_REVIEWS?.[0] == 1) {
       this.showDiv("table-areas-33-34-1", "flex");
       this.showDiv("table-areas-33-34-2", "flex");
       this.showDiv("table-areas-33-34-3", "flex");
@@ -832,6 +889,7 @@ export class BaseDocumentUtils {
       this.renderParkings();
     }
   }
+
 
   F2_TABLE_MANUAL(text) {
     const container = this.tempDiv.querySelector("#manualTableContainer");
