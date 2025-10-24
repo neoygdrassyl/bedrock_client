@@ -81,6 +81,7 @@ td, th {
 #determinates-table-34 th,
 #areas-table-container th,
 .areas-table-container th,
+#titles-table-areas-1 th,
 #tabla-f2 th,
 #f52-table th,
 #table-f51 th {
@@ -321,3 +322,4 @@ td, th {
 .considerative-subitem {
     padding-left: 20px; /* segunda indentación */
 }
+

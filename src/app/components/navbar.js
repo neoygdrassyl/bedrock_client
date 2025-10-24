@@ -191,7 +191,7 @@ export default function Navbar1(props) {
         )}
 
         {/* NAVBAR superior (siempre visible) */}
-        <Navbar {...props} className="app-navbar">
+        <Navbar {...props} className="app-navbar" style={{ backgroundColor: '##F7F7FA' }}>
           {/* MUY IMPORTANTE: evitar <a> para no anidar con Title */}
           <Navbar.Brand as="div"
             style={{
@@ -223,6 +223,10 @@ export default function Navbar1(props) {
             <span style={{ fontSize: 'clamp(0.84rem, 1.42vw, 0.90rem)', lineHeight: 1.15, fontWeight: 500 }}>
               Dovela<br/><small style={{color: 'gray'}}>v 1.9.0</small>
             </span>
+            <span style={{ fontSize: 'clamp(0.64rem, 1.22vw, 0.70rem)', fontWeight: 500, opacity: 0.8 }}>
+              v 1.9.0
+            </span>
+          </div>
 
             {/* Separador vertical */}
             <span aria-hidden="true" style={{ width: 1, height: '1.25rem', background: '#000', opacity: 0.75 }} />

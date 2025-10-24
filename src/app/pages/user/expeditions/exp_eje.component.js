@@ -245,7 +245,7 @@ export default function EXP_EJEC(props) {
         const reso_vig_date_dv = reso?.vig?.date || '';
         const reso_vig_n_dv   = reso?.vig?.n ? String(reso.vig.n) : '12';
 
-        const date_exec = _GET_CLOCK_STATE(70, false)?.date_start || "";
+        const date_exec = _GET_CLOCK_STATE(99, false)?.date_start || "";
         const hasExec = !!date_exec;
         const baseDate = useMemo(
             () => (hasExec ? parseLocalISO(date_exec) : null),
@@ -303,7 +303,7 @@ export default function EXP_EJEC(props) {
                     </div>
                     {!hasExec && (
                         <div className="form-text text-danger text-start">
-                            Registra fecha ejecutoria
+                            Registrar fecha ejecutoria
                         </div>
                     )}
                     </div>
@@ -737,7 +737,7 @@ export default function EXP_EJEC(props) {
                 } else if (response.data === 'ERROR_DUPLICATE') {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo CUB de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });
