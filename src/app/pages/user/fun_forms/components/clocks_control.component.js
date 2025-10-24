@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import EXP_CLOCKS from '../../expeditions/exp_clocks.component';
+import EXP_CLOCKS_DIAGRAM from '../../expeditions/exp_clocks_diagram.component';
 import FUN_CLOCK_CHART from './func_clock_chart';
 
 class CLOCKS_CONTROL extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: 'principal'
+            activeTab: 'expedicion'
         };
     }
 
@@ -438,6 +439,17 @@ class CLOCKS_CONTROL extends Component {
                             {HEAD2}
                             {HEAD3}
                             {_COMPONENT_SECONDARY()}
+                            {/* <EXP_CLOCKS_DIAGRAM
+                                translation={translation}
+                                swaMsg={swaMsg}
+                                globals={globals}
+                                currentItem={currentItem}
+                                currentVersion={currentVersion}
+                                currentRecord={this.props.currentRecord}
+                                currentVersionR={this.props.currentVersionR}
+                                outCodes={this.props.outCodes || []}
+                                requestUpdate={this.requestUpdate}
+                            /> */}
                         </div>
                     )}
 
