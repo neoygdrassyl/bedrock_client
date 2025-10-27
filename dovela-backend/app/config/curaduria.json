@@ -1,0 +1,39 @@
+{
+    "indexName":"Database1",
+    "id": "cub1",
+    "name": "CURADURIA URBANA UNO DE BUCARAMANGA",
+    "name2": "Curaduría Urbana 1 de Bucaramanga",
+    "number": "1",
+    "city": "Bucaramanga",
+    "state": "SANTANDER",
+    "pronoum": "El",
+    "legal1": "Nombramiento Decreto municipal 0070 de 4 de junio de 2021",
+    "legal2": "Diligencia de posesión N° 0125 de 9 de junio de 2021",
+    "master": "Luis Carlos Parra Salazar",
+    "title": "Arq.",
+    "job": "CURADOR URBANO UNO DE BUCARAMANGA",
+    "call": "Nombramiento Decreto municipal 0070 de 4 de junio de 2021\nDiligencia de posesión N° 0125 de 9 de junio de 2021",
+    "nit": "91239522-1",
+    "dir": "CALLE 36 No 31-39 Oficinas: 101/102 Centro Empresarial Chicamocha",
+    "tel": "(607) 680 3596",
+    "cel": "(057) 316 279 5010",
+    "email": "curaduriaurbana1@gmail.com",
+    "page": "www.curaduria1bucaramanga.com/",
+    "law": "DRA. MARÍA MARGARITA JEREZ",
+    "lawt": "Asesora Jurídica",
+    "digital_sign": "docs/public/user_signatures/luis_parra.png",
+    "serials": {
+        "start":"VR",
+        "end": "CUB",
+        "process": "68001-1",
+        "nomen":"N"
+    },
+    "pot" : {
+        "mm": 11,
+        "yy": 2014,
+        "pot": "POT",
+        "n": "078"
+    },
+
+    "pqrs_email": "curaduriaurbana1@gmail.com,abogadapaez@curaduria1bucaramanga.com"
+}

@@ -1,0 +1,140 @@
+[
+    {
+        "tema": "ANTEJARDINES",
+        "arts": [
+           { "name": "Nr 255", "desc": "Normas aplicables a los antejardines."},
+           { "name": "Nr 256", "desc": "Acabados de los antejardines."},
+           { "name": "Nr 257", "desc": "Uso de antejardines en áreas de actividad comercial, servicio y multiple."},
+           { "name": "Nr 258", "desc": "Cubierta en antejardínes."},
+           { "name": "Nr 259", "desc": "Antejardines en predios o bienes de interes cultural."}
+        ]
+    },
+    {
+        "tema": "VOLADIZOS",
+        "arts": [
+           { "name": "Nr 260", "desc": "Definición de Voladizo."},
+           { "name": "Nr 261", "desc": "Dimensiones maximas en voladizos."},
+           { "name": "Nr 262", "desc": "Altura libre minima para el voladizo. "},
+           { "name": "Nr 263", "desc": "Prohibiciones para voladizos."},
+           { "name": "Nr 264", "desc": "Empate de voladizos."}
+        ]
+    },
+    {
+        "tema": "RAMPAS Y ESCALERAS (Peatonales - Vehiculares)",
+        "arts": [
+           { "name": "Nr 265", "desc": "Escaleras en andenes."},
+           { "name": "Nr 266", "desc": "Localización de rampas peatonales y escaleras de acceso a las edificaciones."},
+           { "name": "Nr 267", "desc": "Dimensiones de rampas peatonales y escaleras de acceso a las edificaciones."},
+           { "name": "Nr 268", "desc": "Rampas vehiculares de acceso a las edificaciones."}
+        ]
+    },
+    {
+        "tema": "HABITABILIDAD",
+        "arts": [
+           { "name": "Nr 320", "desc": "Definición de habitabilidad y vivienda minima."},
+           { "name": "Nr 321", "desc": "Medios de evacuación y salidas de emergencia."},
+           { "name": "Nr 322", "desc": "Condiciones mínimas de iluminación y ventilación. "}
+        ]
+    },
+    {
+        "tema": "PATIOS Y VACIOS",
+        "arts": [
+           { "name": "Nr 272", "desc": "Cuando un proyecto de construcción proponga patios o vacíos interiores. "}
+        ]
+    },
+    {
+        "tema": "CERRAMIENTOS",
+        "arts": [
+           { "name": "Nr 269", "desc": "Generalidades de los cerramientos permanentes y en predios no urbanizados."},
+           { "name": "Nr 270", "desc": "Caracteristicas de los cerramientos. "},
+           { "name": "Nr 271", "desc": "Cerramiento temporal durante el desarrollo de las obras de construcción o urbanización."},
+           { "name": "Nr 370", "desc": "Cerramiento temporal del predio durante la ejecución de obras de construcción."}
+        ]
+    },
+    {
+        "tema": "SOTANOS Y SEMISOTANOS",
+        "arts": [
+           { "name": "Nr 273", "desc": "Normas aplicables a sotanos y semisotanos (destinación, condiciones de ventilación e iluminación, altura libre mínima entre otros)."}
+        ]
+    },
+    {
+        "tema": "ALTURA DE EDIFICACIÓN",
+        "arts": [
+           { "name": "Nr 275", "desc": "Altura máxima de piso."},
+           { "name": "Nr 276", "desc": "Definición de altura libre."},
+           { "name": "Nr 277", "desc": "Nivel cero (N:0.00) para la cotabilización de alturas."},
+           { "name": "Nr 278", "desc": "Reglas para el manejo de la altura máxima de las edificaciones."},
+           { "name": "Nr 279", "desc": "Limitanciones a la altura de las construcciones."}
+        ]
+    },
+    {
+        "tema": "CULATAS",
+        "arts": [
+           { "name": "Nr 281", "desc": "Culatas"},
+           { "name": "Nr 282", "desc": "Normas para el tratamiento de las culatas."}
+        ]
+    },
+    {
+        "tema": "EQUIPOS DE LAS EDIFICACIONES",
+        "arts": [
+           { "name": "Nr 284", "desc": "Normas generales aplicables a los equipos de las edificaciones e instalaciones espaciales."},
+           { "name": "Nr 285", "desc": "Ascensores en las edificaciones."},
+           { "name": "Nr 286", "desc": "Planta eléctrica o de emergencia. "},
+           { "name": "Nr 287", "desc": "Instalación de plantas eléctricas o de emergencia. "},
+           { "name": "Nr 288", "desc": "Requisitos para la instalación de antenas. "}
+        ]
+    },
+    {
+        "tema": "AISLAMIENTOS O RETROCESOS",
+        "arts": [
+           { "name": "Nr 290", "desc": "Definición de aislamiento o retroceso."},
+           { "name": "Nr 291", "desc": "Aplicación y condiciones generales de los aislamientos. "},
+           { "name": "Nr 292", "desc": "Dimensiones de los aislamientos."},
+           { "name": "Nr 293", "desc": "Condiciones específicas para los aislamientos en procesos de construcción."},
+           { "name": "Nr 294", "desc": "Aislamientos entre construcciones de un mismo predio, proyecto o conjunto."},
+           { "name": "Nr 295", "desc": "Retiro de construcción en esquina, con ochava, chaflán o similiar."}
+        ]
+    },
+    {
+        "tema": "MEDIDAS AMBIENTALES",
+        "arts": [
+           { "name": "Nr 226", "desc": "Zonificación de restricciones a la ocupación."},
+           { "name": "Nr 296", "desc": "Aislamientos respecto a borde y pie de talud."},
+           { "name": "Nr 297", "desc": "Ronda hídrica o aislamiento mínimo de protección en cauces de fuentes hídricas."},
+           { "name": "Nr 298", "desc": "Zona de manejo del espacio público."},
+           { "name": "Nr 303", "desc": "Limitaciones a las construcciones en ladera."}
+        ]
+    },
+    {
+        "tema": "INDICES DE EDIFICABILIDAD",
+        "arts": [
+           { "name": "Nr 310", "desc": "Indices."},
+           { "name": "Nr 311", "desc": "Indice de Ocupación ( I.O.)"},
+           { "name": "Nr 312", "desc": "Indice de Construcción ( I.C.)"},
+           { "name": "Nr 313", "desc": "Aplicación de indices."},
+           { "name": "Nr 314", "desc": "Áreas y espacios que no se incluyen en el calculo del índice de construcción."},
+           { "name": "Nr 315", "desc": "Bonificación para los cuales se permite el incremento en edificabilidad."}
+        ]
+    },
+    {
+        "tema": "ACCESIBILIDAD",
+        "arts": [
+           { "name": "Nr 316", "desc": "Definición de accesibilidad al medio físico."},
+           { "name": "Nr 317", "desc": "Normas relacionadas con accesibilidad y movilidad de los discapacitados y personas con limitaciones físicas en el espacio público."},
+           { "name": "Nr 318", "desc": "Accesibilidad a las edificaciones y disposiciones generales para discapacitados y personas con limitaciones físicas."},
+           { "name": "Nr 319", "desc": "Adaptación de los Bienes de Interés Cultural de uso público existentes."}
+        ]
+    },
+    {
+        "tema": "EQUIPAMIENTO PRIVADO",
+        "arts": [
+           { "name": "Nr 323", "desc": "Equipamiento comunal privado (anteriormente llamada cesión tipo B)."}
+        ]
+    },
+    {
+        "tema": "ENGLOBE",
+        "arts": [
+           { "name": "Nr 324", "desc": "Normas para englobe de predios."}
+        ]
+    }
+]

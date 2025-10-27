@@ -1,0 +1,132 @@
+{
+  "PUBLISH_TYPE_ARRAY": [
+    "Actos Administrativos",
+    "Notificaciones a vecinos",
+    "Publicaciones de prensa",
+    "Reanudacion de terminos",
+    "Noticias de Interes",
+    "Notificaciones de avisos",
+    "Respuesta de Derecho de Peticion",
+    "Respuesta PQRS",
+    "Otras publicaciones"
+  ],
+  "PQRS_TYPE_ARRAY": [
+    "Peticion",
+    "Queja",
+    "Relcamo",
+    "Sugerencia",
+    "Denuncio",
+    "Felicitaciones"
+  ],
+  "PQRS_MASTER_TYPE_ARRAY": [
+    "Peticion ordinaria",
+    "Peticiones de información y copias o fotocopias de documentos",
+    "Consulta a la Función Pública",
+    "Peticiones de documentos y de información provenientes de otras entidades o autoridades públicas",
+    "Examen de documentos",
+    "Peticiones de expedición de copias o fotocopias de los expedientes y certificaciones",
+    "Solicitudes de informes que se reciban de los Honorables Congresistas en ejercicio",
+    "Solicitud de documentos por parte de las Cámaras Legislativas",
+    "Solicitudes de asesoría y capacitación"
+  ],
+  "PQRS_TYPE_PERSON_ARRAY": [
+    "Persona Natural",
+    "Persona Juridica",
+    "Menores y Adolecentes apoderados"
+  ],
+  "PQRS_TYPE_ID_ARRAY": [
+    "Cedula de Ciudadania",
+    "Cedula de extrageria",
+    "Registro Civil",
+    "Tarjeta de identidad",
+    "Otro"
+  ],
+  "PQRS_TYPE_CHANNEL_ARRAY": [
+    "Canal Electronico (Formulario Pagina Web)",
+    "Canal Electronico (Chat)",
+    "Canal Electronico (Email)",
+    "Canal Escrito (Correo Postal)",
+    "Canal Escrito (Radicacion Personal)",
+    "Canal Escrito (Buzon de Sugerencias)",
+    "Canal Escrito (Fax)",
+    "Canal Presencial",
+    "Canal Telefonico"
+  ],
+  "PQRS_TYPE_STATUS_ARRAY": [
+    "PENDIENTE",
+    "TERMINADA"
+  ],
+  "PQRS_TIME_ARRAY": [
+    15,
+    10,
+    30,
+    10,
+    10,
+    10,
+    5,
+    10,
+    30
+  ],
+  "WORKERS_INFO": {
+    "0" : {
+      "name": "LUIS CARLOS PARRA SALAZAR",
+      "email" : "luiskparra@gmail.com",
+      "email_work" : "curador@curaduria1bucaramanga.com",
+      "role": "CURADOR"
+    },
+    "1" : {
+      "name": "CARLOS ULLOA",
+      "email" : "caruk21@yahoo.com",
+      "email_work" : "ingeniero@curaduria1bucaramanga.com ",
+      "role": "INGENIERO"
+    },
+    "2" : {
+      "name": "MARIA MARGARITA JEREZ",
+      "email" : "mjerez@curaduria1bucaramanga.com",
+      "email_work" : "abogada@curaduria1bucaramanga.com ",
+      "role": "ABOGODA"
+    },
+    "3" : {
+      "name": "MAYRA ANDREA CEPEDA GOMEZ",
+      "email" : "divisiondearquitectura1@gmail.com",
+      "email_work" : "arquitecta@curaduria1bucaramanga.com ",
+      "role": "ARQUITECTA"
+    },
+    "4" : {
+      "name": "LINDA JULIETH PAEZ CARDENAS",
+      "email" : "",
+      "email_work" : "abogadapaez@curaduria1bucaramanga.com ",
+      "role": "ABOGODA"
+    },
+    "5" : {
+      "name": "JOSE DANIEL TRIANA RESTREPO",
+      "email" : "arq.jdtriana@gmail.com",
+      "email_work" : "arq.jdtriana@gmail.com",
+      "role": "ARQUITECTO"
+    },
+    "6" : {
+      "name": "LINA MARIA ROCHA URBINA",
+      "email" : "rochaurbina@gmail.com",
+      "email_work" : "arquitectarocha@curaduria1bucaramanga.com",
+      "role": "ARQUITECTA"
+    },
+    "7" : {
+      "name": "ANTONIO GRANADOS",
+      "email" : "antoniojgranados@gmail.com",
+      "email_work" : "antoniojgranados@gmail.com",
+      "role": "INGENIERO"
+    },
+    "21" : {
+      "name": "XIMENA FLOREZ",
+      "email" : "ximenaflorez.arq@gmail.com",
+      "email_work" : "ximenaflorez.arq@gmail.com",
+      "role": "ARQUITECTA"
+    },
+    "20" : {
+      "name": "STEFANNY GOMEZ",
+      "email" : "marguy.gomezd@gmail.com",
+      "email_work" : "marguy.gomezd@gmail.com",
+      "role": "ABOGODA"
+    }
+  }
+}
