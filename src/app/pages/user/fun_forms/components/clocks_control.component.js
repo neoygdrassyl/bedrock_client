@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
-import EXP_CLOCKS from '../../expeditions/exp_clocks.component';
+//import EXP_CLOCKS from '../../expeditions/exp_clocks.component';
+import EXP_CLOCKS from '../../clocks/centralClocks.component';
 import EXP_CLOCKS_DIAGRAM from '../../expeditions/exp_clocks_diagram.component';
 import FUN_CLOCK_CHART from './func_clock_chart';
 
