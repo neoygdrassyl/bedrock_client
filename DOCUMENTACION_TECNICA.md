@@ -15,6 +15,10 @@
 11. [Despliegue](#11-despliegue)
 12. [Testing](#12-testing)
 13. [Carencias y Recomendaciones](#13-carencias-y-recomendaciones)
+14. [Sistema de Consecutivos](#14-sistema-de-consecutivos)
+15. [Gestión de Profesionales y Asignación a Proyectos](#15-gestión-de-profesionales-y-asignación-a-proyectos)
+16. [Módulo de Gestión de Licencias (FUN)](#16-módulo-de-gestión-de-licencias-fun)
+17. [Sistema de Métricas y Reportes](#17-sistema-de-métricas-y-reportes)
 
 ---
 
@@ -1759,6 +1763,1413 @@ Con las mejoras sugeridas en este documento, el sistema alcanzará estándares d
 
 ---
 
+---
+
+## 14. Sistema de Consecutivos
+
+### 14.1 Propósito del Sistema de Consecutivos
+
+El sistema implementa un mecanismo de generación de identificadores únicos (consecutivos) para diferentes entidades del sistema. Estos identificadores facilitan el seguimiento, trazabilidad y referencia de trámites, documentos y procesos.
+
+### 14.2 Tipos de Consecutivos
+
+El sistema maneja varios tipos de consecutivos según la configuración en `curaduria.json`:
+
+| Tipo | Prefijo | Formato | Ejemplo | Entidad |
+|------|---------|---------|---------|---------|
+| **Licencias/Trámites** | 68001-1 | `{prefijo}-{año}-{número}` | 68001-1-2024-0123 | fun_0 |
+| **Radicaciones** | VR | `VR-{año}-{número}` | VR-2024-0456 | submit |
+| **Expediciones** | CUB | `CUB-{año}-{número}` | CUB-2024-0789 | expedition |
+| **Nomenclaturas** | N | `N-{año}-{número}` | N-2024-0012 | nomenclature |
+| **PQRS** | PQRS | `PQRS-{año}-{número}` | PQRS-2024-0345 | pqrs_masters |
+
+### 14.3 Configuración de Consecutivos
+
+**Archivo:** `dovela-backend/app/config/curaduria.json`
+
+```json
+{
+  "serials": {
+    "start": "VR",        // Prefijo para radicaciones
+    "end": "CUB",         // Prefijo para expediciones
+    "process": "68001-1",  // Prefijo para licencias
+    "nomen": "N"          // Prefijo para nomenclaturas
+  }
+}
+```
+
+### 14.4 Generación de Consecutivos
+
+#### Algoritmo de Generación
+
+```mermaid
+flowchart TD
+    A[Solicitud de nuevo consecutivo] --> B[Consultar último consecutivo]
+    B --> C{¿Existe último consecutivo?}
+    C -->|Sí| D[Extraer número del consecutivo]
+    C -->|No| E[Iniciar en 0001]
+    D --> F[Incrementar número en 1]
+    E --> G[Formatear consecutivo]
+    F --> G
+    G --> H[Validar unicidad en BD]
+    H --> I{¿Ya existe?}
+    I -->|Sí| F
+    I -->|No| J[Asignar consecutivo]
+    J --> K[Retornar consecutivo]
+```
+
+#### Implementación Backend
+
+**Archivo:** `dovela-backend/app/controllers/fun.controller.js`
+
+```javascript
+// Obtener último ID público de licencias
+exports.getLastIdPublic = (req, res) => {
+  const { QueryTypes } = require('sequelize');
+  var query = `
+  SELECT MAX(fun_0s.id_public) AS id
+  FROM fun_0s 
+  WHERE fun_0s.id_public LIKE '${curaduriaInfo.serials.process}%'
+  `;
+
+  db.sequelize.query(query, { type: QueryTypes.SELECT })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Error al obtener último consecutivo"
+      });
+    });
+};
+
+// Obtener último ID de expedición
+exports.getLastIdPublicRes = (req, res) => {
+  const { QueryTypes } = require('sequelize');
+  var query = `
+  SELECT MAX(expeditions.id_public) AS id
+  FROM expeditions
+  `;
+
+  db.sequelize.query(query, { type: QueryTypes.SELECT })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Error al obtener último consecutivo"
+      });
+    });
+};
+```
+
+#### Validación de Duplicados
+
+```javascript
+// Al crear una nueva licencia
+exports.create = (req, res) => {
+  const id_public = req.body.id_public;
+  
+  // Validar que no exista el consecutivo
+  const { QueryTypes } = require('sequelize');
+  var query = `
+  SELECT fun_0s.id_public
+  FROM fun_0s
+  WHERE fun_0s.id_public LIKE '${id_public}'
+  `;
+
+  db.sequelize.query(query, { type: QueryTypes.SELECT })
+    .then(data => {
+      if (data.length) { 
+        return res.send("ERROR_DUPLICATE"); 
+      } else {
+        // Continuar con la creación
+        createRecord();
+      }
+    })
+    .catch(err => {
+      return res.status(500).send({
+        message: err.message || "Error al validar consecutivo"
+      });
+    });
+};
+```
+
+### 14.5 Uso en Frontend
+
+**Ejemplo: Generación de consecutivo para nueva licencia**
+
+```javascript
+import FUNService from '../../services/fun.service';
+
+// Obtener último consecutivo
+const getNextConsecutive = async () => {
+  try {
+    const response = await FUNService.getLastIdPublic();
+    const lastId = response.data[0].id;
+    
+    // Extraer año y número del último consecutivo
+    // Ejemplo: "68001-1-2024-0123" -> año=2024, num=123
+    const parts = lastId.split('-');
+    const year = new Date().getFullYear();
+    const lastYear = parseInt(parts[2]);
+    const lastNum = parseInt(parts[3]);
+    
+    let nextNum;
+    if (year === lastYear) {
+      // Mismo año, incrementar número
+      nextNum = lastNum + 1;
+    } else {
+      // Año nuevo, reiniciar en 1
+      nextNum = 1;
+    }
+    
+    // Formatear nuevo consecutivo
+    const newId = `68001-1-${year}-${nextNum.toString().padStart(4, '0')}`;
+    
+    return newId;
+  } catch (error) {
+    console.error("Error al obtener consecutivo:", error);
+  }
+};
+
+// Uso al crear nueva licencia
+const createNewLicense = async () => {
+  const consecutivo = await getNextConsecutive();
+  
+  const licenseData = {
+    id_public: consecutivo,
+    // ... más datos
+  };
+  
+  await FUNService.create(licenseData);
+};
+```
+
+### 14.6 Ventajas del Sistema de Consecutivos
+
+1. **Unicidad garantizada**: Cada trámite tiene un identificador único
+2. **Trazabilidad**: Fácil seguimiento cronológico de procesos
+3. **Organización**: Separación por tipo de entidad y año
+4. **Auditoría**: Facilita reportes y consultas históricas
+5. **Referencia clara**: Usuarios pueden referenciar trámites fácilmente
+
+### 14.7 Consideraciones Importantes
+
+**⚠️ Concurrencia:**  
+El sistema actual no implementa bloqueos de concurrencia. Si dos usuarios solicitan un consecutivo simultáneamente, podría generarse un duplicado. 
+
+**Recomendación:** Implementar transacciones de base de datos o un servicio de generación de consecutivos con bloqueo optimista/pesimista.
+
+**Ejemplo de mejora con transacciones:**
+
+```javascript
+const createWithConsecutive = async (data) => {
+  const transaction = await db.sequelize.transaction();
+  
+  try {
+    // Bloquear la tabla mientras se genera el consecutivo
+    const lastId = await db.sequelize.query(
+      'SELECT MAX(id_public) AS id FROM fun_0s FOR UPDATE',
+      { type: QueryTypes.SELECT, transaction }
+    );
+    
+    // Generar nuevo consecutivo
+    const newId = generateNext(lastId[0].id);
+    
+    // Crear registro
+    await FUN_0.create({ ...data, id_public: newId }, { transaction });
+    
+    await transaction.commit();
+    return newId;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+```
+
+---
+
+## 15. Gestión de Profesionales y Asignación a Proyectos
+
+### 15.1 Profesionales del Sistema
+
+El sistema cuenta con un equipo de profesionales definidos en la configuración global.
+
+**Archivo:** `dovela-backend/app/config/variables.global.json`
+
+```json
+{
+  "WORKERS_INFO": {
+    "0": {
+      "name": "LUIS CARLOS PARRA SALAZAR",
+      "email": "luiskparra@gmail.com",
+      "email_work": "curador@curaduria1bucaramanga.com",
+      "role": "CURADOR"
+    },
+    "1": {
+      "name": "CARLOS ULLOA",
+      "email": "caruk21@yahoo.com",
+      "email_work": "ingeniero@curaduria1bucaramanga.com",
+      "role": "INGENIERO"
+    },
+    "3": {
+      "name": "MAYRA ANDREA CEPEDA GOMEZ",
+      "email": "divisiondearquitectura1@gmail.com",
+      "email_work": "arquitecta@curaduria1bucaramanga.com",
+      "role": "ARQUITECTA"
+    }
+    // ... más profesionales
+  }
+}
+```
+
+### 15.2 Roles de Profesionales
+
+| ID | Nombre | Rol | Responsabilidad |
+|----|--------|-----|-----------------|
+| 0 | Luis Carlos Parra | CURADOR | Firma y aprobación final de licencias |
+| 1 | Carlos Ulloa | INGENIERO | Revisión estructural y sismorresistente |
+| 2 | María Margarita Jerez | ABOGADA | Revisión jurídica y urbanística |
+| 3 | Mayra Andrea Cepeda | ARQUITECTA | Revisión arquitectónica |
+| 4 | Linda Julieth Páez | ABOGADA | Apoyo jurídico |
+| 5 | José Daniel Triana | ARQUITECTO | Revisión arquitectónica |
+| 6 | Lina María Rocha | ARQUITECTA | Revisión arquitectónica |
+| 7 | Antonio Granados | INGENIERO | Revisión estructural |
+
+### 15.3 Asignación de Profesionales a Proyectos
+
+#### Diagrama de Asignación
+
+```mermaid
+flowchart TD
+    A[Nueva Licencia] --> B{Tipo de Revisión}
+    B -->|Arquitectónica| C[Asignar Arquitecto]
+    B -->|Estructural| D[Asignar Ingeniero]
+    B -->|Urbanística| E[Asignar Abogado]
+    B -->|Propiedad Horizontal| F[Asignar Arquitecto + Abogado]
+    
+    C --> G[record_arc.worker_id]
+    D --> H[record_eng.worker_id]
+    E --> I[record_law.worker_id]
+    F --> J[record_ph.worker_asign_arc_id]
+    F --> K[record_ph.worker_asign_law_id]
+    
+    G --> L[Profesional revisa documentación]
+    H --> L
+    I --> L
+    J --> L
+    K --> L
+    
+    L --> M{¿Aprobado?}
+    M -->|Sí| N[Generar Resolución]
+    M -->|No| O[Generar Observaciones]
+    O --> P[Solicitar correcciones]
+    P --> L
+```
+
+#### Modelo de Relaciones
+
+**Tablas involucradas:**
+
+1. **fun_0**: Licencia principal
+2. **record_arc**: Expediente arquitectónico
+3. **record_eng**: Expediente de ingeniería
+4. **record_law**: Expediente urbanístico
+5. **record_ph**: Expediente de propiedad horizontal
+
+**Relaciones:**
+
+```sql
+-- Una licencia puede tener un expediente arquitectónico
+fun_0 (1) --> (1) record_arc
+  - record_arc.worker_id: ID del arquitecto asignado
+  - record_arc.worker_name: Nombre del arquitecto
+
+-- Una licencia puede tener un expediente de ingeniería
+fun_0 (1) --> (1) record_eng
+  - record_eng.worker_id: ID del ingeniero asignado
+  - record_eng.worker_name: Nombre del ingeniero
+
+-- Una licencia puede tener un expediente urbanístico
+fun_0 (1) --> (1) record_law
+  - record_law.worker_id: ID del abogado asignado
+  - record_law.worker_name: Nombre del abogado
+
+-- Propiedad horizontal requiere dos revisiones
+fun_0 (1) --> (1) record_ph
+  - record_ph.worker_asign_arc_id: ID del arquitecto
+  - record_ph.worker_arc_name: Nombre del arquitecto
+  - record_ph.worker_asign_law_id: ID del abogado
+  - record_ph.worker_law_name: Nombre del abogado
+```
+
+### 15.4 Proceso de Asignación
+
+#### Paso 1: Creación de Licencia
+
+Cuando se crea una nueva licencia (`fun_0`), se determina qué tipo de expediente requiere según el tipo de trámite.
+
+#### Paso 2: Creación de Expediente
+
+```javascript
+// Ejemplo: Crear expediente arquitectónico
+const createArchitecturalRecord = async (fun0Id, workerId) => {
+  const workerInfo = WORKERS_INFO[workerId];
+  
+  const recordData = {
+    fun0Id: fun0Id,
+    worker_id: workerId,
+    worker_name: workerInfo.name,
+    state: 0, // Estado inicial: pendiente
+    date_assigned: new Date()
+  };
+  
+  await RecordArc.create(recordData);
+};
+```
+
+#### Paso 3: Consulta de Asignaciones
+
+**Backend Query - Licencias asignadas a un profesional:**
+
+```javascript
+// Obtener licencias asignadas a un profesional específico
+exports.loadAsign = (req, res) => {
+  const worker_id = req.params.worker_id;
+  const record_type = req.params.record_type; // 'arc', 'eng', 'law'
+  
+  let query = `
+  SELECT
+    fun_0s.id,
+    fun_0s.id_public,
+    fun_0s.state,
+    ${record_type === 'arc' ? 'record_arcs.worker_id' : ''}
+    ${record_type === 'eng' ? 'record_engs.worker_id' : ''}
+    ${record_type === 'law' ? 'record_laws.worker_id' : ''}
+  FROM fun_0s
+  LEFT JOIN record_arcs ON record_arcs.fun0Id = fun_0s.id
+  LEFT JOIN record_engs ON record_engs.fun0Id = fun_0s.id
+  LEFT JOIN record_laws ON record_laws.fun0Id = fun_0s.id
+  WHERE
+    ${record_type === 'arc' ? `record_arcs.worker_id = ${worker_id}` : ''}
+    ${record_type === 'eng' ? `record_engs.worker_id = ${worker_id}` : ''}
+    ${record_type === 'law' ? `record_laws.worker_id = ${worker_id}` : ''}
+  AND fun_0s.state < 200
+  ORDER BY fun_0s.createdAt DESC
+  `;
+  
+  db.sequelize.query(query, { type: QueryTypes.SELECT })
+    .then(data => res.send(data))
+    .catch(err => res.status(500).send({ message: err.message }));
+};
+```
+
+### 15.5 Notificaciones a Profesionales
+
+Cuando se asigna un proyecto a un profesional, el sistema envía una notificación por correo electrónico.
+
+```javascript
+const notifyAssignment = async (workerId, licenseId) => {
+  const workerInfo = WORKERS_INFO[workerId];
+  
+  let transporter = nodemailer.createTransport(mailerConfig.transporter);
+  
+  let mailOptions = {
+    from: 'Curaduría N°1 <no-reply@curaduria1bucaramanga.com.co>',
+    to: workerInfo.email_work,
+    subject: `Nueva asignación: Licencia ${licenseId}`,
+    html: `
+      <h3>Asignación de Licencia</h3>
+      <p>Estimado/a ${workerInfo.name},</p>
+      <p>Se le ha asignado la revisión de la licencia <strong>${licenseId}</strong>.</p>
+      <p>Por favor ingrese al sistema para revisar la documentación.</p>
+      <br/>
+      <p>Este es un mensaje automático del sistema de Curaduría.</p>
+    `
+  };
+  
+  await transporter.sendMail(mailOptions);
+};
+```
+
+### 15.6 Gestión de Carga de Trabajo
+
+El sistema permite consultar la carga de trabajo de cada profesional:
+
+**Query de carga de trabajo:**
+
+```sql
+SELECT
+  record_arcs.worker_id,
+  record_arcs.worker_name,
+  COUNT(*) as total_asignados,
+  SUM(CASE WHEN fun_0s.state < 100 THEN 1 ELSE 0 END) as en_revision,
+  SUM(CASE WHEN fun_0s.state >= 100 AND fun_0s.state < 200 THEN 1 ELSE 0 END) as aprobados,
+  SUM(CASE WHEN fun_0s.state >= 200 THEN 1 ELSE 0 END) as finalizados
+FROM record_arcs
+INNER JOIN fun_0s ON fun_0s.id = record_arcs.fun0Id
+GROUP BY record_arcs.worker_id, record_arcs.worker_name
+ORDER BY total_asignados DESC
+```
+
+### 15.7 Interfaz de Asignación (Frontend)
+
+El frontend proporciona una interfaz para:
+- Ver proyectos asignados
+- Filtrar por estado
+- Acceder rápidamente a la documentación
+- Registrar avances y observaciones
+
+**Componente:** `src/app/pages/user/funmanage.page.js`
+
+```javascript
+// Vista de proyectos asignados al profesional logueado
+const MyAssignedProjects = () => {
+  const [projects, setProjects] = useState([]);
+  const currentUserId = window.user.id;
+  
+  useEffect(() => {
+    loadAssignedProjects();
+  }, []);
+  
+  const loadAssignedProjects = async () => {
+    try {
+      const response = await FUNService.loadAsign(currentUserId, 'arc');
+      setProjects(response.data);
+    } catch (error) {
+      console.error("Error al cargar proyectos:", error);
+    }
+  };
+  
+  return (
+    <div>
+      <h2>Mis Proyectos Asignados</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID Público</th>
+            <th>Estado</th>
+            <th>Fecha Asignación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {projects.map(project => (
+            <tr key={project.id}>
+              <td>{project.id_public}</td>
+              <td>{getStateName(project.state)}</td>
+              <td>{formatDate(project.date_assigned)}</td>
+              <td>
+                <button onClick={() => viewProject(project.id)}>
+                  Ver Detalles
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+```
+
+---
+
+## 16. Módulo de Gestión de Licencias (FUN)
+
+### 16.1 Estructura del Módulo FUN
+
+FUN (Ficha Única Nacional) es el módulo central del sistema que gestiona todo el proceso de licencias de construcción.
+
+#### Diagrama de Componentes FUN
+
+```mermaid
+graph TB
+    subgraph "Módulo FUN"
+        A[FUN_0 - Registro Principal]
+        B[FUN_1 - Datos del Trámite]
+        C[FUN_2 - Datos del Predio]
+        D[FUN_3 - Datos Complementarios]
+        E[FUN_4 - Urbanismo]
+        F[FUN_51 - Propietarios]
+        G[FUN_52 - Profesionales]
+        H[FUN_53 - Constructores]
+        I[FUN_6 - Documentos]
+        J[FUN_LAW - Control Jurídico]
+        K[FUN_CLOCK - Tiempos]
+        L[FUN_C - Checklist Info]
+        M[FUN_R - Checklist Docs]
+    end
+    
+    A --> B
+    A --> C
+    A --> D
+    A --> E
+    A --> F
+    A --> G
+    A --> H
+    A --> I
+    A --> J
+    A --> K
+    A --> L
+    A --> M
+```
+
+### 16.2 Modelo de Datos FUN
+
+#### FUN_0 - Tabla Principal
+
+```javascript
+// Modelo principal de licencias
+{
+  id: INTEGER (PK),
+  version: INTEGER,        // Versión de la licencia
+  state: INTEGER,          // Estado del trámite (0-500)
+  id_public: STRING,       // Consecutivo público (ej: 68001-1-2024-0123)
+  id_pqrs: INTEGER,        // Relación con PQRS si aplica
+  date: DATE,              // Fecha de radicación
+  id_payment: STRING,      // ID de pago
+  type: STRING,            // Tipo de licencia
+  model: STRING,           // Modelo de trámite
+  tags: STRING,            // Etiquetas
+  rules: STRING            // Reglas aplicables
+}
+```
+
+#### Tablas Relacionadas
+
+| Tabla | Propósito | Relación |
+|-------|-----------|----------|
+| **fun_1** | Datos del trámite (tipo, modalidad, uso) | ONE-TO-MANY |
+| **fun_2** | Datos del predio (dirección, matrícula, catastro) | ONE-TO-ONE |
+| **fun_3** | Información complementaria | ONE-TO-MANY |
+| **fun_4** | Datos de urbanismo | ONE-TO-MANY |
+| **fun_51** | Propietarios del predio | ONE-TO-MANY |
+| **fun_52** | Profesionales responsables (arquitecto, ingeniero) | ONE-TO-MANY |
+| **fun_53** | Constructores | ONE-TO-MANY |
+| **fun_6** | Documentos adjuntos | ONE-TO-MANY |
+| **fun_law** | Control de términos legales | ONE-TO-ONE |
+| **fun_clock** | Registro de tiempos y pausas | ONE-TO-MANY |
+
+### 16.3 Estados de las Licencias
+
+El sistema utiliza códigos numéricos para representar el estado de una licencia:
+
+```javascript
+// Estados principales
+const ESTADOS_FUN = {
+  // Radicación e inicio (0-49)
+  0: "Radicado - Pendiente de pago",
+  10: "Pago recibido - Pendiente de asignación",
+  20: "Asignado a revisor",
+  
+  // En revisión (50-99)
+  50: "En revisión inicial",
+  60: "Requiere información adicional",
+  70: "Información adicional recibida",
+  80: "En revisión final",
+  
+  // Aprobación (100-149)
+  100: "Aprobado con observaciones menores",
+  110: "Observaciones subsanadas",
+  120: "Listo para expedición",
+  130: "En firma del curador",
+  
+  // Expedición (150-199)
+  150: "Licencia expedida",
+  160: "Notificación enviada",
+  170: "Publicado",
+  
+  // Finalización (200-299)
+  200: "Licencia entregada",
+  210: "Trámite finalizado",
+  
+  // Rechazos (300-399)
+  300: "Rechazado - No cumple normativa",
+  310: "Rechazado - Documentación incompleta",
+  
+  // Archivado (400-499)
+  400: "Archivado - Desistimiento",
+  410: "Archivado - No pago",
+  420: "Archivado - Vencimiento de términos"
+};
+```
+
+### 16.4 Flujo de Trabajo de una Licencia
+
+```mermaid
+stateDiagram-v2
+    [*] --> Radicado: Ciudadano radica solicitud
+    Radicado --> PagoPendiente: Sistema asigna consecutivo
+    PagoPendiente --> PagoRecibido: Pago verificado
+    PagoRecibido --> Asignado: Admin asigna profesional
+    
+    Asignado --> EnRevision: Profesional inicia revisión
+    EnRevision --> RequiereInfo: Faltan documentos o info
+    RequiereInfo --> EnRevision: Solicitante responde
+    EnRevision --> Observaciones: Se encuentran observaciones
+    Observaciones --> EnRevision: Solicitante corrige
+    EnRevision --> Aprobado: Revisión satisfactoria
+    
+    Aprobado --> EnFirma: Generar resolución
+    EnFirma --> Expedida: Curador firma
+    Expedida --> Notificada: Enviar notificación
+    Notificada --> Entregada: Entregar al solicitante
+    Entregada --> [*]: Trámite completo
+    
+    EnRevision --> Rechazado: No cumple normativa
+    RequiereInfo --> Archivado: Vencimiento de términos
+    PagoPendiente --> Archivado: No pago
+    Rechazado --> [*]
+    Archivado --> [*]
+```
+
+### 16.5 Interfaz de Gestión
+
+#### Vista Principal (Dashboard FUN)
+
+La interfaz principal muestra:
+
+**Archivo:** `src/app/pages/user/fun.js`
+
+1. **Barra de búsqueda**: Por ID público, solicitante, dirección
+2. **Filtros**:
+   - Por estado
+   - Por profesional asignado
+   - Por rango de fechas
+   - Por tipo de licencia
+3. **Tabla de resultados**:
+   - ID Público
+   - Solicitante
+   - Dirección del predio
+   - Estado actual
+   - Profesional asignado
+   - Fecha de radicación
+   - Acciones (ver, editar, generar documentos)
+
+**Código de ejemplo:**
+
+```javascript
+const FunDashboard = () => {
+  const [licencias, setLicencias] = useState([]);
+  const [filtros, setFiltros] = useState({
+    estado: '',
+    profesional: '',
+    fechaInicio: '',
+    fechaFin: ''
+  });
+  
+  useEffect(() => {
+    cargarLicencias();
+  }, [filtros]);
+  
+  const cargarLicencias = async () => {
+    try {
+      const response = await FUNService.findAllFiltered(filtros);
+      setLicencias(response.data);
+    } catch (error) {
+      console.error("Error al cargar licencias:", error);
+    }
+  };
+  
+  return (
+    <div className="fun-dashboard">
+      <h1>Gestión de Licencias</h1>
+      
+      {/* Filtros */}
+      <div className="filtros">
+        <select 
+          value={filtros.estado} 
+          onChange={(e) => setFiltros({...filtros, estado: e.target.value})}
+        >
+          <option value="">Todos los estados</option>
+          <option value="50">En revisión</option>
+          <option value="100">Aprobado</option>
+          <option value="150">Expedida</option>
+        </select>
+        
+        <input 
+          type="date" 
+          value={filtros.fechaInicio}
+          onChange={(e) => setFiltros({...filtros, fechaInicio: e.target.value})}
+        />
+        
+        <input 
+          type="date" 
+          value={filtros.fechaFin}
+          onChange={(e) => setFiltros({...filtros, fechaFin: e.target.value})}
+        />
+        
+        <button onClick={cargarLicencias}>Buscar</button>
+      </div>
+      
+      {/* Tabla de resultados */}
+      <table className="licencias-table">
+        <thead>
+          <tr>
+            <th>ID Público</th>
+            <th>Solicitante</th>
+            <th>Dirección</th>
+            <th>Estado</th>
+            <th>Profesional</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {licencias.map(licencia => (
+            <tr key={licencia.id}>
+              <td>{licencia.id_public}</td>
+              <td>{licencia.propietario}</td>
+              <td>{licencia.direccion}</td>
+              <td>
+                <span className={`estado estado-${licencia.state}`}>
+                  {ESTADOS_FUN[licencia.state]}
+                </span>
+              </td>
+              <td>{licencia.profesional_asignado}</td>
+              <td>{formatDate(licencia.date)}</td>
+              <td>
+                <button onClick={() => verDetalle(licencia.id)}>
+                  <MDBIcon icon="eye" />
+                </button>
+                <button onClick={() => editarLicencia(licencia.id)}>
+                  <MDBIcon icon="edit" />
+                </button>
+                <button onClick={() => generarDocumentos(licencia.id)}>
+                  <MDBIcon icon="file-pdf" />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+```
+
+#### Vista de Detalle de Licencia
+
+Cuando se selecciona una licencia, se muestra una vista detallada con pestañas:
+
+1. **Información General**:
+   - Datos del trámite (FUN_1)
+   - Datos del predio (FUN_2)
+   - Propietarios (FUN_51)
+   - Profesionales responsables (FUN_52)
+
+2. **Expedientes**:
+   - Arquitectónico (record_arc)
+   - Estructural (record_eng)
+   - Urbanístico (record_law)
+   - Propiedad Horizontal (record_ph)
+
+3. **Documentos**:
+   - Documentos adjuntos (FUN_6)
+   - Planos
+   - Estudios técnicos
+   - Resoluciones generadas
+
+4. **Historial**:
+   - Cambios de estado
+   - Observaciones
+   - Comunicaciones
+
+5. **Control de Tiempos**:
+   - Tiempo transcurrido
+   - Pausas y reanudaciones
+   - Días hábiles restantes
+
+### 16.6 Generación de Documentos
+
+El módulo FUN genera automáticamente varios documentos durante el proceso:
+
+#### Tipos de Documentos Generados
+
+| Documento | Etapa | Descripción |
+|-----------|-------|-------------|
+| **Recibo de Radicación** | Inicial | Constancia de recepción de documentos |
+| **Liquidación de Costos** | Inicial | Cálculo de tarifas |
+| **Auto de Trámite** | Revisión | Inicia formalmente el trámite |
+| **Requerimiento** | Revisión | Solicitud de información adicional |
+| **Resolución de Licencia** | Aprobación | Documento que otorga la licencia |
+| **Acto de Notificación** | Expedición | Notifica al solicitante |
+| **Acto de Publicación** | Expedición | Para publicación oficial |
+
+#### Proceso de Generación
+
+```javascript
+// Controlador de generación de documentos
+exports.gendoc_confirm = async (req, res) => {
+  const funId = req.body.funId;
+  const docType = req.body.docType;
+  
+  try {
+    // Obtener datos de la licencia
+    const licencia = await FUN_0.findByPk(funId, {
+      include: [
+        { model: FUN_1 },
+        { model: FUN_2 },
+        { model: FUN_51 },
+        { model: FUN_52 }
+      ]
+    });
+    
+    // Cargar plantilla según tipo de documento
+    const template = loadTemplate(docType);
+    
+    // Reemplazar variables en plantilla
+    const documentData = {
+      id_public: licencia.id_public,
+      fecha: formatDate(licencia.date),
+      propietario: licencia.fun_51s[0].name,
+      direccion: licencia.fun_2.direccion,
+      // ... más datos
+    };
+    
+    const html = replaceVariables(template, documentData);
+    
+    // Generar PDF
+    const pdf = await generatePDF(html);
+    
+    // Guardar en sistema de archivos
+    const filename = `${docType}_${licencia.id_public}_${Date.now()}.pdf`;
+    const filepath = `./docs/process/${licencia.id_public}/${filename}`;
+    
+    fs.writeFileSync(filepath, pdf);
+    
+    // Registrar documento en BD
+    await FUN_6.create({
+      fun0Id: funId,
+      type: docType,
+      filename: filename,
+      path: filepath,
+      date: new Date()
+    });
+    
+    res.send({ success: true, filepath: filepath });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+```
+
+### 16.7 Control de Tiempos
+
+El sistema implementa control de tiempos para cumplir con los plazos legales:
+
+**Tabla:** `fun_law`
+
+```javascript
+{
+  fun0Id: INTEGER (FK),
+  date_start: DATE,          // Fecha de inicio del término
+  days_total: INTEGER,       // Días totales del término
+  days_elapsed: INTEGER,     // Días transcurridos
+  days_remaining: INTEGER,   // Días restantes
+  status: STRING,            // 'active', 'paused', 'expired'
+  pause_reason: TEXT,        // Razón de la pausa
+  pause_date: DATE          // Fecha de pausa
+}
+```
+
+**Cálculo de días hábiles:**
+
+```javascript
+const calculateRemainingDays = (licencia) => {
+  const startDate = licencia.fun_law.date_start;
+  const today = new Date();
+  
+  // Calcular días hábiles transcurridos
+  const elapsedDays = businessDaysBetween(startDate, today);
+  
+  // Restar pausas
+  const pausedDays = calculatePausedDays(licencia.fun_clocks);
+  
+  const netElapsed = elapsedDays - pausedDays;
+  const remaining = licencia.fun_law.days_total - netElapsed;
+  
+  return {
+    elapsed: netElapsed,
+    remaining: remaining,
+    status: remaining > 0 ? 'active' : 'expired'
+  };
+};
+```
+
+### 16.8 Indicadores de Gestión
+
+El dashboard del módulo FUN muestra indicadores clave:
+
+```javascript
+// Indicadores principales
+const indicators = {
+  total_tramites: 0,
+  en_termino: 0,
+  proximos_vencer: 0,  // Menos de 3 días hábiles
+  vencidos: 0,
+  aprobados_mes: 0,
+  rechazados_mes: 0,
+  tiempo_promedio_revision: 0,  // En días hábiles
+  tasa_aprobacion: 0            // Porcentaje
+};
+```
+
+---
+
+## 17. Sistema de Métricas y Reportes
+
+### 17.1 Tipos de Reportes
+
+El sistema genera múltiples tipos de reportes para diferentes entidades:
+
+| Reporte | Destinatario | Frecuencia | Propósito |
+|---------|--------------|------------|-----------|
+| **Contraloría** | Ente de control | Mensual | Supervisión financiera y de gestión |
+| **CAMACOL** | Gremio constructor | Mensual | Estadísticas del sector |
+| **DANE** | Estadísticas nacionales | Mensual | Censo de construcción |
+| **Planeación Municipal** | Alcaldía | Mensual | Planificación urbana |
+| **Ministerio de Vivienda** | Gobierno Nacional | Trimestral | Política pública |
+| **Auditoría Interna** | Curaduría | Mensual | Control interno |
+| **Reporte Financiero** | Administración | Mensual | Gestión financiera |
+
+### 17.2 Arquitectura del Sistema de Reportes
+
+```mermaid
+flowchart TD
+    A[Usuario selecciona reporte] --> B[Especifica rango de fechas]
+    B --> C[Backend ejecuta query]
+    C --> D[Procesa datos]
+    D --> E[Aplica transformaciones]
+    E --> F{Formato de salida}
+    F -->|Excel| G[Genera XLSX]
+    F -->|PDF| H[Genera PDF]
+    F -->|JSON| I[Retorna JSON]
+    G --> J[Descarga archivo]
+    H --> J
+    I --> K[Visualiza en pantalla]
+```
+
+### 17.3 Queries de Reportes
+
+**Archivo:** `dovela-backend/app/config/generalQueries.js`
+
+#### Reporte General (Contraloría)
+
+```javascript
+module.exports.reportsQuery = (date_start, date_end, min_state = 50, max_state = 200) => {
+  return `
+  SELECT
+    fun_0s.id,
+    fun_0s.state,
+    fun_0s.date AS pay_date,
+    fun_0s.id_public,
+    fun_1s.tramite,
+    fun_1s.tipo,
+    fun_1s.usos,
+    fun_1s.vivienda,
+    fun_2s.matricula,
+    fun_2s.catastral,
+    fun_2s.direccion,
+    fun_2s.barrio,
+    fun_2s.estrato,
+    expeditions.taxes,
+    expeditions.reso,
+    
+    -- Propietarios
+    (SELECT GROUP_CONCAT(f51.name SEPARATOR ';') 
+     FROM fun_51s AS f51
+     WHERE f51.fun0Id = fun_0s.id AND f51.role = 'PROPIETARIO') AS propietarios_nombre,
+    
+    (SELECT GROUP_CONCAT(f51.surname SEPARATOR ';')
+     FROM fun_51s AS f51
+     WHERE f51.fun0Id = fun_0s.id AND f51.role = 'PROPIETARIO') AS propietarios_apellido,
+    
+    -- Profesionales responsables
+    (SELECT GROUP_CONCAT(CONCAT(f52.name,' ',f52.surname) SEPARATOR ';')
+     FROM fun_52s AS f52
+     WHERE f52.fun0Id = fun_0s.id) AS profesionales,
+    
+    -- Áreas y cargos
+    (SELECT GROUP_CONCAT(expa.area SEPARATOR ';')
+     FROM exp_areas AS expa
+     WHERE expa.expeditionId = expeditions.id) AS areas,
+    
+    (SELECT GROUP_CONCAT(expa.charge SEPARATOR ';')
+     FROM exp_areas AS expa
+     WHERE expa.expeditionId = expeditions.id) AS cargos,
+    
+    -- Información financiera
+    expeditions.taxes,
+    expeditions.duty
+    
+  FROM fun_0s
+  INNER JOIN fun_1s ON fun_1s.fun0Id = fun_0s.id
+  INNER JOIN fun_2s ON fun_2s.fun0Id = fun_0s.id
+  LEFT JOIN expeditions ON expeditions.fun0Id = fun_0s.id
+  
+  WHERE
+    fun_0s.date BETWEEN '${date_start}' AND '${date_end}'
+    AND fun_0s.state BETWEEN ${min_state} AND ${max_state}
+  
+  ORDER BY fun_0s.date DESC
+  `;
+};
+```
+
+#### Reporte Financiero
+
+```javascript
+module.exports.reportsFinance = (date_start, date_end) => {
+  return `
+  SELECT
+    fun_0s.id_public,
+    fun_0s.date,
+    fun_1s.tramite,
+    fun_1s.tipo,
+    
+    -- Cálculo de costos
+    JSON_EXTRACT(expeditions.taxes, '$.total') AS total_liquidacion,
+    JSON_EXTRACT(expeditions.taxes, '$.cargo_variable') AS cargo_variable,
+    JSON_EXTRACT(expeditions.taxes, '$.delineacion') AS delineacion,
+    JSON_EXTRACT(expeditions.taxes, '$.subsuelo') AS subsuelo,
+    JSON_EXTRACT(expeditions.taxes, '$.embellecimiento') AS embellecimiento,
+    JSON_EXTRACT(expeditions.taxes, '$.pro_uis') AS pro_uis,
+    
+    -- Estado de pago
+    fun_0s.id_payment,
+    CASE 
+      WHEN fun_0s.id_payment IS NOT NULL THEN 'PAGADO'
+      ELSE 'PENDIENTE'
+    END AS estado_pago
+    
+  FROM fun_0s
+  INNER JOIN fun_1s ON fun_1s.fun0Id = fun_0s.id
+  LEFT JOIN expeditions ON expeditions.fun0Id = fun_0s.id
+  
+  WHERE
+    fun_0s.date BETWEEN '${date_start}' AND '${date_end}'
+    AND fun_0s.state >= 10
+  
+  ORDER BY fun_0s.date DESC
+  `;
+};
+```
+
+#### Reporte Resumen
+
+```javascript
+module.exports.reportsResume = (date_start, date_end) => {
+  return `
+  SELECT
+    -- Totales por tipo de trámite
+    COUNT(*) AS total_tramites,
+    SUM(CASE WHEN fun_1s.tramite = 'LICENCIA DE CONSTRUCCION' THEN 1 ELSE 0 END) AS lic_construccion,
+    SUM(CASE WHEN fun_1s.tramite = 'RECONOCIMIENTO' THEN 1 ELSE 0 END) AS reconocimientos,
+    SUM(CASE WHEN fun_1s.tramite = 'MODIFICACION' THEN 1 ELSE 0 END) AS modificaciones,
+    
+    -- Totales por tipo
+    SUM(CASE WHEN fun_1s.tipo = 'OBRA NUEVA' THEN 1 ELSE 0 END) AS obra_nueva,
+    SUM(CASE WHEN fun_1s.tipo = 'AMPLIACION' THEN 1 ELSE 0 END) AS ampliaciones,
+    SUM(CASE WHEN fun_1s.tipo = 'ADECUACION' THEN 1 ELSE 0 END) AS adecuaciones,
+    
+    -- Totales por uso
+    SUM(CASE WHEN fun_1s.usos LIKE '%RESIDENCIAL%' THEN 1 ELSE 0 END) AS uso_residencial,
+    SUM(CASE WHEN fun_1s.usos LIKE '%COMERCIAL%' THEN 1 ELSE 0 END) AS uso_comercial,
+    SUM(CASE WHEN fun_1s.usos LIKE '%INDUSTRIAL%' THEN 1 ELSE 0 END) AS uso_industrial,
+    
+    -- Estados
+    SUM(CASE WHEN fun_0s.state < 100 THEN 1 ELSE 0 END) AS en_revision,
+    SUM(CASE WHEN fun_0s.state >= 100 AND fun_0s.state < 150 THEN 1 ELSE 0 END) AS aprobados,
+    SUM(CASE WHEN fun_0s.state >= 150 AND fun_0s.state < 200 THEN 1 ELSE 0 END) AS expedidos,
+    SUM(CASE WHEN fun_0s.state >= 200 THEN 1 ELSE 0 END) AS finalizados,
+    SUM(CASE WHEN fun_0s.state >= 300 AND fun_0s.state < 400 THEN 1 ELSE 0 END) AS rechazados,
+    
+    -- Áreas totales
+    SUM(
+      (SELECT SUM(CAST(expa.area AS DECIMAL(10,2)))
+       FROM exp_areas AS expa
+       WHERE expa.expeditionId = expeditions.id)
+    ) AS area_total_m2,
+    
+    -- Recaudos totales
+    SUM(
+      CAST(JSON_EXTRACT(expeditions.taxes, '$.total') AS DECIMAL(10,2))
+    ) AS recaudo_total
+    
+  FROM fun_0s
+  INNER JOIN fun_1s ON fun_1s.fun0Id = fun_0s.id
+  LEFT JOIN expeditions ON expeditions.fun0Id = fun_0s.id
+  
+  WHERE
+    fun_0s.date BETWEEN '${date_start}' AND '${date_end}'
+  `;
+};
+```
+
+### 17.4 Componente Frontend de Reportes
+
+**Archivo:** `src/app/pages/user/fun_forms/fun_reports/fun_gen.report.js`
+
+```javascript
+const FUN_REPORT_GEN = (props) => {
+  const { date_i, date_f } = props;
+  
+  const [reportData, setReportData] = useState({});
+  const [loading, setLoading] = useState(false);
+  
+  // Generar reporte
+  const generateReport = async () => {
+    setLoading(true);
+    
+    try {
+      // Obtener datos del backend
+      const response = await FUNService.reportsQuery(date_i, date_f);
+      const data = response.data;
+      
+      // Procesar datos para cada tipo de reporte
+      const processed = processReportData(data);
+      
+      setReportData(processed);
+    } catch (error) {
+      console.error("Error al generar reporte:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Procesar datos según formato requerido
+  const processReportData = (rawData) => {
+    return {
+      contraloria: formatForContraloria(rawData),
+      camacol: formatForCamacol(rawData),
+      dane: formatForDane(rawData),
+      planeacion: formatForPlaneacion(rawData),
+      ministerio: formatForMinisterio(rawData),
+      financiero: formatFinancial(rawData),
+      resumen: calculateSummary(rawData)
+    };
+  };
+  
+  // Exportar a Excel
+  const exportToExcel = (reportType) => {
+    const data = reportData[reportType];
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+    
+    const filename = `Reporte_${reportType}_${date_i}_${date_f}.xlsx`;
+    XLSX.writeFile(wb, filename);
+  };
+  
+  return (
+    <div className="report-generator">
+      <h2>Generador de Reportes</h2>
+      
+      <div className="date-selector">
+        <label>Fecha Inicio:</label>
+        <input type="date" value={date_i} />
+        
+        <label>Fecha Fin:</label>
+        <input type="date" value={date_f} />
+        
+        <button onClick={generateReport}>
+          {loading ? 'Generando...' : 'Generar Reportes'}
+        </button>
+      </div>
+      
+      {!loading && reportData && (
+        <div className="report-options">
+          <div className="report-card">
+            <h3>Reporte Contraloría</h3>
+            <p>Supervisión financiera y de gestión</p>
+            <button onClick={() => exportToExcel('contraloria')}>
+              <MDBIcon icon="file-excel" /> Descargar Excel
+            </button>
+          </div>
+          
+          <div className="report-card">
+            <h3>Reporte CAMACOL</h3>
+            <p>Estadísticas del sector constructor</p>
+            <button onClick={() => exportToExcel('camacol')}>
+              <MDBIcon icon="file-excel" /> Descargar Excel
+            </button>
+          </div>
+          
+          <div className="report-card">
+            <h3>Reporte DANE</h3>
+            <p>Censo de construcción</p>
+            <button onClick={() => exportToExcel('dane')}>
+              <MDBIcon icon="file-excel" /> Descargar Excel
+            </button>
+          </div>
+          
+          <div className="report-card">
+            <h3>Reporte Financiero</h3>
+            <p>Gestión de recaudos</p>
+            <button onClick={() => exportToExcel('financiero')}>
+              <MDBIcon icon="file-excel" /> Descargar Excel
+            </button>
+          </div>
+          
+          <div className="report-card">
+            <h3>Reporte Resumen</h3>
+            <p>Indicadores generales</p>
+            <button onClick={() => viewSummary()}>
+              <MDBIcon icon="chart-bar" /> Ver Resumen
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+### 17.5 Visualización de Métricas
+
+El sistema incluye gráficas y tablas para visualizar métricas:
+
+**Componentes de visualización:**
+
+1. **Gráfica de barras**: Trámites por tipo
+2. **Gráfica de línea**: Tendencia mensual
+3. **Gráfica de torta**: Distribución por uso
+4. **Mapa de calor**: Actividad por día/mes
+5. **Tabla de indicadores**: KPIs principales
+
+```javascript
+// Ejemplo de gráfica con react-vis
+import { XYPlot, VerticalBarSeries, XAxis, YAxis } from 'react-vis';
+
+const TramitesPorTipo = ({ data }) => {
+  const chartData = [
+    { x: 'Obra Nueva', y: data.obra_nueva },
+    { x: 'Ampliación', y: data.ampliaciones },
+    { x: 'Modificación', y: data.modificaciones },
+    { x: 'Adecuación', y: data.adecuaciones }
+  ];
+  
+  return (
+    <div>
+      <h3>Trámites por Tipo</h3>
+      <XYPlot width={400} height={300} xType="ordinal">
+        <XAxis />
+        <YAxis />
+        <VerticalBarSeries data={chartData} color="#0088FE" />
+      </XYPlot>
+    </div>
+  );
+};
+```
+
+### 17.6 APIs de Reportes
+
+**Endpoints disponibles:**
+
+| Endpoint | Método | Parámetros | Descripción |
+|----------|--------|------------|-------------|
+| `/api/fun/reports/:date_start&:date_end` | GET | Fechas | Reporte general |
+| `/api/fun/reports_2/:date_start&:date_end` | GET | Fechas | Reporte detallado |
+| `/api/fun/reports_finance/:date_start&:date_end` | GET | Fechas | Reporte financiero |
+| `/api/fun/reports_resume/:date_start&:date_end` | GET | Fechas | Reporte resumen |
+| `/api/fun/reporstPublicQuery/:id_start&:id_end` | GET | IDs | Rango de consecutivos |
+
+**Ejemplo de uso:**
+
+```javascript
+// Obtener reporte financiero
+const getFinancialReport = async (startDate, endDate) => {
+  try {
+    const response = await axios.get(
+      `/api/fun/reports_finance/${startDate}&${endDate}`
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener reporte:", error);
+  }
+};
+
+// Uso
+const report = await getFinancialReport('2024-01-01', '2024-01-31');
+console.log("Recaudo total:", report.recaudo_total);
+```
+
+### 17.7 Exportación de Datos
+
+El sistema soporta múltiples formatos de exportación:
+
+1. **Excel (.xlsx)**: Para análisis en hojas de cálculo
+2. **PDF**: Para impresión y distribución
+3. **CSV**: Para importación en otros sistemas
+4. **JSON**: Para integración con APIs
+
+```javascript
+// Función de exportación genérica
+const exportData = (data, format, filename) => {
+  switch(format) {
+    case 'excel':
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Datos");
+      XLSX.writeFile(wb, `${filename}.xlsx`);
+      break;
+      
+    case 'csv':
+      const csv = convertToCSV(data);
+      downloadFile(csv, `${filename}.csv`, 'text/csv');
+      break;
+      
+    case 'json':
+      const json = JSON.stringify(data, null, 2);
+      downloadFile(json, `${filename}.json`, 'application/json');
+      break;
+      
+    case 'pdf':
+      generatePDFReport(data, filename);
+      break;
+  }
+};
+```
+
+### 17.8 Automatización de Reportes
+
+El sistema puede configurarse para generar reportes automáticamente:
+
+**Configuración de tareas programadas (Cron jobs):**
+
+```javascript
+// dovela-backend/server.js
+
+const cron = require('node-cron');
+
+// Generar reporte mensual el último día de cada mes a las 23:00
+cron.schedule('0 23 L * *', async () => {
+  console.log('Generando reporte mensual automático...');
+  
+  const lastMonth = moment().subtract(1, 'month');
+  const startDate = lastMonth.startOf('month').format('YYYY-MM-DD');
+  const endDate = lastMonth.endOf('month').format('YYYY-MM-DD');
+  
+  // Generar reportes
+  const report = await generateMonthlyReport(startDate, endDate);
+  
+  // Enviar por email a destinatarios
+  await sendReportByEmail(report, [
+    'contraloria@example.com',
+    'planeacion@example.com'
+  ]);
+  
+  console.log('Reporte mensual generado y enviado');
+});
+```
+
+---
+
 **Última actualización:** Octubre 2024  
-**Versión del documento:** 2.0  
+**Versión del documento:** 3.0  
 **Autor:** Equipo de Desarrollo Curaduría N°1
