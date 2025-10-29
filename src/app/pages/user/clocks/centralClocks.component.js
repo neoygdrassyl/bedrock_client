@@ -219,9 +219,9 @@ export default function EXP_CLOCKS(props) {
   const Header = () => (
     <div className="exp-head d-flex align-items-center justify-content-between">
       <div className="small w-100"><div className="row g-2 m-0 fw-bold">
-        <div className="col-4">EVENTO</div><div className="col-2 text-center">FECHA</div>
-        <div className="col-2 text-center">LÍMITE</div><div className="col-2 text-center">INFO</div>
-        <div className="col-1 text-center">CONSEC.</div><div className="col-1 text-center">DOC</div>
+        <div className="col-4">Evento</div><div className="col-2 text-center">Fecha Evento</div>
+        <div className="col-2 text-center">Fecha Límite Evento</div><div className="col-2 text-center">Info</div>
+        <div className="col-1 text-center">Consec.</div><div className="col-1 text-center">Doc</div>
       </div></div>
     </div>
   );
