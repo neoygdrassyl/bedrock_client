@@ -1,0 +1,313 @@
+/* ============================================
+   ENHANCED SIDEBAR NAVIGATION FOR FUN_FORMS
+   Inspired by GitHub Copilot interface
+   ============================================ */
+
+.fun-nav-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #e1e4e8;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.fun-nav-sidebar.expanded {
+    width: 240px;
+}
+
+.fun-nav-sidebar.collapsed {
+    width: 60px;
+}
+
+/* Scrollbar personalizado para la barra lateral */
+.fun-nav-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.fun-nav-sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.fun-nav-sidebar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.fun-nav-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Toggle button */
+.fun-nav-toggle {
+    position: absolute;
+    right: -12px;
+    top: 20px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 1px solid #e1e4e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fun-nav-toggle:hover {
+    background-color: #f6f8fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.fun-nav-toggle i {
+    font-size: 12px;
+    color: #586069;
+}
+
+/* Header Section */
+.fun-nav-header {
+    padding: 20px 16px;
+    border-bottom: 1px solid #e1e4e8;
+    background-color: #f6f8fa;
+}
+
+.fun-nav-sidebar.collapsed .fun-nav-header {
+    padding: 20px 8px;
+    min-height: 60px;
+}
+
+.fun-nav-header-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #24292e;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.fun-nav-header-title i {
+    font-size: 16px;
+}
+
+.fun-nav-header-info {
+    font-size: 12px;
+}
+
+.fun-nav-info-item {
+    margin-bottom: 4px;
+}
+
+.fun-nav-info-item small {
+    font-size: 11px;
+}
+
+.fun-nav-info-item strong {
+    font-size: 13px;
+    color: #24292e;
+}
+
+/* Navigation Sections */
+.fun-nav-section {
+    padding: 8px 8px;
+    border-bottom: 1px solid #e1e4e8;
+}
+
+.fun-nav-section:last-child {
+    border-bottom: none;
+}
+
+/* Navigation Items */
+.fun-nav-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    margin-bottom: 4px;
+    border: none;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #24292e;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.fun-nav-sidebar.collapsed .fun-nav-item {
+    justify-content: center;
+    padding: 12px;
+}
+
+.fun-nav-item i {
+    font-size: 18px;
+    min-width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fun-nav-sidebar.collapsed .fun-nav-item i {
+    margin: 0;
+}
+
+.fun-nav-label {
+    margin-left: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.fun-nav-sidebar.collapsed .fun-nav-label {
+    display: none;
+}
+
+/* Hover effects for navigation items */
+.fun-nav-item:hover:not(:disabled) {
+    background-color: #f6f8fa;
+    transform: translateX(2px);
+}
+
+.fun-nav-sidebar.collapsed .fun-nav-item:hover:not(:disabled) {
+    transform: none;
+}
+
+/* Active state */
+.fun-nav-item.active {
+    background-color: #e8f4f8;
+    color: #0366d6;
+    font-weight: 600;
+}
+
+.fun-nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: #0366d6;
+}
+
+.fun-nav-item:disabled {
+    cursor: default;
+    opacity: 1;
+}
+
+/* Color variants for buttons */
+.fun-nav-item.btn-info {
+    color: #0c5460;
+}
+
+.fun-nav-item.btn-info:hover:not(:disabled) {
+    background-color: #d1ecf1;
+}
+
+.fun-nav-item.btn-info.active {
+    background-color: #bee5eb;
+    color: #0c5460;
+}
+
+.fun-nav-item.btn-secondary {
+    color: #383d41;
+}
+
+.fun-nav-item.btn-secondary:hover:not(:disabled) {
+    background-color: #e2e3e5;
+}
+
+.fun-nav-item.btn-secondary.active {
+    background-color: #d6d8db;
+    color: #383d41;
+}
+
+.fun-nav-item.btn-warning {
+    color: #856404;
+}
+
+.fun-nav-item.btn-warning:hover:not(:disabled) {
+    background-color: #fff3cd;
+}
+
+.fun-nav-item.btn-warning.active {
+    background-color: #ffeeba;
+    color: #856404;
+}
+
+.fun-nav-item.btn-close-module {
+    color: #d73a49;
+    font-weight: 600;
+}
+
+.fun-nav-item.btn-close-module:hover {
+    background-color: #ffeef0;
+}
+
+/* Badge styles */
+.fun-nav-label .badge {
+    font-size: 10px;
+    padding: 2px 6px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .fun-nav-sidebar.expanded {
+        width: 200px;
+    }
+    
+    .fun-nav-sidebar.collapsed {
+        width: 50px;
+    }
+}
+
+/* Tooltip adjustments for collapsed state */
+.fun-nav-sidebar.collapsed .tooltip {
+    margin-left: 8px;
+}
+
+/* Animation for smooth transitions */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fun-nav-sidebar.expanded .fun-nav-label {
+    animation: slideIn 0.3s ease;
+}
+
+/* Focus states for accessibility */
+.fun-nav-item:focus {
+    outline: 2px solid #0366d6;
+    outline-offset: -2px;
+}
+
+.fun-nav-toggle:focus {
+    outline: 2px solid #0366d6;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .fun-nav-sidebar {
+        display: none;
+    }
+}
