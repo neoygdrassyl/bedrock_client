@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import moment from 'moment';
@@ -23,7 +23,9 @@ export default function EXP_CLOCKS(props) {
   const { swaMsg, currentItem, currentVersion, outCodes } = props;
   const [clocksData, setClocksData] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-
+  const [sidebarHeight, setSidebarHeight] = useState('auto');
+  
+  const sidebarRef = useRef(null);
 
   useEffect(() => {
     if (currentItem?.fun_clocks) {
@@ -32,8 +34,24 @@ export default function EXP_CLOCKS(props) {
     }
   }, [currentItem?.fun_clocks]);
 
-
   const manager = useClocksManager(currentItem, clocksData, currentVersion);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (sidebarRef.current) {
+        setSidebarHeight(sidebarRef.current.offsetHeight - 44); // 44px es la altura del Header de la tabla
+      }
+    };
+    
+    handleResize(); 
+    const timer = setTimeout(handleResize, 200); 
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', handleResize);
+    };
+  }, [clocksData, manager.canAddExtension, manager.canAddSuspension]);
   
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa } = manager;
 
@@ -334,11 +352,11 @@ export default function EXP_CLOCKS(props) {
         <div className="exp-main-content">
           <div className="card exp-card">
             <Header />
-            <div className="exp-scroll">{renderClockList()}</div>
+            <div className="exp-scroll" style={{ height: sidebarHeight, maxHeight: sidebarHeight }}>{renderClockList()}</div>
           </div>
         </div>
         
-        <div className="exp-sidebar">
+        <div className="exp-sidebar" ref={sidebarRef}>
           <SidebarInfo 
              manager={manager} 
              actions={{ onAddTimeControl: addTimeControl }} 
@@ -374,7 +392,7 @@ export default function EXP_CLOCKS(props) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 0.5rem 0.25rem;
+          padding: 0.35rem 0.25rem;
         }
         .sidebar-card-body .value-row .label {
           color: #6c757d;
@@ -390,54 +408,55 @@ export default function EXP_CLOCKS(props) {
         }
         
         /* Specific card styles */
-        .process-status-card .status-text {
+        .status-text {
           font-size: 1.5rem;
           font-weight: 700;
         }
-        .process-status-card .status-icon {
+        .status-icon {
           font-size: 1.5rem;
         }
-        .process-status-card .status-Vencido { color: #e03131; }
-        .process-status-card .status-icon-Vencido { color: #e03131; }
-        .process-status-card .status-Finalizado { color: #2f9e44; }
-        .process-status-card .status-icon-Finalizado { color: #2f9e44; }
-        .process-status-card .status-Pausado { color: #f08c00; }
-        .process-status-card .status-icon-Pausado { color: #f08c00; }
-        .process-status-card .status-Desistido { color: #c92a2a; }
-        .process-status-card .status-icon-Desistido { color: #c92a2a; }
-        .process-status-card .status-default { color: #1971c2; }
-        .process-status-card .status-icon-default { color: #1971c2; }
+        .status-Vencido { color: #e03131; }
+        .status-icon-Vencido { color: #e03131; }
+        .status-Finalizado { color: #2f9e44; }
+        .status-icon-Finalizado { color: #2f9e44; }
+        .status-Pausado { color: #f08c00; }
+        .status-icon-Pausado { color: #f08c00; }
+        .status-Desistido { color: #c92a2a; }
+        .status-icon-Desistido { color: #c92a2a; }
+        .status-default { color: #1971c2; }
+        .status-icon-default { color: #1971c2; }
+        
+        .quick-actions-card .sidebar-card-body {
+            padding: 0;
+        }
+        .btn-action {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 0.6rem;
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color .2s;
+        }
+        .btn-action:not(:last-child) {
+            margin-bottom: .5rem;
+        }
+        .btn-suspension {
+            background-color: #f08c00;
+        }
+        .btn-suspension:hover {
+            background-color: #e67700;
+        }
+        .btn-prorroga {
+            background-color: #17a2b8;
+        }
+        .btn-prorroga:hover {
+            background-color: #138496;
+        }
 
-        .quick-actions-card .btn-group {
-          display: flex;
-          width: 100%;
-        }
-        .quick-actions-card .btn {
-          flex: 1;
-          font-weight: 600;
-        }
-        .quick-actions-card .btn-suspension {
-          background-color: #f08c00;
-          border-color: #f08c00;
-          color: #fff;
-          border-top-right-radius: 0;
-          border-bottom-right-radius: 0;
-        }
-        .quick-actions-card .btn-suspension:hover {
-          background-color: #e67700;
-          border-color: #e67700;
-        }
-        .quick-actions-card .btn-prorroga {
-          background-color: #17a2b8;
-          border-color: #17a2b8;
-          color: #fff;
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0;
-        }
-        .quick-actions-card .btn-prorroga:hover {
-          background-color: #138496;
-          border-color: #138496;
-        }
         .btn-detail-link {
           background: none;
           border: none;
@@ -637,6 +656,9 @@ export default function EXP_CLOCKS(props) {
           box-shadow: 0 6px 16px rgba(0,0,0,.06); 
           overflow: hidden; 
           border: 1px solid #e9ecef; 
+          display: flex;
+          flex-direction: column;
+          height: 100%;
         }
         .exp-head{ 
           position: sticky; 
@@ -649,8 +671,13 @@ export default function EXP_CLOCKS(props) {
           display: flex; 
           border-top-left-radius: 6px; 
           border-top-right-radius: 6px; 
+          flex-shrink: 0;
         }
-        .exp-scroll{ max-height: 80vh; overflow-y: auto; overflow-x: hidden; font-size: .95rem; }
+        .exp-scroll{ 
+          overflow-y: auto; 
+          overflow-x: hidden; 
+          font-size: .95rem; 
+        }
         .exp-row{ background: #fff; position: relative; transition: background-color .2s; display: flex; align-items: stretch; }
         .exp-row::before{ content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--cat, #6c757d); }
         .exp-row:hover{ background: #eaf3ff; }
@@ -758,10 +785,13 @@ export default function EXP_CLOCKS(props) {
           .exp-container {
             flex-direction: column;
           }
-          
           .exp-sidebar {
             width: 100%;
             position: static;
+          }
+          .exp-scroll {
+            height: auto;
+            max-height: 80vh;
           }
         }
       `}</style>
