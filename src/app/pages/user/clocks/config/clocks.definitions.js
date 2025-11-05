@@ -92,7 +92,7 @@ const extraClocks = (props) => {
       { state: 49, name: 'Acta Parte 2: Correcciones', desc: requereCorr() ? "Acta de revisión de correcciones" : false, limit: [[35, 50]], limitValues: viaTime, icon: requereCorr() ? undefined : "empty", spentDaysConfig: { startState: 35 } },
       ...getDesistClocks(-3, getClockVersion),
       ...getDesistClocks(-5, getClockVersion),
-      { title: 'ACTA DE VIABILIDAD' },
+      { title: 'ACTA DE VIABILIDAD Y LIQUIDACIÓN' },
       { state: 61, name: 'Acto de Tramite de Licencia (Viabilidad)', desc: "Tramite de viabilidad Licencia", limit: false, spentDaysConfig: { startState: 49 } },
       { state: 55, name: 'Citación (Viabilidad)', desc: "Comunicación o Requerimiento para el tramite de viabilidad de Licencia", limit: [[61, 5]], spentDaysConfig: { startState: 61 } },
       { state: 56, name: 'Notificación (Viabilidad)', desc: "Se le notifica al solicitante del Tramite de viabilidad Licencia", limit: [[55, 5]], spentDaysConfig: { startState: 55 } },
