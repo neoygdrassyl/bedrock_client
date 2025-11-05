@@ -432,6 +432,7 @@ class RECORD_PH extends Component {
                         currentVersion={currentVersion}
                         FROM={"record_ph"}
                         NAVIGATION={this.props.NAVIGATION}
+                        toggleSidebar={this.props.toggleSidebar}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>

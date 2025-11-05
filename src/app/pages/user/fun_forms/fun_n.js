@@ -181,7 +181,7 @@ class FUNN extends Component {
                             FROM={"edit"}
                             NAVIGATION={this.props.NAVIGATION}
                             pqrsxfun={this.state.pqrsxfun}
-
+                            toggleSidebar={this.props.toggleSidebar}
                         />
                         <FUN_VERSION_NAV
                             translation={translation}

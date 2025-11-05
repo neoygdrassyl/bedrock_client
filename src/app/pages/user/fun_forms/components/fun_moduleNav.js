@@ -8,19 +8,25 @@ class FUN_MODULE_NAV extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isCollapsed: false
+            internalCollapsedState: false
         };
     }
 
     toggleSidebar = () => {
-        this.setState(prevState => ({
-            isCollapsed: !prevState.isCollapsed
-        }));
+        const newState = !this.state.internalCollapsedState;
+        this.setState({
+            internalCollapsedState: newState
+        });
+        // Notify parent component if toggleSidebar prop is provided
+        if (this.props.toggleSidebar) {
+            this.props.toggleSidebar(newState);
+        }
     };
 
     render() {
         const { translation, currentItem, currentVersion, FROM } = this.props;
-        const { isCollapsed } = this.state;
+        const { internalCollapsedState } = this.state;
+        const isCollapsed = internalCollapsedState;
 
         let _REGEX_MATCH_PH = (_string) => {
             let regex0 = /p\.\s+h/i;
@@ -154,59 +160,62 @@ class FUN_MODULE_NAV extends Component {
                             )}
                         </div>
 
-                        {/* Botón de cerrar */}
-                        <div className="fun-nav-section">
-                            <MDBTooltip 
-                                tag="div" 
-                                title={!isCollapsed ? '' : 'Cerrar'}
-                                placement="right"
-                            >
-                                <button
-                                    onClick={() => this.props.NAVIGATION(currentItem, "close", FROM)}
-                                    className={`fun-nav-item btn-close-module`}
+                        {/* Scrollable container for buttons */}
+                        <div className="fun-nav-buttons-container">
+                            {/* Botón de cerrar */}
+                            <div className="fun-nav-section">
+                                <MDBTooltip 
+                                    tag="div" 
+                                    title={!isCollapsed ? '' : 'Cerrar'}
+                                    placement="right"
                                 >
-                                    <i className="fas fa-times-circle"></i>
-                                    {!isCollapsed && <span className="fun-nav-label">CERRAR</span>}
-                                </button>
-                            </MDBTooltip>
-                        </div>
-
-                        {/* Grupos de navegación */}
-                        {navGroups.map(group => (
-                            <div key={group.id} className="fun-nav-section">
-                                {group.items.map(item => {
-                                    const itemColor = item.color || group.color;
-                                    const isActive = FROM === item.from;
-                                    
-                                    return (
-                                        <MDBTooltip 
-                                            key={item.id}
-                                            tag="div" 
-                                            title={!isCollapsed ? '' : item.label}
-                                            placement="right"
-                                        >
-                                            <button
-                                                onClick={() => FROM !== item.from && this.props.NAVIGATION(currentItem, item.id, FROM)}
-                                                className={`fun-nav-item ${isActive ? 'active' : ''} btn-${itemColor}`}
-                                                disabled={isActive}
-                                            >
-                                                <i className={item.icon}></i>
-                                                {!isCollapsed && (
-                                                    <span className="fun-nav-label">
-                                                        {item.label}
-                                                        {item.badge && (
-                                                            <MDBBadge color="primary" className="ms-2">
-                                                                {item.badge}
-                                                            </MDBBadge>
-                                                        )}
-                                                    </span>
-                                                )}
-                                            </button>
-                                        </MDBTooltip>
-                                    );
-                                })}
+                                    <button
+                                        onClick={() => this.props.NAVIGATION(currentItem, "close", FROM)}
+                                        className={`fun-nav-item btn-close-module`}
+                                    >
+                                        <i className="fas fa-times-circle"></i>
+                                        {!isCollapsed && <span className="fun-nav-label">CERRAR</span>}
+                                    </button>
+                                </MDBTooltip>
                             </div>
-                        ))}
+
+                            {/* Grupos de navegación */}
+                            {navGroups.map(group => (
+                                <div key={group.id} className="fun-nav-section">
+                                    {group.items.map(item => {
+                                        const itemColor = item.color || group.color;
+                                        const isActive = FROM === item.from;
+                                        
+                                        return (
+                                            <MDBTooltip 
+                                                key={item.id}
+                                                tag="div" 
+                                                title={!isCollapsed ? '' : item.label}
+                                                placement="right"
+                                            >
+                                                <button
+                                                    onClick={() => FROM !== item.from && this.props.NAVIGATION(currentItem, item.id, FROM)}
+                                                    className={`fun-nav-item ${isActive ? 'active' : ''} btn-${itemColor}`}
+                                                    disabled={isActive}
+                                                >
+                                                    <i className={item.icon}></i>
+                                                    {!isCollapsed && (
+                                                        <span className="fun-nav-label">
+                                                            {item.label}
+                                                            {item.badge && (
+                                                                <MDBBadge color="primary" className="ms-2">
+                                                                    {item.badge}
+                                                                </MDBBadge>
+                                                            )}
+                                                        </span>
+                                                    )}
+                                                </button>
+                                            </MDBTooltip>
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </>

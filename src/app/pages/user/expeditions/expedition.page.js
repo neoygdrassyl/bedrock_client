@@ -326,6 +326,7 @@ class EXPEDITION extends Component {
                         FROM={"expedition"}
                         NAVIGATION={this.props.NAVIGATION}
                         pqrsxfun={this.state.pqrsxfun}
+                        toggleSidebar={this.props.toggleSidebar}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>

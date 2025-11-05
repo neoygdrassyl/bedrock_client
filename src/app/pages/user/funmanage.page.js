@@ -50,6 +50,7 @@ class FUN_MANAGE extends Component {
         this.toggle = this.toggle.bind(this);
         this.openModal = this.openModal.bind(this);
         this.toggle_NEGATIVE = this.toggle_NEGATIVE.bind(this);
+        this.toggleSidebar = this.toggleSidebar.bind(this);
         this.state = {
             error: null,
             isLoaded: false,
@@ -91,6 +92,7 @@ class FUN_MANAGE extends Component {
             fillActive: '4',
             fillActive2: '1',
             clocks: [],
+            isSidebarCollapsed: false,
         };
     }
     componentDidMount() {
@@ -536,6 +538,10 @@ class FUN_MANAGE extends Component {
         if (regex0.test(_string) || regex2.test(_string) || regex1.test(_string) || regex3.test(_string)) return true;
         return false
     }
+    // SIDEBAR TOGGLE HANDLER
+    toggleSidebar = (isCollapsed) => {
+        this.setState({ isSidebarCollapsed: isCollapsed });
+    }
     render() {
         const { translation, swaMsg, globals, breadCrums } = this.props;
         const { currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search } = this.state;
@@ -561,7 +567,7 @@ class FUN_MANAGE extends Component {
                 content: {
                     position: 'absolute',
                     top: '10px',
-                    left: '20%',
+                    left: this.state.isSidebarCollapsed ? '80px' : '260px',
                     right: '15%',
                     bottom: '10px',
                     border: '1px solid #ccc',
@@ -571,7 +577,7 @@ class FUN_MANAGE extends Component {
                     outline: 'none',
                     padding: '20px',
                     marginRight: 'auto',
-
+                    transition: 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 }
             }
         };
@@ -813,6 +819,7 @@ class FUN_MANAGE extends Component {
                         currentVersion={currentVersion}
                         NAVIGATION={this.navigation}
                         NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar}
                     />
 
                     <div className="text-end py-4 mt-3">
@@ -839,7 +846,8 @@ class FUN_MANAGE extends Component {
                         requesRefresh={this.retrievePublish}
                         closeModal={this.toggle_c}
                         NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_c}>
@@ -865,7 +873,8 @@ class FUN_MANAGE extends Component {
                         requestUpdate={this.requestUpdate}
                         requesRefresh={this.retrievePublish}
                         NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_n}>
@@ -890,7 +899,8 @@ class FUN_MANAGE extends Component {
                         currentVersion={currentVersion}
                         requestUpdate={this.requestUpdate}
                         NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_d}>
@@ -916,7 +926,8 @@ class FUN_MANAGE extends Component {
                         requestUpdate={this.requestUpdate}
                         closeModal={this.toggle_alert}
                         NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_alert}>
@@ -941,7 +952,8 @@ class FUN_MANAGE extends Component {
                         currentVersion={currentVersion}
                         requesRefresh={this.retrievePublish}
                         NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_clock}>
@@ -968,7 +980,8 @@ class FUN_MANAGE extends Component {
                         requesRefresh={this.retrievePublish}
                         closeModal={this.toggle_recordArc}
                         NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_recordArc}>
@@ -994,7 +1007,8 @@ class FUN_MANAGE extends Component {
                         requestUpdate={this.requestUpdate}
                         closeModal={this.toggle_recordLaw}
                         NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_recordLaw}>
@@ -1021,7 +1035,8 @@ class FUN_MANAGE extends Component {
                         requesRefresh={this.retrievePublish}
                         closeModal={this.toggle_recordPH}
                         NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_recordPH}>
@@ -1047,7 +1062,8 @@ class FUN_MANAGE extends Component {
                         requestUpdate={this.requestUpdate}
                         closeModal={this.toggle_recordLaw}
                         NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        NAVIGATION_VERSION={this.navigation_version}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_recordEng}>
@@ -1072,7 +1088,8 @@ class FUN_MANAGE extends Component {
                         currentVersion={currentVersion}
                         requestUpdate={this.requestUpdate}
                         closeModal={this.toggle_recordReview}
-                        NAVIGATION={this.navigation} />
+                        NAVIGATION={this.navigation}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_recordReview}>
@@ -1097,7 +1114,8 @@ class FUN_MANAGE extends Component {
                         currentVersion={currentVersion}
                         requesRefresh={this.retrievePublish}
                         closeModal={this.toggle_exp}
-                        NAVIGATION={this.navigation} />
+                        NAVIGATION={this.navigation}
+                        toggleSidebar={this.toggleSidebar} />
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={this.toggle_exp}>

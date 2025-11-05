@@ -699,6 +699,7 @@ class RECORD_ARC extends Component {
                         FROM={"record_arc"}
                         NAVIGATION={this.props.NAVIGATION}
                         pqrsxfun={this.state.pqrsxfun}
+                        toggleSidebar={this.props.toggleSidebar}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>

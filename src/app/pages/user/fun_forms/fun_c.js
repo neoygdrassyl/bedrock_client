@@ -932,6 +932,7 @@ class FUNC extends Component {
                         FROM={"check"}
                         NAVIGATION={this.props.NAVIGATION}
                         pqrsxfun={this.state.pqrsxfun}
+                        toggleSidebar={this.props.toggleSidebar}
                     />
                     <FUN_VERSION_NAV
                         translation={translation}

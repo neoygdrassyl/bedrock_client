@@ -136,6 +136,7 @@ class FUNCLOCK extends Component {
                     FROM={"clock"}
                     NAVIGATION={this.props.NAVIGATION}
                     pqrsxfun={pqrsxfun}
+                    toggleSidebar={this.props.toggleSidebar}
                 />
             </div>
         );
