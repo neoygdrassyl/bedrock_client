@@ -6,8 +6,9 @@ import moment from 'moment';
 
 import { useClocksManager } from './hooks/useClocksManager';
 import { generateClocks } from './config/clocks.definitions';
-import { ControlBar } from './components/ControlBar';
 import { ClockRow } from './components/ClockRow';
+import { SidebarInfo } from './components/SidebarInfo';
+import { HolidayCalendar } from './components/HolidayCalendar';
 
 
 import FUN_SERVICE from '../../../services/fun.service';
@@ -20,7 +21,6 @@ const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
   const { swaMsg, currentItem, currentVersion, outCodes } = props;
-  const [isFull, setIsFull] = useState(false);
   const [clocksData, setClocksData] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -144,6 +144,38 @@ export default function EXP_CLOCKS(props) {
     }
   }
 
+  const delete_clock = (value) => {
+    MySwal.fire({
+      title: '¿Estás seguro?',
+      text: `Se eliminará la fecha del evento "${value.name}". Esta acción no se puede deshacer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const formDataClock = new FormData();
+        
+        formDataClock.set('state', value.state);
+        if (value.version !== undefined) {
+          formDataClock.set('version', value.version);
+        }
+
+        formDataClock.set('date_start', '');
+        formDataClock.set('desc', value.desc || '');
+        
+        applyLocalClockChange(value.state, { 
+            date_start: '',
+            desc: value.desc || ''
+        }, value.version);
+
+        manage_clock(false, value.state, value.version, formDataClock, true);
+      }
+    });
+  };
+
 
   const addTimeControl = (type) => {
     if (type === 'suspension') {
@@ -209,7 +241,6 @@ export default function EXP_CLOCKS(props) {
             if (result.isConfirmed) {
                 const { startDate, endDate } = result.value;
                 
-                // Guardar el inicio de la prórroga
                 const formDataStart = new FormData();
                 formDataStart.set('state', 400);
                 formDataStart.set('date_start', startDate);
@@ -218,7 +249,6 @@ export default function EXP_CLOCKS(props) {
                 applyLocalClockChange(400, { date_start: startDate, desc: 'Prórroga por complejidad técnica', name: 'Inicio Prórroga por Complejidad' });
                 manage_clock(false, 400, false, formDataStart, true);
 
-                // Si se proporcionó fecha de fin, guardarla también
                 if (endDate) {
                     const days = dateParser_dateDiff(startDate, endDate);
                     const formDataEnd = new FormData();
@@ -227,7 +257,6 @@ export default function EXP_CLOCKS(props) {
                     formDataEnd.set('desc', `Fin de prórroga (${days} días)`);
                     formDataEnd.set('name', 'Fin Prórroga por Complejidad');
                     applyLocalClockChange(401, { date_start: endDate, desc: `Fin de prórroga (${days} días)`, name: 'Fin Prórroga por Complejidad' });
-                    // Se usa un timeout para evitar condiciones de carrera en el backend
                     setTimeout(() => manage_clock(false, 401, false, formDataEnd, true), 200);
                 }
             }
@@ -290,7 +319,7 @@ export default function EXP_CLOCKS(props) {
         return (
           <ClockRow
             key={`row-${i}-${value.state ?? 'no-state'}-${value.version ?? 'no-version'}-${refreshTrigger}`}
-            value={value} i={i} clock={clock} onSave={save_clock} cat={cat}
+            value={value} i={i} clock={clock} onSave={save_clock} onDelete={delete_clock} cat={cat}
             outCodes={outCodes} _CHILD_6_SELECT={_CHILD_6_SELECT} _FIND_6={_FIND_6}
             helpers={{ getClock, getNewestDate, ...manager, currentItem }}
           />
@@ -303,11 +332,6 @@ export default function EXP_CLOCKS(props) {
     <div className="exp-wrapper">
       <div className="exp-container">
         <div className="exp-main-content">
-          <ControlBar 
-            manager={manager} 
-            actions={{ onAddTimeControl: addTimeControl, onSetIsFull: setIsFull, isFull }} 
-          />
-          
           <div className="card exp-card">
             <Header />
             <div className="exp-scroll">{renderClockList()}</div>
@@ -315,78 +339,299 @@ export default function EXP_CLOCKS(props) {
         </div>
         
         <div className="exp-sidebar">
-          {/* Aquí puedes agregar futuras funcionalidades */}
-          <div className="sidebar-placeholder">
-            <p className="text-muted">Espacio disponible para futuras funcionalidades</p>
-          </div>
+          <SidebarInfo 
+             manager={manager} 
+             actions={{ onAddTimeControl: addTimeControl }} 
+          />
+          <HolidayCalendar />
         </div>
       </div>
-
-
-      {isFull && (
-        <div className="exp-fullscreen">
-          <div className="exp-fullscreen-inner">
-            <div className="d-flex align-items-center justify-content-between mb-2">
-              <h6 className="m-0">Reloj del Proceso</h6>
-              <button className="btn btn-sm btn-light" onClick={() => setIsFull(false)}><i className="fas fa-compress"></i> Cerrar</button>
-            </div>
-            <ControlBar 
-              manager={manager} 
-              actions={{ onAddTimeControl: addTimeControl, onSetIsFull: setIsFull, isFull }} 
-            />
-            <div className="card exp-card mb-0">
-              <Header />
-              <div className="exp-scroll exp-scroll-full">{renderClockList()}</div>
-            </div>
-          </div>
-        </div>
-      )}
       
       <style>{`
-        .control-bar .bar-inner { display: flex; width: 100%; flex-wrap: wrap; }
-        .control-bar .actions { flex: 0 0 auto; display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
-        .control-bar .control-meta { margin-left: auto; text-align: right; min-width: auto; }
-        .control-bar .status-chips .badge { font-weight: 600; }
-        :root { --headH: 44px; }
-        .control-bar { position: relative; z-index: 1; margin-bottom: 1rem; }
-        .control-bar .btn-sm { padding: .35rem .75rem; font-size: .85rem; }
+        /* --- SIDEBAR CARDS --- */
+        .sidebar-card {
+          background-color: #fff;
+          border-radius: 8px;
+          border: 1px solid #e9ecef;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+          margin-bottom: 1.5rem;
+          padding: 1rem;
+        }
+        .sidebar-card-header {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          font-weight: 600;
+          color: #495057;
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid #f1f3f5;
+          margin-bottom: 1rem;
+        }
+        .sidebar-card-header i {
+          color: #868e96;
+        }
+        .sidebar-card-body .value-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.5rem 0.25rem;
+        }
+        .sidebar-card-body .value-row .label {
+          color: #6c757d;
+        }
+        .sidebar-card-body .value-row .value {
+          font-weight: 600;
+        }
+        .sidebar-card-body .value-row .value.text-danger {
+          color: #e03131 !important;
+        }
+        .sidebar-card-body .value-row .value.text-success {
+          color: #2f9e44 !important;
+        }
         
-        /* Contenedor principal con layout de dos columnas */
+        /* Specific card styles */
+        .process-status-card .status-text {
+          font-size: 1.5rem;
+          font-weight: 700;
+        }
+        .process-status-card .status-icon {
+          font-size: 1.5rem;
+        }
+        .process-status-card .status-Vencido { color: #e03131; }
+        .process-status-card .status-icon-Vencido { color: #e03131; }
+        .process-status-card .status-Finalizado { color: #2f9e44; }
+        .process-status-card .status-icon-Finalizado { color: #2f9e44; }
+        .process-status-card .status-Pausado { color: #f08c00; }
+        .process-status-card .status-icon-Pausado { color: #f08c00; }
+        .process-status-card .status-Desistido { color: #c92a2a; }
+        .process-status-card .status-icon-Desistido { color: #c92a2a; }
+        .process-status-card .status-default { color: #1971c2; }
+        .process-status-card .status-icon-default { color: #1971c2; }
+
+        .quick-actions-card .btn-group {
+          display: flex;
+          width: 100%;
+        }
+        .quick-actions-card .btn {
+          flex: 1;
+          font-weight: 600;
+        }
+        .quick-actions-card .btn-suspension {
+          background-color: #f08c00;
+          border-color: #f08c00;
+          color: #fff;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+        .quick-actions-card .btn-suspension:hover {
+          background-color: #e67700;
+          border-color: #e67700;
+        }
+        .quick-actions-card .btn-prorroga {
+          background-color: #17a2b8;
+          border-color: #17a2b8;
+          color: #fff;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        }
+        .quick-actions-card .btn-prorroga:hover {
+          background-color: #138496;
+          border-color: #138496;
+        }
+        .btn-detail-link {
+          background: none;
+          border: none;
+          color: #1971c2;
+          font-weight: 600;
+          padding: 0;
+          text-align: left;
+          margin-top: 0.75rem;
+          font-size: 0.875rem;
+        }
+        .btn-detail-link:hover {
+          text-decoration: underline;
+        }
+        
+        /* --- CALENDAR WIDGET --- */
+        .calendar-widget .sidebar-card-body {
+            padding: 0;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            text-transform: capitalize;
+        }
+        .calendar-header button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #868e96;
+            padding: 0 .5rem;
+        }
+        .calendar-header .current-month {
+            font-weight: 600;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+        }
+        .days-of-week {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #adb5bd;
+            padding-bottom: 0.5rem;
+        }
+        .day-cell {
+            font-size: 0.8rem;
+            padding: 0.4rem 0;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        .day-cell.not-current-month {
+            color: #ced4da;
+        }
+        .day-cell.weekend {
+            background-color: #f1f3f5;
+            color: #868e96;
+        }
+        .day-cell.holiday {
+            background-color: #ffe066;
+            color: #865900;
+            font-weight: 600;
+        }
+        .day-cell.today {
+            border: 2px solid #339af0;
+        }
+        .calendar-legend {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: #868e96;
+            justify-content: center;
+            margin-top: 1rem;
+            padding: 0.75rem 0;
+            border-top: 1px solid #f1f3f5;
+        }
+        .legend-box {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 0.3rem;
+        }
+        .legend-box.holiday { background-color: #ffe066; }
+        .legend-box.weekend { background-color: #f1f3f5; }
+
+        /* --- CALCULATOR --- */
+        .calculator-section {
+            border-top: 1px solid #e9ecef;
+            padding: 1rem .5rem .5rem .5rem;
+            margin-top: 1rem;
+        }
+        .calc-tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            background-color: #f1f3f5;
+            border-radius: 6px;
+            padding: 2px;
+        }
+        .calc-tabs button {
+            flex: 1;
+            padding: .4rem;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .calc-tabs button.active {
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        }
+        .calc-body {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .calc-body input[type="date"], .calc-body input[type="number"] {
+            flex: 1;
+            min-width: 0;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: .3rem .4rem;
+            font-size: .8rem;
+        }
+        .calc-body input[type="number"] {
+            text-align: center;
+            flex-grow: 0.5;
+        }
+        .calc-separator {
+            color: #868e96;
+        }
+        .calc-button {
+            border: none;
+            background-color: #339af0;
+            color: white;
+            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+        .calc-button:hover {
+            background-color: #1c7ed6;
+        }
+        .calc-result {
+            margin-top: .75rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1864ab;
+            padding: .5rem;
+            background: #e7f5ff;
+            border-radius: 4px;
+        }
+        .calc-result.error {
+            color: #c92a2a;
+            background: #fff5f5;
+        }
+
+        /* --- LAYOUT & MAIN STYLES --- */
         .exp-wrapper {
           overflow-x: hidden;
           width: 100%;
         }
-        
         .exp-container {
           display: flex;
           gap: 1.5rem;
           width: 100%;
           align-items: flex-start;
         }
-        
         .exp-main-content {
-          flex: 0 0 77%;
+          flex: 1;
           min-width: 0;
+          padding-top: 1rem;
         }
-        
         .exp-sidebar {
-          flex: 0 0 23%;
-          min-width: 0;
+          flex: 0 0 320px;
+          min-width: 320px;
+          position: sticky;
+          top: 1rem;
         }
-        
-        .sidebar-placeholder {
-          background: #f8f9fa;
-          border: 2px dashed #dee2e6;
-          border-radius: 6px;
-          padding: 2rem 1rem;
-          text-align: center;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 200px;
-        }
-        
         .exp-card{ 
           border-radius: 6px; 
           box-shadow: 0 6px 16px rgba(0,0,0,.06); 
@@ -397,7 +642,7 @@ export default function EXP_CLOCKS(props) {
           position: sticky; 
           top: 0; 
           z-index: 20; 
-          height: var(--headH); 
+          height: 44px;
           background: #5bc0de; 
           color: #fff; 
           padding: .5rem .75rem; 
@@ -405,29 +650,15 @@ export default function EXP_CLOCKS(props) {
           border-top-left-radius: 6px; 
           border-top-right-radius: 6px; 
         }
-        .exp-full-btn{ line-height: 1; }
         .exp-scroll{ max-height: 80vh; overflow-y: auto; overflow-x: hidden; font-size: .95rem; }
         .exp-row{ background: #fff; position: relative; transition: background-color .2s; display: flex; align-items: stretch; }
         .exp-row::before{ content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--cat, #6c757d); }
         .exp-row:hover{ background: #eaf3ff; }
         .exp-section{ background: #f8f9fa; border-left: 4px solid var(--cat, #6c757d); border-radius: 0 8px 8px 0; padding: .35rem .75rem; font-size: .95rem; letter-spacing: .4px; margin: 0; position: sticky; top: 0; z-index: 10; }
-        .form-control-sm, .form-select-sm { height: 30px; padding: .15rem .35rem !important; }
-        .btn-suspension-info { min-width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; border: 1.5px solid #17a2b8; color: #17a2b8; background: white; border-radius: 4px; flex-shrink: 0; }
-        .btn-suspension-info:hover { background-color: #17a2b8; color: white; border-color: #17a2b8; }
-        .btn-suspension-info i { font-size: 12px; font-weight: bold; }
         .exp-scroll::-webkit-scrollbar{ width: 8px; }
         .exp-scroll::-webkit-scrollbar-track{ background: #f1f1f1; }
         .exp-scroll::-webkit-scrollbar-thumb{ background: #bdbdbd; border-radius: 4px; }
         .exp-scroll::-webkit-scrollbar-thumb:hover{ background: #9e9e9e; }
-        .exp-fullscreen{ position: fixed; inset: 0; background: rgba(0,0,0,.35); backdrop-filter: blur(1px); z-index: 1050; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-        .exp-fullscreen-inner{ width: min(1400px, 96vw); height: min(92vh, 900px); background: #fff; border-radius: 8px; padding: .75rem; box-shadow: 0 10px 30px rgba(0,0,0,.2); display: flex; flex-direction: column; }
-        .exp-scroll-full{ max-height: calc(92vh - 120px); }
-        .text-primary { color: #0d6efd !important; } 
-        .text-info { color: #0dcaf0 !important; } 
-        .text-warning { color: #ffc107 !important; }
-        .alert-info { color: #055160; background-color: #cff4fc; border-color: #b6effb; }
-        
-        /* Bordes verticales entre columnas (grilla) */
         .cell-border { 
           border-right: 1px solid #dee2e6; 
           position: relative; 
@@ -438,47 +669,6 @@ export default function EXP_CLOCKS(props) {
         .exp-head .cell-border { 
           border-right: 1px solid rgba(255, 255, 255, 0.3); 
         }
-        
-        /* Estilo de cajita para los días */
-        .days-badge {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-width: 36px;
-          height: 28px;
-          padding: 4px 10px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          font-weight: 600;
-          font-size: 0.875rem;
-          border-radius: 6px;
-          box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
-          transition: all 0.2s ease;
-        }
-        .days-badge:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
-        }
-
-        /* Badge gris para días gastados sin valor */
-        .days-badge-empty {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-width: 36px;
-          height: 28px;
-          padding: 4px 10px;
-          background: #e9ecef;
-          color: #6c757d;
-          font-weight: 600;
-          font-size: 0.875rem;
-          border-radius: 6px;
-          box-shadow: none;
-          border: 1px solid #dee2e6;
-          transition: all 0.2s ease;
-        }
-
-        /* Alineación vertical de contenido en columnas */
         .exp-row-content {
           display: flex;
           align-items: center;
@@ -486,9 +676,33 @@ export default function EXP_CLOCKS(props) {
           width: 100%;
           height: 100%;
           padding: 0.5rem;
+          position: relative;
         }
-
-        /* Info icon para tooltip */
+        .btn-delete-date {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          width: 18px;
+          height: 18px;
+          border: none;
+          background: #f1f3f5;
+          color: #868e96;
+          border-radius: 4px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+          opacity: 0;
+          transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+          cursor: pointer;
+        }
+        .exp-row-content:hover .btn-delete-date {
+          opacity: 1;
+        }
+        .btn-delete-date:hover {
+          background-color: #e03131;
+          color: white;
+        }
         .info-icon-tooltip {
           display: inline-flex;
           align-items: center;
@@ -504,12 +718,10 @@ export default function EXP_CLOCKS(props) {
           transition: all 0.2s ease;
           position: relative;
         }
-
         .info-icon-tooltip:hover {
           background: rgba(92, 184, 222, 0.3);
           color: #0ca3d1;
         }
-
         .info-icon-tooltip:hover::after {
           content: attr(data-tooltip);
           position: absolute;
@@ -523,13 +735,13 @@ export default function EXP_CLOCKS(props) {
           font-size: 0.8rem;
           font-weight: normal;
           white-space: normal;
+          width: max-content;
           max-width: 280px;
           z-index: 1000;
           box-shadow: 0 4px 12px rgba(0,0,0,.15);
           border: 1px solid #555;
           pointer-events: none;
         }
-
         .info-icon-tooltip:hover::before {
           content: "";
           position: absolute;
@@ -541,87 +753,15 @@ export default function EXP_CLOCKS(props) {
           z-index: 1000;
           pointer-events: none;
         }
-
-        /* Control bar mejorado responsivo */
-        .control-bar {
-          background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
-          border: 1px solid #e9ecef;
-          border-radius: 8px;
-          padding: 1rem;
-        }
-
-        .control-bar .bar-inner {
-          gap: 1rem;
-        }
-
-        .control-bar .actions {
-          min-width: 0;
-        }
-
-        .control-bar .control-meta {
-          flex: 0 1 auto;
-          padding-left: 2rem;
-          border-left: 1px solid #e9ecef;
-        }
-
-        .control-bar-info-row {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
-          margin-top: 0.75rem;
-          width: 100%;
-          font-size: 0.9rem;
-        }
-
-        .control-bar-info-item {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
         
-        /* Responsive */
-        @media (max-width: 1400px) {
-          .exp-main-content {
-            flex: 0 0 75%;
-          }
-          .exp-sidebar {
-            flex: 0 0 25%;
-          }
-        }
-
         @media (max-width: 1200px) {
           .exp-container {
             flex-direction: column;
-            gap: 1rem;
-          }
-          
-          .exp-main-content {
-            flex: 1;
           }
           
           .exp-sidebar {
             width: 100%;
-          }
-
-          .control-bar .control-meta {
-            border-left: none;
-            border-top: 1px solid #e9ecef;
-            padding-left: 0;
-            padding-top: 1rem;
-            margin-top: 0.75rem;
-            width: 100%;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .control-bar .bar-inner {
-            flex-direction: column;
-          }
-          .control-bar .actions {
-            width: 100%;
-          }
-          .control-bar .control-meta {
-            width: 100%;
+            position: static;
           }
         }
       `}</style>

@@ -12,7 +12,7 @@ const MySwal = withReactContent(Swal);
 
 
 export const ClockRow = (props) => {
-    const { value, i, clock, onSave, cat, outCodes, _CHILD_6_SELECT, _FIND_6, helpers } = props;
+    const { value, i, clock, onSave, onDelete, cat, outCodes, _CHILD_6_SELECT, _FIND_6, helpers } = props;
     const { getClock, getNewestDate, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, totalSuspensionDays } = helpers;
 
 
@@ -90,7 +90,6 @@ export const ClockRow = (props) => {
         const thisSusp = isEndPre ? suspensionPreActa : suspensionPostActa;
         if (!thisSusp.start?.date_start) return <span className="text-muted">-</span>;
 
-        // Días ya consumidos por OTRAS suspensiones finalizadas
         const otherUsedDays = (isEndPre ? (suspensionPostActa.end ? suspensionPostActa.days : 0) : (suspensionPreActa.end ? suspensionPreActa.days : 0)) || 0;
         
         const availableTotal = 10 - otherUsedDays;
@@ -101,25 +100,19 @@ export const ClockRow = (props) => {
         return <span className="text-primary" title={tip}>{formatDate(limitDate)}</span>;
     };
     
-    // --- FUNCIÓN CORREGIDA PARA CÁLCULO DE LÍMITES DINÁMICOS ---
     const calculateDynamicLimit = (limitConfig) => {
         if (!limitConfig || !Array.isArray(limitConfig)) return null;
 
-        // Determina si es una lista de opciones (OR) o una sola opción.
-        // Una lista de opciones es un array donde el primer elemento también es un array.
-        // E.g., [[opcion1], [opcion2]]
         const isListOfOptions = Array.isArray(limitConfig[0]);
 
         if (isListOfOptions) {
-            // Es una lista de opciones (lógica OR)
             for (const option of limitConfig) {
                 const result = calculateDynamicLimit(option);
-                if (result) return result; // Devuelve el primer resultado válido
+                if (result) return result;
             }
-            return null; // Ninguna opción fue válida
+            return null;
         }
 
-        // Es una sola opción de límite, e.g., [[33, 32], 30]
         const [states, days] = limitConfig;
         if (states === undefined || days === undefined) return null;
         
@@ -165,15 +158,13 @@ export const ClockRow = (props) => {
     else if (value.name && (value.name.includes('Comunicación') || value.name.includes('Notificación') || 
     value.name.includes('Citación') || value.name.includes('Prórroga correcciones') || 
     value.name.includes('Radicación de Correcciones') || value.name.includes('Traslado') || 
-    value.name.includes('Radicación en superintendencia') || value.name.includes('Declaracion en legal y debida forma') || 
+    value.name.includes('Declaracion en legal y debida forma') || value.name.includes('superintendencia') ||
     value.name.includes('Recepción') || value.name.includes('Fin de'))) indentLevel = 2;
     else indentLevel = 1;
 
-    // Calcular días gastados
     const renderDaysSpent = () => {
         const result = calculateDaysSpent(value, clock);
 
-        // Caso 1: No se pudo calcular.
         if (result === null || isNaN(result.days)) {
             return <div className="days-badge-empty">-</div>;
         }
@@ -182,21 +173,16 @@ export const ClockRow = (props) => {
         const eventDate = clock?.date_start;
         const limitDate = calculatedLimit;
 
-        // Tooltip para dar más contexto
         const tip = `Días calculados desde: ${formatDate(result.startDate)}. Límite: ${limitDate ? formatDate(limitDate) : 'N/A'}`;
 
-        // Caso 2: El evento tiene fecha límite y se pasó de la fecha.
         if (limitDate && moment(eventDate).isAfter(limitDate, 'day')) {
             return <span className="text-danger" style={{ fontWeight: '600' }} title={tip}>{days} días (retraso)</span>;
         }
         
-        // Caso 3: Días transcurridos dentro del plazo o sin fecha límite.
-        // Se muestra en el color informativo por defecto (azul).
         return <span className="text-info" style={{ fontWeight: '600' }} title={tip}>{days} días</span>;
     };
 
 
-    // Renderizar nombre del evento con tooltip sutil
     const renderEventName = () => {
         const eventDesc = value.desc ? (typeof value.desc === 'string' ? value.desc : '') : '';
         const eventName = value.name ?? sentenceCaseEs(clock?.name) ?? '';
@@ -231,7 +217,7 @@ export const ClockRow = (props) => {
             ) : (
                 <div className="exp-row border-bottom" style={{ '--cat': cat.color }}>
                     <div className="row g-0 align-items-stretch w-100 m-0">
-                        <div className="col-6 px-3 py-2 cell-border">
+                        <div className="col-6 px-1 py-2 cell-border">
                             <div style={{ paddingLeft: `${indentLevel * 1.1}rem` }} className="d-flex align-items-center h-100">
                                 {indentLevel > 0 && (
                                 <span className="text-muted me-2" style={{ fontSize: '1rem', display: 'inline-flex', alignItems: 'center' }}>
@@ -245,7 +231,18 @@ export const ClockRow = (props) => {
                         <div className="col-2 px-1 cell-border">
                             <div className="exp-row-content">
                                 {canEditDate ? (
-                                    <input type="date" className="form-control form-control-sm p-1" id={'clock_exp_date_' + i} max="2100-01-01" defaultValue={currentDate} onBlur={() => onSave(value, i)} />
+                                    <>
+                                        <input type="date" className="form-control form-control-sm p-1" id={'clock_exp_date_' + i} max="2100-01-01" defaultValue={currentDate} onBlur={() => onSave(value, i)} />
+                                        {currentDate && (
+                                            <button 
+                                                className="btn-delete-date" 
+                                                title="Eliminar fecha"
+                                                onClick={() => onDelete(value)}
+                                            >
+                                                <i className="fas fa-trash-alt"></i>
+                                            </button>
+                                        )}
+                                    </>
                                 ) : (<span className="text-center small">{currentDate ? formatDate(currentDate) : <span className='text-danger'>-</span>}</span>)}
                             </div>
                         </div>
