@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import PQRS_COLLAPSIBLE_NAV from './pqrs_collapsibleNav.component';
-import PQRS_FIXED_HEADER from './pqrs_fixedHeader.component';
-import './pqrs_layoutWrapper.css';
+import FUN_COLLAPSIBLE_NAV from './fun_collapsibleNav.component';
+import FUN_FIXED_HEADER from './fun_fixedHeader.component';
+import './fun_layoutWrapper.css';
 
-class PQRS_LAYOUT_WRAPPER extends Component {
+class FUN_LAYOUT_WRAPPER extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -16,55 +16,54 @@ class PQRS_LAYOUT_WRAPPER extends Component {
         this.setState({ sidebarOpen: isOpen });
         // Update body class for CSS targeting
         if (isOpen) {
-            document.body.classList.add('pqrs-sidebar-open');
-            document.body.classList.remove('pqrs-sidebar-closed');
+            document.body.classList.add('fun-sidebar-open');
+            document.body.classList.remove('fun-sidebar-closed');
         } else {
-            document.body.classList.add('pqrs-sidebar-closed');
-            document.body.classList.remove('pqrs-sidebar-open');
+            document.body.classList.add('fun-sidebar-closed');
+            document.body.classList.remove('fun-sidebar-open');
         }
     };
 
     handleNavigation = (sectionId) => {
         this.setState({ activeSection: sectionId });
-        // Future enhancement: scroll to section if IDs are added to content sections
-        // const element = document.getElementById(`pqrs-section-${sectionId}`);
-        // if (element) {
-        //     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // }
     };
 
     componentDidMount() {
         // Set initial body class
-        document.body.classList.add('pqrs-sidebar-open');
+        document.body.classList.add('fun-sidebar-open');
     }
 
     componentWillUnmount() {
         // Clean up body classes
-        document.body.classList.remove('pqrs-sidebar-open', 'pqrs-sidebar-closed');
+        document.body.classList.remove('fun-sidebar-open', 'fun-sidebar-closed');
     }
 
     render() {
-        const { children, currentItem, translation, swaMsg, globals } = this.props;
+        const { children, currentItem, currentVersion, FROM, translation, pqrsxfun, NAVIGATION } = this.props;
         const { sidebarOpen, activeSection } = this.state;
 
         return (
-            <div className="pqrs-layout-container">
-                <PQRS_COLLAPSIBLE_NAV
+            <div className="fun-layout-container">
+                <FUN_COLLAPSIBLE_NAV
                     translation={translation}
                     currentItem={currentItem}
+                    currentVersion={currentVersion}
+                    FROM={FROM}
                     activeSection={activeSection}
                     onNavigate={this.handleNavigation}
                     isOpen={sidebarOpen}
                     onToggle={this.handleSidebarToggle}
+                    pqrsxfun={pqrsxfun}
+                    NAVIGATION={NAVIGATION}
                 />
                 
-                <div className={`pqrs-main-content ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-                    <PQRS_FIXED_HEADER 
+                <div className={`fun-main-content ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+                    <FUN_FIXED_HEADER 
                         currentItem={currentItem}
                         translation={translation}
                     />
                     
-                    <div className="pqrs-content-body">
+                    <div className="fun-content-body">
                         {children}
                     </div>
                 </div>
@@ -73,4 +72,4 @@ class PQRS_LAYOUT_WRAPPER extends Component {
     }
 }
 
-export default PQRS_LAYOUT_WRAPPER;
+export default FUN_LAYOUT_WRAPPER;

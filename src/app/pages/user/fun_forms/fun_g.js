@@ -12,6 +12,7 @@ import FUNG_CHECKLIST from './fun_g_checklist';
 import FUNG_NAV from './components/fun_g_nav';
 import FUN_MODULE_NAV from './components/fun_moduleNav';
 import FUN_VERSION_NAV from './components/fun_versionNav';
+import FUN_LAYOUT_WRAPPER from './components/fun_layoutWrapper.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import FUN_3_G_VIEW from './components/fun_3_g_view';
 import VIZUALIZER from '../../../components/vizualizer.component';
@@ -919,6 +920,14 @@ class FUNG extends Component {
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : {})
         let rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
         return (
+            <FUN_LAYOUT_WRAPPER
+                currentItem={currentItem}
+                currentVersion={currentVersion}
+                FROM="general"
+                translation={translation}
+                pqrsxfun={this.state.pqrsxfun}
+                NAVIGATION={this.props.NAVIGATION}
+            >
             <div className="py-3">
                 {currentItem != null ? <>
                     <h2 className="text-center">RESUMEN DE LA SOLICITUD</h2>
@@ -1038,30 +1047,31 @@ class FUNG extends Component {
                     />
 
 
-                    {/* <FUNG_NAV
-                        translation={translation} swaMsg={swaMsg} globals={globals}
-                        currentItem={currentItem}
-                        currentVersion={currentVersion}
-                    /> */}
-                    <FUN_MODULE_NAV
-                        translation={translation}
-                        currentItem={currentItem}
-                        currentVersion={currentVersion}
-                        FROM={"general"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
-                    />
-                    <FUN_VERSION_NAV
-                        translation={translation}
-                        currentItem={currentItem}
-                        currentVersion={currentVersion}
-                        NAVIGATION_VERSION={this.props.NAVIGATION_VERSION}
-                        ON
-                    />
+                    {/* Original navigation kept for functionality - visually hidden by new sidebar */}
+                    {currentItem && (
+                        <div style={{ display: 'none' }}>
+                            <FUN_MODULE_NAV
+                                translation={translation}
+                                currentItem={currentItem}
+                                currentVersion={currentVersion}
+                                FROM={"general"}
+                                NAVIGATION={this.props.NAVIGATION}
+                                pqrsxfun={this.state.pqrsxfun}
+                            />
+                            <FUN_VERSION_NAV
+                                translation={translation}
+                                currentItem={currentItem}
+                                currentVersion={currentVersion}
+                                NAVIGATION_VERSION={this.props.NAVIGATION_VERSION}
+                                ON
+                            />
+                        </div>
+                    )}
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
                 </fieldset>}
             </div>
+            </FUN_LAYOUT_WRAPPER>
         );
     }
 }

@@ -1,0 +1,145 @@
+/* ============ FIXED HEADER FOR LICENSE MODULE (FUN_FORMS) ============ */
+
+.fun-fixed-header {
+    position: sticky;
+    top: calc(var(--navbar-height, 60px));
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #ffffff;
+    border-bottom: 2px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 90;
+    transition: margin-left 0.3s ease;
+}
+
+/* Adjust header when sidebar is open/closed */
+body.fun-sidebar-open .fun-fixed-header {
+    margin-left: 250px;
+}
+
+body.fun-sidebar-closed .fun-fixed-header {
+    margin-left: 60px;
+}
+
+/* Left Section */
+.fun-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.fun-header-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.fun-header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+
+.fun-header-number {
+    color: #495057;
+    font-weight: 500;
+}
+
+.fun-header-number i {
+    margin-right: 4px;
+    color: #007bff;
+}
+
+.fun-header-status {
+    color: #856404;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
+.fun-header-status i {
+    margin-right: 4px;
+}
+
+.fun-header-version {
+    font-size: 12px;
+    color: #6c757d;
+    padding: 3px 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* Right Section */
+.fun-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fun-header-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.fun-header-btn:hover {
+    background-color: #e9ecef;
+}
+
+.fun-header-btn:active {
+    transform: scale(0.95);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .fun-fixed-header {
+        height: auto;
+        padding: 12px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    body.fun-sidebar-open .fun-fixed-header,
+    body.fun-sidebar-closed .fun-fixed-header {
+        margin-left: 0;
+    }
+
+    .fun-header-title {
+        font-size: 16px;
+    }
+
+    .fun-header-info {
+        font-size: 12px;
+        gap: 8px;
+    }
+
+    .fun-header-right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .fun-header-version {
+        display: none;
+    }
+}

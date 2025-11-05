@@ -1,73 +1,73 @@
-/* ============ LAYOUT WRAPPER FOR PQRS MODULE ============ */
+/* ============ LAYOUT WRAPPER FOR LICENSE MODULE (FUN_FORMS) ============ */
 
-.pqrs-layout-container {
+.fun-layout-container {
     position: relative;
     width: 100%;
     min-height: 100vh;
 }
 
 /* Main Content Area */
-.pqrs-main-content {
+.fun-main-content {
     margin-left: 60px; /* Collapsed sidebar width */
     transition: margin-left 0.3s ease;
     width: calc(100% - 60px);
     min-height: 100vh;
 }
 
-.pqrs-main-content.sidebar-open {
+.fun-main-content.sidebar-open {
     margin-left: 250px; /* Expanded sidebar width */
     width: calc(100% - 250px);
 }
 
-.pqrs-main-content.sidebar-closed {
+.fun-main-content.sidebar-closed {
     margin-left: 60px;
     width: calc(100% - 60px);
 }
 
 /* Content Body */
-.pqrs-content-body {
+.fun-content-body {
     padding: 20px;
     background-color: #ffffff;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .pqrs-main-content {
+    .fun-main-content {
         margin-left: 0;
         width: 100%;
     }
 
-    .pqrs-main-content.sidebar-open {
+    .fun-main-content.sidebar-open {
         margin-left: 0;
         width: 100%;
     }
 
-    .pqrs-main-content.sidebar-closed {
+    .fun-main-content.sidebar-closed {
         margin-left: 0;
         width: 100%;
     }
 
-    .pqrs-content-body {
+    .fun-content-body {
         padding: 16px;
     }
 }
 
 /* Body classes for global adjustments */
-body.pqrs-sidebar-open .pqrs-collapsible-sidebar {
+body.fun-sidebar-open .fun-collapsible-sidebar {
     width: 250px;
 }
 
-body.pqrs-sidebar-closed .pqrs-collapsible-sidebar {
+body.fun-sidebar-closed .fun-collapsible-sidebar {
     width: 60px;
 }
 
 /* Ensure fieldsets don't overflow */
-.pqrs-content-body fieldset {
+.fun-content-body fieldset {
     max-width: 100%;
     overflow-x: auto;
 }
 
 /* Smooth transitions for all interactive elements */
-.pqrs-layout-container * {
+.fun-layout-container * {
     box-sizing: border-box;
 }

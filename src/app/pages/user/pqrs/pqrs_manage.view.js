@@ -7,7 +7,6 @@ import USERS_Service from '../../../services/users.service'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import { dateParser, dateParser_finalDate } from '../../../components/customClasses/typeParse'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
-import PQRS_LAYOUT_WRAPPER from './components/pqrs_layoutWrapper.component';
 import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 import PQRS_COMPONENT_ATTACH_PROFESIONAL from './components/pqrs_attach_pro.component';
@@ -947,12 +946,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
     // ** DATA TABLE  ** //
 
     return (
-        <PQRS_LAYOUT_WRAPPER
-            currentItem={currentItem}
-            translation={translation}
-            swaMsg={swaMsg}
-            globals={globals}
-        >
+        <div>
+
             {currentItem != null ? <>
                 {load ? <>
 
@@ -1309,17 +1304,12 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
             </fieldset>
             }
-            {/* Original navigation kept for functionality - visually hidden by new sidebar */}
-            {currentItem && (
-                <div style={{ display: 'none' }}>
-                    <PQRS_MODULE_NAV
-                        translation={translation}
-                        currentItem={currentItem}
-                        FROM={currentItem.status == 0 ? "manage" : "editable"}
-                        NAVIGATION={props.NAVIGATION}
-                    />
-                </div>
-            )}
-        </PQRS_LAYOUT_WRAPPER>
+            <PQRS_MODULE_NAV
+                translation={translation}
+                currentItem={currentItem}
+                FROM={currentItem.status == 0 ? "manage" : "editable"}
+                NAVIGATION={props.NAVIGATION}
+            />
+        </div >
     )
 }
