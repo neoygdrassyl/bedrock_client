@@ -92,13 +92,8 @@ html{
   z-index: 1;
 }
 .btn-nav_module {
-  position: fixed;
-  right: 0px;
-  top: 10%;
-  margin: 0px;
-  padding: 0px;
-  margin-right: 3px;
-  width: 15%;
+  /* Legacy styles - overridden by new enhanced sidebar */
+  display: none;
 }
 .btn-nav_module-pqr {
   position: fixed;

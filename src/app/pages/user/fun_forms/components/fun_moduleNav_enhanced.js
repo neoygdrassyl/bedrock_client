@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { MDBBadge, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBCard, MDBCardBody, MDBTooltip } from 'mdb-react-ui-kit';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import './fun_moduleNav_enhanced.css';
 
-class FUN_MODULE_NAV extends Component {
+class FUN_MODULE_NAV_ENHANCED extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -214,4 +214,4 @@ class FUN_MODULE_NAV extends Component {
     }
 }
 
-export default FUN_MODULE_NAV;
+export default FUN_MODULE_NAV_ENHANCED;
