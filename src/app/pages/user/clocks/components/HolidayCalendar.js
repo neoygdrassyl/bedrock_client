@@ -1,38 +1,53 @@
 import React, { useState, useMemo } from 'react';
 import moment from 'moment';
-import { getColombianHolidays, countBusinessDays, addBusinessDays } from './colombianHolidays';
+import 'moment/locale/es';
+import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol.js';
+
+moment.locale('es');
+
+const businessDaysCalculator = new DiasHabilesColombia();
 
 export const HolidayCalendar = () => {
     const [currentDate, setCurrentDate] = useState(moment());
     
     // --- Lógica del Calendario ---
-    const holidaysForYear = useMemo(() => getColombianHolidays(currentDate.year()), [currentDate]);
-    const holidaysForNextYear = useMemo(() => getColombianHolidays(currentDate.year() + 1), [currentDate]);
-    const allHolidays = useMemo(() => [...holidaysForYear, ...holidaysForNextYear], [holidaysForYear, holidaysForNextYear]);
+    const allHolidays = useMemo(() => {
+        // Carga festivos del año actual, anterior y siguiente para la navegación del calendario
+        const year = currentDate.year();
+        return businessDaysCalculator.getHolidaysForYears([year - 1, year, year + 1]);
+    }, [currentDate.year()]);
 
     // --- Lógica de la Calculadora ---
-    const [calcMode, setCalcMode] = useState('range'); // 'range' o 'add'
+    const [calcMode, setCalcMode] = useState('range');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [daysToAdd, setDaysToAdd] = useState('');
     const [result, setResult] = useState(null);
 
     const handleCalculate = () => {
+        const startMoment = moment(startDate);
+        if (!startMoment.isValid()) {
+            return setResult({ text: 'Fecha de inicio requerida', isError: true });
+        }
+        
+        const startDateStr = startMoment.format('YYYY-MM-DD');
+
         if (calcMode === 'range') {
-            if (!startDate || !endDate) return setResult({ text: 'Fechas requeridas', isError: true });
-            const start = moment(startDate);
-            const end = moment(endDate);
-            if (end.isBefore(start)) return setResult({ text: 'Fecha fin inválida', isError: true });
+            const endMoment = moment(endDate);
+            if (!endMoment.isValid()) return setResult({ text: 'Fecha de fin requerida', isError: true });
+            if (endMoment.isBefore(startMoment)) return setResult({ text: 'Fecha fin inválida', isError: true });
             
-            const businessDays = countBusinessDays(start, end, allHolidays);
+            const endDateStr = endMoment.format('YYYY-MM-DD');
+            const businessDays = businessDaysCalculator.contarDiasHabiles(startDateStr, endDateStr);
             setResult({ text: `${businessDays} día(s) hábil(es)`, isError: false });
 
         } else if (calcMode === 'add') {
             const numDays = parseInt(daysToAdd, 10);
-            if (!startDate || !numDays || numDays <= 0) return setResult({ text: 'Datos requeridos', isError: true });
+            if (!numDays || numDays <= 0) return setResult({ text: 'Número de días requerido', isError: true });
 
-            const finalDate = addBusinessDays(moment(startDate), numDays, allHolidays);
-            setResult({ text: finalDate.format('DD MMM YYYY'), isError: false });
+            const finalDateStr = businessDaysCalculator.sumarDiasHabiles(startDateStr, numDays);
+            const finalDateMoment = moment(finalDateStr);
+            setResult({ text: finalDateMoment.format('DD MMM YYYY'), isError: false });
         }
     };
 
@@ -43,13 +58,13 @@ export const HolidayCalendar = () => {
     const renderHeader = () => (
         <div className="calendar-header">
             <button onClick={() => changeMonth(-1)} title="Mes anterior">&lt;</button>
-            <div className="current-month">{currentDate.format('MMMM YYYY')}</div>
+            <div className="current-month" style={{textTransform: 'capitalize'}}>{currentDate.format('MMMM YYYY')}</div>
             <button onClick={() => changeMonth(1)} title="Mes siguiente">&gt;</button>
         </div>
     );
 
     const renderDaysOfWeek = () => {
-        const days = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'];
+        const days = moment.weekdaysShort(true);
         return <div className="calendar-grid days-of-week">{days.map(day => <div key={day}>{day}</div>)}</div>;
     };
 
@@ -60,23 +75,28 @@ export const HolidayCalendar = () => {
         const endDate = monthEnd.clone().endOf('isoWeek');
 
         const rows = [];
-        let days = [];
         let day = startDate.clone();
 
-        while (day.isBefore(endDate, 'day')) {
+        while (day.isSameOrBefore(endDate, 'day')) {
+            const weekRow = [];
             for (let i = 0; i < 7; i++) {
                 const formattedDate = day.format('YYYY-MM-DD');
                 let dayClass = 'day-cell';
-                if (!day.isSame(currentDate, 'month')) dayClass += ' not-current-month';
-                else if (allHolidays.includes(formattedDate)) dayClass += ' holiday';
-                else if (day.day() === 0 || day.day() === 6) dayClass += ' weekend';
-                if (day.isSame(moment(), 'day')) dayClass += ' today';
+                if (!day.isSame(currentDate, 'month')) {
+                    dayClass += ' not-current-month';
+                } else if (allHolidays.has(formattedDate)) {
+                    dayClass += ' holiday';
+                } else if (day.isoWeekday() >= 6) {
+                    dayClass += ' weekend';
+                }
+                if (day.isSame(moment(), 'day')) {
+                    dayClass += ' today';
+                }
 
-                days.push(<div className={dayClass} key={day.toString()}>{day.date()}</div>);
+                weekRow.push(<div className={dayClass} key={day.toString()}>{day.date()}</div>);
                 day.add(1, 'day');
             }
-            rows.push(<div className="calendar-grid" key={day.toString()}>{days}</div>);
-            days = [];
+            rows.push(<div className="calendar-grid" key={day.toString()}>{weekRow}</div>);
         }
         return <div className="calendar-body">{rows}</div>;
     };
@@ -96,7 +116,6 @@ export const HolidayCalendar = () => {
                     <div><span className="legend-box weekend"></span> Fin de semana</div>
                 </div>
 
-                {/* --- Calculadora --- */}
                 <div className="calculator-section">
                     <div className="calc-tabs">
                         <button className={calcMode === 'range' ? 'active' : ''} onClick={() => setCalcMode('range')}>Rango</button>
@@ -113,7 +132,7 @@ export const HolidayCalendar = () => {
                             <>
                                 <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
                                 <span className="calc-separator">+</span>
-                                <input type="number" placeholder="días" value={daysToAdd} onChange={e => setDaysToAdd(e.target.value)} />
+                                <input type="number" placeholder="días" value={daysToAdd} onChange={e => setDaysToAdd(e.target.value)} min="1"/>
                             </>
                         )}
                          <button className="calc-button" onClick={handleCalculate}>=</button>

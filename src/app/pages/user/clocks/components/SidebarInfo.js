@@ -72,31 +72,47 @@ export const SidebarInfo = ({ manager, actions }) => {
     });
   };
 
-  const getDesistReason = () => {
-    const preferred = desistEvents.find(e => String(e.state) === '-5' || String(e.state) === '-6');
-    const any = preferred || desistEvents[0];
-    if (!any) return null;
-    return NEGATIVE_PROCESS_TITLE?.[String(any.version)] || `Estado ${any.state}`;
-  };
-
   return (
     <>
-      {/* --- CARD: ESTADO DEL PROCESO --- */}
-      <div className="sidebar-card process-status-card">
+      {/* --- CARD UNIFICADA: ESTADO Y TIEMPOS --- */}
+      <div className="sidebar-card">
         <div className="sidebar-card-header">
           <i className="fas fa-chart-line"></i>
           <span>Estado del Proceso</span>
         </div>
         <div className="sidebar-card-body">
-            <div className={`d-flex justify-content-between align-items-center`}>
+            <div className="d-flex justify-content-between align-items-center mb-3">
                 <span className={`status-text status-${status.className}`}>{status.text}</span>
                 <i className={`status-icon status-icon-${status.className} ${status.icon}`}></i>
             </div>
-            {isDesisted && <small className="text-muted">Motivo: {getDesistReason()}</small>}
+            
+            {!isDesisted && !notStarted && curaduriaDetails && (
+                <>
+                    <div className="value-row">
+                        <span className="label">Días Restantes</span>
+                        <span className={`value ${curaduriaDetails.remaining < 0 ? 'text-danger' : 'text-success'}`}>{curaduriaDetails.remaining}</span>
+                    </div>
+                    <div className="value-row">
+                        <span className="label">Días Usados</span>
+                        <span className="value">{curaduriaDetails.used}</span>
+                    </div>
+                    <div className="value-row">
+                        <span className="label">Días Totales</span>
+                        <span className="value">{curaduriaDetails.total}</span>
+                    </div>
+                    <div className="value-row">
+                        <span className="label">Referencia</span>
+                        <span className="value">{FROM_LABEL[curaduriaDetails.from] || curaduriaDetails.from}</span>
+                    </div>
+                    <button className="btn-detail-link" onClick={handleShowCuraduriaDetails}>
+                        VER DETALLE DEL CÁLCULO
+                    </button>
+                </>
+            )}
         </div>
       </div>
       
-      {/* --- CARD: ACCIONES RÁPIDAS --- */}
+      {/* --- CARD: ACCIONES RÁPIDAS (MÁS COMPACTA) --- */}
       {!isDesisted && (canAddSuspension || canAddExtension) && (
         <div className="sidebar-card quick-actions-card">
           <div className="sidebar-card-header">
@@ -104,51 +120,18 @@ export const SidebarInfo = ({ manager, actions }) => {
             <span>Acciones Rápidas</span>
           </div>
           <div className="sidebar-card-body">
-            <div className="btn-group">
-              {canAddSuspension && (
-                <button type="button" className="btn btn-suspension" onClick={() => onAddTimeControl('suspension')}>
-                  <i className="fas fa-pause me-1"></i> SUSPENSIÓN
-                </button>
-              )}
-              {canAddExtension && (
-                <button type="button" className="btn btn-prorroga" onClick={() => onAddTimeControl('extension')}>
-                  <i className="fas fa-clock me-1"></i> PRÓRROGA
-                </button>
-              )}
-            </div>
+            {canAddSuspension && (
+              <button type="button" className="btn btn-action btn-suspension" onClick={() => onAddTimeControl('suspension')}>
+                <i className="fas fa-pause me-2"></i> SUSPENSIÓN
+              </button>
+            )}
+            {canAddExtension && (
+              <button type="button" className="btn btn-action btn-prorroga" onClick={() => onAddTimeControl('extension')}>
+                <i className="fas fa-clock me-2"></i> PRÓRROGA
+              </button>
+            )}
           </div>
         </div>
-      )}
-
-      {/* --- CARD: TIEMPOS DE CURADURÍA --- */}
-      {!isDesisted && !notStarted && curaduriaDetails && (
-         <div className="sidebar-card">
-            <div className="sidebar-card-header">
-                <i className="fas fa-hourglass-start"></i>
-                <span>Tiempos de Curaduría</span>
-            </div>
-            <div className="sidebar-card-body">
-                <div className="value-row">
-                    <span className="label">Días Restantes</span>
-                    <span className={`value ${curaduriaDetails.remaining < 0 ? 'text-danger' : 'text-success'}`}>{curaduriaDetails.remaining}</span>
-                </div>
-                <div className="value-row">
-                    <span className="label">Días Usados</span>
-                    <span className="value">{curaduriaDetails.used}</span>
-                </div>
-                 <div className="value-row">
-                    <span className="label">Días Totales</span>
-                    <span className="value">{curaduriaDetails.total}</span>
-                </div>
-                <div className="value-row">
-                    <span className="label">Referencia</span>
-                    <span className="value">{FROM_LABEL[curaduriaDetails.from] || curaduriaDetails.from}</span>
-                </div>
-                <button className="btn-detail-link" onClick={handleShowCuraduriaDetails}>
-                    VER DETALLE DEL CÁLCULO
-                </button>
-            </div>
-         </div>
       )}
     </>
   );
