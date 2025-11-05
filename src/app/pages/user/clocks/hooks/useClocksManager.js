@@ -55,14 +55,20 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
   }, [clocksData]);
 
   const totalSuspensionDays = useMemo(() => {
-    return (suspensionPreActa.days || 0) + (suspensionPostActa.days || 0);
+    // Solo contamos días de suspensiones finalizadas para el total
+    const preDays = suspensionPreActa.exists && suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0;
+    const postDays = suspensionPostActa.exists && suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0;
+    return preDays + postDays;
   }, [suspensionPreActa, suspensionPostActa]);
 
   const extension = useMemo(() => {
     const startClock = getClock(400);
     const endClock = getClock(401);
     const exists = !!startClock?.date_start;
-    const days = exists && endClock?.date_start ? dateParser_dateDiff(startClock.date_start, endClock.date_start) : 22;
+    // Si hay fecha de fin, calcula los días. Si no, devuelve el máximo teórico (22)
+    const days = exists && endClock?.date_start 
+        ? dateParser_dateDiff(startClock.date_start, endClock.date_start) 
+        : (exists ? 22 : 0);
 
     return { exists, start: startClock, end: endClock, days };
   }, [clocksData]);
@@ -70,9 +76,14 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
   const canAddSuspension = useMemo(() => {
     const act_2 = getClock(49);
     const ldfTime = getClock(5);
+    // No se puede añadir si ya se usaron los 10 días o más
     if (totalSuspensionDays >= 10) return false;
-    if (suspensionPreActa.exists && suspensionPostActa.exists) return false;
+    // No se puede añadir si hay una suspensión en curso (sin fecha de fin)
+    if (suspensionPreActa.exists && !suspensionPreActa.end?.date_start) return false;
+    if (suspensionPostActa.exists && !suspensionPostActa.end?.date_start) return false;
+    // Restricciones del proceso
     if (act_2?.date_start || !ldfTime?.date_start) return false;
+    
     return true;
   }, [totalSuspensionDays, suspensionPreActa, suspensionPostActa, clocksData]);
   
@@ -211,6 +222,52 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     return time < 1 ? 1 : time;
   }, [clocksData, currentItem.type, totalSuspensionDays, extension]);
 
+  const getNewestDate = (states) => {
+    let newDate = null;
+    states.forEach((element) => {
+      const date = getClock(element)?.date_start;
+      if (!newDate && date) newDate = date;
+      else if (date && moment(date).isAfter(newDate)) newDate = date;
+    });
+    return newDate;
+  }
+
+  const calculateDaysSpent = (value, clock) => {
+    // 1. Validaciones iniciales
+    if (!value.spentDaysConfig || !clock?.date_start) {
+      return null;
+    }
+
+    const { startState, referenceDate } = value.spentDaysConfig;
+    let startDate = null;
+
+    // 2. Búsqueda de la fecha de inicio
+    if (referenceDate) {
+      // Prioridad 1: Usar la fecha de referencia directa si existe.
+      startDate = referenceDate;
+    } else if (Array.isArray(startState)) {
+      // Prioridad 2: Buscar en la lista de estados de inicio usando getNewestDate
+      startDate = getNewestDate(startState);
+    } else if (typeof startState === 'number' || typeof startState === 'string') {
+      // Prioridad 3: Comportamiento anterior para un solo estado.
+      startDate = getClock(startState)?.date_start;
+    }
+
+    // 3. Si después de todas las búsquedas no hay fecha de inicio, no se puede calcular.
+    if (!startDate) {
+      return null;
+    }
+
+    // 4. Calcular la diferencia en días.
+    const days = dateParser_dateDiff(startDate, clock.date_start);
+
+    // 5. Devolver un objeto con el resultado.
+    return {
+        days: days,
+        startDate: startDate,
+    };
+  };
+
   return {
     // Data & Calculated values
     clocksData,
@@ -223,6 +280,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     desistEvents,
     isDesisted,
     viaTime,
+    getNewestDate, // Exportar para usar en ClockRow
     
     // Booleans & Checks
     canAddSuspension,
@@ -232,6 +290,9 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     // Constants
     NEGATIVE_PROCESS_TITLE,
     FUN_0_TYPE_TIME,
+    
+    // Methods
+    calculateDaysSpent,
     
     // Raw Getters
     getClock,

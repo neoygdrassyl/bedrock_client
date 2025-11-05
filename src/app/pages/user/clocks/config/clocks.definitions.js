@@ -17,6 +17,7 @@ const getSuspensionClocks = (suspensionData, type) => {
         },
         {
             state: endState, name: 'Fin de Suspensión', editableDate: true, hasConsecutivo: false, hasAnnexSelect: true,
+            spentDaysConfig: { startState: type === 'pre' ? 300 : 301 }
         },
     ];
 };
@@ -26,7 +27,12 @@ const getExtensionClocks = (extensionData) => {
     return [
         { title: 'PRÓRROGA POR COMPLEJIDAD' },
         { state: 400, name: 'Inicio de Prórroga', editableDate: true, hasConsecutivo: false, hasAnnexSelect: true },
-        { state: 401, name: 'Fin de Prórroga', editableDate: true, hasConsecutivo: false, hasAnnexSelect: true, show: !!extensionData.end?.date_start },
+        // La fecha de fin siempre es editable si el inicio existe
+        { 
+            state: 401, name: 'Fin de Prórroga', editableDate: true, hasConsecutivo: false, hasAnnexSelect: true, 
+            limit: [[400, 22]], // Límite de 22 días desde el inicio
+            spentDaysConfig: { startState: 400 } 
+        },
     ];
 };
 
@@ -62,31 +68,35 @@ const extraClocks = (props) => {
     return [
       { title: 'RADICACIÓN' },
       { state: false, name: 'Radicación', desc: "Tiempo de Creación en el sistema", manualDate: currentItem.date, editableDate: false, hasConsecutivo: false, hasAnnexSelect: false, },
-      { state: 3, name: 'Expensas Fijas', desc: "Pago de Expensas Fijas", editableDate: false, hasConsecutivo: false, hasAnnexSelect: false, },
-      { state: -1, name: 'Incompleto', desc: false, editableDate: false, limit: [[3, false], 30], hasConsecutivo: false, hasAnnexSelect: false, icon: "empty" },
-      { state: 5, name: 'Legal y debida forma', desc: false, editableDate: false, limit: regexChecker_isOA_2(child1) ? [[4, false], -30] : [[3, false], 30], hasConsecutivo: false, hasAnnexSelect: false },
+      { state: 3, name: 'Expensas Fijas', desc: "Pago de Expensas Fijas", editableDate: false, hasConsecutivo: false, hasAnnexSelect: false, spentDaysConfig: { startState: false, referenceDate: currentItem.date } },
+      { state: -1, name: 'Incompleto', desc: false, editableDate: false, limit: [[3, 30]], hasConsecutivo: false, hasAnnexSelect: false, icon: "empty", spentDaysConfig: { startState: 3 } },
+
+      { state: 502, name: 'Legal y debida forma', desc: "Último día en el que se completó la documentación requerida", editableDate: true, limit: regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]], hasConsecutivo: false, hasAnnexSelect: false, rest:2, spentDaysConfig: { startState: regexChecker_isOA_2(child1) ? 4 : 3 } },
+      { state: 501, name: 'Declaracion en legal y debida forma', desc: "Fecha de documento legal y debida forma", editableDate: true, limit: [[502, 1]], hasConsecutivo: false, hasAnnexSelect: false, spentDaysConfig: { startState: 502 } },
+      { state: 5, name: 'Radicación en superintendencia', desc: "Radicación del legal y debida forma en la superintendencia", editableDate: true, limit: [[501, 1], [502, 1], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]], hasConsecutivo: false, hasAnnexSelect: false, spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] } },
+      { state: 503, name: 'Instalación de la valla', desc: false, editableDate: true, limit: [[5, 5]], hasConsecutivo: false, hasAnnexSelect: false, spentDaysConfig: { startState: 5 } },
       ...getDesistClocks(-1, getClockVersion),
       ...getDesistClocks(-2, getClockVersion),
       ...preActaSusp,
       ...preActaExt,
       { title: 'ACTA PARTE 1: OBSERVACIONES' },
-      { state: 30, name: 'Acta Parte 1: Observaciones', desc: "Acta de Observaciones inicial", limit: [[5, false], fun_type], },
-      { state: 31, name: 'Citación (Observaciones)', desc: "Citación para Observaciones", limit: [[30, false],5], hasConsecutivo: false, hasAnnexSelect: false, },
-      { state: 32, name: 'Notificación (Observaciones)', desc: "Notificación de Observaciones", limit: [31, 5], info: ['PERSONAL', 'ELECTRÓNICO'], },
-      { state: 33, name: 'Notificación por aviso (Observaciones)', desc: "Notificación por aviso de Observaciones", limit: [31, 10], icon: "empty", info: ['CERTIFICADO', 'ELECTRÓNICO'], },
-      { state: 34, name: 'Prórroga correcciones', desc: "Prórroga para presentar correcciones", limit: [[33, 32], [30, 30]], icon: "empty", hasConsecutivo: false, hasAnnexSelect: false, },
-      { state: 35, name: 'Radicación de Correcciones', desc: requereCorr() ? "Radicación de documentos corregidos" : false, limit: [[33, 32], presentExt() ? [45, 35, 40] : [30, 35, 40]], icon: requereCorr() ? undefined : "empty", hasConsecutivo: false, hasAnnexSelect: false, },
+      { state: 30, name: 'Acta Parte 1: Observaciones', desc: "Acta de Observaciones inicial", limit: [[5, fun_type]], spentDaysConfig: { startState: 5 } },
+      { state: 31, name: 'Citación (Observaciones)', desc: "Citación para Observaciones", limit: [[30, 5]], hasConsecutivo: false, hasAnnexSelect: false, spentDaysConfig: { startState: 30 } },
+      { state: 32, name: 'Notificación (Observaciones)', desc: "Notificación de Observaciones", limit: [[31, 5]], spentDaysConfig: { startState: 31 } },
+      { state: 33, name: 'Notificación por aviso (Observaciones)', desc: "Notificación por aviso de Observaciones", limit: [[31, 10]], icon: "empty", spentDaysConfig: { startState: 31 } },
+      { state: 34, name: 'Prórroga correcciones', desc: "Prórroga para presentar correcciones", limit: [ [[33, 32], 30], [[30], 30] ], icon: "empty", hasConsecutivo: false, hasAnnexSelect: true, spentDaysConfig: { startState: [33, 32] } },
+      { state: 35, name: 'Radicación de Correcciones', desc: requereCorr() ? "Radicación de documentos corregidos" : false, limit: [ [[33, 32], presentExt() ? 45 : 30] ], icon: requereCorr() ? undefined : "empty", hasConsecutivo: false, hasAnnexSelect: false, spentDaysConfig: { startState: 30 } },
       ...postActaSusp,
       ...postActaExt,
       { title: 'ACTA PARTE 2: CORRECCIONES' },
-      { state: 49, name: 'Acta Parte 2: Correcciones', desc: requereCorr() ? "Acta de revisión de correcciones" : false, limit: [[35, false], 50], limitValues: viaTime, icon: requereCorr() ? undefined : "empty", },
+      { state: 49, name: 'Acta Parte 2: Correcciones', desc: requereCorr() ? "Acta de revisión de correcciones" : false, limit: [[35, 50]], limitValues: viaTime, icon: requereCorr() ? undefined : "empty", spentDaysConfig: { startState: 35 } },
       ...getDesistClocks(-3, getClockVersion),
-      ...getDesistClocks(-5, getClockVersion), // -4 está en pagos
+      ...getDesistClocks(-5, getClockVersion),
       { title: 'ACTA DE VIABILIDAD' },
-      { state: 61, name: 'Acto de Tramite de Licencia (Viabilidad)', desc: "Tramite de viabilidad Licencia", limit: false, },
-      { state: 55, name: 'Citación (Viabilidad)', desc: "Comunicación o Requerimiento para el tramite de viabilidad de Licencia", limit: [61, 5], info: ['MEDIO EFICAZ', 'CERTIFICADO', 'ELECTRÓNICO'], },
-      { state: 56, name: 'Notificación (Viabilidad)', desc: "Se le notifica al solicitante del Tramite de viabilidad Licencia", limit: [55, 5], info: ['PERSONAL', 'ELECTRÓNICO'], },
-      { state: 57, show: false, name: 'Notificación por aviso (Viabilidad)', desc: "El solicitante NO se presento para el Tramite de viabilidad Licencia, fue informado por otros medios", limit: [55, 10], icon: "empty", info: ['CERTIFICADO', 'ELECTRÓNICO'], },
+      { state: 61, name: 'Acto de Tramite de Licencia (Viabilidad)', desc: "Tramite de viabilidad Licencia", limit: false, spentDaysConfig: { startState: 49 } },
+      { state: 55, name: 'Citación (Viabilidad)', desc: "Comunicación o Requerimiento para el tramite de viabilidad de Licencia", limit: [[61, 5]], spentDaysConfig: { startState: 61 } },
+      { state: 56, name: 'Notificación (Viabilidad)', desc: "Se le notifica al solicitante del Tramite de viabilidad Licencia", limit: [[55, 5]], spentDaysConfig: { startState: 55 } },
+      { state: 57, show: false, name: 'Notificación por aviso (Viabilidad)', desc: "El solicitante NO se presento para el Tramite de viabilidad Licencia, fue informado por otros medios", limit: [[55, 10]], icon: "empty", spentDaysConfig: { startState: 55 } },
     ]
 }
 
@@ -95,36 +105,36 @@ const paymentsClocks = (props) => {
     const conOA = regexChecker_isOA_2(child1);
     return [
         { title: 'PAGOS' },
-        { state: 62, name: 'Expensas Variables', desc: "Pago de Expensas Variables", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: conOA },
-        { state: 63, name: namePayment, desc: "Pago de Impuestos Municipales", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: conOA },
-        { state: 64, name: 'Estampilla PRO-UIS', desc: "Pago de Estampilla PRO-UIS", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'] },
-        { state: 65, name: 'Deberes Urbanísticos', desc: "Pago de Deberes Urbanísticos", limit: [49, 30], info: ['PAGO', 'NO PAGO', 'NA'], show: !conGI },
-        { state: 69, name: 'Radicacion de último pago', desc: "Último pago realizado", limit: [[56, 57], 30] },
+        { state: 62, name: 'Expensas Variables', desc: "Pago de Expensas Variables", limit: [[49, 30]], show: conOA, spentDaysConfig: { startState: 49 } },
+        { state: 63, name: namePayment, desc: "Pago de Impuestos Municipales", limit: [[49, 30]], show: conOA, spentDaysConfig: { startState: 49 } },
+        { state: 64, name: 'Estampilla PRO-UIS', desc: "Pago de Estampilla PRO-UIS", limit: [[49, 30]], spentDaysConfig: { startState: 49 } },
+        { state: 65, name: 'Deberes Urbanísticos', desc: "Pago de Deberes Urbanísticos", limit: [[49, 30]], show: !conGI, spentDaysConfig: { startState: 49 } },
+        { state: 69, name: 'Radicacion de último pago', desc: "Último pago realizado", limit: [[[56, 57], 30]], spentDaysConfig: { startState: [56, 57] } },
         ...getDesistClocks(-4, getClockVersion),
     ];
 };
 
 const finalClocks = () => [
     { title: 'RESOLUCIÓN' },
-    { state: 70, name: "Acto Administrativo / Resolución ", desc: "Expedición Acto Administrativo ", limit: [69, 5], info: ['OTORGA', 'NIEGA', 'DESISTE', 'RECURSO', 'REVOCATORIA DIRECTA', 'SILENCIO ADMINISTRATIVO', 'ACLARACIONES Y CORRECCIONES', 'INTERNO', 'OTRO'] },
-    { state: 71, name: "Comunicación o Requerimiento(Resolución)", desc: "Comunicación para notificar al solicitante de Acto Administrativo", info: ['MEDIO EFICAZ', 'CERTIFICADO', 'ELECTRÓNICO'] },
-    { state: 72, name: "Notificación (Resolución)", desc: "Se le notifica al solicitante del Acto Administrativo", limit: [71, 5], info: ['PERSONAL', 'ELECTRÓNICO',] },
-    { state: 73, name: "Notificación por aviso (Resolución)", desc: "El solicitante NO se presento para el Acto Administrativo, fue informado por otros medios", limit: [71, 10], info: ['CERTIFICADO', 'ELECTRÓNICO'] },
-    { state: 731, name: "Notificación (Planeación)", desc: "Se notificar a la oficina de planeación", limit: [71, 5], info: ['PERSONAL', 'ELECTRÓNICO', 'NA'] },
+    { state: 70, name: "Acto Administrativo / Resolución ", desc: "Expedición Acto Administrativo ", limit: [[69, 5]], spentDaysConfig: { startState: 69 } },
+    { state: 71, name: "Comunicación o Requerimiento(Resolución)", desc: "Comunicación para notificar al solicitante de Acto Administrativo", spentDaysConfig: { startState: 70 } },
+    { state: 72, name: "Notificación (Resolución)", desc: "Se le notifica al solicitante del Acto Administrativo", limit: [[71, 5]], spentDaysConfig: { startState: 71 } },
+    { state: 73, name: "Notificación por aviso (Resolución)", desc: "El solicitante NO se presento para el Acto Administrativo, fue informado por otros medios", limit: [[71, 10]], spentDaysConfig: { startState: 71 } },
+    { state: 731, name: "Notificación (Planeación)", desc: "Se notificar a la oficina de planeación", limit: [[71, 5]], spentDaysConfig: { startState: 71 } },
     { state: 730, name: "Renuncia de Términos", desc: "Se renuncia a los términos", },
     { title: 'RECURSO' },
-    { state: 74, name: "Recurso", desc: "Se presenta recurso", limit: [71, 15], info: ['REPOSICIÓN', 'APELACIÓN', 'QUEJA'], },
-    { state: 75, name: "Resuelve Recurso", desc: "El recurso se resuelve", limit: [74, 30], info: ['CONFIRMA', 'REVOCA - MODIFICA'], requiredClock: 74 },
-    { state: 751, name: "Comunicación o Requerimiento(Recurso)", desc: "Comunicación para notificar al solicitante de Recurso", limit: [74, 5], info: ['MEDIO EFICAZ', 'CERTIFICADO', 'ELECTRÓNICO'], requiredClock: 74 },
-    { state: 752, name: "Notificación (Recurso)", desc: "Se le notifica al solicitante del Recurso", limit: [751, 5], info: ['PERSONAL', 'ELECTRÓNICO',], requiredClock: 74 },
-    { state: 733, name: "Notificación por aviso (Recurso)", desc: "El solicitante NO se presento para el Recurso, fue informado por otros medios", limit: [751, 10], info: ['CERTIFICADO', 'ELECTRÓNICO'], requiredClock: 74 },
-    { state: 762, name: "Traslado Recurso", desc: "Se traslada el recurso", limit: [75, 5], requiredClock: 74 },
-    { state: 76, name: "Apelación (Planeación)", desc: "El recurso se resuelve por planeación", limit: [74, 30], info: ['CONFIRMA', 'REVOCA - MODIFICA'], requiredClock: 74 },
+    { state: 74, name: "Recurso", desc: "Se presenta recurso", limit: [[71, 15]], spentDaysConfig: { startState: 71 } },
+    { state: 75, name: "Resuelve Recurso", desc: "El recurso se resuelve", limit: [[74, 30]], requiredClock: 74, spentDaysConfig: { startState: 74 } },
+    { state: 751, name: "Comunicación o Requerimiento(Recurso)", desc: "Comunicación para notificar al solicitante de Recurso", limit: [[74, 5]], requiredClock: 74, spentDaysConfig: { startState: 74 } },
+    { state: 752, name: "Notificación (Recurso)", desc: "Se le notifica al solicitante del Recurso", limit: [[751, 5]], requiredClock: 74, spentDaysConfig: { startState: 751 } },
+    { state: 733, name: "Notificación por aviso (Recurso)", desc: "El solicitante NO se presento para el Recurso, fue informado por otros medios", limit: [[751, 10]], requiredClock: 74, spentDaysConfig: { startState: 751 } },
+    { state: 762, name: "Traslado Recurso", desc: "Se traslada el recurso", limit: [[75, 5]], requiredClock: 74, spentDaysConfig: { startState: 75 } },
+    { state: 76, name: "Apelación (Planeación)", desc: "El recurso se resuelve por planeación", limit: [[74, 30]], requiredClock: 74, spentDaysConfig: { startState: 74 } },
     { state: 761, name: "Recepción Notificación (Planeación)", desc: "Se recibe el recurso de planeación", requiredClock: 74 },
     { title: 'LICENCIA' },
-    { state: 85, name: "Publicación", desc: "Se publica la Licencia", info: ['PRENSA', 'PAGINA'] },
-    { state: 99, name: "Ejecutoria - Licencia", desc: "Expedición de Licencia", limit: [[72, 73], 10], },
-    { state: 98, name: "Entrega de Licencia", desc: "La licencia fue entregada oficialmente", },
+    { state: 85, name: "Publicación", desc: "Se publica la Licencia", spentDaysConfig: { startState: 99 } },
+    { state: 99, name: "Ejecutoria - Licencia", desc: "Expedición de Licencia", limit: [[[72, 73], 10]], spentDaysConfig: { startState: [72, 73] } },
+    { state: 98, name: "Entrega de Licencia", desc: "La licencia fue entregada oficialmente", spentDaysConfig: { startState: 99 } },
 ];
 
 
