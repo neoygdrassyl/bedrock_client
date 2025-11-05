@@ -1025,12 +1025,12 @@ class FUN extends Component {
                     right: 0,
                     bottom: 0,
                     backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                    zIndex: 2,
+                    zIndex: 1040,
                 },
                 content: {
                     position: 'absolute',
                     top: '10px',
-                    left: '15%',
+                    left: '260px',
                     right: '1%',
                     bottom: '10px',
                     border: '1px solid #ccc',
@@ -1053,7 +1053,7 @@ class FUN extends Component {
                     right: 0,
                     bottom: 0,
                     backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                    zIndex: 2,
+                    zIndex: 1040,
                 },
                 content: {
                     position: 'absolute',
