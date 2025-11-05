@@ -116,36 +116,40 @@ export const ControlBar = ({ manager, actions }) => {
 
   return (
     <div className="control-bar mb-1">
-      <div className="d-flex align-items-center p-2 bg-light rounded-3 shadow-sm bar-inner">
+      <div className="bar-inner">
+        {/* SECCIÓN IZQUIERDA: BOTONES */}
         <div className="actions d-flex gap-2 flex-wrap align-items-center">
           {!isDesisted && canAddSuspension && (
-            <button type="button" className="btn btn-warning btn-sm" onClick={() => onAddTimeControl('suspension')}>
-              <i className="fas fa-pause me-2"></i> Añadir Suspensión
+            <button type="button" className="btn btn-warning btn-sm" onClick={() => onAddTimeControl('suspension')} title="Pausar el tiempo del proceso">
+              <i className="fas fa-pause me-1"></i> Suspensión
             </button>
           )}
           {!isDesisted && canAddExtension && (
-            <button type="button" className="btn btn-info btn-sm" onClick={() => onAddTimeControl('extension')}>
-              <i className="fas fa-clock me-2"></i> Prórroga por Complejidad
+            <button type="button" className="btn btn-info btn-sm" onClick={() => onAddTimeControl('extension')} title="Extender plazo por complejidad">
+              <i className="fas fa-clock me-1"></i> Prórroga
             </button>
           )}
           {!isFull && (
-            <button type="button" className="btn btn-sm btn-light ms-1 exp-full-btn" title="Pantalla completa" onClick={() => onSetIsFull(true)}>
+            <button type="button" className="btn btn-outline-secondary btn-sm exp-full-btn" title="Pantalla completa" onClick={() => onSetIsFull(true)}>
               <i className="fas fa-expand"></i>
             </button>
           )}
         </div>
 
-        <div className="control-meta ms-auto small text-end">
+        {/* SECCIÓN DERECHA: INFORMACIÓN */}
+        <div className="control-meta ms-auto">
           {isDesisted ? (
-            <div className="text-danger">
-              <i className="fas fa-ban me-1"></i> Proceso desistido
-              <button type="button" className="btn btn-link btn-sm p-0 ms-2 align-baseline" onClick={showDesistModal}>
+            <div className="text-danger d-flex align-items-center gap-2">
+              <i className="fas fa-ban"></i> 
+              <span>Proceso desistido</span>
+              <button type="button" className="btn btn-link btn-sm p-0" onClick={showDesistModal}>
                 Ver motivo
               </button>
             </div>
           ) : (
             <>
-              <div className="status-chips d-flex justify-content-end flex-wrap gap-2 mb-1">
+              {/* Badges de Estado */}
+              <div className="status-chips d-flex justify-content-end flex-wrap gap-2 mb-2">
                 {finalized && (<span className="badge bg-success"><i className="fas fa-check-circle me-1"></i> Finalizado</span>)}
                 {!finalized && notStarted && (<span className="badge bg-secondary"><i className="fas fa-circle me-1"></i> No iniciado</span>)}
                 {!finalized && !notStarted && paused && (<span className="badge bg-warning text-dark"><i className="fas fa-pause me-1"></i> Pausado</span>)}
@@ -153,24 +157,51 @@ export const ControlBar = ({ manager, actions }) => {
                 {!finalized && !notStarted && !paused && curaduriaDetails && curaduriaDetails.remaining >= 0 && (<span className="badge bg-primary"><i className="fas fa-hourglass-half me-1"></i> En curso</span>)}
               </div>
 
+              {/* Información de Curaduría */}
               {finalized ? (
-                <div className="text-success"><i className="fas fa-check-circle me-1"></i> Curaduría: Finalizado</div>
+                <div className="text-success d-flex align-items-center gap-2">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Curaduría: Finalizado</span>
+                </div>
               ) : notStarted ? (
-                <div className="text-muted"><i className="fas fa-circle me-1"></i> Curaduría: No iniciado
-                  <button type="button" className="btn btn-link btn-sm p-0 ms-2 align-baseline" onClick={handleShowCuraduriaDetails}>Más info</button>
+                <div className="text-muted d-flex align-items-center gap-2">
+                  <i className="fas fa-circle"></i>
+                  <span>No iniciado</span>
+                  <button type="button" className="btn btn-link btn-sm p-0" onClick={handleShowCuraduriaDetails}>
+                    Más info
+                  </button>
                 </div>
               ) : curaduriaDetails ? (
-                <div className={paused ? 'text-warning' : (curaduriaDetails.remaining < 0 ? 'text-danger' : 'text-primary')}>
-                  <i className={`me-1 ${paused ? 'fas fa-pause' : 'fas fa-hourglass-half'}`}></i>
-                  Curaduría: {paused ? 'Pausado' : `${curaduriaDetails.remaining} días restantes`}
-                  <button type="button" className="btn btn-link btn-sm p-0 ms-2 align-baseline" onClick={handleShowCuraduriaDetails}>Ver detalle</button>
+                <div className={`d-flex align-items-center gap-2 ${paused ? 'text-warning' : (curaduriaDetails.remaining < 0 ? 'text-danger' : 'text-primary')}`}>
+                  <i className={`${paused ? 'fas fa-pause' : 'fas fa-hourglass-half'}`}></i>
+                  <span>{paused ? 'Pausado' : `${curaduriaDetails.remaining} días`}</span>
+                  <button type="button" className="btn btn-link btn-sm p-0" onClick={handleShowCuraduriaDetails}>
+                    Detalle
+                  </button>
                 </div>
-              ) : (<div className="text-muted">Control de tiempos adicionales</div>)}
+              ) : (
+                <div className="text-muted">
+                  <i className="fas fa-info-circle me-1"></i> Control de tiempos
+                </div>
+              )}
 
-              <div className="d-flex justify-content-end flex-wrap gap-2 mt-1">
-                {totalSuspensionDays > 0 && (<span className="badge bg-warning text-dark"><i className="fas fa-pause me-1"></i> Suspensiones: {totalSuspensionDays}/10</span>)}
-                {extension.exists && (<span className="badge bg-info text-dark"><i className="fas fa-clock me-1"></i> Prórroga: {extension.days} d</span>)}
-              </div>
+              {/* Badges de Recursos Usados */}
+              {(totalSuspensionDays > 0 || extension.exists) && (
+                <div className="d-flex justify-content-end flex-wrap gap-2 mt-2">
+                  {totalSuspensionDays > 0 && (
+                    <span className="badge bg-warning text-dark">
+                      <i className="fas fa-pause me-1"></i> 
+                      Suspensiones: {totalSuspensionDays}/10
+                    </span>
+                  )}
+                  {extension.exists && (
+                    <span className="badge bg-info text-dark">
+                      <i className="fas fa-clock me-1"></i> 
+                      Prórroga: {extension.days} d
+                    </span>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
