@@ -1310,14 +1310,16 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             </fieldset>
             }
             {/* Original navigation kept for functionality - visually hidden by new sidebar */}
-            <div style={{ display: 'none' }}>
-                <PQRS_MODULE_NAV
-                    translation={translation}
-                    currentItem={currentItem}
-                    FROM={currentItem.status == 0 ? "manage" : "editable"}
-                    NAVIGATION={props.NAVIGATION}
-                />
-            </div>
+            {currentItem && (
+                <div style={{ display: 'none' }}>
+                    <PQRS_MODULE_NAV
+                        translation={translation}
+                        currentItem={currentItem}
+                        FROM={currentItem.status == 0 ? "manage" : "editable"}
+                        NAVIGATION={props.NAVIGATION}
+                    />
+                </div>
+            )}
         </PQRS_LAYOUT_WRAPPER>
     )
 }

@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import './pqrs_fixedHeader.css';
 
 class PQRS_FIXED_HEADER extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const { currentItem } = this.props;
 

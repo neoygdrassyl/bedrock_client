@@ -26,11 +26,11 @@ class PQRS_LAYOUT_WRAPPER extends Component {
 
     handleNavigation = (sectionId) => {
         this.setState({ activeSection: sectionId });
-        // Scroll to section if needed
-        const element = document.getElementById(`pqrs-section-${sectionId}`);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        // Future enhancement: scroll to section if IDs are added to content sections
+        // const element = document.getElementById(`pqrs-section-${sectionId}`);
+        // if (element) {
+        //     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // }
     };
 
     componentDidMount() {
