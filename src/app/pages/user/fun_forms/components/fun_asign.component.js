@@ -11,6 +11,7 @@ import { infoCud, nomens } from '../../../../components/jsons/vars';
 import { Badge, Calendar, Popover, Tag, TagGroup, Whisper } from 'rsuite';
 import Modal from 'react-modal';
 import FUN_ASIGNS_HISTORY_COMPONENT from './fun_asign_history.component';
+import './fun_modal_shared.css';
 
 const customStylesForModal = {
     overlay: {
@@ -25,7 +26,7 @@ const customStylesForModal = {
     content: {
         position: 'absolute',
         top: '10px',
-        left: '20%',
+        left: 'var(--fun-sidebar-width)',
         right: '15%',
         bottom: '10px',
         border: '1px solid #ccc',
