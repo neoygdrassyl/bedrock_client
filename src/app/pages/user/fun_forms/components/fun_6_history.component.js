@@ -7,6 +7,7 @@ import FUN_SERVICE from '../../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
+import './fun_modal_shared.css';
 
 const MySwal = withReactContent(Swal);
 class FUN_6_HISTORY extends Component {
@@ -64,7 +65,7 @@ class FUN_6_HISTORY extends Component {
             content: {
                 position: 'absolute',
                 top: '15%',
-                left: '30%',
+                left: 'var(--fun-sidebar-width)',
                 right: '30%',
                 bottom: '15%',
                 border: '1px solid #ccc',

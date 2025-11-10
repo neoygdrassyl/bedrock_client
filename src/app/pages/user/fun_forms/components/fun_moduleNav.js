@@ -13,9 +13,15 @@ class FUN_MODULE_NAV extends Component {
     }
 
     toggleSidebar = () => {
-        this.setState(prevState => ({
-            isCollapsed: !prevState.isCollapsed
-        }));
+        this.setState(prevState => {
+            const newCollapsedState = !prevState.isCollapsed;
+            // Update CSS variable for dynamic modal positioning
+            document.documentElement.style.setProperty(
+                '--fun-sidebar-width',
+                newCollapsedState ? '60px' : '240px'
+            );
+            return { isCollapsed: newCollapsedState };
+        });
     };
 
     render() {
