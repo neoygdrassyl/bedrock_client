@@ -6,12 +6,12 @@
 /* Modal content positioning - synchronized with sidebar width */
 .ReactModal__Content {
     left: var(--fun-sidebar-width) !important;
-    transition: left 0.3s ease;
+    transition: left 0.15s ease;
 }
 
 /* Ensure modal content respects the sidebar positioning */
 .fun-modal-content {
     position: absolute;
     left: var(--fun-sidebar-width);
-    transition: left 0.3s ease;
+    transition: left 0.15s ease;
 }
