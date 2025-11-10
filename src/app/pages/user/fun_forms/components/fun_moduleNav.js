@@ -164,7 +164,7 @@ class FUN_MODULE_NAV extends Component {
                         <div className="fun-nav-section">
                             <MDBTooltip 
                                 tag="div" 
-                                title={!isCollapsed ? '' : 'Cerrar'}
+                                title={isCollapsed ? 'Cerrar' : ''}
                                 placement="right"
                             >
                                 <button
@@ -188,7 +188,7 @@ class FUN_MODULE_NAV extends Component {
                                         <MDBTooltip 
                                             key={item.id}
                                             tag="div" 
-                                            title={!isCollapsed ? '' : item.label}
+                                            title={isCollapsed ? item.label : ''}
                                             placement="right"
                                         >
                                             <button
