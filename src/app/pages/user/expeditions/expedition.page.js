@@ -12,7 +12,7 @@ import CUSTOM_DATA_SERVICE from '../../../services/custom.service';
 import EXP_1 from './exp_1.component';
 import EXP_AREAS from './exp_areas.component';
 import EXP_DOCS from './exp_docs.component';
-import EXP_CLOCKS from './exp_clocks.component';
+import EXP_CLOCKS from './exp_clocks.component_OLD';
 import EXP_LIC from './exp_lic.component';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_2 from './exp_2.component';
