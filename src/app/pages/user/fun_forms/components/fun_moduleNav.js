@@ -7,15 +7,31 @@ import './fun_moduleNav_enhanced.css';
 class FUN_MODULE_NAV extends Component {
     constructor(props) {
         super(props);
+        // Check if CSS variable is already set to determine initial state
+        const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
         this.state = {
-            isCollapsed: false
+            isCollapsed: currentWidth === '60px'
         };
     }
 
+    componentDidMount() {
+        // Ensure CSS variable is set on mount if not already set
+        const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
+        if (!currentWidth || currentWidth === '') {
+            document.documentElement.style.setProperty('--fun-sidebar-width', '240px');
+        }
+    }
+
     toggleSidebar = () => {
-        this.setState(prevState => ({
-            isCollapsed: !prevState.isCollapsed
-        }));
+        this.setState(prevState => {
+            const newCollapsedState = !prevState.isCollapsed;
+            // Update CSS variable for dynamic modal positioning
+            document.documentElement.style.setProperty(
+                '--fun-sidebar-width',
+                newCollapsedState ? '60px' : '240px'
+            );
+            return { isCollapsed: newCollapsedState };
+        });
     };
 
     render() {
@@ -40,66 +56,86 @@ class FUN_MODULE_NAV extends Component {
         const isOA = regexChecker_isOA_2(fun1);
         const rules = currentItem.rules ? currentItem.rules.split(';') : [];
 
-        // Definir grupos de navegación con colores
-        const navGroups = [
-            {
-                id: 'actions',
-                color: 'info',
-                items: [
-                    { id: 'general', icon: 'far fa-folder-open', label: 'DETALLES', from: 'general' },
-                    { id: 'clock', icon: 'far fa-clock', label: 'TIEMPOS', from: 'clock' },
-                    { id: 'archive', icon: 'fas fa-archive', label: 'DOCUMENTOS', from: 'archive', color: 'secondary' }
-                ]
-            }
-        ];
+        // Definir grupos de navegación con colores - REFACTORIZADO
+        const navGroups = [];
+        
+        // Grupo 1: Detalles y Tiempos
+        navGroups.push({
+            id: 'details_time',
+            color: 'info',
+            items: [
+                { id: 'general', icon: 'far fa-folder-open', label: 'DETALLES', from: 'general' },
+                { id: 'clock', icon: 'far fa-clock', label: 'TIEMPOS', from: 'clock' }
+            ]
+        });
 
-        // Agregar grupo de edición si el estado lo permite
+        // Grupo 2: Documentos y Edición (solo si el estado lo permite)
+        const editGroup = [];
+        editGroup.push({ id: 'archive', icon: 'fas fa-archive', label: 'DOCUMENTOS', from: 'archive' });
+        
         if (currentItem.state != 101 && currentItem.state <= 200) {
+            editGroup.push({ id: 'edit', icon: 'far fa-folder-open', label: 'ACTUALIZAR', from: 'edit' });
+            editGroup.push({ id: 'check', icon: 'far fa-check-square', label: 'CHECKEO', from: 'check' });
+            
+            if (!isPH && !isOA && rules[0] != 1) {
+                editGroup.push({ 
+                    id: 'alert', 
+                    icon: 'fas fa-sign', 
+                    label: 'PUBLICIDAD', 
+                    from: 'alert',
+                    badge: this.props.pqrsxfun?.length ? 'PQRS' : null
+                });
+            }
+        }
+        
+        if (editGroup.length > 0) {
             navGroups.push({
-                id: 'edition',
+                id: 'documents_edition',
                 color: 'secondary',
-                items: [
-                    { id: 'edit', icon: 'far fa-folder-open', label: 'ACTUALIZAR', from: 'edit' },
-                    { id: 'check', icon: 'far fa-check-square', label: 'CHECKEO', from: 'check', color: 'warning' }
-                ]
+                items: editGroup
             });
+        }
 
-            // Grupo de evaluación con color warning
-            const evaluationItems = [];
+        // Grupo 3: Informes (solo si el estado lo permite)
+        if (currentItem.state != 101 && currentItem.state <= 200) {
+            const reportsItems = [];
 
             if (!isPH) {
-                if (!isOA && rules[0] != 1) {
-                    evaluationItems.push({ 
-                        id: 'alert', 
-                        icon: 'fas fa-sign', 
-                        label: 'PUBLICIDAD', 
-                        from: 'alert',
-                        badge: this.props.pqrsxfun?.length ? 'PQRS' : null
-                    });
-                }
-
-                evaluationItems.push({ id: 'record_law', icon: 'fas fa-balance-scale', label: 'INF. JURÍDICO', from: 'record_law' });
+                reportsItems.push({ id: 'record_law', icon: 'fas fa-balance-scale', label: 'INF. JURÍDICO', from: 'record_law' });
 
                 if (!isOA) {
-                    evaluationItems.push({ id: 'record_arc', icon: 'far fa-building', label: 'INF. ARQ.', from: 'record_arc' });
+                    reportsItems.push({ id: 'record_arc', icon: 'far fa-building', label: 'INF. ARQ.', from: 'record_arc' });
                     
                     if (rules[1] != 1) {
-                        evaluationItems.push({ id: 'record_eng', icon: 'fas fa-cogs', label: 'INF. ESTRUCT.', from: 'record_eng' });
+                        reportsItems.push({ id: 'record_eng', icon: 'fas fa-cogs', label: 'INF. ESTRUCT.', from: 'record_eng' });
                     }
-
-                    evaluationItems.push({ id: 'record_review', icon: 'fas fa-file-contract', label: 'ACTA', from: 'record_review' });
                 }
             } else {
-                evaluationItems.push({ id: 'record_ph', icon: 'fas fa-pencil-ruler', label: 'INFORME P.H.', from: 'record_ph' });
+                reportsItems.push({ id: 'record_ph', icon: 'fas fa-pencil-ruler', label: 'INFORME P.H.', from: 'record_ph' });
             }
 
-            evaluationItems.push({ id: 'expedition', icon: 'far fa-file-alt', label: 'EXPEDICIÓN', from: 'expedition' });
-
-            if (evaluationItems.length > 0) {
+            if (reportsItems.length > 0) {
                 navGroups.push({
-                    id: 'evaluation',
+                    id: 'reports',
                     color: 'warning',
-                    items: evaluationItems
+                    items: reportsItems
+                });
+            }
+
+            // Grupo 4: Acta y Expedición
+            const finalItems = [];
+            
+            if (!isPH && !isOA) {
+                finalItems.push({ id: 'record_review', icon: 'fas fa-file-contract', label: 'ACTA', from: 'record_review' });
+            }
+            
+            finalItems.push({ id: 'expedition', icon: 'far fa-file-alt', label: 'EXPEDICIÓN', from: 'expedition' });
+
+            if (finalItems.length > 0) {
+                navGroups.push({
+                    id: 'final_steps',
+                    color: 'warning',
+                    items: finalItems
                 });
             }
         }
@@ -156,19 +192,14 @@ class FUN_MODULE_NAV extends Component {
 
                         {/* Botón de cerrar */}
                         <div className="fun-nav-section">
-                            <MDBTooltip 
-                                tag="div" 
-                                title={!isCollapsed ? '' : 'Cerrar'}
-                                placement="right"
+                            <button
+                                onClick={() => this.props.NAVIGATION(currentItem, "close", FROM)}
+                                className={`fun-nav-item btn-close-module`}
+                                data-tooltip="CERRAR"
                             >
-                                <button
-                                    onClick={() => this.props.NAVIGATION(currentItem, "close", FROM)}
-                                    className={`fun-nav-item btn-close-module`}
-                                >
-                                    <i className="fas fa-times-circle"></i>
-                                    {!isCollapsed && <span className="fun-nav-label">CERRAR</span>}
-                                </button>
-                            </MDBTooltip>
+                                <i className="fas fa-times-circle"></i>
+                                {!isCollapsed && <span className="fun-nav-label">CERRAR</span>}
+                            </button>
                         </div>
 
                         {/* Grupos de navegación */}
@@ -179,30 +210,25 @@ class FUN_MODULE_NAV extends Component {
                                     const isActive = FROM === item.from;
                                     
                                     return (
-                                        <MDBTooltip 
+                                        <button
                                             key={item.id}
-                                            tag="div" 
-                                            title={!isCollapsed ? '' : item.label}
-                                            placement="right"
+                                            onClick={() => FROM !== item.from && this.props.NAVIGATION(currentItem, item.id, FROM)}
+                                            className={`fun-nav-item ${isActive ? 'active' : ''} btn-${itemColor}`}
+                                            disabled={isActive}
+                                            data-tooltip={item.label}
                                         >
-                                            <button
-                                                onClick={() => FROM !== item.from && this.props.NAVIGATION(currentItem, item.id, FROM)}
-                                                className={`fun-nav-item ${isActive ? 'active' : ''} btn-${itemColor}`}
-                                                disabled={isActive}
-                                            >
-                                                <i className={item.icon}></i>
-                                                {!isCollapsed && (
-                                                    <span className="fun-nav-label">
-                                                        {item.label}
-                                                        {item.badge && (
-                                                            <MDBBadge color="primary" className="ms-2">
-                                                                {item.badge}
-                                                            </MDBBadge>
-                                                        )}
-                                                    </span>
-                                                )}
-                                            </button>
-                                        </MDBTooltip>
+                                            <i className={item.icon}></i>
+                                            {!isCollapsed && (
+                                                <span className="fun-nav-label">
+                                                    {item.label}
+                                                    {item.badge && (
+                                                        <MDBBadge color="primary" className="ms-2">
+                                                            {item.badge}
+                                                        </MDBBadge>
+                                                    )}
+                                                </span>
+                                            )}
+                                        </button>
                                     );
                                 })}
                             </div>
