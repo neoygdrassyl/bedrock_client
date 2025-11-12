@@ -9,6 +9,7 @@ import { generateClocks } from './config/clocks.definitions';
 import { ClockRow } from './components/ClockRow';
 import { SidebarInfo } from './components/SidebarInfo';
 import { HolidayCalendar } from './components/HolidayCalendar';
+import { DateSimulator } from './components/DateSimulator';
 
 
 import FUN_SERVICE from '../../../services/fun.service';
@@ -25,6 +26,7 @@ export default function EXP_CLOCKS(props) {
   const [clocksData, setClocksData] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [sidebarHeight, setSidebarHeight] = useState('auto');
+  const [simulatedDate, setSimulatedDate] = useState(null);
   
   const sidebarRef = useRef(null);
 
@@ -35,7 +37,7 @@ export default function EXP_CLOCKS(props) {
     }
   }, [currentItem?.fun_clocks]);
 
-  const manager = useClocksManager(currentItem, clocksData, currentVersion);
+  const manager = useClocksManager(currentItem, clocksData, currentVersion, simulatedDate);
 
   useEffect(() => {
     const handleResize = () => {
@@ -195,6 +197,97 @@ export default function EXP_CLOCKS(props) {
     });
   };
 
+  const validateBeforeSave = (eventType, eventData, helpers) => {
+    const { totalSuspensionDays, extension, getClock } = helpers;
+
+    // Validación 1: Límite de suspensiones
+    if (eventType === 'suspension') {
+      const newDays = dateParser_dateDiff(eventData.startDate, eventData.endDate || eventData.startDate);
+      const diasDisponibles = 10 - totalSuspensionDays;
+
+      if (newDays > diasDisponibles) {
+        MySwal.fire({
+          icon: 'error',
+          title: 'Límite Excedido',
+          text: `Solo hay ${diasDisponibles} días disponibles de los 10 totales permitidos para suspensiones.`
+        });
+        return false;
+      }
+    }
+
+    // Validación 2: Prórroga complejidad única
+    if (eventType === 'extension') {
+      if (extension.exists) {
+        MySwal.fire({
+          icon: 'error',
+          title: 'Prórroga Ya Existe',
+          text: 'Solo puede haber UNA prórroga por complejidad en el expediente.'
+        });
+        return false;
+      }
+    }
+
+    // Validación 3: Prórroga correcciones única
+    if (eventType === 'correction_extension') {
+      if (getClock(34)?.date_start) {
+        MySwal.fire({
+          icon: 'error',
+          title: 'Prórroga Ya Otorgada',
+          text: 'Ya se otorgó prórroga de correcciones al solicitante.'
+        });
+        return false;
+      }
+    }
+
+    // Validación 4: No solapamiento (simplificada)
+    if (['suspension', 'extension'].includes(eventType)) {
+      const allSpecialEvents = [];
+      
+      // Recopilar eventos especiales existentes
+      if (helpers.suspensionPreActa?.exists && helpers.suspensionPreActa?.start?.date_start && helpers.suspensionPreActa?.end?.date_start) {
+        allSpecialEvents.push({
+          start: helpers.suspensionPreActa.start.date_start,
+          end: helpers.suspensionPreActa.end.date_start
+        });
+      }
+      if (helpers.suspensionPostActa?.exists && helpers.suspensionPostActa?.start?.date_start && helpers.suspensionPostActa?.end?.date_start) {
+        allSpecialEvents.push({
+          start: helpers.suspensionPostActa.start.date_start,
+          end: helpers.suspensionPostActa.end.date_start
+        });
+      }
+      if (helpers.extension?.exists && helpers.extension?.start?.date_start && helpers.extension?.end?.date_start) {
+        allSpecialEvents.push({
+          start: helpers.extension.start.date_start,
+          end: helpers.extension.end.date_start
+        });
+      }
+
+      const newStart = moment(eventData.startDate);
+      const newEnd = eventData.endDate ? moment(eventData.endDate) : newStart;
+
+      for (let event of allSpecialEvents) {
+        const eventStart = moment(event.start);
+        const eventEnd = moment(event.end);
+
+        const overlaps = newStart.isBetween(eventStart, eventEnd, null, '[]') ||
+                         newEnd.isBetween(eventStart, eventEnd, null, '[]') ||
+                         (newStart.isSameOrBefore(eventStart) && newEnd.isSameOrAfter(eventEnd));
+
+        if (overlaps) {
+          MySwal.fire({
+            icon: 'error',
+            title: 'Fechas Solapadas',
+            text: 'Las fechas se solapan con otro evento especial existente.'
+          });
+          return false;
+        }
+      }
+    }
+
+    return true;
+  };
+
 
   const addTimeControl = (type) => {
     if (type === 'suspension') {
@@ -349,6 +442,8 @@ export default function EXP_CLOCKS(props) {
 
   return (
     <div className="exp-wrapper">
+      <DateSimulator onDateChange={setSimulatedDate} />
+      
       <div className="exp-container">
         <div className="exp-main-content">
           <div className="card exp-card">

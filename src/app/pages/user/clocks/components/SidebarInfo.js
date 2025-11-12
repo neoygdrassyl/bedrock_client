@@ -23,7 +23,9 @@ export const SidebarInfo = ({ manager, actions }) => {
     canAddExtension,
     curaduriaDetails,
     desistEvents,
-    NEGATIVE_PROCESS_TITLE
+    NEGATIVE_PROCESS_TITLE,
+    solicitanteTimes,
+    suggestions
   } = manager;
 
   const { onAddTimeControl } = actions;
@@ -70,6 +72,85 @@ export const SidebarInfo = ({ manager, actions }) => {
       confirmButtonText: 'Cerrar',
       width: 480,
     });
+  };
+
+  const renderSolicitanteTimes = () => {
+    if (!solicitanteTimes) return null;
+
+    return (
+      <div className="sidebar-card">
+        <div className="sidebar-card-header">
+          <i className="fas fa-user-clock" />
+          <span>Tiempos del Solicitante</span>
+        </div>
+        <div className="sidebar-card-body">
+          {solicitanteTimes.radicacion.used !== null && (
+            <div className="value-row">
+              <span className="label">Radicación:</span>
+              <span className={`value ${solicitanteTimes.radicacion.status === 'exceeded' ? 'text-danger' : 'text-success'}`}>
+                {solicitanteTimes.radicacion.used} / {solicitanteTimes.radicacion.limit} días
+              </span>
+            </div>
+          )}
+
+          {solicitanteTimes.correcciones.used !== null && (
+            <div className="value-row">
+              <span className="label">Correcciones:</span>
+              <span className={`value ${solicitanteTimes.correcciones.status === 'exceeded' ? 'text-danger' : 'text-success'}`}>
+                {solicitanteTimes.correcciones.used} / {solicitanteTimes.correcciones.limit} días
+                {solicitanteTimes.correcciones.hasExtension && (
+                  <i className="fas fa-clock text-info ml-1" title="Con prórroga" />
+                )}
+              </span>
+            </div>
+          )}
+
+          {solicitanteTimes.pagos.used !== null && (
+            <div className="value-row">
+              <span className="label">Pagos:</span>
+              <span className={`value ${solicitanteTimes.pagos.status === 'exceeded' ? 'text-danger' : 'text-success'}`}>
+                {solicitanteTimes.pagos.used} / {solicitanteTimes.pagos.limit} días
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderSuggestions = () => {
+    if (!suggestions || suggestions.length === 0) return null;
+
+    return (
+      <div className="sidebar-card suggestions-card">
+        <div className="sidebar-card-header">
+          <i className="fas fa-lightbulb" />
+          <span>Sugerencias del Sistema</span>
+        </div>
+        <div className="sidebar-card-body">
+          {suggestions.map((s, i) => (
+            <div key={i} className={`alert alert-${s.type}`}>
+              <i className={`fas ${s.icon}`} />
+              <p className="mb-2">{s.message}</p>
+              {s.actions && s.actions.length > 0 && (
+                <div className="btn-group-vertical w-100">
+                  {s.actions.map((a, j) => (
+                    <button
+                      key={j}
+                      disabled={!a.enabled}
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => onAddTimeControl(a.type)}
+                    >
+                      {a.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -133,6 +214,10 @@ export const SidebarInfo = ({ manager, actions }) => {
           </div>
         </div>
       )}
+
+      {/* --- NUEVAS SECCIONES --- */}
+      {renderSolicitanteTimes()}
+      {renderSuggestions()}
     </>
   );
 };

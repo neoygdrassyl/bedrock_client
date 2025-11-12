@@ -14,7 +14,8 @@ export const NEGATIVE_PROCESS_TITLE = {
   '-6': 'NEGADA',
 };
 
-export const useClocksManager = (currentItem, clocksData, currentVersion) => {
+export const useClocksManager = (currentItem, clocksData, currentVersion, simulatedDate = null) => {
+  const currentDate = simulatedDate || moment();
 
   const getClock = (state) => (clocksData || []).find(c => String(c.state) === String(state)) || null;
   const getClockVersion = (state, version) => (clocksData || []).find(c => String(c.state) === String(state) && String(c.version) === String(version)) || null;
@@ -38,10 +39,10 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     const exists = !!startClock?.date_start;
     const days = exists && endClock?.date_start
       ? dateParser_dateDiff(startClock.date_start, endClock.date_start)
-      : (exists ? dateParser_dateDiff(startClock.date_start, moment().format('YYYY-MM-DD')) : 0);
+      : (exists ? dateParser_dateDiff(startClock.date_start, currentDate.format('YYYY-MM-DD')) : 0);
       
     return { exists, start: startClock, end: endClock, days };
-  }, [clocksData]);
+  }, [clocksData, currentDate]);
 
   const suspensionPostActa = useMemo(() => {
     const startClock = getClock(301);
@@ -49,10 +50,10 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     const exists = !!startClock?.date_start;
     const days = exists && endClock?.date_start
       ? dateParser_dateDiff(startClock.date_start, endClock.date_start)
-      : (exists ? dateParser_dateDiff(startClock.date_start, moment().format('YYYY-MM-DD')) : 0);
+      : (exists ? dateParser_dateDiff(startClock.date_start, currentDate.format('YYYY-MM-DD')) : 0);
 
     return { exists, start: startClock, end: endClock, days };
-  }, [clocksData]);
+  }, [clocksData, currentDate]);
 
   const totalSuspensionDays = useMemo(() => {
     // Solo contamos días de suspensiones finalizadas para el total
@@ -116,6 +117,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     const ldfTime = getClock(5)?.date_start;
     const acta1Time = getClock(30)?.date_start;
     const corrTime = getClock(35)?.date_start;
+    const viaTime = getClock(61)?.date_start;
 
     const extensionDays = extension.exists ? extension.days : 0;
     const baseTotal = evaDefaultTime + totalSuspensionDays + extensionDays;
@@ -123,27 +125,23 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     if (!ldfTime) {
       return {
         total: baseTotal, used: 0, remaining: baseTotal, reference: null, from: 'NOT_STARTED',
-        today: moment().format('YYYY-MM-DD'), suspensions: totalSuspensionDays, extension: extensionDays,
-        preActaUsed: 0, preFirstEventUsed: 0, preFirstEventExtra: 0, paused: false, notStarted: true,
+        today: currentDate.format('YYYY-MM-DD'), suspensions: totalSuspensionDays, extension: extensionDays,
+        paused: false, notStarted: true, daysLeft: baseTotal,
       };
     }
     
-    const preActaUsed = (ldfTime && acta1Time) ? dateParser_dateDiff(ldfTime, acta1Time) : 0;
+    // PERÍODO 1: Pre-Acta (state:5 → state:30)
+    const preActaUsed = acta1Time ? dateParser_dateDiff(ldfTime, acta1Time) : 0;
 
-    const firstEventCandidates = [];
-    if (suspensionPreActa?.start?.date_start) firstEventCandidates.push({ date: suspensionPreActa.start.date_start, type: 'SUSP_PRE_START(300)' });
-    if (suspensionPostActa?.start?.date_start) firstEventCandidates.push({ date: suspensionPostActa.start.date_start, type: 'SUSP_POST_START(301)' });
-    if (corrTime) firstEventCandidates.push({ date: corrTime, type: 'CORR_35' });
+    // PERÍODO 3: Post-Correcciones (state:35 → state:61)
+    // Solo si existen correcciones
+    const postCorrUsed = (corrTime && viaTime) ? dateParser_dateDiff(corrTime, viaTime) : 0;
 
-    const validFirsts = firstEventCandidates.filter(c => c.date && (moment(c.date).isAfter(ldfTime) || moment(c.date).isSame(ldfTime)));
-    let firstEvent = null;
-    if (validFirsts.length) {
-      validFirsts.sort((a, b) => (moment(a.date).isBefore(b.date) ? -1 : 1));
-      firstEvent = validFirsts[0];
-    }
-    
-    const preFirstEventUsed = firstEvent ? dateParser_dateDiff(ldfTime, firstEvent.date) : 0;
-    const preFirstEventExtra = Math.max(0, preFirstEventUsed - preActaUsed);
+    // Total consumido por curaduría
+    const totalUsed = preActaUsed + postCorrUsed;
+
+    // Días disponibles restantes
+    const daysLeft = baseTotal - totalUsed;
 
     const candidates = [];
     if (acta1Time) {
@@ -159,22 +157,24 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     if (!candidates.length) {
       if (acta1Time) {
         return {
-          total: baseTotal, used: preActaUsed + preFirstEventExtra, remaining: baseTotal - (preActaUsed + preFirstEventExtra),
-          reference: null, from: 'PAUSED', today: moment().format('YYYY-MM-DD'), suspensions: totalSuspensionDays, extension: extensionDays,
-          preActaUsed, preFirstEventUsed, preFirstEventExtra, paused: true, notStarted: false, firstEventDate: firstEvent?.date, firstEventType: firstEvent?.type,
+          total: baseTotal, used: totalUsed, remaining: daysLeft,
+          reference: null, from: 'PAUSED', today: currentDate.format('YYYY-MM-DD'), 
+          suspensions: totalSuspensionDays, extension: extensionDays,
+          paused: true, notStarted: false, daysLeft,
         };
       }
       return {
-        total: baseTotal, used: 0, remaining: baseTotal, reference: null, from: 'NOT_STARTED', today: moment().format('YYYY-MM-DD'),
-        suspensions: totalSuspensionDays, extension: extensionDays, preActaUsed: 0, preFirstEventUsed: 0, preFirstEventExtra: 0,
-        paused: false, notStarted: true, firstEventDate: firstEvent?.date, firstEventType: firstEvent?.type,
+        total: baseTotal, used: 0, remaining: baseTotal, reference: null, from: 'NOT_STARTED', 
+        today: currentDate.format('YYYY-MM-DD'),
+        suspensions: totalSuspensionDays, extension: extensionDays,
+        paused: false, notStarted: true, daysLeft: baseTotal,
       };
     }
 
     candidates.sort((a, b) => (moment(a.date).isAfter(b.date) ? -1 : 1));
     const lastRef = candidates[0];
 
-    let effectiveToday = moment().format('YYYY-MM-DD');
+    let effectiveToday = currentDate.format('YYYY-MM-DD');
     const isActiveSuspension = (susp) => susp.exists && !susp.end?.date_start && susp.start?.date_start && moment(susp.start.date_start).isAfter(lastRef.date);
 
     if (acta1Time) {
@@ -184,17 +184,17 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     }
 
     const usedAfterRef = dateParser_dateDiff(lastRef.date, effectiveToday);
-    const used = preActaUsed + preFirstEventExtra + usedAfterRef;
+    const used = totalUsed + usedAfterRef;
     const remaining = baseTotal - used;
     const isPaused = (acta1Time && !corrTime && !suspensionPostActa.start?.date_start) || (isActiveSuspension(suspensionPreActa)) || (isActiveSuspension(suspensionPostActa));
 
     return {
       total: baseTotal, used, remaining, reference: lastRef.date, from: lastRef.from, today: effectiveToday,
-      suspensions: totalSuspensionDays, extension: extensionDays, preActaUsed, preFirstEventUsed, preFirstEventExtra,
-      paused: isPaused, notStarted: false, firstEventDate: firstEvent?.date, firstEventType: firstEvent?.type,
+      suspensions: totalSuspensionDays, extension: extensionDays,
+      paused: isPaused, notStarted: false, daysLeft: remaining,
     };
 
-  }, [clocksData, currentItem.type, extension, totalSuspensionDays, suspensionPreActa, suspensionPostActa]);
+  }, [clocksData, currentItem.type, extension, totalSuspensionDays, suspensionPreActa, suspensionPostActa, currentDate]);
   
   const desistEvents = useMemo(() => {
       return (clocksData || []).filter(c => c?.date_start && STEPS_TO_CHECK.includes(String(c.state)));
@@ -268,6 +268,119 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     };
   };
 
+  const solicitanteTimes = useMemo(() => {
+    // RADICACIÓN: desde creación hasta state:5 (LDF)
+    const ldfTime = getClock(5)?.date_start;
+    const radicacionTime = ldfTime 
+      ? dateParser_dateDiff(currentItem.create, ldfTime) 
+      : null;
+
+    // CORRECCIONES: desde notificación acta hasta state:35
+    const notifActa = getNewestDate([32, 33]);
+    const corrTime = getClock(35)?.date_start;
+    const corrExtension = getClock(34); // Prórroga correcciones
+    const corrLimit = corrExtension?.date_start ? 45 : 30;
+    const correccionesTime = (notifActa && corrTime) 
+      ? dateParser_dateDiff(notifActa, corrTime) 
+      : null;
+
+    // PAGOS: desde notificación viabilidad hasta state:69
+    const notifVia = getNewestDate([56, 57]);
+    const radicacionPagos = getClock(69);
+    const pagosTime = (notifVia && radicacionPagos?.date_start) 
+      ? dateParser_dateDiff(notifVia, radicacionPagos.date_start) 
+      : null;
+
+    return {
+      radicacion: { 
+        used: radicacionTime, 
+        limit: 30,
+        status: radicacionTime && radicacionTime > 30 ? 'exceeded' : 'ok'
+      },
+      correcciones: { 
+        used: correccionesTime, 
+        limit: corrLimit,
+        hasExtension: !!corrExtension?.date_start,
+        status: correccionesTime && correccionesTime > corrLimit ? 'exceeded' : 'ok'
+      },
+      pagos: { 
+        used: pagosTime, 
+        limit: 30,
+        status: pagosTime && pagosTime > 30 ? 'exceeded' : 'ok'
+      }
+    };
+  }, [currentItem, clocksData, currentDate]);
+
+  const suggestions = useMemo(() => {
+    const list = [];
+
+    // Sugerencia: Días de curaduría por vencer
+    if (curaduriaDetails && !curaduriaDetails.notStarted && !curaduriaDetails.paused) {
+      const { daysLeft } = curaduriaDetails;
+
+      if (daysLeft <= 5 && daysLeft > 0) {
+        list.push({
+          type: 'warning',
+          icon: 'fa-exclamation-triangle',
+          message: `Quedan ${daysLeft} días disponibles para curaduría`,
+          actions: [
+            { 
+              type: 'suspension', 
+              label: 'Añadir Suspensión', 
+              enabled: canAddSuspension 
+            },
+            { 
+              type: 'extension', 
+              label: 'Añadir Prórroga Complejidad', 
+              enabled: canAddExtension 
+            }
+          ]
+        });
+      }
+
+      if (daysLeft <= 0) {
+        list.push({
+          type: 'danger',
+          icon: 'fa-times-circle',
+          message: `Plazo vencido: ${Math.abs(daysLeft)} días de retraso`,
+          actions: [
+            { 
+              type: 'special_extension', 
+              label: 'Solicitar Prórroga Especial', 
+              enabled: true 
+            }
+          ]
+        });
+      }
+    }
+
+    // Sugerencia: Prórroga de correcciones
+    const notifActa = getNewestDate([32, 33]);
+    const corrTime = getClock(35)?.date_start;
+    const corrExtension = getClock(34);
+    if (notifActa && !corrTime && !corrExtension) {
+      const corrUsed = dateParser_dateDiff(notifActa, currentDate.format('YYYY-MM-DD'));
+      const corrLeft = 30 - corrUsed;
+
+      if (corrLeft <= 5 && corrLeft > 0) {
+        list.push({
+          type: 'info',
+          icon: 'fa-clock',
+          message: `Prórroga de correcciones disponible (${corrLeft} días restantes para solicitante)`,
+          actions: [
+            { 
+              type: 'correction_extension', 
+              label: 'Otorgar Prórroga +15 días', 
+              enabled: true 
+            }
+          ]
+        });
+      }
+    }
+
+    return list;
+  }, [curaduriaDetails, canAddSuspension, canAddExtension, clocksData, currentDate]);
+
   return {
     // Data & Calculated values
     clocksData,
@@ -281,6 +394,9 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
     isDesisted,
     viaTime,
     getNewestDate, // Exportar para usar en ClockRow
+    solicitanteTimes, // NUEVO
+    suggestions, // NUEVO
+    currentDate, // NUEVO
     
     // Booleans & Checks
     canAddSuspension,

@@ -6,26 +6,49 @@ const STEPS_TO_CHECK = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19
 // --- GENERADORES DE SECCIONES DINÁMICAS ---
 const getSuspensionClocks = (suspensionData, type) => {
     if (!suspensionData.exists) return [];
+    
     const [startState, endState] = type === 'pre' ? [300, 350] : [301, 351];
-    const title = type === 'pre' ? 'SUSPENSIÓN ANTES DEL ACTA' : 'SUSPENSIÓN DESPUÉS DEL ACTA';
+    const title = type === 'pre' 
+      ? 'SUSPENSIÓN PRE-ACTA (Período 1: Antes de Acta Parte 1)' 
+      : 'SUSPENSIÓN POST-ACTA (Período 3: Después de Correcciones)';
 
     return [
-        { title },
+        { 
+          title, 
+          subtitle: 'Extiende plazos de CURADURÍA - No cuenta como días consumidos' 
+        },
         {
             state: startState, name: 'Inicio de Suspensión', editableDate: true, hasConsecutivo: false, hasAnnexSelect: true,
             suspensionInfo: { data: suspensionData, type }
         },
         {
             state: endState, name: 'Fin de Suspensión', editableDate: true, hasConsecutivo: false, hasAnnexSelect: true,
-            spentDaysConfig: { startState: type === 'pre' ? 300 : 301 }
+            spentDaysConfig: { startState }
         },
     ];
 };
 
-const getExtensionClocks = (extensionData) => {
+const getExtensionClocks = (extensionData, helpers) => {
     if (!extensionData.exists) return [];
+    
+    // Determinar si es pre o post basado en fechas
+    const acta1 = helpers?.getClock ? helpers.getClock(30) : null;
+    const correcciones = helpers?.getClock ? helpers.getClock(35) : null;
+
+    let period = 'Indeterminado';
+    if (extensionData.start?.date_start) {
+      if (acta1?.date_start && extensionData.start.date_start < acta1.date_start) {
+        period = 'Período 1: Antes de Acta Parte 1';
+      } else if (correcciones?.date_start && extensionData.start.date_start >= correcciones.date_start) {
+        period = 'Período 3: Después de Correcciones';
+      }
+    }
+
     return [
-        { title: 'PRÓRROGA POR COMPLEJIDAD' },
+        { 
+          title: 'PRÓRROGA POR COMPLEJIDAD',
+          subtitle: `${period} - Extiende plazos de CURADURÍA en 22 días fijos`
+        },
         { state: 400, name: 'Inicio de Prórroga', editableDate: true, hasConsecutivo: false, hasAnnexSelect: true },
         // La fecha de fin siempre es editable si el inicio existe
         { 
@@ -61,9 +84,9 @@ const extraClocks = (props) => {
     const postActaSusp = acta1 ? getSuspensionClocks(suspensionPostActa, 'post') : [];
     
     const preActaExt = !acta1 || (extension.exists && extension.start?.date_start < acta1.date_start)
-        ? getExtensionClocks(extension) : [];
+        ? getExtensionClocks(extension, props) : [];
     const postActaExt = acta1 && extension.exists && extension.start?.date_start >= acta1.date_start
-        ? getExtensionClocks(extension) : [];
+        ? getExtensionClocks(extension, props) : [];
 
     return [
       { title: 'RADICACIÓN' },
@@ -104,12 +127,36 @@ const paymentsClocks = (props) => {
     const { child1, getClockVersion, namePayment, conGI } = props;
     const conOA = regexChecker_isOA_2(child1);
     return [
-        { title: 'PAGOS' },
-        { state: 62, name: 'Expensas Variables', desc: "Pago de Expensas Variables", limit: [[49, 30]], show: conOA, spentDaysConfig: { startState: 49 } },
-        { state: 63, name: namePayment, desc: "Pago de Impuestos Municipales", limit: [[49, 30]], show: conOA, spentDaysConfig: { startState: 49 } },
-        { state: 64, name: 'Estampilla PRO-UIS', desc: "Pago de Estampilla PRO-UIS", limit: [[49, 30]], spentDaysConfig: { startState: 49 } },
-        { state: 65, name: 'Deberes Urbanísticos', desc: "Pago de Deberes Urbanísticos", limit: [[49, 30]], show: !conGI, spentDaysConfig: { startState: 49 } },
-        { state: 69, name: 'Radicacion de último pago', desc: "Último pago realizado", limit: [[[56, 57], 30]], spentDaysConfig: { startState: [56, 57] } },
+        { 
+          title: 'PAGOS DEL SOLICITANTE', 
+          subtitle: '30 días hábiles desde notificación de viabilidad - Tiempo del SOLICITANTE (TS)' 
+        },
+        { 
+          state: 62, name: 'Expensas Variables', desc: "Pago de Expensas Variables", 
+          limit: [[56, 57], 30], info: ['PAGO', 'NO PAGO', 'NA'], hasConsecutivo: true, 
+          editableDate: true, show: conOA, spentDaysConfig: { startState: [56, 57] } 
+        },
+        { 
+          state: 63, name: namePayment, desc: "Pago de Impuestos Municipales / Delineación", 
+          limit: [[56, 57], 30], info: ['PAGO', 'NO PAGO', 'NA'], hasConsecutivo: true, 
+          editableDate: true, show: conOA, spentDaysConfig: { startState: [56, 57] } 
+        },
+        { 
+          state: 64, name: 'Estampilla PRO-UIS', desc: "Pago de Estampilla PRO-UIS", 
+          limit: [[56, 57], 30], info: ['PAGO', 'NO PAGO', 'NA'], hasConsecutivo: true, 
+          editableDate: true, spentDaysConfig: { startState: [56, 57] } 
+        },
+        { 
+          state: 65, name: 'Deberes Urbanísticos', desc: "Pago de Deberes Urbanísticos", 
+          limit: [[56, 57], 30], info: ['PAGO', 'NO PAGO', 'NA'], hasConsecutivo: true, 
+          editableDate: true, show: !conGI, spentDaysConfig: { startState: [56, 57] } 
+        },
+        { 
+          state: 69, name: 'Radicación Último Pago', 
+          desc: "Radicación de todos los pagos requeridos - EVENTO CRÍTICO", 
+          limit: [[56, 57], 30], hasConsecutivo: true, editableDate: true, 
+          criticalEvent: true, spentDaysConfig: { startState: [56, 57] } 
+        },
         ...getDesistClocks(-4, getClockVersion),
     ];
 };
