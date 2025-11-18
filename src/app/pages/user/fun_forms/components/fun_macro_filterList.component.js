@@ -2,6 +2,7 @@ import React, { Component, useState } from 'react';
 import { MDBBadge, MDBBtn, MDBCollapse, MDBTooltip } from 'mdb-react-ui-kit';
 import { MDBDataTable } from 'mdbreact';
 import Modal from 'react-modal';
+import './fun_modal_shared.css';
 
 
 
@@ -24,7 +25,7 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
         content: {
             position: 'absolute',
             top: '8%',
-            left: '25%',
+            left: 'var(--fun-sidebar-width)',
             right: '25%',
             bottom: '8%',
             border: '1px solid #ccc',
