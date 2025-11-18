@@ -92,13 +92,8 @@ html{
   z-index: 1;
 }
 .btn-nav_module {
-  position: fixed;
-  right: 0px;
-  top: 10%;
-  margin: 0px;
-  padding: 0px;
-  margin-right: 3px;
-  width: 15%;
+  /* Legacy styles - overridden by new enhanced sidebar */
+  display: none;
 }
 .btn-nav_module-pqr {
   position: fixed;
@@ -183,6 +178,9 @@ html, body, #root, .App { width: 100%; max-width: 100%; }
   --sidebar-width-expanded: 13rem;     /* ancho expandido que quieres */
   --footer-height: 4.5rem;
   --sidebar-transition: 0.3s ease;
+  
+  /* FUN Forms sidebar width - unified via CSS variable for dynamic modal alignment */
+  --fun-sidebar-width: 240px;
 }
 
 /* Evita barra horizontal global */
