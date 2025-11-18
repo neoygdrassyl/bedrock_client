@@ -336,6 +336,8 @@
     height: 100%;
     padding: 0.5rem;
     position: relative;
+    flex-direction: column; /* Alinea contenido verticalmente */
+    line-height: 1.2; /* Reduce el espacio entre líneas */
 }
 .btn-delete-date {
     position: absolute;
@@ -424,5 +426,195 @@
     .exp-scroll {
     height: auto;
     max-height: 80vh;
+    }
+}
+
+/* --- MEJORAS ADICIONALES --- */
+.days-badge-empty {
+    color: #adb5bd;
+    font-weight: 400;
+}
+
+/* Estado de fecha límite según cumplimiento */
+.limit-date-ok {
+    color: #2f9e44;
+}
+
+.limit-date-warning {
+    color: #f08c00;
+}
+
+.limit-date-error {
+    color: #e03131;
+    font-weight: 600;
+}
+
+/* Animación sutil para cambios de estado */
+@keyframes pulse-subtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.status-text {
+    animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Responsive mejoras */
+@media (max-width: 768px) {
+    .exp-row .col-6, .exp-row .col-5 {
+        font-size: 0.85rem;
+    }
+    
+    .exp-row .col-2, .exp-row .col-1 {
+        font-size: 0.75rem;
+        padding: 0.25rem !important;
+    }
+    
+    .info-icon-tooltip {
+        font-size: 0.65rem;
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* Mejora de contraste para fechas límite */
+.text-primary {
+    color: #1971c2 !important;
+}
+
+/* Estilos para alertas proactivas en sidebar */
+.alert {
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.alert-warning {
+    background-color: #fff9db;
+    border-color: #ffe066;
+    color: #865900;
+}
+
+.alert-danger {
+    background-color: #fff5f5;
+    border-color: #ffc9c9;
+    color: #c92a2a;
+}
+
+.alert-info {
+    background-color: #e7f5ff;
+    border-color: #a5d8ff;
+    color: #1864ab;
+}
+
+/* Estilo para el tipo de proceso */
+.value-row .value.text-info {
+    color: #1971c2 !important;
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   ESTILOS PARA PROGRAMACIÓN DE PROCESO
+   ======================================== */
+.schedule-modal-content {
+    text-align: left;
+}
+
+.phase-config {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #17a2b8;
+}
+
+.phase-config label {
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.slider-wrapper {
+    padding: 0 0.5rem;
+}
+
+.form-range {
+    width: 100%;
+}
+
+.scheduled-limit-cell, .legal-limit-cell, .days-spent-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1rem; /* Reduce el espacio vertical */
+    white-space: nowrap; /* Evita saltos de línea */
+}
+
+.limit-date, .scheduled-date {
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.scheduled-remaining, .limit-status, .days-alert, .days-progress {
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.scheduled-remaining {
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.scheduled-remaining.text-danger, .limit-status.text-danger {
+    background: rgba(224, 49, 49, 0.1);
+}
+
+.scheduled-remaining.text-success, .limit-status.text-success {
+    background: rgba(47, 158, 68, 0.1);
+}
+
+.limit-status.text-warning {
+    background: rgba(240, 140, 0, 0.1);
+}
+/* Estilo neutro para la 'tarjetica' del límite legal */
+.limit-status.text-muted {
+    background: #f1f3f5;
+    color: #495057 !important;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}
+
+.days-number {
+    font-size: 0.85rem;
+}
+
+.days-alert {
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    background: rgba(224, 49, 49, 0.1);
+}
+
+.days-alert.text-warning {
+    background: rgba(240, 140, 0, 0.1);
+}
+
+/* Responsive para columnas unificadas */
+@media (max-width: 768px) {
+    .legal-limit-cell,
+    .days-spent-cell,
+    .scheduled-limit-cell {
+        font-size: 0.7rem;
+    }
+    
+    .limit-date,
+    .scheduled-date,
+    .days-number {
+        font-size: 0.7rem;
+    }
+    
+    .limit-status,
+    .days-alert,
+    .days-progress,
+    .scheduled-remaining {
+        font-size: 0.6rem;
     }
 }
