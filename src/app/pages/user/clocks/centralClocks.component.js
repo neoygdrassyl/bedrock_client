@@ -3,13 +3,12 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import moment from 'moment';
 
-
-import { useClocksManager } from './hooks/useClocksManager';
+import { useClocksManager, useScheduleConfig } from './hooks/useClocksManager';
 import { generateClocks } from './config/clocks.definitions';
 import { ClockRow } from './components/ClockRow';
 import { SidebarInfo } from './components/SidebarInfo';
 import { HolidayCalendar } from './components/HolidayCalendar';
-
+import { calcularDiasHabiles, sumarDiasHabiles } from './hooks/useClocksManager';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
@@ -19,7 +18,6 @@ import './centralClocks.css';
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
-
 export default function EXP_CLOCKS(props) {
   const { swaMsg, currentItem, currentVersion, outCodes } = props;
   const [clocksData, setClocksData] = useState([]);
@@ -27,6 +25,9 @@ export default function EXP_CLOCKS(props) {
   const [sidebarHeight, setSidebarHeight] = useState('auto');
   
   const sidebarRef = useRef(null);
+
+  // 🆕 Hook de programación
+  const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
 
   useEffect(() => {
     if (currentItem?.fun_clocks) {
@@ -40,7 +41,7 @@ export default function EXP_CLOCKS(props) {
   useEffect(() => {
     const handleResize = () => {
       if (sidebarRef.current) {
-        setSidebarHeight(sidebarRef.current.offsetHeight - 44); // 44px es la altura del Header de la tabla
+        setSidebarHeight(sidebarRef.current.offsetHeight - 44);
       }
     };
     
@@ -54,12 +55,10 @@ export default function EXP_CLOCKS(props) {
     };
   }, [clocksData, manager.canAddExtension, manager.canAddSuspension]);
   
-  const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa } = manager;
-
+  const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa, FUN_0_TYPE_TIME } = manager;
 
   const conGI = _GLOBAL_ID === 'cb1';
   const namePayment = conGI ? 'Impuestos Municipales' : 'Impuesto Delineacion';
-
 
   const clocksToShow = generateClocks({
       ...manager,
@@ -67,7 +66,6 @@ export default function EXP_CLOCKS(props) {
       namePayment,
       conGI
   });
-
 
   const applyLocalClockChange = (state, changes, version) => {
     setClocksData(prev => {
@@ -83,23 +81,19 @@ export default function EXP_CLOCKS(props) {
     setRefreshTrigger(p => p + 1);
   };
 
-
   const save_clock = (value, i) => {
     if (value.state === false || value.state == null) return;
     var formDataClock = new FormData();
-
 
     const dateInput = document.getElementById("clock_exp_date_" + i);
     const resolverSelect = document.getElementById("clock_exp_res_" + i);
     const id6Select = document.getElementById("clock_exp_id6_" + i);
     const idRelatedInput = document.getElementById("clock_exp_id_related_" + i);
 
-
     const dateVal = dateInput ? String(dateInput.value || '').trim() : '';
     let resolver_context = resolverSelect ? resolverSelect.value : false;
     let resolver_id6 = id6Select ? id6Select.value : 0;
     let id_related = idRelatedInput ? idRelatedInput.value : '';
-
 
     if (dateVal) formDataClock.set('date_start', dateVal);
     if (resolver_context) formDataClock.set('resolver_context', resolver_context);
@@ -107,22 +101,26 @@ export default function EXP_CLOCKS(props) {
     formDataClock.set('state', value.state);
     formDataClock.set('id_related', id_related);
 
-
     let descBase = value.desc || '';
+    
     if ((value.state === 350 || value.state === 351) && dateVal) {
       const startSusp = (value.state === 350) ? suspensionPreActa.start?.date_start : suspensionPostActa.start?.date_start;
-      if (startSusp) descBase = `Fin de suspensión (${dateParser_dateDiff(startSusp, dateVal)} días)`;
+      if (startSusp) {
+        const days = calcularDiasHabiles(startSusp, dateVal);
+        descBase = `Fin de suspensión (${days} días hábiles)`;
+      }
     }
     if (value.state === 401 && dateVal) {
         const startExt = manager.extension.start?.date_start;
-        if(startExt) descBase = `Fin de prórroga (${dateParser_dateDiff(startExt, dateVal)} días)`;
+        if (startExt) {
+          const days = calcularDiasHabiles(startExt, dateVal);
+          descBase = `Fin de prórroga (${days} días hábiles)`;
+        }
     }
     if (resolver_context) descBase = (descBase ? (descBase + ': ') : '') + resolver_context;
 
-
     formDataClock.set('desc', descBase);
     formDataClock.set('name', value.name);
-
 
     applyLocalClockChange(value.state, {
       date_start: dateVal,
@@ -133,15 +131,12 @@ export default function EXP_CLOCKS(props) {
       name: value.name,
     }, value.version);
 
-
     manage_clock(false, value.state, value.version, formDataClock, true);
   }
-
 
   const manage_clock = (useMySwal, findOne, version, formDataClock, triggerUpdate = false) => {
     var _CHILD = getClockVersion(findOne, version) || getClock(findOne);
     formDataClock.set('fun0Id', currentItem.id);
-
 
     if (useMySwal) MySwal.fire({ title: swaMsg.title_wait, text: swaMsg.text_wait, icon: 'info', showConfirmButton: false });
     
@@ -154,7 +149,6 @@ export default function EXP_CLOCKS(props) {
       console.log(e);
       if (useMySwal) MySwal.fire({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning', confirmButtonText: swaMsg.text_btn });
     }
-
 
     if (_CHILD && _CHILD.id) {
       FUN_SERVICE.update_clock(_CHILD.id, formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
@@ -195,7 +189,6 @@ export default function EXP_CLOCKS(props) {
     });
   };
 
-
   const addTimeControl = (type) => {
     if (type === 'suspension') {
       const availableDays = 10 - totalSuspensionDays;
@@ -204,7 +197,6 @@ export default function EXP_CLOCKS(props) {
       const typeSelectHtml = availableSuspensionTypes.length > 1
         ? `<div class="col-12"><label class="form-label">Ubicación</label><select id="susp_type" class="form-select">${availableSuspensionTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}</select></div>`
         : `<input type="hidden" id="susp_type" value="${availableSuspensionTypes[0].value}">`;
-
 
       MySwal.fire({
         title: 'Nueva Suspensión de Términos',
@@ -235,7 +227,6 @@ export default function EXP_CLOCKS(props) {
           manage_clock(false, startState, false, formDataStart, true);
         }
       });
-
 
     } else if (type === 'extension') {
         MySwal.fire({
@@ -283,9 +274,144 @@ export default function EXP_CLOCKS(props) {
     }
   };
 
+  // 🆕 MODAL DE PROGRAMACIÓN DEL PROCESO
+  const openScheduleModal = () => {
+    const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
+    const totalDays = baseDays + totalSuspensionDays + (manager.extension.exists && manager.extension.end?.date_start ? manager.extension.days : 0);
+    
+    const currentPhase1 = scheduleConfig?.phase1Days || Math.floor(totalDays * 0.6);
+    const currentPhase2 = scheduleConfig?.phase2Days || (totalDays - currentPhase1);
+
+    MySwal.fire({
+      title: 'Programar Tiempos del Proceso',
+      html: `
+        <div class="schedule-modal-content">
+          <div class="alert alert-info mb-3">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Días hábiles totales disponibles:</strong> ${totalDays} días
+            <br><small class="text-muted">Base: ${baseDays} + Suspensiones: ${totalSuspensionDays} + Prórroga: ${manager.extension.exists && manager.extension.end?.date_start ? manager.extension.days : 0}</small>
+          </div>
+
+          <div class="phase-config mb-4">
+            <label class="form-label fw-bold">
+              <i class="fas fa-clipboard-list me-2 text-warning"></i>
+              Fase 1: Legal → Acta Parte 1
+            </label>
+            <div class="input-group">
+              <input type="number" id="phase1_days" class="form-control" min="1" max="${totalDays}" value="${currentPhase1}" />
+              <span class="input-group-text">días hábiles</span>
+            </div>
+            <div class="slider-wrapper mt-2">
+              <input type="range" class="form-range" id="phase1_slider" min="1" max="${totalDays}" value="${currentPhase1}" />
+            </div>
+          </div>
+
+          <div class="phase-config mb-3">
+            <label class="form-label fw-bold">
+              <i class="fas fa-compass me-2 text-purple"></i>
+              Fase 2: Correcciones → Viabilidad
+            </label>
+            <div class="input-group">
+              <input type="number" id="phase2_days" class="form-control" min="1" max="${totalDays}" value="${currentPhase2}" />
+              <span class="input-group-text">días hábiles</span>
+            </div>
+            <div class="slider-wrapper mt-2">
+              <input type="range" class="form-range" id="phase2_slider" min="1" max="${totalDays}" value="${currentPhase2}" />
+            </div>
+          </div>
+
+          <div class="alert alert-secondary small">
+            <i class="fas fa-lightbulb me-2"></i>
+            <strong>Nota:</strong> La distribución de días es flexible y te permite planificar internamente sin afectar los límites legales.
+          </div>
+        </div>
+      `,
+      width: 600,
+      showCancelButton: true,
+      showDenyButton: hasSchedule,
+      confirmButtonText: 'Guardar Programación',
+      cancelButtonText: 'Cancelar',
+      denyButtonText: 'Eliminar Programación',
+      didOpen: () => {
+        const phase1Input = document.getElementById('phase1_days');
+        const phase2Input = document.getElementById('phase2_days');
+        const phase1Slider = document.getElementById('phase1_slider');
+        const phase2Slider = document.getElementById('phase2_slider');
+
+        // Sincronizar inputs y sliders
+        phase1Input.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value) || 1;
+          phase1Slider.value = val;
+          phase2Input.value = totalDays - val;
+          phase2Slider.value = totalDays - val;
+        });
+
+        phase1Slider.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value);
+          phase1Input.value = val;
+          phase2Input.value = totalDays - val;
+          phase2Slider.value = totalDays - val;
+        });
+
+        phase2Input.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value) || 1;
+          phase2Slider.value = val;
+          phase1Input.value = totalDays - val;
+          phase1Slider.value = totalDays - val;
+        });
+
+        phase2Slider.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value);
+          phase2Input.value = val;
+          phase1Input.value = totalDays - val;
+          phase1Slider.value = totalDays - val;
+        });
+      },
+      preConfirm: () => {
+        const phase1 = parseInt(document.getElementById('phase1_days').value);
+        const phase2 = parseInt(document.getElementById('phase2_days').value);
+
+        if (phase1 + phase2 !== totalDays) {
+          Swal.showValidationMessage(`La suma debe ser ${totalDays} días (actualmente: ${phase1 + phase2})`);
+          return false;
+        }
+
+        return { phase1Days: phase1, phase2Days: phase2 };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        saveScheduleConfig(result.value);
+        setRefreshTrigger(prev => prev + 1);
+        
+        MySwal.fire({
+          title: 'Programación Guardada',
+          html: `
+            <div class="text-start">
+              <p><strong>Fase 1:</strong> ${result.value.phase1Days} días hábiles</p>
+              <p><strong>Fase 2:</strong> ${result.value.phase2Days} días hábiles</p>
+              <p class="text-muted small mb-0">La nueva columna "Límite Programado" mostrará las fechas calculadas.</p>
+            </div>
+          `,
+          icon: 'success',
+          confirmButtonText: 'Entendido'
+        });
+      } else if (result.isDenied) {
+        clearScheduleConfig();
+        setRefreshTrigger(prev => prev + 1);
+        
+        MySwal.fire({
+          title: 'Programación Eliminada',
+          text: 'Se ha eliminado la configuración de programación del proceso.',
+          icon: 'info',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  };
 
   const _FIND_6 = (id) => (currentItem.fun_6s || []).find(f => f.id == id) || null;
   const _CHILD_6_SELECT = () => (currentItem.fun_6s || []).map(f => <option key={f.id} value={f.id}>{f.description}</option>);
+  
   const catForTitle = (title = '') => {
     title = title.toUpperCase();
     if (title.includes('DESISTIDO')) return { color: '#F93154', icon: 'fa-exclamation-circle' };
@@ -301,6 +427,7 @@ export default function EXP_CLOCKS(props) {
     if (title.includes('PRÓRROGA')) return { color: '#17a2b8', icon: 'fa-clock' };
     return { color: '#5bc0de', icon: 'fa-folder-open' };
   };
+  
   const getNewestDate = (states) => {
     let newDate = null;
     states.forEach((element) => {
@@ -311,18 +438,16 @@ export default function EXP_CLOCKS(props) {
     return newDate;
   }
 
-
   const Header = () => (
     <div className="exp-head d-flex align-items-center justify-content-between">
       <div className="small w-100"><div className="row g-2 m-0 fw-bold">
-        <div className="col-6 cell-border">Evento</div>
+        <div className="col-5 cell-border">Evento</div>
         <div className="col-2 text-center cell-border">Fecha Evento</div>
-        <div className="col-2 text-center cell-border">Fecha Límite Evento</div>
-        <div className="col-2 text-center cell-border">Días Gastados</div>
+        <div className="col-3 text-center cell-border">Límite Legal</div>
+        <div className="col-2 text-center">Límite Programado</div>
       </div></div>
     </div>
   );
-
 
   let lastTitle = '';
   const renderClockList = () => {
@@ -334,18 +459,17 @@ export default function EXP_CLOCKS(props) {
         if (value.title) lastTitle = value.title;
         const cat = catForTitle(lastTitle);
 
-
         return (
           <ClockRow
             key={`row-${i}-${value.state ?? 'no-state'}-${value.version ?? 'no-version'}-${refreshTrigger}`}
             value={value} i={i} clock={clock} onSave={save_clock} onDelete={delete_clock} cat={cat}
             outCodes={outCodes} _CHILD_6_SELECT={_CHILD_6_SELECT} _FIND_6={_FIND_6}
             helpers={{ getClock, getNewestDate, ...manager, currentItem }}
+            scheduleConfig={scheduleConfig}
           />
         );
     });
   }
-
 
   return (
     <div className="exp-wrapper">
@@ -360,15 +484,14 @@ export default function EXP_CLOCKS(props) {
         <div className="exp-sidebar" ref={sidebarRef}>
           <SidebarInfo 
              manager={manager} 
-             actions={{ onAddTimeControl: addTimeControl }} 
+             actions={{ 
+               onAddTimeControl: addTimeControl,
+               onOpenScheduleModal: openScheduleModal
+             }} 
           />
           <HolidayCalendar />
         </div>
       </div>
-      
-      <style>{`
-        
-      `}</style>
     </div>
   );
 }
