@@ -115,7 +115,9 @@ export const useScheduleConfig = (expedienteId) => {
 // =====================================================
 // HOOK PRINCIPAL
 // =====================================================
-export const useClocksManager = (currentItem, clocksData, currentVersion) => {
+export const useClocksManager = (currentItem, clocksData, currentVersion, systemDate) => { // 🆕 systemDate añadido
+  
+  const today = useMemo(() => moment(systemDate).format('YYYY-MM-DD'), [systemDate]); // 🆕 Fecha "hoy" dinámica
 
   const getClock = (state) => (clocksData || []).find(c => String(c.state) === String(state)) || null;
   
@@ -161,14 +163,14 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
       if (endClock?.date_start) {
         days = calcularDiasHabiles(startClock.date_start, endClock.date_start);
       } else {
-        const today = moment().format('YYYY-MM-DD');
+        // Usa `today` del hook en lugar de moment()
         days = calcularDiasHabiles(startClock.date_start, today);
         isActive = true;
       }
     }
       
     return { exists, start: startClock, end: endClock, days, isActive };
-  }, [clocksData]);
+  }, [clocksData, today]);
 
   const suspensionPostActa = useMemo(() => {
     const startClock = getClock(301);
@@ -182,15 +184,14 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
       if (endClock?.date_start) {
         days = calcularDiasHabiles(startClock.date_start, endClock.date_start);
       } else {
-        const today = moment().format('YYYY-MM-DD');
         days = calcularDiasHabiles(startClock.date_start, today);
         isActive = true;
       }
     }
 
     return { exists, start: startClock, end: endClock, days, isActive };
-  }, [clocksData]);
-
+  }, [clocksData, today]);
+  
   const totalSuspensionDays = useMemo(() => {
     const preDays = suspensionPreActa.exists && suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0;
     const postDays = suspensionPostActa.exists && suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0;
@@ -261,7 +262,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
         remaining: 0,
         reference: acta2Clock?.date_start || actViav?.date_start,
         from: acta2Clock?.date_start ? 'ACTA_2(49)' : 'VIABILIDAD(61)',
-        today: moment().format('YYYY-MM-DD'),
+        today: today, // 🆕 Usa `today` del hook
         notStarted: false,
         paused: false,
         finished: true,
@@ -286,7 +287,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
         remaining: baseDays,
         reference: null,
         from: 'NO_INICIADO',
-        today: moment().format('YYYY-MM-DD'),
+        today: today, // 🆕 Usa `today` del hook
         notStarted: true,
         paused: false,
         finished: false,
@@ -325,7 +326,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
       referenceLabel = 'ACTA_1(30) - PAUSADO';
     }
     else if (corrTime) {
-      let phase1End = acta1Time || moment().format('YYYY-MM-DD');
+      let phase1End = acta1Time || today;
       let phase1Days = calcularDiasHabiles(ldfTime, phase1End);
       
       if (suspensionPreActa.exists && suspensionPreActa.end?.date_start) {
@@ -337,7 +338,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
         }
       }
       
-      let phase2End = moment().format('YYYY-MM-DD');
+      let phase2End = today;
       
       if (suspensionPostActa.isActive && suspensionPostActa.start?.date_start) {
         if (moment(suspensionPostActa.start.date_start).isAfter(corrTime)) {
@@ -362,7 +363,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
       referenceLabel = isPaused ? `SUSP_ACTIVA(${suspensionPostActa.start.state})` : 'HOY';
     }
     else {
-      let endDateForCalc = moment().format('YYYY-MM-DD');
+      let endDateForCalc = today;
       
       if (suspensionPreActa.isActive && suspensionPreActa.start?.date_start) {
         endDateForCalc = suspensionPreActa.start.date_start;
@@ -398,7 +399,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
       remaining,
       reference: referenceDate,
       from: referenceLabel,
-      today: moment().format('YYYY-MM-DD'),
+      today: today, // 🆕 Usa `today` del hook
       notStarted: false,
       paused: isPaused,
       finished: false,
@@ -409,7 +410,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion) => {
       processTypeLabel: FUN_0_TYPE_LABELS[currentItem.type] || currentItem.type,
     };
 
-  }, [clocksData, currentItem.type, totalSuspensionDays, extension, suspensionPreActa, suspensionPostActa]);
+  }, [clocksData, currentItem.type, totalSuspensionDays, extension, suspensionPreActa, suspensionPostActa, today]); // 🆕 `today` como dependencia
   
   const desistEvents = useMemo(() => {
       return (clocksData || []).filter(c => c?.date_start && STEPS_TO_CHECK.includes(String(c.state)));

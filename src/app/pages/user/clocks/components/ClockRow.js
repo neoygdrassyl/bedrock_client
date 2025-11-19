@@ -95,9 +95,6 @@ export const ClockRow = (props) => {
         return null;
     };
 
-    // =====================================================
-    // 🆕 RENDERIZADO UNIFICADO DE LÍMITE LEGAL (CORREGIDO)
-    // =====================================================
     const renderLegalLimit = () => {
         let limitDate = null;
         let tooltip = 'Límite legal calculado según la normativa.';
@@ -150,9 +147,9 @@ export const ClockRow = (props) => {
             }
             
             if (scheduledTotal !== null) {
-                statusText = `${days}/${scheduledTotal}d gastados`;
+                statusText = `${days}/${scheduledTotal}d invertidos`;
             } else {
-                statusText = `${days}d gastados`;
+                statusText = `${days}d invertidos`;
             }
         }
 

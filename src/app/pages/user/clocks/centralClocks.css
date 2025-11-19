@@ -618,3 +618,663 @@
         font-size: 0.6rem;
     }
 }
+
+/* --- NUEVOS ESTILOS PARA CONTROL BAR --- */
+.control-bar {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+.bar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.time-travel-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.time-travel-controls .control-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+.time-travel-controls .date-picker {
+    width: 140px;
+    padding: 0.25rem 0.5rem;
+}
+.time-travel-banner {
+    background-color: #fff3cd;
+    color: #664d03;
+    border: 1px solid #ffecb5;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* --- SIDEBAR CARDS --- */
+.sidebar-card {
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+}
+.sidebar-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-weight: 600;
+    color: #495057;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f3f5;
+    margin-bottom: 1rem;
+}
+.sidebar-card-header i {
+    color: #868e96;
+}
+.sidebar-card-body .value-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0.25rem;
+}
+.sidebar-card-body .value-row .label {
+    color: #6c757d;
+}
+.sidebar-card-body .value-row .value {
+    font-weight: 600;
+}
+.sidebar-card-body .value-row .value.text-danger {
+    color: #e03131 !important;
+}
+.sidebar-card-body .value-row .value.text-success {
+    color: #2f9e44 !important;
+}
+
+/* Specific card styles */
+.status-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+.status-icon {
+    font-size: 1.5rem;
+}
+.status-Vencido { color: #e03131; }
+.status-icon-Vencido { color: #e03131; }
+.status-Finalizado { color: #2f9e44; }
+.status-icon-Finalizado { color: #2f9e44; }
+.status-Pausado { color: #f08c00; }
+.status-icon-Pausado { color: #f08c00; }
+.status-Desistido { color: #c92a2a; }
+.status-icon-Desistido { color: #c92a2a; }
+.status-default { color: #1971c2; }
+.status-icon-default { color: #1971c2; }
+
+.quick-actions-card .sidebar-card-body {
+    padding: 0;
+}
+.btn-action {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.6rem;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color .2s;
+}
+.btn-action:not(:last-child) {
+    margin-bottom: .5rem;
+}
+.btn-suspension {
+    background-color: #f08c00;
+}
+.btn-suspension:hover {
+    background-color: #e67700;
+}
+.btn-prorroga {
+    background-color: #17a2b8;
+}
+.btn-prorroga:hover {
+    background-color: #138496;
+}
+
+.btn-detail-link {
+    background: none;
+    border: none;
+    color: #1971c2;
+    font-weight: 600;
+    padding: 0;
+    text-align: left;
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+}
+.btn-detail-link:hover {
+    text-decoration: underline;
+}
+
+/* --- CALENDAR WIDGET --- */
+.calendar-widget .sidebar-card-body {
+    padding: 0;
+}
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    text-transform: capitalize;
+}
+.calendar-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #868e96;
+    padding: 0 .5rem;
+}
+.calendar-header .current-month {
+    font-weight: 600;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}
+.days-of-week {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #adb5bd;
+    padding-bottom: 0.5rem;
+}
+.day-cell {
+    font-size: 0.8rem;
+    padding: 0.4rem 0;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+.day-cell.not-current-month {
+    color: #ced4da;
+}
+.day-cell.weekend {
+    background-color: #f1f3f5;
+    color: #868e96;
+}
+.day-cell.holiday {
+    background-color: #ffe066;
+    color: #865900;
+    font-weight: 600;
+}
+.day-cell.today {
+    border: 2px solid #339af0;
+}
+.calendar-legend {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #868e96;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid #f1f3f5;
+}
+.legend-box {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 0.3rem;
+}
+.legend-box.holiday { background-color: #ffe066; }
+.legend-box.weekend { background-color: #f1f3f5; }
+
+/* --- CALCULATOR --- */
+.calculator-section {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem .5rem .5rem .5rem;
+    margin-top: 1rem;
+}
+.calc-tabs {
+    display: flex;
+    margin-bottom: 1rem;
+    background-color: #f1f3f5;
+    border-radius: 6px;
+    padding: 2px;
+}
+.calc-tabs button {
+    flex: 1;
+    padding: .4rem;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+.calc-tabs button.active {
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+.calc-body {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+.calc-body input[type="date"], .calc-body input[type="number"] {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: .3rem .4rem;
+    font-size: .8rem;
+}
+.calc-body input[type="number"] {
+    text-align: center;
+    flex-grow: 0.5;
+}
+.calc-separator {
+    color: #868e96;
+}
+.calc-button {
+    border: none;
+    background-color: #339af0;
+    color: white;
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+.calc-button:hover {
+    background-color: #1c7ed6;
+}
+.calc-result {
+    margin-top: .75rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #1864ab;
+    padding: .5rem;
+    background: #e7f5ff;
+    border-radius: 4px;
+}
+.calc-result.error {
+    color: #c92a2a;
+    background: #fff5f5;
+}
+
+/* --- LAYOUT & MAIN STYLES --- */
+.exp-wrapper {
+    overflow-x: hidden;
+    width: 100%;
+}
+.exp-container {
+    display: flex;
+    gap: 1.5rem;
+    width: 100%;
+    align-items: flex-start;
+}
+.exp-main-content {
+    flex: 1;
+    min-width: 0;
+    padding-top: 1rem;
+}
+.exp-sidebar {
+    flex: 0 0 320px;
+    min-width: 320px;
+    position: sticky;
+    top: 1rem;
+}
+.exp-card{ 
+    border-radius: 6px; 
+    box-shadow: 0 6px 16px rgba(0,0,0,.06); 
+    overflow: hidden; 
+    border: 1px solid #e9ecef; 
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.exp-head{ 
+    position: sticky; 
+    top: 0; 
+    z-index: 20; 
+    height: 44px;
+    background: #5bc0de; 
+    color: #fff; 
+    padding: .5rem .75rem; 
+    display: flex; 
+    border-top-left-radius: 6px; 
+    border-top-right-radius: 6px; 
+    flex-shrink: 0;
+}
+.exp-scroll{ 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    font-size: .95rem; 
+}
+.exp-row{ background: #fff; position: relative; transition: background-color .2s; display: flex; align-items: stretch; }
+.exp-row::before{ content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--cat, #6c757d); }
+.exp-row:hover{ background: #eaf3ff; }
+.exp-section{ background: #f8f9fa; border-left: 4px solid var(--cat, #6c757d); border-radius: 0 8px 8px 0; padding: .35rem .75rem; font-size: .95rem; letter-spacing: .4px; margin: 0; position: sticky; top: 0; z-index: 10; }
+.exp-scroll::-webkit-scrollbar{ width: 8px; }
+.exp-scroll::-webkit-scrollbar-track{ background: #f1f1f1; }
+.exp-scroll::-webkit-scrollbar-thumb{ background: #bdbdbd; border-radius: 4px; }
+.exp-scroll::-webkit-scrollbar-thumb:hover{ background: #9e9e9e; }
+.cell-border { 
+    border-right: 1px solid #dee2e6; 
+    position: relative; 
+}
+.cell-border:last-child { 
+    border-right: none; 
+}
+.exp-head .cell-border { 
+    border-right: 1px solid rgba(255, 255, 255, 0.3); 
+}
+.exp-row-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    position: relative;
+    flex-direction: column; /* Alinea contenido verticalmente */
+    line-height: 1.2; /* Reduce el espacio entre líneas */
+}
+.btn-delete-date {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    background: #f1f3f5;
+    color: #868e96;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+    cursor: pointer;
+}
+.exp-row-content:hover .btn-delete-date {
+    opacity: 1;
+}
+.btn-delete-date:hover {
+    background-color: #e03131;
+    color: white;
+}
+.info-icon-tooltip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5rem;
+    cursor: help;
+    font-size: 0.75rem;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(92, 184, 222, 0.2);
+    color: #5bc0de;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.info-icon-tooltip:hover {
+    background: rgba(92, 184, 222, 0.3);
+    color: #0ca3d1;
+}
+.info-icon-tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: normal;
+    white-space: normal;
+    width: max-content;
+    max-width: 280px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    border: 1px solid #555;
+    pointer-events: none;
+}
+.info-icon-tooltip:hover::before {
+    content: "";
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+@media (max-width: 1200px) {
+    .exp-container {
+    flex-direction: column;
+    }
+    .exp-sidebar {
+    width: 100%;
+    position: static;
+    }
+    .exp-scroll {
+    height: auto;
+    max-height: 80vh;
+    }
+}
+
+/* --- MEJORAS ADICIONALES --- */
+.days-badge-empty {
+    color: #adb5bd;
+    font-weight: 400;
+}
+
+/* Estado de fecha límite según cumplimiento */
+.limit-date-ok {
+    color: #2f9e44;
+}
+
+.limit-date-warning {
+    color: #f08c00;
+}
+
+.limit-date-error {
+    color: #e03131;
+    font-weight: 600;
+}
+
+/* Animación sutil para cambios de estado */
+@keyframes pulse-subtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.status-text {
+    animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Responsive mejoras */
+@media (max-width: 768px) {
+    .exp-row .col-6, .exp-row .col-5 {
+        font-size: 0.85rem;
+    }
+    
+    .exp-row .col-2, .exp-row .col-1 {
+        font-size: 0.75rem;
+        padding: 0.25rem !important;
+    }
+    
+    .info-icon-tooltip {
+        font-size: 0.65rem;
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* Mejora de contraste para fechas límite */
+.text-primary {
+    color: #1971c2 !important;
+}
+
+/* Estilos para alertas proactivas en sidebar */
+.alert {
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.alert-warning {
+    background-color: #fff9db;
+    border-color: #ffe066;
+    color: #865900;
+}
+
+.alert-danger {
+    background-color: #fff5f5;
+    border-color: #ffc9c9;
+    color: #c92a2a;
+}
+
+.alert-info {
+    background-color: #e7f5ff;
+    border-color: #a5d8ff;
+    color: #1864ab;
+}
+
+/* Estilo para el tipo de proceso */
+.value-row .value.text-info {
+    color: #1971c2 !important;
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   ESTILOS PARA PROGRAMACIÓN DE PROCESO
+   ======================================== */
+.schedule-modal-content {
+    text-align: left;
+}
+
+.phase-config {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #17a2b8;
+}
+
+.phase-config label {
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.slider-wrapper {
+    padding: 0 0.5rem;
+}
+
+.form-range {
+    width: 100%;
+}
+
+.scheduled-limit-cell, .legal-limit-cell, .days-spent-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1rem; /* Reduce el espacio vertical */
+    white-space: nowrap; /* Evita saltos de línea */
+}
+
+.limit-date, .scheduled-date {
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.scheduled-remaining, .limit-status, .days-alert, .days-progress {
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.scheduled-remaining {
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.scheduled-remaining.text-danger, .limit-status.text-danger {
+    background: rgba(224, 49, 49, 0.1);
+}
+
+.scheduled-remaining.text-success, .limit-status.text-success {
+    background: rgba(47, 158, 68, 0.1);
+}
+
+.limit-status.text-warning {
+    background: rgba(240, 140, 0, 0.1);
+}
+/* Estilo neutro para la 'tarjetica' del límite legal */
+.limit-status.text-muted {
+    background: #f1f3f5;
+    color: #495057 !important;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}
+
+.days-number {
+    font-size: 0.85rem;
+}
+
+.days-alert {
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    background: rgba(224, 49, 49, 0.1);
+}
+
+.days-alert.text-warning {
+    background: rgba(240, 140, 0, 0.1);
+}
+
+/* Responsive para columnas unificadas */
+@media (max-width: 768px) {
+    .legal-limit-cell,
+    .days-spent-cell,
+    .scheduled-limit-cell {
+        font-size: 0.7rem;
+    }
+    
+    .limit-date,
+    .scheduled-date,
+    .days-number {
+        font-size: 0.7rem;
+    }
+    
+    .limit-status,
+    .days-alert,
+    .days-progress,
+    .scheduled-remaining {
+        font-size: 0.6rem;
+    }
+}
