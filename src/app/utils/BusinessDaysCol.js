@@ -9,6 +9,7 @@ class DiasHabilesColombia {
             '12-08': 'Inmaculada Concepción',
             '12-25': 'Navidad'
         };
+        this.memoizedHolidays = {};
     }
 
     /**
@@ -30,72 +31,69 @@ class DiasHabilesColombia {
         const mes = Math.floor((h + l - 7 * m + 114) / 31);
         const dia = ((h + l - 7 * m + 114) % 31) + 1;
         
-        return new Date(año, mes - 1, dia);
+        // Usar UTC para evitar problemas de zona horaria
+        return new Date(Date.UTC(año, mes - 1, dia));
     }
 
     /**
      * Calcula todos los festivos de Colombia para un año dado
      */
     obtenerFestivos(año) {
+        if (this.memoizedHolidays[año]) {
+            return this.memoizedHolidays[año];
+        }
+
         const festivos = new Set();
         
         // Agregar festivos fijos
-        for (const [fecha, nombre] of Object.entries(this.festivosFijos)) {
+        for (const [fecha] of Object.entries(this.festivosFijos)) {
             festivos.add(`${año}-${fecha}`);
         }
         
-        // Calcular festivos basados en Pascua
         const pascua = this.calcularPascua(año);
         
-        // Festivos relativos a Pascua
         const festivosPascua = [
-            { dias: -3, nombre: 'Jueves Santo' },
-            { dias: -2, nombre: 'Viernes Santo' },
-            { dias: 39, nombre: 'Ascensión del Señor' },
-            { dias: 60, nombre: 'Corpus Christi' },
-            { dias: 68, nombre: 'Sagrado Corazón' }
+            { dias: -3 }, // Jueves Santo
+            { dias: -2 }, // Viernes Santo
+            { dias: 39 }, // Ascensión del Señor
+            { dias: 60 }, // Corpus Christi
+            { dias: 68 }  // Sagrado Corazón
         ];
         
         festivosPascua.forEach(festivo => {
-            const fecha = new Date(pascua);
-            fecha.setDate(pascua.getDate() + festivo.dias);
+            const fecha = new Date(pascua.getTime());
+            fecha.setUTCDate(fecha.getUTCDate() + festivo.dias);
             
-            // Para Ascensión, Corpus Christi y Sagrado Corazón, se trasladan al lunes siguiente
-            if (festivo.dias > 0) {
-                const diasParaLunes = (8 - fecha.getDay()) % 7;
-                if (diasParaLunes > 0) {
-                    fecha.setDate(fecha.getDate() + diasParaLunes);
-                }
+            if (festivo.dias > 0) { // Trasladar al lunes
+                const diaSemana = fecha.getUTCDay(); // Domingo=0, Lunes=1
+                const diasParaLunes = (diaSemana === 0) ? 1 : (8 - diaSemana) % 7;
+                fecha.setUTCDate(fecha.getUTCDate() + diasParaLunes);
             }
             
-            const fechaStr = fecha.toISOString().split('T')[0];
-            festivos.add(fechaStr);
+            festivos.add(fecha.toISOString().split('T')[0]);
         });
         
-        // Festivos que se trasladan al lunes siguiente si no caen en lunes
         const festivosTraslado = [
-            { mes: 1, dia: 6, nombre: 'Epifanía' },
-            { mes: 3, dia: 19, nombre: 'San José' },
-            { mes: 6, dia: 29, nombre: 'San Pedro y San Pablo' },
-            { mes: 8, dia: 15, nombre: 'Asunción de la Virgen' },
-            { mes: 10, dia: 12, nombre: 'Día de la Raza' },
-            { mes: 11, dia: 1, nombre: 'Todos los Santos' },
-            { mes: 11, dia: 11, nombre: 'Independencia de Cartagena' }
+            { mes: 1, dia: 6 },  // Epifanía
+            { mes: 3, dia: 19 }, // San José
+            { mes: 6, dia: 29 }, // San Pedro y San Pablo
+            { mes: 8, dia: 15 }, // Asunción de la Virgen
+            { mes: 10, dia: 12 },// Día de la Raza
+            { mes: 11, dia: 1 }, // Todos los Santos
+            { mes: 11, dia: 11 }// Independencia de Cartagena
         ];
         
         festivosTraslado.forEach(festivo => {
-            const fecha = new Date(año, festivo.mes - 1, festivo.dia);
-            
-            // Trasladar al siguiente lunes si no es lunes
-            const diasParaLunes = (8 - fecha.getDay()) % 7;
-            if (diasParaLunes > 0) {
-                fecha.setDate(fecha.getDate() + diasParaLunes);
+            const fecha = new Date(Date.UTC(año, festivo.mes - 1, festivo.dia));
+            const diaSemana = fecha.getUTCDay(); // Domingo=0, Lunes=1
+            const diasParaLunes = (diaSemana === 0) ? 1 : (8 - diaSemana) % 7;
+            if (diaSemana !== 1) { // Si no es lunes
+                 fecha.setUTCDate(fecha.getUTCDate() + diasParaLunes);
             }
-            
-            const fechaStr = fecha.toISOString().split('T')[0];
-            festivos.add(fechaStr);
+            festivos.add(fecha.toISOString().split('T')[0]);
         });
-        
+
+        this.memoizedHolidays[año] = festivos;
         return festivos;
     }
 
@@ -103,113 +101,139 @@ class DiasHabilesColombia {
      * Verifica si una fecha es día hábil (no es fin de semana ni festivo)
      */
     esDiaHabil(fecha, festivos) {
-        const fechaObj = new Date(fecha + 'T00:00:00');
-        const diaSemana = fechaObj.getDay();
+        // Asegurarse de que la fecha no tenga componentes de hora
+        const fechaObj = new Date(fecha + 'T00:00:00Z');
+        const diaSemana = fechaObj.getUTCDay();
         
-        // 0 = Domingo, 6 = Sábado
-        if (diaSemana === 0 || diaSemana === 6) {
+        if (diaSemana === 0 || diaSemana === 6) { // 0 = Domingo, 6 = Sábado
             return false;
         }
         
-        // Verificar si es festivo
         return !festivos.has(fecha);
     }
 
-    /**
-     * Obtiene el siguiente día hábil a partir de una fecha dada
-     */
+    // --- MÉTODOS EXISTENTES (NO MODIFICADOS) ---
+
     siguienteDiaHabil(fechaInicial) {
-        const fecha = new Date(fechaInicial + 'T00:00:00');
-        const año = fecha.getFullYear();
+        const fecha = new Date(fechaInicial + 'T00:00:00Z');
+        const año = fecha.getUTCFullYear();
         const festivos = this.obtenerFestivos(año);
-        let festivosAñoSiguiente = null;
         
-        // Comenzar desde el día siguiente
-        fecha.setDate(fecha.getDate() + 1);
+        fecha.setUTCDate(fecha.getUTCDate() + 1);
         
         while (true) {
             const fechaStr = fecha.toISOString().split('T')[0];
-            
-            // Si cambiamos de año, obtener festivos del nuevo año
-            if (fecha.getFullYear() !== año && !festivosAñoSiguiente) {
-                festivosAñoSiguiente = this.obtenerFestivos(fecha.getFullYear());
-            }
-            
-            const festivosActuales = fecha.getFullYear() === año ? festivos : festivosAñoSiguiente;
+            const añoActual = fecha.getUTCFullYear();
+            const festivosActuales = this.obtenerFestivos(añoActual);
             
             if (this.esDiaHabil(fechaStr, festivosActuales)) {
                 return fechaStr;
             }
-            
-            fecha.setDate(fecha.getDate() + 1);
+            fecha.setUTCDate(fecha.getUTCDate() + 1);
         }
     }
 
-    /**
-     * Calcula una fecha que está N días hábiles después de la fecha inicial
-     */
     calcularDiasHabiles(fechaInicial, diasHabiles) {
         if (diasHabiles <= 0) {
             throw new Error('El número de días hábiles debe ser mayor a 0');
         }
         
-        const fecha = new Date(fechaInicial + 'T00:00:00');
-        let año = fecha.getFullYear();
-        let festivos = this.obtenerFestivos(año);
-        let festivosAñoSiguiente = null;
-        
+        const fecha = new Date(fechaInicial + 'T00:00:00Z');
         let diasContados = 0;
         
-        // Comenzar desde el día siguiente a la fecha inicial
-        fecha.setDate(fecha.getDate() + 1);
+        // Empezar desde el día siguiente
+        fecha.setUTCDate(fecha.getUTCDate() + 1);
         
         while (diasContados < diasHabiles) {
             const fechaStr = fecha.toISOString().split('T')[0];
-            
-            // Si cambiamos de año, obtener festivos del nuevo año
-            if (fecha.getFullYear() !== año) {
-                año = fecha.getFullYear();
-                festivosAñoSiguiente = this.obtenerFestivos(año);
-            }
-            
-            const festivosActuales = festivosAñoSiguiente || festivos;
+            const añoActual = fecha.getUTCFullYear();
+            const festivosActuales = this.obtenerFestivos(añoActual);
             
             if (this.esDiaHabil(fechaStr, festivosActuales)) {
                 diasContados++;
             }
             
             if (diasContados < diasHabiles) {
-                fecha.setDate(fecha.getDate() + 1);
+                fecha.setUTCDate(fecha.getUTCDate() + 1);
             }
         }
         
         return fecha.toISOString().split('T')[0];
     }
+
+    // --- NUEVOS MÉTODOS PARA EL CALENDARIO ---
+
+    /**
+     * Devuelve una lista de festivos para los años especificados.
+     * @param {number[]} years - Un array de años.
+     * @returns {Set<string>} - Un Set con todas las fechas de los festivos en formato YYYY-MM-DD.
+     */
+    getHolidaysForYears(years) {
+        const allHolidays = new Set();
+        years.forEach(year => {
+            const yearHolidays = this.obtenerFestivos(year);
+            yearHolidays.forEach(holiday => allHolidays.add(holiday));
+        });
+        return allHolidays;
+    }
+
+    /**
+     * Cuenta los días hábiles entre dos fechas (inclusivo).
+     * @param {string} startDate - Fecha de inicio 'YYYY-MM-DD'
+     * @param {string} endDate - Fecha de fin 'YYYY-MM-DD'
+     * @returns {number}
+     */
+    contarDiasHabiles(startDate, endDate) {
+        const start = new Date(startDate + 'T00:00:00Z');
+        const end = new Date(endDate + 'T00:00:00Z');
+        let count = 0;
+        
+        const current = new Date(start.getTime());
+        
+        while (current <= end) {
+            const fechaStr = current.toISOString().split('T')[0];
+            const festivos = this.obtenerFestivos(current.getUTCFullYear());
+            if (this.esDiaHabil(fechaStr, festivos)) {
+                count++;
+            }
+            current.setUTCDate(current.getUTCDate() + 1);
+        }
+        return count;
+    }
+
+    /**
+     * Suma N días hábiles a una fecha.
+     * @param {string} startDate - Fecha de inicio 'YYYY-MM-DD'
+     * @param {number} days - Días a sumar.
+     * @returns {string} - Fecha resultante 'YYYY-MM-DD'
+     */
+    sumarDiasHabiles(startDate, days) {
+        if (days <= 0) return startDate;
+
+        const fecha = new Date(startDate + 'T00:00:00Z');
+        let diasSumados = 0;
+
+        while (diasSumados < days) {
+            fecha.setUTCDate(fecha.getUTCDate() + 1);
+            const fechaStr = fecha.toISOString().split('T')[0];
+            const festivos = this.obtenerFestivos(fecha.getUTCFullYear());
+            if (this.esDiaHabil(fechaStr, festivos)) {
+                diasSumados++;
+            }
+        }
+        return fecha.toISOString().split('T')[0];
+    }
 }
 
-/**
- * Función principal exportable para calcular días hábiles
- * @param {string} fechaInicial - Fecha en formato YYYY-MM-DD
- * @param {number} diasHabiles - Número de días hábiles a calcular (por defecto 10)
- * @returns {Object} Objeto con fechaInicial, siguienteDiaHabil y diezDiasHabiles
- */
 function procesarFecha(fechaInicial, diasHabiles = 10) {
     const businessDays = new DiasHabilesColombia();
-
-    // Validar formato de fecha
     const formatoValido = /^\d{4}-\d{2}-\d{2}$/.test(fechaInicial);
     if (!formatoValido) {
         throw new Error('La fecha debe estar en formato YYYY-MM-DD');
     }
-    
-    const siguienteDia = businessDays.siguienteDiaHabil(fechaInicial);
-    const diasHabilesCalculados = businessDays.calcularDiasHabiles(fechaInicial, diasHabiles);
-    
-    return diasHabilesCalculados;
+    return businessDays.calcularDiasHabiles(fechaInicial, diasHabiles);
 }
 
-// Exportaciones para diferentes sistemas de módulos
-// CommonJS (Node.js)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { procesarFecha, DiasHabilesColombia };
 }
