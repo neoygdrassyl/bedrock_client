@@ -8,10 +8,11 @@ import { generateClocks } from './config/clocks.definitions';
 import { ClockRow } from './components/ClockRow';
 import { SidebarInfo } from './components/SidebarInfo';
 import { HolidayCalendar } from './components/HolidayCalendar';
-import { calcularDiasHabiles, sumarDiasHabiles } from './hooks/useClocksManager';
+import { ControlBar } from './components/ControlBar'; // Importado
+import { calcularDiasHabiles } from './hooks/useClocksManager';
 
 import FUN_SERVICE from '../../../services/fun.service';
-import { dateParser_dateDiff, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
+import { dateParser_dateDiff } from '../../../components/customClasses/typeParse';
 
 import './centralClocks.css';
 
@@ -24,9 +25,11 @@ export default function EXP_CLOCKS(props) {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [sidebarHeight, setSidebarHeight] = useState('auto');
   
+  // --- NUEVO ESTADO PARA LA FECHA DEL SISTEMA ---
+  const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
+  
   const sidebarRef = useRef(null);
 
-  // 🆕 Hook de programación
   const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
 
   useEffect(() => {
@@ -36,12 +39,14 @@ export default function EXP_CLOCKS(props) {
     }
   }, [currentItem?.fun_clocks]);
 
-  const manager = useClocksManager(currentItem, clocksData, currentVersion);
+  // Pasamos `systemDate` al hook principal
+  const manager = useClocksManager(currentItem, clocksData, currentVersion, systemDate);
 
   useEffect(() => {
     const handleResize = () => {
       if (sidebarRef.current) {
-        setSidebarHeight(sidebarRef.current.offsetHeight - 44);
+        const controlBarHeight = 60; // Altura aproximada del nuevo ControlBar
+        setSidebarHeight(sidebarRef.current.offsetHeight - 44 - controlBarHeight);
       }
     };
     
@@ -53,7 +58,7 @@ export default function EXP_CLOCKS(props) {
         clearTimeout(timer);
         window.removeEventListener('resize', handleResize);
     };
-  }, [clocksData, manager.canAddExtension, manager.canAddSuspension]);
+  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate]);
   
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa, FUN_0_TYPE_TIME } = manager;
 
@@ -203,7 +208,7 @@ export default function EXP_CLOCKS(props) {
         html: `<div class="row g-3">
             <div class="col-12"><div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Días disponibles: <strong>${availableDays}</strong></div></div>
             ${typeSelectHtml}
-            <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="susp_start" class="form-control"/></div>
+            <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="susp_start" class="form-control" value="${systemDate}"/></div>
             <div class="col-12"><label class="form-label">Información Adicional</label><textarea id="susp_info" class="form-control" rows="3" placeholder="Detalles..."></textarea></div>
           </div>`,
         showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
@@ -233,7 +238,7 @@ export default function EXP_CLOCKS(props) {
             title: 'Nueva Prórroga por Complejidad',
             html: `<div class="row g-3">
                 <div class="col-12"><div class="alert alert-info"><i class="fas fa-clock me-2"></i>Otorga hasta <strong>22 días hábiles</strong> adicionales.</div></div>
-                <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="ext_start" class="form-control"/></div>
+                <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="ext_start" class="form-control" value="${systemDate}"/></div>
                 <div class="col-12"><label class="form-label">Fecha de Fin (Opcional)</label><input type="date" id="ext_end" class="form-control"/></div>
             </div>`,
             showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
@@ -274,7 +279,6 @@ export default function EXP_CLOCKS(props) {
     }
   };
 
-  // 🆕 MODAL DE PROGRAMACIÓN DEL PROCESO
   const openScheduleModal = () => {
     const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
     const totalDays = baseDays + totalSuspensionDays + (manager.extension.exists && manager.extension.end?.date_start ? manager.extension.days : 0);
@@ -338,7 +342,6 @@ export default function EXP_CLOCKS(props) {
         const phase1Slider = document.getElementById('phase1_slider');
         const phase2Slider = document.getElementById('phase2_slider');
 
-        // Sincronizar inputs y sliders
         phase1Input.addEventListener('input', (e) => {
           const val = parseInt(e.target.value) || 1;
           phase1Slider.value = val;
@@ -385,8 +388,7 @@ export default function EXP_CLOCKS(props) {
         
         MySwal.fire({
           title: 'Programación Guardada',
-          html: `
-            <div class="text-start">
+          html: `<div class="text-start">
               <p><strong>Fase 1:</strong> ${result.value.phase1Days} días hábiles</p>
               <p><strong>Fase 2:</strong> ${result.value.phase2Days} días hábiles</p>
               <p class="text-muted small mb-0">La nueva columna "Límite Programado" mostrará las fechas calculadas.</p>
@@ -437,7 +439,20 @@ export default function EXP_CLOCKS(props) {
     });
     return newDate;
   }
+  
+  // --- ACCIONES PARA LA BARRA DE CONTROL DE TIEMPO ---
+  const handleDateChange = (newDate) => {
+    setSystemDate(newDate);
+  };
+  
+  const handleDateShift = (days) => {
+    setSystemDate(prevDate => moment(prevDate).add(days, 'days').format('YYYY-MM-DD'));
+  };
 
+  const resetDate = () => {
+    setSystemDate(moment().format('YYYY-MM-DD'));
+  };
+  
   const Header = () => (
     <div className="exp-head d-flex align-items-center justify-content-between">
       <div className="small w-100"><div className="row g-2 m-0 fw-bold">
@@ -461,7 +476,7 @@ export default function EXP_CLOCKS(props) {
 
         return (
           <ClockRow
-            key={`row-${i}-${value.state ?? 'no-state'}-${value.version ?? 'no-version'}-${refreshTrigger}`}
+            key={`row-${i}-${value.state ?? 'no-state'}-${value.version ?? 'no-version'}-${refreshTrigger}-${systemDate}`}
             value={value} i={i} clock={clock} onSave={save_clock} onDelete={delete_clock} cat={cat}
             outCodes={outCodes} _CHILD_6_SELECT={_CHILD_6_SELECT} _FIND_6={_FIND_6}
             helpers={{ getClock, getNewestDate, ...manager, currentItem }}
@@ -473,6 +488,14 @@ export default function EXP_CLOCKS(props) {
 
   return (
     <div className="exp-wrapper">
+      <ControlBar 
+        timeTravel={{
+            systemDate,
+            onDateChange: handleDateChange,
+            onDateShift: handleDateShift,
+            onDateReset: resetDate,
+        }}
+      />
       <div className="exp-container">
         <div className="exp-main-content">
           <div className="card exp-card">
