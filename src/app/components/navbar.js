@@ -227,7 +227,7 @@ export default function Navbar1(props) {
             <span style={{ fontSize: 'clamp(0.64rem, 1.22vw, 0.70rem)', fontWeight: 500, opacity: 0.8 }}>
               v 1.9.0
             </span>
-          </div>
+          
 
             {/* Separador vertical */}
             <span aria-hidden="true" style={{ width: 1, height: '1.25rem', background: '#000', opacity: 0.75 }} />
