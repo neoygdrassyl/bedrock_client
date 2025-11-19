@@ -114,7 +114,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             '-3': 'NO CUMPLE ACTA CORRECCIONES',
             '-4': 'NO PAGA EXPENSAS',
             '-5': 'VOLUNTARIO',
-            '-6': 'NEGADA',
+            // '-6': 'NEGADA',
         }
         const resolveStatusIcon = {
             '-1': <i class="far fa-dot-circle text-muted" style={{ fontSize: '150%' }}></i>,
