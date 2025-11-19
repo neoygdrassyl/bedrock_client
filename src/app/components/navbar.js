@@ -220,7 +220,7 @@ export default function Navbar1(props) {
               alt="logo"
               style={{ width: '2.25rem', height: '2.25rem', display: 'block', objectFit: 'contain' }}
             />
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }} />
             <span style={{ fontSize: 'clamp(0.84rem, 1.42vw, 0.90rem)', fontWeight: 600 }}>
               Dovela
             </span>
