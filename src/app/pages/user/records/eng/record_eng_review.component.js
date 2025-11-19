@@ -462,7 +462,7 @@ class RECORD_ENG_REVIEW extends Component {
                     let idesc3 = i == 0 ? (_CHILD.check_3_cotext ?? desc[2] ?? '') : desc[2] ?? '';
 
                     let isPrimal = i == 0;
-                    let allowReview = (iasing != null && iasing != undefined && iasing != '') || window.user.roleId === 1;
+                    let allowReview = (iasing != null && iasing != undefined && iasing != '') || window.user.roleId == 1;
 
                     return <>
                         <div className="row border">
