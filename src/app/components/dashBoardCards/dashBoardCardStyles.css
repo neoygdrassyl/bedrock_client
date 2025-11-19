@@ -1,11 +1,11 @@
 .dashboard-card {
-  width: 135px;
-  height: 135px;
-  background: #ccc;
-  border-radius: 0.4em;
-  background: linear-gradient(145deg, #e6e6e6, #ffffff);
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), 0px 0px 18px #ffffff;
-  transition: border 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  width: 160px;
+  height: 160px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e1e4e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,27 +13,62 @@
   box-sizing: border-box;
   position: relative;
   text-wrap: pretty;
+  padding: 16px;
 }
+
 .dashboard-card h3 {
-  margin: 4px;
+  margin: 8px 0 0 0;
   font-size: 14px;
-  color: black;
+  font-weight: 600;
+  color: #24292e;
+  text-align: center;
+  line-height: 1.3;
 }
 
 .image-container {
-  width: 50%;
-  height: 50%;
+  width: 60%;
+  height: 60%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 4px;
+  border-radius: 50%;
+  background-color: #f6f8fa;
+  transition: all 0.2s ease;
+}
+
+.image-container i {
+  transition: transform 0.2s ease;
 }
 
 .dashboard-card:hover {
-  background: #e2e2e2;
-  /* background: linear-gradient(90deg, rgb(93, 112, 131) 0%, rgba(0, 212, 255, 1) 100%); */
+  background: #f6f8fa;
+  border-color: #2651A8;
+  box-shadow: 0 4px 12px rgba(38, 81, 168, 0.15);
+  transform: translateY(-2px);
+}
+
+.dashboard-card:hover .image-container {
+  background-color: #e3f2fd;
+}
+
+.dashboard-card:hover .image-container i {
+  transform: scale(1.1);
 }
 
 .dashboard-card:active {
-  transform: translate(0em, 0.2em);
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-card {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .dashboard-card h3 {
+    font-size: 13px;
+  }
 }

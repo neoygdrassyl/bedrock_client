@@ -23,19 +23,51 @@ class Dashboard extends Component {
                 <div className="col-12 d-flex justify-content-start p-0">
                     <MDBBreadcrumb className="">
                         <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></MDBBreadcrumbItem>
+                        <MDBBreadcrumbItem active><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
                 </div>
 
                 <div className="row mb-2 d-flex justify-content-center">
 
                     <div className="col-lg-10 col-md-12">
-                        <h1 className="text-center my-4">Panel de Control</h1>
-                        <hr />
-                        <h2 className="text-start my-4">Módulos de Trabajo</h2>
-                        <div className="d-flex justify-content-around py-3">
+                        {/* Modern Dashboard Header */}
+                        <div style={{
+                            background: 'linear-gradient(135deg, #f6f8fa 0%, #e3f2fd 100%)',
+                            borderRadius: '12px',
+                            padding: '24px',
+                            marginBottom: '32px',
+                            marginTop: '16px',
+                            border: '1px solid #e1e4e8',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+                        }}>
+                            <h1 style={{
+                                fontSize: '28px',
+                                fontWeight: '700',
+                                color: '#24292e',
+                                marginBottom: '8px',
+                                textAlign: 'center'
+                            }}>Panel de Control</h1>
+                            <p style={{
+                                fontSize: '14px',
+                                color: '#6b7280',
+                                textAlign: 'center',
+                                margin: 0
+                            }}>Acceso rápido a los módulos y utilidades del sistema</p>
+                        </div>
+
+                        {/* Section: Work Modules */}
+                        <div style={{ marginBottom: '40px' }}>
+                            <h2 style={{
+                                fontSize: '20px',
+                                fontWeight: '600',
+                                color: '#24292e',
+                                marginBottom: '20px',
+                                paddingBottom: '8px',
+                                borderBottom: '2px solid #e1e4e8'
+                            }}>Módulos de Trabajo</h2>
+                            <div className="d-flex justify-content-around flex-wrap py-3" style={{ gap: '16px' }}>
                             <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Buzón de Mensajes" image="fas fa-envelope-open-text fa-3x" link={"/mail"} imageColor=" Crimson" />
 
@@ -55,7 +87,7 @@ class Dashboard extends Component {
                                 <DashBoardCard title="Peticiones PQRS" image="fas fa-file-invoice fa-3x" link={"/pqrsadmin"} imageColor=" MediumPurple" />
                             </MDBCol>
                         </div>
-                        <div className="d-flex justify-content-around py-3">
+                        <div className="d-flex justify-content-around flex-wrap py-3" style={{ gap: '16px' }}>
 
                             <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Nomenclaturas" image="fas fa-signature fa-3x" link={"/nomenclature"} imageColor=" Plum" />
@@ -77,13 +109,19 @@ class Dashboard extends Component {
                                     : null}
                             </MDBCol>
                         </div>
-
-                        <div className="d-flex justify-content-around">
                         </div>
 
-                        <hr />
-                        <h2 className="text-start my-4">Utilidades y Documentación</h2>
-                        <div className="d-flex justify-content-center py-3">
+                        {/* Section: Utilities */}
+                        <div style={{ marginBottom: '40px' }}>
+                            <h2 style={{
+                                fontSize: '20px',
+                                fontWeight: '600',
+                                color: '#24292e',
+                                marginBottom: '20px',
+                                paddingBottom: '8px',
+                                borderBottom: '2px solid #e1e4e8'
+                            }}>Utilidades y Documentación</h2>
+                            <div className="d-flex justify-content-center flex-wrap py-3" style={{ gap: '16px' }}>
                             <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Documentos" image="far fa-file-alt fa-3x" link={"/osha"} imageColor=" Crimson" />
                             </MDBCol>
@@ -102,10 +140,11 @@ class Dashboard extends Component {
                                 <DashBoardCard title="Base de Datos Profesionales" image="fas fa-hard-hat fa-3x" link={"/profesionals"} imageColor=" Black" />
                             </MDBCol>
                         </div>
-                        <div className="d-flex justify-content-center py-3">
+                        <div className="d-flex justify-content-center flex-wrap py-3" style={{ gap: '16px' }}>
                             <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Historial de Profesionales" image="fas fa-address-book fa-4x" link={"/certs"} imageColor=" MediumSeaGreen" />
                             </MDBCol>
+                        </div>
                         </div>
                     </div >
                 </div >
