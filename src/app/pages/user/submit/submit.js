@@ -9,6 +9,7 @@ import withReactContent from 'sweetalert2-react-content'
 import SUBTMIT_MANAGE from './submit_manage'
 import Modal from 'react-modal';
 import moment from 'moment';
+import ListsCodes from '../../../components/jsons/fun6DocsList.json'
 
 const MySwal = withReactContent(Swal);
 
@@ -282,6 +283,7 @@ class SUBMIT extends Component {
                 'Propietario',
                 'Persona que entrega',
                 'Número de Folios',
+                'Descripción',
             ];
 
             rows.push(headRows);
@@ -289,23 +291,33 @@ class SUBMIT extends Component {
                 let id = d.id_public;
                 let con = limit_1 <= id && id <= limit_2;
                 let folios = 0
-                if (d.sub_lists && d.sub_lists.length){
+                let docs = [];
+                if (d.sub_lists && d.sub_lists.length) {
                     for (let i = 0; i < d.sub_lists.length; i++) {
                         const element = d.sub_lists[i].list_pages;
                         var pages = element ? element.split(",") : [];
                         pages.map(p => folios += Number(p));
+
+                        const doc_codes =  d.sub_lists[i].list_code;
+                         var codes = doc_codes ? doc_codes.split(",") : [];
+                         codes.map(c => {
+                            if ( ListsCodes[c] ) docs.push(ListsCodes[c])
+                         });
+
                     }
                 }
+
                 if (con) {
                     let row = [];
                     row.push(d.id_public);
                     row.push(d.id_related);
                     row.push(d.type);
-                    row.push(state[d.list_type] ?? ''); 
+                    row.push(state[d.list_type] ?? '');
                     row.push(`${d.date} - ${d.time ?? ''}`);
                     row.push(d.owner);
                     row.push(d.name_retriever);
-                    row.push(folios > 0 ? folios : ""); 
+                    row.push(folios > 0 ? folios : "");
+                    row.push(docs.join(", "));
                     rows.push(row)
                 }
             })
