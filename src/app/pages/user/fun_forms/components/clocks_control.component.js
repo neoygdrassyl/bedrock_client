@@ -179,43 +179,91 @@ class CLOCKS_CONTROL extends Component {
             return time < 1 ? 1 : time;
         }
 
-        const extraClocks = () => {
-            if (regexChecker_isOA_2(_GET_CHILD_1())) return [];
-            return [
-                { state: 30, name: 'Acta Parte 1: Observaciones', limit: [5, false, _fun_0_type_time[currentItem.type] ?? 45], icon: <i className="fas fa-file-alt text-success"></i> },
-                { state: 31, name: 'Citación (Observaciones)', icon: <i className="far fa-envelope text-secondary"></i> },
-                { state: 32, name: 'Notificación (Observaciones)', limit: [31, false, 5], icon: <i className="far fa-envelope text-secondary"></i> },
-                { state: 33, name: 'Notificación por aviso (Observaciones)', limit: [31, false, 10], icon: <i className="far fa-envelope text-secondary"></i>, optional: true },
-                { state: 34, name: 'Prórroga correcciones', optional: true, limit: [[33, 32], false, [30, 30]], icon: <i className="far fa-dot-circle"></i> },
-                { state: 35, name: 'Radicación de Correcciones', optional: !requereCorr(), limit: [[33, 32], false, [35, 35, 40]], limitValues: presentExt() ? 45 : 30, icon: <i className="fas fa-file-alt"></i> },
-                { state: stepsToCheck, version: -3, optional: true, icon: <i className="far fa-dot-circle text-danger"></i> },
-                { state: 49, name: 'Acta Parte 2: Correcciones', optional: !requereCorr(), limit: [35, false, 50], limitValues: viaTime(), icon: <i className="fas fa-file-alt text-success"></i> },
-                { state: stepsToCheck, version: -4, optional: true, icon: <i className="far fa-dot-circle text-danger"></i> },
-                { state: 61, name: 'Acto de Tramite de Licencia (Viabilidad)', limit: false, icon: <i className="fas fa-file-alt text-success"></i> },
-                { state: 55, name: 'Citación (Viabilidad)', limit: [61, false, 5], icon: <i className="far fa-envelope text-secondary"></i> },
-                { state: 56, name: 'Notificación (Viabilidad)', limit: [55, false, 5], icon: <i className="far fa-envelope text-secondary"></i> },
-                { state: 57, name: 'Notificación por aviso (Viabilidad)', limit: [55, false, 10], icon: <i className="far fa-envelope text-secondary"></i>, optional: true },
-                { state: 69, name: 'Radicacion de último pago', limit: false, icon: <i className="fas fa-comment-dollar text-warning"></i> },
-            ];
-        } 
+        // const extraClocks = () => {
+        //     if (regexChecker_isOA_2(_GET_CHILD_1())) return [];
+        //     return [
+        //         { state: 30, name: 'Acta Parte 1: Observaciones', limit: [5, false, _fun_0_type_time[currentItem.type] ?? 45], icon: <i className="fas fa-file-alt text-success"></i> },
+        //         { state: 31, name: 'Citación (Observaciones)', icon: <i className="far fa-envelope text-secondary"></i> },
+        //         { state: 32, name: 'Notificación (Observaciones)', limit: [31, false, 5], icon: <i className="far fa-envelope text-secondary"></i> },
+        //         { state: 33, name: 'Notificación por aviso (Observaciones)', limit: [31, false, 10], icon: <i className="far fa-envelope text-secondary"></i>, optional: true },
+        //         { state: 34, name: 'Prórroga correcciones', optional: true, limit: [[33, 32], false, [30, 30]], icon: <i className="far fa-dot-circle"></i> },
+        //         { state: 35, name: 'Radicación de Correcciones', optional: !requereCorr(), limit: [[33, 32], false, [35, 35, 40]], limitValues: presentExt() ? 45 : 30, icon: <i className="fas fa-file-alt"></i> },
+        //         { state: stepsToCheck, version: -3, optional: true, icon: <i className="far fa-dot-circle text-danger"></i> },
+        //         { state: 49, name: 'Acta Parte 2: Correcciones', optional: !requereCorr(), limit: [35, false, 50], limitValues: viaTime(), icon: <i className="fas fa-file-alt text-success"></i> },
+        //         { state: stepsToCheck, version: -4, optional: true, icon: <i className="far fa-dot-circle text-danger"></i> },
+        //         { state: 61, name: 'Acto de Tramite de Licencia (Viabilidad)', limit: false, icon: <i className="fas fa-file-alt text-success"></i> },
+        //         { state: 55, name: 'Citación (Viabilidad)', limit: [61, false, 5], icon: <i className="far fa-envelope text-secondary"></i> },
+        //         { state: 56, name: 'Notificación (Viabilidad)', limit: [55, false, 5], icon: <i className="far fa-envelope text-secondary"></i> },
+        //         { state: 57, name: 'Notificación por aviso (Viabilidad)', limit: [55, false, 10], icon: <i className="far fa-envelope text-secondary"></i>, optional: true },
+        //         { state: 69, name: 'Radicacion de último pago', limit: false, icon: <i className="fas fa-comment-dollar text-warning"></i> },
+        //     ];
+        // } 
         
+        // const clocks = [
+        //     { state: false, version: false, desc: "Tiempo de Creacion en el sistema", name: 'RADICACIÓN', date: currentItem.date, icon: <i className="far fa-dot-circle"></i>, },
+        //     { state: 3, version: false, desc: "Las fechas se calculan a partir de este momento", name: 'PAGO EXPENSAS FIJAS', icon: <i className="fas fa-comment-dollar text-warning"></i>, },
+        //     { state: -1, version: false, desc: false, name: 'INCOMPLETO', limit: [3, false, 30], icon: <i className="far fa-dot-circle"></i>, optional: true, },
+        //     { state: stepsToCheck, version: -1, optional: true, icon: <i className="far fa-dot-circle text-danger"></i> },
+        //     { state: 4, version: false, desc: "Vencimiento Licencia Inicial", name: 'VENCIMIENTO LICENCIA INICIAL', icon: <i className="fas fa-file-alt text-success"></i>,  optional: !regexChecker_isOA_2(_GET_CHILD_1()),},
+        //     { state: 5, version: false, desc: false, name: 'LEGAL Y DEBIDA FORMA', limit: regexChecker_isOA_2(_GET_CHILD_1()) ?  [4, false, -30]:  [3, false, 5], icon: <i className="far fa-check-circle text-success"></i>, },
+        //     ...extraClocks(),
+        //     { state: 70, name: 'Acto Administrativo / Resolución', limit: [69, false, 10], icon: <i className="fas fa-file-alt text-success"></i>, },
+        //     { state: 71, name: 'Citación (Resolución)', limit: [70, false, 5], icon: <i className="far fa-envelope text-secondary"></i>, },
+        //     { state: 72, name: 'Notificación (Resolución)', limit: [71, false, 5], icon: <i className="far fa-envelope text-secondary"></i>, },
+        //     { state: 73, name: 'Notificación por aviso (Resolución)', limit: [71, false, 10], icon: <i className="far fa-envelope text-secondary"></i>, optional: true, },
+        //     { state: 74, name: 'Recurso Resolución', limit: [[72, 73], false, [10, 10]], optional: true, icon: <i className="far fa-dot-circle"></i>, },
+        //     { state: 75, name: 'Respuesta Recurso Resolución', limit: [74, false, 60], optional: true, icon: <i className="far fa-dot-circle"></i>, },
+        //     { state: 99, name: 'Ejecutoria', icon: <i className="fas fa-file-alt text-success"></i>, },
+        //     { state: 101, name: 'Archivo', icon: <i className="fas fa-lock text-info"></i>, },
+        // ];
+
+        let extraClocks = () => {
+            if(regexChecker_isOA_2(_GET_CHILD_1())) return []
+            else return [
+                { state: 30, name: 'Acta Parte 1: Observaciones', limit: [5, false, _fun_0_type_time[currentItem.type] ?? 45], icon: <i class="fas fa-file-alt text-success"></i>, },
+                { state: 31, name: 'Citación (Observaciones)', icon: <i class="far fa-envelope text-secondary"></i>, },
+                { state: 32, name: 'Notificación (Observaciones)', limit: [31, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
+                { state: 33, name: 'Notificación por aviso (Observaciones)', limit: [31, false, 10], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
+    
+                { state: 34, name: 'Prórroga correcciones', optional: true, limit: [[33, 32], false, [30, 30]], icon: <i class="far fa-dot-circle"></i>, },
+                { state: 35, name: 'Correcciones', optional: !requereCorr(), limit: [[33, 32], false, [35, 35, 40]], limitValues: presentExt() ? 45 : 30, icon: <i class="fas fa-file-alt"></i>, },
+    
+                { state: stepsToCheck, version: -3, optional: true, icon: <i class="far fa-dot-circle text-danger"></i> },
+    
+                { state: 49, name: 'Acta Parte 2: Correcciones', optional: !requereCorr(), limit: [35, false, 50], limitValues: viaTime(), icon: <i class="fas fa-file-alt text-success"></i>, },
+    
+                { state: stepsToCheck, version: -4, optional: true, icon: <i class="far fa-dot-circle text-danger"></i> },
+    
+                { state: 61, name: 'Acto de Tramite de Licencia (Viabilidad)', limit: false, icon: <i class="fas fa-file-alt text-success"></i>, },
+                { state: 55, name: 'Citación (Viabilidad)', limit: [61, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
+                { state: 56, name: 'Notificación (Viabilidad)', limit: [55, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
+                { state: 57, name: 'Notificación por aviso (Viabilidad)', limit: [55, false, 10], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
+    
+                { state: 69, name: 'Radicaciones de pagos', limit: false, icon: <i class="fas fa-comment-dollar text-warning"></i>, },
+            ]
+        } 
         const clocks = [
-            { state: false, version: false, desc: "Tiempo de Creacion en el sistema", name: 'RADICACIÓN', date: currentItem.date, icon: <i className="far fa-dot-circle"></i>, },
-            { state: 3, version: false, desc: "Las fechas se calculan a partir de este momento", name: 'PAGO EXPENSAS FIJAS', icon: <i className="fas fa-comment-dollar text-warning"></i>, },
-            { state: -1, version: false, desc: false, name: 'INCOMPLETO', limit: [3, false, 30], icon: <i className="far fa-dot-circle"></i>, optional: true, },
-            { state: stepsToCheck, version: -1, optional: true, icon: <i className="far fa-dot-circle text-danger"></i> },
-            { state: 4, version: false, desc: "Vencimiento Licencia Inicial", name: 'VENCIMIENTO LICENCIA INICIAL', icon: <i className="fas fa-file-alt text-success"></i>,  optional: !regexChecker_isOA_2(_GET_CHILD_1()),},
-            { state: 5, version: false, desc: false, name: 'LEGAL Y DEBIDA FORMA', limit: regexChecker_isOA_2(_GET_CHILD_1()) ?  [4, false, -30]:  [3, false, 5], icon: <i className="far fa-check-circle text-success"></i>, },
+            { state: false, version: false, desc: "Tiempo de Creacion en el sistema", name: 'RADICACIÓN', date: currentItem.date, icon: <i class="far fa-dot-circle"></i>, },
+            { state: 3, version: false, desc: "Las fechas se calculan a partir de este momento", name: 'PAGO EXPENSAS FIJAS', icon: <i class="fas fa-comment-dollar text-warning"></i>, },
+            { state: -1, version: false, desc: false, name: 'INCOMPLETO', limit: [3, false, 30], icon: <i class="far fa-dot-circle"></i>, optional: true, },
+            { state: stepsToCheck, version: -1, optional: true, icon: <i class="far fa-dot-circle text-danger"></i> },
+            { state: 4, version: false, desc: "Vencimiento Licencia Inicial", name: 'VENCIMIENTO LICENCIA INICIAL', icon: <i class="fas fa-file-alt text-success"></i>,  optional: regexChecker_isOA_2(_GET_CHILD_1()) ? false: true,},
+            { state: 5, version: false, desc: false, name: 'LEGAL Y DEBIDA FORMA', limit: regexChecker_isOA_2(_GET_CHILD_1()) ?  [4, false, -30]:  [3, false, 30], icon: <i class="far fa-check-circle text-success"></i>, },
+
             ...extraClocks(),
-            { state: 70, name: 'Acto Administrativo / Resolución', limit: [69, false, 10], icon: <i className="fas fa-file-alt text-success"></i>, },
-            { state: 71, name: 'Citación (Resolución)', limit: [70, false, 5], icon: <i className="far fa-envelope text-secondary"></i>, },
-            { state: 72, name: 'Notificación (Resolución)', limit: [71, false, 5], icon: <i className="far fa-envelope text-secondary"></i>, },
-            { state: 73, name: 'Notificación por aviso (Resolución)', limit: [71, false, 10], icon: <i className="far fa-envelope text-secondary"></i>, optional: true, },
-            { state: 74, name: 'Recurso Resolución', limit: [[72, 73], false, [10, 10]], optional: true, icon: <i className="far fa-dot-circle"></i>, },
-            { state: 75, name: 'Respuesta Recurso Resolución', limit: [74, false, 60], optional: true, icon: <i className="far fa-dot-circle"></i>, },
-            { state: 99, name: 'Ejecutoria', icon: <i className="fas fa-file-alt text-success"></i>, },
-            { state: 101, name: 'Archivo', icon: <i className="fas fa-lock text-info"></i>, },
-        ];
+
+            { state: 70, name: 'Acto Administrativo / Resolución', limit: [69, false, 10], icon: <i class="fas fa-file-alt text-success"></i>, },
+
+            { state: 71, name: 'Citación (Resolución)', limit: [69, false, 0], icon: <i class="far fa-envelope text-secondary"></i>, },
+            { state: 72, name: 'Notificación (Resolución)', limit: [71, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, },
+            { state: 73, name: 'Notificación por aviso (Resolución)', limit: [71, false, 5], icon: <i class="far fa-envelope text-secondary"></i>, optional: true, },
+
+            { state: 74, name: 'Recurso Resolución', limit: [71, false, 15], optional: true, icon: <i class="far fa-dot-circle"></i>, },
+            { state: 75, name: 'Respuesta Recurso Resolución', limit: [74, false, 30], optional: true, icon: <i class="far fa-dot-circle"></i>, },
+            //{ state: 80, name: 'Certificación de Ejecutoria', icon: <i class="fas fa-file-alt text-success"></i>, },
+            { state: 99, name: 'Licencia', icon: <i class="fas fa-file-alt text-success"></i>, },
+            { state: 101, name: 'Archivo', icon: <i class="fas fa-lock text-info"></i>, },
+        ]
         
         const _ROW_COMPONENT = (value, hideLimit, key) => {
             const clock = value.version !== false ? _GET_CLOCK_STATE_VERSION(value.state, value.version) : _GET_CLOCK_STATE(value.state);
