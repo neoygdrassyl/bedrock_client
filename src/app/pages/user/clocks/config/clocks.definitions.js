@@ -208,7 +208,7 @@ const extraClocks = (props) => {
         state: 34, 
         name: 'Prórroga de correcciones', 
         desc: "Prórroga para presentar correcciones (15 días adicionales sobre los 20 días base = 45 días totales)", 
-        limit: [[[33, 32], 30], [[30], 30]], 
+        limit: [[[33, 32], 30]], //[[[33, 32], 30], [[30], 30]], 
         icon: "empty", 
         hasConsecutivo: false, 
         hasAnnexSelect: true, 

@@ -8,7 +8,7 @@ import { generateClocks } from './config/clocks.definitions';
 import { ClockRow } from './components/ClockRow';
 import { SidebarInfo } from './components/SidebarInfo';
 import { HolidayCalendar } from './components/HolidayCalendar';
-import { ControlBar } from './components/ControlBar'; // Importado
+import { ControlBar } from './components/ControlBar';
 import { calcularDiasHabiles } from './hooks/useClocksManager';
 
 import FUN_SERVICE from '../../../services/fun.service';
@@ -25,7 +25,6 @@ export default function EXP_CLOCKS(props) {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [sidebarHeight, setSidebarHeight] = useState('auto');
   
-  // --- NUEVO ESTADO PARA LA FECHA DEL SISTEMA ---
   const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
   
   const sidebarRef = useRef(null);
