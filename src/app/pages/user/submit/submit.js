@@ -303,6 +303,7 @@ class SUBMIT extends Component {
                          codes.map(c => {
                             if ( ListsCodes[c] ) docs.push(ListsCodes[c])
                          });
+                        
 
                     }
                 }

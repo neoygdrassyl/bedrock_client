@@ -27,29 +27,29 @@ export default function Navbar1(props) {
 
   // ================= Módulos (ids únicos) =================
   const workModulesBase = [
-    { id: 'dashboard',    name: 'Panel Control',   icon: 'fas fa-tv',                 href: '/dashboard',    color: '#2651A8' },
-    { id: 'mail',         name: 'Buzón Mensajes',  icon: 'fas fa-envelope-open-text', href: '/mail',         color: '#DC143C' },
-    { id: 'appointments', name: 'Calendario',      icon: 'far fa-calendar-alt',       href: '/appointments', color: '#3CB371' },
-    { id: 'submit',       name: 'Ventanilla Única',icon: 'fas fa-file-import',        href: '/submit',       color: '#DAA520' },
-    { id: 'publish',      name: 'Publicaciones',   icon: 'fas fa-newspaper',          href: '/publish',      color: '#FFA07A' },
-    { id: 'pqrs',         name: 'PQRS',            icon: 'fas fa-file-invoice',       href: '/pqrsadmin',    color: '#9370DB' },
+    { id: 'dashboard', name: 'Panel Control', icon: 'fas fa-tv', href: '/dashboard', color: '#2651A8' },
+    { id: 'mail', name: 'Buzón Mensajes', icon: 'fas fa-envelope-open-text', href: '/mail', color: '#DC143C' },
+    { id: 'appointments', name: 'Calendario', icon: 'far fa-calendar-alt', href: '/appointments', color: '#3CB371' },
+    { id: 'submit', name: 'Ventanilla Única', icon: 'fas fa-file-import', href: '/submit', color: '#DAA520' },
+    { id: 'publish', name: 'Publicaciones', icon: 'fas fa-newspaper', href: '/publish', color: '#FFA07A' },
+    { id: 'pqrs', name: 'PQRS', icon: 'fas fa-file-invoice', href: '/pqrsadmin', color: '#9370DB' },
     // { id: 'nomenclature', name: 'Nomenclaturas',   icon: 'fas fa-file-signature',     href: '/nomenclature', color: '#DDA0DD' },
-    { id: 'archive',      name: 'Archivo',         icon: 'fas fa-folder-open',        href: '/archive',      color: '#CD853F' },
-    { id: 'fun',          name: 'Solicitudes',     icon: 'fas fa-file-alt',           href: '/fun',          color: '#1E90FF' },
-    { id: 'funmanage',    name: 'Gestión Solic.',  icon: 'fas fa-folder',             href: '/funmanage',    color: '#4169E1' },
+    { id: 'archive', name: 'Archivo', icon: 'fas fa-folder-open', href: '/archive', color: '#CD853F' },
+    { id: 'fun', name: 'Solicitudes', icon: 'fas fa-file-alt', href: '/fun', color: '#1E90FF' },
+    { id: 'funmanage', name: 'Gestión Solic.', icon: 'fas fa-folder', href: '/funmanage', color: '#4169E1' },
   ];
 
   const workModulesSpecific = [
-    { id: 'norm',         name: 'Norm. Urbanas',   icon: 'fas fa-home',               href: '/norms',        color: '#008B8B' },
+    { id: 'norm', name: 'Norm. Urbanas', icon: 'fas fa-home', href: '/norms', color: '#008B8B' },
   ];
 
   const workModules = [...workModulesBase, ...workModulesSpecific];
 
   // ============== Visibilidad por rol ==============
   const allowByRole = {
-    ADMIN: ['dashboard','mail','appointments','submit','publish','pqrs','nomenclature','archive','fun','funmanage','norm'],
-    AUX:   ['dashboard','appointments','pqrs','fun','funmanage','norm'],
-    USER:  ['dashboard','appointments','submit','pqrs','norm'],
+    ADMIN: ['dashboard', 'mail', 'appointments', 'submit', 'publish', 'pqrs', 'nomenclature', 'archive', 'fun', 'funmanage', 'norm'],
+    AUX: ['dashboard', 'appointments', 'pqrs', 'fun', 'funmanage', 'norm'],
+    USER: ['dashboard', 'appointments', 'submit', 'pqrs', 'norm'],
   };
   const allowedIds = roleShort ? allowByRole[roleShort.toUpperCase()] : null;
   const visibleModules = allowedIds
@@ -220,14 +220,14 @@ export default function Navbar1(props) {
               alt="logo"
               style={{ width: '2.25rem', height: '2.25rem', display: 'block', objectFit: 'contain' }}
             />
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }} />
-            <span style={{ fontSize: 'clamp(0.84rem, 1.42vw, 0.90rem)', fontWeight: 600 }}>
-              Dovela
-            </span>
-            <span style={{ fontSize: 'clamp(0.64rem, 1.22vw, 0.70rem)', fontWeight: 500, opacity: 0.8 }}>
-              v 1.9.0
-            </span>
-          </div>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }} >
+              <span style={{ fontSize: 'clamp(0.84rem, 1.42vw, 0.90rem)', fontWeight: 600 }}>
+                Dovela
+              </span>
+              <span style={{ fontSize: 'clamp(0.64rem, 1.22vw, 0.70rem)', fontWeight: 500, opacity: 0.8 }}>
+                v 1.9.0
+              </span>
+            </div>
 
             {/* Separador vertical */}
             <span aria-hidden="true" style={{ width: 1, height: '1.25rem', background: '#000', opacity: 0.75 }} />
