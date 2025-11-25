@@ -1278,3 +1278,163 @@
         font-size: 0.6rem;
     }
 }
+
+/* --- AÑADIR ESTOS ESTILOS PARA EL CARRUSEL DE FASES --- */
+.phase-nav {
+    display: flex;
+    align-items: center;
+}
+.phase-nav .btn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+}
+.phase-nav .phase-indicator {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6c757d;
+    min-width: 40px;
+    text-align: center;
+}
+.phase-card-content .phase-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #343a40;
+    text-align: center;
+}
+.phase-card-content .status-header {
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem !important;
+}
+.phase-card-content .status-header-primary { background-color: #e7f5ff; border-left: 4px solid #1c7ed6; }
+.phase-card-content .status-header-secondary { background-color: #f8f9fa; border-left: 4px solid #adb5bd; }
+.phase-card-content .status-header-success { background-color: #e6fcf5; border-left: 4px solid #2f9e44; }
+.phase-card-content .status-header-danger { background-color: #fff5f5; border-left: 4px solid #c92a2a; }
+.phase-card-content .status-header-warning { background-color: #fff9db; border-left: 4px solid #f08c00; }
+.phase-card-content .status-header-info { background-color: #e3fafc; border-left: 4px solid #15aabf; }
+
+.phase-card-content .status-text {
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+}
+.phase-card-content .responsible-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.status-primary { color: #1c7ed6; }
+.status-secondary { color: #495057; }
+.status-success { color: #2b8a3e; }
+.status-danger { color: #c92a2a; }
+.status-warning { color: #e67700; }
+.status-info { color: #1098ad; }
+
+.timeline-bar .progress {
+    border-radius: 5px;
+    background-color: #e9ecef;
+}
+.timeline-bar .progress-bar {
+    transition: width 0.5s ease-in-out;
+}
+
+/* --- ESTILOS MEJORADOS PARA NAVEGACIÓN DE FASES --- */
+.phase-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.phase-nav .btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+/* Centrado perfecto para íconos en botones outline */
+.phase-nav .btn i {
+    margin: 0;
+    line-height: 1;
+    font-size: 0.85rem;
+}
+
+/* Estilos para btn-outline-primary */
+.phase-nav .btn-outline-primary {
+    border: 1.5px solid #1c7ed6;
+    color: #1c7ed6;
+    background-color: transparent;
+}
+
+.phase-nav .btn-outline-primary:hover:not(:disabled) {
+    background-color: #1c7ed6;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(28, 126, 214, 0.3);
+}
+
+.phase-nav .btn-outline-primary:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(28, 126, 214, 0.2);
+}
+
+.phase-nav .btn-outline-primary:disabled {
+    border-color: #ced4da;
+    color: #adb5bd;
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.phase-nav .phase-indicator {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #495057;
+    min-width: 50px;
+    text-align: center;
+    padding: 0 0.25rem;
+}
+
+/* Estilos para btn-outline-primary */
+.phase-nav .btn-outline-primary {
+    border: 1.5px solid #1c7ed6;
+    color: #1c7ed6;
+    background-color: transparent;
+}
+
+.phase-nav .btn-outline-primary:hover:not(:disabled) {
+    background-color: #1c7ed6;
+    color: white; /* El ícono heredará este color blanco */
+    border-color: #1c7ed6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(28, 126, 214, 0.3);
+}
+
+/* Asegura que el ícono herede el color del botón */
+.phase-nav .btn-outline-primary i {
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+.phase-nav .btn-outline-primary:active:not(:disabled) {
+    background-color: #1971c2;
+    color: white;
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(28, 126, 214, 0.2);
+}
+
+.phase-nav .btn-outline-primary:disabled {
+    border-color: #ced4da;
+    color: #adb5bd;
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
