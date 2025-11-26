@@ -25,6 +25,9 @@ export default function EXP_CLOCKS(props) {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [sidebarHeight, setSidebarHeight] = useState('auto');
   
+  // --- NUEVO ESTADO: Controlar visibilidad del Time Travel ---
+  const [showTimeTravel, setShowTimeTravel] = useState(false);
+  
   const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
   
   const sidebarRef = useRef(null);
@@ -38,14 +41,15 @@ export default function EXP_CLOCKS(props) {
     }
   }, [currentItem?.fun_clocks]);
 
-  // Pasamos `systemDate` al hook principal
   const manager = useClocksManager(currentItem, clocksData, currentVersion, systemDate);
 
   useEffect(() => {
     const handleResize = () => {
       if (sidebarRef.current) {
-        const controlBarHeight = 60; // Altura aproximada del nuevo ControlBar
-        setSidebarHeight(sidebarRef.current.offsetHeight - 44 - controlBarHeight);
+        // Ajuste dinámico si la barra está visible u oculta
+        const controlBarHeight = showTimeTravel ? 60 : 0; 
+        const toolStripHeight = showTimeTravel ? 0 : 40; // Espacio aproximado del botón de activar
+        setSidebarHeight(sidebarRef.current.offsetHeight - 44 - controlBarHeight - toolStripHeight);
       }
     };
     
@@ -57,7 +61,7 @@ export default function EXP_CLOCKS(props) {
         clearTimeout(timer);
         window.removeEventListener('resize', handleResize);
     };
-  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate]);
+  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, showTimeTravel]);
   
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa, FUN_0_TYPE_TIME } = manager;
 
@@ -336,6 +340,7 @@ export default function EXP_CLOCKS(props) {
       cancelButtonText: 'Cancelar',
       denyButtonText: 'Eliminar Programación',
       didOpen: () => {
+        // ... (Lógica del modal se mantiene igual)
         const phase1Input = document.getElementById('phase1_days');
         const phase2Input = document.getElementById('phase2_days');
         const phase1Slider = document.getElementById('phase1_slider');
@@ -487,14 +492,30 @@ export default function EXP_CLOCKS(props) {
 
   return (
     <div className="exp-wrapper">
-      <ControlBar 
-        timeTravel={{
-            systemDate,
-            onDateChange: handleDateChange,
-            onDateShift: handleDateShift,
-            onDateReset: resetDate,
-        }}
-      />
+      {/* BARRA DE HERRAMIENTAS DE TIEMPO - CONTROL DINÁMICO */}
+      {showTimeTravel ? (
+         <ControlBar 
+            timeTravel={{
+                systemDate,
+                onDateChange: handleDateChange,
+                onDateShift: handleDateShift,
+                onDateReset: resetDate,
+            }}
+            onClose={() => setShowTimeTravel(false)}
+          />
+      ) : (
+          <div className="d-flex justify-content-end mb-2">
+             <button 
+                className="btn btn-sm btn-time-travel-toggle" 
+                onClick={() => setShowTimeTravel(true)}
+                title="Activar máquina del tiempo"
+             >
+                 <i className="fas fa-user-clock me-2"></i>
+                 Modificar fecha del sistema
+             </button>
+          </div>
+      )}
+
       <div className="exp-container">
         <div className="exp-main-content">
           <div className="card exp-card">

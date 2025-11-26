@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 
-export const ControlBar = ({ timeTravel }) => {
+export const ControlBar = ({ timeTravel, onClose }) => {
   const { systemDate, onDateChange, onDateShift, onDateReset } = timeTravel;
   const isToday = moment(systemDate).isSame(moment(), 'day');
 
@@ -23,7 +23,7 @@ export const ControlBar = ({ timeTravel }) => {
           <button 
             type="button" 
             className="btn btn-outline-secondary btn-sm" 
-            title="Retroceder 5 días"
+            title="Retroceder 1 días"
             onClick={() => onDateShift(-1)}
           >
             <i className="fas fa-chevron-left me-1"></i>-1d
@@ -39,7 +39,7 @@ export const ControlBar = ({ timeTravel }) => {
           <button 
             type="button" 
             className="btn btn-outline-secondary btn-sm" 
-            title="Retroceder 5 días"
+            title="Avanzar 1 días"
             onClick={() => onDateShift(1)}
           >
             <i className="fas fa-chevron-right me-1"></i>+1d
@@ -65,7 +65,16 @@ export const ControlBar = ({ timeTravel }) => {
           </button>
         </div>
         <div className="actions">
-          {/* Aquí podrían ir otros controles como el de pantalla completa si lo necesitas */}
+            {onClose && (
+              <button 
+                  type="button" 
+                  className="btn btn-sm btn-outline-danger border-0"
+                  onClick={onClose}
+                  title="Ocultar barra de tiempo"
+              >
+                  <i className="fas fa-times"></i>
+              </button>
+            )}
         </div>
       </div>
        {!isToday && (
