@@ -34,12 +34,15 @@ const customStylesForModal = {
 };
 const CURRENT_YEAR = moment().format('YYYY')
 
-const SMMV = 1423500
+let SMMV = 1423500;
+if (CURRENT_YEAR == '2025') SMMV = 1423500
+
+
 const PORUIS_DATA = {
     name: 'Estampilla PRO-UIS',
     subrules: [
-        { name: 'Estrao 3 y 4', mult: 1423.5, round: true, },
-        { name: 'Estrao 5 y 6', mult: 2847, round: true, },
+        { name: 'Estrao 3 y 4', mult: SMMV / 1000.0, round: true, },
+        { name: 'Estrao 5 y 6', mult: SMMV / 500.0, round: true, },
     ]
 }
 const cur_matrix = [
@@ -289,7 +292,7 @@ export default function EXP_CALC(props) {
 
         setM2(subrule.mult * (perc / 100));
         let mValue = (subrule.mult * value) * (perc / 100);
-        if (subrule.round) setMt((Math.ceil(mValue / 1000) * 1000).toFixed(0));
+        if (subrule.round) setMt((Math.ceil(mValue / 100) * 100).toFixed(0));
         else setMt((mValue).toFixed(0));
     }
 
