@@ -162,7 +162,7 @@ const extraClocks = (props) => {
         name: 'Instalación de la valla', 
         desc: "Instalación de la valla informativa del proyecto", 
         editableDate: true, 
-        limit: [[5, 5]], 
+        limit: [[5, 5]],
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
         spentDaysConfig: { startState: 5 } 
@@ -218,7 +218,7 @@ const extraClocks = (props) => {
         state: 35, 
         name: 'Radicación de Correcciones', 
         desc: requereCorr() ? "Radicación de los documentos corregidos por el solicitante (CONTINÚA PLAZO DE CURADURÍA)" : false, 
-        limit: [[[33, 32], presentExt() ? 45 : 20]], 
+        limit: [[[33, 32], presentExt() ? 45 : 30]], 
         icon: requereCorr() ? undefined : "empty", 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
@@ -233,7 +233,7 @@ const extraClocks = (props) => {
         state: 49, 
         name: 'Acta Parte 2: Correcciones', 
         desc: requereCorr() ? "Acta de revisión de las correcciones presentadas" : false, 
-        limit: [[35, 50]], 
+        // limit: [[35, 50]], 
         limitValues: viaTime, 
         icon: requereCorr() ? undefined : "empty", 
         spentDaysConfig: { startState: 35 } 
@@ -246,7 +246,8 @@ const extraClocks = (props) => {
         state: 61, 
         name: 'Acto de Trámite de Licencia (Viabilidad)', 
         desc: "Acto de trámite de viabilidad de la licencia (FINALIZA PLAZO DE CURADURÍA)", 
-        limit: false, 
+        // limit: [[35, 50]], 
+        limitValues: viaTime,
         spentDaysConfig: { startState: 49 } 
       },
       { 

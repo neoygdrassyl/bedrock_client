@@ -494,3 +494,8 @@ body.sidebar-expanded .btn-scroll-top{
 .header-bg-primary{
   background-color: #6B7280 !important;
 }
+
+
+.popover {
+    z-index: 10500 !important;
+}

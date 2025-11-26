@@ -9,11 +9,11 @@ const MySwal = withReactContent(Swal);
 
 export const ClockRow = (props) => {
     const { value, i, clock, onSave, onDelete, cat, outCodes, _CHILD_6_SELECT, _FIND_6, helpers, scheduleConfig } = props;
-    const { getClock, getNewestDate, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, totalSuspensionDays } = helpers;
+    const { getClock, getNewestDate, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, totalSuspensionDays, viaTime } = helpers;
 
     moment.locale('es');
 
-    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('DD MMM YYYY') : '';
+    const formatDate = (dateStr) => dateStr ?  moment(dateStr). format('DD MMM YYYY') : '';
 
     // =====================================================
     // CÁLCULO DEL LÍMITE PARA ACTA PARTE 1 (State 30)
@@ -24,22 +24,24 @@ export const ClockRow = (props) => {
         const ldf = getClock(5)?.date_start;
         if (!ldf) return null;
 
-        const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
+        const baseDays = FUN_0_TYPE_TIME[currentItem. type] ?? 45;
         let totalDays = baseDays;
 
-        if (suspensionPreActa.exists && suspensionPreActa.end?.date_start) {
+        // Sumamos días de suspensión pre-acta si están cerrados
+        if (suspensionPreActa.exists && suspensionPreActa. end?.date_start) {
             totalDays += suspensionPreActa.days;
         }
 
-        if (extension.exists && extension.end?.date_start && !extension.isActive) {
+        // Sumamos días de prórroga si aplica antes del acta
+        if (extension.exists && extension. end?.date_start && ! extension.isActive) {
             const acta1Date = getClock(30)?.date_start;
-            if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) {
+            if (! acta1Date || moment(extension.start.date_start). isBefore(acta1Date)) {
                 totalDays += extension.days;
             }
         }
 
         const limitDate = sumarDiasHabiles(ldf, totalDays);
-        const tip = `Base: ${baseDays} días + Suspensión: ${suspensionPreActa.days} días + Prórroga: ${extension.exists && !extension.isActive ? extension.days : 0} días = ${totalDays} días hábiles desde LDF`;
+        const tip = `Base: ${baseDays} + Susp: ${suspensionPreActa.days} + Prórroga: ${extension.exists && ! extension.isActive ? extension.days : 0} = ${totalDays} días hábiles desde LDF`;
 
         return { limitDate, tooltip: tip };
     };
@@ -49,32 +51,89 @@ export const ClockRow = (props) => {
     // =====================================================
     const calculateSuspensionLimit = () => {
         const isEndPre = value.state === 350;
-        const isEndPost = value.state === 351;
-        if (!isEndPre && !isEndPost) return null;
+        const isEndPost = value. state === 351;
+        if (!isEndPre && ! isEndPost) return null;
 
         const thisSusp = isEndPre ? suspensionPreActa : suspensionPostActa;
-        if (!thisSusp.start?.date_start) return null;
+        if (!thisSusp. start?. date_start) return null;
 
         const otherUsedDays = isEndPre 
-            ? (suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0)
+            ? (suspensionPostActa.end?.date_start ?  suspensionPostActa.days : 0)
             : (suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0);
         
         const availableForThis = 10 - otherUsedDays;
         const limitDate = sumarDiasHabiles(thisSusp.start.date_start, availableForThis);
-        const tip = `Días hábiles disponibles para esta suspensión: ${availableForThis} (Total: 10, Usados en otra: ${otherUsedDays})`;
+        const tip = `Días disponibles: ${availableForThis} (Total 10 - Usados otra susp: ${otherUsedDays})`;
 
         return { limitDate, tooltip: tip };
     };
 
     // =====================================================
-    // CÁLCULO DINÁMICO DE LÍMITES
+    // CÁLCULO DEL LÍMITE PARA VIABILIDAD (States 49 y 61)
+    // =====================================================
+    const calculateViabilityLimit = () => {
+        // Solo aplica para estados 49 (Acta 2) y 61 (Viabilidad)
+        if (value.state !== 49 && value.state !== 61) return null;
+
+        const ldf = getClock(5)?.date_start;
+        const acta1 = getClock(30);
+        const corrDate = getClock(35)?.date_start; // Fecha de correcciones
+
+        // Si no hay LDF, no podemos calcular nada
+        if (!ldf) return null;
+
+        // 1. Calcular Días Totales Disponibles para Curaduría
+        const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
+        
+        // Incluimos TODAS las suspensiones cerradas y prórrogas cerradas al total de días
+        const totalSuspension = (suspensionPreActa.exists && suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0) +
+                                (suspensionPostActa.exists && suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0);
+        
+        const totalExtension = (extension.exists && extension.end?.date_start ? extension.days : 0);
+        
+        const totalCuraduriaDays = baseDays + totalSuspension + totalExtension;
+
+        // Determinar escenario: Lógica ESTRICTA de cumplimiento
+        // Solo es verdadero si el texto contiene la frase exacta.
+        const complianceString = "ACTA PARTE 1 OBSERVACIONES: CUMPLE";
+        const isCumple = acta1?.desc?.includes(complianceString);
+        const hasActa = !!acta1?.date_start;
+
+        // ESCENARIO A: ACTA 1 CUMPLE (O no hay acta aún y asumimos proyección ideal desde LDF)
+        // Lógica: Fecha Límite = LDF + Total Días Curaduría
+        if (isCumple || !hasActa) {
+            const limitDate = sumarDiasHabiles(acta1?.date_start, viaTime);
+            const tooltip = `Caso CUMPLE (o proyección inicial): Desde Acta parte 1 (${formatDate(acta1?.date_start)}) + ${viaTime} días totales (Base ${baseDays} + Susp ${totalSuspension} + Prórroga ${totalExtension})`;
+            return { limitDate, tooltip };
+        }
+
+        // ESCENARIO B: ACTA 1 NO CUMPLE (Cualquier otro texto en el acta)
+        // Lógica: Fecha Límite = Fecha Radicación Correcciones + Días Restantes (viaTime)
+        if (hasActa && !isCumple) {
+            if (corrDate) {
+                // Si ya hay correcciones, usamos la fecha de correcciones + días restantes
+                // Nota: viaTime ya viene calculado correctamente (incluyendo regla de día siguiente) desde el hook
+                const limitDate = sumarDiasHabiles(corrDate, viaTime);
+                const tooltip = `Caso CORRECCIONES: Desde Radicación Correcciones (${formatDate(corrDate)}) + ${viaTime} días restantes`;
+                return { limitDate, tooltip };
+            } else {
+                // Si NO hay correcciones aún, pero el acta ya se emitió y no cumple
+                return { limitDate: null, tooltip: "Esperando radicación de correcciones para calcular límite." };
+            }
+        }
+
+        return null;
+    };
+
+    // =====================================================
+    // CÁLCULO DINÁMICO DE LÍMITES (GENÉRICO)
     // =====================================================
     const calculateDynamicLimit = (limitConfig) => {
         if (!limitConfig || !Array.isArray(limitConfig)) return null;
 
-        const isListOfOptions = Array.isArray(limitConfig[0]);
+        const isDirectConfig = typeof limitConfig[1] === 'number';
 
-        if (isListOfOptions) {
+        if (! isDirectConfig) {
             for (const option of limitConfig) {
                 const result = calculateDynamicLimit(option);
                 if (result) return result;
@@ -97,40 +156,38 @@ export const ClockRow = (props) => {
 
     const renderLegalLimit = () => {
         let limitDate = null;
-        let tooltip = 'Límite legal calculado según la normativa.';
+        let tooltip = 'Límite legal calculado según la normativa. ';
 
-        // Casos especiales y dinámicos para obtener la fecha límite
+        // Caso especial: Suspensiones (350/351)
         if (value.state === 350 || value.state === 351) {
             const result = calculateSuspensionLimit();
             if (result) {
                 limitDate = result.limitDate;
                 tooltip = result.tooltip;
             }
-        } else if (value.state === 30) {
+        } 
+        // Caso especial: Acta Parte 1 (30)
+        else if (value.state === 30) {
             const result = calculateActa1Limit();
+            if (result) {
+                limitDate = result.limitDate;
+                tooltip = result. tooltip;
+            }
+        } 
+        // Caso especial: Viabilidad (49 y 61) - NUEVA LÓGICA
+        else if (value.state === 49 || value.state === 61) {
+            const result = calculateViabilityLimit();
             if (result) {
                 limitDate = result.limitDate;
                 tooltip = result.tooltip;
             }
-        } else if (value.limit) {
+        }
+        // Caso general: usar limit config
+        else if (value.limit) {
             limitDate = calculateDynamicLimit(value.limit);
-        } else if (value.limitValues) {
-            let baseDate = null;
-            const corrTime = getClock(35)?.date_start;
-            if (extension.exists && corrTime && extension.start.date_start >= corrTime && extension.end?.date_start) {
-                baseDate = extension.start.date_start;
-            } else if (suspensionPostActa.exists && suspensionPostActa.end?.date_start && corrTime && suspensionPostActa.end.date_start >= corrTime) {
-                baseDate = suspensionPostActa.end.date_start;
-            } else if (corrTime) {
-                baseDate = corrTime;
-            }
-            if (baseDate) {
-                limitDate = sumarDiasHabiles(baseDate, value.limitValues);
-                tooltip = `Límite legal: ${value.limitValues} días hábiles desde ${formatDate(baseDate)}`;
-            }
         }
 
-        // Obtener los días gastados (lógica de la columna eliminada)
+        // Obtener los días gastados
         const spentDaysResult = calculateDaysSpent(value, clock);
         let statusText = null;
 
@@ -141,7 +198,7 @@ export const ClockRow = (props) => {
             if (scheduleConfig) {
                 if (value.state === 30 && scheduleConfig.phase1Days) {
                     scheduledTotal = scheduleConfig.phase1Days;
-                } else if (value.state === 61 && scheduleConfig.phase2Days) {
+                } else if (value. state === 61 && scheduleConfig.phase2Days) {
                     scheduledTotal = scheduleConfig.phase2Days;
                 }
             }
@@ -153,8 +210,8 @@ export const ClockRow = (props) => {
             }
         }
 
-        if (!limitDate) {
-            return <div className="legal-limit-cell" title="No aplica un límite legal para este evento.">-</div>;
+        if (! limitDate) {
+            return <div className="legal-limit-cell" title="No aplica un límite legal para este evento o faltan fechas previas.">-</div>;
         }
         
         return (
@@ -172,7 +229,7 @@ export const ClockRow = (props) => {
     };
 
     // =====================================================
-    // RENDERIZADO DE LÍMITE PROGRAMADO (YA EXISTENTE)
+    // RENDERIZADO DE LÍMITE PROGRAMADO
     // =====================================================
     const renderScheduledLimit = () => {
         if (!scheduleConfig) return <div className="scheduled-limit-cell" title="No hay una programación guardada para este proceso.">-</div>;
@@ -191,29 +248,38 @@ export const ClockRow = (props) => {
             baseDateForSchedule = ldf;
         } else if (value.state === 61 && scheduleConfig.phase2Days) {
             const corrTime = getClock(35)?.date_start;
-            if(corrTime){
+            // Ajuste en programación: Si es CUMPLE, la fase 2 arranca desde LDF+Fase1, si es NO CUMPLE arranca desde correcciones
+            const acta1 = getClock(30);
+            const isCumple = acta1?.desc?.includes('CUMPLE') && !acta1?.desc?.includes('NO CUMPLE');
+            
+            if (isCumple) {
+                // Si cumple, la "Fase 2" programada inicia teóricamente tras terminar la Fase 1 programada
+                // O más simple: desde Acta 1
+                baseDateForSchedule = acta1?.date_start;
+                scheduledDays = scheduleConfig.phase2Days;
+            } else if (corrTime) {
                 scheduledDays = scheduleConfig.phase2Days;
                 baseDateForSchedule = corrTime;
             } else {
-                 tooltip = "Esperando fecha de correcciones para calcular.";
+                 tooltip = "Esperando fecha de correcciones o acta favorable para calcular. ";
             }
         }
         
         if (scheduledDays && baseDateForSchedule) {
             scheduledLimitDate = sumarDiasHabiles(baseDateForSchedule, scheduledDays);
             tooltip = `${scheduledDays} días programados desde ${formatDate(baseDateForSchedule)}.`;
-            const eventDate = clock?.date_start;
+            const eventDate = clock?. date_start;
 
             if (eventDate) {
                 const daysTaken = calcularDiasHabiles(baseDateForSchedule, eventDate);
                 remainingDays = scheduledDays - daysTaken;
             } else {
-                const today = moment().format('YYYY-MM-DD');
+                const today = moment(). format('YYYY-MM-DD');
                 const daysUsed = calcularDiasHabiles(baseDateForSchedule, today);
                 remainingDays = scheduledDays - daysUsed;
             }
-        } else if (scheduleConfig && (value.state === 30 || value.state === 61)) {
-            // Caso donde hay plan pero no aplica a esta fila
+        } else if (scheduleConfig && (value.state === 30 || value. state === 61)) {
+            // Caso donde hay plan pero no aplica a esta fila por falta de fechas
         } else {
             return <div className="scheduled-limit-cell" title={tooltip}>-</div>;
         }
@@ -228,7 +294,7 @@ export const ClockRow = (props) => {
                         {formatDate(scheduledLimitDate)}
                     </div>
                 )}
-                {remainingDays !== null && !clock?.date_start && (
+                {remainingDays !== null && ! clock?.date_start && (
                     <div className={`scheduled-remaining small ${isOverdue ? 'text-danger' : 'text-success'}`}>
                         {isOverdue ? `Retraso: ${Math.abs(remainingDays)}d` : `Quedan: ${remainingDays}d`}
                     </div>
@@ -244,9 +310,9 @@ export const ClockRow = (props) => {
     // RENDERIZADO DE NOMBRE DEL EVENTO
     // =====================================================
     const renderEventName = () => {
-        const eventDesc = value.desc ? (typeof value.desc === 'string' ? value.desc : '') : '';
-        const sentenceCaseEs = (s) => (s && typeof s === 'string') ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s;
-        const eventName = value.name ?? sentenceCaseEs(clock?.name) ?? '';
+        const eventDesc = value.desc ?  (typeof value.desc === 'string' ? value.desc : '') : '';
+        const sentenceCaseEs = (s) => (s && typeof s === 'string') ? s.charAt(0).toUpperCase() + s. slice(1). toLowerCase() : s;
+        const eventName = value.name ??  sentenceCaseEs(clock?.name) ?? '';
         
         if (eventDesc && eventDesc !== false) {
             return (
@@ -265,9 +331,6 @@ export const ClockRow = (props) => {
         return <span>{eventName}</span>;
     };
 
-    // =====================================================
-    // ICONO DE ESTADO
-    // =====================================================
     const get_clockExistIcon = (state, icon) => {
         const _CHILD = getClock(state);
         if (_CHILD && icon !== "empty") {
@@ -279,30 +342,24 @@ export const ClockRow = (props) => {
         return <i className="far fa-circle text-muted"></i>;
     };
 
-    // =====================================================
-    // VALIDACIONES DE VISUALIZACIÓN
-    // =====================================================
     if (value.show === false) return null;
     if (value.requiredClock && !getClock(value.requiredClock)?.date_start) return null;
     if (value.optional && !clock) return null;
 
-    const currentDate = clock?.date_start ?? value.manualDate ?? '';
+    const currentDate = clock?.date_start ??  value.manualDate ??  '';
     const canEditDate = value.editableDate !== false && value.version === undefined;
 
-    // =====================================================
-    // CÁLCULO DE INDENTACIÓN
-    // =====================================================
     let indentLevel = 0;
-    if (value.title) {
+    if (value. title) {
         indentLevel = 0;
     } else if (value.name && (
         value.name.includes('Comunicación') || 
-        value.name.includes('Notificación') || 
-        value.name.includes('Citación') || 
-        value.name.includes('Prórroga') ||
-        value.name.includes('Radicación de Correcciones') ||
+        value. name.includes('Notificación') || 
+        value. name.includes('Citación') || 
+        value.name. includes('Prórroga') ||
+        value. name.includes('Radicación de Correcciones') ||
         value.name.includes('Traslado') ||
-        value.name.includes('Declaracion') ||
+        value. name.includes('Declaracion') ||
         value.name.includes('superintendencia') ||
         value.name.includes('Recepción') ||
         value.name.includes('Fin de')
@@ -312,13 +369,10 @@ export const ClockRow = (props) => {
         indentLevel = 1;
     }
 
-    // =====================================================
-    // RENDERIZADO FINAL (🆕 CON COLUMNAS UNIFICADAS)
-    // =====================================================
     return (
         <React.Fragment>
-            {value.title ? (
-                <div className="exp-section" style={{ '--cat': cat.color }}>
+            {value.title ?  (
+                <div className="exp-section" style={{ '--cat': cat. color }}>
                     <div className="d-flex align-items-center mb-1">
                         <i className={`fas ${cat.icon} me-2`}></i>
                         <strong className="text-uppercase">{value.title}</strong>
@@ -327,7 +381,6 @@ export const ClockRow = (props) => {
             ) : (
                 <div className="exp-row border-bottom" style={{ '--cat': cat.color }}>
                     <div className="row g-0 align-items-stretch w-100 m-0">
-                        {/* COLUMNA 1: NOMBRE DEL EVENTO */}
                         <div className="col-5 px-1 py-2 cell-border">
                             <div style={{ paddingLeft: `${indentLevel * 1.1}rem` }} className="d-flex align-items-center h-100">
                                 {indentLevel > 0 && (
@@ -342,10 +395,9 @@ export const ClockRow = (props) => {
                             </div>
                         </div>
 
-                        {/* COLUMNA 2: FECHA DEL EVENTO */}
                         <div className="col-2 px-1 cell-border">
                             <div className="exp-row-content">
-                                {canEditDate ? (
+                                {canEditDate ?  (
                                     <>
                                         <input 
                                             type="date" 
@@ -367,20 +419,18 @@ export const ClockRow = (props) => {
                                     </>
                                 ) : (
                                     <span className="text-center small">
-                                        {currentDate ? formatDate(currentDate) : <span className='text-muted'>-</span>}
+                                        {currentDate ?  formatDate(currentDate) : <span className='text-muted'>-</span>}
                                     </span>
                                 )}
                             </div>
                         </div>
 
-                        {/* 🆕 COLUMNA 3: LÍMITE LEGAL (UNIFICADA) */}
                         <div className="col-3 text-center small cell-border">
                             <div className="exp-row-content">
                                 {renderLegalLimit()}
                             </div>
                         </div>
 
-                        {/* 🆕 COLUMNA 4: LÍMITE PROGRAMADO */}
                         <div className="col-2 text-center small">
                             <div className="exp-row-content">
                                 {renderScheduledLimit()}
