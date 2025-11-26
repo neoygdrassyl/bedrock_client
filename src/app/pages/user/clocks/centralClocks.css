@@ -1438,3 +1438,1557 @@
     cursor: not-allowed;
     opacity: 0.6;
 }
+
+
+/* ========================================
+   ESTILOS UNIFICADOS PARA PANELES DE FASE
+   ======================================== */
+
+/* Tarjeta de fase moderna */
+.phase-card-modern {
+    padding: 0;
+}
+
+.phase-card-modern .phase-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #343a40;
+    text-align: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e9ecef;
+    position: relative;
+}
+
+.phase-card-modern .phase-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, #1971c2, #15aabf);
+    border-radius: 2px;
+}
+
+/* Indicador de tiempos paralelos */
+.parallel-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e7f5ff 0%, #d0ebff 100%);
+    color: #1864ab;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border: 1px solid #a5d8ff;
+}
+
+.parallel-indicator i {
+    color: #1971c2;
+}
+
+/* Contenedor de paneles paralelos */
+.parallel-actors-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ========================================
+   PANEL DE ACTOR (COMPONENTE REUTILIZABLE)
+   ======================================== */
+.actor-panel {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.actor-panel::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+}
+
+.actor-panel.primary::before {
+    background: linear-gradient(180deg, #1971c2, #1864ab);
+}
+
+.actor-panel.secondary::before {
+    background: linear-gradient(180deg, #15aabf, #0c8599);
+}
+
+.actor-panel.single::before {
+    background: linear-gradient(180deg, #1971c2, #15aabf);
+}
+
+.actor-panel:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+/* Cabecera del actor */
+.actor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.actor-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    color: #343a40;
+}
+
+.actor-name i {
+    font-size: 1.1rem;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    margin-right: 0.5rem;
+}
+
+.actor-header-primary .actor-name i {
+    background: linear-gradient(135deg, #e7f5ff, #d0ebff);
+    color: #1971c2;
+}
+
+.actor-header-info .actor-name i {
+    background: linear-gradient(135deg, #e3fafc, #c5f6fa);
+    color: #0c8599;
+}
+
+.actor-header-purple .actor-name i {
+    background: linear-gradient(135deg, #f3d9fa, #eebefa);
+    color: #9c36b5;
+}
+
+.actor-header-secondary .actor-name i {
+    background: linear-gradient(135deg, #f1f3f5, #e9ecef);
+    color: #495057;
+}
+
+/* Badge de estado del actor */
+.actor-status-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.actor-status-badge.status-primary {
+    background: linear-gradient(135deg, #e7f5ff, #d0ebff);
+    color: #1971c2;
+    border: 1px solid #a5d8ff;
+}
+
+.actor-status-badge.status-secondary {
+    background: linear-gradient(135deg, #f1f3f5, #e9ecef);
+    color: #495057;
+    border: 1px solid #ced4da;
+}
+
+.actor-status-badge.status-success {
+    background: linear-gradient(135deg, #d3f9d8, #b2f2bb);
+    color: #2b8a3e;
+    border: 1px solid #8ce99a;
+}
+
+.actor-status-badge.status-warning {
+    background: linear-gradient(135deg, #fff3bf, #ffec99);
+    color: #e67700;
+    border: 1px solid #ffd43b;
+}
+
+.actor-status-badge.status-danger {
+    background: linear-gradient(135deg, #ffe3e3, #ffc9c9);
+    color: #c92a2a;
+    border: 1px solid #ffa8a8;
+}
+
+.actor-status-badge.status-info {
+    background: linear-gradient(135deg, #c5f6fa, #99e9f2);
+    color: #0c8599;
+    border: 1px solid #66d9e8;
+}
+
+/* Descripción de tarea */
+.actor-task {
+    font-size: 0.8rem;
+    color: #495057;
+    background: linear-gradient(135deg, #fff, #f8f9fa);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    border: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+}
+
+.actor-task i {
+    color: #868e96;
+    margin-right: 0.5rem;
+}
+
+/* Métricas del actor */
+.actor-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.metric-row:hover {
+    background: #f1f3f5;
+}
+
+.metric-row.highlight {
+    background: linear-gradient(135deg, #e7f5ff, #f8f9fa);
+    border: 1px solid #d0ebff;
+}
+
+.metric-label {
+    color: #6c757d;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.metric-label i {
+    width: 16px;
+    text-align: center;
+    color: #adb5bd;
+}
+
+.metric-value {
+    font-weight: 700;
+    color: #343a40;
+    font-size: 0.85rem;
+}
+
+.metric-remaining.positive {
+    color: #2b8a3e;
+    background: linear-gradient(135deg, #d3f9d8, #ebfbee);
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+}
+
+.metric-remaining.warning {
+    color: #e67700;
+    background: linear-gradient(135deg, #fff3bf, #fff9db);
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+}
+
+.metric-remaining.negative {
+    color: #c92a2a;
+    background: linear-gradient(135deg, #ffe3e3, #fff5f5);
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+}
+
+/* Barra de progreso mejorada */
+.actor-progress {
+    position: relative;
+    padding-top: 0.5rem;
+}
+
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    color: #adb5bd;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.actor-progress .progress {
+    border-radius: 4px;
+    background-color: #e9ecef;
+    overflow: visible;
+    position: relative;
+}
+
+.actor-progress .progress-bar {
+    transition: width 0.6s ease-in-out;
+    border-radius: 4px;
+    position: relative;
+}
+
+.progress-indicator {
+    position: absolute;
+    top: -8px;
+    transform: translateX(-50%);
+    transition: left 0.6s ease-in-out;
+}
+
+.indicator-value {
+    background: #343a40;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    display: block;
+}
+
+.indicator-value::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #343a40;
+}
+
+/* Divisor entre paneles paralelos */
+.parallel-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 0;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ced4da, transparent);
+}
+
+.divider-icon {
+    padding: 0 1rem;
+    color: #adb5bd;
+    font-size: 0.85rem;
+    background: #fff;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #e9ecef;
+}
+
+/* Timeline de la fase */
+.phase-timeline {
+    background: linear-gradient(135deg, #f8f9fa, #fff);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border: 1px solid #e9ecef;
+}
+
+.timeline-dates {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.timeline-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.timeline-date i {
+    font-size: 1rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.timeline-date.start i {
+    background: linear-gradient(135deg, #d3f9d8, #b2f2bb);
+    color: #2b8a3e;
+}
+
+.timeline-date.end i {
+    background: linear-gradient(135deg, #ffe3e3, #ffc9c9);
+    color: #e03131;
+}
+
+.timeline-date span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.timeline-connector {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, #b2f2bb, #ced4da, #ffc9c9);
+    margin: 0 0.75rem;
+    border-radius: 2px;
+    position: relative;
+}
+
+.timeline-connector::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border: 2px solid #ced4da;
+    border-radius: 50%;
+}
+
+/* Animaciones */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.actor-panel {
+    animation: slideIn 0.3s ease-out;
+}
+
+.parallel-actors-container .actor-panel:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+/* Animación para badge activo */
+.actor-status-badge.status-primary i,
+.actor-status-badge.status-info i {
+    animation: pulse-icon 2s ease-in-out infinite;
+}
+
+@keyframes pulse-icon {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Hover effects mejorados */
+.actor-panel.primary:hover {
+    border-color: #a5d8ff;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e7f5ff 100%);
+}
+
+.actor-panel.secondary:hover {
+    border-color: #99e9f2;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e3fafc 100%);
+}
+
+.actor-panel.single:hover {
+    border-color: #a5d8ff;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e7f5ff 100%);
+}
+
+/* Responsive para paneles */
+@media (min-width: 1400px) {
+    .parallel-actors-container {
+        flex-direction: row;
+        gap: 0;
+    }
+
+    .parallel-actors-container > .actor-panel {
+        flex: 1;
+    }
+
+    .parallel-divider {
+        flex-direction: column;
+        padding: 0 0.75rem;
+        min-height: 100%;
+    }
+
+    .divider-line {
+        width: 1px;
+        height: auto;
+        flex: 1;
+        background: linear-gradient(180deg, transparent, #ced4da, transparent);
+    }
+
+    .divider-icon {
+        padding: 0.5rem 0;
+        margin: 0.5rem 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .actor-panel {
+        padding: 0.75rem;
+    }
+
+    .actor-name {
+        font-size: 0.85rem;
+    }
+
+    .metric-row {
+        padding: 0.3rem 0.5rem;
+    }
+
+    .metric-label,
+    .metric-value {
+        font-size: 0.75rem;
+    }
+
+    .timeline-date span {
+        font-size: 0.7rem;
+    }
+}
+
+/* ========================================
+   ESTILOS ADICIONALES PARA RESPONSABLE MIXTO
+   ======================================== */
+.actor-header-purple .actor-name {
+    color: #862e9c;
+}
+
+.actor-panel.single[data-responsible="Mixto"]::before {
+    background: linear-gradient(180deg, #9c36b5, #862e9c);
+}
+
+/* ========================================
+   ESTILOS MEJORADOS PARA SIDEBAR FOOTER
+   ======================================== */
+.sidebar-card-footer {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-footer-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    color: #495057;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-footer-action:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    color: #212529;
+}
+
+.btn-footer-action i {
+    font-size: 0.9rem;
+    color: #5bc0de;
+}
+
+/* Chip de contexto para Fase 4 */
+.phase-context-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    padding: 0.4rem 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+    color: #495057;
+}
+
+.chip-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    color: #5bc0de;
+}
+
+.chip-text strong {
+    color: #5bc0de;
+}
+
+/* Badge de días extra */
+.days-extra-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #d4edda;
+    color: #155724;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 10px;
+    margin-left: 0.25rem;
+}
+
+/* ========================================
+   MODAL DE DESGLOSE - INTEGRADO CON ESTILOS GENERALES
+   ======================================== */
+.days-modal-popup {
+    border-radius: 8px !important;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1) !important;
+}
+
+.days-modal-popup .swal2-html-container {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.days-modal-close {
+    color: #fff !important;
+    opacity: 0.8;
+    font-size: 1.25rem !important;
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+}
+
+.days-modal-close:hover {
+    opacity: 1;
+}
+
+.days-modal {
+    font-family: inherit;
+}
+
+/* Header del modal - usando color principal de la app */
+.days-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: #5bc0de;
+    color: #fff;
+}
+
+.header-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+.header-content {
+    flex: 1;
+}
+
+.header-content h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.header-content p {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.header-total {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+.total-number {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.total-label {
+    font-size: 0.7rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Barra principal */
+.days-main-bar {
+    padding: 1.25rem 1.5rem;
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.bar-track {
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.bar-segment {
+    position: relative;
+    min-width: 3px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.bar-segment:hover {
+    filter: brightness(1.1);
+}
+
+.seg-phase1 {
+    background: #fd7e14;
+}
+
+.seg-phase4 {
+    background: #6f42c1;
+}
+
+.seg-remaining {
+    background: #28a745;
+}
+
+.seg-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.seg-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #333;
+}
+
+.bar-segment:hover .seg-tooltip {
+    display: block;
+}
+
+.bar-legend {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.dot-phase1 { background: #fd7e14; }
+.dot-phase4 { background: #6f42c1; }
+.dot-remaining { background: #28a745; }
+
+/* Grid de tarjetas */
+.days-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: #f8f9fa;
+}
+
+.days-card {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.days-card .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.days-card .card-header i {
+    color: #5bc0de;
+    font-size: 0.85rem;
+}
+
+.days-card .card-body {
+    padding: 0.75rem;
+}
+
+/* Composición del plazo */
+.comp-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+.comp-row:last-of-type {
+    border-bottom: none;
+}
+
+.comp-row.muted {
+    opacity: 0.5;
+}
+
+.comp-row.active {
+    opacity: 1;
+}
+
+.comp-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: #495057;
+}
+
+.comp-label i {
+    width: 14px;
+    text-align: center;
+    color: #adb5bd;
+    font-size: 0.75rem;
+}
+
+.comp-value {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #212529;
+}
+
+.comp-value.text-warning { color: #f08c00; }
+.comp-value.text-info { color: #17a2b8; }
+
+.comp-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding-top: 0.6rem;
+    border-top: 2px solid #e9ecef;
+}
+
+.comp-total .comp-label {
+    font-weight: 600;
+    color: #212529;
+}
+
+.comp-total .comp-value {
+    font-size: 0.95rem;
+    color: #5bc0de;
+    font-weight: 700;
+}
+
+/* Uso por fase */
+.phase-row {
+    padding: 0.5rem 0;
+}
+
+.phase-row:first-child {
+    padding-top: 0;
+}
+
+.phase-info {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.35rem;
+}
+
+.phase-name {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #212529;
+}
+
+.phase-desc {
+    font-size: 0.7rem;
+    color: #868e96;
+}
+
+.phase-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.phase-bar {
+    flex: 1;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.phase-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.fill-phase1 { background: #fd7e14; }
+.fill-phase4 { background: #6f42c1; }
+
+.phase-numbers {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6c757d;
+    min-width: 45px;
+    text-align: right;
+}
+
+.phase-transfer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.4rem;
+    margin: 0.35rem 0;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    color: #868e96;
+}
+
+.phase-transfer i {
+    color: #5bc0de;
+    font-size: 0.65rem;
+}
+
+/* Footer del modal */
+.days-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.5rem;
+    background: #343a40;
+    color: #fff;
+}
+
+.footer-stat {
+    flex: 1;
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.text-used { color: #ffc107; }
+.text-remaining { color: #28a745; }
+.text-percent { color: #5bc0de; }
+
+.footer-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 0 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .days-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .days-modal-header {
+        flex-wrap: wrap;
+        padding: 1rem;
+    }
+    
+    .header-total {
+        width: 100%;
+        margin-top: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .header-total .total-number {
+        font-size: 1.4rem;
+    }
+    
+    .bar-legend {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .days-footer {
+        padding: 0.75rem 1rem;
+    }
+    
+    .stat-value {
+        font-size: 1.1rem;
+    }
+    
+    .footer-divider {
+        margin: 0 0.5rem;
+        height: 30px;
+    }
+    
+    .days-main-bar,
+    .days-grid {
+        padding: 1rem;
+    }
+}
+
+
+
+/* ========================================
+   MODAL DE DESGLOSE DE DÍAS - DISEÑO LIMPIO
+   ======================================== */
+.days-modal-popup {
+    border-radius: 8px !important;
+    padding: 0 !important;
+}
+
+.days-modal-title {
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    color: #343a40 !important;
+    padding: 1rem 1.25rem !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.days-modal-container {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.days-modal-btn {
+    padding: 0.5rem 1.5rem !important;
+    font-weight: 600 !important;
+}
+
+.days-modal-content {
+    padding: 1.25rem;
+}
+
+/* Resumen superior */
+.days-summary-row {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 1.25rem;
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #343a40;
+    line-height: 1;
+}
+
+.summary-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-item.used .summary-value {
+    color: #fd7e14;
+}
+
+.summary-item.remaining .summary-value {
+    color: #28a745;
+}
+
+/* Barra de progreso */
+.days-progress-section {
+    margin-bottom: 1.25rem;
+}
+
+.progress-bar-container {
+    display: flex;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.progress-segment {
+    transition: width 0.3s ease;
+}
+
+.progress-segment.phase1 {
+    background: #fd7e14;
+}
+
+.progress-segment.phase4 {
+    background: #6f42c1;
+}
+
+.progress-segment.available {
+    background: #28a745;
+}
+
+.progress-legend {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 0.6rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: #495057;
+}
+
+.legend-item .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.dot.phase1 { background: #fd7e14; }
+.dot.phase4 { background: #6f42c1; }
+.dot.available { background: #28a745; }
+
+/* Grid de información */
+.days-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.info-card {
+    background: #f8f9fa;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.info-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.info-card-title i {
+    color: #5bc0de;
+}
+
+.info-card-body {
+    padding: 0.75rem;
+}
+
+/* Filas de información */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    font-size: 0.8rem;
+    color: #495057;
+}
+
+.info-row span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.info-row i {
+    width: 14px;
+    color: #adb5bd;
+    font-size: 0.7rem;
+}
+
+.info-row strong {
+    color: #212529;
+}
+
+.info-row.muted {
+    opacity: 0.5;
+}
+
+.info-row.total {
+    margin-top: 0.5rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+.info-row.total strong {
+    color: #5bc0de;
+}
+
+.text-warning { color: #f08c00 !important; }
+.text-info { color: #17a2b8 !important; }
+
+/* Detalle de fases */
+.phase-detail {
+    margin-bottom: 0.5rem;
+}
+
+.phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.3rem;
+}
+
+.phase-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.phase-count {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.phase-mini-bar {
+    height: 6px;
+    background: #dee2e6;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.phase-mini-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.phase-mini-fill.phase1 { background: #fd7e14; }
+.phase-mini-fill.phase4 { background: #6f42c1; }
+
+.phase-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0;
+    font-size: 0.7rem;
+    color: #868e96;
+}
+
+.phase-arrow i {
+    color: #5bc0de;
+    font-size: 0.65rem;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .days-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .days-summary-row {
+        gap: 1rem;
+    }
+    
+    .summary-value {
+        font-size: 1.4rem;
+    }
+    
+    .progress-legend {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+}
+
+/* --- SIDEBAR CARDS --- */
+.sidebar-card {
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+}
+.sidebar-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-weight: 600;
+    color: #495057;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f3f5;
+    margin-bottom: 1rem;
+}
+.sidebar-card-header i {
+    color: #868e96;
+}
+
+/* ... (ESTILOS EXISTENTES SE MANTIENEN IGUAL) ... */
+/* COPIA TODO EL CSS ORIGINAL Y REEMPLAZA SOLAMENTE LA SECCION DEL FOOTER */
+
+/* --- REEMPLAZO Y MEJORA DEL SIDEBAR FOOTER --- */
+.sidebar-card-footer {
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.sidebar-card-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.btn-footer-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    color: #495057;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-footer-action:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    color: #212529;
+}
+
+.btn-footer-action i {
+    font-size: 0.9rem;
+    color: #5bc0de;
+}
+
+/* Estilos específicos para acciones dinámicas (Suspensión y Prórroga) */
+.btn-footer-action.action-suspension {
+    background-color: #fff9db;
+    border-color: #ffec99;
+    color: #e67700;
+}
+
+.btn-footer-action.action-suspension:hover {
+    background-color: #ffec99;
+    border-color: #ffd43b;
+}
+
+.btn-footer-action.action-suspension i {
+    color: #f08c00;
+}
+
+.btn-footer-action.action-extension {
+    background-color: #e3fafc;
+    border-color: #99e9f2;
+    color: #0c8599;
+}
+
+.btn-footer-action.action-extension:hover {
+    background-color: #c5f6fa;
+    border-color: #66d9e8;
+}
+
+.btn-footer-action.action-extension i {
+    color: #15aabf;
+}
+
+/* --- ESTILO BOTÓN TOGGLE TIME TRAVEL --- */
+.btn-time-travel-toggle {
+    background-color: transparent;
+    color: #adb5bd;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.btn-time-travel-toggle:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+    border-color: #e9ecef;
+}
+
+/* ... (MANTENER RESTO DE ESTILOS ORIGINALES) ... */
+/* Asegúrate de mantener las otras reglas CSS originales que no fueron tocadas aquí */
+
+/* Chip de contexto para Fase 4 */
+.phase-context-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    padding: 0.4rem 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+    color: #495057;
+}
+
+.chip-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    color: #5bc0de;
+}
+
+.chip-text strong {
+    color: #5bc0de;
+}
+
+/* Badge de días extra */
+.days-extra-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #d4edda;
+    color: #155724;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 10px;
+    margin-left: 0.25rem;
+}
+
+/* --- NUEVOS ESTILOS PARA CONTROL BAR --- */
+.control-bar {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+.bar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.time-travel-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.time-travel-controls .control-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+.time-travel-controls .date-picker {
+    width: 140px;
+    padding: 0.25rem 0.5rem;
+}
+.time-travel-banner {
+    background-color: #fff3cd;
+    color: #664d03;
+    border: 1px solid #ffecb5;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* ... RESTO DEL CSS ... */
