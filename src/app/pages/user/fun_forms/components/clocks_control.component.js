@@ -55,7 +55,7 @@ class CLOCKS_CONTROL extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: 'principal'
+            activeTab: 'tiempos'
         };
     }
 
@@ -177,7 +177,7 @@ class CLOCKS_CONTROL extends Component {
         const presentExt = () => {
             return _GET_CLOCK_STATE(34).date_start ? true : false;
         }
-
+        // DEPRECATED FUNCTION
         const viaTime = () => {
             let ldfTime = _GET_CLOCK_STATE(5).date_start;
             let actaTime = _GET_CLOCK_STATE(30).date_start;
