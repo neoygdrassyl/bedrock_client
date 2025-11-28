@@ -46,10 +46,8 @@ export default function EXP_CLOCKS(props) {
   useEffect(() => {
     const handleResize = () => {
       if (sidebarRef.current) {
-        // Ajuste dinámico si la barra está visible u oculta
-        const controlBarHeight = showTimeTravel ? 60 : 0; 
-        const toolStripHeight = showTimeTravel ? 0 : 40; // Espacio aproximado del botón de activar
-        setSidebarHeight(sidebarRef.current.offsetHeight - 44 - controlBarHeight - toolStripHeight);
+        // Altura fija dinámica basada en el sidebar menos el header
+        setSidebarHeight(sidebarRef.current.offsetHeight - 44);
       }
     };
     
@@ -61,7 +59,7 @@ export default function EXP_CLOCKS(props) {
         clearTimeout(timer);
         window.removeEventListener('resize', handleResize);
     };
-  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, showTimeTravel]);
+  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate]);
   
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa, FUN_0_TYPE_TIME } = manager;
 
@@ -492,28 +490,19 @@ export default function EXP_CLOCKS(props) {
 
   return (
     <div className="exp-wrapper">
-      {/* BARRA DE HERRAMIENTAS DE TIEMPO - CONTROL DINÁMICO */}
-      {showTimeTravel ? (
-         <ControlBar 
-            timeTravel={{
-                systemDate,
-                onDateChange: handleDateChange,
-                onDateShift: handleDateShift,
-                onDateReset: resetDate,
-            }}
-            onClose={() => setShowTimeTravel(false)}
-          />
-      ) : (
-          <div className="d-flex justify-content-end mb-2">
-             <button 
-                className="btn btn-sm btn-time-travel-toggle" 
-                onClick={() => setShowTimeTravel(true)}
-                title="Activar máquina del tiempo"
-             >
-                 <i className="fas fa-user-clock me-2"></i>
-                 Modificar fecha del sistema
-             </button>
-          </div>
+      {/* WIDGET FLOTANTE FIJO (NO MODAL) */}
+      {showTimeTravel && (
+        <div className="time-travel-floating-widget">
+            <ControlBar 
+                timeTravel={{
+                    systemDate,
+                    onDateChange: handleDateChange,
+                    onDateShift: handleDateShift,
+                    onDateReset: resetDate,
+                }}
+                onClose={() => setShowTimeTravel(false)}
+            />
+        </div>
       )}
 
       <div className="exp-container">
@@ -533,6 +522,16 @@ export default function EXP_CLOCKS(props) {
              }} 
           />
           <HolidayCalendar />
+          
+          {/* BOTÓN DE ACTIVACIÓN EN EL SIDEBAR (BAJO EL CALENDARIO) */}
+          <button 
+            className="btn-sidebar-utility mt-3" 
+            onClick={() => setShowTimeTravel(true)}
+            title="Activar herramientas de fecha"
+          >
+             <i className="fas fa-user-clock me-2"></i>
+             Emulador de fecha
+          </button>
         </div>
       </div>
     </div>
