@@ -203,12 +203,14 @@ class DiasHabilesColombia {
 
     /**
      * Suma N días hábiles a una fecha.
+     * Si days es negativo, delega en restarDiasHabiles.
      * @param {string} startDate - Fecha de inicio 'YYYY-MM-DD'
-     * @param {number} days - Días a sumar.
+     * @param {number} days - Días a sumar (puede ser negativo).
      * @returns {string} - Fecha resultante 'YYYY-MM-DD'
      */
     sumarDiasHabiles(startDate, days) {
-        if (days <= 0) return startDate;
+        if (days === 0) return startDate;
+        if (days < 0) return this.restarDiasHabiles(startDate, -days);
 
         const fecha = new Date(startDate + 'T00:00:00Z');
         let diasSumados = 0;
@@ -223,6 +225,30 @@ class DiasHabilesColombia {
         }
         return fecha.toISOString().split('T')[0];
     }
+
+    /**
+     * Resta N días hábiles a una fecha.
+     * No resta más ni menos que el parámetro dado: cuenta exactamente N días hábiles hacia atrás.
+     * @param {string} startDate - Fecha de inicio 'YYYY-MM-DD'
+     * @param {number} days - Días hábiles a restar (debe ser > 0)
+     * @returns {string} - Fecha resultante 'YYYY-MM-DD'
+     */
+    restarDiasHabiles(startDate, days) {
+        if (days <= 0) return startDate;
+
+        const fecha = new Date(startDate + 'T00:00:00Z');
+        let diasRestados = 0;
+
+        while (diasRestados < days) {
+            fecha.setUTCDate(fecha.getUTCDate() - 1);
+            const fechaStr = fecha.toISOString().split('T')[0];
+            const festivos = this.obtenerFestivos(fecha.getUTCFullYear());
+            if (this.esDiaHabil(fechaStr, festivos)) {
+                diasRestados++;
+            }
+        }
+        return fecha.toISOString().split('T')[0];
+    }
 }
 
 function procesarFecha(fechaInicial, diasHabiles = 10) {
@@ -231,9 +257,24 @@ function procesarFecha(fechaInicial, diasHabiles = 10) {
     if (!formatoValido) {
         throw new Error('La fecha debe estar en formato YYYY-MM-DD');
     }
-    return businessDays.calcularDiasHabiles(fechaInicial, diasHabiles);
+    return businessDays.sumarDiasHabiles(fechaInicial, diasHabiles);
+}
+
+/**
+ * Procesa la resta de días hábiles desde una fecha dada.
+ * @param {string} fechaInicial - 'YYYY-MM-DD'
+ * @param {number} diasHabiles - días a restar (>0)
+ * @returns {string} 'YYYY-MM-DD'
+ */
+function procesarFechaRestar(fechaInicial, diasHabiles = 10) {
+    const businessDays = new DiasHabilesColombia();
+    const formatoValido = /^\d{4}-\d{2}-\d{2}$/.test(fechaInicial);
+    if (!formatoValido) {
+        throw new Error('La fecha debe estar en formato YYYY-MM-DD');
+    }
+    return businessDays.restarDiasHabiles(fechaInicial, diasHabiles);
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { procesarFecha, DiasHabilesColombia };
+    module.exports = { procesarFecha, procesarFechaRestar, DiasHabilesColombia };
 }
