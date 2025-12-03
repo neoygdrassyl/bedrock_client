@@ -5,10 +5,13 @@ import { useProcessPhases } from './useProcessPhases';
 
 // --- INSTANCIA Y HELPERS ---
 const businessDaysCalculator = new DiasHabilesColombia();
-export const calcularDiasHabiles = (fechaInicio, fechaFin) => {
+export const calcularDiasHabiles = (fechaInicio, fechaFin, include=false) => {
   if (!fechaInicio || !fechaFin) return 0;
   try {
-    const inicio = moment(fechaInicio). format('YYYY-MM-DD');
+    let inicio = moment(fechaInicio). format('YYYY-MM-DD');
+    if (!include){
+      inicio = sumarDiasHabiles(inicio, 1);
+    }
     const fin = moment(fechaFin).format('YYYY-MM-DD');
     if (moment(fin).isBefore(inicio)) return 0;
     return businessDaysCalculator. contarDiasHabiles(inicio, fin);
@@ -76,22 +79,22 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
   const suspensionPreActa = useMemo(() => {
     const start = getClock(300), end = getClock(350);
     const exists = !!start?. date_start;
-    return { exists, start, end, days: exists && end?.date_start ? calcularDiasHabiles(start. date_start, end.date_start) : 0, isActive: exists && ! end?. date_start };
+    return { exists, start, end, days: exists && end?.date_start ? calcularDiasHabiles(start.date_start, end.date_start, true) : 0, isActive: exists && ! end?. date_start };
   }, [clocksData]);
 
   const suspensionPostActa = useMemo(() => {
     const start = getClock(301), end = getClock(351);
     const exists = !! start?.date_start;
-    return { exists, start, end, days: exists && end?.date_start ? calcularDiasHabiles(start.date_start, end.date_start) : 0, isActive: exists && !end?.date_start };
+    return { exists, start, end, days: exists && end?.date_start ? calcularDiasHabiles(start.date_start, end.date_start, true) : 0, isActive: exists && !end?.date_start };
   }, [clocksData]);
 
   const extension = useMemo(() => {
     const start = getClock(400), end = getClock(401);
     const exists = !!start?. date_start;
-    return { exists, start, end, days: exists && end?. date_start ? calcularDiasHabiles(start. date_start, end.date_start) : 0, isActive: exists && ! end?.date_start };
+    return { exists, start, end, days: exists && end?. date_start ? calcularDiasHabiles(start. date_start, end.date_start, true) : 0, isActive: exists && ! end?.date_start };
   }, [clocksData]);
 
-  const totalSuspensionDays = useMemo(() => suspensionPreActa.days + suspensionPostActa. days, [suspensionPreActa, suspensionPostActa]);
+  const totalSuspensionDays = useMemo(() => suspensionPreActa.days + suspensionPostActa.days, [suspensionPreActa, suspensionPostActa]);
   const extensionDays = useMemo(() => extension.days, [extension]);
 
   // --- CÁLCULO DE viaTime (Ajustado con regla día siguiente) ---

@@ -266,7 +266,7 @@ const extraClocks = (props) => {
       },
       { 
         state: 57, 
-        show: false, 
+        // show: false, 
         name: 'Notificación por Aviso (Viabilidad)', 
         desc: "Notificación por aviso del acto de viabilidad", 
         limit: [[55, 10]], 
