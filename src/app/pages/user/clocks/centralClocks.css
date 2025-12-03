@@ -268,7 +268,7 @@
 }
 .exp-container {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.2rem;
     width: 100%;
     align-items: flex-start;
 }
@@ -278,8 +278,8 @@
     padding-top: 1rem;
 }
 .exp-sidebar {
-    flex: 0 0 320px;
-    min-width: 320px;
+    flex: 0 0 350px;
+    min-width: 350px;
     position: sticky;
     top: 1rem;
 }

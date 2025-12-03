@@ -453,7 +453,7 @@ export const SidebarInfo = ({ manager, actions }) => {
                     Fases del Proceso
                 </h6>
                 
-                <div className="d-flex align-items-center gap-2">
+                <div className="d-flex align-items-center">
                     <button 
                         className="btn btn-sm btn-outline-secondary border-0 text-muted" 
                         onClick={showDebug}
