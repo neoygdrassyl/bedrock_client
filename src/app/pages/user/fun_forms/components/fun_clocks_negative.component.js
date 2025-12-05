@@ -16,14 +16,17 @@ class FUN_CLOCKS_NEGATIVE extends Component {
     constructor(props) {
         super(props);
         this.requestUpdate = this.requestUpdate.bind(this);
+        this.manage_clock = this.manage_clock.bind(this);
         this.state = {
             fillActive: null,
         };
     }
+
     requestUpdate(id) {
         this.props.requestUpdate(id)
     }
-    componentDidUpdate(prevState) {
+
+    componentDidUpdate(prevProps, prevState) {
         if (this.state.edit !== prevState.edit && this.state.edit != false) {
             var _ITEM = this.state.edit;
             document.getElementById("f_clock_edit_1").value = _ITEM.resolver_sattus ? _ITEM.resolver_sattus : 0;
@@ -31,10 +34,125 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             document.getElementById("f_clock_edit_3").value = _ITEM.resolver_context;
             document.getElementById("f_clock_edit_4").value = _ITEM.date_start ? _ITEM.date_start : moment().format('YYYY-MM-DD');
         }
+        // Verificar si hay nuevos datos para ejecutar la autoguardado
+        if (this.props.currentItem !== prevProps.currentItem) {
+            this.autoSaveMissingStartClock();
+        }
     }
+
     componentDidMount() {
-        this.setState({ fillActive: this.props.currentItem.state })
+        this.setState({ fillActive: this.props.currentItem.state });
+        this.autoSaveMissingStartClock();
     }
+
+    // --- DATA GETTERS MOVIDOS A METODOS DE CLASE ---
+    get_child_clock() {
+        var _CHILD = this.props.currentItem.fun_clocks;
+        var _LIST = [];
+        if (_CHILD) {
+            _LIST = _CHILD;
+        }
+        return _LIST;
+    }
+
+    get_clock_state_version(_state, _version) {
+        var _CLOCK = this.get_child_clock();
+        if (_state == null) return false;
+        for (var i = 0; i < _CLOCK.length; i++) {
+            if (_CLOCK[i].state == _state && _CLOCK[i].version == _version) return _CLOCK[i];
+        }
+        return false;
+    }
+
+    // --- LOGICA DE AUTOGUARDADO ---
+    autoSaveMissingStartClock() {
+        const versionsToCheck = [-1, -2, -3, -4, -5, -6]; // Versiones posibles de desistimiento
+
+        versionsToCheck.forEach(version => {
+            let clock50 = this.get_clock_state_version(-50, version);
+            let clock5 = this.get_clock_state_version(-5, version);
+
+            // SI EXISTE -5 (Citación) PERO NO EXISTE -50 (Inicio Desistimiento)
+            if (clock5 && !clock50) {
+                // Preparamos la data para guardar automaticamente
+                let formDataClock = new FormData();
+                
+                // Usamos la fecha del -5 como pidió el usuario
+                formDataClock.set('date_start', clock5.date_start); 
+                formDataClock.set('name', "INICIO DEL PROCESO DE DESISTIMIENTO");
+                // Usamos una descripción generica o copiamos la del -5
+                formDataClock.set('desc', "Inicio de proceso generado automáticamente desde Citación."); 
+                formDataClock.set('state', -50);
+                formDataClock.set('version', version);
+                formDataClock.set('fun0Id', this.props.currentItem.id);
+
+                // Llamamos a manage_clock en modo silencioso (false)
+                this.manage_clock(false, -50, version, formDataClock);
+            }
+        });
+    }
+
+    // --- API ACTION ---
+    manage_clock(useMySwal, state, version, formDataClock) {
+        const { swaMsg, currentItem } = this.props;
+        var _CHILD = this.get_clock_state_version(state, version);
+
+        if (useMySwal) {
+            MySwal.fire({
+                title: swaMsg.title_wait,
+                text: swaMsg.text_wait,
+                icon: 'info',
+                showConfirmButton: false,
+            });
+        }
+
+        const handleResponse = (response) => {
+            if (response.data === 'OK') {
+                if (useMySwal) {
+                    MySwal.fire({
+                        title: swaMsg.publish_success_title,
+                        text: swaMsg.publish_success_text,
+                        footer: swaMsg.text_footer,
+                        icon: 'success',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+                this.props.requestUpdate(currentItem.id);
+            } else {
+                if (useMySwal) {
+                    MySwal.fire({
+                        title: swaMsg.generic_eror_title,
+                        text: swaMsg.generic_error_text,
+                        icon: 'warning',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                }
+            }
+        };
+
+        const handleError = (e) => {
+            console.log(e);
+            if (useMySwal) {
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            }
+        };
+
+        if (_CHILD && _CHILD.id) {
+            FUN_SERVICE.update_clock(_CHILD.id, formDataClock)
+                .then(handleResponse)
+                .catch(handleError);
+        } else {
+            FUN_SERVICE.create_clock(formDataClock)
+                .then(handleResponse)
+                .catch(handleError);
+        }
+    }
+
     render() {
         const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
         const { fillActive } = this.state;
@@ -47,6 +165,10 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             '-4': {
                 "name": 'RECORDATORIO RATIFICACIÓN',
                 "desc": 'Se enviá un email al solicitante 10 días antes de iniciar el proceso de desistimiento.',
+            },
+            '-50': {
+                "name": 'INICIO DEL PROCESO DE DESISTIMIENTO',
+                "desc": 'Se da inicio formal al proceso de desistimiento. A partir de esta fecha corren los tiempos.',
             },
             "-6": {
                 "name": "CREACIÓN DE RESOLUCIÓN",
@@ -124,14 +246,9 @@ class FUN_CLOCKS_NEGATIVE extends Component {
         }
 
         // DATA GETTERS
-        let _GET_CHILD_CLOCK = () => {
-            var _CHILD = currentItem.fun_clocks;
-            var _LIST = [];
-            if (_CHILD) {
-                _LIST = _CHILD;
-            }
-            return _LIST;
-        }
+        // Usamos los métodos de clase ahora, pero mantenemos alias locales si es necesario para compatibilidad con el resto del código en render
+        let _GET_CHILD_CLOCK = () => this.get_child_clock();
+        
         let _GET_CHILD_6 = () => {
             var _CHILD = currentItem.fun_6s;
             var _LIST = [];
@@ -151,14 +268,8 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             return _CHILD;
         }
         // DATA CONVERTERS
-        let _GET_CLOCK_STATE_VERSION = (_state, _version) => {
-            var _CLOCK = _GET_CHILD_CLOCK();
-            if (_state == null) return false;
-            for (var i = 0; i < _CLOCK.length; i++) {
-                if (_CLOCK[i].state == _state && _CLOCK[i].version == _version) return _CLOCK[i];
-            }
-            return false;
-        }
+        let _GET_CLOCK_STATE_VERSION = (_state, _version) => this.get_clock_state_version(_state, _version);
+
         let _GET_CLOCK_STATE = (_state) => {
             var _CLOCKS = _GET_CHILD_CLOCK();
             for (var i = 0; i < _CLOCKS.length; i++) {
@@ -168,15 +279,15 @@ class FUN_CLOCKS_NEGATIVE extends Component {
         }
 
         let _CHECK_IF_PROCESS = () => {
-            if (_GET_CLOCK_STATE_VERSION(-5, -1) && !_GET_CLOCK_STATE_VERSION(-30, -1)) return true;
-            if (_GET_CLOCK_STATE_VERSION(-5, -2) && !_GET_CLOCK_STATE_VERSION(-30, -2)) return true;
-            if (_GET_CLOCK_STATE_VERSION(-5, -3) && !_GET_CLOCK_STATE_VERSION(-30, -3)) return true;
-            if (_GET_CLOCK_STATE_VERSION(-5, -4) && !_GET_CLOCK_STATE_VERSION(-30, -4)) return true;
-            if (_GET_CLOCK_STATE_VERSION(-5, -5) && !_GET_CLOCK_STATE_VERSION(-30, -5)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -1) || _GET_CLOCK_STATE_VERSION(-5, -1)) && !_GET_CLOCK_STATE_VERSION(-30, -1)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -2) || _GET_CLOCK_STATE_VERSION(-5, -2)) && !_GET_CLOCK_STATE_VERSION(-30, -2)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -3) || _GET_CLOCK_STATE_VERSION(-5, -3)) && !_GET_CLOCK_STATE_VERSION(-30, -3)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -4) || _GET_CLOCK_STATE_VERSION(-5, -4)) && !_GET_CLOCK_STATE_VERSION(-30, -4)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -5) || _GET_CLOCK_STATE_VERSION(-5, -5)) && !_GET_CLOCK_STATE_VERSION(-30, -5)) return true;
             return false;
         }
         let _CHECK_IF_PROCESS_ENDED = (version) => {
-            if (_GET_CLOCK_STATE_VERSION(-5, version) && _GET_CLOCK_STATE_VERSION(-30, version)) return true;
+            if ((_GET_CLOCK_STATE_VERSION(-50, version) || _GET_CLOCK_STATE_VERSION(-5, version)) && _GET_CLOCK_STATE_VERSION(-30, version)) return true;
             return false;
         }
         let _GET_DEFAULT_PROCESS = () => {
@@ -202,11 +313,11 @@ class FUN_CLOCKS_NEGATIVE extends Component {
         }
         let _GET_ONGOING_PROCESS = () => {
             let OngoingProcess = 0;
-            if (_GET_CLOCK_STATE_VERSION(-5, -1) && !_GET_CLOCK_STATE_VERSION(-30, -1)) OngoingProcess = -1;
-            if (_GET_CLOCK_STATE_VERSION(-5, -2) && !_GET_CLOCK_STATE_VERSION(-30, -2)) OngoingProcess = -2;
-            if (_GET_CLOCK_STATE_VERSION(-5, -3) && !_GET_CLOCK_STATE_VERSION(-30, -3)) OngoingProcess = -3;
-            if (_GET_CLOCK_STATE_VERSION(-5, -4) && !_GET_CLOCK_STATE_VERSION(-30, -4)) OngoingProcess = -4;
-            if (_GET_CLOCK_STATE_VERSION(-5, -5) && !_GET_CLOCK_STATE_VERSION(-30, -5)) OngoingProcess = -5;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -1) || _GET_CLOCK_STATE_VERSION(-5, -1)) && !_GET_CLOCK_STATE_VERSION(-30, -1)) OngoingProcess = -1;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -2) || _GET_CLOCK_STATE_VERSION(-5, -2)) && !_GET_CLOCK_STATE_VERSION(-30, -2)) OngoingProcess = -2;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -3) || _GET_CLOCK_STATE_VERSION(-5, -3)) && !_GET_CLOCK_STATE_VERSION(-30, -3)) OngoingProcess = -3;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -4) || _GET_CLOCK_STATE_VERSION(-5, -4)) && !_GET_CLOCK_STATE_VERSION(-30, -4)) OngoingProcess = -4;
+            if ((_GET_CLOCK_STATE_VERSION(-50, -5) || _GET_CLOCK_STATE_VERSION(-5, -5)) && !_GET_CLOCK_STATE_VERSION(-30, -5)) OngoingProcess = -5;
             return OngoingProcess;
         }
         let _CHILD_6_SELECT = () => {
@@ -250,6 +361,12 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 }
             }
 
+            let startClock = _GET_CLOCK_STATE_VERSION('-50', version) || _GET_CLOCK_STATE_VERSION('-5', version);
+            if (!startClock) return '';
+
+            if (state == '-6' || state == '-5') {
+                return dateParser_finalDate(startClock.date_start, 5);
+            }
             if (state == '-7' || state == '-8') {
                 clock = _GET_CLOCK_STATE_VERSION('-6', version);
                 if (clock) return dateParser_finalDate(clock.date_start, 5);
@@ -498,12 +615,13 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                     }
                 },
             ]
-            var stepsToCheck = ['-6', '-5', , '-7', '-8', '-10', '-17', '-20', '-21', '-22', '-30'];
+            var stepsToCheck = ['-50', '-6', '-5', , '-7', '-8', '-10', '-17', '-20', '-21', '-22', '-30'];
             if (NegativeState == '-1') { stepsToCheck.unshift('-4'); stepsToCheck.unshift('-3') }
             if (NegativeState == '-3') { stepsToCheck.unshift('-4'); stepsToCheck.unshift('-3') }
             if (NegativeState == '-4') { stepsToCheck.unshift('-4'); }
             let EVENT_CLOCKS = [];
 
+            let startClockLegacy = _GET_CLOCK_STATE_VERSION('-5', NegativeState);
 
             stepsToCheck.map(value => {
                 let newClock = {
@@ -520,6 +638,13 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                     disabled: (value == '-4' || value == '-3') ? false : value == '-30' && currentItem.state == 200 && _CHECK_IF_PROCESS_ENDED(NegativeState) ? false : !edit,
                 }
                 let clock = _GET_CLOCK_STATE_VERSION(value, NegativeState);
+
+                // Handle legacy processes that started with -5
+                if (value == '-50' && !clock && startClockLegacy) {
+                    clock = { ...startClockLegacy, id: null };
+                    // Ya no deshabilitamos, pero esta visualización es solo temporal
+                    // hasta que el autoSaveMissingStartClock guarde el dato real en DB
+                }
 
                 newClock = { ...newClock, ...ClockDictionary[value] };
                 newClock = { ...newClock, ...clock };
@@ -576,7 +701,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             let worker = document.getElementById('fun_cloclneg_3').value;
             let date = document.getElementById('fun_cloclneg_2').value;
 
-            let alreadyExist = _GET_CLOCK_STATE_VERSION(-5, process);
+            let alreadyExist = _GET_CLOCK_STATE_VERSION(-50, process) || _GET_CLOCK_STATE_VERSION(-5, process);
             if (alreadyExist) {
                 MySwal.fire({
                     title: 'ESTE PROCESO YA EXISTE',
@@ -600,15 +725,15 @@ class FUN_CLOCKS_NEGATIVE extends Component {
 
             formDataClock = new FormData();
 
-            let state = -5 // THIS IS CANGED DEPENDING ON WICH LOCATION IT 
+            let state = -50
             formDataClock.set('date_start', date);
-            formDataClock.set('name', "CITACIÓN PARA NOTIFICACIÓN PERSONAL");
-            formDataClock.set('desc', "Se Inicia proceso de desistimiento por: " + worker);
+            formDataClock.set('name', "INICIO DEL PROCESO DE DESISTIMIENTO");
+            formDataClock.set('desc', "Inicio de proceso abierto por: " + worker);
             formDataClock.set('state', state);
             formDataClock.set('version', process);
             formDataClock.set('fun0Id', currentItem.id);
 
-            manage_clock(true, state, process, formDataClock);
+            this.manage_clock(true, state, process, formDataClock);
 
             formData = new FormData();
             let new_state = Number(process) - 100;
@@ -646,7 +771,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('fun0Id', currentItem.id);
 
 
-            manage_clock(true, data.state, data.version, formDataClock);
+            this.manage_clock(true, data.state, data.version, formDataClock);
         }
         let save_close = (version) => {
             formDataClock = new FormData();
@@ -663,7 +788,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', version);
             formDataClock.set('fun0Id', currentItem.id);
 
-            manage_clock(false, state, currentVersion, formDataClock);
+            this.manage_clock(false, state, currentVersion, formDataClock);
 
         }
         let save_archive = () => {
@@ -681,7 +806,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', currentVersion);
             formDataClock.set('fun0Id', currentItem.id);
 
-            manage_clock(false, state, currentVersion, formDataClock);
+            this.manage_clock(false, state, currentVersion, formDataClock);
 
         }
         let final_clock = () => {
@@ -700,96 +825,10 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', OngoingProcess);
             formDataClock.set('fun0Id', currentItem.id);
 
-            manage_clock(false, state, OngoingProcess, formDataClock);
+            this.manage_clock(false, state, OngoingProcess, formDataClock);
         }
-        let manage_clock = (useMySwal, state, version, formDataClock) => {
-            var _CHILD = _GET_CLOCK_STATE_VERSION(state, version);
-
-            if (useMySwal) {
-                MySwal.fire({
-                    title: swaMsg.title_wait,
-                    text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
-                });
-            }
-
-            if (_CHILD.id) {
-                FUN_SERVICE.update_clock(_CHILD.id, formDataClock)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                            }
-                            this.props.requestUpdate(currentItem.id);
-                        } else {
-                            if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                            }
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                    });
-            }
-            else {
-                FUN_SERVICE.create_clock(formDataClock)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.publish_success_title,
-                                    text: swaMsg.publish_success_text,
-                                    footer: swaMsg.text_footer,
-                                    icon: 'success',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                            }
-                            this.props.requestUpdate(currentItem.id);
-                        } else {
-                            if (useMySwal) {
-                                MySwal.fire({
-                                    title: swaMsg.generic_eror_title,
-                                    text: swaMsg.generic_error_text,
-                                    icon: 'warning',
-                                    confirmButtonText: swaMsg.text_btn,
-                                });
-                            }
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useMySwal) {
-                            MySwal.fire({
-                                title: swaMsg.generic_eror_title,
-                                text: swaMsg.generic_error_text,
-                                icon: 'warning',
-                                confirmButtonText: swaMsg.text_btn,
-                            });
-                        }
-                    });
-            }
-
-        }
+        
+        // NOTA: Se ha movido manage_clock a un método de clase para ser usado en el ciclo de vida.
 
         let update_fun_0_atFinalProcess = (useMySwal, version) => {
             formData = new FormData();
