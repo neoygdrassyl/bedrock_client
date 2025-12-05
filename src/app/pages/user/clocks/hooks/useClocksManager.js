@@ -28,7 +28,7 @@ export const sumarDiasHabiles = (fechaInicio, dias) => {
 // --- CONSTANTES ---
 export const FUN_0_TYPE_TIME = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
 export const FUN_0_TYPE_LABELS = { 'i': 'Tipo I', 'ii': 'Tipo II', 'iii': 'Tipo III', 'iv': 'Tipo IV', 'oa': 'Obra Menor' };
-const STEPS_TO_CHECK = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
+const STEPS_TO_CHECK = ['-50', '-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
 export const NEGATIVE_PROCESS_TITLE = { '-1': 'INCOMPLETO', '-2': 'FALTA VALLA INFORMATIVA', '-3': 'NO CUMPLE ACTA CORRECCIONES', '-4': 'NO PAGA EXPENSAS', '-5': 'VOLUNTARIO', '-6': 'NEGADA' };
 
 export const useScheduleConfig = (expedienteId) => {
