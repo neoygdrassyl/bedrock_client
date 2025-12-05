@@ -66,12 +66,52 @@ export default function EXP_CLOCKS(props) {
   const conGI = _GLOBAL_ID === 'cb1';
   const namePayment = conGI ? 'Impuestos Municipales' : 'Impuesto Delineacion';
 
-  const clocksToShow = generateClocks({
+  const clocksToShowRaw = generateClocks({
       ...manager,
       currentItem,
       namePayment,
       conGI
   });
+
+  // Filtra la tabla para ocultar los bloques por debajo del desistimiento (excepto Ejecutoria y Entrega)
+  const filterAfterDesist = (items) => {
+    if (!manager.isDesisted) return items;
+
+    let skip = false;
+    let inDesistBlock = false;
+    const res = [];
+
+    items.forEach((item) => {
+      const titleUpper = (item.title || '').toUpperCase();
+
+      if (titleUpper.includes('EJECUTORIA')) {
+        skip = false;
+        inDesistBlock = false;
+        res.push(item);
+        return;
+      }
+
+      if (titleUpper.includes('DESIST')) {
+        skip = false;
+        inDesistBlock = true;
+        res.push(item);
+        return;
+      }
+
+      if (item.title && !titleUpper.includes('DESIST')) {
+        if (inDesistBlock) {
+          skip = true;
+          inDesistBlock = false;
+        }
+      }
+
+      if (!skip) res.push(item);
+    });
+
+    return res;
+  };
+
+  const clocksToShow = filterAfterDesist(clocksToShowRaw);
 
   const applyLocalClockChange = (state, changes, version) => {
     setClocksData(prev => {
@@ -106,6 +146,11 @@ export default function EXP_CLOCKS(props) {
     formDataClock.set('resolver_id6', resolver_id6);
     formDataClock.set('state', value.state);
     formDataClock.set('id_related', id_related);
+    
+    // >>> CORRECCIÓN: AGREGAR LA VERSIÓN AL FORMDATA <<<
+    if (value.version !== undefined) {
+        formDataClock.set('version', value.version);
+    }
 
     let descBase = value.desc || '';
     
@@ -135,6 +180,7 @@ export default function EXP_CLOCKS(props) {
       id_related: id_related || '',
       desc: descBase,
       name: value.name,
+      version: value.version,
     }, value.version);
 
     manage_clock(false, value.state, value.version, formDataClock, true);
@@ -418,7 +464,7 @@ export default function EXP_CLOCKS(props) {
   
   const catForTitle = (title = '') => {
     title = title.toUpperCase();
-    if (title.includes('DESISTIDO')) return { color: '#F93154', icon: 'fa-exclamation-circle' };
+    if (title.includes('DESISTIDO') || title.includes('DESISTIMIENTO')) return { color: '#F93154', icon: 'fa-exclamation-circle' };
     if (title.includes('RADICACIÓN')) return { color: '#5bc0de', icon: 'fa-inbox' };
     if (title.includes('OBSERVACIONES')) return { color: '#fd7e14', icon: 'fa-clipboard-list' };
     if (title.includes('CORRECCIONES')) return { color: '#20c997', icon: 'fa-tools' };
@@ -456,7 +502,7 @@ export default function EXP_CLOCKS(props) {
   };
   
   const Header = () => (
-    <div className="exp-head d-flex align-items-center justify-content-between">
+    <div className="exp-head d-flex align-items-center justify-between">
       <div className="small w-100"><div className="row g-2 m-0 fw-bold">
         <div className="col-5 cell-border">Evento</div>
         <div className="col-2 text-center cell-border">Fecha Evento</div>

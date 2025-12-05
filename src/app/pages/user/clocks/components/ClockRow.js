@@ -9,9 +9,17 @@ const MySwal = withReactContent(Swal);
 
 export const ClockRow = (props) => {
     const { value, i, clock, onSave, onDelete, cat, outCodes, _CHILD_6_SELECT, _FIND_6, helpers, scheduleConfig } = props;
-    const { getClock, getNewestDate, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, totalSuspensionDays, viaTime } = helpers;
+    const { getClock, getClockVersion, getNewestDate, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, totalSuspensionDays, viaTime } = helpers;
 
     moment.locale('es');
+
+    // Resolver reloj según versión (para que límites de desistimiento usen el proceso correcto)
+    const getClockScoped = (state) => {
+        if (value.version !== undefined) {
+            return getClockVersion(state, value.version) || getClock(state);
+        }
+        return getClock(state);
+    };
 
     const formatDate = (dateStr) => dateStr ?  moment(dateStr). format('DD MMM YYYY') : '';
 
@@ -21,7 +29,7 @@ export const ClockRow = (props) => {
     const calculateActa1Limit = () => {
         if (value.state !== 30) return null;
 
-        const ldf = getClock(5)?.date_start;
+        const ldf = getClockScoped(5)?.date_start;
         if (!ldf) return null;
 
         const baseDays = FUN_0_TYPE_TIME[currentItem. type] ?? 45;
@@ -34,7 +42,7 @@ export const ClockRow = (props) => {
 
         // Sumamos días de prórroga si aplica antes del acta
         if (extension.exists && extension. end?.date_start && ! extension.isActive) {
-            const acta1Date = getClock(30)?.date_start;
+            const acta1Date = getClockScoped(30)?.date_start;
             if (! acta1Date || moment(extension.start.date_start). isBefore(acta1Date)) {
                 totalDays += extension.days;
             }
@@ -75,9 +83,9 @@ export const ClockRow = (props) => {
         // Solo aplica para estados 49 (Acta 2) y 61 (Viabilidad)
         if (value.state !== 49 && value.state !== 61) return null;
 
-        const ldf = getClock(5)?.date_start;
-        const acta1 = getClock(30);
-        const corrDate = getClock(35)?.date_start; // Fecha de correcciones
+        const ldf = getClockScoped(5)?.date_start;
+        const acta1 = getClockScoped(30);
+        const corrDate = getClockScoped(35)?.date_start; // Fecha de correcciones
 
         // Si no hay LDF, no podemos calcular nada
         if (!ldf) return null;
@@ -145,7 +153,14 @@ export const ClockRow = (props) => {
         if (states === undefined || days === undefined) return null;
         
         const startStates = Array.isArray(states) ? states : [states];
-        const baseDate = getNewestDate(startStates);
+        const baseDate = (() => {
+            // Para clocks versionados (desistimientos) usamos la versión actual
+            for (const st of startStates) {
+                const c = getClockScoped(st);
+                if (c?.date_start) return c.date_start;
+            }
+            return null;
+        })();
 
         if (baseDate) {
             return sumarDiasHabiles(baseDate, days);
@@ -234,7 +249,7 @@ export const ClockRow = (props) => {
     const renderScheduledLimit = () => {
         if (!scheduleConfig) return <div className="scheduled-limit-cell" title="No hay una programación guardada para este proceso.">-</div>;
 
-        const ldf = getClock(5)?.date_start;
+        const ldf = getClockScoped(5)?.date_start;
         if (!ldf) return <div className="scheduled-limit-cell" title="La programación requiere la fecha de Legal y Debida Forma.">-</div>;
 
         let scheduledDays = null;
@@ -247,9 +262,9 @@ export const ClockRow = (props) => {
             scheduledDays = scheduleConfig.phase1Days;
             baseDateForSchedule = ldf;
         } else if (value.state === 61 && scheduleConfig.phase2Days) {
-            const corrTime = getClock(35)?.date_start;
+            const corrTime = getClockScoped(35)?.date_start;
             // Ajuste en programación: Si es CUMPLE, la fase 2 arranca desde LDF+Fase1, si es NO CUMPLE arranca desde correcciones
-            const acta1 = getClock(30);
+            const acta1 = getClockScoped(30);
             const isCumple = acta1?.desc?.includes('CUMPLE') && !acta1?.desc?.includes('NO CUMPLE');
             
             if (isCumple) {
@@ -332,7 +347,7 @@ export const ClockRow = (props) => {
     };
 
     const get_clockExistIcon = (state, icon) => {
-        const _CHILD = getClock(state);
+        const _CHILD = getClockScoped(state);
         if (_CHILD && icon !== "empty") {
             if (_CHILD.date_start || _CHILD.name === "RADICACIÓN") {
                 return <i className="far fa-check-circle text-success"></i>;
@@ -343,11 +358,11 @@ export const ClockRow = (props) => {
     };
 
     if (value.show === false) return null;
-    if (value.requiredClock && !getClock(value.requiredClock)?.date_start) return null;
+    if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) return null;
     if (value.optional && !clock) return null;
 
     const currentDate = clock?.date_start ??  value.manualDate ??  '';
-    const canEditDate = value.editableDate !== false && value.version === undefined;
+    const canEditDate = value.editableDate !== false;
 
     let indentLevel = 0;
     if (value. title) {

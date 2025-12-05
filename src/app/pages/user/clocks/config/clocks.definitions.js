@@ -2,7 +2,67 @@ import { regexChecker_isOA_2 } from '../../../../components/customClasses/typePa
 import { NEGATIVE_PROCESS_TITLE } from '../hooks/useClocksManager';
 import moment from 'moment';
 
-const STEPS_TO_CHECK = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
+const DESIST_CLOCKS = {
+    '-50': { name: 'Inicio del proceso de desistimiento', desc: 'Inicio formal del proceso de desistimiento.' },
+    '-6':  { name: 'Creación de Resolución', desc: 'Notificación mediante email.' },
+    '-5':  { name: 'Citación', desc: 'Se inicia proceso de desistimiento.' },
+    '-7':  { name: 'Notificación', desc: 'Contacto personal, electrónico o certificada.' },
+    '-8':  { name: 'Notificación por aviso', desc: 'El solicitante no se presentó, se informa por aviso.' },
+    '-10': { name: 'Interponer recurso', desc: 'El solicitante presenta o no el recurso.' },
+    '-17': { name: 'Resolución frente a recurso', desc: 'Respuesta al recurso interpuesto.' },
+    '-20': { name: 'Citación (2° vez)', desc: 'Citación adicional para informar la decisión.' },
+    '-21': { name: 'Notificación por aviso (2° vez)', desc: 'Aviso al solicitante (2° vez).' },
+    '-22': { name: 'Notificación (2° vez)', desc: 'Notificación personal/electrónica (2° vez).' },
+    '-30': { name: 'Finalización', desc: 'El proceso de desistimiento ha finalizado oficialmente.' },
+};
+
+// Límites legales para cada evento de desistimiento
+const getDesistLimit = (state) => {
+    switch (String(state)) {
+        case '-6':
+        case '-5':
+            // 5 días hábiles desde el inicio del desistimiento
+            return [[-50, 5], [-5, 5]];
+        case '-7':
+        case '-8':
+            // 5 días hábiles desde la resolución/citación
+            return [[-6, 5]];
+        case '-10':
+            // 10 días hábiles desde la notificación (personal o aviso)
+            return [[-7, 10], [-8, 10]];
+        case '-21':
+        case '-22':
+            // 5 días hábiles desde la segunda citación
+            return [[-20, 5]];
+        default:
+            return null;
+    }
+};
+
+const buildDesistSection = (version, getClockVersion) => {
+    const hasProcess = getClockVersion(-50, version) || getClockVersion(-5, version) || getClockVersion(-6, version);
+    if (!hasProcess) return [];
+
+    const title = `DESISTIMIENTO - ${NEGATIVE_PROCESS_TITLE[version] || 'MOTIVO NO ESPECIFICADO'}`;
+    const stepsOrder = ['-50', '-6', '-5', '-7', '-8', '-10', '-17', '-20', '-21', '-22', '-30'];
+
+    const section = [{ title }];
+    stepsOrder.forEach((stateKey) => {
+        const meta = DESIST_CLOCKS[stateKey];
+        if (!meta) return;
+        section.push({
+            state: Number(stateKey),
+            version,
+            name: meta.name,
+            desc: meta.desc,
+            editableDate: true,
+            hasAnnexSelect: true,
+            optional: false,
+            limit: getDesistLimit(stateKey),
+        });
+    });
+    return section;
+};
 
 // --- GENERADORES DE SECCIONES DINÁMICAS ---
 const getSuspensionClocks = (suspensionData, type) => {
@@ -57,22 +117,6 @@ const getExtensionClocks = (extensionData) => {
     ];
 };
 
-const getDesistClocks = (version, getClockVersion) => {
-    const hasDesistProcess = getClockVersion(-5, version) || getClockVersion(-6, version);
-    if (!hasDesistProcess) return [];
-    return [
-        { title: `DESISTIDO POR: ${NEGATIVE_PROCESS_TITLE[version] || 'MOTIVO NO ESPECIFICADO'}` },
-        { 
-            state: STEPS_TO_CHECK, 
-            version: version, 
-            editableDate: false, 
-            hasConsecutivo: false, 
-            hasAnnexSelect: false, 
-            optional: true 
-        }
-    ];
-};
-
 // --- DEFINICIONES DE SECCIONES ESTÁTICAS ---
 const extraClocks = (props) => {
     const { currentItem, child1, getClock, getClockVersion, viaTime, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension } = props;
@@ -89,7 +133,6 @@ const extraClocks = (props) => {
     const postActaSusp = getSuspensionClocks(suspensionPostActa, 'post');
     
     // La prórroga se muestra donde esté ubicada temporalmente
-    let condition = !acta1 || (extension.exists && extension.start?.date_start && (!acta1.date_start || moment(extension.start.date_start).isBefore(acta1.date_start)));
     const preActaExt = !acta1 || (extension.exists && extension.start?.date_start && (!acta1.date_start || moment(extension.start.date_start).isBefore(acta1.date_start)))
         ? getExtensionClocks(extension) : [];
     const postActaExt = acta1 && extension.exists && extension.start?.date_start && moment(extension.start.date_start).isSameOrAfter(acta1.date_start)
@@ -167,8 +210,8 @@ const extraClocks = (props) => {
         hasAnnexSelect: false, 
         spentDaysConfig: { startState: 5 } 
       },
-      ...getDesistClocks(-1, getClockVersion),
-      ...getDesistClocks(-2, getClockVersion),
+      ...buildDesistSection('-1', getClockVersion),
+      ...buildDesistSection('-2', getClockVersion),
       ...preActaSusp,
       ...preActaExt,
       
@@ -238,8 +281,9 @@ const extraClocks = (props) => {
         icon: requereCorr() ? undefined : "empty", 
         spentDaysConfig: { startState: 35 } 
       },
-      ...getDesistClocks(-3, getClockVersion),
-      ...getDesistClocks(-5, getClockVersion),
+      ...buildDesistSection('-3', getClockVersion),
+      ...buildDesistSection('-5', getClockVersion),
+      ...buildDesistSection('-6', getClockVersion),
       
       { title: 'VIABILIDAD Y LIQUIDACIÓN' },
       { 
@@ -319,7 +363,7 @@ const paymentsClocks = (props) => {
             limit: [[[56, 57], 30]], 
             spentDaysConfig: { startState: [56, 57] } 
         },
-        ...getDesistClocks(-4, getClockVersion),
+        ...buildDesistSection('-4', getClockVersion),
     ];
 };
 
