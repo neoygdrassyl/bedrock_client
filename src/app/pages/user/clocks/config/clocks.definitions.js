@@ -181,24 +181,26 @@ const extraClocks = (props) => {
         spentDaysConfig: { startState: regexChecker_isOA_2(child1) ? 4 : 3 } 
       },
       { 
-        state: 501, 
+        state: 5, 
         name: 'Declaración en legal y debida forma', 
         desc: "Fecha del documento formal de legal y debida forma", 
         editableDate: true, 
         limit: [[502, 1]], 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
-        spentDaysConfig: { startState: 502 } 
+        spentDaysConfig: { startState: 502 },
+        allowSchedule: true
       },
       { 
-        state: 5, 
+        state: 501, 
         name: 'Radicación en superintendencia', 
         desc: "Radicación del expediente en legal y debida forma ante la superintendencia (INICIA PLAZO DE CURADURÍA)", 
         editableDate: true, 
-        limit: [[501, 1], [502, 1], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]], 
+        limit: [[5, 1], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]],  // [501, 1], [502, 1],
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
-        spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] } 
+        spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] },
+        allowSchedule: true
       },
       { 
         state: 503, 
@@ -221,7 +223,8 @@ const extraClocks = (props) => {
         name: 'Acta Parte 1: Observaciones', 
         desc: "Acta de observaciones inicial (indica si CUMPLE o NO CUMPLE)", 
         limit: [[5, fun_type]], 
-        spentDaysConfig: { startState: 5 } 
+        spentDaysConfig: { startState: 5 },
+        allowSchedule: true
       },
       { 
         state: 31, 
@@ -230,14 +233,16 @@ const extraClocks = (props) => {
         limit: [[30, 5]], 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
-        spentDaysConfig: { startState: 30 } 
+        spentDaysConfig: { startState: 30 },
+        allowSchedule: true
       },
       { 
         state: 32, 
         name: 'Notificación Personal (Observaciones)', 
         desc: "Notificación personal del acta de observaciones", 
         limit: [[31, 5]], 
-        spentDaysConfig: { startState: 31 } 
+        spentDaysConfig: { startState: 31 },
+        allowSchedule: true 
       },
       { 
         state: 33, 
@@ -245,7 +250,8 @@ const extraClocks = (props) => {
         desc: "Notificación por aviso del acta de observaciones (si no se logró notificación personal)", 
         limit: [[31, 10]], 
         icon: "empty", 
-        spentDaysConfig: { startState: 31 } 
+        spentDaysConfig: { startState: 31 },
+        allowSchedule: true
       },
       { 
         state: 34, 
@@ -279,7 +285,8 @@ const extraClocks = (props) => {
         // limit: [[35, 50]], 
         limitValues: viaTime, 
         icon: requereCorr() ? undefined : "empty", 
-        spentDaysConfig: { startState: 35 } 
+        spentDaysConfig: { startState: 35 },
+        allowSchedule: true
       },
       ...buildDesistSection('-3', getClockVersion),
       ...buildDesistSection('-5', getClockVersion),
@@ -292,21 +299,24 @@ const extraClocks = (props) => {
         desc: "Acto de trámite de viabilidad de la licencia (FINALIZA PLAZO DE CURADURÍA)", 
         // limit: [[35, 50]], 
         limitValues: viaTime,
-        spentDaysConfig: { startState: 49 } 
+        spentDaysConfig: { startState: 49 },
+        allowSchedule: true 
       },
       { 
         state: 55, 
         name: 'Citación (Viabilidad)', 
         desc: "Citación para notificar el acto de viabilidad", 
         limit: [[61, 5]], 
-        spentDaysConfig: { startState: 61 } 
+        spentDaysConfig: { startState: 61 },
+        allowSchedule: true 
       },
       { 
         state: 56, 
         name: 'Notificación Personal (Viabilidad)', 
         desc: "Notificación personal del acto de viabilidad", 
         limit: [[55, 5]], 
-        spentDaysConfig: { startState: 55 } 
+        spentDaysConfig: { startState: 55 },
+        allowSchedule: true 
       },
       { 
         state: 57, 
@@ -315,7 +325,8 @@ const extraClocks = (props) => {
         desc: "Notificación por aviso del acto de viabilidad", 
         limit: [[55, 10]], 
         icon: "empty", 
-        spentDaysConfig: { startState: 55 } 
+        spentDaysConfig: { startState: 55 },
+        allowSchedule: true 
       },
     ]
 };
@@ -371,27 +382,30 @@ const finalClocks = (props) => {
     const { getClock } = props;
     
     return [
-        { title: 'RESOLUCIÓN (PLAZO CURADURÍA: 5 DÍAS)' },
+        { title: 'RESOLUCIÓN' },
         { 
             state: 70, 
             name: "Acto Administrativo / Resolución", 
             desc: "Expedición del acto administrativo de resolución", 
             limit: [[69, 5]], 
-            spentDaysConfig: { startState: 69 } 
+            spentDaysConfig: { startState: 69 },
+            allowSchedule: true 
         },
         { 
             state: 71, 
             name: "Comunicación o Requerimiento (Resolución)", 
             desc: "Comunicación para notificar al solicitante del acto administrativo", 
             limit: [[70, 1]], 
-            spentDaysConfig: { startState: 70 } 
+            spentDaysConfig: { startState: 70 },
+            allowSchedule: true 
         },
         { 
             state: 72, 
             name: "Notificación Personal (Resolución)", 
             desc: "Notificación personal del acto administrativo", 
             limit: [[71, 5]], 
-            spentDaysConfig: { startState: 71 } 
+            spentDaysConfig: { startState: 71 },
+            allowSchedule: true
         },
         { 
             state: 73, 
@@ -399,21 +413,24 @@ const finalClocks = (props) => {
             desc: "Notificación por aviso del acto administrativo (si no se logró notificación personal)", 
             limit: [[71, 10]], 
             icon: "empty",
-            spentDaysConfig: { startState: 71 } 
+            spentDaysConfig: { startState: 71 },
+            allowSchedule: true 
         },
         { 
             state: 731, 
             name: "Notificación a Planeación", 
             desc: "Notificación a la oficina de planeación municipal", 
             limit: [[71, 5]], 
-            spentDaysConfig: { startState: 71 } 
+            spentDaysConfig: { startState: 71 }, 
+            allowSchedule: true
         },
         { 
             state: 85, 
             name: "Publicación", 
             desc: "Publicación de la resolución (DEBE SER EL MISMO DÍA O MÁXIMO 1 DÍA DESPUÉS)", 
             limit: [[70, 1]], 
-            spentDaysConfig: { startState: 70 } 
+            spentDaysConfig: { startState: 70 },
+            allowSchedule: true 
         },
         
         { title: 'RECURSO DE REPOSICIÓN (OPCIONAL - PLAZO SOLICITANTE: 10 DÍAS)' },
