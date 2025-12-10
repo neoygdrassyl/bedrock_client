@@ -3423,7 +3423,6 @@ export default function EXP_RES(props) {
     var formData = new FormData();
     let pdf_gen_res = (editDocument = null) => {
         formData = new FormData();
-        console.log("Here 1")
         formData.set('type_not', document.getElementById("type_not").value);
 
         let date_payment = _GET_CLOCK_STATE(3).date_start || '';
@@ -3631,32 +3630,51 @@ export default function EXP_RES(props) {
         });
         EXPEDITION_SERVICE.gen_doc_res(formData)
             .then(response => {
-                // console.log(response.data);
-                if (response.data.status  === 'OK') {
+                console.log('✅ Respuesta exitosa:', response.data);
+                if (response.data.status === 'OK') {
                     if (editDocument) {
-                        // console.log(response.data);
                         setResDocData(response.data); 
                         MySwal.close();
-                    }
-                    else{
+                    } else {
                         MySwal.close();
                         window.open(process.env.REACT_APP_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
                     }
                 } else {
+                    console.warn('⚠️ Status no es OK:', response.data);
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
+                        text: response.data.message || swaMsg.generic_error_text,
                         icon: 'warning',
                         confirmButtonText: swaMsg.text_btn,
                     });
                 }
             })
             .catch(e => {
-                console.log(e);
+                console.error('❌ ERROR COMPLETO:', e);
+                console.error('Error response:', e.response);
+                console.error('Error data:', e.response?.data);
+                console.error('Error status:', e.response?.status);
+                console.error('Error headers:', e.response?.headers);
+                console.error('Error message:', e.message);
+                
+                // Construir mensaje de error más detallado
+                let errorMessage = swaMsg.generic_error_text;
+                
+                if (e.response?.data?.message) {
+                    errorMessage = e.response.data.message;
+                } else if (e.response?.data?.error) {
+                    errorMessage = e.response.data.error;
+                } else if (e.message) {
+                    errorMessage = e.message;
+                }
+                
                 MySwal.fire({
                     title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
+                    html: `
+                        <p>${errorMessage}</p>
+                        ${e.response?.data?.details ? `<pre style="text-align: left; font-size: 12px; max-height: 200px; overflow: auto;">${JSON.stringify(e.response.data.details, null, 2)}</pre>` : ''}
+                    `,
+                    icon: 'error',
                     confirmButtonText: swaMsg.text_btn,
                 });
             });
