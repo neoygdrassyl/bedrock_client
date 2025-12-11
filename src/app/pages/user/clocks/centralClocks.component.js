@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import moment from 'moment';
@@ -9,7 +10,9 @@ import { ClockRow } from './components/ClockRow';
 import { SidebarInfo } from './components/SidebarInfo';
 import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
+import { ScheduleModal } from './components/ScheduleModal';
 import { calcularDiasHabiles } from './hooks/useClocksManager';
+import { buildSchedulePayload } from './utils/scheduleUtils';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff } from '../../../components/customClasses/typeParse';
@@ -327,133 +330,135 @@ export default function EXP_CLOCKS(props) {
   };
 
   const openScheduleModal = () => {
-    const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
-    const totalDays = baseDays + totalSuspensionDays + (manager.extension.exists && manager.extension.end?.date_start ? manager.extension.days : 0);
+    let localScheduleData = scheduleConfig?.times || {};
     
-    const currentPhase1 = scheduleConfig?.phase1Days || Math.floor(totalDays * 0.6);
-    const currentPhase2 = scheduleConfig?.phase2Days || (totalDays - currentPhase1);
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'schedule-modal-root';
+
+    const handleScheduleChange = (newSchedule) => {
+      localScheduleData = newSchedule;
+    };
 
     MySwal.fire({
       title: 'Programar Tiempos del Proceso',
-      html: `
-        <div class="schedule-modal-content">
-          <div class="alert alert-info mb-3">
-            <i class="fas fa-info-circle me-2"></i>
-            <strong>Días hábiles totales disponibles:</strong> ${totalDays} días
-            <br><small class="text-muted">Base: ${baseDays} + Suspensiones: ${totalSuspensionDays} + Prórroga: ${manager.extension.exists && manager.extension.end?.date_start ? manager.extension.days : 0}</small>
-          </div>
-
-          <div class="phase-config mb-4">
-            <label class="form-label fw-bold">
-              <i class="fas fa-clipboard-list me-2 text-warning"></i>
-              Fase 1: Legal → Acta Parte 1
-            </label>
-            <div class="input-group">
-              <input type="number" id="phase1_days" class="form-control" min="1" max="${totalDays}" value="${currentPhase1}" />
-              <span class="input-group-text">días hábiles</span>
-            </div>
-            <div class="slider-wrapper mt-2">
-              <input type="range" class="form-range" id="phase1_slider" min="1" max="${totalDays}" value="${currentPhase1}" />
-            </div>
-          </div>
-
-          <div class="phase-config mb-3">
-            <label class="form-label fw-bold">
-              <i class="fas fa-compass me-2 text-purple"></i>
-              Fase 2: Correcciones → Viabilidad
-            </label>
-            <div class="input-group">
-              <input type="number" id="phase2_days" class="form-control" min="1" max="${totalDays}" value="${currentPhase2}" />
-              <span class="input-group-text">días hábiles</span>
-            </div>
-            <div class="slider-wrapper mt-2">
-              <input type="range" class="form-range" id="phase2_slider" min="1" max="${totalDays}" value="${currentPhase2}" />
-            </div>
-          </div>
-
-          <div class="alert alert-secondary small">
-            <i class="fas fa-lightbulb me-2"></i>
-            <strong>Nota:</strong> La distribución de días es flexible y te permite planificar internamente sin afectar los límites legales.
-          </div>
-        </div>
-      `,
-      width: 600,
+      html: modalContainer,
+      width: 1000,
       showCancelButton: true,
       showDenyButton: hasSchedule,
-      confirmButtonText: 'Guardar Programación',
+      confirmButtonText: '<i class="fas fa-save me-2"></i>Guardar Programación',
       cancelButtonText: 'Cancelar',
-      denyButtonText: 'Eliminar Programación',
+      denyButtonText: '<i class="fas fa-trash me-2"></i>Eliminar Programación',
       didOpen: () => {
-        // ... (Lógica del modal se mantiene igual)
-        const phase1Input = document.getElementById('phase1_days');
-        const phase2Input = document.getElementById('phase2_days');
-        const phase1Slider = document.getElementById('phase1_slider');
-        const phase2Slider = document.getElementById('phase2_slider');
-
-        phase1Input.addEventListener('input', (e) => {
-          const val = parseInt(e.target.value) || 1;
-          phase1Slider.value = val;
-          phase2Input.value = totalDays - val;
-          phase2Slider.value = totalDays - val;
-        });
-
-        phase1Slider.addEventListener('input', (e) => {
-          const val = parseInt(e.target.value);
-          phase1Input.value = val;
-          phase2Input.value = totalDays - val;
-          phase2Slider.value = totalDays - val;
-        });
-
-        phase2Input.addEventListener('input', (e) => {
-          const val = parseInt(e.target.value) || 1;
-          phase2Slider.value = val;
-          phase1Input.value = totalDays - val;
-          phase1Slider.value = totalDays - val;
-        });
-
-        phase2Slider.addEventListener('input', (e) => {
-          const val = parseInt(e.target.value);
-          phase2Input.value = val;
-          phase1Input.value = totalDays - val;
-          phase1Slider.value = totalDays - val;
-        });
+        ReactDOM.render(
+          <ScheduleModal
+            clocksToShow={clocksToShow}
+            currentItem={currentItem}
+            manager={manager}
+            scheduleConfig={scheduleConfig}
+            onScheduleChange={handleScheduleChange}
+          />,
+          modalContainer
+        );
       },
       preConfirm: () => {
-        const phase1 = parseInt(document.getElementById('phase1_days').value);
-        const phase2 = parseInt(document.getElementById('phase2_days').value);
-
-        if (phase1 + phase2 !== totalDays) {
-          Swal.showValidationMessage(`La suma debe ser ${totalDays} días (actualmente: ${phase1 + phase2})`);
+        // Validar que al menos haya una programación
+        if (Object.keys(localScheduleData).length === 0) {
+          Swal.showValidationMessage('Debes programar al menos un tiempo antes de guardar');
           return false;
         }
 
-        return { phase1Days: phase1, phase2Days: phase2 };
+        return localScheduleData;
+      },
+      willClose: () => {
+        ReactDOM.unmountComponentAtNode(modalContainer);
       }
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        saveScheduleConfig(result.value);
-        setRefreshTrigger(prev => prev + 1);
+        // Construir payload para el endpoint
+        const payload = buildSchedulePayload(result.value, currentItem);
         
+        // Guardar en backend usando FormData
         MySwal.fire({
-          title: 'Programación Guardada',
-          html: `<div class="text-start">
-              <p><strong>Fase 1:</strong> ${result.value.phase1Days} días hábiles</p>
-              <p><strong>Fase 2:</strong> ${result.value.phase2Days} días hábiles</p>
-              <p class="text-muted small mb-0">La nueva columna "Límite Programado" mostrará las fechas calculadas.</p>
-            </div>
-          `,
-          icon: 'success',
-          confirmButtonText: 'Entendido'
-        });
-      } else if (result.isDenied) {
-        clearScheduleConfig();
-        setRefreshTrigger(prev => prev + 1);
-        
-        MySwal.fire({
-          title: 'Programación Eliminada',
-          text: 'Se ha eliminado la configuración de programación del proceso.',
+          title: 'Guardando...',
+          text: 'Por favor espera mientras guardamos la programación',
           icon: 'info',
-          confirmButtonText: 'OK'
+          showConfirmButton: false,
+          allowOutsideClick: false
+        });
+
+        const formData = new FormData();
+        formData.append('scheduleConfig', JSON.stringify(payload));
+
+        FUN_SERVICE.updateSchedule(currentItem.id, formData)
+          .then(response => {
+            if (response.data === 'OK' || response.status === 200) {
+              // Guardar en localStorage
+              saveScheduleConfig(payload);
+              setRefreshTrigger(prev => prev + 1);
+              
+              const scheduledCount = Object.keys(result.value).length;
+              MySwal.fire({
+                title: 'Programación Guardada',
+                html: `<div class="text-start">
+                    <p><i class="fas fa-check-circle text-success me-2"></i><strong>${scheduledCount}</strong> tiempo${scheduledCount !== 1 ? 's' : ''} programado${scheduledCount !== 1 ? 's' : ''}</p>
+                    <p class="text-muted small mb-0">La columna "Límite Programado" mostrará las fechas calculadas.</p>
+                  </div>
+                `,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+              });
+            } else {
+              throw new Error('Respuesta inesperada del servidor');
+            }
+          })
+          .catch(error => {
+            console.error('Error guardando programación:', error);
+            MySwal.fire({
+              title: 'Error al Guardar',
+              text: 'No se pudo guardar la programación. Por favor intenta nuevamente.',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
+          });
+      } else if (result.isDenied) {
+        // Eliminar programación
+        MySwal.fire({
+          title: '¿Estás seguro?',
+          text: 'Se eliminará toda la programación de tiempos para este expediente.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((confirmResult) => {
+          if (confirmResult.isConfirmed) {
+            const formData = new FormData();
+            formData.append('scheduleConfig', JSON.stringify(null));
+
+            FUN_SERVICE.updateSchedule(currentItem.id, formData)
+              .then(() => {
+                clearScheduleConfig();
+                setRefreshTrigger(prev => prev + 1);
+                
+                MySwal.fire({
+                  title: 'Programación Eliminada',
+                  text: 'Se ha eliminado la configuración de programación del proceso.',
+                  icon: 'info',
+                  timer: 2000,
+                  showConfirmButton: false
+                });
+              })
+              .catch(error => {
+                console.error('Error eliminando programación:', error);
+                MySwal.fire({
+                  title: 'Error',
+                  text: 'No se pudo eliminar la programación.',
+                  icon: 'error'
+                });
+              });
+          }
         });
       }
     });
