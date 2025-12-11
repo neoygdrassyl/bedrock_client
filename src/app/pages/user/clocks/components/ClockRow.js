@@ -108,8 +108,24 @@ export const ClockRow = (props) => {
         const isCumple = acta1?.desc?.includes(complianceString);
         const hasActa = !!acta1?.date_start;
 
+        // NUEVO: Para Viabilidad (61) en caso CUMPLE, usar notificación efectiva
+        if (value.state === 61 && isCumple) {
+            // Buscar notificación efectiva: aviso (state 32) o personal (state 33)
+            const notificacionAviso = getClockScoped(32)?.date_start;
+            const notificacionPersonal = getClockScoped(33)?.date_start;
+            const notificacionEfectiva = notificacionAviso || notificacionPersonal;
+            
+            if (notificacionEfectiva) {
+                const limitDate = sumarDiasHabiles(notificacionEfectiva, viaTime);
+                const tooltip = `Caso CUMPLE - Viabilidad: Desde Notificación Efectiva (${formatDate(notificacionEfectiva)}) + ${viaTime} días (Base ${baseDays} + Susp ${totalSuspension} + Prórroga ${totalExtension})`;
+                return { limitDate, tooltip };
+            } else {
+                return { limitDate: null, tooltip: "Esperando notificación efectiva para calcular límite de viabilidad." };
+            }
+        }
+
         // ESCENARIO A: ACTA 1 CUMPLE (O no hay acta aún y asumimos proyección ideal desde LDF)
-        // Lógica: Fecha Límite = LDF + Total Días Curaduría
+        // Lógica: Fecha Límite = Acta1 + viaTime
         if (isCumple || !hasActa) {
             const limitDate = sumarDiasHabiles(acta1?.date_start, viaTime);
             const tooltip = `Caso CUMPLE (o proyección inicial): Desde Acta parte 1 (${formatDate(acta1?.date_start)}) + ${viaTime} días totales (Base ${baseDays} + Susp ${totalSuspension} + Prórroga ${totalExtension})`;
@@ -267,14 +283,19 @@ export const ClockRow = (props) => {
             return <div className="scheduled-limit-cell" title="Este tiempo no tiene programación.">-</div>;
         }
 
-        const { limitDate, days, display } = scheduledLimit;
+        const { limitDate, days, display, extensionDays } = scheduledLimit;
         
-        // Determinar si hay retraso
+        // Determinar si hay retraso o adelanto
         let isCompleted = !!clock?.date_start;
         let isOverdue = false;
         let remainingDays = null;
+        let completionDifference = null;
 
-        if (limitDate && !isCompleted) {
+        if (limitDate && isCompleted) {
+            // Evento completado: calcular días de adelanto o retraso
+            completionDifference = calcularDiasHabiles(limitDate, clock.date_start, true);
+        } else if (limitDate && !isCompleted) {
+            // Evento pendiente: calcular días restantes o retraso
             const today = moment().format('YYYY-MM-DD');
             if (moment(today).isAfter(limitDate)) {
                 isOverdue = true;
@@ -293,9 +314,9 @@ export const ClockRow = (props) => {
                         <div className={`scheduled-date ${colorClass}`}>
                             {moment(limitDate).format('DD MMM YYYY')}
                         </div>
-                        {days && (
+                        {days && !isCompleted && (
                             <div className="scheduled-remaining small text-muted">
-                                {days} días
+                                {extensionDays > 0 ? `${days} días (${days - extensionDays}+${extensionDays})` : `${days} días`}
                             </div>
                         )}
                         {!isCompleted && remainingDays !== null && (
@@ -303,8 +324,25 @@ export const ClockRow = (props) => {
                                 {isOverdue ? `Retraso: ${remainingDays}d` : `Quedan: ${remainingDays}d`}
                             </div>
                         )}
-                        {isCompleted && (
-                            <div className="scheduled-remaining small text-muted">Completado</div>
+                        {isCompleted && completionDifference !== null && (
+                            <div>
+                                <div className="completed-date small text-muted">
+                                    {moment(clock.date_start).format('DD MMM YYYY')}
+                                </div>
+                                {completionDifference < 0 ? (
+                                    <div className="success-badge small">
+                                        Completado con {Math.abs(completionDifference)} días de anticipación
+                                    </div>
+                                ) : completionDifference > 0 ? (
+                                    <div className="delay-badge small">
+                                        Completado con {completionDifference} días de retraso
+                                    </div>
+                                ) : (
+                                    <div className="on-time-badge small">
+                                        Completado a tiempo
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </>
                 ) : (
