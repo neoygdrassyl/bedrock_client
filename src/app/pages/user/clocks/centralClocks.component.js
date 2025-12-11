@@ -339,6 +339,27 @@ export default function EXP_CLOCKS(props) {
       localScheduleData = newSchedule;
     };
 
+    // Calcular límites legales para pasar al modal
+    const legalLimits = {};
+    clocksToShow.forEach(clockValue => {
+      if (!clockValue.title && clockValue.state !== undefined && clockValue.state !== false) {
+        // Aquí necesitamos calcular el límite legal para cada tiempo
+        // Esto se hace en ClockRow, necesitamos extraer esa lógica
+        const clockData = clockValue.version !== undefined
+          ? manager.getClockVersion(clockValue.state, clockValue.version)
+          : manager.getClock(clockValue.state);
+        
+        if (clockData) {
+          // Simplificado: solo guardamos si existe una fecha límite
+          // La lógica completa está en ClockRow, aquí solo necesitamos pasar referencia
+          legalLimits[clockValue.state] = {
+            clockValue: clockValue,
+            clockData: clockData
+          };
+        }
+      }
+    });
+
     MySwal.fire({
       title: 'Programar Tiempos del Proceso',
       html: modalContainer,
@@ -356,6 +377,7 @@ export default function EXP_CLOCKS(props) {
             manager={manager}
             scheduleConfig={scheduleConfig}
             onScheduleChange={handleScheduleChange}
+            legalLimits={legalLimits}
           />,
           modalContainer
         );

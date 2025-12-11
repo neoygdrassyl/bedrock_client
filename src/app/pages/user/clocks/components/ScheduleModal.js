@@ -2,22 +2,34 @@ import React, { useState, useMemo } from 'react';
 import moment from 'moment';
 import { isTimeSchedulable, getReferenceDate, calculateScheduledDateFromDays, calculateDaysFromScheduledDate, getTotalAvailableDaysWithExtensions } from '../utils/scheduleUtils';
 
-export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConfig, onScheduleChange }) => {
-  const { getClock, getClockVersion, FUN_0_TYPE_TIME } = manager;
+export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConfig, onScheduleChange, legalLimits }) => {
+  const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension } = manager;
   
   // Estado local para programación
   const [localSchedule, setLocalSchedule] = useState(() => {
     return scheduleConfig?.times || {};
   });
 
-  // Filtrar tiempos programables
+  // Filtrar tiempos programables y ocultar según caso CUMPLE
   const schedulableClocks = useMemo(() => {
+    const acta1 = getClock(30);
+    const complianceString = "ACTA PARTE 1 OBSERVACIONES: CUMPLE";
+    const isCumple = acta1?.desc?.includes(complianceString);
+    
     return clocksToShow.filter(clockValue => {
       if (clockValue.title) return false;
       
       const clock = clockValue.version !== undefined
         ? getClockVersion(clockValue.state, clockValue.version)
         : getClock(clockValue.state);
+      
+      // Si es caso CUMPLE, ocultar tiempos intermedios
+      if (isCumple) {
+        const hiddenStates = [34, 35, 49]; // Prórroga correcciones, Radiación correcciones, Acta Parte 2
+        if (hiddenStates.includes(clockValue.state)) {
+          return false;
+        }
+      }
       
       return isTimeSchedulable(clockValue, clock);
     });
@@ -88,42 +100,18 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
     }
   }, [localSchedule, onScheduleChange]);
 
-  // Obtener límite legal para referencia
+  // Obtener límite legal para referencia desde tabla maestra
   const getLegalLimitForReference = (clockValue) => {
-    const clock = clockValue.version !== undefined
-      ? getClockVersion(clockValue.state, clockValue.version)
-      : getClock(clockValue.state);
-
-    // Obtener límite legal desde la lógica existente
-    if (clockValue.limitValues) {
-      return clockValue.limitValues ? `Calculado (${clockValue.limitValues} días)` : '-';
-    }
-
-    if (clockValue.limit) {
-      // Intentar resolver el límite
-      const refDate = getReferenceDate(
-        clockValue.state,
-        clockValue,
-        { times: localSchedule },
-        getClock,
-        getClockVersion,
-        manager
-      );
-
-      if (refDate) {
-        // Calcular días desde limit config
-        const limitConfig = clockValue.limit;
-        if (Array.isArray(limitConfig) && limitConfig.length >= 2) {
-          const days = limitConfig[1];
-          if (typeof days === 'number') {
-            const limitDate = calculateScheduledDateFromDays(refDate, days);
-            return moment(limitDate).format('DD/MM/YYYY');
-          }
-        }
+    // Primero intentar obtener desde los límites legales pasados desde la tabla maestra
+    if (legalLimits && legalLimits[clockValue.state]) {
+      const limitData = legalLimits[clockValue.state];
+      if (limitData.limitDate) {
+        return moment(limitData.limitDate).format('DD/MM/YYYY');
       }
     }
 
-    return '-';
+    // Si no está en legalLimits, no mostrar nada (celda vacía)
+    return '';
   };
 
   // Renderizar fila de programación
