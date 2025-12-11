@@ -293,6 +293,7 @@ export const ClockRow = (props) => {
 
         if (limitDate && isCompleted) {
             // Evento completado: calcular días de adelanto o retraso
+            // Negativo = anticipación, Positivo = retraso
             completionDifference = calcularDiasHabiles(limitDate, clock.date_start, true);
         } else if (limitDate && !isCompleted) {
             // Evento pendiente: calcular días restantes o retraso

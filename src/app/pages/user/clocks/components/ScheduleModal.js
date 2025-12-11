@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import moment from 'moment';
-import { isTimeSchedulable, getReferenceDate, calculateScheduledDateFromDays, calculateDaysFromScheduledDate, getTotalAvailableDaysWithExtensions } from '../utils/scheduleUtils';
+import { isTimeSchedulable, getReferenceDate, calculateScheduledDateFromDays, calculateDaysFromScheduledDate, getTotalAvailableDaysWithExtensions, COMPLIANCE_STRING, HIDDEN_STATES_IN_CUMPLE } from '../utils/scheduleUtils';
 
 export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConfig, onScheduleChange, legalLimits }) => {
   const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension } = manager;
@@ -13,8 +13,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
   // Filtrar tiempos programables y ocultar según caso CUMPLE
   const schedulableClocks = useMemo(() => {
     const acta1 = getClock(30);
-    const complianceString = "ACTA PARTE 1 OBSERVACIONES: CUMPLE";
-    const isCumple = acta1?.desc?.includes(complianceString);
+    const isCumple = acta1?.desc?.includes(COMPLIANCE_STRING);
     
     return clocksToShow.filter(clockValue => {
       if (clockValue.title) return false;
@@ -24,11 +23,8 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
         : getClock(clockValue.state);
       
       // Si es caso CUMPLE, ocultar tiempos intermedios
-      if (isCumple) {
-        const hiddenStates = [34, 35, 49]; // Prórroga correcciones, Radiación correcciones, Acta Parte 2
-        if (hiddenStates.includes(clockValue.state)) {
-          return false;
-        }
+      if (isCumple && HIDDEN_STATES_IN_CUMPLE.includes(clockValue.state)) {
+        return false;
       }
       
       return isTimeSchedulable(clockValue, clock);

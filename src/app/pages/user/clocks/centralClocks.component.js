@@ -12,7 +12,7 @@ import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
 import { ScheduleModal } from './components/ScheduleModal';
 import { calcularDiasHabiles } from './hooks/useClocksManager';
-import { buildSchedulePayload } from './utils/scheduleUtils';
+import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff } from '../../../components/customClasses/typeParse';
@@ -341,20 +341,15 @@ export default function EXP_CLOCKS(props) {
 
     // Calcular límites legales para pasar al modal
     const legalLimits = {};
+    
     clocksToShow.forEach(clockValue => {
       if (!clockValue.title && clockValue.state !== undefined && clockValue.state !== false) {
-        // Aquí necesitamos calcular el límite legal para cada tiempo
-        // Esto se hace en ClockRow, necesitamos extraer esa lógica
-        const clockData = clockValue.version !== undefined
-          ? manager.getClockVersion(clockValue.state, clockValue.version)
-          : manager.getClock(clockValue.state);
+        // Calcular límite legal usando la función compartida
+        const limitDate = calculateLegalLimit(clockValue.state, clockValue, manager);
         
-        if (clockData) {
-          // Simplificado: solo guardamos si existe una fecha límite
-          // La lógica completa está en ClockRow, aquí solo necesitamos pasar referencia
+        if (limitDate) {
           legalLimits[clockValue.state] = {
-            clockValue: clockValue,
-            clockData: clockData
+            limitDate: limitDate
           };
         }
       }

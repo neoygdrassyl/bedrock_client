@@ -1,6 +1,10 @@
 import moment from 'moment';
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
 
+// Constantes compartidas
+export const COMPLIANCE_STRING = "ACTA PARTE 1 OBSERVACIONES: CUMPLE";
+export const HIDDEN_STATES_IN_CUMPLE = [34, 35, 49]; // Prórroga correcciones, Radiación correcciones, Acta Parte 2
+
 /**
  * Convierte días disponibles a fecha límite programada
  * @param {string} referenceDate - Fecha de referencia en formato YYYY-MM-DD
@@ -55,8 +59,7 @@ export const getReferenceDate = (clockState, clockValue, scheduleConfig, getCloc
   if (clockState === 49 || clockState === 61) {
     const acta1 = getClockScoped(30);
     const corrDate = getClockScoped(35)?.date_start;
-    const complianceString = "ACTA PARTE 1 OBSERVACIONES: CUMPLE";
-    const isCumple = acta1?.desc?.includes(complianceString);
+    const isCumple = acta1?.desc?.includes(COMPLIANCE_STRING);
     
     // Para Viabilidad (61) en caso CUMPLE, usar notificación efectiva
     if (clockState === 61 && isCumple) {
@@ -270,7 +273,8 @@ export const calculateScheduledLimitForDisplay = (
     // Calcular días entre referencia y fecha programada
     const baseDays = calculateDaysFromScheduledDate(referenceDate, scheduled.value);
     // Restar las prórrogas/suspensiones porque ya están "incluidas" en la fecha programada
-    days = baseDays - extensionDays;
+    // Asegurar que no resulte en días negativos
+    days = Math.max(0, baseDays - extensionDays);
     limitDate = scheduled.value;
   }
 
@@ -328,6 +332,141 @@ export const getTotalAvailableDaysWithExtensions = (clockState, manager, baseDay
   }
 
   return totalDays;
+};
+
+/**
+ * Calcula el límite legal para un tiempo específico
+ * @param {number} clockState - Estado del clock
+ * @param {object} clockValue - Definición del clock
+ * @param {object} manager - Manager con toda la información
+ * @returns {string|null} Fecha límite legal en formato YYYY-MM-DD
+ */
+export const calculateLegalLimit = (clockState, clockValue, manager) => {
+  const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, viaTime } = manager;
+  
+  const getClockScoped = (state) => {
+    if (clockValue.version !== undefined) {
+      return getClockVersion(state, clockValue.version) || getClock(state);
+    }
+    return getClock(state);
+  };
+  
+  // Casos especiales
+  
+  // Acta Parte 1 (state 30)
+  if (clockState === 30) {
+    const ldf = getClockScoped(5)?.date_start;
+    if (!ldf) return null;
+    
+    const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
+    let totalDays = baseDays;
+    
+    if (suspensionPreActa.exists && suspensionPreActa.end?.date_start) {
+      totalDays += suspensionPreActa.days;
+    }
+    
+    if (extension.exists && extension.end?.date_start && !extension.isActive) {
+      const acta1Date = getClockScoped(30)?.date_start;
+      if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) {
+        totalDays += extension.days;
+      }
+    }
+    
+    return sumarDiasHabiles(ldf, totalDays);
+  }
+  
+  // Viabilidad (states 49 y 61)
+  if (clockState === 49 || clockState === 61) {
+    const ldf = getClockScoped(5)?.date_start;
+    const acta1 = getClockScoped(30);
+    const corrDate = getClockScoped(35)?.date_start;
+    
+    if (!ldf) return null;
+    
+    const isCumple = acta1?.desc?.includes(COMPLIANCE_STRING);
+    const hasActa = !!acta1?.date_start;
+    
+    // Viabilidad en CUMPLE usa notificación efectiva
+    if (clockState === 61 && isCumple) {
+      const notificacionAviso = getClockScoped(32)?.date_start;
+      const notificacionPersonal = getClockScoped(33)?.date_start;
+      const notificacionEfectiva = notificacionAviso || notificacionPersonal;
+      
+      if (notificacionEfectiva && viaTime) {
+        return sumarDiasHabiles(notificacionEfectiva, viaTime);
+      }
+      return null;
+    }
+    
+    // CUMPLE o sin acta
+    if (isCumple || !hasActa) {
+      if (acta1?.date_start && viaTime) {
+        return sumarDiasHabiles(acta1.date_start, viaTime);
+      }
+      return null;
+    }
+    
+    // NO CUMPLE
+    if (hasActa && !isCumple && corrDate && viaTime) {
+      return sumarDiasHabiles(corrDate, viaTime);
+    }
+    
+    return null;
+  }
+  
+  // Suspensiones (states 350/351)
+  if (clockState === 350 || clockState === 351) {
+    const isEndPre = clockState === 350;
+    const thisSusp = isEndPre ? suspensionPreActa : suspensionPostActa;
+    
+    if (!thisSusp.start?.date_start) return null;
+    
+    const otherUsedDays = isEndPre 
+      ? (suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0)
+      : (suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0);
+    
+    const availableForThis = 10 - otherUsedDays;
+    return sumarDiasHabiles(thisSusp.start.date_start, availableForThis);
+  }
+  
+  // Caso general: usar limit config
+  if (clockValue.limit) {
+    return resolveLegalLimitFromConfig(clockValue.limit, getClockScoped, clockValue.version);
+  }
+  
+  return null;
+};
+
+/**
+ * Resuelve límite legal desde configuración de limit
+ * @private
+ */
+const resolveLegalLimitFromConfig = (limitConfig, getClockScoped, version) => {
+  if (!limitConfig || !Array.isArray(limitConfig)) return null;
+  
+  const isDirectConfig = typeof limitConfig[1] === 'number';
+  
+  if (!isDirectConfig) {
+    for (const option of limitConfig) {
+      const result = resolveLegalLimitFromConfig(option, getClockScoped, version);
+      if (result) return result;
+    }
+    return null;
+  }
+  
+  const [states, days] = limitConfig;
+  if (states === undefined || days === undefined) return null;
+  
+  const startStates = Array.isArray(states) ? states : [states];
+  
+  for (const st of startStates) {
+    const c = getClockScoped(st, version);
+    if (c?.date_start) {
+      return sumarDiasHabiles(c.date_start, days);
+    }
+  }
+  
+  return null;
 };
 
 /**
