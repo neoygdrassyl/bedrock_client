@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { FaMinus } from "react-icons/fa6";
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
+import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 
 const MySwal = withReactContent(Swal);
 
@@ -247,75 +248,69 @@ export const ClockRow = (props) => {
     // RENDERIZADO DE LÍMITE PROGRAMADO
     // =====================================================
     const renderScheduledLimit = () => {
-        if (!scheduleConfig) return <div className="scheduled-limit-cell" title="No hay una programación guardada para este proceso.">-</div>;
+        if (!scheduleConfig || !scheduleConfig.times) {
+            return <div className="scheduled-limit-cell" title="No hay una programación guardada para este proceso.">-</div>;
+        }
 
-        const ldf = getClockScoped(5)?.date_start;
-        if (!ldf) return <div className="scheduled-limit-cell" title="La programación requiere la fecha de Legal y Debida Forma.">-</div>;
+        // Usar la nueva utilidad para calcular el límite programado
+        const scheduledLimit = calculateScheduledLimitForDisplay(
+            value.state,
+            value,
+            clock,
+            scheduleConfig,
+            getClock,
+            getClockVersion,
+            helpers
+        );
 
-        let scheduledDays = null;
-        let scheduledLimitDate = null;
+        if (!scheduledLimit) {
+            return <div className="scheduled-limit-cell" title="Este tiempo no tiene programación.">-</div>;
+        }
+
+        const { limitDate, days, display } = scheduledLimit;
+        
+        // Determinar si hay retraso
+        let isCompleted = !!clock?.date_start;
+        let isOverdue = false;
         let remainingDays = null;
-        let baseDateForSchedule = null;
-        let tooltip = 'Límite según la programación interna.';
 
-        if (value.state === 30 && scheduleConfig.phase1Days) {
-            scheduledDays = scheduleConfig.phase1Days;
-            baseDateForSchedule = ldf;
-        } else if (value.state === 61 && scheduleConfig.phase2Days) {
-            const corrTime = getClockScoped(35)?.date_start;
-            // Ajuste en programación: Si es CUMPLE, la fase 2 arranca desde LDF+Fase1, si es NO CUMPLE arranca desde correcciones
-            const acta1 = getClockScoped(30);
-            const isCumple = acta1?.desc?.includes('CUMPLE') && !acta1?.desc?.includes('NO CUMPLE');
-            
-            if (isCumple) {
-                // Si cumple, la "Fase 2" programada inicia teóricamente tras terminar la Fase 1 programada
-                // O más simple: desde Acta 1
-                baseDateForSchedule = acta1?.date_start;
-                scheduledDays = scheduleConfig.phase2Days;
-            } else if (corrTime) {
-                scheduledDays = scheduleConfig.phase2Days;
-                baseDateForSchedule = corrTime;
+        if (limitDate && !isCompleted) {
+            const today = moment().format('YYYY-MM-DD');
+            if (moment(today).isAfter(limitDate)) {
+                isOverdue = true;
+                remainingDays = calcularDiasHabiles(limitDate, today, true);
             } else {
-                 tooltip = "Esperando fecha de correcciones o acta favorable para calcular. ";
+                remainingDays = calcularDiasHabiles(today, limitDate, true);
             }
         }
-        
-        if (scheduledDays && baseDateForSchedule) {
-            scheduledLimitDate = sumarDiasHabiles(baseDateForSchedule, scheduledDays);
-            tooltip = `${scheduledDays} días programados desde ${formatDate(baseDateForSchedule)}.`;
-            const eventDate = clock?. date_start;
 
-            if (eventDate) {
-                const daysTaken = calcularDiasHabiles(baseDateForSchedule, eventDate);
-                remainingDays = scheduledDays - daysTaken;
-            } else {
-                const today = moment(). format('YYYY-MM-DD');
-                const daysUsed = calcularDiasHabiles(baseDateForSchedule, today);
-                remainingDays = scheduledDays - daysUsed;
-            }
-        } else if (scheduleConfig && (value.state === 30 || value. state === 61)) {
-            // Caso donde hay plan pero no aplica a esta fila por falta de fechas
-        } else {
-            return <div className="scheduled-limit-cell" title={tooltip}>-</div>;
-        }
-        
-        const isOverdue = remainingDays !== null && remainingDays < 0;
-        const colorClass = isOverdue ? 'text-danger' : (remainingDays === 0 && clock?.date_start) ? 'text-success' : 'text-primary';
+        const colorClass = isOverdue ? 'text-danger' : isCompleted ? 'text-success' : 'text-primary';
 
         return (
-            <div className="scheduled-limit-cell" title={tooltip}>
-                {scheduledLimitDate && (
-                    <div className={`scheduled-date ${colorClass}`}>
-                        {formatDate(scheduledLimitDate)}
+            <div className="scheduled-limit-cell" title={`Límite programado: ${display}`}>
+                {limitDate ? (
+                    <>
+                        <div className={`scheduled-date ${colorClass}`}>
+                            {moment(limitDate).format('DD MMM YYYY')}
+                        </div>
+                        {days && (
+                            <div className="scheduled-remaining small text-muted">
+                                {days} días
+                            </div>
+                        )}
+                        {!isCompleted && remainingDays !== null && (
+                            <div className={`scheduled-remaining small ${isOverdue ? 'text-danger' : 'text-success'}`}>
+                                {isOverdue ? `Retraso: ${remainingDays}d` : `Quedan: ${remainingDays}d`}
+                            </div>
+                        )}
+                        {isCompleted && (
+                            <div className="scheduled-remaining small text-muted">Completado</div>
+                        )}
+                    </>
+                ) : (
+                    <div className="scheduled-remaining small text-warning">
+                        {display}
                     </div>
-                )}
-                {remainingDays !== null && ! clock?.date_start && (
-                    <div className={`scheduled-remaining small ${isOverdue ? 'text-danger' : 'text-success'}`}>
-                        {isOverdue ? `Retraso: ${Math.abs(remainingDays)}d` : `Quedan: ${remainingDays}d`}
-                    </div>
-                )}
-                 {clock?.date_start && (
-                    <div className="scheduled-remaining small text-muted">Completado</div>
                 )}
             </div>
         );
