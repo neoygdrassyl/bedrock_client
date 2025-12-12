@@ -236,10 +236,40 @@ export const calculateScheduledLimitForDisplay = (
     manager
   );
 
-  // Obtener días programados de prórrogas/suspensiones
+  // --- Lógica especial para Fase 2 (Viabilidad, etc.) ---
+  const isPhase2Event = clockState === 49 || clockState === 61;
+  if (isPhase2Event && manager.viaTime !== null) {
+      if (!referenceDate) {
+          return {
+              limitDate: null,
+              days: manager.viaTime,
+              display: `${manager.viaTime} días restantes (pendiente fecha ref.)`,
+              extensionDays: 0,
+          };
+      }
+      
+      // Si el evento está programado, usamos su fecha o días, pero el total es `viaTime`
+      let limitDate;
+      let days = scheduled.type === 'days' ? scheduled.value : calculateDaysFromScheduledDate(referenceDate, scheduled.value);
+
+      if (scheduled.type === 'date') {
+          limitDate = scheduled.value;
+      } else {
+          limitDate = calculateScheduledDateFromDays(referenceDate, scheduled.value);
+      }
+
+      return {
+          limitDate,
+          days: days,
+          // Mostramos los días programados vs. el total disponible de `viaTime`
+          display: `${moment(limitDate).format('DD/MM/YYYY')} (${days} de ${manager.viaTime}d restantes)`,
+          extensionDays: 0 // viaTime ya incluye suspensiones y prórrogas
+      };
+  }
+  
+  // --- Lógica General para otros eventos ---
   const extensionDays = getProgrammedExtensionDays(clockState, scheduleConfig, manager);
 
-  // Caso 1: No hay fecha de referencia
   if (!referenceDate) {
     if (scheduled.type === 'days') {
       const totalDays = scheduled.value + extensionDays;
@@ -248,32 +278,27 @@ export const calculateScheduledLimitForDisplay = (
         days: totalDays,
         display: extensionDays > 0 
           ? `${totalDays} días (${scheduled.value}+${extensionDays} ext.) (pendiente fecha ref.)`
-          : `${scheduled.value} días (pendiente fecha ref.)`
+          : `${scheduled.value} días (pendiente fecha ref.)`,
+        extensionDays: extensionDays,
       };
     } else {
       return {
         limitDate: scheduled.value,
         days: null,
-        display: 'Pendiente fecha ref.'
+        display: 'Pendiente fecha ref.',
+        extensionDays: extensionDays,
       };
     }
   }
 
-  // Caso 2: Hay fecha de referencia
   let limitDate, days;
 
   if (scheduled.type === 'days') {
-    // CASO: Programado con días disponibles
-    // Sumar días programados + prórrogas/suspensiones programadas
     const totalDays = scheduled.value + extensionDays;
     limitDate = calculateScheduledDateFromDays(referenceDate, totalDays);
     days = totalDays;
   } else {
-    // CASO: Programado con fecha específica
-    // Calcular días entre referencia y fecha programada
     const baseDays = calculateDaysFromScheduledDate(referenceDate, scheduled.value);
-    // Restar las prórrogas/suspensiones porque ya están "incluidas" en la fecha programada
-    // Asegurar que no resulte en días negativos
     days = Math.max(0, baseDays - extensionDays);
     limitDate = scheduled.value;
   }
@@ -392,7 +417,7 @@ export const calculateLegalLimit = (clockState, clockValue, manager) => {
       const notificacionPersonal = getClockScoped(33)?.date_start;
       const notificacionEfectiva = notificacionAviso || notificacionPersonal;
       
-      if (notificacionEfectiva && viaTime) {
+      if (notificacionEfectiva && viaTime !== null) {
         return sumarDiasHabiles(notificacionEfectiva, viaTime);
       }
       return null;
@@ -400,14 +425,14 @@ export const calculateLegalLimit = (clockState, clockValue, manager) => {
     
     // CUMPLE o sin acta
     if (isCumple || !hasActa) {
-      if (acta1?.date_start && viaTime) {
+      if (acta1?.date_start && viaTime !== null) {
         return sumarDiasHabiles(acta1.date_start, viaTime);
       }
       return null;
     }
     
     // NO CUMPLE
-    if (hasActa && !isCumple && corrDate && viaTime) {
+    if (hasActa && !isCumple && corrDate && viaTime !== null) {
       return sumarDiasHabiles(corrDate, viaTime);
     }
     
@@ -470,81 +495,46 @@ const resolveLegalLimitFromConfig = (limitConfig, getClockScoped, version) => {
 };
 
 /**
- * Calcula días programados de prórrogas y suspensiones para un tiempo
- * @param {number} clockState - Estado del clock
- * @param {object} scheduleConfig - Configuración de programación
- * @param {object} manager - Manager con información de extensiones
- * @returns {number} Días programados de prórrogas/suspensiones
+ * Calcula días programados de prórrogas y suspensiones que afectan a un tiempo específico.
+ * @param {number} clockState - El estado del tiempo que se está calculando.
+ * @param {object} scheduleConfig - La configuración de programación guardada.
+ * @param {object} manager - El objeto manager con acceso a todos los datos del proceso.
+ * @returns {number} El total de días de extensión/suspensión que se deben sumar.
  */
 export const getProgrammedExtensionDays = (clockState, scheduleConfig, manager) => {
-  if (!scheduleConfig || !scheduleConfig.times) return 0;
-  
-  const { suspensionPreActa, suspensionPostActa, extension } = manager;
-  let totalDays = 0;
+    if (!scheduleConfig || !scheduleConfig.times) return 0;
 
-  // Para Acta Parte 1 (state 30): prórrogas y suspensiones ANTES de Acta 1
-  if (clockState === 30) {
-    // Suspensión pre-acta (states 300, 350)
-    if (scheduleConfig.times[350]) {
-      const suspStart = manager.getClock(300)?.date_start;
-      const suspEnd = manager.getClock(350)?.date_start;
-      if (suspStart && suspEnd) {
-        totalDays += calcularDiasHabiles(suspStart, suspEnd, true);
-      } else if (scheduleConfig.times[350].type === 'days') {
-        totalDays += scheduleConfig.times[350].value || 0;
-      }
+    const { suspensionPreActa, suspensionPostActa, extension, getClock } = manager;
+    let totalDays = 0;
+
+    const addDaysFromEvent = (event) => {
+        if (event.exists && event.end?.date_start) {
+            totalDays += event.days;
+        }
+    };
+    
+    // Para Acta Parte 1 (state 30), solo contamos lo que ocurrió ANTES
+    if (clockState === 30) {
+        addDaysFromEvent(suspensionPreActa);
+        
+        // La prórroga solo se suma si empezó antes del acta
+        if (extension.exists && extension.start?.date_start) {
+            const acta1Date = getClock(30)?.date_start;
+            if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) {
+                 addDaysFromEvent(extension);
+            }
+        }
     }
     
-    // Prórroga antes de acta (states 400, 401)
-    if (scheduleConfig.times[401]) {
-      const extStart = manager.getClock(400)?.date_start;
-      const extEnd = manager.getClock(401)?.date_start;
-      const acta1Date = manager.getClock(30)?.date_start;
-      
-      // Solo contar si la prórroga termina antes o no hay acta aún
-      if (extStart && extEnd && (!acta1Date || moment(extEnd).isBefore(acta1Date))) {
-        totalDays += calcularDiasHabiles(extStart, extEnd, true);
-      } else if (scheduleConfig.times[401].type === 'days' && !acta1Date) {
-        totalDays += scheduleConfig.times[401].value || 0;
-      }
-    }
-  }
-
-  // Para Acta Parte 2 (state 49) y Viabilidad (61): TODAS las prórrogas/suspensiones
-  if (clockState === 49 || clockState === 61) {
-    // Suspensión pre-acta
-    if (scheduleConfig.times[350]) {
-      const suspStart = manager.getClock(300)?.date_start;
-      const suspEnd = manager.getClock(350)?.date_start;
-      if (suspStart && suspEnd) {
-        totalDays += calcularDiasHabiles(suspStart, suspEnd, true);
-      } else if (scheduleConfig.times[350].type === 'days') {
-        totalDays += scheduleConfig.times[350].value || 0;
-      }
+    // Para Acta Parte 2 (49) y Viabilidad (61), la lógica se maneja con `viaTime`,
+    // por lo que no necesitamos sumar días extra aquí. `viaTime` ya los contiene.
+    // Devolvemos 0 para evitar doble contabilidad.
+    if (clockState === 49 || clockState === 61) {
+        return 0;
     }
     
-    // Suspensión post-acta
-    if (scheduleConfig.times[351]) {
-      const suspStart = manager.getClock(301)?.date_start;
-      const suspEnd = manager.getClock(351)?.date_start;
-      if (suspStart && suspEnd) {
-        totalDays += calcularDiasHabiles(suspStart, suspEnd, true);
-      } else if (scheduleConfig.times[351].type === 'days') {
-        totalDays += scheduleConfig.times[351].value || 0;
-      }
-    }
+    // Para cualquier otro evento, podrías necesitar una lógica más genérica,
+    // pero por ahora, nos mantenemos restrictivos según tu petición.
     
-    // Prórroga
-    if (scheduleConfig.times[401]) {
-      const extStart = manager.getClock(400)?.date_start;
-      const extEnd = manager.getClock(401)?.date_start;
-      if (extStart && extEnd) {
-        totalDays += calcularDiasHabiles(extStart, extEnd, true);
-      } else if (scheduleConfig.times[401].type === 'days') {
-        totalDays += scheduleConfig.times[401].value || 0;
-      }
-    }
-  }
-
-  return totalDays;
+    return totalDays;
 };

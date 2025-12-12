@@ -78,7 +78,8 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
   // --- MEMOS DE EVENTOS CLAVE ---
   const suspensionPreActa = useMemo(() => {
     const start = getClock(300), end = getClock(350);
-    const exists = !!start?. date_start;
+    const exists = !!start?.date_start;
+    const days = exists && end?.date_start ? calcularDiasHabiles(start.date_start, end.date_start, true) : 0;
     return { exists, start, end, days: exists && end?.date_start ? calcularDiasHabiles(start.date_start, end.date_start, true) : 0, isActive: exists && ! end?. date_start };
   }, [clocksData]);
 
@@ -217,6 +218,6 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
     clocksData, suspensionPreActa, suspensionPostActa, totalSuspensionDays, extension,
     curaduriaDetails, isDesisted: curaduriaDetails. isDesisted, processPhases, getNewestDate, canAddSuspension, canAddExtension, availableSuspensionTypes,
     NEGATIVE_PROCESS_TITLE, FUN_0_TYPE_TIME, FUN_0_TYPE_LABELS, calculateDaysSpent, getClock, getClockVersion,
-    viaTime, 
+    viaTime, currentItem, 
   };
 };
