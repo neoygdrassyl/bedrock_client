@@ -518,15 +518,15 @@
 
 /* Estado de fecha límite según cumplimiento */
 .limit-date-ok {
-    color: #2f9e44;
+    color: var(--success);
 }
 
 .limit-date-warning {
-    color: #f08c00;
+    color: var(--warning);
 }
 
 .limit-date-error {
-    color: #e03131;
+    color: var(--danger);
     font-weight: 600;
 }
 
@@ -560,7 +560,7 @@
 
 /* Mejora de contraste para fechas límite */
 .text-primary {
-    color: #1971c2 !important;
+    color: var(--info) !important;
 }
 
 /* Estilos para alertas proactivas en sidebar */
@@ -589,8 +589,8 @@
 
 /* Estilo para el tipo de proceso */
 .value-row .value.text-info {
-    color: #1971c2 !important;
-    font-size: 0.9rem;
+    color: var(--info) !important;
+    font-size: var(--font-size-base);
 }
 
 /* ========================================
@@ -601,19 +601,19 @@
 }
 
 .phase-config {
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #17a2b8;
+    padding: var(--space-md);
+    background: var(--background-light);
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid var(--info);
 }
 
 .phase-config label {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-sm);
     display: block;
 }
 
 .slider-wrapper {
-    padding: 0 0.5rem;
+    padding: 0 var(--space-sm);
 }
 
 .form-range {
@@ -648,28 +648,31 @@
 }
 
 .scheduled-remaining {
-    padding: 0.1rem 0.3rem;
-    border-radius: 3px;
+    padding: var(--space-xs);
+    border-radius: var(--border-radius-sm);
     background: rgba(0, 0, 0, 0.05);
 }
 
 .scheduled-remaining.text-danger, .limit-status.text-danger {
     background: rgba(224, 49, 49, 0.1);
+    color: var(--danger);
 }
 
 .scheduled-remaining.text-success, .limit-status.text-success {
     background: rgba(47, 158, 68, 0.1);
+    color: var(--success);
 }
 
 .limit-status.text-warning {
     background: rgba(240, 140, 0, 0.1);
+    color: var(--warning);
 }
 /* Estilo neutro para la 'tarjetica' del límite legal */
 .limit-status.text-muted {
-    background: #f1f3f5;
-    color: #495057 !important;
-    padding: 0.1rem 0.3rem;
-    border-radius: 3px;
+    background: var(--background-light);
+    color: var(--text-secondary) !important;
+    padding: var(--space-xs);
+    border-radius: var(--border-radius-sm);
 }
 
 .days-number {
@@ -677,13 +680,15 @@
 }
 
 .days-alert {
-    padding: 0.1rem 0.3rem;
-    border-radius: 3px;
+    padding: var(--space-xs);
+    border-radius: var(--border-radius-sm);
     background: rgba(224, 49, 49, 0.1);
+    color: var(--danger);
 }
 
 .days-alert.text-warning {
     background: rgba(240, 140, 0, 0.1);
+    color: var(--warning);
 }
 
 /* Responsive para columnas unificadas */
@@ -756,12 +761,12 @@
     font-size: 0.75rem;
     font-weight: 600;
 }
-.status-primary { color: #1c7ed6; }
-.status-secondary { color: #495057; }
-.status-success { color: #2b8a3e; }
-.status-danger { color: #c92a2a; }
-.status-warning { color: #e67700; }
-.status-info { color: #1098ad; }
+.status-primary { color: var(--info); }
+.status-secondary { color: var(--text-secondary); }
+.status-success { color: var(--success); }
+.status-danger { color: var(--danger); }
+.status-warning { color: var(--warning); }
+.status-info { color: var(--info); }
 
 .timeline-bar .progress {
     border-radius: 5px;
@@ -907,18 +912,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #e7f5ff 0%, #d0ebff 100%);
-    color: #1864ab;
-    padding: 0.5rem 1rem;
+    background: var(--primary-light);
+    color: var(--info);
+    padding: var(--space-sm) var(--space-md);
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: var(--font-size-sm);
     font-weight: 600;
-    margin-bottom: 1rem;
-    border: 1px solid #a5d8ff;
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--primary);
 }
 
 .parallel-indicator i {
-    color: #1971c2;
+    color: var(--info);
 }
 
 /* Contenedor de paneles paralelos */
@@ -1211,36 +1216,36 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 0;
+    padding: var(--space-sm) 0;
 }
 
 .divider-line {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, #ced4da, transparent);
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
 }
 
 .divider-icon {
-    padding: 0 1rem;
-    color: #adb5bd;
-    font-size: 0.85rem;
-    background: #fff;
+    padding: 0 var(--space-md);
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    background: var(--background-white);
     width: 32px;
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border-color);
 }
 
 /* Timeline de la fase */
 .phase-timeline {
-    background: linear-gradient(135deg, #f8f9fa, #fff);
-    border-radius: 8px;
-    padding: 0.75rem;
-    margin-top: 1rem;
-    border: 1px solid #e9ecef;
+    background: linear-gradient(135deg, var(--background-light), var(--background-white));
+    border-radius: var(--border-radius-md);
+    padding: var(--space-sm);
+    margin-top: var(--space-md);
+    border: 1px solid var(--border-color);
 }
 
 .timeline-dates {
@@ -1279,7 +1284,7 @@
 .timeline-date span {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #495057;
+    color: var(--text-secondary);
 }
 
 .timeline-connector {
@@ -1466,14 +1471,14 @@
 .phase-context-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
+    gap: var(--space-sm);
+    background: var(--background-light);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
-    padding: 0.4rem 0.75rem;
-    margin-bottom: 0.75rem;
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-sm);
     font-size: 0.75rem;
-    color: #495057;
+    color: var(--text-secondary);
 }
 
 .chip-icon {
@@ -1482,14 +1487,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
+    background: var(--background-white);
     border-radius: 50%;
     font-size: 0.65rem;
-    color: #5bc0de;
+    color: var(--primary);
 }
 
 .chip-text strong {
-    color: #5bc0de;
+    color: var(--primary);
 }
 
 /* Badge de días extra */
@@ -1497,13 +1502,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #d4edda;
-    color: #155724;
+    background: rgba(47, 158, 68, 0.15);
+    color: var(--success);
     font-size: 0.65rem;
     font-weight: 700;
-    padding: 0.15rem 0.4rem;
+    padding: var(--space-xs);
     border-radius: 10px;
-    margin-left: 0.25rem;
+    margin-left: var(--space-xs);
 }
 
 /* ========================================
@@ -2086,21 +2091,21 @@
 }
 
 .info-card {
-    background: #f8f9fa;
-    border-radius: 6px;
+    background: var(--background-light);
+    border-radius: var(--border-radius-md);
     overflow: hidden;
 }
 
 .info-card-title {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 0.75rem;
-    background: #fff;
-    border-bottom: 1px solid #e9ecef;
-    font-size: 0.8rem;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    background: var(--background-white);
+    border-bottom: 1px solid var(--border-color);
+    font-size: var(--font-size-sm);
     font-weight: 600;
-    color: #495057;
+    color: var(--text-secondary);
 }
 
 .info-card-title i {
@@ -2108,7 +2113,7 @@
 }
 
 .info-card-body {
-    padding: 0.75rem;
+    padding: var(--space-sm);
 }
 
 /* Filas de información */
@@ -2116,25 +2121,25 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.4rem 0;
-    font-size: 0.8rem;
-    color: #495057;
+    padding: var(--space-sm) 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
 }
 
 .info-row span {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: var(--space-sm);
 }
 
 .info-row i {
     width: 14px;
-    color: #adb5bd;
+    color: var(--text-muted);
     font-size: 0.7rem;
 }
 
 .info-row strong {
-    color: #212529;
+    color: var(--text-primary);
 }
 
 .info-row.muted {
@@ -2142,9 +2147,9 @@
 }
 
 .info-row.total {
-    margin-top: 0.5rem;
-    padding-top: 0.6rem;
-    border-top: 1px solid #dee2e6;
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border-color);
     font-weight: 600;
 }
 
@@ -2157,37 +2162,37 @@
 
 /* Detalle de fases */
 .phase-detail {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-sm);
 }
 
 .phase-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.3rem;
+    margin-bottom: var(--space-xs);
 }
 
 .phase-label {
-    font-size: 0.8rem;
+    font-size: var(--font-size-sm);
     font-weight: 600;
-    color: #495057;
+    color: var(--text-secondary);
 }
 
 .phase-count {
     font-size: 0.75rem;
-    color: #6c757d;
+    color: var(--text-muted);
 }
 
 .phase-mini-bar {
     height: 6px;
-    background: #dee2e6;
-    border-radius: 3px;
+    background: var(--border-color);
+    border-radius: var(--border-radius-sm);
     overflow: hidden;
 }
 
 .phase-mini-fill {
     height: 100%;
-    border-radius: 3px;
+    border-radius: var(--border-radius-sm);
     transition: width 0.3s ease;
 }
 
@@ -2198,10 +2203,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 0;
     font-size: 0.7rem;
-    color: #868e96;
+    color: var(--text-muted);
 }
 
 .phase-arrow i {
