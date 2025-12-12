@@ -1,3 +1,6 @@
+/* Import centralClocks styling */
+@import '../styles/centralClocks.css';
+
 html{
   scroll-behavior: smooth;
 }
