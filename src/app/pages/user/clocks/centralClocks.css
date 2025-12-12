@@ -838,26 +838,29 @@
 }
 
 /* ========================================
-   ESTILOS PARA PROGRAMACIÓN DE PROCESO
+   ESTILOS PARA PROGRAMACIÓN DE PROCESO - MEJORADOS
    ======================================== */
 .schedule-modal-content {
     text-align: left;
 }
 
 .phase-config {
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #17a2b8;
+    padding: var(--spacing-lg);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .phase-config label {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing-sm);
     display: block;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
 }
 
 .slider-wrapper {
-    padding: 0 0.5rem;
+    padding: 0 var(--spacing-sm);
 }
 
 .form-range {
@@ -949,18 +952,20 @@
     border-color: var(--warning);
 }
 
-/* Responsive para columnas unificadas */
+/* ========================================
+   RESPONSIVE - COLUMNAS UNIFICADAS
+   ======================================== */
 @media (max-width: 768px) {
     .legal-limit-cell,
     .days-spent-cell,
     .scheduled-limit-cell {
-        font-size: 0.7rem;
+        font-size: var(--font-size-xs);
     }
     
     .limit-date,
     .scheduled-date,
     .days-number {
-        font-size: 0.7rem;
+        font-size: var(--font-size-xs);
     }
     
     .limit-status,
@@ -968,6 +973,11 @@
     .days-progress,
     .scheduled-remaining {
         font-size: 0.6rem;
+    }
+    
+    /* Ajustes de espaciado en móviles */
+    .exp-row-content {
+        padding: var(--spacing-xs);
     }
 }
 
@@ -991,45 +1001,79 @@
     min-width: 40px;
     text-align: center;
 }
+/* ========================================
+   PHASE CARD CONTENT - MEJORADO
+   ======================================== */
 .phase-card-content .phase-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #343a40;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray-800);
     text-align: center;
 }
+
 .phase-card-content .status-header {
-    border-radius: 6px;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 1rem !important;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-lg) !important;
+    border-left: 4px solid;
 }
-.phase-card-content .status-header-primary { background-color: #e7f5ff; border-left: 4px solid #1c7ed6; }
-.phase-card-content .status-header-secondary { background-color: #f8f9fa; border-left: 4px solid #adb5bd; }
-.phase-card-content .status-header-success { background-color: #e6fcf5; border-left: 4px solid #2f9e44; }
-.phase-card-content .status-header-danger { background-color: #fff5f5; border-left: 4px solid #c92a2a; }
-.phase-card-content .status-header-warning { background-color: #fff9db; border-left: 4px solid #f08c00; }
-.phase-card-content .status-header-info { background-color: #e3fafc; border-left: 4px solid #15aabf; }
+
+.phase-card-content .status-header-primary { 
+    background-color: var(--primary-lighter); 
+    border-left-color: var(--primary);
+}
+
+.phase-card-content .status-header-secondary { 
+    background-color: var(--gray-50); 
+    border-left-color: var(--gray-500);
+}
+
+.phase-card-content .status-header-success { 
+    background-color: var(--success-light); 
+    border-left-color: var(--success);
+}
+
+.phase-card-content .status-header-danger { 
+    background-color: var(--danger-light); 
+    border-left-color: var(--danger);
+}
+
+.phase-card-content .status-header-warning { 
+    background-color: var(--warning-light); 
+    border-left-color: var(--warning);
+}
+
+.phase-card-content .status-header-info { 
+    background-color: var(--primary-lighter); 
+    border-left-color: var(--primary);
+}
 
 .phase-card-content .status-text {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
     display: flex;
     align-items: center;
+    gap: var(--spacing-sm);
 }
+
 .phase-card-content .responsible-badge {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
 }
-.status-primary { color: #1c7ed6; }
-.status-secondary { color: #495057; }
-.status-success { color: #2b8a3e; }
-.status-danger { color: #c92a2a; }
-.status-warning { color: #e67700; }
-.status-info { color: #1098ad; }
+
+/* Estados de fase con colores actualizados */
+.status-primary { color: var(--primary); }
+.status-secondary { color: var(--text-secondary); }
+.status-success { color: var(--success); }
+.status-danger { color: var(--danger); }
+.status-warning { color: var(--warning); }
+.status-info { color: var(--primary); }
 
 .timeline-bar .progress {
-    border-radius: 5px;
-    background-color: #e9ecef;
+    border-radius: var(--radius-md);
+    background-color: var(--gray-200);
 }
+
 .timeline-bar .progress-bar {
     transition: width 0.5s ease-in-out;
 }
@@ -1110,7 +1154,7 @@
 
 
 /* ========================================
-   ESTILOS UNIFICADOS PARA PANELES DE FASE
+   PANELES DE FASE - UNIFICADOS
    ======================================== */
 
 /* Tarjeta de fase moderna */
@@ -1119,13 +1163,13 @@
 }
 
 .phase-card-modern .phase-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #343a40;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-800);
     text-align: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #e9ecef;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--gray-200);
     position: relative;
 }
 
@@ -1137,8 +1181,8 @@
     transform: translateX(-50%);
     width: 60px;
     height: 2px;
-    background: linear-gradient(90deg, #1971c2, #15aabf);
-    border-radius: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    border-radius: var(--radius-sm);
 }
 
 /* Indicador de tiempos paralelos */
@@ -1146,18 +1190,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #e7f5ff 0%, #d0ebff 100%);
-    color: #1864ab;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    border: 1px solid #a5d8ff;
+    background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--primary-light) 100%);
+    color: var(--primary-dark);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid var(--primary-light);
 }
 
 .parallel-indicator i {
-    color: #1971c2;
+    color: var(--primary);
+    margin-right: var(--spacing-sm);
 }
 
 /* Contenedor de paneles paralelos */
@@ -1168,16 +1213,17 @@
 }
 
 /* ========================================
-   PANEL DE ACTOR (COMPONENTE REUTILIZABLE)
+   PANEL DE ACTOR - REUTILIZABLE Y MEJORADO
    ======================================== */
 .actor-panel {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-radius: 10px;
-    padding: 1rem;
-    border: 1px solid #e9ecef;
-    transition: all 0.3s ease;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 100%);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--gray-200);
+    transition: all var(--transition-slow);
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
 }
 
 .actor-panel::before {
@@ -1187,23 +1233,23 @@
     top: 0;
     bottom: 0;
     width: 4px;
-    border-radius: 4px 0 0 4px;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
 }
 
 .actor-panel.primary::before {
-    background: linear-gradient(180deg, #1971c2, #1864ab);
+    background: linear-gradient(180deg, var(--primary), var(--primary-dark));
 }
 
 .actor-panel.secondary::before {
-    background: linear-gradient(180deg, #15aabf, #0c8599);
+    background: linear-gradient(180deg, var(--primary), var(--primary-darker));
 }
 
 .actor-panel.single::before {
-    background: linear-gradient(180deg, #1971c2, #15aabf);
+    background: linear-gradient(180deg, var(--primary), var(--primary-dark));
 }
 
 .actor-panel:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-hover);
     transform: translateY(-2px);
 }
 
@@ -1212,38 +1258,38 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid #e9ecef;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--gray-200);
 }
 
 .actor-name {
-    font-weight: 700;
-    font-size: 0.95rem;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
     display: flex;
     align-items: center;
-    color: #343a40;
+    color: var(--gray-800);
 }
 
 .actor-name i {
-    font-size: 1.1rem;
+    font-size: var(--font-size-lg);
     width: 28px;
     height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
-    margin-right: 0.5rem;
+    border-radius: var(--radius-md);
+    margin-right: var(--spacing-sm);
 }
 
 .actor-header-primary .actor-name i {
-    background: linear-gradient(135deg, #e7f5ff, #d0ebff);
-    color: #1971c2;
+    background: linear-gradient(135deg, var(--primary-lighter), var(--primary-light));
+    color: var(--primary);
 }
 
 .actor-header-info .actor-name i {
-    background: linear-gradient(135deg, #e3fafc, #c5f6fa);
-    color: #0c8599;
+    background: linear-gradient(135deg, var(--primary-lighter), var(--primary-light));
+    color: var(--primary-dark);
 }
 
 .actor-header-purple .actor-name i {
@@ -1252,142 +1298,143 @@
 }
 
 .actor-header-secondary .actor-name i {
-    background: linear-gradient(135deg, #f1f3f5, #e9ecef);
-    color: #495057;
+    background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+    color: var(--text-secondary);
 }
 
 /* Badge de estado del actor */
 .actor-status-badge {
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.35rem 0.65rem;
-    border-radius: 20px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-pill);
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: var(--spacing-xs);
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
 
 .actor-status-badge.status-primary {
-    background: linear-gradient(135deg, #e7f5ff, #d0ebff);
-    color: #1971c2;
-    border: 1px solid #a5d8ff;
+    background: linear-gradient(135deg, var(--primary-lighter), var(--primary-light));
+    color: var(--primary);
+    border: 1px solid var(--primary-light);
 }
 
 .actor-status-badge.status-secondary {
-    background: linear-gradient(135deg, #f1f3f5, #e9ecef);
-    color: #495057;
-    border: 1px solid #ced4da;
+    background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+    color: var(--text-secondary);
+    border: 1px solid var(--gray-400);
 }
 
 .actor-status-badge.status-success {
-    background: linear-gradient(135deg, #d3f9d8, #b2f2bb);
-    color: #2b8a3e;
+    background: linear-gradient(135deg, var(--success-light), #b2f2bb);
+    color: var(--success);
     border: 1px solid #8ce99a;
 }
 
 .actor-status-badge.status-warning {
-    background: linear-gradient(135deg, #fff3bf, #ffec99);
-    color: #e67700;
+    background: linear-gradient(135deg, var(--warning-light), #ffec99);
+    color: var(--warning);
     border: 1px solid #ffd43b;
 }
 
 .actor-status-badge.status-danger {
-    background: linear-gradient(135deg, #ffe3e3, #ffc9c9);
-    color: #c92a2a;
+    background: linear-gradient(135deg, var(--danger-light), #ffc9c9);
+    color: var(--danger);
     border: 1px solid #ffa8a8;
 }
 
 .actor-status-badge.status-info {
-    background: linear-gradient(135deg, #c5f6fa, #99e9f2);
-    color: #0c8599;
-    border: 1px solid #66d9e8;
+    background: linear-gradient(135deg, var(--primary-lighter), var(--primary-light));
+    color: var(--primary-dark);
+    border: 1px solid var(--primary-light);
 }
 
 /* Descripción de tarea */
 .actor-task {
-    font-size: 0.8rem;
-    color: #495057;
-    background: linear-gradient(135deg, #fff, #f8f9fa);
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    margin-bottom: 0.75rem;
-    border: 1px solid #e9ecef;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    background: linear-gradient(135deg, #fff, var(--gray-50));
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+    border: 1px solid var(--gray-200);
     display: flex;
     align-items: center;
 }
 
 .actor-task i {
-    color: #868e96;
-    margin-right: 0.5rem;
+    color: var(--text-light);
+    margin-right: var(--spacing-sm);
 }
 
 /* Métricas del actor */
 .actor-metrics {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
 }
 
 .metric-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.4rem 0.6rem;
-    background: #f8f9fa;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
 }
 
 .metric-row:hover {
-    background: #f1f3f5;
+    background: var(--gray-100);
 }
 
 .metric-row.highlight {
-    background: linear-gradient(135deg, #e7f5ff, #f8f9fa);
-    border: 1px solid #d0ebff;
+    background: linear-gradient(135deg, var(--primary-lighter), var(--gray-50));
+    border: 1px solid var(--primary-light);
 }
 
 .metric-label {
-    color: #6c757d;
-    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
     display: flex;
     align-items: center;
+    gap: var(--spacing-sm);
 }
 
 .metric-label i {
     width: 16px;
     text-align: center;
-    color: #adb5bd;
+    color: var(--gray-500);
 }
 
 .metric-value {
-    font-weight: 700;
-    color: #343a40;
-    font-size: 0.85rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-800);
+    font-size: var(--font-size-base);
 }
 
 .metric-remaining.positive {
-    color: #2b8a3e;
-    background: linear-gradient(135deg, #d3f9d8, #ebfbee);
-    padding: 0.15rem 0.5rem;
-    border-radius: 12px;
+    color: var(--success);
+    background: linear-gradient(135deg, var(--success-light), #ebfbee);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-xl);
 }
 
 .metric-remaining.warning {
-    color: #e67700;
-    background: linear-gradient(135deg, #fff3bf, #fff9db);
-    padding: 0.15rem 0.5rem;
-    border-radius: 12px;
+    color: var(--warning);
+    background: linear-gradient(135deg, var(--warning-light), #fff9db);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-xl);
 }
 
 .metric-remaining.negative {
-    color: #c92a2a;
-    background: linear-gradient(135deg, #ffe3e3, #fff5f5);
-    padding: 0.15rem 0.5rem;
-    border-radius: 12px;
+    color: var(--danger);
+    background: linear-gradient(135deg, var(--danger-light), #fff5f5);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-xl);
 }
 
 /* Barra de progreso mejorada */
@@ -1590,27 +1637,29 @@
     background: linear-gradient(135deg, #f8f9fa 0%, #e7f5ff 100%);
 }
 
-/* Responsive para paneles */
+/* ========================================
+   RESPONSIVE - PANELES DE ACTOR
+   ======================================== */
 @media (max-width: 576px) {
     .actor-panel {
-        padding: 0.75rem;
+        padding: var(--spacing-md);
     }
 
     .actor-name {
-        font-size: 0.85rem;
+        font-size: var(--font-size-base);
     }
 
     .metric-row {
-        padding: 0.3rem 0.5rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
     }
 
     .metric-label,
     .metric-value {
-        font-size: 0.75rem;
+        font-size: var(--font-size-xs);
     }
 
     .timeline-date span {
-        font-size: 0.7rem;
+        font-size: var(--font-size-xs);
     }
 }
 
@@ -2170,52 +2219,54 @@
     margin: 0 var(--spacing-md);
 }
 
-/* Responsive */
+/* ========================================
+   RESPONSIVE - MODALES
+   ======================================== */
 @media (max-width: 600px) {
     .days-grid {
         grid-template-columns: 1fr;
-        gap: 0.75rem;
+        gap: var(--spacing-md);
     }
     
     .days-modal-header {
         flex-wrap: wrap;
-        padding: 1rem;
+        padding: var(--spacing-lg);
     }
     
     .header-total {
         width: 100%;
-        margin-top: 0.75rem;
+        margin-top: var(--spacing-md);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: var(--spacing-sm);
     }
     
     .header-total .total-number {
-        font-size: 1.4rem;
+        font-size: var(--font-size-xl);
     }
     
     .bar-legend {
         flex-wrap: wrap;
-        gap: 0.75rem;
+        gap: var(--spacing-md);
     }
     
     .days-footer {
-        padding: 0.75rem 1rem;
+        padding: var(--spacing-md) var(--spacing-lg);
     }
     
     .stat-value {
-        font-size: 1.1rem;
+        font-size: var(--font-size-lg);
     }
     
     .footer-divider {
-        margin: 0 0.5rem;
+        margin: 0 var(--spacing-sm);
         height: 30px;
     }
     
     .days-main-bar,
     .days-grid {
-        padding: 1rem;
+        padding: var(--spacing-lg);
     }
 }
 
@@ -2474,23 +2525,25 @@
     font-size: 0.65rem;
 }
 
-/* Responsive */
+/* ========================================
+   RESPONSIVE - DÍAS INFO GRID
+   ======================================== */
 @media (max-width: 576px) {
     .days-info-grid {
         grid-template-columns: 1fr;
     }
     
     .days-summary-row {
-        gap: 1rem;
+        gap: var(--spacing-lg);
     }
     
     .summary-value {
-        font-size: 1.4rem;
+        font-size: var(--font-size-xl);
     }
     
     .progress-legend {
         flex-wrap: wrap;
-        gap: 0.75rem;
+        gap: var(--spacing-md);
     }
 }
 
@@ -2711,7 +2764,9 @@
     color: var(--primary);
 }
 
-/* Responsive para el widget flotante */
+/* ========================================
+   RESPONSIVE - WIDGET FLOTANTE
+   ======================================== */
 @media (max-width: 768px) {
     .time-travel-floating-widget {
         min-width: auto;
@@ -2720,11 +2775,13 @@
         bottom: 15px;
         width: auto;
     }
+    
     /* Ajustes internos si se comprime mucho */
     .time-travel-floating-widget .control-bar .bar-inner {
         flex-direction: column;
-        gap: 1rem;
+        gap: var(--spacing-lg);
     }
+    
     .time-travel-floating-widget .time-travel-controls {
         flex-wrap: wrap;
         justify-content: center;
@@ -2867,23 +2924,25 @@
     color: #2b8a3e;
 }
 
-/* Responsive para modal de programación */
+/* ========================================
+   RESPONSIVE - MODAL DE PROGRAMACIÓN
+   ======================================== */
 @media (max-width: 768px) {
     .schedule-modal-table-container .table {
-        font-size: 0.75rem;
+        font-size: var(--font-size-xs);
     }
     
     .schedule-modal-table-container .table thead th {
-        font-size: 0.7rem;
-        padding: 0.5rem 0.25rem;
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-sm) var(--spacing-xs);
     }
     
     .schedule-modal-table-container .table tbody td {
-        padding: 0.5rem 0.25rem;
+        padding: var(--spacing-sm) var(--spacing-xs);
     }
     
     .schedule-modal-table-container .form-control-sm {
-        font-size: 0.75rem;
+        font-size: var(--font-size-xs);
     }
 }
 
