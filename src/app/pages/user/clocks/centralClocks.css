@@ -1,4 +1,67 @@
 /* ========================================
+   REDISEÑO DE ESTILOS - MÓDULO DE TIEMPOS
+   ========================================
+   
+   RESUMEN DE CAMBIOS VISUALES:
+   
+   1. SISTEMA DE TOKENS DE DISEÑO
+      - Se crearon variables CSS para colores, espaciado, tipografía y efectos
+      - Color primario unificado: #5bc0de (turquesa/cyan) en headers y elementos clave
+      - Sistema de grises consistente para fondos y bordes
+      - Tokens de espaciado estandarizado (xs, sm, md, lg, xl, 2xl)
+   
+   2. HEADERS UNIFICADOS
+      - .exp-head, .sidebar-card-header, .days-modal-header: fondo var(--primary)
+      - Altura mínima 44px para cumplir estándares táctiles
+      - Texto en blanco para máximo contraste
+      - Iconos actualizados con colores primarios
+   
+   3. BADGES Y PILLS
+      - Border-radius: 4-6px para rectangulares, 20px para pills
+      - Padding estandarizado: 0.25rem-0.5rem
+      - Backgrounds con 10% opacidad + borde 1px del color semántico
+      - Estados de cumplimiento con colores claros (success, warning, danger)
+   
+   4. TABLAS Y GRIDS
+      - Bordes: 1px solid var(--gray-200)
+      - Hover: background var(--primary-lighter)
+      - Headers de tabla con fondo primary
+      - Padding celda: 0.5rem vertical, 0.75rem horizontal
+   
+   5. MODALES
+      - Header: fondo primary con iconos en blanco
+      - Cuerpo: fondo var(--gray-50) para contraste
+      - Footer: fondo var(--gray-800) con stats destacados
+      - Border radius consistente de 8-12px
+   
+   6. INPUTS Y CONTROLES
+      - Border: 1px solid var(--gray-300)
+      - Focus: border-color var(--primary) + box-shadow con 10% opacidad
+      - Padding: 0.5rem vertical, 0.75rem horizontal
+      - Transiciones suaves en todos los estados
+   
+   7. BOTONES
+      - Hover: translateY(-1px) + box-shadow
+      - Active: translateY(0)
+      - Min-height: 44px para accesibilidad táctil
+      - Colores primarios para acciones principales
+   
+   8. MEJORAS DE INTERACCIÓN
+      - Tooltips con fondo gris oscuro y mejor posicionamiento
+      - Animaciones sutiles en hover (scale, translateY)
+      - Estados disabled claramente diferenciados
+      - Feedback visual en todos los elementos clicables
+   
+   RESTRICCIONES RESPETADAS:
+   - No se modificó ninguna clase con lógica JavaScript
+   - Se mantuvieron z-index originales de modales y overlays
+   - Se preservaron dimensiones de inputs para usabilidad táctil
+   - Se mantuvieron position: sticky y overflow funcionales
+   - Se respetaron todos los selectores y estructura del DOM
+   
+   ======================================== */
+
+/* ========================================
    CSS VARIABLES - DESIGN TOKENS
    ======================================== */
 :root {
@@ -176,7 +239,7 @@
 .status-icon-Finalizado { color: var(--success); }
 .status-Pausado { color: var(--warning); }
 .status-icon-Pausado { color: var(--warning); }
-.status-Desistido { color: #c92a2a; }
+.status-Desistido { color: #c92a2a; } /* Color específico para desistimiento */
 .status-icon-Desistido { color: #c92a2a; }
 .status-default { color: var(--info); }
 .status-icon-default { color: var(--info); }
@@ -225,7 +288,7 @@
 }
 
 .btn-suspension:hover {
-    background-color: #e67700;
+    background-color: #e67700; /* Hover más oscuro que warning */
 }
 
 .btn-prorroga {
@@ -343,8 +406,8 @@
 }
 
 .day-cell.holiday {
-    background-color: #ffe066;
-    color: #865900;
+    background-color: #ffe066; /* Color amarillo específico para festivos */
+    color: #865900; /* Marrón oscuro para contraste con amarillo */
     font-weight: var(--font-weight-semibold);
 }
 
@@ -373,7 +436,7 @@
     margin-right: var(--spacing-xs);
 }
 
-.legend-box.holiday { background-color: #ffe066; }
+.legend-box.holiday { background-color: #ffe066; } /* Amarillo festivos */
 .legend-box.weekend { background-color: var(--gray-100); }
 
 /* ========================================
@@ -809,14 +872,14 @@
 
 .alert-warning {
     background-color: var(--warning-light);
-    border-color: #ffe066;
-    color: #865900;
+    border-color: #ffe066; /* Borde amarillo para alertas */
+    color: #865900; /* Texto marrón para contraste */
 }
 
 .alert-danger {
     background-color: var(--danger-light);
-    border-color: #ffc9c9;
-    color: #c92a2a;
+    border-color: #ffc9c9; /* Borde rosa claro para peligro */
+    color: #c92a2a; /* Rojo oscuro para texto */
 }
 
 .alert-info {
@@ -827,7 +890,7 @@
 
 .alert-success {
     background-color: var(--success-light);
-    border-color: #8ce99a;
+    border-color: #8ce99a; /* Borde verde claro */
     color: var(--success);
 }
 
@@ -1293,8 +1356,8 @@
 }
 
 .actor-header-purple .actor-name i {
-    background: linear-gradient(135deg, #f3d9fa, #eebefa);
-    color: #9c36b5;
+    background: linear-gradient(135deg, #f3d9fa, #eebefa); /* Gradiente morado para responsable mixto */
+    color: #9c36b5; /* Morado oscuro */
 }
 
 .actor-header-secondary .actor-name i {
@@ -1328,21 +1391,21 @@
 }
 
 .actor-status-badge.status-success {
-    background: linear-gradient(135deg, var(--success-light), #b2f2bb);
+    background: linear-gradient(135deg, var(--success-light), #b2f2bb); /* Gradiente verde */
     color: var(--success);
-    border: 1px solid #8ce99a;
+    border: 1px solid #8ce99a; /* Borde verde claro */
 }
 
 .actor-status-badge.status-warning {
-    background: linear-gradient(135deg, var(--warning-light), #ffec99);
+    background: linear-gradient(135deg, var(--warning-light), #ffec99); /* Gradiente amarillo */
     color: var(--warning);
-    border: 1px solid #ffd43b;
+    border: 1px solid #ffd43b; /* Borde amarillo oscuro */
 }
 
 .actor-status-badge.status-danger {
-    background: linear-gradient(135deg, var(--danger-light), #ffc9c9);
+    background: linear-gradient(135deg, var(--danger-light), #ffc9c9); /* Gradiente rojo */
     color: var(--danger);
-    border: 1px solid #ffa8a8;
+    border: 1px solid #ffa8a8; /* Borde rojo claro */
 }
 
 .actor-status-badge.status-info {
