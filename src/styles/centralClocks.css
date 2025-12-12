@@ -282,7 +282,7 @@
 .form-control-sm,
 .form-select-sm {
   height: 30px;
-  padding: var(--space-xs) var(--space-sm) !important;
+  padding: var(--space-xs) var(--space-sm);
   font-size: var(--font-size-sm);
   border-color: var(--border-color);
   border-radius: var(--border-radius-sm);
@@ -1170,14 +1170,9 @@
     --space-lg: 1rem;
   }
 
-  /* Hide less critical columns on very small screens */
-  .exp-row .col-1:last-child {
-    display: none; /* Hide DOC column on very small screens */
-  }
-
-  .exp-head .col-1:last-child {
-    display: none;
-  }
+  /* Note: Hiding specific columns on very small screens can be enabled
+     by adding specific classes like .doc-column to the HTML structure.
+     This ensures flexibility without assuming DOM structure. */
 }
 
 /* Tablet specific adjustments */
@@ -1281,31 +1276,16 @@
 }
 
 /* ============================================================================
-   18. DARK MODE SUPPORT (Optional - for future implementation)
+   18. DARK MODE SUPPORT
    ============================================================================ */
 
-@media (prefers-color-scheme: dark) {
-  /* Uncomment to enable dark mode
-  :root {
-    --text-primary: #f8f9fa;
-    --text-secondary: #e9ecef;
-    --text-muted: #adb5bd;
-    --border-color: #495057;
-    --background-light: #212529;
-    --background-white: #343a40;
-  }
-
-  .exp-card,
-  .sidebar-card,
-  .calendar-widget {
-    background: var(--background-white);
-  }
-
-  .exp-head {
-    background: var(--background-light);
-  }
-  */
-}
+/* Dark mode is not currently implemented. To enable it in the future:
+   1. Uncomment the media query below
+   2. Add the dark-mode class to the body element via JavaScript
+   3. Test thoroughly for contrast and accessibility
+   
+   The variables are defined here for reference but are currently inactive.
+*/
 
 /* ============================================================================
    END OF STYLESHEET
