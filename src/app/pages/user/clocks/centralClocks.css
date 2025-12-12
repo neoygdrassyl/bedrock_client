@@ -11,8 +11,10 @@
   /* Colores Semánticos */
   --success: #2f9e44;
   --warning: #f08c00;
+  --warning-dark: #e67700;
   --danger: #e03131;
   --info: #1971c2;
+  --info-dark: #0c8599;
 
   /* Paleta de Grises y Neutros */
   --text-primary: #212529;
@@ -123,13 +125,13 @@
     background-color: var(--warning);
 }
 .btn-suspension:hover {
-    background-color: #e67700; /* Darker warning tone */
+    background-color: var(--warning-dark);
 }
 .btn-prorroga {
     background-color: var(--info);
 }
 .btn-prorroga:hover {
-    background-color: #0c8599; /* Darker info tone */
+    background-color: var(--info-dark);
 }
 
 .btn-detail-link {
@@ -838,40 +840,10 @@
     padding: 0 var(--space-xs);
 }
 
-/* Estilos para btn-outline-primary */
-.phase-nav .btn-outline-primary {
-    border: 1.5px solid #1c7ed6;
-    color: #1c7ed6;
-    background-color: transparent;
-}
-
-.phase-nav .btn-outline-primary:hover:not(:disabled) {
-    background-color: #1c7ed6;
-    color: white; /* El ícono heredará este color blanco */
-    border-color: #1c7ed6;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(28, 126, 214, 0.3);
-}
-
 /* Asegura que el ícono herede el color del botón */
 .phase-nav .btn-outline-primary i {
     color: inherit;
     transition: color 0.2s ease;
-}
-
-.phase-nav .btn-outline-primary:active:not(:disabled) {
-    background-color: #1971c2;
-    color: white;
-    transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(28, 126, 214, 0.2);
-}
-
-.phase-nav .btn-outline-primary:disabled {
-    border-color: #ced4da;
-    color: #adb5bd;
-    background-color: #f8f9fa;
-    cursor: not-allowed;
-    opacity: 0.6;
 }
 
 
