@@ -11,6 +11,8 @@ import { SidebarInfo } from './components/SidebarInfo';
 import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
 import { ScheduleModal } from './components/ScheduleModal';
+import { AlarmsWidget } from './components/AlarmsWidget'; // Importar el nuevo widget
+import { useAlarms } from './hooks/useAlarms'; // Importar el nuevo hook de alarmas
 import { calcularDiasHabiles } from './hooks/useClocksManager';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
 
@@ -28,8 +30,9 @@ export default function EXP_CLOCKS(props) {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [sidebarHeight, setSidebarHeight] = useState('auto');
   
-  // --- NUEVO ESTADO: Controlar visibilidad del Time Travel ---
   const [showTimeTravel, setShowTimeTravel] = useState(false);
+  // --- ESTADO: Controla la visibilidad del widget de alarmas flotante ---
+  const [showAlarms, setShowAlarms] = useState(false);
   
   const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
   
@@ -46,10 +49,25 @@ export default function EXP_CLOCKS(props) {
 
   const manager = useClocksManager(currentItem, clocksData, currentVersion, systemDate);
 
+  const conGI = _GLOBAL_ID === 'cb1';
+  const namePayment = conGI ? 'Impuestos Municipales' : 'Impuesto Delineacion';
+
+  const clocksToShowRaw = generateClocks({
+      ...manager,
+      currentItem,
+      namePayment,
+      conGI
+  });
+
+  // --- OBTENEMOS LAS ALARMAS USANDO EL HOOK (PUNTO 4: AHORA PASAMOS systemDate) ---
+  const alarms = useAlarms(manager, scheduleConfig, clocksToShowRaw, systemDate);
+
+  // --- PUNTO 1: ELIMINADO EL useEffect QUE ABRÍA AUTOMÁTICAMENTE EL WIDGET ---
+  // Ya no se abrirá solo al cargar la página.
+
   useEffect(() => {
     const handleResize = () => {
       if (sidebarRef.current) {
-        // Altura fija dinámica basada en el sidebar menos el header
         setSidebarHeight(sidebarRef.current.offsetHeight - 44);
       }
     };
@@ -62,21 +80,10 @@ export default function EXP_CLOCKS(props) {
         clearTimeout(timer);
         window.removeEventListener('resize', handleResize);
     };
-  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate]);
+  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, alarms]);
   
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa, FUN_0_TYPE_TIME } = manager;
 
-  const conGI = _GLOBAL_ID === 'cb1';
-  const namePayment = conGI ? 'Impuestos Municipales' : 'Impuesto Delineacion';
-
-  const clocksToShowRaw = generateClocks({
-      ...manager,
-      currentItem,
-      namePayment,
-      conGI
-  });
-
-  // Filtra la tabla para ocultar los bloques por debajo del desistimiento (excepto Ejecutoria y Entrega)
   const filterAfterDesist = (items) => {
     if (!manager.isDesisted) return items;
 
@@ -150,7 +157,6 @@ export default function EXP_CLOCKS(props) {
     formDataClock.set('state', value.state);
     formDataClock.set('id_related', id_related);
     
-    // >>> CORRECCIÓN: AGREGAR LA VERSIÓN AL FORMDATA <<<
     if (value.version !== undefined) {
         formDataClock.set('version', value.version);
     }
@@ -339,12 +345,10 @@ export default function EXP_CLOCKS(props) {
       localScheduleData = newSchedule;
     };
 
-    // Calcular límites legales para pasar al modal
     const legalLimits = {};
     
     clocksToShow.forEach(clockValue => {
       if (!clockValue.title && clockValue.state !== undefined && clockValue.state !== false) {
-        // Calcular límite legal usando la función compartida
         const limitDate = calculateLegalLimit(clockValue.state, clockValue, manager);
         
         if (limitDate) {
@@ -378,7 +382,6 @@ export default function EXP_CLOCKS(props) {
         );
       },
       preConfirm: () => {
-        // Validar que al menos haya una programación
         if (Object.keys(localScheduleData).length === 0) {
           Swal.showValidationMessage('Debes programar al menos un tiempo antes de guardar');
           return false;
@@ -391,10 +394,8 @@ export default function EXP_CLOCKS(props) {
       }
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        // Construir payload para el endpoint
         const payload = buildSchedulePayload(result.value, currentItem);
         
-        // Guardar en backend usando FormData
         MySwal.fire({
           title: 'Guardando...',
           text: 'Por favor espera mientras guardamos la programación',
@@ -409,7 +410,6 @@ export default function EXP_CLOCKS(props) {
         FUN_SERVICE.updateSchedule(currentItem.id, formData)
           .then(response => {
             if (response.data === 'OK' || response.status === 200) {
-              // Guardar en localStorage
               saveScheduleConfig(payload);
               setRefreshTrigger(prev => prev + 1);
               
@@ -439,7 +439,6 @@ export default function EXP_CLOCKS(props) {
             });
           });
       } else if (result.isDenied) {
-        // Eliminar programación
         MySwal.fire({
           title: '¿Estás seguro?',
           text: 'Se eliminará toda la programación de tiempos para este expediente.',
@@ -510,7 +509,6 @@ export default function EXP_CLOCKS(props) {
     return newDate;
   }
   
-  // --- ACCIONES PARA LA BARRA DE CONTROL DE TIEMPO ---
   const handleDateChange = (newDate) => {
     setSystemDate(newDate);
   };
@@ -528,8 +526,8 @@ export default function EXP_CLOCKS(props) {
       <div className="small w-100"><div className="row g-2 m-0 fw-bold">
         <div className="col-5 cell-border">Evento</div>
         <div className="col-2 text-center cell-border">Fecha Evento</div>
-        <div className="col-3 text-center cell-border">Límite Legal</div>
-        <div className="col-2 text-center">Límite Programado</div>
+        <div className="col-2 text-center cell-border">Límite Legal</div>
+        <div className="col-3 text-center">Límite Programado</div>
       </div></div>
     </div>
   );
@@ -551,6 +549,7 @@ export default function EXP_CLOCKS(props) {
             outCodes={outCodes} _CHILD_6_SELECT={_CHILD_6_SELECT} _FIND_6={_FIND_6}
             helpers={{ getClock, getNewestDate, ...manager, currentItem }}
             scheduleConfig={scheduleConfig}
+            systemDate={systemDate}
           />
         );
     });
@@ -558,7 +557,23 @@ export default function EXP_CLOCKS(props) {
 
   return (
     <div className="exp-wrapper">
-      {/* WIDGET FLOTANTE FIJO (NO MODAL) */}
+      
+      {/* --- PUNTO 1 y 2: LÓGICA DE RENDERIZADO DEL WIDGET DE ALARMAS Y FAB --- */}
+      {showAlarms && (
+        <AlarmsWidget 
+          alarms={alarms} 
+          onClose={() => setShowAlarms(false)} 
+        />
+      )}
+      
+      {!showAlarms && alarms.length > 0 && (
+        <button className="alarms-fab" onClick={() => setShowAlarms(true)} title="Mostrar Alertas">
+          <i className="fas fa-bell"></i>
+          <span className="fab-badge">{alarms.length}</span>
+        </button>
+      )}
+
+
       {showTimeTravel && (
         <div className="time-travel-floating-widget">
             <ControlBar 
@@ -591,15 +606,16 @@ export default function EXP_CLOCKS(props) {
           />
           <HolidayCalendar />
           
-          {/* BOTÓN DE ACTIVACIÓN EN EL SIDEBAR (BAJO EL CALENDARIO) */}
-          <button 
-            className="btn-sidebar-utility mt-3" 
-            onClick={() => setShowTimeTravel(true)}
-            title="Activar herramientas de fecha"
-          >
-             <i className="fas fa-user-clock me-2"></i>
-             Emulador de fecha
-          </button>
+          <div className="sidebar-utilities">
+            <button 
+              className="btn-sidebar-utility" 
+              onClick={() => setShowTimeTravel(true)}
+              title="Activar emulador de fecha"
+            >
+               <i className="fas fa-user-clock"></i>
+               Emulador de Fecha
+            </button>
+          </div>
         </div>
       </div>
     </div>

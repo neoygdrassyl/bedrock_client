@@ -9,7 +9,7 @@ import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 const MySwal = withReactContent(Swal);
 
 export const ClockRow = (props) => {
-    const { value, i, clock, onSave, onDelete, cat, outCodes, _CHILD_6_SELECT, _FIND_6, helpers, scheduleConfig } = props;
+    const { value, i, clock, onSave, onDelete, cat, outCodes, _CHILD_6_SELECT, _FIND_6, helpers, scheduleConfig, systemDate } = props;
     const { getClock, getClockVersion, getNewestDate, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, totalSuspensionDays, viaTime } = helpers;
 
     moment.locale('es');
@@ -261,96 +261,89 @@ export const ClockRow = (props) => {
     };
 
     // =====================================================
-    // RENDERIZADO DE LÍMITE PROGRAMADO
+    // RENDERIZADO DE LÍMITE PROGRAMADO (REDiseñado)
     // =====================================================
     const renderScheduledLimit = () => {
-        if (!scheduleConfig || !scheduleConfig.times) {
-            return <div className="scheduled-limit-cell" title="No hay una programación guardada para este proceso.">-</div>;
-        }
-
-        // Usar la nueva utilidad para calcular el límite programado
-        const scheduledLimit = calculateScheduledLimitForDisplay(
-            value.state,
-            value,
-            clock,
-            scheduleConfig,
-            getClock,
-            getClockVersion,
-            helpers
-        );
-
-        if (!scheduledLimit) {
+        if (!scheduleConfig || !scheduleConfig.times || !scheduleConfig.times[value.state]) {
             return <div className="scheduled-limit-cell" title="Este tiempo no tiene programación.">-</div>;
         }
 
-        const { limitDate, days, display, extensionDays } = scheduledLimit;
-        
-        // Determinar si hay retraso o adelanto
-        let isCompleted = !!clock?.date_start;
-        let isOverdue = false;
-        let remainingDays = null;
-        let completionDifference = null;
-
-        if (limitDate && isCompleted) {
-            // Evento completado: calcular días de adelanto o retraso
-            // Negativo = anticipación, Positivo = retraso
-            completionDifference = calcularDiasHabiles(limitDate, clock.date_start, true);
-        } else if (limitDate && !isCompleted) {
-            // Evento pendiente: calcular días restantes o retraso
-            const today = moment().format('YYYY-MM-DD');
-            if (moment(today).isAfter(limitDate)) {
-                isOverdue = true;
-                remainingDays = calcularDiasHabiles(limitDate, today, true);
-            } else {
-                remainingDays = calcularDiasHabiles(today, limitDate, true);
-            }
+        const scheduledData = calculateScheduledLimitForDisplay(value.state, value, clock, scheduleConfig, getClock, getClockVersion, helpers);
+        if (!scheduledData) {
+            return <div className="scheduled-limit-cell">-</div>;
         }
 
-        const colorClass = isOverdue ? 'text-danger' : isCompleted ? 'text-success' : 'text-primary';
+        const { limitDate, days, display, extensionDays } = scheduledData;
+        
+        const isCompleted = !!clock?.date_start;
+        let completionDifference = null;
+        let remainingDays = null;
+        let isOverdue = false;
+
+        if (limitDate) {
+            if (isCompleted) {
+                completionDifference = calcularDiasHabiles(limitDate, clock.date_start, true);
+            } else {
+                const today = systemDate;
+                if (moment(today).isAfter(limitDate)) {
+                    isOverdue = true;
+                    remainingDays = calcularDiasHabiles(limitDate, today, true);
+                } else {
+                    remainingDays = calcularDiasHabiles(today, limitDate, true);
+                }
+            }
+        }
+        
+        // --- LÓGICA DE RENDERIZADO EN 2 FILAS ---
+
+        // Fila Superior: Fecha y Días
+        const TopRow = () => {
+            if (isCompleted) {
+                return <span className="completed-date">{formatDate(clock.date_start)}</span>;
+            }
+            if (limitDate) {
+                return (
+                    <>
+                        <span className="scheduled-date">{formatDate(limitDate)}</span>
+                        {days !== null && <span className="scheduled-days-badge">{`(${days}d)`}</span>}
+                    </>
+                );
+            }
+            // Sin fecha de referencia, solo mostrar días en amarillo
+            if (days !== null) {
+                return <span className="scheduled-days-only">{`${days}d`}</span>;
+            }
+            return null;
+        };
+
+        // Fila Inferior: Estado (Restante, Retraso, Completado)
+        const BottomRow = () => {
+            if (isCompleted) {
+                if (completionDifference === null) return null;
+                if (completionDifference < 0) {
+                    return <div className="success-badge">Completado {Math.abs(completionDifference)}d antes</div>;
+                }
+                if (completionDifference > 0) {
+                    return <div className="delay-badge">Completado {completionDifference}d tarde</div>;
+                }
+                return <div className="on-time-badge">Completado a tiempo</div>;
+            }
+            if (remainingDays !== null) {
+                const statusClass = isOverdue ? 'text-danger' : 'text-success';
+                const statusText = isOverdue ? `Retraso: ${remainingDays}d` : `Quedan: ${remainingDays}d`;
+                return <div className={`scheduled-remaining small ${statusClass}`}>{statusText}</div>;
+            }
+            return null; // No mostrar nada si no hay estado que reportar
+        };
 
         return (
-            <div className="scheduled-limit-cell" title={`Límite programado: ${display}`}>
-                {limitDate ? (
-                    <>
-                        <div className={`scheduled-date ${colorClass}`}>
-                            {moment(limitDate).format('DD MMM YYYY')}
-                        </div>
-                        {days && !isCompleted && (
-                            <div className="scheduled-remaining small text-muted">
-                                {extensionDays > 0 ? `${days} días (${days - extensionDays}+${extensionDays})` : `${days} días`}
-                            </div>
-                        )}
-                        {!isCompleted && remainingDays !== null && (
-                            <div className={`scheduled-remaining small ${isOverdue ? 'text-danger' : 'text-success'}`}>
-                                {isOverdue ? `Retraso: ${remainingDays}d` : `Quedan: ${remainingDays}d`}
-                            </div>
-                        )}
-                        {isCompleted && completionDifference !== null && (
-                            <div>
-                                <div className="completed-date small text-muted">
-                                    {moment(clock.date_start).format('DD MMM YYYY')}
-                                </div>
-                                {completionDifference < 0 ? (
-                                    <div className="success-badge small">
-                                        Completado con {Math.abs(completionDifference)} días de anticipación
-                                    </div>
-                                ) : completionDifference > 0 ? (
-                                    <div className="delay-badge small">
-                                        Completado con {completionDifference} días de retraso
-                                    </div>
-                                ) : (
-                                    <div className="on-time-badge small">
-                                        Completado a tiempo
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </>
-                ) : (
-                    <div className="scheduled-remaining small text-warning">
-                        {display}
-                    </div>
-                )}
+            <div className="scheduled-limit-cell" title={display}>
+                <div className="scheduled-limit-top">
+                    <TopRow />
+                </div>
+                <div className="scheduled-limit-bottom">
+                    <BottomRow />
+                </div>
             </div>
         );
     };
@@ -474,13 +467,13 @@ export const ClockRow = (props) => {
                             </div>
                         </div>
 
-                        <div className="col-3 text-center small cell-border">
+                        <div className="col-2 text-center small cell-border">
                             <div className="exp-row-content">
                                 {renderLegalLimit()}
                             </div>
                         </div>
 
-                        <div className="col-2 text-center small">
+                        <div className="col-3 text-center small">
                             <div className="exp-row-content">
                                 {renderScheduledLimit()}
                             </div>

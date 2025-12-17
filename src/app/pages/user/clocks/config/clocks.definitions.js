@@ -210,7 +210,8 @@ const extraClocks = (props) => {
         limit: [[5, 5]],
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
-        spentDaysConfig: { startState: 5 } 
+        spentDaysConfig: { startState: 5 },
+        hasLegalAlarm: true
       },
       ...buildDesistSection('-1', getClockVersion),
       ...buildDesistSection('-2', getClockVersion),

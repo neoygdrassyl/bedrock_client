@@ -305,13 +305,15 @@ export const SidebarInfo = ({ manager, actions }) => {
     const showDaysDetailsModal = () => {
         const phase1 = processPhases?.find(p => p.id === 'phase1');
         const phase4 = processPhases?.find(p => p.id === 'phase4');
-        
-        const breakdown = phase1?.daysBreakdown || phase1?.parallelActors?.primary?.daysBreakdown;
         const context = phase4?.daysContext;
 
-        const baseDays = breakdown?.base || 45;
-        const suspDays = breakdown?.suspensions || 0;
-        const extDays = breakdown?.extension || 0;
+        // --- CORRECCIÓN INICIA AQUÍ ---
+        // 1. Usar los valores correctos directamente desde el manager.
+        const baseDays = FUN_0_TYPE_TIME[manager.currentItem.type] ?? 45;
+        const suspDays = manager.totalSuspensionDays || 0;
+        const extDays = manager.extension.days || 0;
+        // --- FIN CORRECCIÓN ---
+
         const totalDays = baseDays + suspDays + extDays;
         
         const phase1Used = context?.usedInPhase1 || phase1?.usedDays || 0;

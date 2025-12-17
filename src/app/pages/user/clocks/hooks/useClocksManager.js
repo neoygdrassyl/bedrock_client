@@ -9,12 +9,15 @@ export const calcularDiasHabiles = (fechaInicio, fechaFin, include=false) => {
   if (!fechaInicio || !fechaFin) return 0;
   try {
     let inicio = moment(fechaInicio). format('YYYY-MM-DD');
-    if (!include){
-      inicio = sumarDiasHabiles(inicio, 1);
-    }
+    // --- CORRECCIÓN CLAVE: El cálculo de días hábiles entre dos fechas.
+    // Si include es false, significa que no contamos el día de inicio. La forma correcta de
+    // hacerlo es simplemente usar la función como está, ya que por defecto cuenta los días *entre* las fechas.
+    // Sumar un día al inicio puede causar errores si la fecha de fin es el mismo día.
     const fin = moment(fechaFin).format('YYYY-MM-DD');
     if (moment(fin).isBefore(inicio)) return 0;
-    return businessDaysCalculator. contarDiasHabiles(inicio, fin);
+    // La librería ya gestiona si el día de inicio cuenta o no basado en su implementación interna,
+    // que es contar los días completos *entre* las fechas.
+    return businessDaysCalculator.contarDiasHabiles(inicio, fin, include);
   } catch (e) { return 0; }
 };
 export const sumarDiasHabiles = (fechaInicio, dias) => {
@@ -78,8 +81,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
   // --- MEMOS DE EVENTOS CLAVE ---
   const suspensionPreActa = useMemo(() => {
     const start = getClock(300), end = getClock(350);
-    const exists = !!start?.date_start;
-    const days = exists && end?.date_start ? calcularDiasHabiles(start.date_start, end.date_start, true) : 0;
+    const exists = !!start?. date_start;
     return { exists, start, end, days: exists && end?.date_start ? calcularDiasHabiles(start.date_start, end.date_start, true) : 0, isActive: exists && ! end?. date_start };
   }, [clocksData]);
 
@@ -98,7 +100,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
   const totalSuspensionDays = useMemo(() => suspensionPreActa.days + suspensionPostActa.days, [suspensionPreActa, suspensionPostActa]);
   const extensionDays = useMemo(() => extension.days, [extension]);
 
-  // --- CÁLCULO DE viaTime (Ajustado con regla día siguiente) ---
+  // --- CÁLCULO DE viaTime (Días restantes para Fase 4) ---
   const viaTime = useMemo(() => {
     const ldfDate = getClock(5)?.date_start;
     const acta1Date = getClock(30)?. date_start;
@@ -116,14 +118,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
     
     let phase1UsedDays = 0;
     if (acta1Date) {
-      // APLICAMOS REGLA: Consumo de días inicia al día siguiente de LDF
-      // Si LDF = hoy, cálculo inicia mañana. Si Acta1 = hoy, y LDF = hoy, días usados = 0.
-      const calcStart = sumarDiasHabiles(ldfDate, 1);
-      if (moment(acta1Date).isSameOrAfter(calcStart)) {
-          phase1UsedDays = calcularDiasHabiles(calcStart, acta1Date);
-      } else {
-          phase1UsedDays = 0;
-      }
+        phase1UsedDays = calcularDiasHabiles(ldfDate, acta1Date, false);
     }
     
     return Math.max(0, totalCuraduriaDays - phase1UsedDays);
@@ -133,29 +128,32 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
       clocksData, currentItem, today, suspensionPreActa, suspensionPostActa, extension
   });
   
+  // --- CÁLCULO DEL ESTADO GENERAL DEL PROCESO ---
   const curaduriaDetails = useMemo(() => {
     const activePhase = processPhases. find(p => ['ACTIVO', 'PAUSADO']. includes(p.status));
     const isFinished = processPhases.length > 0 && processPhases[processPhases.length - 1].status === 'COMPLETADO';
     const desistEvents = (clocksData || []). filter(c => c?. date_start && STEPS_TO_CHECK. includes(String(c.state)));
     const isDesisted = desistEvents. length > 0;
 
-    if (isDesisted) return { status: 'DESISTIDO', notStarted: false, paused: false, finished: true, isDesisted: true };
-    if (isFinished) return { status: 'FINALIZADO', notStarted: false, paused: false, finished: true, isDesisted: false };
-    if (! activePhase) return { status: 'NO_INICIADO', notStarted: true, paused: false, finished: false, isDesisted: false };
+    if (isDesisted) return { status: 'DESISTIDO', notStarted: false, paused: false, finished: true, isDesisted: true, activePhaseName: 'Proceso Desistido' };
+    if (isFinished) return { status: 'FINALIZADO', notStarted: false, paused: false, finished: true, isDesisted: false, activePhaseName: 'Proceso Finalizado' };
+    if (! activePhase) return { status: 'NO_INICIADO', notStarted: true, paused: false, finished: false, isDesisted: false, activePhaseName: 'Pendiente de Inicio' };
     
     const total = (activePhase.totalDays || 0) + (activePhase.extraDays || 0);
     const used = activePhase.usedDays || 0;
+    const remaining = total-used;
     
     let status = activePhase.status;
-    if (status === 'ACTIVO' && total > 0 && total - used < 0) {
+    if (status === 'ACTIVO' && total > 0 && remaining < 0) {
       status = 'VENCIDO';
     }
 
     return {
-      status: status, total: total, used: used, remaining: total - used,
+      status: status, total: total, used: used, remaining: remaining,
       notStarted: false, paused: status === 'PAUSADO', finished: false, isDesisted: false,
       baseDays: activePhase.totalDays, suspensionDays: totalSuspensionDays, extensionDays: extensionDays,
       processTypeLabel: FUN_0_TYPE_LABELS[currentItem. type] || '',
+      activePhaseName: activePhase.title || 'Fase General', // <-- ¡AQUÍ ESTÁ LA MEJORA!
     };
   }, [processPhases, totalSuspensionDays, extensionDays, currentItem. type, clocksData]);
 
@@ -206,18 +204,16 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
         startDate = getNewestDate(startStates);
     }
     if (!startDate) return null;
-    // Aplicar también regla día siguiente para la visualización de "invertidos"
-    // Si startDate = hoy, y clock.date = hoy, días = 0
-    const calcStart = sumarDiasHabiles(startDate, 1);
-    if (moment(clock.date_start).isBefore(calcStart)) return { days: 0, startDate };
-    
-    return { days: calcularDiasHabiles(calcStart, clock.date_start), startDate };
+
+    const days = calcularDiasHabiles(startDate, clock.date_start);
+    return { days, startDate };
   };
 
   return {
+    systemDate, // Pasar la fecha del sistema para que otros hooks la usen
     clocksData, suspensionPreActa, suspensionPostActa, totalSuspensionDays, extension,
     curaduriaDetails, isDesisted: curaduriaDetails. isDesisted, processPhases, getNewestDate, canAddSuspension, canAddExtension, availableSuspensionTypes,
     NEGATIVE_PROCESS_TITLE, FUN_0_TYPE_TIME, FUN_0_TYPE_LABELS, calculateDaysSpent, getClock, getClockVersion,
-    viaTime, currentItem, 
+    viaTime, currentItem,
   };
 };
