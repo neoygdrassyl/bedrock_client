@@ -11,8 +11,8 @@ import { SidebarInfo } from './components/SidebarInfo';
 import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
 import { ScheduleModal } from './components/ScheduleModal';
-import { AlarmsWidget } from './components/AlarmsWidget'; // Importar el nuevo widget
-import { useAlarms } from './hooks/useAlarms'; // Importar el nuevo hook de alarmas
+import { AlarmsWidget } from './components/AlarmsWidget';
+import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles } from './hooks/useClocksManager';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
 
@@ -31,11 +31,13 @@ export default function EXP_CLOCKS(props) {
   const [sidebarHeight, setSidebarHeight] = useState('auto');
   
   const [showTimeTravel, setShowTimeTravel] = useState(false);
-  // --- ESTADO: Controla la visibilidad del widget de alarmas flotante ---
   const [showAlarms, setShowAlarms] = useState(false);
   
   const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
   
+  // Estado para secciones colapsables (Acordeón)
+  const [collapsedSections, setCollapsedSections] = useState({});
+
   const sidebarRef = useRef(null);
 
   const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
@@ -59,11 +61,7 @@ export default function EXP_CLOCKS(props) {
       conGI
   });
 
-  // --- OBTENEMOS LAS ALARMAS USANDO EL HOOK (PUNTO 4: AHORA PASAMOS systemDate) ---
   const alarms = useAlarms(manager, scheduleConfig, clocksToShowRaw, systemDate);
-
-  // --- PUNTO 1: ELIMINADO EL useEffect QUE ABRÍA AUTOMÁTICAMENTE EL WIDGET ---
-  // Ya no se abrirá solo al cargar la página.
 
   useEffect(() => {
     const handleResize = () => {
@@ -82,7 +80,7 @@ export default function EXP_CLOCKS(props) {
     };
   }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, alarms]);
   
-  const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa, FUN_0_TYPE_TIME } = manager;
+  const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa } = manager;
 
   const filterAfterDesist = (items) => {
     if (!manager.isDesisted) return items;
@@ -123,6 +121,13 @@ export default function EXP_CLOCKS(props) {
 
   const clocksToShow = filterAfterDesist(clocksToShowRaw);
 
+  const toggleSection = (title) => {
+    setCollapsedSections(prev => ({
+        ...prev,
+        [title]: !prev[title]
+    }));
+  };
+
   const applyLocalClockChange = (state, changes, version) => {
     setClocksData(prev => {
       const arr = Array.isArray(prev) ? [...prev] : [];
@@ -142,20 +147,10 @@ export default function EXP_CLOCKS(props) {
     var formDataClock = new FormData();
 
     const dateInput = document.getElementById("clock_exp_date_" + i);
-    const resolverSelect = document.getElementById("clock_exp_res_" + i);
-    const id6Select = document.getElementById("clock_exp_id6_" + i);
-    const idRelatedInput = document.getElementById("clock_exp_id_related_" + i);
-
     const dateVal = dateInput ? String(dateInput.value || '').trim() : '';
-    let resolver_context = resolverSelect ? resolverSelect.value : false;
-    let resolver_id6 = id6Select ? id6Select.value : 0;
-    let id_related = idRelatedInput ? idRelatedInput.value : '';
 
     if (dateVal) formDataClock.set('date_start', dateVal);
-    if (resolver_context) formDataClock.set('resolver_context', resolver_context);
-    formDataClock.set('resolver_id6', resolver_id6);
     formDataClock.set('state', value.state);
-    formDataClock.set('id_related', id_related);
     
     if (value.version !== undefined) {
         formDataClock.set('version', value.version);
@@ -177,16 +172,12 @@ export default function EXP_CLOCKS(props) {
           descBase = `Fin de prórroga (${days} días hábiles)`;
         }
     }
-    if (resolver_context) descBase = (descBase ? (descBase + ': ') : '') + resolver_context;
 
     formDataClock.set('desc', descBase);
     formDataClock.set('name', value.name);
 
     applyLocalClockChange(value.state, {
       date_start: dateVal,
-      resolver_context: resolver_context || '',
-      resolver_id6: resolver_id6,
-      id_related: id_related || '',
       desc: descBase,
       name: value.name,
       version: value.version,
@@ -251,7 +242,7 @@ export default function EXP_CLOCKS(props) {
   };
 
   const addTimeControl = (type) => {
-    if (type === 'suspension') {
+     if (type === 'suspension') {
       const availableDays = 10 - totalSuspensionDays;
       if (availableSuspensionTypes.length === 0) return MySwal.fire({ title: 'No disponible', text: 'No hay espacios para añadir suspensiones', icon: 'warning' });
       
@@ -386,7 +377,6 @@ export default function EXP_CLOCKS(props) {
           Swal.showValidationMessage('Debes programar al menos un tiempo antes de guardar');
           return false;
         }
-
         return localScheduleData;
       },
       willClose: () => {
@@ -395,7 +385,6 @@ export default function EXP_CLOCKS(props) {
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         const payload = buildSchedulePayload(result.value, currentItem);
-        
         MySwal.fire({
           title: 'Guardando...',
           text: 'Por favor espera mientras guardamos la programación',
@@ -403,24 +392,20 @@ export default function EXP_CLOCKS(props) {
           showConfirmButton: false,
           allowOutsideClick: false
         });
-
         const formData = new FormData();
         formData.append('scheduleConfig', JSON.stringify(payload));
-
         FUN_SERVICE.updateSchedule(currentItem.id, formData)
           .then(response => {
             if (response.data === 'OK' || response.status === 200) {
               saveScheduleConfig(payload);
               setRefreshTrigger(prev => prev + 1);
-              
               const scheduledCount = Object.keys(result.value).length;
               MySwal.fire({
                 title: 'Programación Guardada',
                 html: `<div class="text-start">
                     <p><i class="fas fa-check-circle text-success me-2"></i><strong>${scheduledCount}</strong> tiempo${scheduledCount !== 1 ? 's' : ''} programado${scheduledCount !== 1 ? 's' : ''}</p>
                     <p class="text-muted small mb-0">La columna "Límite Programado" mostrará las fechas calculadas.</p>
-                  </div>
-                `,
+                  </div>`,
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false
@@ -439,7 +424,8 @@ export default function EXP_CLOCKS(props) {
             });
           });
       } else if (result.isDenied) {
-        MySwal.fire({
+        // ... (Logica de eliminación igual)
+         MySwal.fire({
           title: '¿Estás seguro?',
           text: 'Se eliminará toda la programación de tiempos para este expediente.',
           icon: 'warning',
@@ -483,22 +469,6 @@ export default function EXP_CLOCKS(props) {
   const _FIND_6 = (id) => (currentItem.fun_6s || []).find(f => f.id == id) || null;
   const _CHILD_6_SELECT = () => (currentItem.fun_6s || []).map(f => <option key={f.id} value={f.id}>{f.description}</option>);
   
-  const catForTitle = (title = '') => {
-    title = title.toUpperCase();
-    if (title.includes('DESISTIDO') || title.includes('DESISTIMIENTO')) return { color: '#F93154', icon: 'fa-exclamation-circle' };
-    if (title.includes('RADICACIÓN')) return { color: '#5bc0de', icon: 'fa-inbox' };
-    if (title.includes('OBSERVACIONES')) return { color: '#fd7e14', icon: 'fa-clipboard-list' };
-    if (title.includes('CORRECCIONES')) return { color: '#20c997', icon: 'fa-tools' };
-    if (title.includes('VIABILIDAD')) return { color: '#6f42c1', icon: 'fa-compass' };
-    if (title.includes('PAGOS')) return { color: '#198754', icon: 'fa-money-bill' };
-    if (title.includes('RESOLUCIÓN')) return { color: '#0b5ed7', icon: 'fa-file-signature' };
-    if (title.includes('RECURSO')) return { color: '#d63384', icon: 'fa-exclamation-circle' };
-    if (title.includes('LICENCIA')) return { color: '#157347', icon: 'fa-id-card' };
-    if (title.includes('SUSPENSIÓN')) return { color: '#ffc107', icon: 'fa-pause' };
-    if (title.includes('PRÓRROGA')) return { color: '#17a2b8', icon: 'fa-clock' };
-    return { color: '#5bc0de', icon: 'fa-folder-open' };
-  };
-  
   const getNewestDate = (states) => {
     let newDate = null;
     states.forEach((element) => {
@@ -521,31 +491,59 @@ export default function EXP_CLOCKS(props) {
     setSystemDate(moment().format('YYYY-MM-DD'));
   };
   
+  // -- NUEVO HEADER CON ALINEACIÓN A LA IZQUIERDA --
   const Header = () => (
-    <div className="exp-head d-flex align-items-center justify-between">
-      <div className="small w-100"><div className="row g-2 m-0 fw-bold">
-        <div className="col-5 cell-border">Evento</div>
-        <div className="col-2 text-center cell-border">Fecha Evento</div>
-        <div className="col-2 text-center cell-border">Límite Legal</div>
-        <div className="col-3 text-center">Límite Programado</div>
-      </div></div>
+    <div className="exp-head d-flex align-items-center">
+      <div className="col-eventos header-title">
+        <i className="fas fa-list me-2"></i> Evento
+      </div>
+      <div className="col-fecha header-title">
+         <i className="far fa-calendar me-2"></i> Fecha evento
+      </div>
+      <div className="col-limite header-title">
+         <i className="fas fa-history me-2"></i> Límite legal
+      </div>
+      <div className="col-programado header-title">
+         <i className="fas fa-calendar-check me-2"></i> Límite Programado
+      </div>
+       <div className="col-alarma header-title">
+         <i className="far fa-clock me-2"></i> Alarmas
+      </div>
     </div>
   );
 
   let lastTitle = '';
   const renderClockList = () => {
+    let isCurrentGroupCollapsed = false;
+
     return clocksToShow.map((value, i) => {
         const clock = value.version !== undefined
           ? getClockVersion(value.state, value.version)
           : getClock(value.state);
         
-        if (value.title) lastTitle = value.title;
-        const cat = catForTitle(lastTitle);
+        if (value.title) {
+            lastTitle = value.title;
+            const isCollapsed = collapsedSections[value.title];
+            isCurrentGroupCollapsed = isCollapsed;
+
+            return (
+                <div key={`section-${i}`} className="exp-section-header" onClick={() => toggleSection(value.title)}>
+                    <div className="d-flex align-items-center">
+                        <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} me-3 text-muted`}></i>
+                        <span className="fw-normal">{value.title}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        if (isCurrentGroupCollapsed) {
+            return null;
+        }
 
         return (
           <ClockRow
             key={`row-${i}-${value.state ?? 'no-state'}-${value.version ?? 'no-version'}-${refreshTrigger}-${systemDate}`}
-            value={value} i={i} clock={clock} onSave={save_clock} onDelete={delete_clock} cat={cat}
+            value={value} i={i} clock={clock} onSave={save_clock} onDelete={delete_clock}
             outCodes={outCodes} _CHILD_6_SELECT={_CHILD_6_SELECT} _FIND_6={_FIND_6}
             helpers={{ getClock, getNewestDate, ...manager, currentItem }}
             scheduleConfig={scheduleConfig}
@@ -557,8 +555,6 @@ export default function EXP_CLOCKS(props) {
 
   return (
     <div className="exp-wrapper">
-      
-      {/* --- PUNTO 1 y 2: LÓGICA DE RENDERIZADO DEL WIDGET DE ALARMAS Y FAB --- */}
       {showAlarms && (
         <AlarmsWidget 
           alarms={alarms} 
@@ -572,7 +568,6 @@ export default function EXP_CLOCKS(props) {
           <span className="fab-badge">{alarms.length}</span>
         </button>
       )}
-
 
       {showTimeTravel && (
         <div className="time-travel-floating-widget">

@@ -15,6 +15,16 @@ export const ALARM_THRESHOLD_DAYS = {
  */
 export const ALARM_SUGGESTIONS = {
     // --- Sugerencias específicas por STATE del clock ---
+    502: { // Legal y debida forma
+        legal: {
+            porVencer: { suggestion: "El tiempo está pronto a vencer, en caso de no quedar en Legal y debida forma el proyecto deberá desistirse." },
+            vencido: { suggestion: "El tiempo legal para el solicitante ha finalizado, por favor iniciar el desistimiento" }
+        },
+        scheduled: {
+            porVencer: { suggestion: "El tiempo está pronto a vencer, en caso de no quedar en Legal y debida forma el proyecto deberá desistirse." },
+            vencido: { suggestion: "El tiempo legal para el solicitante ha finalizado, por favor iniciar el desistimiento" }
+        }
+    },
     30: { // Acta Parte 1
         legal: {
             porVencer: { suggestion: "El plazo para emitir el Acta de Observaciones está por terminar. Añadir suspensión de términos o prórroga por complejidad." },
@@ -23,6 +33,16 @@ export const ALARM_SUGGESTIONS = {
         scheduled: {
             porVencer: { suggestion: "La fecha que programaste para el Acta de Observaciones se acerca. Asegúrate de cumplir con tu planificación." },
             vencido: { suggestion: "Te has retrasado en la fecha programada para el Acta. Reprograma o completa la tarea con urgencia." }
+        }
+    },
+    35: { // Radicacion correcciones solicitante
+        legal: {
+            porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
+            vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
+        },
+        scheduled: {
+            porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
+            vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
         }
     },
     61: { // Viabilidad
@@ -48,7 +68,7 @@ export const ALARM_SUGGESTIONS = {
     503: { // Instalación de Valla
         legal: {
             porVencer: { suggestion: "El solicitante está cerca del límite para registrar la instalación de la valla. Considera enviar un recordatorio." },
-            vencido: { suggestion: "El plazo para instalar la valla ha vencido. Inicia el proceso de desistimiento por incumplimiento si corresponde." }
+            vencido: { suggestion: "El plazo para instalar la valla ha vencido. Inicia el proceso de desistimiento por valla." }
         }
     },
 
