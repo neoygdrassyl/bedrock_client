@@ -84,8 +84,13 @@ export default function RECORDS_BINNACLE(props) {
             .then(response => {
                 let binn = '';
 
-                if (PATH) binn = response.data[PATH].binnacle;
-                if (response.data.length) binn = response.data[0].binnacle;
+                // FIX: Add optional chaining for undefined response handling
+                if (PATH && response.data?.[PATH]?.binnacle) {
+                    binn = response.data[PATH].binnacle;
+                }
+                if (response.data?.length && response.data[0]?.binnacle) {
+                    binn = response.data[0].binnacle;
+                }
 
                 binn = binn ?? '';
                 setBinn(binn);
