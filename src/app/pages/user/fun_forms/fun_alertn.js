@@ -646,7 +646,8 @@ class FUN_ALERT extends Component {
                             </div>
                         </div>
                     })}
-                </React.Fragment> {/* FIX: Changed from fragment to React.Fragment to support key */}
+                </React.Fragment>
+                {/* FIX: Changed from fragment to React.Fragment to support key */}
             })
             return <>
                 {map}
