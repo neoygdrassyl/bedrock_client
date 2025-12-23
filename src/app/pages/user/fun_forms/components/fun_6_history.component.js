@@ -339,8 +339,14 @@ class FUN_6_HISTORY extends Component {
             <div>
                 <MDBTooltip title='Ver Historial' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 ms-1">
                     {/* FIX: Changed from MDBBtn to span to avoid nested button issues */}
-                    <span role="button" tabIndex={0} className="btn shadow-none p-1" onClick={() => toggle(true)} style={{cursor: 'pointer'}}>
-                        <i class="fas fa-history" style={{fontSize: '150%'}}></i>
+                    <span 
+                        role="button" 
+                        tabIndex={0} 
+                        className="btn shadow-none p-1" 
+                        onClick={() => toggle(true)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggle(true); }}
+                        style={{cursor: 'pointer'}}>
+                        <i className="fas fa-history" style={{fontSize: '150%'}}></i>
                     </span>
                 </MDBTooltip>
 
