@@ -314,7 +314,8 @@ class FUNN53 extends Component {
 
             return <select className='form-select' onChange={(e) => setCopy(e.target.value)}>
                 <option disabled selected>Copiar...</option>
-                {copyList.map(value => <option value={value.index}>{value.name} {value.surname}</option>)}
+                {/* FIX: Added key prop to map */}
+                {copyList.map((value, index) => <option key={value.index || index} value={value.index}>{value.name} {value.surname}</option>)}
             </select>
 
         }
