@@ -96,14 +96,14 @@ class FUN_6_HISTORY extends Component {
                 },
                 {
                     name: <label>FECHA</label>,
-                    selector: 'date',
+                    selector: row => row.date, // FIX: v7→v8 column selector
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.date}</label>
                 },
                 {
                     name: <label>ESTADO FINAL</label>,
-                    selector: 'state',
+                    selector: row => row.state, // FIX: v7→v8 column selector
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.state == 0 ? "EN ARCHIVO" : "FUERA DE ARCHIVO"}</label>
@@ -338,7 +338,10 @@ class FUN_6_HISTORY extends Component {
         return (
             <div>
                 <MDBTooltip title='Ver Historial' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 ms-1">
-                    <MDBBtn className="btn shadow-none p-1" onClick={() => toggle(true)}><i class="fas fa-history" style={{fontSize: '150%'}}></i></MDBBtn>
+                    {/* FIX: Changed from MDBBtn to span to avoid nested button issues */}
+                    <span role="button" tabIndex={0} className="btn shadow-none p-1" onClick={() => toggle(true)} style={{cursor: 'pointer'}}>
+                        <i class="fas fa-history" style={{fontSize: '150%'}}></i>
+                    </span>
                 </MDBTooltip>
 
                 <Modal contentLabel="GENERAL VIEW FUN"
