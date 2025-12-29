@@ -31,20 +31,20 @@ export const ClockRow = (props) => {
         const currentDate = clock?.date_start ?? value.manualDate;
         
         if (currentDate) {
-            return <i className="fas fa-check" style={{ color: '#80B882', fontSize: '1rem' }}></i>;
+            return <i className="fas fa-check-circle" style={{ color: '#80B882', fontSize: '0.6rem' }}></i>;
         }
         
         if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) {
-             return <i className="fas fa-minus-circle" style={{ color: '#EBEBEB', fontSize: '1rem' }}></i>;
+             return <i className="fas fa-minus-circle" style={{ color: '#EBEBEB', fontSize: '0.6rem' }}></i>;
         }
 
-        const isCritical = ['Citación', 'Notificación'].some(k => (value.name || '').includes(k)); 
+        // const isCritical = ['Citación', 'Notificación'].some(k => (value.name || '').includes(k)); 
         
-        if (isCritical) {
-            return <i className="fas fa-exclamation-circle" style={{ color: '#C52D2D', fontSize: '1rem' }}></i>;
-        }
+        // if (isCritical) {
+        //     return <i className="fas fa-exclamation-circle" style={{ color: '#C52D2D', fontSize: '0.6rem' }}></i>;
+        // }
 
-        return <i className="fas fa-minus-circle" style={{ color: '#F0D228', fontSize: '1rem' }}></i>;
+        return <i className="fas fa-minus-circle" style={{ color: '#F0D228', fontSize: '0.6rem' }}></i>;
     };
 
 

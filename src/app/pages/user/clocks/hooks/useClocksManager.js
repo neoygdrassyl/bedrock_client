@@ -60,7 +60,7 @@ export const useScheduleConfig = (expedienteId) => {
 // =====================================================
 // HOOK PRINCIPAL
 // =====================================================
-export const useClocksManager = (currentItem, clocksData, currentVersion, systemDate) => {
+export const useClocksManager = (currentItem, clocksData, currentVersion, systemDate, phaseOptions = {}) => {
 
   const today = useMemo(() => moment(systemDate).format('YYYY-MM-DD'), [systemDate]);
 
@@ -214,6 +214,6 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
     clocksData, suspensionPreActa, suspensionPostActa, totalSuspensionDays, extension,
     curaduriaDetails, isDesisted: curaduriaDetails. isDesisted, processPhases, getNewestDate, canAddSuspension, canAddExtension, availableSuspensionTypes,
     NEGATIVE_PROCESS_TITLE, FUN_0_TYPE_TIME, FUN_0_TYPE_LABELS, calculateDaysSpent, getClock, getClockVersion,
-    viaTime, currentItem,
+    viaTime, currentItem, phaseOptions, // <-- AÑADIR phaseOptions a los valores de retorno
   };
 };

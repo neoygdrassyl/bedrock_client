@@ -42,10 +42,26 @@ export default function EXP_CLOCKS(props) {
 
   const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
 
+  // --- LOGGING ---
+  console.log('%c[EXP_CLOCKS RENDER] ==================================', 'color: #8A2BE2; font-weight: bold;');
+  console.log('Props (currentItem.fun_clocks):', currentItem?.fun_clocks);
+  console.log('State (clocksData):', clocksData);
+
   useEffect(() => {
+    console.log('%c[EFFECT 1] Sincronizando props -> state', 'color: #007BFF');
     if (currentItem?.fun_clocks) {
-      setClocksData([...currentItem.fun_clocks]);
-      setRefreshTrigger(prev => prev + 1);
+      const clock1001FromProps = currentItem.fun_clocks.find(c => String(c.state) === '1001');
+      const clock1001FromState = clocksData.find(c => String(c.state) === '1001');
+      
+      // SOLO actualizar si el 1001 del state es diferente al de las props
+      // Esto previene que se sobrescriba el estado local durante una actualización optimista
+      if (!clock1001FromState || (clock1001FromProps && clock1001FromProps.desc !== clock1001FromState.desc)) {
+         console.log('%c[EFFECT 1] Prop `fun_clocks` ha cambiado. Actualizando `clocksData`...', 'color: #007BFF; font-weight: bold;');
+         setClocksData([...currentItem.fun_clocks]);
+         setRefreshTrigger(prev => prev + 1);
+      } else {
+         console.log('%c[EFFECT 1] `fun_clocks` recibido, pero se omite la actualización del state para prevenir sobreescritura.', 'color: #007BFF');
+      }
     }
   }, [currentItem?.fun_clocks]);
 
@@ -54,11 +70,25 @@ export default function EXP_CLOCKS(props) {
   const conGI = _GLOBAL_ID === 'cb1';
   const namePayment = conGI ? 'Impuestos Municipales' : 'Impuesto Delineacion';
 
+  // Obtener la configuración de las fases desde el clock especial 1001
+  const phaseOptionsClock = manager.getClock('1001');
+  let phaseOptions = {};
+  try {
+      phaseOptions = phaseOptionsClock?.desc ? JSON.parse(phaseOptionsClock.desc) : {};
+  } catch (e) {
+      console.error("Error parsing phaseOptions JSON:", e);
+      phaseOptions = {};
+  }
+  
+  // --- LOGGING ---
+  console.log('%c[RENDER] Usando `phaseOptions`:', 'color: #8A2BE2', phaseOptions);
+
   const clocksToShowRaw = generateClocks({
       ...manager,
       currentItem,
       namePayment,
-      conGI
+      conGI,
+      phaseOptions // Pasamos las opciones a las definiciones
   });
 
   const alarms = useAlarms(manager, scheduleConfig, clocksToShowRaw, systemDate);
@@ -187,17 +217,34 @@ export default function EXP_CLOCKS(props) {
   };
 
   const applyLocalClockChange = (state, changes, version) => {
+    console.groupCollapsed('%c[applyLocalClockChange] Actualización optimista de UI', 'color: #28a745');
+    console.log('State:', state, 'Version:', version, 'Changes:', changes);
+    
     setClocksData(prev => {
       const arr = Array.isArray(prev) ? [...prev] : [];
       const idx = arr.findIndex(c => String(c.state) === String(state) && (version !== undefined ? String(c.version) === String(version) : true));
+      
+      let newClock;
       if (idx >= 0) {
-        arr[idx] = { ...arr[idx], ...changes, state, version };
+        newClock = { ...arr[idx], ...changes };
+        arr[idx] = newClock;
       } else {
-        arr.push({ ...changes, state, version });
+        newClock = { ...changes, state, version };
+        arr.push(newClock);
       }
+      
+      console.log('Nuevo `clocksData` local:', arr);
+      
+      // Si estamos actualizando el clock 1001, refrescamos el trigger
+      // para forzar el re-renderizado completo con las nuevas opciones.
+      if (String(state) === '1001') {
+        console.log('%cForzando refreshTrigger para el clock 1001', 'color: #28a745; font-weight: bold;');
+        setRefreshTrigger(p => p + 1);
+      }
+      
+      console.groupEnd();
       return arr;
     });
-    setRefreshTrigger(p => p + 1);
   };
 
   const save_clock = (value, i) => {
@@ -226,8 +273,8 @@ export default function EXP_CLOCKS(props) {
     if (value.state === 401 && dateVal) {
         const startExt = manager.extension.start?.date_start;
         if (startExt) {
-          const days = calcularDiasHabiles(startExt, dateVal);
-          descBase = `Fin de prórroga (${days} días hábiles)`;
+          const days = dateParser_dateDiff(startExt, dateVal);
+          descBase = `Fin de prórroga (${days} días)`;
         }
     }
 
@@ -245,24 +292,32 @@ export default function EXP_CLOCKS(props) {
   }
 
   const manage_clock = (useMySwal, findOne, version, formDataClock, triggerUpdate = false) => {
+    console.groupCollapsed('%c[manage_clock] Guardando en backend', 'color: #17a2b8');
+    console.log('State:', findOne, 'Version:', version, 'Trigger Update:', triggerUpdate);
+    
     var _CHILD = getClockVersion(findOne, version) || getClock(findOne);
     formDataClock.set('fun0Id', currentItem.id);
 
     if (useMySwal) MySwal.fire({ title: swaMsg.title_wait, text: swaMsg.text_wait, icon: 'info', showConfirmButton: false });
     
     const onOk = () => {
+      console.log('%cGuardado en backend OK. Solicitando update...', 'color: #17a2b8');
       if (useMySwal) MySwal.fire({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer, icon: 'success', confirmButtonText: swaMsg.text_btn });
       props.requestUpdate(currentItem.id);
       if (triggerUpdate) setTimeout(() => props.requestUpdate(currentItem.id), 150);
+      console.groupEnd();
     }
     const onErr = (e) => {
-      console.log(e);
+      console.error('Error guardando clock en backend:', e);
       if (useMySwal) MySwal.fire({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning', confirmButtonText: swaMsg.text_btn });
+      console.groupEnd();
     }
 
     if (_CHILD && _CHILD.id) {
+       console.log('Llamando a FUN_SERVICE.update_clock para el ID:', _CHILD.id);
       FUN_SERVICE.update_clock(_CHILD.id, formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
     } else {
+       console.log('Llamando a FUN_SERVICE.create_clock');
       FUN_SERVICE.create_clock(formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
     }
   }
@@ -524,6 +579,47 @@ export default function EXP_CLOCKS(props) {
     });
   };
 
+  const handleOptionChange = (phaseKey, option, value) => {
+    console.group('%c[handleOptionChange] El usuario cambió una opción', 'color: #fd7e14');
+    console.log('Fase:', phaseKey, 'Opción:', option, 'Nuevo Valor:', value);
+
+    // 1. Clonar las opciones actuales desde el estado para una UI optimista
+    let allOptions = { ...(phaseOptions || {}) };
+
+    // 2. Preparar la estructura para la fase si no existe
+    if (!allOptions[phaseKey]) {
+        allOptions[phaseKey] = {};
+    }
+
+    // 3. Actualizar la opción específica
+    let phaseSpecificOptions = { ...allOptions[phaseKey], [option]: value };
+
+    // 4. Lógica excluyente
+    if (option === 'notificationType' && value === 'comunicar') {
+        phaseSpecificOptions.byAviso = false;
+    }
+
+    // 5. Unir todo en el objeto principal
+    const newAllOptions = { ...allOptions, [phaseKey]: phaseSpecificOptions };
+    const newDesc = JSON.stringify(newAllOptions);
+    console.log('Nuevas opciones a guardar (JSON):', newDesc);
+
+    // 6. Actualización optimista de la UI
+    console.log('Invocando `applyLocalClockChange` para actualización optimista...');
+    applyLocalClockChange('1001', { name: 'phase_options', desc: newDesc }, undefined);
+
+    // 7. Guardar en backend en segundo plano
+    const formData = new FormData();
+    formData.set('name', 'phase_options');
+    formData.set('desc', newDesc);
+    
+    // El 'false' en triggerUpdate es importante para evitar una solicitud de actualización extra
+    console.log('Invocando `manage_clock` para guardar en backend...');
+    manage_clock(false, '1001', undefined, formData, false);
+    console.groupEnd();
+  };
+
+
   const _FIND_6 = (id) => (currentItem.fun_6s || []).find(f => f.id == id) || null;
   const _CHILD_6_SELECT = () => (currentItem.fun_6s || []).map(f => <option key={f.id} value={f.id}>{f.description}</option>);
   
@@ -574,15 +670,78 @@ export default function EXP_CLOCKS(props) {
   const renderClockList = () => {
     let isCurrentGroupCollapsed = false;
 
+    // Esta función renderiza la cinta de opciones
+    const renderOptionsRibbon = (phaseKey) => {
+      const phaseSpecificOptions = phaseOptions[phaseKey] || {};
+      const notificationType = phaseSpecificOptions.notificationType || 'notificar';
+      const byAviso = phaseSpecificOptions.byAviso === true;
+      
+      return (
+        <div className="section-options" onClick={(e) => e.stopPropagation()}>
+          <div className="compact-radio-group">
+            <div className="form-check">
+              <input 
+                type="radio" 
+                className="form-check-input" 
+                name={`notificationType_${phaseKey}`}
+                id={`type_notificar_${phaseKey}`}
+                value="notificar"
+                checked={notificationType === 'notificar'}
+                onChange={() => handleOptionChange(phaseKey, 'notificationType', 'notificar')}
+              />
+              <label className="form-check-label" htmlFor={`type_notificar_${phaseKey}`}>Notificar</label>
+            </div>
+            <div className="form-check">
+              <input 
+                type="radio" 
+                className="form-check-input" 
+                name={`notificationType_${phaseKey}`}
+                id={`type_comunicar_${phaseKey}`}
+                value="comunicar"
+                checked={notificationType === 'comunicar'}
+                onChange={() => handleOptionChange(phaseKey, 'notificationType', 'comunicar')}
+              />
+              <label className="form-check-label" htmlFor={`type_comunicar_${phaseKey}`}>Comunicar</label>
+            </div>
+          </div>
+
+          {notificationType === 'notificar' && (
+             <div className="compact-sub-option">
+               <div className="form-check form-switch">
+                 <input 
+                   className="form-check-input" 
+                   type="checkbox" 
+                   role="switch" 
+                   id={`checkByAviso_${phaseKey}`}
+                   checked={byAviso}
+                   onChange={(e) => handleOptionChange(phaseKey, 'byAviso', e.target.checked)}
+                 />
+                 <label className="form-check-label" htmlFor={`checkByAviso_${phaseKey}`}>Por Aviso</label>
+               </div>
+             </div>
+          )}
+        </div>
+      );
+    };
+
     return clocksToShow.map((value, i) => {
         const clock = value.version !== undefined
           ? getClockVersion(value.state, value.version)
           : getClock(value.state);
         
         if (value.title) {
+            // AÑADIDO: Si el título tiene show: false, no renderizarlo y colapsar el grupo
+            if (value.show === false) {
+                isCurrentGroupCollapsed = true;
+                return null;
+            }
+            
             lastTitle = value.title;
             const isCollapsed = collapsedSections[value.title];
             isCurrentGroupCollapsed = isCollapsed;
+
+            const isEstudioValla = value.title === 'Estudio y Valla';
+            const isRevisionCorrecciones = value.title === 'Revisión y Viabilidad';
 
             return (
                 <div key={`section-${i}`} className="exp-section-header" onClick={() => toggleSection(value.title)}>
@@ -590,6 +749,9 @@ export default function EXP_CLOCKS(props) {
                         <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} me-3 text-muted`}></i>
                         <span className="fw-normal">{value.title}</span>
                     </div>
+
+                    {!isCollapsed && isEstudioValla && renderOptionsRibbon('phase_estudio')}
+                    {!isCollapsed && isRevisionCorrecciones && renderOptionsRibbon('phase_correcciones')}
                 </div>
             );
         }

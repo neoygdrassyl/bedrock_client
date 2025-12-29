@@ -68,7 +68,7 @@ const buildDesistSection = (version, getClockVersion) => {
 const getSuspensionClocks = (suspensionData, type) => {
     if (!suspensionData.exists) return [];
     const [startState, endState] = type === 'pre' ? [300, 350] : [301, 351];
-    const title = type === 'pre' ? 'SUSPENSIÓN ANTES DEL ACTA' : 'SUSPENSIÓN DESPUÉS DE CORRECCIONES';
+    const title = type === 'pre' ? 'Suspensión antes del acta' : 'Suspensión después de correcciones';
 
     return [
         { title },
@@ -95,7 +95,7 @@ const getSuspensionClocks = (suspensionData, type) => {
 const getExtensionClocks = (extensionData) => {
     if (!extensionData.exists) return [];
     return [
-        { title: 'PRÓRROGA POR COMPLEJIDAD' },
+        { title: 'Prórroga por complejidad' },
         { 
             state: 400, 
             name: 'Inicio de Prórroga', 
@@ -119,7 +119,15 @@ const getExtensionClocks = (extensionData) => {
 
 // --- DEFINICIONES DE SECCIONES ESTÁTICAS ---
 const extraClocks = (props) => {
-    const { currentItem, child1, getClock, getClockVersion, viaTime, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension } = props;
+    const { currentItem, child1, getClock, getClockVersion, viaTime, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, phaseOptions } = props;
+
+    // Opciones para la fase de Estudio y Valla
+    const estudioOptions = phaseOptions?.phase_estudio || { notificationType: 'notificar', byAviso: false };
+
+    // Opciones para la fase de Revisión de Correcciones
+    const correccionesOptions = phaseOptions?.phase_correcciones || { notificationType: 'notificar', byAviso: false };
+    console.log("correccionesOptions:", correccionesOptions);
+
 
     const getRadicacionFecha = () => {
         // 1. Usar "optional chaining" (?.) para acceder a la propiedad de forma segura.
@@ -141,10 +149,6 @@ const extraClocks = (props) => {
 
         return "Fecha no encontrada";
     };
-
-    const fecha = getRadicacionFecha();
-
-    console.log("Fecha de Radicación de valla obtenida:", fecha);
 
     // Obtener fecha de radicación de valla informativa y correlacionarla con el state apartado en la sección finalClocks
     
@@ -213,7 +217,7 @@ const extraClocks = (props) => {
       },
       { 
         state: 502,
-        name: 'Declaración en legal y debida forma', 
+        name: '(Carta) Declaración en legal y debida forma', 
         desc: "Fecha del documento formal de legal y debida forma", 
         editableDate: true, 
         limit: [[5, 1], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]], 
@@ -237,7 +241,6 @@ const extraClocks = (props) => {
       ...buildDesistSection('-2', getClockVersion),
       ...preActaSusp,
       ...preActaExt,
-      
       { title: 'Estudio y Valla' },
       { 
         state: 503, 
@@ -260,6 +263,17 @@ const extraClocks = (props) => {
         allowSchedule: true
       },
       { 
+        state: 33, 
+        name: 'Comunicación (Observaciones)', 
+        desc: "Comunicación del acta de observaciones", 
+        limit: [[30, 5]], 
+        icon: "empty", 
+        spentDaysConfig: { startState: 30 },
+        allowSchedule: true,
+        show: estudioOptions.notificationType==='comunicar',
+      },
+      { title: 'Notificación Observaciones', show: estudioOptions.notificationType !== 'comunicar' },
+      {
         state: 31, 
         name: 'Citación (Observaciones)', 
         desc: "Citación para notificar el acta de observaciones", 
@@ -267,7 +281,8 @@ const extraClocks = (props) => {
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
         spentDaysConfig: { startState: 30 },
-        allowSchedule: true
+        allowSchedule: true,
+        show: estudioOptions.notificationType === 'notificar',
       },
       { 
         state: 32, 
@@ -275,22 +290,25 @@ const extraClocks = (props) => {
         desc: "Notificación personal del acta de observaciones", 
         limit: [[31, 5]], 
         spentDaysConfig: { startState: 31 },
-        allowSchedule: true 
+        allowSchedule: true,
+        show: estudioOptions.notificationType === 'notificar',
       },
       { 
         state: 33, 
         name: 'Notificación por Aviso (Observaciones)', 
         desc: "Notificación por aviso del acta de observaciones (si no se logró notificación personal)", 
-        limit: [[31, 10]], 
+        limit: [[32, 5]], 
         icon: "empty", 
         spentDaysConfig: { startState: 31 },
-        allowSchedule: true
+        allowSchedule: true,
+        show: (estudioOptions.notificationType === 'notificar' && estudioOptions.byAviso),
       },
-      { 
+      { title: 'Correcciones del Solicitante' },
+      {
         state: 34, 
         name: 'Prórroga de correcciones', 
         desc: "Prórroga para presentar correcciones (15 días adicionales sobre los 20 días base = 45 días totales)", 
-        limit: [[[33, 32], 30]], //[[[33, 32], 30], [[30], 30]], 
+        limit: estudioOptions.notificationType === 'comunicar' ? [[[30], 30]] : estudioOptions.byAviso ? [[[33], 30]] : [[[32], 30]], //[[[33, 32], 30]], //[[[33, 32], 30], [[30], 30]], 
         icon: "empty", 
         hasConsecutivo: false, 
         hasAnnexSelect: true, 
@@ -300,7 +318,7 @@ const extraClocks = (props) => {
         state: 35, 
         name: 'Radicación de Correcciones', 
         desc: requereCorr() ? "Radicación de los documentos corregidos por el solicitante (CONTINÚA PLAZO DE CURADURÍA)" : false, 
-        limit: [[[33, 32], presentExt() ? 45 : 30]], 
+        limit: estudioOptions.notificationType === 'comunicar' ? [[[30], presentExt() ? 45 : 30]] : estudioOptions.byAviso ? [[[33], presentExt() ? 45 : 30]] : [[[32], presentExt() ? 45 : 30]], 
         icon: requereCorr() ? undefined : "empty", 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
@@ -310,7 +328,7 @@ const extraClocks = (props) => {
       ...postActaSusp,
       ...postActaExt,
       
-      { title: 'ACTA PARTE 2: REVISIÓN DE CORRECCIONES' },
+      { title: 'Revisión y Viabilidad' },
       { 
         state: 49, 
         name: 'Acta Parte 2: Correcciones', 
@@ -321,11 +339,6 @@ const extraClocks = (props) => {
         spentDaysConfig: { startState: 35 },
         allowSchedule: true
       },
-      ...buildDesistSection('-3', getClockVersion),
-      ...buildDesistSection('-5', getClockVersion),
-      ...buildDesistSection('-6', getClockVersion),
-      
-      { title: 'VIABILIDAD Y LIQUIDACIÓN' },
       { 
         state: 61, 
         name: 'Acto de Trámite de Licencia (Viabilidad)', 
@@ -336,12 +349,28 @@ const extraClocks = (props) => {
         allowSchedule: true 
       },
       { 
+        state: 57, 
+        // show: false, 
+        name: 'Comunicación (Viabilidad)', 
+        desc: "Comunicación del acto de viabilidad", 
+        limit: [[55, 10]], 
+        icon: "empty", 
+        spentDaysConfig: { startState: 55 },
+        allowSchedule: true,
+        show: correccionesOptions.notificationType==='comunicar',
+      },
+      ...buildDesistSection('-3', getClockVersion),
+      ...buildDesistSection('-5', getClockVersion),
+      ...buildDesistSection('-6', getClockVersion),
+      
+      { title: "Notificación de Viabilidad", show: correccionesOptions.notificationType !== 'comunicar' },
+      { 
         state: 55, 
         name: 'Citación (Viabilidad)', 
         desc: "Citación para notificar el acto de viabilidad", 
         limit: [[61, 5]], 
         spentDaysConfig: { startState: 61 },
-        allowSchedule: true 
+        allowSchedule: true
       },
       { 
         state: 56, 
@@ -359,21 +388,26 @@ const extraClocks = (props) => {
         limit: [[55, 10]], 
         icon: "empty", 
         spentDaysConfig: { startState: 55 },
-        allowSchedule: true 
+        allowSchedule: true,
+        show: (correccionesOptions.notificationType === 'notificar' && correccionesOptions.byAviso),
       },
     ]
 };
 
 const paymentsClocks = (props) => {
-    const { child1, getClockVersion, namePayment, conGI } = props;
+    const { child1, getClockVersion, namePayment, conGI, phaseOptions } = props;
     const conOA = regexChecker_isOA_2(child1);
+    // Opciones para la fase de Revisión de Correcciones
+    const correccionesOptions = phaseOptions?.phase_correcciones || { notificationType: 'notificar', byAviso: false };
+
     return [
-        { title: 'PAGOS (PLAZO SOLICITANTE: 30 DÍAS)' },
+        { title: 'Liquidación y Pagos' },
         { 
             state: 62, 
             name: 'Expensas Variables', 
             desc: "Pago de expensas variables", 
-            limit: [[[56, 57], 30]], 
+            // limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             show: conOA, 
             spentDaysConfig: { startState: [56, 57] } 
         },
@@ -381,7 +415,7 @@ const paymentsClocks = (props) => {
             state: 63, 
             name: namePayment, 
             desc: "Pago de impuestos municipales o delineación", 
-            limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             show: conOA, 
             spentDaysConfig: { startState: [56, 57] } 
         },
@@ -389,14 +423,14 @@ const paymentsClocks = (props) => {
             state: 64, 
             name: 'Estampilla PRO-UIS', 
             desc: "Pago de estampilla PRO-UIS", 
-            limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             spentDaysConfig: { startState: [56, 57] } 
         },
         { 
             state: 65, 
             name: 'Deberes Urbanísticos', 
             desc: "Pago de deberes urbanísticos", 
-            limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]], 
             show: !conGI, 
             spentDaysConfig: { startState: [56, 57] } 
         },
@@ -404,7 +438,7 @@ const paymentsClocks = (props) => {
             state: 69, 
             name: 'Radicación de último pago', 
             desc: "Radicación de todos los pagos requeridos (INICIA PLAZO RESOLUCIÓN)", 
-            limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             spentDaysConfig: { startState: [56, 57] } 
         },
         ...buildDesistSection('-4', getClockVersion),
@@ -415,7 +449,7 @@ const finalClocks = (props) => {
     const { getClock } = props;
     
     return [
-        { title: 'RESOLUCIÓN' },
+        { title: 'Generación de Resolución' },
         { 
             state: 70, 
             name: "Acto Administrativo / Resolución", 
@@ -424,6 +458,7 @@ const finalClocks = (props) => {
             spentDaysConfig: { startState: 69 },
             allowSchedule: true 
         },
+        { title: 'Notificación Resolución' },
         { 
             state: 71, 
             name: "Comunicación o Requerimiento (Resolución)", 
@@ -466,7 +501,7 @@ const finalClocks = (props) => {
             allowSchedule: true 
         },
         
-        { title: 'RECURSO DE REPOSICIÓN (OPCIONAL - PLAZO SOLICITANTE: 10 DÍAS)' },
+        { title: 'Recurso de Reposición' },
         { 
             state: 730, 
             name: "Renuncia de Términos", 
@@ -543,7 +578,7 @@ const finalClocks = (props) => {
             requiredClock: 74 
         },
         
-        { title: 'EJECUTORIA Y ENTREGA (PLAZO CURADURÍA: 10 DÍAS + 1 DÍA)' },
+        { title: 'Ejecutoria y Recurso' },
         { 
             state: 99, 
             name: "Ejecutoria - Licencia", 
