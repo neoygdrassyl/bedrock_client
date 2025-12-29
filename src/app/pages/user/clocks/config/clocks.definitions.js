@@ -120,6 +120,33 @@ const getExtensionClocks = (extensionData) => {
 // --- DEFINICIONES DE SECCIONES ESTÁTICAS ---
 const extraClocks = (props) => {
     const { currentItem, child1, getClock, getClockVersion, viaTime, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension } = props;
+
+    const getRadicacionFecha = () => {
+        // 1. Usar "optional chaining" (?.) para acceder a la propiedad de forma segura.
+        // Esto evita errores si `fun_law` no existe.
+        const signString = currentItem?.fun_law?.sign;
+
+        // 2. Verificar si el string existe y no está vacío.
+        if (!signString) {
+            return "Fecha no disponible";
+        }
+
+        // 3. Dividir el string por la coma para obtener un array.
+        const signArray = signString.split(',');
+
+        // 4. Verificar si el array tiene al menos dos elementos y devolver el segundo (la fecha).
+        if (signArray.length > 1) {
+            return signArray[1]; // Esta es la fecha
+        }
+
+        return "Fecha no encontrada";
+    };
+
+    const fecha = getRadicacionFecha();
+
+    console.log("Fecha de Radicación de valla obtenida:", fecha);
+
+    // Obtener fecha de radicación de valla informativa y correlacionarla con el state apartado en la sección finalClocks
     
     if (regexChecker_isOA_2(child1)) return [];
 
@@ -139,7 +166,7 @@ const extraClocks = (props) => {
         ? getExtensionClocks(extension) : [];
 
     return [
-      { title: 'RADICACIÓN Y LEGAL Y DEBIDA FORMA' },
+      { title: 'Radicación de Legal y debida forma' },
       { 
         state: false, 
         name: 'Radicación', 
@@ -148,44 +175,48 @@ const extraClocks = (props) => {
         editableDate: false, 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
+        legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.1.2 Radicación de la solicitud. Presentada la solicitud de licencia, se radicará y numerará consecutivamente, en orden cronológico de recibo, dejando constancia de los documentos aportados con la misma. Nota: El solicitante entrega los documentos. La Curaduría los recibe, les asigna un código de ingreso (Ej: VR 21-00000) y expide un soporte del inventario documental recibido.",
       },
       { 
         state: 3, 
-        name: 'Expensas Fijas', 
+        name: 'Liquidación y Pago del Cargo Fijo (Expensas)', 
         desc: "Pago de expensas fijas (inicio del plazo de 30 días para completar documentación)", 
         editableDate: false, 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
+        legalSupport: 'DECRETO 1077 de 2015. ARTÍCULO 2.2.6.6.8.5 Radicación de las solicitudes de licencias. Además de los requisitos contemplados en la Subsección 1 de la Sección 2 del Capítulo 1 del presente Título, será condición para la radicación ante las curadurías urbanas de toda solicitud de licencia de urbanización y construcción o sus modalidades, el pago al curador del cargo fijo "Cf" establecido en el presente decreto.',
         spentDaysConfig: { startState: false, referenceDate: currentItem.date } 
       },
       { 
         state: -1, 
-        name: 'Incompleto', 
-        desc: "Desistimiento por no completar documentación en 30 días hábiles", 
+        name: 'Entrega de documentación Incompleta', 
+        desc: "Desiste por no completar documentación en 30 días hábiles", 
         editableDate: false, 
         limit: [[3, 30]], 
         hasConsecutivo: false, 
-        hasAnnexSelect: false, 
+        hasAnnexSelect: false,
+        legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.1.2 Radicación de la solicitud  (…) En caso de que la solicitud no se encuentre completa, se devolverá la documentación para completarla. Si el peticionario insiste, se radicará dejando constancia de este hecho y advirtiéndole que deberá allanarse a cumplir dentro de los treinta (30) días hábiles siguientes so pena de entenderse desistida la solicitud, lo cuál se hará mediante acto administrativo que ordene su archivo y contra el que procederá el recurso de reposición ante la autoridad que lo expidió. Nota: Se declara si faltan documentos. Se Informa al solicitante, indicando qué debe completar la documentación en un término no superior a 30 días hábiles, contados a partir de la radicación." ,
         icon: "empty", 
         spentDaysConfig: { startState: 3 } 
       },
       { 
-        state: 502, 
-        name: 'Legal y debida forma', 
+        state: 5, 
+        name: 'Radicación en Legal y debida forma', 
         desc: "Último día en que se completó toda la documentación requerida", 
         editableDate: true, 
         limit: regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]], 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
+        legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.1.1 (…) PARÁGRAFO 1. Se entenderá que una solicitud de licencia o su modificación está radicada en Legal y debida forma si a la fecha de radicación se allega la totalidad de los documentos exigidos en el presente Capítulo, aun cuando estén sujetos a posteriores correcciones. (…) DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.3.1 Término para resolver las solicitudes de licencias, sus modificaciones y revalidación de licencias. Los curadores urbanos y la entidad municipal o distrital encargada del estudio, trámite y expedición de las licencias, según el caso. tendrán un plazo máximo de cuarenta y cinco (45) días hábiles para resolver las solicitudes de licencias y de modificación de licencia vigente pronunciándose sobre su viabilidad, negación o desistimiento contados desde la fecha en que la solicitud haya sido radicada en legal y debida forma. Nota: La curaduría cuenta según el sistema de categorización del proyecto un plazo que esta entre 20 y 45 días hábiles contados a partir de la radicación en legal y debida forma; en este periodo se debe realizar el proceso de revisión como el pronunciamiento sobre la solicitud",
         rest: 2, 
         spentDaysConfig: { startState: regexChecker_isOA_2(child1) ? 4 : 3 } 
       },
       { 
-        state: 5, 
+        state: 502,
         name: 'Declaración en legal y debida forma', 
         desc: "Fecha del documento formal de legal y debida forma", 
         editableDate: true, 
-        limit: [[502, 1]], 
+        limit: [[5, 1], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]], 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
         spentDaysConfig: { startState: 502 },
@@ -196,29 +227,30 @@ const extraClocks = (props) => {
         name: 'Radicación en superintendencia', 
         desc: "Radicación del expediente en legal y debida forma ante la superintendencia (INICIA PLAZO DE CURADURÍA)", 
         editableDate: true, 
-        limit: [[5, 1], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]],  // [501, 1], [502, 1],
+        limit: [[5, 2], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]],  // [501, 1], [502, 1],
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
         spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] },
         allowSchedule: true
-      },
-      { 
-        state: 503, 
-        name: 'Instalación de la valla', 
-        desc: "Instalación de la valla informativa del proyecto", 
-        editableDate: true, 
-        limit: [[5, 5]],
-        hasConsecutivo: false, 
-        hasAnnexSelect: false, 
-        spentDaysConfig: { startState: 5 },
-        hasLegalAlarm: true
       },
       ...buildDesistSection('-1', getClockVersion),
       ...buildDesistSection('-2', getClockVersion),
       ...preActaSusp,
       ...preActaExt,
       
-      { title: 'ACTA PARTE 1: OBSERVACIONES' },
+      { title: 'Estudio y Valla' },
+      { 
+        state: 503, 
+        name: 'Instalación y Registro de la Valla Informativa', 
+        desc: "Instalación de la valla informativa del proyecto", 
+        editableDate: true, 
+        limit: [[5, 5]],
+        hasConsecutivo: false, 
+        hasAnnexSelect: false, 
+        legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.2.1 PARÁGRAFO 1. Desde el día siguiente a la fecha de radicación en legal y debida forma de solicitudes de proyectos de parcelación, urbanización y construcción en cualquiera de sus modalidades, el peticionario de la licencia deberá instalar una valla resistente a la intemperie de fondo amarillo y letras negras (…) Nota: El funcionario a cargo de la radicación le informa al peticionario sobre el deber de publicidad de los actos de licenciamiento urbanístico que incluyen la valla informativa, la citación a los vecinos colindante y terceros interesados etc",
+        spentDaysConfig: { startState: 5 },
+        hasLegalAlarm: true
+      },
       { 
         state: 30, 
         name: 'Acta Parte 1: Observaciones', 
