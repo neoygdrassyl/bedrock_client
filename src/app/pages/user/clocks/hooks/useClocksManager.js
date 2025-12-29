@@ -125,7 +125,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
   }, [clocksData, currentItem?. type, suspensionPreActa, suspensionPostActa, extension]);
 
   const processPhases = useProcessPhases({
-      clocksData, currentItem, today, suspensionPreActa, suspensionPostActa, extension
+      clocksData, currentItem, today, suspensionPreActa, suspensionPostActa, extension, phaseOptions
   });
   
   // --- CÁLCULO DEL ESTADO GENERAL DEL PROCESO ---

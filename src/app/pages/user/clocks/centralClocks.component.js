@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -65,23 +65,23 @@ export default function EXP_CLOCKS(props) {
     }
   }, [currentItem?.fun_clocks]);
 
-  const manager = useClocksManager(currentItem, clocksData, currentVersion, systemDate);
+  const phaseOptions = useMemo(() => {
+    const phaseOptionsClock = clocksData.find(c => String(c.state) === '1001');
+    try {
+      return phaseOptionsClock?.desc ? JSON.parse(phaseOptionsClock.desc) : {};
+    } catch (e) {
+      console.error("Error parsing phaseOptions JSON:", e);
+      return {};
+    }
+  }, [clocksData]);
+
+  console.log('%c[RENDER] Usando `phaseOptions`:', 'color: #8A2BE2', phaseOptions);
+
+  // Ahora pasamos phaseOptions al manager
+  const manager = useClocksManager(currentItem, clocksData, currentVersion, systemDate, phaseOptions);
 
   const conGI = _GLOBAL_ID === 'cb1';
   const namePayment = conGI ? 'Impuestos Municipales' : 'Impuesto Delineacion';
-
-  // Obtener la configuración de las fases desde el clock especial 1001
-  const phaseOptionsClock = manager.getClock('1001');
-  let phaseOptions = {};
-  try {
-      phaseOptions = phaseOptionsClock?.desc ? JSON.parse(phaseOptionsClock.desc) : {};
-  } catch (e) {
-      console.error("Error parsing phaseOptions JSON:", e);
-      phaseOptions = {};
-  }
-  
-  // --- LOGGING ---
-  console.log('%c[RENDER] Usando `phaseOptions`:', 'color: #8A2BE2', phaseOptions);
 
   const clocksToShowRaw = generateClocks({
       ...manager,
@@ -740,7 +740,7 @@ export default function EXP_CLOCKS(props) {
             const isCollapsed = collapsedSections[value.title];
             isCurrentGroupCollapsed = isCollapsed;
 
-            const isEstudioValla = value.title === 'Estudio y Valla';
+            const isEstudioValla = value.title === 'Estudio y Observaciones';
             const isRevisionCorrecciones = value.title === 'Revisión y Viabilidad';
 
             return (
