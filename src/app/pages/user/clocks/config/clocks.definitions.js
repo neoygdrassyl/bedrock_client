@@ -241,7 +241,7 @@ const extraClocks = (props) => {
       ...buildDesistSection('-2', getClockVersion),
       ...preActaSusp,
       ...preActaExt,
-      { title: 'Estudio y Valla' },
+      { title: 'Estudio y Observaciones' },
       { 
         state: 503, 
         name: 'Instalación y Registro de la Valla Informativa', 

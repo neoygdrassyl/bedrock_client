@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import moment from 'moment';
 import { calcularDiasHabiles, sumarDiasHabiles, FUN_0_TYPE_TIME } from './useClocksManager';
 
-export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPreActa, suspensionPostActa, extension }) => {
+export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPreActa, suspensionPostActa, extension, phaseOptions }) => {
 
   const processPhases = useMemo(() => {
     // --- HELPERS DE CLOCKS ---
@@ -23,6 +23,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     };
 
     const desistimientoVersion = getDesistimientoVersion();
+    const estudioOptions = phaseOptions?.phase_estudio || { notificationType: 'notificar', byAviso: false };
+    const correccionesOptions = phaseOptions?.phase_correcciones || { notificationType: 'notificar', byAviso: false };
 
     // --- 1. EXTRACCIÓN DE FECHAS ESTÁNDAR ---
     const radicacionDate = currentItem.date;
@@ -30,12 +32,12 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     const vallaDate = getClock(503)?.date_start;
     const acta1 = getClock(30);
     const acta1Date = acta1?.date_start;
-    const notificacionActa1Date = getClock(32)?.date_start || getClock(33)?.date_start; // Simplificado para lógica de fases
+    const notificacionActa1Date =  estudioOptions.byAviso ? getClock(33)?.date_start : getClock(32)?.date_start;
     const corrDate = getClock(35)?.date_start;
     
     // Viabilidad
     const viabilidadDate = getClock(61)?.date_start;
-    const notificacionViaDate = getClock(56)?.date_start || getClock(57)?.date_start;
+    const notificacionViaDate = correccionesOptions.byAviso ? getClock(57)?.date_start : getClock(56)?.date_start;
     
     // Pagos
     const pagosDate = getClock(69)?.date_start;
@@ -282,7 +284,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         
         addPhase({ 
             id: 'phase1_valla', 
-            title: 'Estudio y Valla', 
+            title: 'Estudio y Observaciones', 
             responsible: 'Curaduría', 
             status: phase1Status, 
             totalDays: baseDaysCuraduria, 
@@ -453,21 +455,23 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         });
 
         const isCumple = checkCompliance(acta1?.desc);
+        const notificaActa = estudioOptions.notificationType === 'notificar';
 
         // FASE 2 & 3 (Solo si NO CUMPLE)
         if (!isCumple) {
+            if(notificaActa){
             addPhase({
               id: 'phase2', 
               title: 'Notificación Observaciones', 
               responsible: 'Curaduría',
               status: checkStatus(acta1Date, notificacionActa1Date), 
-              totalDays: 15,
+              totalDays: estudioOptions.byAviso ? 15 : 10,
               usedDays: calculateUsedDaysFromNextDay(acta1Date, notificacionActa1Date), 
               extraDays: 0,
               startDate: acta1Date, 
               endDate: notificacionActa1Date, 
               parallelActors: null,
-            });
+            });}
 
             const hasProrrogaCorr = !!getClock(34)?.date_start;
             addPhase({
@@ -504,19 +508,23 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           parallelActors: null,
         });
 
+        const notificaVia = correccionesOptions.notificationType === 'notificar';
+
         // FASE 5: Notificación Viabilidad
-        addPhase({
-            id: 'phase5_notif',
-            title: 'Notificación de Viabilidad',
-            responsible: 'Curaduría',
-            status: checkStatus(viabilidadDate, notificacionViaDate),
-            totalDays: 15,
-            usedDays: calculateUsedDaysFromNextDay(viabilidadDate, notificacionViaDate),
-            extraDays: 0,
-            startDate: viabilidadDate,
-            endDate: notificacionViaDate,
-            parallelActors: null
-        });
+        if(notificaVia){
+            addPhase({
+                id: 'phase5_notif',
+                title: 'Notificación de Viabilidad',
+                responsible: 'Curaduría',
+                status: checkStatus(viabilidadDate, notificacionViaDate),
+                totalDays: correccionesOptions.byAviso ? 15 : 10,
+                usedDays: calculateUsedDaysFromNextDay(viabilidadDate, notificacionViaDate),
+                extraDays: 0,
+                startDate: viabilidadDate,
+                endDate: notificacionViaDate,
+                parallelActors: null
+            });
+        }
 
         // FASE 6: Liquidación y Pagos
         // >>> CORRECCIÓN: "cuando no se paga expensas tampoco debe esperarse la ultima fecha de pago a expensas"
@@ -595,7 +603,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             addPhase({
                 id: 'phase9_exec',
                 title: 'Ejecutoria y Recurso',
-                responsible: 'Mixto',
+                responsible: 'Curaduría',
                 status: phase9Status,
                 totalDays: 10,
                 usedDays: calculateUsedDaysFromNextDay(notificacionResDate, ejecutoriaEndDate),
