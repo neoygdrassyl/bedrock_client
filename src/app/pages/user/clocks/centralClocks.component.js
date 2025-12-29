@@ -79,6 +79,64 @@ export default function EXP_CLOCKS(props) {
         window.removeEventListener('resize', handleResize);
     };
   }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, alarms]);
+
+  // Este hook se va a encargar de sincronizar el campo de fecha de valla del informe juridico con un state,
+  // TODO: Como trabajo futuro se va a corregir para que directamente desde el formulario juridico el guardado en el state
+  useEffect(() => {
+      const syncVallaDate = () => {
+          // Evita ejecuciones si los datos no están listos
+          if (!currentItem || !currentItem.fun_law) return;
+
+          // --- Obtener fechas de ambas fuentes ---
+          const signArray = currentItem.fun_law.sign ? currentItem.fun_law.sign.split(',') : [];
+          const formDate = signArray.length > 1 && signArray[1] ? signArray[1] : null;
+
+          const clock503 = (clocksData || []).find(c => c.state == 503);
+          const clockDate = clock503 ? clock503.date_start : null;
+          
+          // --- Lógica de Sincronización Bidireccional ---
+          
+          // Caso 1: El formulario tiene la fecha y el reloj no, o son diferentes.
+          // El formulario es la fuente de verdad y actualiza el reloj.
+          if (formDate && (!clockDate || formDate !== clockDate)) {
+              console.log("SYNC: Actualizando reloj [503] desde el formulario...");
+              const formData = new FormData();
+              formData.set('date_start', formDate);
+              formData.set('state', 503);
+              formData.set('name', 'Instalación y Registro de la Valla Informativa'); // Desde clock.definitions.js
+              formData.set('desc', 'Instalación de la valla informativa del proyecto'); // Desde clock.definitions.js
+              
+              // Reutiliza la función existente para crear/actualizar el reloj
+              manage_clock(false, 503, undefined, formData, true);
+          }
+          
+          // Caso 2: El reloj tiene la fecha pero el formulario no.
+          // El reloj actualiza al formulario.
+          else if (clockDate && !formDate) {
+              const funLawId = currentItem.fun_law.id;
+              if (!funLawId) return; // No se puede actualizar sin un ID
+
+              console.log("SYNC: Actualizando formulario desde el reloj [503]...");
+              const newSign = [signArray[0] || '-1', clockDate].join(',');
+              
+              const formData = new FormData();
+              formData.set('sign', newSign);
+              
+              FUN_SERVICE.update_sign(funLawId, formData)
+                  .then(response => {
+                      if (response.data === 'OK') {
+                          props.requestUpdate(currentItem.id);
+                      }
+                  })
+                  .catch(e => console.error("Error sincronizando formulario desde reloj:", e));
+          }
+      };
+
+      // Llama a la función de sincronización. El timeout previene carreras de datos al inicio.
+      const timer = setTimeout(syncVallaDate, 100);
+      return () => clearTimeout(timer);
+
+  }, [currentItem, clocksData, props.requestUpdate]);
   
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa } = manager;
 
