@@ -233,21 +233,29 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick }) => {
 
       <div className={`phase-actors-compact ${isParallel ? 'is-parallel' : 'is-single'}`}>
         {isParallel ? (
-          <div className="phase-actors-scroll" title="Desliza horizontalmente para ver ambos actores">
-            <div className="phase-actors-row">
-              {compactActors.map((a) => (
-                <ActorCompactRow key={a._key} actor={a} onActorClick={onActorClick} dense />
-              ))}
-            </div>
+          <div className="phase-actors-stack">
+            {compactActors.map((a) => (
+              <ActorCompactRow
+                key={a._key}
+                actor={a}
+                onActorClick={onActorClick}
+                dense
+              />
+            ))}
           </div>
         ) : (
           <div className="phase-actors-grid one">
             {compactActors.map((a) => (
-              <ActorCompactRow key={a._key} actor={a} onActorClick={onActorClick} />
+              <ActorCompactRow
+                key={a._key}
+                actor={a}
+                onActorClick={onActorClick}
+              />
             ))}
           </div>
         )}
       </div>
+
     </div>
   );
 };
