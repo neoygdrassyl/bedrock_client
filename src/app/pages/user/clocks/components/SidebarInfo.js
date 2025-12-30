@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import moment from 'moment';
+import ReactDOM from 'react-dom';
+import { GanttCard } from './GanttCard';
+import { GanttChart } from './GanttChart';
 
 const MySwal = withReactContent(Swal);
 
@@ -634,6 +637,32 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
     });
   };
 
+  const openFullGanttView = () => {
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'gantt-modal-root';
+
+    MySwal.fire({
+      title: false,
+      html: modalContainer,
+      width: 1400,
+      showCloseButton: true,
+      showConfirmButton: false,
+      customClass: {
+        popup: 'gantt-modal-popup',
+        htmlContainer: 'gantt-modal-container'
+      },
+      didOpen: () => {
+        ReactDOM.render(
+          <GanttChart manager={manager} />,
+          modalContainer
+        );
+      },
+      willClose: () => {
+        ReactDOM.unmountComponentAtNode(modalContainer);
+      }
+    });
+  };
+
   if (!curaduriaDetails || !processPhases || processPhases.length === 0) {
     return (
       <div className="sidebar-card">
@@ -654,7 +683,8 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
   const currentPhase = processPhases[currentPhaseIndex];
 
   return (
-    <div className="sidebar-card phases-card">
+    <>
+      <div className="sidebar-card phases-card">
       <div className="sidebar-card-header d-flex justify-content-between align-items-center">
         <h6 className="mb-0" style={{ fontSize: '0.9rem' }}>
           <i className="fas fa-tasks me-2" />
@@ -744,5 +774,11 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
         )}
       </div>
     </div>
+    
+    <GanttCard 
+      manager={manager} 
+      onOpenFullView={openFullGanttView} 
+    />
+    </>
   );
 };

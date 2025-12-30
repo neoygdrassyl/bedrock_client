@@ -1,0 +1,982 @@
+/* ========================================
+   ESTILOS PARA DIAGRAMA DE GANTT
+   ======================================== */
+
+/* --- GANTT CARD (Vista Compacta en Sidebar) --- */
+
+.gantt-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.gantt-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.gantt-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.gantt-card-header i {
+  margin-right: 0.5rem;
+}
+
+.gantt-header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-gantt-mode,
+.btn-gantt-expand {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.btn-gantt-mode:hover,
+.btn-gantt-expand:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-gantt-mode.active {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.gantt-card-body {
+  padding: 1rem;
+}
+
+/* Resumen de días */
+.gantt-summary {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.gantt-summary-item {
+  flex: 1;
+  min-width: 80px;
+  background: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.gantt-summary-item .label {
+  display: block;
+  font-size: 0.7rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.gantt-summary-item .value {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #495057;
+}
+
+/* Indicador de modo */
+.gantt-mode-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #e7f3ff;
+  border-left: 3px solid #007bff;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #004085;
+}
+
+.gantt-mode-indicator i {
+  font-size: 1rem;
+}
+
+/* Timeline compacto */
+.gantt-compact-timeline {
+  margin-top: 1rem;
+}
+
+.gantt-compact-phase {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.gantt-compact-phase:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.gantt-phase-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.gantt-phase-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.gantt-phase-days {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+/* Barra de fase compacta */
+.gantt-phase-bar-container {
+  position: relative;
+  height: 24px;
+  margin-bottom: 0.5rem;
+}
+
+.gantt-phase-bar {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #e9ecef;
+  border-radius: 12px;
+  overflow: visible;
+}
+
+.gantt-phase-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+  border-radius: 12px;
+  transition: width 0.3s ease;
+}
+
+.gantt-phase-suspension,
+.gantt-phase-extension {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 0 12px 12px 0;
+}
+
+.gantt-phase-suspension {
+  background: repeating-linear-gradient(
+    45deg,
+    #ffc107,
+    #ffc107 4px,
+    #ffca2c 4px,
+    #ffca2c 8px
+  );
+}
+
+.gantt-phase-extension {
+  background: repeating-linear-gradient(
+    45deg,
+    #17a2b8,
+    #17a2b8 4px,
+    #20c9e3 4px,
+    #20c9e3 8px
+  );
+}
+
+/* Estados de fase */
+.gantt-status-completed .gantt-phase-progress {
+  background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+}
+
+.gantt-status-active .gantt-phase-progress {
+  background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+}
+
+.gantt-status-paused .gantt-phase-progress {
+  background: linear-gradient(90deg, #ffc107 0%, #e0a800 100%);
+}
+
+.gantt-status-pending {
+  background: #f8f9fa;
+}
+
+.gantt-status-pending .gantt-phase-progress {
+  background: linear-gradient(90deg, #6c757d 0%, #495057 100%);
+}
+
+.gantt-status-overdue .gantt-phase-progress {
+  background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+}
+
+/* Actores en paralelo (compacto) */
+.gantt-parallel-actors {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.gantt-actor-mini {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: #495057;
+}
+
+.gantt-actor-mini i {
+  font-size: 0.8rem;
+}
+
+.gantt-actor-name {
+  font-weight: 600;
+}
+
+.gantt-actor-days {
+  color: #6c757d;
+  margin-left: auto;
+}
+
+/* Ver más */
+.gantt-compact-more {
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+.btn-gantt-more {
+  background: transparent;
+  border: 1px dashed #6c757d;
+  color: #6c757d;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.btn-gantt-more:hover {
+  background: #f8f9fa;
+  border-color: #495057;
+  color: #495057;
+}
+
+/* Leyenda */
+.gantt-legend {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e9ecef;
+  flex-wrap: wrap;
+}
+
+.gantt-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  color: #6c757d;
+}
+
+.gantt-legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+/* Footer de la tarjeta */
+.gantt-card-footer {
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.btn-gantt-footer {
+  width: 100%;
+  background: white;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-gantt-footer:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* --- GANTT FULL VIEW (Vista Completa en Modal) --- */
+
+.gantt-full-view {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  min-height: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Controles */
+.gantt-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.gantt-info .gantt-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.gantt-info .gantt-title h4 {
+  color: #495057;
+  font-weight: 700;
+}
+
+.gantt-dates {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.gantt-date-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.gantt-date-item i {
+  color: #007bff;
+  margin-right: 0.25rem;
+}
+
+.gantt-date-item strong {
+  color: #495057;
+  margin-left: 0.25rem;
+}
+
+/* Toggle de modo */
+.gantt-mode-toggle {
+  display: flex;
+  gap: 0.5rem;
+  background: #e9ecef;
+  padding: 0.25rem;
+  border-radius: 8px;
+}
+
+.btn-mode {
+  background: transparent;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #6c757d;
+  transition: all 0.2s ease;
+}
+
+.btn-mode:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.btn-mode.active {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Información de distribución */
+.gantt-distribution-info {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.distribution-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.distribution-header {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: #495057;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.distribution-header i {
+  color: #667eea;
+  font-size: 1.2rem;
+}
+
+.distribution-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.distribution-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.distribution-item .label {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.distribution-item .value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #495057;
+}
+
+.distribution-item.total {
+  border-top: 2px solid #e9ecef;
+  padding-top: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.distribution-item.total .label {
+  font-weight: 700;
+  color: #495057;
+}
+
+.distribution-item.total .value {
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+.distribution-note {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fff3cd;
+  border-left: 3px solid #ffc107;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #856404;
+}
+
+.distribution-note i {
+  margin-right: 0.25rem;
+}
+
+/* Estadísticas resumidas */
+.gantt-summary-stats {
+  display: flex;
+  gap: 1rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #495057;
+}
+
+/* Timeline principal */
+.gantt-timeline-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.gantt-timeline-header {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.gantt-phases-column {
+  width: 350px;
+  min-width: 350px;
+  padding: 1rem;
+  border-right: 2px solid #dee2e6;
+}
+
+.gantt-phases-column .column-title {
+  font-weight: 700;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.gantt-chart-column {
+  position: relative;
+  min-width: 100%;
+  padding: 1rem 0;
+}
+
+/* Escala de días */
+.gantt-scale {
+  position: relative;
+  height: 30px;
+}
+
+.gantt-scale-mark {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gantt-scale-mark::before {
+  content: '';
+  width: 1px;
+  height: 8px;
+  background: #6c757d;
+  margin-bottom: 4px;
+}
+
+.gantt-scale-mark span {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Cuerpo del timeline */
+.gantt-timeline-body {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.gantt-timeline-row {
+  display: flex;
+  border-bottom: 1px solid #e9ecef;
+  min-height: 80px;
+}
+
+.gantt-timeline-row:hover {
+  background: #f8f9fa;
+}
+
+.gantt-timeline-row:last-child {
+  border-bottom: none;
+}
+
+/* Celda de fase */
+.gantt-phase-cell {
+  padding: 1rem;
+}
+
+.gantt-phase-cell .phase-name {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.gantt-phase-cell .phase-name i {
+  color: #667eea;
+  font-size: 1rem;
+}
+
+.phase-meta {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.phase-status-badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.phase-status-badge.gantt-status-completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.phase-status-badge.gantt-status-active {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.phase-status-badge.gantt-status-paused {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.phase-status-badge.gantt-status-pending {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.phase-status-badge.gantt-status-overdue {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.phase-responsible {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.phase-responsible i {
+  color: #007bff;
+}
+
+.phase-dates {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.phase-dates .date-start,
+.phase-dates .date-end {
+  font-weight: 500;
+}
+
+.phase-dates i {
+  color: #dee2e6;
+  font-size: 0.7rem;
+}
+
+/* Barra del Gantt */
+.gantt-bar-container {
+  position: relative;
+  height: 40px;
+  margin: 20px 0;
+}
+
+.gantt-bar {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #e9ecef;
+  border-radius: 8px;
+  overflow: visible;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.gantt-bar-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.3s ease;
+}
+
+.gantt-bar-label {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Bloques de suspensión y prórroga */
+.gantt-suspension-block,
+.gantt-extension-block {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.gantt-suspension-block {
+  background: repeating-linear-gradient(
+    45deg,
+    #ffc107,
+    #ffc107 6px,
+    #ffca2c 6px,
+    #ffca2c 12px
+  );
+}
+
+.gantt-extension-block {
+  background: repeating-linear-gradient(
+    45deg,
+    #17a2b8,
+    #17a2b8 6px,
+    #20c9e3 6px,
+    #20c9e3 12px
+  );
+}
+
+/* Tracks paralelos para actores */
+.gantt-parallel-tracks {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gantt-parallel-track {
+  height: 24px;
+}
+
+.gantt-actor-bar {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.gantt-actor-bar.gantt-actor-primary {
+  border-left: 3px solid #007bff;
+}
+
+.gantt-actor-bar.gantt-actor-info {
+  border-left: 3px solid #17a2b8;
+}
+
+.gantt-actor-bar.gantt-actor-purple {
+  border-left: 3px solid #6f42c1;
+}
+
+.gantt-actor-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.gantt-actor-label {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #495057;
+  z-index: 1;
+}
+
+/* Leyenda completa */
+.gantt-legend-full {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.gantt-legend-full .legend-title {
+  font-weight: 700;
+  color: #495057;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.gantt-legend-full .legend-title i {
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+.gantt-legend-full .legend-items {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.gantt-legend-full .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #495057;
+  font-weight: 500;
+}
+
+.gantt-legend-full .legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .gantt-distribution-info {
+    grid-template-columns: 1fr;
+  }
+  
+  .gantt-summary-stats {
+    flex-direction: column;
+  }
+  
+  .gantt-phases-column {
+    width: 280px;
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .gantt-controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .gantt-mode-toggle {
+    width: 100%;
+  }
+  
+  .btn-mode {
+    flex: 1;
+  }
+  
+  .gantt-dates {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .gantt-phases-column {
+    width: 240px;
+    min-width: 240px;
+  }
+  
+  .gantt-phase-cell .phase-name {
+    font-size: 0.85rem;
+  }
+}
+
+/* Scrollbar personalizado */
+.gantt-timeline-container::-webkit-scrollbar,
+.gantt-timeline-body::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.gantt-timeline-container::-webkit-scrollbar-track,
+.gantt-timeline-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.gantt-timeline-container::-webkit-scrollbar-thumb,
+.gantt-timeline-body::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+.gantt-timeline-container::-webkit-scrollbar-thumb:hover,
+.gantt-timeline-body::-webkit-scrollbar-thumb:hover {
+  background: #764ba2;
+}
+
+/* Animaciones */
+@keyframes gantt-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.gantt-status-active .gantt-bar-progress,
+.gantt-status-active .gantt-phase-progress {
+  animation: gantt-pulse 2s ease-in-out infinite;
+}

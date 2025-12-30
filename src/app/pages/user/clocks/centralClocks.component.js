@@ -20,6 +20,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff } from '../../../components/customClasses/typeParse';
 
 import './centralClocks.css';
+import './diagramGantt.css';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
