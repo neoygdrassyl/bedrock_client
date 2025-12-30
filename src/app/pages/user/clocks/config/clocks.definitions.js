@@ -217,7 +217,7 @@ const extraClocks = (props) => {
       },
       { 
         state: 502,
-        name: '(Carta) Declaración en legal y debida forma', 
+        name: 'Declaración en legal y debida forma', 
         desc: "Fecha del documento formal de legal y debida forma", 
         editableDate: true, 
         limit: [[5, 1], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]], 
@@ -230,6 +230,17 @@ const extraClocks = (props) => {
         state: 501, 
         name: 'Radicación en superintendencia', 
         desc: "Radicación del expediente en legal y debida forma ante la superintendencia (INICIA PLAZO DE CURADURÍA)", 
+        editableDate: true, 
+        limit: [[5, 2], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]],  // [501, 1], [502, 1],
+        hasConsecutivo: false, 
+        hasAnnexSelect: false, 
+        spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] },
+        allowSchedule: true
+      },
+      { 
+        state: 504, 
+        name: 'Comunicación a vecinos', 
+        desc: "COMUNICACIÓN A VECINOS)", 
         editableDate: true, 
         limit: [[5, 2], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]],  // [501, 1], [502, 1],
         hasConsecutivo: false, 

@@ -8,7 +8,7 @@ import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 const MySwal = withReactContent(Swal);
 
 export const ClockRow = (props) => {
-    const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate } = props;
+    const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, highlightClass } = props;
     const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
 
     moment.locale('es');
@@ -298,7 +298,7 @@ export const ClockRow = (props) => {
     const rowIcon = getRowIcon();
 
     return (
-        <div className="exp-row-custom">
+        <div className={`exp-row-custom ${highlightClass}`}>
             {/* COL 1: Evento (Icono + Texto) */}
             <div className="col-eventos d-flex align-items-center">
                 <div className="row-icon-container">

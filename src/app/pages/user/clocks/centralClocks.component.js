@@ -38,6 +38,9 @@ export default function EXP_CLOCKS(props) {
   // Estado para secciones colapsables (Acordeón)
   const [collapsedSections, setCollapsedSections] = useState({});
 
+  // --- NUEVO ESTADO: Almacena el ID de la fase activa para el resaltado ---
+  const [activePhaseId, setActivePhaseId] = useState(null);
+
   const sidebarRef = useRef(null);
 
   const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
@@ -670,6 +673,11 @@ export default function EXP_CLOCKS(props) {
   const renderClockList = () => {
     let isCurrentGroupCollapsed = false;
 
+    // --- Lógica para encontrar la clase de resaltado ---
+    const activePhase = manager.processPhases.find(p => p.id === activePhaseId);
+    const highlightClass = activePhase ? activePhase.highlightClass : '';
+    const relatedStates = activePhase ? activePhase.relatedStates : [];
+
     // Esta función renderiza la cinta de opciones
     const renderOptionsRibbon = (phaseKey) => {
       const phaseSpecificOptions = phaseOptions[phaseKey] || {};
@@ -742,9 +750,16 @@ export default function EXP_CLOCKS(props) {
 
             const isEstudioValla = value.title === 'Estudio y Observaciones';
             const isRevisionCorrecciones = value.title === 'Revisión y Viabilidad';
+            
+            // --- NUEVO: Determinar si la sección está resaltada ---
+            const isSectionHighlighted = relatedStates.length > 0;
 
             return (
-                <div key={`section-${i}`} className="exp-section-header" onClick={() => toggleSection(value.title)}>
+                <div 
+                  key={`section-${i}`} 
+                  className={`exp-section-header ${isSectionHighlighted ? highlightClass : ''}`} 
+                  onClick={() => toggleSection(value.title)}
+                >
                     <div className="d-flex align-items-center">
                         <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} me-3 text-muted`}></i>
                         <span className="fw-normal">{value.title}</span>
@@ -760,6 +775,9 @@ export default function EXP_CLOCKS(props) {
             return null;
         }
 
+        // --- NUEVO: Determinar si la fila está resaltada ---
+        const isRowHighlighted = relatedStates.includes(value.state);
+
         return (
           <ClockRow
             key={`row-${i}-${value.state ?? 'no-state'}-${value.version ?? 'no-version'}-${refreshTrigger}-${systemDate}`}
@@ -768,6 +786,8 @@ export default function EXP_CLOCKS(props) {
             helpers={{ getClock, getNewestDate, ...manager, currentItem }}
             scheduleConfig={scheduleConfig}
             systemDate={systemDate}
+            // --- NUEVO: Pasar la clase de resaltado ---
+            highlightClass={isRowHighlighted ? highlightClass : ''}
           />
         );
     });
@@ -817,7 +837,10 @@ export default function EXP_CLOCKS(props) {
              actions={{ 
                onAddTimeControl: addTimeControl,
                onOpenScheduleModal: openScheduleModal
-             }} 
+             }}
+             // --- NUEVO: Pasar la función para actualizar el ID de la fase activa ---
+             onActivePhaseChange={setActivePhaseId}
+             activePhaseId={activePhaseId}
           />
           <HolidayCalendar />
           

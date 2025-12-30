@@ -130,7 +130,7 @@ const ActorCompactRow = ({ actor, onActorClick, dense = false }) => {
   );
 };
 
-const PhaseCard = ({ phase, onPhaseClick, onActorClick }) => {
+const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
   if (!phase) return null;
 
   const {
@@ -144,6 +144,7 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick }) => {
     endDate,
     parallelActors,
     daysContext,
+    highlightClass, // <--- Recibimos la clase de resaltado
   } = phase;
 
   const totalAvailable = (Number(totalDays) || 0) + (Number(extraDays) || 0);
@@ -189,10 +190,13 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick }) => {
   }
 
   const handlePhaseClick = () => onPhaseClick?.(phase);
+  
+  // --- APLICAMOS LA CLASE DE RESALTADO SI LA TARJETA ESTÁ ACTIVA ---
+  const activeHighlightClass = isActive ? highlightClass : '';
 
   return (
     <div
-      className="phase-card-compact"
+      className={`phase-card-compact ${activeHighlightClass}`}
       role="button"
       tabIndex={0}
       onClick={handlePhaseClick}
@@ -260,7 +264,7 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick }) => {
   );
 };
 
-export const SidebarInfo = ({ manager, actions }) => {
+export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhaseId }) => {
   const {
     processPhases,
     curaduriaDetails,
@@ -283,6 +287,16 @@ export const SidebarInfo = ({ manager, actions }) => {
     else if (firstPendingIndex !== -1) setCurrentPhaseIndex(firstPendingIndex);
     else setCurrentPhaseIndex(processPhases.length - 1);
   }, [processPhases]);
+
+  // --- NUEVO EFFECT: Notifica al padre cuando la fase activa cambia ---
+  useEffect(() => {
+    if (processPhases && processPhases.length > 0) {
+      const activePhase = processPhases[currentPhaseIndex];
+      if (activePhase) {
+        onActivePhaseChange?.(activePhase.id);
+      }
+    }
+  }, [currentPhaseIndex, processPhases, onActivePhaseChange]);
 
   const handlePhaseChange = (direction) => {
     setCurrentPhaseIndex((prev) =>
@@ -691,6 +705,8 @@ export const SidebarInfo = ({ manager, actions }) => {
           phase={currentPhase}
           onPhaseClick={openPhaseDetailModal}
           onActorClick={(actor) => openActorDetailModal(actor, currentPhase)}
+          // --- NUEVO: Indicamos que esta tarjeta es la activa ---
+          isActive={true}
         />
       </div>
 
@@ -730,5 +746,3 @@ export const SidebarInfo = ({ manager, actions }) => {
     </div>
   );
 };
-
-export default SidebarInfo;
