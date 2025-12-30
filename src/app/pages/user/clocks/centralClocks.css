@@ -4464,8 +4464,8 @@ from { transform: translateY(30px); opacity: 0; }
   border-bottom: 1px solid #f1f3f5;
   transition: background-color 0.2s;
   user-select: none;
-  min-height: 50px;
-  max-height: 55px;
+  min-height: 45px;
+  max-height: 50px;
 }
 
 .exp-section-header:hover {
@@ -4498,8 +4498,8 @@ from { transform: translateY(30px); opacity: 0; }
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #f1f3f5;
   background: #fff;
-  min-height: 30px;
-  max-height: 35px;
+  min-height: 25px;
+  max-height: 30px;
   font-size: 0.85rem;
 }
 
@@ -5894,3 +5894,76 @@ from { opacity: 0; transform: translateY(-5px); }
     transform: translateX(0);
   }
 }
+
+/* ============================================================
+   ESTILOS PARA CORRELACIÓN VISUAL DE FASES (AÑADIR AL FINAL)
+   ============================================================ */
+
+/* --- Colores base para cada fase --- */
+:root {
+  --phase-color-radicacion: rgba(26, 178, 145, 0.08); /* Verde menta */
+  --phase-color-estudio: rgba(253, 126, 20, 0.07); /* Naranja */
+  --phase-color-notificacion: rgba(108, 117, 125, 0.07); /* Gris */
+  --phase-color-correcciones: rgba(23, 162, 184, 0.07); /* Cian */
+  --phase-color-viabilidad: rgba(111, 66, 193, 0.07); /* Púrpura */
+  --phase-color-pagos: rgba(255, 193, 7, 0.1); /* Amarillo */
+  --phase-color-resolucion: rgba(0, 86, 179, 0.07); /* Azul oscuro */
+  --phase-color-recurso: rgba(100, 43, 107, 0.07); /* Morado */
+  --phase-color-entrega: rgba(40, 167, 69, 0.08); /* Verde éxito */
+  --phase-color-desist: rgba(220, 53, 69, 0.06); /* Rojo */
+
+  --phase-border-radicacion: rgba(26, 178, 145, 0.6);
+  --phase-border-estudio: rgba(253, 126, 20, 0.6);
+  --phase-border-notificacion: rgba(108, 117, 125, 0.5);
+  --phase-border-correcciones: rgba(23, 162, 184, 0.6);
+  --phase-border-viabilidad: rgba(111, 66, 193, 0.6);
+  --phase-border-pagos: rgba(255, 193, 7, 0.7);
+  --phase-border-resolucion: rgba(0, 86, 179, 0.6);
+  --phase-border-recurso: rgba(100, 43, 107, 0.6);
+  --phase-border-entrega: rgba(40, 167, 69, 0.6);
+  --phase-border-desist: rgba(220, 53, 69, 0.5);
+}
+
+/* --- Estilo para la fila de evento en la tabla --- */
+.exp-row-custom {
+  transition: background-color 0.4s ease, transform 0.2s ease;
+}
+
+/* --- Clases de resaltado para cada fase (aplicadas a la fila) --- */
+.exp-row-custom.phase-highlight-radicacion { background-color: var(--phase-color-radicacion); }
+.exp-row-custom.phase-highlight-estudio { background-color: var(--phase-color-estudio); }
+.exp-row-custom.phase-highlight-notificacion { background-color: var(--phase-color-notificacion); }
+.exp-row-custom.phase-highlight-correcciones { background-color: var(--phase-color-correcciones); }
+.exp-row-custom.phase-highlight-viabilidad { background-color: var(--phase-color-viabilidad); }
+.exp-row-custom.phase-highlight-pagos { background-color: var(--phase-color-pagos); }
+.exp-row-custom.phase-highlight-resolucion { background-color: var(--phase-color-resolucion); }
+.exp-row-custom.phase-highlight-recurso { background-color: var(--phase-color-recurso); }
+.exp-row-custom.phase-highlight-entrega { background-color: var(--phase-color-entrega); }
+.exp-row-custom.phase-highlight-desist { background-color: var(--phase-color-desist); }
+
+/* --- Estilo para la tarjeta de fase en el sidebar --- */
+.phase-card-compact.highlighted {
+  border-width: 1px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+  animation: pulse-border 1.8s infinite;
+}
+
+/* --- Animación de borde para la tarjeta activa --- */
+@keyframes pulse-border {
+  0% { border-color: var(--border-color-start); }
+  50% { border-color: var(--border-color-end); }
+  100% { border-color: var(--border-color-start); }
+}
+
+/* --- Clases de color para el borde animado (aplicadas a la tarjeta) --- */
+.phase-card-compact.highlighted.phase-highlight-radicacion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-radicacion); }
+.phase-card-compact.highlighted.phase-highlight-estudio { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-estudio); }
+.phase-card-compact.highlighted.phase-highlight-notificacion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-notificacion); }
+.phase-card-compact.highlighted.phase-highlight-correcciones { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-correcciones); }
+.phase-card-compact.highlighted.phase-highlight-viabilidad { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-viabilidad); }
+.phase-card-compact.highlighted.phase-highlight-pagos { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-pagos); }
+.phase-card-compact.highlighted.phase-highlight-resolucion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-resolucion); }
+.phase-card-compact.highlighted.phase-highlight-recurso { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-recurso); }
+.phase-card-compact.highlighted.phase-highlight-entrega { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-entrega); }
+.phase-card-compact.highlighted.phase-highlight-desist { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-desist); }

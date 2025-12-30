@@ -119,7 +119,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0,
             startDate: dStart,
             endDate: dRes,
-            parallelActors: null
+            parallelActors: null,
+            highlightClass: 'phase-highlight-desist',
+            relatedStates: [-50, -6],
         });
 
         // FASE D2: Notificación Resolución
@@ -136,7 +138,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0,
             startDate: startNotif,
             endDate: dNotif,
-            parallelActors: null
+            parallelActors: null,
+            highlightClass: 'phase-highlight-desist',
+            relatedStates: [-5, -7, -8],
         });
 
         // FASE D3: Ejecutoria y Plazo Recurso
@@ -191,7 +195,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     status: recursoStatus,
                     taskDescription: 'Interposición de recurso',
                 }
-            }
+            },
+            highlightClass: 'phase-highlight-desist',
+            relatedStates: [-10],
         });
 
         // FASES ADICIONALES SI HAY RECURSO
@@ -207,7 +213,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0,
                 startDate: dRecurso,
                 endDate: dResRecurso,
-                parallelActors: null
+                parallelActors: null,
+                highlightClass: 'phase-highlight-desist',
+                relatedStates: [-17],
             });
 
             // FASE D5: Notificación Recurso
@@ -221,7 +229,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0,
                 startDate: dResRecurso,
                 endDate: dNotifRecurso,
-                parallelActors: null
+                parallelActors: null,
+                highlightClass: 'phase-highlight-desist',
+                relatedStates: [-20, -21, -22],
             });
 
             // FASE D6: Cierre / Fase Final
@@ -235,7 +245,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0,
                 startDate: dNotifRecurso,
                 endDate: dFinal,
-                parallelActors: null
+                parallelActors: null,
+                highlightClass: 'phase-highlight-desist',
+                relatedStates: [-30],
             });
         }
 
@@ -264,7 +276,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         extraDays: 0, 
         startDate: radicacionDate, 
         endDate: ldfDate, 
-        parallelActors: null 
+        parallelActors: null,
+        highlightClass: 'phase-highlight-radicacion',
+        relatedStates: [3, -1, 5, 501, 502],
     });
 
     // --- CASO 1: INCOMPLETO (-1) ---
@@ -313,7 +327,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     status: phase1Status === 'PENDIENTE' ? 'PENDIENTE' : (vallaDate ? 'COMPLETADO' : 'ACTIVO'), 
                     taskDescription: 'Falta Valla Informativa', 
                 } 
-            }
+            },
+            highlightClass: 'phase-highlight-estudio',
+            relatedStates: [503, 300, 350, 400, 401],
         });
 
         // Luego fases de desistimiento
@@ -342,7 +358,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0, 
             startDate: ldfDate, 
             endDate: acta1Date,
-            parallelActors: null 
+            parallelActors: null,
+            highlightClass: 'phase-highlight-estudio',
+            relatedStates: [503, 30, 300, 350, 400, 401],
         });
 
         // FASE 2: Notificación Observaciones
@@ -357,6 +375,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           startDate: acta1Date, 
           endDate: notificacionActa1Date, 
           parallelActors: null,
+          highlightClass: 'phase-highlight-notificacion',
+          relatedStates: [31, 32, 33],
         });
 
         // FASE 3: Correcciones
@@ -376,6 +396,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           startDate: notificacionActa1Date, 
           endDate: corrDate, 
           parallelActors: null,
+          highlightClass: 'phase-highlight-correcciones',
+          relatedStates: [34, 35],
         });
 
         // FASE 4: Correcciones y Viabilidad (RENOMBRADA y DETENIDA AQUÍ)
@@ -396,6 +418,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           startDate: startPhase4, 
           endDate: endPhase4, 
           parallelActors: null,
+          highlightClass: 'phase-highlight-viabilidad',
+          relatedStates: [49, 61, 301, 351, 400, 401], // Reutiliza la prórroga si aplica aquí
         });
 
         // Fases de Desistimiento
@@ -451,7 +475,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     status: checkParallelStatus(ldfDate, vallaDate), 
                     taskDescription: 'Instalación de valla', 
                 } 
-            } 
+            },
+            highlightClass: 'phase-highlight-estudio',
+            relatedStates: [503, 30, 300, 350, 400, 401], // Incluye suspensión pre-acta y prórroga
         });
 
         const isCumple = checkCompliance(acta1?.desc);
@@ -471,6 +497,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
               startDate: acta1Date, 
               endDate: notificacionActa1Date, 
               parallelActors: null,
+              highlightClass: 'phase-highlight-notificacion',
+              relatedStates: [31, 32, 33],
             });}
 
             const hasProrrogaCorr = !!getClock(34)?.date_start;
@@ -485,6 +513,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
               startDate: notificacionActa1Date, 
               endDate: corrDate, 
               parallelActors: null,
+              highlightClass: 'phase-highlight-correcciones',
+              relatedStates: [34, 35],
             });
         }
 
@@ -506,6 +536,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           endDate: viabilidadDate, 
           daysContext: { totalCuraduria: totalCuraduriaDays, usedInPhase1: phase1UsedDays, availableForPhase4: phase4AvailableDays },
           parallelActors: null,
+          highlightClass: 'phase-highlight-viabilidad',
+          relatedStates: [49, 61, 301, 351, 400, 401], // Incluye suspensión post-acta y prórroga
         });
 
         const notificaVia = correccionesOptions.notificationType === 'notificar';
@@ -522,7 +554,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0,
                 startDate: viabilidadDate,
                 endDate: notificacionViaDate,
-                parallelActors: null
+                parallelActors: null,
+                highlightClass: 'phase-highlight-notificacion',
+                relatedStates: [55, 56, 57],
             });
         }
 
@@ -541,7 +575,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0,
             startDate: notificacionViaDate,
             endDate: pagosDate,
-            parallelActors: null
+            parallelActors: null,
+            highlightClass: 'phase-highlight-pagos',
+            relatedStates: [62, 63, 64, 65, 69],
         });
 
         // >>> PUNTO DE BIFURCACIÓN PARA NO PAGA EXPENSAS (-4) <<<
@@ -563,7 +599,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0, 
                 startDate: pagosDate, 
                 endDate: resolucionDate, 
-                parallelActors: null 
+                parallelActors: null,
+                highlightClass: 'phase-highlight-resolucion',
+                relatedStates: [70],
             });
 
             // FASE 8: Notificación Res
@@ -577,7 +615,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0, 
                 startDate: resolucionDate, 
                 endDate: notificacionResDate, 
-                parallelActors: null 
+                parallelActors: null,
+                highlightClass: 'phase-highlight-notificacion',
+                relatedStates: [71, 72, 73, 731, 85],
             });
 
             // FASE 9: Ejecutoria y Recurso (Lógica Paralela Estándar)
@@ -631,7 +671,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                         status: recursoStatus,
                         taskDescription: recursoDate ? 'Recurso presentado' : (recursoExpired ? 'Derecho agotado' : 'Plazo disponible'),
                     }
-                }
+                },
+                highlightClass: 'phase-highlight-recurso',
+                relatedStates: [730, 74, 75, 751, 752, 733, 762, 76, 761, 99],
             });
 
             // FASE 10: Entrega
@@ -645,7 +687,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0, 
                 startDate: ejecutoriaDate, 
                 endDate: entregaDate, 
-                parallelActors: null 
+                parallelActors: null,
+                highlightClass: 'phase-highlight-entrega',
+                relatedStates: [98],
             });
         }
     }
