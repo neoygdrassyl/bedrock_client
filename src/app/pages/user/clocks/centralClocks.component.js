@@ -12,6 +12,8 @@ import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
 import { ScheduleModal } from './components/ScheduleModal';
 import { AlarmsWidget } from './components/AlarmsWidget';
+import { GanttCard } from './components/GanttCard';
+import { GanttModal } from './components/GanttModal';
 import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles } from './hooks/useClocksManager';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
@@ -20,6 +22,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff } from '../../../components/customClasses/typeParse';
 
 import './centralClocks.css';
+import './diagramGantt.css';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -32,6 +35,7 @@ export default function EXP_CLOCKS(props) {
   
   const [showTimeTravel, setShowTimeTravel] = useState(false);
   const [showAlarms, setShowAlarms] = useState(false);
+  const [showGanttModal, setShowGanttModal] = useState(false);
   
   const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
   
@@ -842,6 +846,10 @@ export default function EXP_CLOCKS(props) {
              onActivePhaseChange={setActivePhaseId}
              activePhaseId={activePhaseId}
           />
+          <GanttCard 
+            manager={manager} 
+            onExpandClick={() => setShowGanttModal(true)}
+          />
           <HolidayCalendar />
           
           <div className="sidebar-utilities">
@@ -856,6 +864,12 @@ export default function EXP_CLOCKS(props) {
           </div>
         </div>
       </div>
+      
+      <GanttModal 
+        manager={manager} 
+        isOpen={showGanttModal} 
+        onClose={() => setShowGanttModal(false)}
+      />
     </div>
   );
 }
