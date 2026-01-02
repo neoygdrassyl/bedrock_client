@@ -656,7 +656,7 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
   return (
     <div className="sidebar-card phases-card">
       <div className="sidebar-card-header d-flex justify-content-between align-items-center">
-        <h6 className="mb-0" style={{ fontSize: '0.9rem' }}>
+        <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
           <i className="fas fa-tasks me-2" />
           Fases del Proceso
         </h6>

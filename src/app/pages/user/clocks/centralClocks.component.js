@@ -45,13 +45,8 @@ export default function EXP_CLOCKS(props) {
 
   const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
 
-  // --- LOGGING ---
-  console.log('%c[EXP_CLOCKS RENDER] ==================================', 'color: #8A2BE2; font-weight: bold;');
-  console.log('Props (currentItem.fun_clocks):', currentItem?.fun_clocks);
-  console.log('State (clocksData):', clocksData);
 
   useEffect(() => {
-    console.log('%c[EFFECT 1] Sincronizando props -> state', 'color: #007BFF');
     if (currentItem?.fun_clocks) {
       const clock1001FromProps = currentItem.fun_clocks.find(c => String(c.state) === '1001');
       const clock1001FromState = clocksData.find(c => String(c.state) === '1001');
@@ -59,12 +54,12 @@ export default function EXP_CLOCKS(props) {
       // SOLO actualizar si el 1001 del state es diferente al de las props
       // Esto previene que se sobrescriba el estado local durante una actualización optimista
       if (!clock1001FromState || (clock1001FromProps && clock1001FromProps.desc !== clock1001FromState.desc)) {
-         console.log('%c[EFFECT 1] Prop `fun_clocks` ha cambiado. Actualizando `clocksData`...', 'color: #007BFF; font-weight: bold;');
          setClocksData([...currentItem.fun_clocks]);
          setRefreshTrigger(prev => prev + 1);
-      } else {
-         console.log('%c[EFFECT 1] `fun_clocks` recibido, pero se omite la actualización del state para prevenir sobreescritura.', 'color: #007BFF');
-      }
+      } 
+      // else {
+      //   //  console.log('%c[EFFECT 1] `fun_clocks` recibido, pero se omite la actualización del state para prevenir sobreescritura.', 'color: #007BFF');
+      // }
     }
   }, [currentItem?.fun_clocks]);
 
@@ -77,8 +72,6 @@ export default function EXP_CLOCKS(props) {
       return {};
     }
   }, [clocksData]);
-
-  console.log('%c[RENDER] Usando `phaseOptions`:', 'color: #8A2BE2', phaseOptions);
 
   // Ahora pasamos phaseOptions al manager
   const manager = useClocksManager(currentItem, clocksData, currentVersion, systemDate, phaseOptions);
@@ -132,7 +125,6 @@ export default function EXP_CLOCKS(props) {
           // Caso 1: El formulario tiene la fecha y el reloj no, o son diferentes.
           // El formulario es la fuente de verdad y actualiza el reloj.
           if (formDate && (!clockDate || formDate !== clockDate)) {
-              console.log("SYNC: Actualizando reloj [503] desde el formulario...");
               const formData = new FormData();
               formData.set('date_start', formDate);
               formData.set('state', 503);
@@ -149,7 +141,6 @@ export default function EXP_CLOCKS(props) {
               const funLawId = currentItem.fun_law.id;
               if (!funLawId) return; // No se puede actualizar sin un ID
 
-              console.log("SYNC: Actualizando formulario desde el reloj [503]...");
               const newSign = [signArray[0] || '-1', clockDate].join(',');
               
               const formData = new FormData();
@@ -220,8 +211,6 @@ export default function EXP_CLOCKS(props) {
   };
 
   const applyLocalClockChange = (state, changes, version) => {
-    console.groupCollapsed('%c[applyLocalClockChange] Actualización optimista de UI', 'color: #28a745');
-    console.log('State:', state, 'Version:', version, 'Changes:', changes);
     
     setClocksData(prev => {
       const arr = Array.isArray(prev) ? [...prev] : [];
@@ -236,12 +225,9 @@ export default function EXP_CLOCKS(props) {
         arr.push(newClock);
       }
       
-      console.log('Nuevo `clocksData` local:', arr);
-      
       // Si estamos actualizando el clock 1001, refrescamos el trigger
       // para forzar el re-renderizado completo con las nuevas opciones.
       if (String(state) === '1001') {
-        console.log('%cForzando refreshTrigger para el clock 1001', 'color: #28a745; font-weight: bold;');
         setRefreshTrigger(p => p + 1);
       }
       
@@ -296,7 +282,6 @@ export default function EXP_CLOCKS(props) {
 
   const manage_clock = (useMySwal, findOne, version, formDataClock, triggerUpdate = false) => {
     console.groupCollapsed('%c[manage_clock] Guardando en backend', 'color: #17a2b8');
-    console.log('State:', findOne, 'Version:', version, 'Trigger Update:', triggerUpdate);
     
     var _CHILD = getClockVersion(findOne, version) || getClock(findOne);
     formDataClock.set('fun0Id', currentItem.id);
@@ -304,7 +289,6 @@ export default function EXP_CLOCKS(props) {
     if (useMySwal) MySwal.fire({ title: swaMsg.title_wait, text: swaMsg.text_wait, icon: 'info', showConfirmButton: false });
     
     const onOk = () => {
-      console.log('%cGuardado en backend OK. Solicitando update...', 'color: #17a2b8');
       if (useMySwal) MySwal.fire({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer, icon: 'success', confirmButtonText: swaMsg.text_btn });
       props.requestUpdate(currentItem.id);
       if (triggerUpdate) setTimeout(() => props.requestUpdate(currentItem.id), 150);
@@ -317,10 +301,8 @@ export default function EXP_CLOCKS(props) {
     }
 
     if (_CHILD && _CHILD.id) {
-       console.log('Llamando a FUN_SERVICE.update_clock para el ID:', _CHILD.id);
       FUN_SERVICE.update_clock(_CHILD.id, formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
     } else {
-       console.log('Llamando a FUN_SERVICE.create_clock');
       FUN_SERVICE.create_clock(formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
     }
   }
@@ -583,8 +565,6 @@ export default function EXP_CLOCKS(props) {
   };
 
   const handleOptionChange = (phaseKey, option, value) => {
-    console.group('%c[handleOptionChange] El usuario cambió una opción', 'color: #fd7e14');
-    console.log('Fase:', phaseKey, 'Opción:', option, 'Nuevo Valor:', value);
 
     // 1. Clonar las opciones actuales desde el estado para una UI optimista
     let allOptions = { ...(phaseOptions || {}) };
@@ -605,10 +585,7 @@ export default function EXP_CLOCKS(props) {
     // 5. Unir todo en el objeto principal
     const newAllOptions = { ...allOptions, [phaseKey]: phaseSpecificOptions };
     const newDesc = JSON.stringify(newAllOptions);
-    console.log('Nuevas opciones a guardar (JSON):', newDesc);
 
-    // 6. Actualización optimista de la UI
-    console.log('Invocando `applyLocalClockChange` para actualización optimista...');
     applyLocalClockChange('1001', { name: 'phase_options', desc: newDesc }, undefined);
 
     // 7. Guardar en backend en segundo plano
@@ -617,7 +594,6 @@ export default function EXP_CLOCKS(props) {
     formData.set('desc', newDesc);
     
     // El 'false' en triggerUpdate es importante para evitar una solicitud de actualización extra
-    console.log('Invocando `manage_clock` para guardar en backend...');
     manage_clock(false, '1001', undefined, formData, false);
     console.groupEnd();
   };
