@@ -700,6 +700,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         desistimiento: { active: !!desistimientoVersion, version: desistimientoVersion }
     };
 
+    console.log('Process Phases Computed:', phases);
+
     return phases;
   }, [clocksData, currentItem, today, extension, suspensionPreActa, suspensionPostActa]);
 
