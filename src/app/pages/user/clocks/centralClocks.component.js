@@ -15,6 +15,7 @@ import { AlarmsWidget } from './components/AlarmsWidget';
 import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles } from './hooks/useClocksManager';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
+import { GanttModal } from './components/GanttModal';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff } from '../../../components/customClasses/typeParse';
@@ -40,6 +41,7 @@ export default function EXP_CLOCKS(props) {
 
   // --- NUEVO ESTADO: Almacena el ID de la fase activa para el resaltado ---
   const [activePhaseId, setActivePhaseId] = useState(null);
+  const [showGanttModal, setShowGanttModal] = useState(false);
 
   const sidebarRef = useRef(null);
 
@@ -809,15 +811,25 @@ export default function EXP_CLOCKS(props) {
         
         <div className="exp-sidebar" ref={sidebarRef}>
           <SidebarInfo 
-             manager={manager} 
-             actions={{ 
-               onAddTimeControl: addTimeControl,
-               onOpenScheduleModal: openScheduleModal
-             }}
-             // --- NUEVO: Pasar la función para actualizar el ID de la fase activa ---
-             onActivePhaseChange={setActivePhaseId}
-             activePhaseId={activePhaseId}
+            manager={manager} 
+            actions={{ 
+              onAddTimeControl: addTimeControl,
+              onOpenScheduleModal: openScheduleModal
+            }}
+            onActivePhaseChange={setActivePhaseId}
+            activePhaseId={activePhaseId}
           />
+          <GanttModal
+            isOpen={showGanttModal}
+            onClose={() => setShowGanttModal(false)}
+            phases={manager.processPhases}
+            ldfDate={getClock(5)?.date_start || currentItem?.date}
+            suspensionPreActa={manager.suspensionPreActa}
+            suspensionPostActa={manager.suspensionPostActa}
+            extension={manager.extension}
+            currentItem={currentItem}
+          />
+
           <HolidayCalendar />
           
           <div className="sidebar-utilities">

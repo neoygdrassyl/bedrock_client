@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import moment from 'moment';
+import { GanttPreview } from './GanttPreview';
+import { GanttModal } from './GanttModal';
 
 const MySwal = withReactContent(Swal);
 
@@ -272,10 +274,16 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
     canAddExtension,
     isDesisted,
     FUN0TYPETIME,
+    suspensionPreActa,
+    suspensionPostActa,
+    extension,
+    getClock,
+    currentItem,
   } = manager || {};
 
   const { onAddTimeControl, onOpenScheduleModal } = actions || {};
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
+  const [showGanttModal, setShowGanttModal] = useState(false);
 
   useEffect(() => {
     if (!processPhases || processPhases.length === 0) return;
@@ -652,97 +660,132 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
   }
 
   const currentPhase = processPhases[currentPhaseIndex];
+  const ldfDate = getClock?.(5)?.date_start || currentItem?.date;
 
   return (
-    <div className="sidebar-card phases-card">
-      <div className="sidebar-card-header d-flex justify-content-between align-items-center">
-        <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
-          <i className="fas fa-tasks me-2" />
-          Fases del Proceso
-        </h6>
+    <>
+      <div className="sidebar-card phases-card">
+        <div className="sidebar-card-header d-flex justify-content-between align-items-center">
+          <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
+            <i className="fas fa-tasks me-2" />
+            Fases del Proceso
+          </h6>
 
-        <div className="d-flex align-items-center">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary border-0 text-muted"
-            onClick={showDebug}
-            title="Ver diagnóstico"
-            style={{ padding: '0 6px' }}
-          >
-            <i className="fas fa-bug" />
+          <div className="d-flex align-items-center">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary border-0 text-muted"
+              onClick={showDebug}
+              title="Ver diagnóstico"
+              style={{ padding: '0 6px' }}
+            >
+              <i className="fas fa-bug" />
+            </button>
+
+            <div className="phase-nav ms-1">
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => handlePhaseChange(-1)}
+                disabled={currentPhaseIndex === 0}
+                title="Fase anterior"
+              >
+                <i className="fas fa-chevron-left" />
+              </button>
+
+              <span className="phase-indicator">
+                {currentPhaseIndex + 1}/{processPhases.length}
+              </span>
+
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => handlePhaseChange(1)}
+                disabled={currentPhaseIndex === processPhases.length - 1}
+                title="Fase siguiente"
+              >
+                <i className="fas fa-chevron-right" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="sidebar-card-body phases-body">
+          <PhaseCard
+            phase={currentPhase}
+            onPhaseClick={openPhaseDetailModal}
+            onActorClick={(actor) => openActorDetailModal(actor, currentPhase)}
+            // --- NUEVO: Indicamos que esta tarjeta es la activa ---
+            isActive={true}
+          />
+        </div>
+
+        <div className="sidebar-card-footer sidebar-card-footer-grid">
+          <button type="button" className="btn-footer-action" onClick={showDaysDetailsModal}>
+            <i className="fas fa-chart-pie" />
+            <span>Desglose</span>
           </button>
 
-          <div className="phase-nav ms-1">
+          <button type="button" className="btn-footer-action" onClick={onOpenScheduleModal}>
+            <i className="fas fa-calendar-check" />
+            <span>Programar</span>
+          </button>
+
+          {!isDesisted && canAddSuspension && (
             <button
               type="button"
-              className="btn btn-sm btn-outline-primary"
-              onClick={() => handlePhaseChange(-1)}
-              disabled={currentPhaseIndex === 0}
-              title="Fase anterior"
+              className="btn-footer-action action-suspension"
+              onClick={() => onAddTimeControl?.('suspension')}
             >
-              <i className="fas fa-chevron-left" />
+              <i className="fas fa-pause" />
+              <span>Suspensión</span>
             </button>
+          )}
 
-            <span className="phase-indicator">
-              {currentPhaseIndex + 1}/{processPhases.length}
-            </span>
-
+          {!isDesisted && canAddExtension && (
             <button
               type="button"
-              className="btn btn-sm btn-outline-primary"
-              onClick={() => handlePhaseChange(1)}
-              disabled={currentPhaseIndex === processPhases.length - 1}
-              title="Fase siguiente"
+              className="btn-footer-action action-extension"
+              onClick={() => onAddTimeControl?.('extension')}
             >
-              <i className="fas fa-chevron-right" />
+              <i className="fas fa-clock" />
+              <span>Prórroga</span>
             </button>
-          </div>
+          )}
         </div>
       </div>
 
-      <div className="sidebar-card-body phases-body">
-        <PhaseCard
-          phase={currentPhase}
-          onPhaseClick={openPhaseDetailModal}
-          onActorClick={(actor) => openActorDetailModal(actor, currentPhase)}
-          // --- NUEVO: Indicamos que esta tarjeta es la activa ---
-          isActive={true}
-        />
+      {/* NUEVA SECCIÓN: Diagrama de Gantt */}
+      <div className="sidebar-card gantt-card mt-3">
+        <div className="sidebar-card-header">
+          <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
+            <i className="fas fa-chart-gantt me-2" />
+            Diagrama de Gantt
+          </h6>
+        </div>
+        <div className="sidebar-card-body p-2">
+          <GanttPreview
+            phases={processPhases}
+            ldfDate={ldfDate}
+            suspensionPreActa={suspensionPreActa}
+            suspensionPostActa={suspensionPostActa}
+            extension={extension}
+            onExpand={() => setShowGanttModal(true)}
+          />
+        </div>
       </div>
 
-      <div className="sidebar-card-footer sidebar-card-footer-grid">
-        <button type="button" className="btn-footer-action" onClick={showDaysDetailsModal}>
-          <i className="fas fa-chart-pie" />
-          <span>Desglose</span>
-        </button>
-
-        <button type="button" className="btn-footer-action" onClick={onOpenScheduleModal}>
-          <i className="fas fa-calendar-check" />
-          <span>Programar</span>
-        </button>
-
-        {!isDesisted && canAddSuspension && (
-          <button
-            type="button"
-            className="btn-footer-action action-suspension"
-            onClick={() => onAddTimeControl?.('suspension')}
-          >
-            <i className="fas fa-pause" />
-            <span>Suspensión</span>
-          </button>
-        )}
-
-        {!isDesisted && canAddExtension && (
-          <button
-            type="button"
-            className="btn-footer-action action-extension"
-            onClick={() => onAddTimeControl?.('extension')}
-          >
-            <i className="fas fa-clock" />
-            <span>Prórroga</span>
-          </button>
-        )}
-      </div>
-    </div>
+      {/* Modal del Gantt */}
+      <GanttModal
+        isOpen={showGanttModal}
+        onClose={() => setShowGanttModal(false)}
+        phases={processPhases}
+        ldfDate={ldfDate}
+        suspensionPreActa={suspensionPreActa}
+        suspensionPostActa={suspensionPostActa}
+        extension={extension}
+        currentItem={currentItem}
+      />
+    </>
   );
 };
