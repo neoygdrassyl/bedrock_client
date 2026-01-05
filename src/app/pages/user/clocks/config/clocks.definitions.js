@@ -193,7 +193,7 @@ const extraClocks = (props) => {
       },
       { 
         state: -1, 
-        name: 'Entrega de documentación Incompleta', 
+        name: 'Radicación Incompleta', 
         desc: "Desiste por no completar documentación en 30 días hábiles", 
         editableDate: false, 
         limit: [[3, 30]], 
