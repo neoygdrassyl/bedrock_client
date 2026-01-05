@@ -328,7 +328,7 @@ export const ClockRow = (props) => {
                         />
                         {currentDate && (
                             <button className="btn btn-link text-danger p-0 ms-1" onClick={() => onDelete(value)} title="Eliminar fecha">
-                                <i className="fas fa-times"></i>
+                                <i className="fas fa-eraser"></i>
                             </button>
                         )}
                     </div>
