@@ -1,0 +1,248 @@
+[
+  {
+    "Regla":"Cada una de las fases será una fila general en el diagrama Gantt",
+    "Regla2":"Cada fila prinicpal puede tener hasta 2 actores paralelos, donde cada subproceso se considerará una fila especifica dentro de la fila general del diagrama de gantt",
+    "Regla3":"Una fila puede tener dos o una sola fila y cada actor en el json enviado contendrá cuan grande es el tamaño de la barra o progress bar y este tamaño en días debe reflejarse en el diagrama de gantt",
+    "Regla4":"Cada fase tendrá un color de resaltado diferente para identificar visualmente cada una de las fases del proceso",
+    "Regla5":"Cada bloque contendrá una progressBar que refleje el avance del proceso en días usados vs días totales asignados",
+    "Regla6":"Cada fase tendrá un estado que puede ser PENDIENTE, ACTIVO o COMPLETADO y dpendiendo del estado se mostrará un color diferente en la barra de progreso",
+    "Regla7":"Cuando hay una suspension o prorroga para las fases de Estudio y Observaciones de la curaduria o Revisión y Viabilidad debe unicamente en la barra del tiempo mostrar pequeño un segmento amarillo si hay suspenisones y uno azul, qque aparezcan al fina lde la barra y no agrande el tamaño de la misma, simplemente es para saber que en ese tiempo hay suspension y prrorga o solo una",
+    "Regla8":"Identificar si la prorroga o suspension fue antes o despues del acta y dependiendo de eso incluye el segmento correspondiente, insisto nuevamente no debe distinguir la fecha de inico y fin de la suspension, simplemente indicar existencia",
+    "Regla9":"Cuando la fase de estudio y observaciones no tiene endDate, entonces el ancho de la de viabilidad será 1 (el ancho del bloque) y la de estudio contendrá el totalDays disponibles, y los días usados como barra de progreso",
+    "Regla10":"Indendientemente de que haya una fecha de endDate o no debe mostrarse el cuadro del proceso si sale en la lista de fases, para lo unico que funciona es para rellenar la barra de progreso, pero en todos los casos siempre habrá un ancho de días que parten justo despues de la anterior fila o fase",
+    "Regla11":"Las columnas del diagrama de gantt serán días hábiles transcurridos desde la fecha de radicación legal y debida forma y también se visualizarán las fechas, la idea es conseguir relacion y sinergia entre la cantidad de días y las fechas límites que se mostraran en el diagrama",
+    "Regla12":"El diagrama se mostrará de forma descendiente mediante una relacion de una fase a la otra, hablo del elemento gráfico que relaicona los bloques en el diagrama espeicficamente",
+    "Regla13":"No puede quedar espacio en blanco entre una fase y otra",
+    "Regla14":"El diagrama gantt tendrá dos formas de visualizacion, una normal (por defecto) y otra donde va a cambiar el ancho de los bloques (Ojo ancho de los bloques no es igual a ancho de progreso en el bloque) donde el ancho de tiempo disponible se iguale a la fecha de evento en caso de existir, y si no pues se deja toda, es como para ver acorde a como avanzan las fases cuanto tiempo final se ha recortado",
+    "Regla15":"El diagrama de gantt tendrá 2 formas de verlo, uno mediante una previsualización pequeña donde en lugar nombres va a tener los números del proceso y la idea es que todo el diagrama se visualice en el espacio disponible asi se vea pequeño, justo dentro del sidebar en la parte de abajo como una pestaña pequeña, y tambien la visualización en modo grande en un modal donde se detallan mas cosas",
+    "Regla16":"Toda la información se inlcuye en usesProcessPhases, por lo que no hay que inventar o calcular nueva, si es necesario cambiar argumentos incluyelos pero con nuevos nombres en la lista que retorna mi archivo encargado de construir esa lista de fases"
+  },
+  {
+    "id": "phase0",
+    "title": "Radicación de Legal y debida forma",
+    "responsible": "Solicitante",
+    "status": "COMPLETADO",
+    "totalDays": 30,
+    "usedDays": 8,
+    "extraDays": 0,
+    "startDate": "2025-08-15",
+    "endDate": "2025-08-27",
+    "parallelActors": null,
+    "highlightClass": "phase-highlight-radicacion",
+    "relatedStates": [
+      3,
+      -1,
+      5,
+      501,
+      502
+    ]
+  },
+  {
+    "id": "phase1",
+    "title": "Estudio y Observaciones",
+    "responsible": "Curaduría",
+    "status": "COMPLETADO",
+    "totalDays": 55,
+    "usedDays": 50,
+    "extraDays": 0,
+    "startDate": "2025-08-27",
+    "endDate": "2025-11-06",
+    "parallelActors": {
+      "primary": {
+        "name": "Curaduría",
+        "icon": "fa-building",
+        "color": "primary",
+        "totalDays": 55,
+        "usedDays": 50,
+        "extraDays": 0,
+        "status": "COMPLETADO",
+        "taskDescription": "Acta parte 1: Observaciones"
+      },
+      "secondary": {
+        "name": "Solicitante",
+        "icon": "fa-user",
+        "color": "info",
+        "totalDays": 5,
+        "usedDays": 8,
+        "extraDays": 0,
+        "status": "COMPLETADO",
+        "taskDescription": "Instalación de valla"
+      }
+    },
+    "highlightClass": "phase-highlight-estudio",
+    "relatedStates": [
+      503,
+      30,
+      300,
+      350,
+      400,
+      401
+    ]
+  },
+  {
+    "id": "phase3",
+    "title": "Correcciones del Solicitante",
+    "responsible": "Solicitante",
+    "status": "COMPLETADO",
+    "totalDays": 30,
+    "usedDays": 5,
+    "extraDays": 0,
+    "startDate": "2025-11-21",
+    "endDate": "2025-11-27",
+    "parallelActors": null,
+    "highlightClass": "phase-highlight-correcciones",
+    "relatedStates": [
+      34,
+      35
+    ]
+  },
+  {
+    "id": "phase4",
+    "title": "Revisión y Viabilidad",
+    "responsible": "Curaduría",
+    "status": "ACTIVO",
+    "totalDays": 5,
+    "usedDays": 23,
+    "extraDays": 0,
+    "startDate": "2025-11-27",
+    "daysContext": {
+      "totalCuraduria": 55,
+      "usedInPhase1": 50,
+      "availableForPhase4": 5
+    },
+    "parallelActors": null,
+    "highlightClass": "phase-highlight-viabilidad",
+    "relatedStates": [
+      49,
+      61,
+      301,
+      351,
+      400,
+      401
+    ]
+  },
+  {
+    "id": "phase5_notif",
+    "title": "Notificación de Viabilidad",
+    "responsible": "Curaduría",
+    "status": "PENDIENTE",
+    "totalDays": 10,
+    "usedDays": 0,
+    "extraDays": 0,
+    "parallelActors": null,
+    "highlightClass": "phase-highlight-notificacion",
+    "relatedStates": [
+      55,
+      56,
+      57
+    ]
+  },
+  {
+    "id": "phase6_pagos",
+    "title": "Liquidación y Pagos",
+    "responsible": "Solicitante",
+    "status": "PENDIENTE",
+    "totalDays": 30,
+    "usedDays": 0,
+    "extraDays": 0,
+    "parallelActors": null,
+    "highlightClass": "phase-highlight-pagos",
+    "relatedStates": [
+      62,
+      63,
+      64,
+      65,
+      69
+    ]
+  },
+  {
+    "id": "phase7",
+    "title": "Generación de Resolución",
+    "responsible": "Curaduría",
+    "status": "PENDIENTE",
+    "totalDays": 5,
+    "usedDays": 0,
+    "extraDays": 0,
+    "parallelActors": null,
+    "highlightClass": "phase-highlight-resolucion",
+    "relatedStates": [
+      70
+    ]
+  },
+  {
+    "id": "phase8_notif",
+    "title": "Notificación Resolución",
+    "responsible": "Curaduría",
+    "status": "PENDIENTE",
+    "totalDays": 15,
+    "usedDays": 0,
+    "extraDays": 0,
+    "parallelActors": null,
+    "highlightClass": "phase-highlight-notificacion",
+    "relatedStates": [
+      71,
+      72,
+      73,
+      731,
+      85
+    ]
+  },
+  {
+    "id": "phase9_exec",
+    "title": "Ejecutoria y Recurso",
+    "responsible": "Curaduría",
+    "status": "PENDIENTE",
+    "totalDays": 10,
+    "usedDays": 0,
+    "extraDays": 0,
+    "parallelActors": {
+      "primary": {
+        "name": "Ejecutoria",
+        "icon": "fa-gavel",
+        "color": "primary",
+        "totalDays": 10,
+        "usedDays": 0,
+        "extraDays": 0,
+        "status": "PENDIENTE",
+        "taskDescription": "Licencia queda en firme"
+      },
+      "secondary": {
+        "name": "Recurso",
+        "icon": "fa-file-invoice",
+        "color": "info",
+        "totalDays": 10,
+        "usedDays": 0,
+        "extraDays": 0,
+        "status": "PENDIENTE",
+        "taskDescription": "Plazo disponible"
+      }
+    },
+    "highlightClass": "phase-highlight-recurso",
+    "relatedStates": [
+      730,
+      74,
+      75,
+      751,
+      752,
+      733,
+      762,
+      76,
+      761,
+      99
+    ]
+  },
+  {
+    "id": "phase10",
+    "title": "Entrega de Licencia",
+    "responsible": "Curaduría",
+    "status": "PENDIENTE",
+    "totalDays": 1,
+    "usedDays": 0,
+    "extraDays": 0,
+    "parallelActors": null,
+    "highlightClass": "phase-highlight-entrega",
+    "relatedStates": [
+      98
+    ]
+  }
+]
