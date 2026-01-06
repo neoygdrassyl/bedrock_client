@@ -819,15 +819,16 @@ export default function EXP_CLOCKS(props) {
             onActivePhaseChange={setActivePhaseId}
             activePhaseId={activePhaseId}
           />
+
           <GanttModal
-            isOpen={showGanttModal}
+            show={showGanttModal}
             onClose={() => setShowGanttModal(false)}
             phases={manager.processPhases}
             ldfDate={getClock(5)?.date_start || currentItem?.date}
             suspensionPreActa={manager.suspensionPreActa}
             suspensionPostActa={manager.suspensionPostActa}
             extension={manager.extension}
-            currentItem={currentItem}
+            activePhaseId={activePhaseId}
           />
 
           <HolidayCalendar />

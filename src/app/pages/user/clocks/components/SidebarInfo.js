@@ -3,9 +3,12 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import moment from 'moment';
 import { GanttPreview } from './GanttPreview';
+// Importa GanttModal aquí si aún no lo has hecho
 import { GanttModal } from './GanttModal';
 
 const MySwal = withReactContent(Swal);
+
+// ... (El resto de tus componentes y helpers como STATUS_MAP, escapeHtml, etc. se mantienen igual) ...
 
 const STATUS_MAP = {
   PENDIENTE: { text: 'Pendiente', color: 'secondary', icon: 'fa-hourglass-start' },
@@ -198,7 +201,7 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
 
   return (
     <div
-      className={`phase-card-compact ${activeHighlightClass}`}
+      className={`phase-card-compact ${isActive ? 'highlighted' : ''} ${activeHighlightClass}`}
       role="button"
       tabIndex={0}
       onClick={handlePhaseClick}
@@ -266,6 +269,7 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
   );
 };
 
+
 export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhaseId }) => {
   const {
     processPhases,
@@ -273,7 +277,7 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
     canAddSuspension,
     canAddExtension,
     isDesisted,
-    FUN0TYPETIME,
+    FUN_0_TYPE_TIME,
     suspensionPreActa,
     suspensionPostActa,
     extension,
@@ -283,6 +287,8 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
 
   const { onAddTimeControl, onOpenScheduleModal } = actions || {};
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
+  
+  // ✅ **NUEVO:** Estado para controlar la visibilidad del modal del Gantt
   const [showGanttModal, setShowGanttModal] = useState(false);
 
   useEffect(() => {
@@ -296,7 +302,6 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
     else setCurrentPhaseIndex(processPhases.length - 1);
   }, [processPhases]);
 
-  // --- NUEVO EFFECT: Notifica al padre cuando la fase activa cambia ---
   useEffect(() => {
     if (processPhases && processPhases.length > 0) {
       const activePhase = processPhases[currentPhaseIndex];
@@ -311,7 +316,7 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
       Math.max(0, Math.min(prev + direction, (processPhases?.length || 1) - 1)),
     );
   };
-
+  
   const showDebug = () => {
     const info = processPhases?.debugInfo;
     if (!info) return Swal.fire('No info', 'No hay información de debug disponible.', 'warning');
@@ -357,7 +362,7 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
     const context = phase4?.daysContext;
 
     const baseDays =
-      (typeof FUN0TYPETIME === 'function' ? FUN0TYPETIME(manager?.currentItem?.type) : null) ?? 45;
+      (typeof FUN_0_TYPE_TIME === 'function' ? FUN_0_TYPE_TIME(manager?.currentItem?.type) : null) ?? 45;
     const suspDays = manager?.totalSuspensionDays || 0;
     const extDays = manager?.extension?.days || 0;
 
@@ -715,8 +720,7 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
             phase={currentPhase}
             onPhaseClick={openPhaseDetailModal}
             onActorClick={(actor) => openActorDetailModal(actor, currentPhase)}
-            // --- NUEVO: Indicamos que esta tarjeta es la activa ---
-            isActive={true}
+            isActive={currentPhase?.id === activePhaseId}
           />
         </div>
 
@@ -755,14 +759,20 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
         </div>
       </div>
 
-      {/* NUEVA SECCIÓN: Diagrama de Gantt */}
+      {/* ✅ **INICIO: Cambios en el Widget de Gantt** */}
       <div className="sidebar-card gantt-card mt-3">
-        <div className="sidebar-card-header">
-          <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
-            <i className="fas fa-chart-gantt me-2" />
-            Diagrama de Gantt
-          </h6>
+        {/* El header ahora contiene el título y el botón */}
+        <div className="sidebar-card-header d-flex justify-content-between align-items-center">
+            <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
+                <i className="fas fa-chart-gantt me-2" />
+                Diagrama de Gantt
+            </h6>
+            <button className="btn-footer-action" style={{flex: '0 0 auto', padding: '0.3rem 0.6rem'}} onClick={() => setShowGanttModal(true)}>
+                <i className="fas fa-expand-alt" />
+                <span style={{fontSize: '0.75rem'}}>Expandir</span>
+            </button>
         </div>
+        {/* El cuerpo solo contiene la previsualización */}
         <div className="sidebar-card-body p-2">
           <GanttPreview
             phases={processPhases}
@@ -770,21 +780,23 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
             suspensionPreActa={suspensionPreActa}
             suspensionPostActa={suspensionPostActa}
             extension={extension}
-            onExpand={() => setShowGanttModal(true)}
+            activePhaseId={activePhaseId}
+            // onExpand ya no es necesario aquí
           />
         </div>
       </div>
+      {/* ✅ **FIN: Cambios en el Widget de Gantt** */}
 
-      {/* Modal del Gantt */}
+      {/* El modal se controla con el nuevo estado local 'showGanttModal' */}
       <GanttModal
-        isOpen={showGanttModal}
+        show={showGanttModal} // Usamos 'show' en lugar de 'isOpen' para coincidir
         onClose={() => setShowGanttModal(false)}
         phases={processPhases}
         ldfDate={ldfDate}
         suspensionPreActa={suspensionPreActa}
         suspensionPostActa={suspensionPostActa}
         extension={extension}
-        currentItem={currentItem}
+        activePhaseId={activePhaseId} // Pasamos el activePhaseId
       />
     </>
   );
