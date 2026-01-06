@@ -6813,3 +6813,1317 @@ from { opacity: 0; transform: translateY(-5px); }
     min-width: 120px;
   }
 }
+
+
+/* ==============================================
+   DIAGRAMA GANTT MEJORADO - COLUMNAS FIJAS
+   ============================================== */
+
+/* Contenedor principal del Gantt */
+.gantt-container {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.gantt-container.gantt-compact {
+  padding: 8px;
+  font-size: 11px;
+}
+
+/* Estado vacío */
+.gantt-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.gantt-empty i {
+  font-size: 48px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* ========== HEADER CON COLUMNAS ========== */
+.gantt-header-wrapper {
+  display: flex;
+  margin-bottom: 20px;
+  height: 60px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.gantt-compact .gantt-header-wrapper {
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+/* Columna de títulos FIJA */
+.gantt-title-column {
+  width: 200px;
+  flex-shrink: 0;
+  padding-right: 16px;
+  border-right: 2px solid #dee2e6;
+}
+
+.gantt-compact .gantt-title-column {
+  width: 60px;
+  padding-right: 8px;
+}
+
+.gantt-title-header {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding-bottom: 8px;
+  font-weight: 700;
+  color: #495057;
+  font-size: 14px;
+}
+
+.gantt-compact .gantt-title-header {
+  padding-bottom: 4px;
+  font-size: 11px;
+}
+
+/* Columna de gráfico con SCROLL */
+.gantt-chart-column {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.gantt-chart-column::-webkit-scrollbar {
+  height: 8px;
+}
+
+.gantt-chart-column::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.gantt-chart-column::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 4px;
+}
+
+.gantt-chart-column::-webkit-scrollbar-thumb:hover {
+  background: #9e9e9e;
+}
+
+/* Timeline con marcadores */
+.gantt-header {
+  position: relative;
+  height: 100%;
+}
+
+.gantt-timeline {
+  position: relative;
+  height: 100%;
+}
+
+.gantt-timeline-marker {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+}
+
+.gantt-timeline-tick {
+  width: 2px;
+  height: 12px;
+  background: #6c757d;
+  margin-bottom: 4px;
+}
+
+.gantt-compact .gantt-timeline-tick {
+  height: 6px;
+}
+
+.gantt-timeline-label {
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.gantt-compact .gantt-timeline-label {
+  font-size: 9px;
+}
+
+.gantt-timeline-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.gantt-timeline-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.85);
+}
+
+/* ========== CUERPO DEL DIAGRAMA ========== */
+.gantt-body {
+  position: relative;
+}
+
+/* Fase individual (fila principal) con COLUMNAS */
+.gantt-phase {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.gantt-compact .gantt-phase {
+  margin-bottom: 12px;
+}
+
+.gantt-phase:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Resaltado de fase activa */
+.gantt-phase.gantt-phase-active {
+  box-shadow: 0 0 0 3px rgba(91, 192, 222, 0.3);
+  background: rgba(91, 192, 222, 0.05);
+}
+
+/* Columna de título de fase FIJA */
+.gantt-phase-title-column {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  font-weight: 600;
+  color: #495057;
+  border-right: 2px solid #dee2e6;
+  background: #f8f9fa;
+}
+
+.gantt-compact .gantt-phase-title-column {
+  width: 60px;
+  padding: 6px;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 4px;
+}
+
+.gantt-phase-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.gantt-compact .gantt-phase-number {
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+}
+
+.gantt-phase-title {
+  font-size: 14px;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.gantt-compact .gantt-phase-title {
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+/* Columna de barras con SCROLL */
+.gantt-phase-bars-column {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.gantt-phase-bars {
+  position: relative;
+  min-height: 60px;
+  padding: 8px 0;
+}
+
+.gantt-compact .gantt-phase-bars {
+  min-height: 30px;
+  padding: 4px 0;
+}
+
+/* Bloque de la fase */
+.gantt-block {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.gantt-compact .gantt-block {
+  top: 4px;
+  bottom: 4px;
+  padding: 3px;
+  gap: 2px;
+}
+
+/* Filas dentro del bloque (actores) SIN TEXTO */
+.gantt-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  background: rgba(248, 249, 250, 0.5);
+  border-radius: 4px;
+  min-height: 24px;
+}
+
+.gantt-compact .gantt-row {
+  padding: 2px;
+  min-height: 12px;
+}
+
+/* Contenedor de barra de progreso LIMPIA */
+.gantt-progress-container {
+  flex: 1;
+  position: relative;
+  height: 16px;
+  background: #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gantt-compact .gantt-progress-container {
+  height: 8px;
+}
+
+/* Barra de progreso SIN TEXTO */
+.gantt-progress-bar {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.gantt-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Colores según estado */
+.gantt-progress-pending {
+  background: #6c757d;
+}
+
+.gantt-progress-active {
+  background: #007bff;
+}
+
+.gantt-progress-completed {
+  background: #28a745;
+}
+
+.gantt-progress-paused {
+  background: #ffc107;
+}
+
+.gantt-progress-overdue {
+  background: #dc3545;
+}
+
+/* Segmentos extra (suspensión/prórroga) */
+.gantt-extra-segments {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.gantt-segment {
+  width: 6px;
+  height: 80%;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.gantt-segment-suspension {
+  background: #ffc107;
+}
+
+.gantt-segment-extension {
+  background: #17a2b8;
+}
+
+/* Conector entre fases */
+.gantt-phase-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: -12px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.gantt-compact .gantt-phase-connector {
+  margin: -6px 0;
+}
+
+.gantt-connector-line {
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(180deg, #dee2e6, #adb5bd);
+}
+
+.gantt-compact .gantt-connector-line {
+  height: 10px;
+}
+
+.gantt-connector-arrow {
+  color: #adb5bd;
+  font-size: 12px;
+}
+
+.gantt-compact .gantt-connector-arrow {
+  font-size: 8px;
+}
+
+/* ========== COLORES DE RESALTADO MEJORADOS ========== */
+/* Estos colores ahora coinciden con useProcessPhases */
+.phase-highlight-radicacion {
+  background: linear-gradient(90deg, rgba(108, 117, 125, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #6c757d;
+}
+
+.phase-highlight-estudio {
+  background: linear-gradient(90deg, rgba(25, 113, 194, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #1971c2;
+}
+
+.phase-highlight-notificacion {
+  background: linear-gradient(90deg, rgba(21, 170, 191, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #15aabf;
+}
+
+.phase-highlight-correcciones {
+  background: linear-gradient(90deg, rgba(230, 119, 0, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #e67700;
+}
+
+.phase-highlight-viabilidad {
+  background: linear-gradient(90deg, rgba(47, 158, 68, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #2f9e44;
+}
+
+.phase-highlight-pagos {
+  background: linear-gradient(90deg, rgba(224, 49, 49, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #e03131;
+}
+
+.phase-highlight-resolucion {
+  background: linear-gradient(90deg, rgba(111, 66, 193, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #6f42c1;
+}
+
+.phase-highlight-recurso {
+  background: linear-gradient(90deg, rgba(253, 126, 20, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #fd7e14;
+}
+
+.phase-highlight-entrega {
+  background: linear-gradient(90deg, rgba(32, 201, 151, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #20c997;
+}
+
+.phase-highlight-desist {
+  background: linear-gradient(90deg, rgba(233, 30, 99, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #e91e63;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gantt-title-column {
+    width: 150px;
+  }
+  
+  .gantt-phase-title-column {
+    width: 150px;
+    padding: 8px;
+  }
+  
+  .gantt-phase-title {
+    font-size: 12px;
+  }
+}
+
+/* ==============================================
+   GANTT MODAL - Z-INDEX Y CORRECCIONES
+   ============================================== */
+
+/* Modal overlay con z-index alto */
+.gantt-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000; /* PRIORIDAD MÁXIMA */
+  padding: 20px;
+}
+
+.gantt-modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 95%;
+  max-width: 1400px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 3001; /* Por encima del overlay */
+}
+
+.gantt-modal-header {
+  padding: 20px 24px;
+  border-bottom: 2px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.gantt-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #343a40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gantt-modal-header h3 i {
+  color: #007bff;
+}
+
+.gantt-modal-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gantt-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #495057;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gantt-toggle input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.gantt-info-icon {
+  color: #6c757d;
+  font-size: 16px;
+  cursor: help;
+}
+
+.gantt-close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #6c757d;
+}
+
+.gantt-close-btn:hover {
+  background: #e9ecef;
+  color: #dc3545;
+  transform: rotate(90deg);
+}
+
+.gantt-modal-body {
+  flex: 1;
+  padding: 24px;
+  overflow: auto; /* SOLO UN SCROLL GENERAL */
+}
+
+.gantt-modal-chart-container {
+  min-height: 400px;
+}
+
+.gantt-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #dee2e6;
+  background: #f8f9fa;
+}
+
+.gantt-legend h5 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #495057;
+  margin: 0 0 12px 0;
+}
+
+.gantt-legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.gantt-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #495057;
+}
+
+.gantt-legend-color {
+  width: 24px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+/* ==============================================
+   GANTT PREVIEW WIDGET
+   ============================================== */
+
+.gantt-preview-container {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gantt-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.gantt-preview-header h5 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gantt-preview-header h5 i {
+  color: #007bff;
+}
+
+.gantt-expand-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gantt-expand-btn:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.gantt-preview-body {
+  padding: 12px;
+  background: #fff;
+}
+
+/* ==============================================
+   CORRECCIÓN: QUITAR SCROLL INTERNO EN CAJONES
+   ============================================== */
+
+/* Quitar overflow de columnas de barras */
+.gantt-phase-bars-column {
+  overflow: visible; /* Era overflow-x: auto */
+}
+
+.gantt-chart-column {
+  overflow-x: auto;
+  overflow-y: visible; /* Era hidden */
+}
+
+/* Vista compacta: SOLO NÚMEROS en títulos */
+.gantt-compact .gantt-phase-title {
+  display: none; /* Ocultar título completo */
+}
+
+.gantt-compact .gantt-phase-title-column {
+  width: 60px;
+  padding: 6px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gantt-modal-content {
+    width: 100%;
+    max-height: 95vh;
+  }
+  
+  .gantt-modal-header {
+    padding: 16px;
+  }
+  
+  .gantt-modal-body {
+    padding: 16px;
+  }
+}
+
+
+/* ==============================================
+   DIAGRAMA GANTT MEJORADO - SCROLL SINCRONIZADO
+   ============================================== */
+
+/* Contenedor principal del Gantt */
+.gantt-container {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  /* CORRECCIÓN: Eliminamos el padding para controlar el layout interno */
+}
+
+/* ... (mantener estilos de .gantt-empty) ... */
+.gantt-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.gantt-empty i {
+  font-size: 48px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+
+/* ========== HEADER CON COLUMNAS ========== */
+.gantt-header-wrapper {
+  display: flex;
+  height: 60px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.gantt-compact .gantt-header-wrapper {
+  height: 30px;
+}
+
+/* Columna de títulos FIJA */
+.gantt-title-column {
+  width: 200px;
+  flex-shrink: 0;
+  padding: 0 16px;
+  border-right: 2px solid #dee2e6;
+}
+
+.gantt-compact .gantt-title-column {
+  width: 60px;
+  padding: 0 8px;
+}
+
+.gantt-title-header {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding-bottom: 8px;
+  font-weight: 700;
+  color: #495057;
+  font-size: 14px;
+}
+
+.gantt-compact .gantt-title-header {
+  padding-bottom: 4px;
+  font-size: 11px;
+}
+
+/* CORRECCIÓN: Columna de gráfico con SCROLL */
+.gantt-chart-column {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ... (mantener estilos de scrollbar) ... */
+.gantt-chart-column::-webkit-scrollbar {
+  height: 8px;
+}
+.gantt-chart-column::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.gantt-chart-column::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 4px;
+}
+.gantt-chart-column::-webkit-scrollbar-thumb:hover {
+  background: #9e9e9e;
+}
+
+
+/* ... (mantener estilos de .gantt-header, .gantt-timeline, .gantt-timeline-marker, etc.) ... */
+.gantt-header {
+  position: relative;
+  height: 100%;
+}
+.gantt-timeline {
+  position: relative;
+  height: 100%;
+}
+.gantt-timeline-marker {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+}
+.gantt-timeline-tick {
+  width: 2px;
+  height: 12px;
+  background: #6c757d;
+  margin-bottom: 4px;
+}
+.gantt-compact .gantt-timeline-tick {
+  height: 6px;
+}
+.gantt-timeline-label {
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.gantt-compact .gantt-timeline-label {
+  font-size: 9px;
+}
+.gantt-timeline-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+.gantt-timeline-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.85);
+}
+
+
+/* ========== CUERPO DEL DIAGRAMA ========== */
+
+/* CORRECCIÓN: Wrapper para el scroll del cuerpo */
+.gantt-body-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: auto; /* Permitir scroll vertical si hay muchas fases */
+}
+
+.gantt-body-scroll-wrapper::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.gantt-body-scroll-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 4px;
+}
+.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #9e9e9e;
+}
+
+
+/* Fase individual (fila principal) con COLUMNAS */
+.gantt-phase {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 24px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.gantt-compact .gantt-phase {
+  margin-bottom: 12px;
+}
+
+.gantt-phase:hover {
+  background: rgba(91, 192, 222, 0.05);
+}
+
+.gantt-phase.gantt-phase-active {
+  box-shadow: 0 0 0 3px rgba(91, 192, 222, 0.3);
+  background: rgba(91, 192, 222, 0.05);
+  border-radius: 8px;
+}
+
+/* Columna de título de fase FIJA */
+.gantt-phase-title-column {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  font-weight: 600;
+  color: #495057;
+  border-right: 2px solid #e9ecef;
+}
+
+.gantt-compact .gantt-phase-title-column {
+  width: 60px;
+  padding: 6px;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 4px;
+}
+
+/* ... (mantener .gantt-phase-number, .gantt-phase-title) ... */
+.gantt-phase-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.gantt-compact .gantt-phase-number {
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+}
+.gantt-phase-title {
+  font-size: 14px;
+  line-height: 1.3;
+  flex: 1;
+}
+.gantt-compact .gantt-phase-title {
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+/* CORRECCIÓN: Contenedor para las barras de una fase */
+.gantt-phase-bars-container {
+  flex: 1;
+  position: relative;
+}
+
+.gantt-phase-bars {
+  position: relative;
+  min-height: 60px;
+  padding: 8px 0;
+}
+
+.gantt-compact .gantt-phase-bars {
+  min-height: 30px;
+  padding: 4px 0;
+}
+
+
+/* ... (mantener el resto de los estilos del Gantt que ya tenías) ... */
+.gantt-block {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.gantt-compact .gantt-block {
+  top: 4px;
+  bottom: 4px;
+  padding: 3px;
+  gap: 2px;
+}
+.gantt-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  background: rgba(248, 249, 250, 0.5);
+  border-radius: 4px;
+  min-height: 24px;
+}
+.gantt-compact .gantt-row {
+  padding: 2px;
+  min-height: 12px;
+}
+.gantt-progress-container {
+  flex: 1;
+  position: relative;
+  height: 16px;
+  background: #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.gantt-compact .gantt-progress-container {
+  height: 8px;
+}
+.gantt-progress-bar {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+.gantt-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+.gantt-progress-pending {
+  background: #6c757d;
+}
+.gantt-progress-active {
+  background: #007bff;
+}
+.gantt-progress-completed {
+  background: #28a745;
+}
+.gantt-progress-paused {
+  background: #ffc107;
+}
+.gantt-progress-overdue {
+  background: #dc3545;
+}
+.gantt-extra-segments {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.gantt-segment {
+  width: 6px;
+  height: 80%;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.gantt-segment-suspension {
+  background: #ffc107;
+}
+.gantt-segment-extension {
+  background: #17a2b8;
+}
+.gantt-phase-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: -24px 0 0 100px; /* Ajustado para alinear con la columna de títulos */
+  position: relative;
+  z-index: -1;
+}
+
+.gantt-compact .gantt-phase-connector {
+  margin: -12px 0 0 30px;
+}
+.gantt-connector-line {
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(180deg, #dee2e6, #adb5bd);
+}
+.gantt-compact .gantt-connector-line {
+  height: 10px;
+}
+.gantt-connector-arrow {
+  color: #adb5bd;
+  font-size: 12px;
+}
+.gantt-compact .gantt-connector-arrow {
+  font-size: 8px;
+}
+.phase-highlight-radicacion {
+  background: linear-gradient(90deg, rgba(108, 117, 125, 0.08) 0%, transparent 50%);
+}
+.phase-highlight-estudio {
+  background: linear-gradient(90deg, rgba(25, 113, 194, 0.08) 0%, transparent 50%);
+}
+.phase-highlight-notificacion {
+  background: linear-gradient(90deg, rgba(21, 170, 191, 0.08) 0%, transparent 50%);
+}
+.phase-highlight-correcciones {
+  background: linear-gradient(90deg, rgba(230, 119, 0, 0.08) 0%, transparent 50%);
+}
+.phase-highlight-viabilidad {
+  background: linear-gradient(90deg, rgba(47, 158, 68, 0.08) 0%, transparent 50%);
+}
+.phase-highlight-pagos {
+  background: linear-gradient(90deg, rgba(224, 49, 49, 0.08) 0%, transparent 50%);
+}
+.phase-highlight-resolucion {
+  background: linear-gradient(90deg, rgba(111, 66, 193, 0.08) 0%, transparent 50%);
+}
+.phase-highlight-recurso {
+  background: linear-gradient(90deg, rgba(253, 126, 20, 0.08) 0%, transparent 50%);
+}
+.phase-highlight-entrega {
+  background: linear-gradient(90deg, rgba(32, 201, 151, 0.08) 0%, transparent 50%);
+}
+.phase-highlight-desist {
+  background: linear-gradient(90deg, rgba(233, 30, 99, 0.08) 0%, transparent 50%);
+}
+@media (max-width: 768px) {
+  .gantt-title-column {
+    width: 150px;
+  }
+  .gantt-phase-title-column {
+    width: 150px;
+    padding: 8px;
+  }
+  .gantt-phase-title {
+    font-size: 12px;
+  }
+}
+
+/* CORRECCIÓN: Asegurar que el conector no se vea afectado por el scroll */
+.gantt-body-scroll-wrapper .gantt-phase {
+  margin-bottom: 0; /* Quitar margen para que el conector una directamente */
+}
+.gantt-body-scroll-wrapper .gantt-phase-connector {
+    margin: 0 0 0 100px; /* Centrar con el título */
+}
+.gantt-compact .gantt-phase-connector {
+    margin: 0 0 0 30px; /* Centrar en modo compacto */
+}
+
+/* ... (Manten todos tus estilos anteriores) ... */
+
+/* ==============================================
+   GANTT PREVIEW WIDGET - CORRECCIONES
+   ============================================== */
+
+/* ✅ Contenedor para las filas de actores cuando son paralelos */
+.gantt-block .gantt-row-parallel-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Espacio entre las barras de los actores */
+  flex: 1;
+}
+
+/* Modo compacto: el gap es más pequeño */
+.gantt-compact .gantt-block .gantt-row-parallel-container {
+  gap: 2px;
+}
+
+/* Estilos para el nuevo botón de expandir en el header del card */
+.sidebar-card-header .btn-footer-action {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  background: #fff;
+  border-color: #dee2e6;
+  color: #007bff;
+}
+
+.sidebar-card-header .btn-footer-action:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+.sidebar-card-header .btn-footer-action i {
+  color: inherit; /* El ícono hereda el color del botón */
+  font-size: 0.8rem;
+}
+
+
+/* ... (Manten todos tus estilos anteriores) ... */
+
+/* ============================================================
+   ESTILOS PARA CORRELACIÓN VISUAL DE FASES (AÑADIR AL FINAL)
+   ============================================================ */
+
+/* --- Colores base para cada fase --- */
+:root {
+  --phase-color-radicacion: rgba(26, 178, 145, 0.08); /* Verde menta */
+  --phase-color-estudio: rgba(253, 126, 20, 0.07); /* Naranja */
+  --phase-color-notificacion: rgba(108, 117, 125, 0.07); /* Gris */
+  --phase-color-correcciones: rgba(23, 162, 184, 0.07); /* Cian */
+  --phase-color-viabilidad: rgba(111, 66, 193, 0.07); /* Púrpura */
+  --phase-color-pagos: rgba(255, 193, 7, 0.1); /* Amarillo */
+  --phase-color-resolucion: rgba(0, 86, 179, 0.07); /* Azul oscuro */
+  --phase-color-recurso: rgba(100, 43, 107, 0.07); /* Morado */
+  --phase-color-entrega: rgba(40, 167, 69, 0.08); /* Verde éxito */
+  --phase-color-desist: rgba(220, 53, 69, 0.06); /* Rojo */
+
+  --phase-border-radicacion: rgba(26, 178, 145, 0.6);
+  --phase-border-estudio: rgba(253, 126, 20, 0.6);
+  --phase-border-notificacion: rgba(108, 117, 125, 0.5);
+  --phase-border-correcciones: rgba(23, 162, 184, 0.6);
+  --phase-border-viabilidad: rgba(111, 66, 193, 0.6);
+  --phase-border-pagos: rgba(255, 193, 7, 0.7);
+  --phase-border-resolucion: rgba(0, 86, 179, 0.6);
+  --phase-border-recurso: rgba(100, 43, 107, 0.6);
+  --phase-border-entrega: rgba(40, 167, 69, 0.6);
+  --phase-border-desist: rgba(220, 53, 69, 0.5);
+}
+
+/* --- Estilo para la fila de evento en la tabla --- */
+.exp-row-custom {
+  transition: background-color 0.4s ease, transform 0.2s ease;
+}
+
+/* --- Clases de resaltado para cada fase (aplicadas a la fila) --- */
+.exp-row-custom.phase-highlight-radicacion { background-color: var(--phase-color-radicacion); }
+.exp-row-custom.phase-highlight-estudio { background-color: var(--phase-color-estudio); }
+.exp-row-custom.phase-highlight-notificacion { background-color: var(--phase-color-notificacion); }
+.exp-row-custom.phase-highlight-correcciones { background-color: var(--phase-color-correcciones); }
+.exp-row-custom.phase-highlight-viabilidad { background-color: var(--phase-color-viabilidad); }
+.exp-row-custom.phase-highlight-pagos { background-color: var(--phase-color-pagos); }
+.exp-row-custom.phase-highlight-resolucion { background-color: var(--phase-color-resolucion); }
+.exp-row-custom.phase-highlight-recurso { background-color: var(--phase-color-recurso); }
+.exp-row-custom.phase-highlight-entrega { background-color: var(--phase-color-entrega); }
+.exp-row-custom.phase-highlight-desist { background-color: var(--phase-color-desist); }
+
+/* --- Estilo para la tarjeta de fase en el sidebar --- */
+.phase-card-compact.highlighted {
+  border-width: 1px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+  animation: pulse-border 1.8s infinite;
+}
+
+/* --- Animación de borde para la tarjeta activa --- */
+@keyframes pulse-border {
+  0% { border-color: var(--border-color-start); }
+  50% { border-color: var(--border-color-end); }
+  100% { border-color: var(--border-color-start); }
+}
+
+/* --- Clases de color para el borde animado (aplicadas a la tarjeta) --- */
+.phase-card-compact.highlighted.phase-highlight-radicacion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-radicacion); }
+.phase-card-compact.highlighted.phase-highlight-estudio { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-estudio); }
+.phase-card-compact.highlighted.phase-highlight-notificacion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-notificacion); }
+.phase-card-compact.highlighted.phase-highlight-correcciones { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-correcciones); }
+.phase-card-compact.highlighted.phase-highlight-viabilidad { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-viabilidad); }
+.phase-card-compact.highlighted.phase-highlight-pagos { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-pagos); }
+.phase-card-compact.highlighted.phase-highlight-resolucion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-resolucion); }
+.phase-card-compact.highlighted.phase-highlight-recurso { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-recurso); }
+.phase-card-compact.highlighted.phase-highlight-entrega { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-entrega); }
+.phase-card-compact.highlighted.phase-highlight-desist { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-desist); }
+
+/* Estilo para resaltar la fase activa en el Gantt */
+.gantt-phase.gantt-phase-active {
+  box-shadow: 0 0 0 3px rgba(91, 192, 222, 0.3);
+  background: rgba(91, 192, 222, 0.05);
+}

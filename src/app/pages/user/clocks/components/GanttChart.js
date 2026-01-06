@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useLayoutEffect } from 'react'; // Añadir useRef y useLayoutEffect
 import moment from 'moment';
 import { sumarDiasHabiles } from '../hooks/useClocksManager';
 
 /**
- * GanttChart - Componente principal del diagrama de Gantt
+ * GanttChart - Componente principal del diagrama de Gantt MEJORADO
  * 
  * @param {Array} phases - Lista de fases del proceso desde useProcessPhases
  * @param {String} ldfDate - Fecha de radicación legal y debida forma (fecha base)
@@ -11,20 +11,50 @@ import { sumarDiasHabiles } from '../hooks/useClocksManager';
  * @param {Object} suspensionPostActa - Información de suspensión post-acta
  * @param {Object} extension - Información de prórroga
  * @param {Boolean} compactMode - Modo compacto (vista previa pequeña)
- * @param {Boolean} adjustedWidthMode - Modo de ancho ajustado (Regla 14)
+ * @param {Boolean} adjustedWidthMode - Modo de ancho ajustado
  * @param {Function} onPhaseClick - Callback cuando se hace click en una fase
+ * @param {String} activePhaseId - ID de la fase actualmente activa en el sidebar
  */
-export const GanttChart = ({ 
-  phases = [], 
-  ldfDate, 
+export const GanttChart = ({
+  phases = [],
+  ldfDate,
   suspensionPreActa,
   suspensionPostActa,
   extension,
   compactMode = false,
   adjustedWidthMode = false,
-  onPhaseClick
+  onPhaseClick,
+  activePhaseId
 }) => {
   const [hoveredDay, setHoveredDay] = useState(null);
+  // CORRECCIÓN: Refs para sincronizar el scroll
+  const headerScrollRef = useRef(null);
+  const bodyScrollRef = useRef(null);
+
+  // CORRECCIÓN: Efecto para sincronizar los scrolls
+  useLayoutEffect(() => {
+    const headerEl = headerScrollRef.current;
+    const bodyEl = bodyScrollRef.current;
+
+    if (!headerEl || !bodyEl) return;
+
+    const syncScroll = (e) => {
+      if (e.target === headerEl) {
+        bodyEl.scrollLeft = headerEl.scrollLeft;
+      } else {
+        headerEl.scrollLeft = bodyEl.scrollLeft;
+      }
+    };
+    
+    headerEl.addEventListener('scroll', syncScroll);
+    bodyEl.addEventListener('scroll', syncScroll);
+
+    return () => {
+      headerEl.removeEventListener('scroll', syncScroll);
+      bodyEl.removeEventListener('scroll', syncScroll);
+    };
+  }, []);
+
 
   // Calcular datos del diagrama
   const ganttData = useMemo(() => {
@@ -36,10 +66,10 @@ export const GanttChart = ({
     const processedPhases = [];
 
     phases.forEach((phase, index) => {
-      const { 
-        id, 
-        title, 
-        totalDays = 0, 
+      const {
+        id,
+        title,
+        totalDays = 0,
         usedDays = 0,
         parallelActors,
         startDate,
@@ -49,7 +79,7 @@ export const GanttChart = ({
         relatedStates
       } = phase;
 
-      // Calcular ancho del bloque según Regla 14
+      // Calcular ancho del bloque
       let blockWidth = totalDays;
       if (adjustedWidthMode && endDate) {
         blockWidth = usedDays;
@@ -57,10 +87,10 @@ export const GanttChart = ({
         blockWidth = totalDays;
       }
 
-      // Determinar si tiene actores paralelos (Regla 2)
+      // Determinar si tiene actores paralelos
       const hasParallelActors = !!parallelActors?.primary && !!parallelActors?.secondary;
 
-      // Identificar suspensiones y prórrogas para esta fase (Regla 7 y 8)
+      // Identificar suspensiones y prórrogas para esta fase
       let hasSuspensionPreActa = false;
       let hasSuspensionPostActa = false;
       let hasExtension = false;
@@ -69,6 +99,7 @@ export const GanttChart = ({
         hasSuspensionPreActa = suspensionPreActa?.exists;
         hasExtension = extension?.exists;
       }
+
       if (id === 'phase4' && relatedStates?.includes(301)) {
         hasSuspensionPostActa = suspensionPostActa?.exists;
         hasExtension = extension?.exists;
@@ -78,7 +109,7 @@ export const GanttChart = ({
         ...phase,
         phaseIndex: index + 1,
         startPosition: cumulativeDays,
-        blockWidth: blockWidth || 1, // Mínimo 1 día de ancho
+        blockWidth: blockWidth || 1,
         hasParallelActors,
         hasSuspensionPreActa,
         hasSuspensionPostActa,
@@ -86,9 +117,8 @@ export const GanttChart = ({
         rows: []
       };
 
-      // Construir filas (Regla 2 y 3)
+      // Construir filas
       if (hasParallelActors) {
-        // Dos actores paralelos = dos filas
         phaseData.rows.push({
           type: 'primary',
           actor: parallelActors.primary,
@@ -104,7 +134,6 @@ export const GanttChart = ({
           status: parallelActors.secondary.status
         });
       } else {
-        // Un solo actor = una fila
         phaseData.rows.push({
           type: 'single',
           actor: { name: phase.responsible },
@@ -118,12 +147,11 @@ export const GanttChart = ({
       cumulativeDays += blockWidth;
     });
 
-    // Calcular columnas de días (Regla 11)
+    // Calcular columnas de días
     const maxDays = cumulativeDays;
     const dateColumns = [];
-    
-    // Generar marcadores de días cada 5 días hábiles
     const interval = compactMode ? 10 : 5;
+
     for (let i = 0; i <= maxDays; i += interval) {
       const date = sumarDiasHabiles(ldfDate, i);
       dateColumns.push({
@@ -140,20 +168,18 @@ export const GanttChart = ({
     };
   }, [phases, ldfDate, adjustedWidthMode, compactMode, suspensionPreActa, suspensionPostActa, extension]);
 
-  // Calcular el factor de escala para que el diagrama quepa en el 100% del ancho
+  // Calcular el factor de escala
   const scaleFactor = useMemo(() => {
     if (ganttData.maxDays === 0) return 1;
-    // En modo compacto usamos menos espacio, en modo normal más
     const basePixelsPerDay = compactMode ? 2 : 8;
     return basePixelsPerDay;
   }, [ganttData.maxDays, compactMode]);
 
-  // Renderizar barra de progreso con estados (Regla 5 y 6)
+  // Renderizar barra de progreso SIN TEXTO DE ACTOR
   const renderProgressBar = (row, blockWidth) => {
     const { totalDays, usedDays, status } = row;
     const progress = totalDays > 0 ? Math.min(100, (usedDays / totalDays) * 100) : 0;
 
-    // Colores según estado (Regla 6)
     let statusClass = 'gantt-progress-pending';
     if (status === 'COMPLETADO') statusClass = 'gantt-progress-completed';
     else if (status === 'ACTIVO') statusClass = 'gantt-progress-active';
@@ -162,50 +188,44 @@ export const GanttChart = ({
 
     return (
       <div className="gantt-progress-container">
-        <div 
+        <div
           className={`gantt-progress-bar ${statusClass}`}
           style={{ width: `${progress}%` }}
         />
-        {!compactMode && (
-          <span className="gantt-progress-text">
-            {usedDays}/{totalDays}d
-          </span>
-        )}
       </div>
     );
   };
 
-  // Renderizar segmentos de suspensión/prórroga (Regla 7 y 8)
+  // Renderizar segmentos de suspensión/prórroga
   const renderExtraSegments = (phase) => {
     if (compactMode) return null;
-    
+
     const segments = [];
     
-    // Determinar si fue antes o después del acta (Regla 8)
     if (phase.hasSuspensionPreActa) {
       segments.push(
-        <div 
-          key="susp-pre" 
+        <div
+          key="susp-pre"
           className="gantt-segment gantt-segment-suspension"
           title="Suspensión antes del acta"
         />
       );
     }
-    
+
     if (phase.hasSuspensionPostActa) {
       segments.push(
-        <div 
-          key="susp-post" 
+        <div
+          key="susp-post"
           className="gantt-segment gantt-segment-suspension"
           title="Suspensión después del acta"
         />
       );
     }
-    
+
     if (phase.hasExtension) {
       segments.push(
-        <div 
-          key="extension" 
+        <div
+          key="extension"
           className="gantt-segment gantt-segment-extension"
           title="Prórroga"
         />
@@ -213,15 +233,14 @@ export const GanttChart = ({
     }
 
     return segments.length > 0 ? (
-      <div className="gantt-extra-segments">
-        {segments}
-      </div>
+      <div className="gantt-extra-segments">{segments}</div>
     ) : null;
   };
 
-  // Renderizar conectores entre fases (Regla 12)
+  // Renderizar conectores entre fases
   const renderConnector = (index) => {
     if (index === ganttData.phases.length - 1) return null;
+
     return (
       <div className="gantt-phase-connector">
         <div className="gantt-connector-line" />
@@ -245,88 +264,87 @@ export const GanttChart = ({
 
   return (
     <div className={`gantt-container ${compactMode ? 'gantt-compact' : ''}`}>
-      {/* Encabezado con días y fechas (Regla 11) */}
-      <div className="gantt-header" style={{ width: `${totalWidth}px` }}>
-        <div className="gantt-timeline">
-          {ganttData.dateColumns.map((col) => (
-            <div
-              key={col.day}
-              className="gantt-timeline-marker"
-              style={{ left: `${col.position * scaleFactor}px` }}
-              onMouseEnter={() => setHoveredDay(col)}
-              onMouseLeave={() => setHoveredDay(null)}
-            >
-              <div className="gantt-timeline-tick" />
-              <span className="gantt-timeline-label">
-                {compactMode ? `${col.day}d` : `Día ${col.day}`}
-              </span>
-              {/* Tooltip con fecha (Regla 11) */}
-              {!compactMode && hoveredDay?.day === col.day && (
-                <div className="gantt-timeline-tooltip">
-                  {moment(col.date).format('DD/MM/YYYY')}
+      {/* Encabezado con línea de tiempo */}
+      <div className="gantt-header-wrapper">
+        <div className="gantt-title-column">
+          <div className="gantt-title-header">
+            {!compactMode && <span>Fases</span>}
+          </div>
+        </div>
+        {/* CORRECCIÓN: Contenedor de scroll para el header */}
+        <div className="gantt-chart-column" ref={headerScrollRef}>
+          <div className="gantt-header" style={{ width: `${totalWidth}px` }}>
+            <div className="gantt-timeline">
+              {ganttData.dateColumns.map((col) => (
+                <div
+                  key={col.day}
+                  className="gantt-timeline-marker"
+                  style={{ left: `${col.position * scaleFactor}px` }}
+                  onMouseEnter={() => setHoveredDay(col)}
+                  onMouseLeave={() => setHoveredDay(null)}
+                >
+                  <div className="gantt-timeline-tick" />
+                  <span className="gantt-timeline-label">
+                    {compactMode ? `${col.day}d` : `Día ${col.day}`}
+                  </span>
+                  {!compactMode && hoveredDay?.day === col.day && (
+                    <div className="gantt-timeline-tooltip">
+                      {moment(col.date).format('DD/MM/YYYY')}
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
-      {/* Cuerpo del diagrama con fases (Regla 1, 2, 3, 4) */}
-      <div className="gantt-body">
+      {/* CORRECCIÓN: Contenedor de scroll para el cuerpo */}
+      <div className="gantt-body-scroll-wrapper" ref={bodyScrollRef}>
         {ganttData.phases.map((phase, phaseIndex) => (
           <React.Fragment key={phase.id}>
-            {/* Fase principal (Regla 1) */}
-            <div 
-              className={`gantt-phase ${phase.highlightClass || ''}`}
+            {/* Fase principal con columnas fijas */}
+            <div
+              className={`gantt-phase ${
+                activePhaseId === phase.id ? 'gantt-phase-active' : ''
+              }`}
               onClick={() => onPhaseClick?.(phase)}
             >
-              {/* Etiqueta de la fase */}
-              <div className="gantt-phase-label">
-                {compactMode ? (
-                  <span className="gantt-phase-number">{phase.phaseIndex}</span>
-                ) : (
-                  <>
-                    <span className="gantt-phase-number">{phase.phaseIndex}</span>
-                    <span className="gantt-phase-title">{phase.title}</span>
-                  </>
-                )}
+              {/* Columna de título FIJA */}
+              <div className="gantt-phase-title-column">
+                <div className="gantt-phase-number">{phase.phaseIndex}</div>
+                <span className="gantt-phase-title">{phase.title}</span>
               </div>
 
-              {/* Área de barras */}
-              <div 
-                className="gantt-phase-bars"
-                style={{ width: `${totalWidth}px` }}
-              >
-                {/* Contenedor del bloque (Regla 10 y 13) */}
-                <div
-                  className="gantt-block"
-                  style={{
-                    left: `${phase.startPosition * scaleFactor}px`,
-                    width: `${phase.blockWidth * scaleFactor}px`
-                  }}
-                >
-                  {/* Filas dentro del bloque (Regla 2 y 3) */}
-                  {phase.rows.map((row, rowIndex) => (
-                    <div 
-                      key={rowIndex}
-                      className={`gantt-row gantt-row-${row.type}`}
-                    >
-                      {!compactMode && (
-                        <span className="gantt-row-label">
-                          {row.actor.name}
-                        </span>
-                      )}
-                      {renderProgressBar(row, phase.blockWidth)}
+              {/* CORRECCIÓN: Contenedor de barras ahora es solo un div */}
+              <div className="gantt-phase-bars-container">
+                <div className="gantt-phase-bars" style={{ width: `${totalWidth}px` }}>
+                  {/* Contenedor del bloque */}
+                  <div
+                    className="gantt-block"
+                    style={{
+                      left: `${phase.startPosition * scaleFactor}px`,
+                      width: `${phase.blockWidth * scaleFactor}px`
+                    }}
+                  >
+                    {/* ✅ MODIFICACIÓN: Contenedor para filas paralelas */}
+                    <div className={phase.hasParallelActors ? 'gantt-row-parallel-container' : ''}>
+                      {phase.rows.map((row, rowIndex) => (
+                        <div
+                          key={rowIndex}
+                          className={`gantt-row gantt-row-${row.type}`}
+                        >
+                          {renderProgressBar(row, phase.blockWidth)}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-
-                  {/* Segmentos de suspensión/prórroga (Regla 7) */}
-                  {renderExtraSegments(phase)}
+                    {renderExtraSegments(phase)}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Conector a la siguiente fase (Regla 12) */}
+            {/* Conector a la siguiente fase */}
             {renderConnector(phaseIndex)}
           </React.Fragment>
         ))}
