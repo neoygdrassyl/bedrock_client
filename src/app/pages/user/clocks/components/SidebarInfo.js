@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import moment from 'moment';
-import { GanttPreview } from './GanttPreview';
-import { GanttModal } from './GanttModal';
+import { GanttPreview } from './gantt/GanttPreview';
+import { GanttModal } from './gantt/GanttModal';
 
 const MySwal = withReactContent(Swal);
 

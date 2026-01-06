@@ -15,12 +15,13 @@ import { AlarmsWidget } from './components/AlarmsWidget';
 import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles } from './hooks/useClocksManager';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
-import { GanttModal } from './components/GanttModal';
+import { GanttModal } from './components/gantt/GanttModal';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff } from '../../../components/customClasses/typeParse';
 
 import './centralClocks.css';
+import './gantt.css';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
