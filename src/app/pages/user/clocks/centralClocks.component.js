@@ -801,6 +801,17 @@ export default function EXP_CLOCKS(props) {
         </div>
       )}
 
+      <GanttModal
+        isOpen={showGanttModal}
+        onClose={() => setShowGanttModal(false)}
+        phases={manager.processPhases}
+        ldfDate={getClock(5)?.date_start || currentItem?.date}
+        suspensionPreActa={manager.suspensionPreActa}
+        suspensionPostActa={manager.suspensionPostActa}
+        extension={manager.extension}
+        currentItem={currentItem}
+      />
+
       <div className="exp-container">
         <div className="exp-main-content">
           <div className="card exp-card">
@@ -810,25 +821,15 @@ export default function EXP_CLOCKS(props) {
         </div>
         
         <div className="exp-sidebar" ref={sidebarRef}>
-          <SidebarInfo 
-            manager={manager} 
-            actions={{ 
+          <SidebarInfo
+            manager={manager}
+            actions={{
               onAddTimeControl: addTimeControl,
-              onOpenScheduleModal: openScheduleModal
+              onOpenScheduleModal: openScheduleModal,
             }}
             onActivePhaseChange={setActivePhaseId}
             activePhaseId={activePhaseId}
-          />
-
-          <GanttModal
-            show={showGanttModal}
-            onClose={() => setShowGanttModal(false)}
-            phases={manager.processPhases}
-            ldfDate={getClock(5)?.date_start || currentItem?.date}
-            suspensionPreActa={manager.suspensionPreActa}
-            suspensionPostActa={manager.suspensionPostActa}
-            extension={manager.extension}
-            activePhaseId={activePhaseId}
+          onOpenGanttModal={() => setShowGanttModal(true)}
           />
 
           <HolidayCalendar />

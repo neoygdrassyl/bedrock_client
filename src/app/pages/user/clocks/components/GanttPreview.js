@@ -7,20 +7,21 @@ export const GanttPreview = ({
   suspensionPreActa,
   suspensionPostActa,
   extension,
-  // onExpand ya no es necesario aquí
-  activePhaseId
+  activePhaseId,
+  onPhaseClick // <-- Añadido
 }) => {
   return (
-    // ✅ Se elimina el div de 'gantt-preview-container' y su header.
-    // Ahora el componente solo renderiza el gráfico directamente.
-    <GanttChart
-      phases={phases}
-      ldfDate={ldfDate}
-      suspensionPreActa={suspensionPreActa}
-      suspensionPostActa={suspensionPostActa}
-      extension={extension}
-      compactMode={true}
-      activePhaseId={activePhaseId}
-    />
+    <div className="gantt-preview-body">
+      <GanttChart
+        phases={phases}
+        ldfDate={ldfDate}
+        suspensionPreActa={suspensionPreActa}
+        suspensionPostActa={suspensionPostActa}
+        extension={extension}
+        compactMode={true}
+        activePhaseId={activePhaseId}
+        onPhaseClick={onPhaseClick} // <-- Pasamos el handler
+      />
+    </div>
   );
 };
