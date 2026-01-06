@@ -5906,7 +5906,7 @@ from { opacity: 0; transform: translateY(-5px); }
    ESTILOS PARA CORRELACIÓN VISUAL DE FASES (AÑADIR AL FINAL)
    ============================================================ */
 
-/* --- Colores base para cada fase --- */
+/* --- Colores base para cada fase (fondo sutil) --- */
 :root {
   --phase-color-radicacion: rgba(26, 178, 145, 0.08); /* Verde menta */
   --phase-color-estudio: rgba(253, 126, 20, 0.07); /* Naranja */
@@ -5919,6 +5919,7 @@ from { opacity: 0; transform: translateY(-5px); }
   --phase-color-entrega: rgba(40, 167, 69, 0.08); /* Verde éxito */
   --phase-color-desist: rgba(220, 53, 69, 0.06); /* Rojo */
 
+  /* Colores principales para el borde animado */
   --phase-border-radicacion: rgba(26, 178, 145, 0.6);
   --phase-border-estudio: rgba(253, 126, 20, 0.6);
   --phase-border-notificacion: rgba(108, 117, 125, 0.5);
@@ -5931,46 +5932,856 @@ from { opacity: 0; transform: translateY(-5px); }
   --phase-border-desist: rgba(220, 53, 69, 0.5);
 }
 
-/* --- Estilo para la fila de evento en la tabla --- */
-.exp-row-custom {
-  transition: background-color 0.4s ease, transform 0.2s ease;
+/* --- Estilo para la fila de evento y encabezado de sección --- */
+.exp-row-custom, .exp-section-header {
+  transition: background-color 0.4s ease;
 }
 
-/* --- Clases de resaltado para cada fase (aplicadas a la fila) --- */
-.exp-row-custom.phase-highlight-radicacion { background-color: var(--phase-color-radicacion); }
-.exp-row-custom.phase-highlight-estudio { background-color: var(--phase-color-estudio); }
-.exp-row-custom.phase-highlight-notificacion { background-color: var(--phase-color-notificacion); }
-.exp-row-custom.phase-highlight-correcciones { background-color: var(--phase-color-correcciones); }
-.exp-row-custom.phase-highlight-viabilidad { background-color: var(--phase-color-viabilidad); }
-.exp-row-custom.phase-highlight-pagos { background-color: var(--phase-color-pagos); }
-.exp-row-custom.phase-highlight-resolucion { background-color: var(--phase-color-resolucion); }
-.exp-row-custom.phase-highlight-recurso { background-color: var(--phase-color-recurso); }
-.exp-row-custom.phase-highlight-entrega { background-color: var(--phase-color-entrega); }
-.exp-row-custom.phase-highlight-desist { background-color: var(--phase-color-desist); }
+/* --- Clases de resaltado (aplicadas a filas y encabezados) --- */
+.phase-highlight-radicacion { background-color: var(--phase-color-radicacion) !important; }
+.phase-highlight-estudio { background-color: var(--phase-color-estudio) !important; }
+.phase-highlight-notificacion { background-color: var(--phase-color-notificacion) !important; }
+.phase-highlight-correcciones { background-color: var(--phase-color-correcciones) !important; }
+.phase-highlight-viabilidad { background-color: var(--phase-color-viabilidad) !important; }
+.phase-highlight-pagos { background-color: var(--phase-color-pagos) !important; }
+.phase-highlight-resolucion { background-color: var(--phase-color-resolucion) !important; }
+.phase-highlight-recurso { background-color: var(--phase-color-recurso) !important; }
+.phase-highlight-entrega { background-color: var(--phase-color-entrega) !important; }
+.phase-highlight-desist { background-color: var(--phase-color-desist) !important; }
 
-/* --- Estilo para la tarjeta de fase en el sidebar --- */
-.phase-card-compact.highlighted {
-  border-width: 1px;
+/* --- Estilo para la tarjeta de fase activa en el sidebar --- */
+.phase-card-compact.phase-highlight-radicacion,
+.phase-card-compact.phase-highlight-estudio,
+.phase-card-compact.phase-highlight-notificacion,
+.phase-card-compact.phase-highlight-correcciones,
+.phase-card-compact.phase-highlight-viabilidad,
+.phase-card-compact.phase-highlight-pagos,
+.phase-card-compact.phase-highlight-resolucion,
+.phase-card-compact.phase-highlight-recurso,
+.phase-card-compact.phase-highlight-entrega,
+.phase-card-compact.phase-highlight-desist {
+  border-width: 1.5px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.08);
   transform: translateY(-2px);
   animation: pulse-border 1.8s infinite;
 }
 
-/* --- Animación de borde para la tarjeta activa --- */
-@keyframes pulse-border {
-  0% { border-color: var(--border-color-start); }
-  50% { border-color: var(--border-color-end); }
-  100% { border-color: var(--border-color-start); }
+
+/* ============================================================
+   FIX: CORRELACIÓN VISUAL TABLA MAESTRA (Fases -> filas/headers)
+   Objetivos:
+   - Colores fijos por fase (sin degradados).
+   - Resaltar solo la fase activa (sutil, mismo color).
+   - Evitar "toda la tabla del mismo color".
+   Pegar AL FINAL de centralClocks.css
+============================================================ */
+
+/* 1) Paleta (puedes ajustarla, está alineada con tu Gantt) */
+:root{
+  --phase-radicacion: #6c757d;
+  --phase-estudio: #1971c2;
+  --phase-notificacion: #15aabf;
+  --phase-correcciones: #e67700;
+  --phase-viabilidad: #6f42c1;
+  --phase-pagos: #e03131;
+  --phase-resolucion: #0056b3;
+  --phase-recurso: #fd7e14;
+  --phase-entrega: #2f9e44;
+  --phase-desist: #c92a2a;
+
+  /* fondos muy sutiles (sin degradado) */
+  --phase-bg-alpha: 0.06;
 }
 
-/* --- Clases de color para el borde animado (aplicadas a la tarjeta) --- */
-.phase-card-compact.highlighted.phase-highlight-radicacion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-radicacion); }
-.phase-card-compact.highlighted.phase-highlight-estudio { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-estudio); }
-.phase-card-compact.highlighted.phase-highlight-notificacion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-notificacion); }
-.phase-card-compact.highlighted.phase-highlight-correcciones { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-correcciones); }
-.phase-card-compact.highlighted.phase-highlight-viabilidad { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-viabilidad); }
-.phase-card-compact.highlighted.phase-highlight-pagos { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-pagos); }
-.phase-card-compact.highlighted.phase-highlight-resolucion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-resolucion); }
-.phase-card-compact.highlighted.phase-highlight-recurso { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-recurso); }
-.phase-card-compact.highlighted.phase-highlight-entrega { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-entrega); }
-.phase-card-compact.highlighted.phase-highlight-desist { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-desist); }
+/* helper: color actual de fase */
+.phase-highlight-radicacion { --phase-accent: var(--phase-radicacion); }
+.phase-highlight-estudio { --phase-accent: var(--phase-estudio); }
+.phase-highlight-notificacion { --phase-accent: var(--phase-notificacion); }
+.phase-highlight-correcciones { --phase-accent: var(--phase-correcciones); }
+.phase-highlight-viabilidad { --phase-accent: var(--phase-viabilidad); }
+.phase-highlight-pagos { --phase-accent: var(--phase-pagos); }
+.phase-highlight-resolucion { --phase-accent: var(--phase-resolucion); }
+.phase-highlight-recurso { --phase-accent: var(--phase-recurso); }
+.phase-highlight-entrega { --phase-accent: var(--phase-entrega); }
+.phase-highlight-desist { --phase-accent: var(--phase-desist); }
+
+/* 2) Base: quita degradados heredados en tabla maestra.
+   IMPORTANTE: esto evita que `.phase-highlight-*` (que hoy en tu CSS
+   tiene backgrounds/gradients) manche todo. */
+.exp-row-custom.phase-highlight-radicacion,
+.exp-row-custom.phase-highlight-estudio,
+.exp-row-custom.phase-highlight-notificacion,
+.exp-row-custom.phase-highlight-correcciones,
+.exp-row-custom.phase-highlight-viabilidad,
+.exp-row-custom.phase-highlight-pagos,
+.exp-row-custom.phase-highlight-resolucion,
+.exp-row-custom.phase-highlight-recurso,
+.exp-row-custom.phase-highlight-entrega,
+.exp-row-custom.phase-highlight-desist,
+.exp-section-header.phase-highlight-radicacion,
+.exp-section-header.phase-highlight-estudio,
+.exp-section-header.phase-highlight-notificacion,
+.exp-section-header.phase-highlight-correcciones,
+.exp-section-header.phase-highlight-viabilidad,
+.exp-section-header.phase-highlight-pagos,
+.exp-section-header.phase-highlight-resolucion,
+.exp-section-header.phase-highlight-recurso,
+.exp-section-header.phase-highlight-entrega,
+.exp-section-header.phase-highlight-desist{
+  background-image: none !important;
+}
+
+/* 3) Estilo “accent fijo” (borde + fondo sutil).
+   Se activa SOLO cuando en JS agregas `phase-accent phase-highlight-*` */
+.exp-row-custom.phase-accent,
+.exp-section-header.phase-accent{
+  position: relative;
+  border-left: 4px solid var(--phase-accent, #dee2e6) !important;
+
+  /* fondo sutil sólido, sin degradado */
+  background-color: color-mix(in srgb, var(--phase-accent, #1971c2) calc(var(--phase-bg-alpha) * 100%), #ffffff) !important;
+}
+
+/* Para que el hover no destruya el color, solo lo sube un poco */
+.exp-row-custom.phase-accent:hover,
+.exp-section-header.phase-accent:hover{
+  background-color: color-mix(in srgb, var(--phase-accent, #1971c2) 10%, #ffffff) !important;
+}
+
+/* 4) Resaltado SOLO cuando es la fase activa (clase `phase-active`) */
+.exp-row-custom.phase-active,
+.exp-section-header.phase-active{
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--phase-accent, #1971c2) 35%, transparent) !important;
+}
+
+/* 5) Evita que el before viejo (.exp-row::before) meta colores raros si se usara */
+.exp-row-custom::before{
+  background: transparent !important;
+}
+
+/* 6) Opcional: mejora de legibilidad dentro de filas/headers cuando están activos */
+.exp-row-custom.phase-active .row-title{
+  font-weight: 600;
+}
+.exp-section-header.phase-active span{
+  font-weight: 600;
+}
+
+/* 7) Si tienes títulos que por CSS base quedan con gris fijo, lo respetamos,
+   pero cuando están “phase-accent” los dejamos tomar el fondo sutil. */
+.exp-section-header{
+  border-left: 4px solid transparent; /* base */
+}
+
+/* ============================================================
+   VISUAL CORRELATION v2 (FIXED COLORS + ACTIVE HIGHLIGHT)
+   - Colores fijos por fase (tabla maestra completa).
+   - Resaltado sutil SOLO para la fase activa.
+   - Sin degradados.
+   Pegar AL FINAL de centralClocks.css
+============================================================ */
+
+/* Paleta base (alineada a tu Gantt) */
+:root{
+  --phase-radicacion: #6c757d;
+  --phase-estudio: #1971c2;
+  --phase-notificacion: #15aabf;
+  --phase-correcciones: #e67700;
+  --phase-viabilidad: #6f42c1;
+  --phase-pagos: #e03131;
+  --phase-resolucion: #0056b3;
+  --phase-recurso: #fd7e14;
+  --phase-entrega: #2f9e44;
+  --phase-desist: #c92a2a;
+
+  --phase-bg-alpha: 0.055;   /* fondo fijo, muy leve */
+  --phase-bg-hover: 0.09;    /* hover suave */
+  --phase-active-ring: 0.35; /* ring/outline */
+}
+
+/* cada highlightClass define el accent color */
+.phase-highlight-radicacion { --phase-accent: var(--phase-radicacion); }
+.phase-highlight-estudio { --phase-accent: var(--phase-estudio); }
+.phase-highlight-notificacion { --phase-accent: var(--phase-notificacion); }
+.phase-highlight-correcciones { --phase-accent: var(--phase-correcciones); }
+.phase-highlight-viabilidad { --phase-accent: var(--phase-viabilidad); }
+.phase-highlight-pagos { --phase-accent: var(--phase-pagos); }
+.phase-highlight-resolucion { --phase-accent: var(--phase-resolucion); }
+.phase-highlight-recurso { --phase-accent: var(--phase-recurso); }
+.phase-highlight-entrega { --phase-accent: var(--phase-entrega); }
+.phase-highlight-desist { --phase-accent: var(--phase-desist); }
+
+/* Neutraliza cualquier degradado previo (tu CSS tiene duplicados) */
+.exp-row-custom.phase-highlight-radicacion,
+.exp-row-custom.phase-highlight-estudio,
+.exp-row-custom.phase-highlight-notificacion,
+.exp-row-custom.phase-highlight-correcciones,
+.exp-row-custom.phase-highlight-viabilidad,
+.exp-row-custom.phase-highlight-pagos,
+.exp-row-custom.phase-highlight-resolucion,
+.exp-row-custom.phase-highlight-recurso,
+.exp-row-custom.phase-highlight-entrega,
+.exp-row-custom.phase-highlight-desist,
+.exp-section-header.phase-highlight-radicacion,
+.exp-section-header.phase-highlight-estudio,
+.exp-section-header.phase-highlight-notificacion,
+.exp-section-header.phase-highlight-correcciones,
+.exp-section-header.phase-highlight-viabilidad,
+.exp-section-header.phase-highlight-pagos,
+.exp-section-header.phase-highlight-resolucion,
+.exp-section-header.phase-highlight-recurso,
+.exp-section-header.phase-highlight-entrega,
+.exp-section-header.phase-highlight-desist{
+  background-image: none !important;
+}
+
+/* ===========
+   ACCENT FIJO
+   =========== */
+.exp-row-custom.phase-accent,
+.exp-section-header.phase-accent{
+  border-left: 4px solid var(--phase-accent, #dee2e6) !important;
+
+  /* fondo sólido muy leve, sin gradiente */
+  background-color: color-mix(in srgb, var(--phase-accent, #1971c2) calc(var(--phase-bg-alpha) * 100%), #ffffff) !important;
+}
+
+/* Hover: sube un poco el fondo, no cambia el color */
+.exp-row-custom.phase-accent:hover,
+.exp-section-header.phase-accent:hover{
+  background-color: color-mix(in srgb, var(--phase-accent, #1971c2) calc(var(--phase-bg-hover) * 100%), #ffffff) !important;
+}
+
+/* =======================
+   RESALTADO FASE ACTIVA
+   ======================= */
+.exp-row-custom.phase-active,
+.exp-section-header.phase-active{
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--phase-accent, #1971c2) calc(var(--phase-active-ring) * 100%), transparent) !important;
+}
+
+/* mejora de legibilidad en activo */
+.exp-row-custom.phase-active .row-title,
+.exp-section-header.phase-active span{
+  font-weight: 600;
+}
+
+/* Evita que otros estilos metan “barras” raras */
+.exp-row-custom::before{
+  background: transparent !important;
+}
+
+/* ============================================================
+   SEGUIMIENTO GENERAL DEL PROCESO (UI CONSISTENTE)
+   - clases para badges/estado general del proceso
+   - (útil si lo quieres mostrar en SidebarInfo o en otro card)
+============================================================ */
+
+.process-status-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: .75rem;
+  border: 1px solid #dee2e6;
+  background: #f8f9fa;
+  color: #495057;
+  white-space: nowrap;
+}
+
+.process-status-pill i{ font-size: .85rem; }
+
+.process-status-activo{
+  background: color-mix(in srgb, #1971c2 12%, #ffffff);
+  border-color: color-mix(in srgb, #1971c2 35%, #dee2e6);
+  color: #1864ab;
+}
+
+.process-status-pausado{
+  background: color-mix(in srgb, #f08c00 12%, #ffffff);
+  border-color: color-mix(in srgb, #f08c00 35%, #dee2e6);
+  color: #e67700;
+}
+
+.process-status-vencido{
+  background: color-mix(in srgb, #e03131 10%, #ffffff);
+  border-color: color-mix(in srgb, #e03131 40%, #dee2e6);
+  color: #c92a2a;
+}
+
+.process-status-finalizado{
+  background: color-mix(in srgb, #2f9e44 12%, #ffffff);
+  border-color: color-mix(in srgb, #2f9e44 35%, #dee2e6);
+  color: #2b8a3e;
+}
+
+.process-status-desistido{
+  background: color-mix(in srgb, #c92a2a 10%, #ffffff);
+  border-color: color-mix(in srgb, #c92a2a 40%, #dee2e6);
+  color: #c92a2a;
+}
+
+.process-status-no-iniciado{
+  background: #f1f3f5;
+  border-color: #dee2e6;
+  color: #495057;
+}
+
+/* ============================================================
+   FIX RELACIÓN FASES ↔ TABLA MAESTRA (SIN DEGRADADOS)
+   - phase-highlight-* SOLO define variables (no pinta por sí sola)
+   - phase-highlight-active aplica el resaltado suave
+   - Unifica paleta con Gantt / tonos consistentes
+   Pegar AL FINAL
+   ============================================================ */
+
+/* 1) Variables por fase (colores fijos) */
+:root {
+  /* borde (color principal) */
+  --ph-radicacion: #6c757d;
+  --ph-estudio: #1971c2;
+  --ph-notificacion: #15aabf;
+  --ph-correcciones: #e67700;
+  --ph-viabilidad: #2f9e44;
+  --ph-pagos: #e03131;
+  --ph-resolucion: #6f42c1;
+  --ph-recurso: #fd7e14;
+  --ph-entrega: #20c997;
+  --ph-desist: #e91e63;
+
+  /* fondos suaves */
+  --ph-soft-radicacion: rgba(108,117,125,0.10);
+  --ph-soft-estudio: rgba(25,113,194,0.10);
+  --ph-soft-notificacion: rgba(21,170,191,0.10);
+  --ph-soft-correcciones: rgba(230,119,0,0.11);
+  --ph-soft-viabilidad: rgba(47,158,68,0.10);
+  --ph-soft-pagos: rgba(224,49,49,0.10);
+  --ph-soft-resolucion: rgba(111,66,193,0.10);
+  --ph-soft-recurso: rgba(253,126,20,0.10);
+  --ph-soft-entrega: rgba(32,201,151,0.10);
+  --ph-soft-desist: rgba(233,30,99,0.10);
+}
+
+/* 2) phase-highlight-* NO PINTA NADA.
+      Solo define variables para que el resaltado se aplique cuando sea ACTIVE. */
+.phase-highlight-radicacion { --phase-accent: var(--ph-radicacion); --phase-soft: var(--ph-soft-radicacion); }
+.phase-highlight-estudio { --phase-accent: var(--ph-estudio); --phase-soft: var(--ph-soft-estudio); }
+.phase-highlight-notificacion { --phase-accent: var(--ph-notificacion); --phase-soft: var(--ph-soft-notificacion); }
+.phase-highlight-correcciones { --phase-accent: var(--ph-correcciones); --phase-soft: var(--ph-soft-correcciones); }
+.phase-highlight-viabilidad { --phase-accent: var(--ph-viabilidad); --phase-soft: var(--ph-soft-viabilidad); }
+.phase-highlight-pagos { --phase-accent: var(--ph-pagos); --phase-soft: var(--ph-soft-pagos); }
+.phase-highlight-resolucion { --phase-accent: var(--ph-resolucion); --phase-soft: var(--ph-soft-resolucion); }
+.phase-highlight-recurso { --phase-accent: var(--ph-recurso); --phase-soft: var(--ph-soft-recurso); }
+.phase-highlight-entrega { --phase-accent: var(--ph-entrega); --phase-soft: var(--ph-soft-entrega); }
+.phase-highlight-desist { --phase-accent: var(--ph-desist); --phase-soft: var(--ph-soft-desist); }
+
+/* 3) Tablas: base neutra (asegura que no quede “tinte” residual) */
+.exp-row-custom {
+  background: #fff;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.exp-section-header {
+  background-color: #F9F9F9;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* 4) Resaltado ÚNICO para el elemento activo (fila o header) */
+.exp-row-custom.phase-highlight-active,
+.exp-section-header.phase-highlight-active {
+  background-color: var(--phase-soft, rgba(0,0,0,0.03)) !important;
+}
+
+/* Fila activa: deja un borde izquierdo del color de la fase (sutil pero claro) */
+.exp-row-custom.phase-highlight-active::before {
+  background: var(--phase-accent, #6c757d) !important; /* usa tu pseudo-elemento existente */
+}
+
+/* Header de sección activo: línea inferior + borde lateral sutil */
+.exp-section-header.phase-highlight-active {
+  box-shadow: inset 4px 0 0 var(--phase-accent, #6c757d);
+}
+
+/* Hover: NO debe “ganarle” al resaltado */
+.exp-row-custom.phase-highlight-active:hover,
+.exp-section-header.phase-highlight-active:hover {
+  background-color: var(--phase-soft, rgba(0,0,0,0.04)) !important;
+}
+
+/* 5) Sidebar phase card: solo resalta cuando está activa (sin animaciones) */
+.phase-card-compact.phase-highlight-active {
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+  background: #fff;
+  position: relative;
+}
+
+/* Marca izquierda del color de fase */
+.phase-card-compact.phase-highlight-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--phase-accent, #6c757d);
+  /* border-radius: 10px 0 0 10px; */
+}
+
+
+
+/* 6) IMPORTANTE: neutraliza reglas viejas que estaban pintando TODO.
+   Si tenías definiciones previas tipo:
+   .phase-highlight-xxx { background-color: ... !important; }
+   esto evita que afecten sin "phase-highlight-active".
+*/
+.phase-highlight-radicacion:not(.phase-highlight-active),
+.phase-highlight-estudio:not(.phase-highlight-active),
+.phase-highlight-notificacion:not(.phase-highlight-active),
+.phase-highlight-correcciones:not(.phase-highlight-active),
+.phase-highlight-viabilidad:not(.phase-highlight-active),
+.phase-highlight-pagos:not(.phase-highlight-active),
+.phase-highlight-resolucion:not(.phase-highlight-active),
+.phase-highlight-recurso:not(.phase-highlight-active),
+.phase-highlight-entrega:not(.phase-highlight-active),
+.phase-highlight-desist:not(.phase-highlight-active) {
+  background-color: inherit !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+
+/* (contenido previo del archivo sin cambios)... */
+
+/* ============================================================
+   SINTONÍA FASES ↔ TABLA MAESTRA (COLORES FIJOS + RESALTO ACTIVO)
+   ============================================================
+   - Cada fase tiene un color fijo y sutil (phase-accent).
+   - Siempre se ve un tinte leve para correlacionar filas/títulos con la fase.
+   - Cuando una fase está activa, el resalto se intensifica ligeramente.
+   - Las clases se aplican desde el JS como:
+       phase-accent + phase-highlight-xxxx [+ phase-highlight-active]
+   - Compatible con encabezados (exp-section-header) y filas (exp-row-custom).
+-------------------------------------------------------------- */
+:root {
+  --phase-radicacion: #6c757d;
+  --phase-estudio: #1971c2;
+  --phase-notificacion: #15aabf;
+  --phase-correcciones: #e67700;
+  --phase-viabilidad: #6f42c1;
+  --phase-pagos: #e03131;
+  --phase-resolucion: #0056b3;
+  --phase-recurso: #fd7e14;
+  --phase-entrega: #2f9e44;
+  --phase-desist: #c92a2a;
+
+  --phase-soft-alpha: 0.055;
+  --phase-soft-active-alpha: 0.12;
+  --phase-ring-alpha: 0.28;
+}
+
+/* mapa de acentos (solo setea la variable) */
+.phase-highlight-radicacion { --phase-accent: var(--phase-radicacion); }
+.phase-highlight-estudio { --phase-accent: var(--phase-estudio); }
+.phase-highlight-notificacion { --phase-accent: var(--phase-notificacion); }
+.phase-highlight-correcciones { --phase-accent: var(--phase-correcciones); }
+.phase-highlight-viabilidad { --phase-accent: var(--phase-viabilidad); }
+.phase-highlight-pagos { --phase-accent: var(--phase-pagos); }
+.phase-highlight-resolucion { --phase-accent: var(--phase-resolucion); }
+.phase-highlight-recurso { --phase-accent: var(--phase-recurso); }
+.phase-highlight-entrega { --phase-accent: var(--phase-entrega); }
+.phase-highlight-desist { --phase-accent: var(--phase-desist); }
+
+/* base: tinte suave y borde sutil para todas las filas/headers */
+.exp-row-custom.phase-accent,
+.exp-section-header.phase-accent {
+  position: relative;
+  border-left: 4px solid var(--phase-accent, #dee2e6) !important;
+  background-color: color-mix(in srgb, var(--phase-accent, #1971c2) calc(var(--phase-soft-alpha) * 100%), #ffffff) !important;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* hover: no invade, solo un poco más de contraste */
+.exp-row-custom.phase-accent:hover,
+.exp-section-header.phase-accent:hover {
+  background-color: color-mix(in srgb, var(--phase-accent, #1971c2) 8%, #ffffff) !important;
+}
+
+/* activo: resalto moderado + anillo suave */
+.exp-row-custom.phase-highlight-active,
+.exp-section-header.phase-highlight-active {
+  background-color: color-mix(in srgb, var(--phase-accent, #1971c2) calc(var(--phase-soft-active-alpha) * 100%), #ffffff) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--phase-accent, #1971c2) calc(var(--phase-ring-alpha) * 100%), transparent);
+}
+
+/* evita gradientes heredados y barras previas */
+.exp-row-custom.phase-accent::before {
+  background: transparent !important;
+}
+
+/* texto ligeramente más marcado al estar activo */
+.exp-row-custom.phase-highlight-active .row-title,
+.exp-section-header.phase-highlight-active span {
+  font-weight: 600;
+}
+
+/* mantener títulos compactos sin ruido */
+.exp-section-header.phase-accent {
+  border-bottom: 1px solid #f1f3f5;
+  background-image: none !important;
+}
+
+/* compatibilidad con la tarjeta de fase en el sidebar */
+.phase-card-compact.phase-highlight-active {
+  border: 1px solid color-mix(in srgb, var(--phase-accent, #1971c2) 30%, #e9ecef);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  background: #fff;
+}
+.phase-card-compact.phase-highlight-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--phase-accent, #1971c2);
+  border-radius: 8px 0 0 8px;
+}
+
+/* Variante compacta: evita sobresaturar en listas largas */
+.exp-row-custom.phase-accent.phase-highlight-desist,
+.exp-section-header.phase-accent.phase-highlight-desist {
+  border-left-style: dotted !important;
+}
+
+/* coherencia con la grilla del gantt: no toques la paleta existente */
+.gantt-phase.gantt-phase-active {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--phase-accent, #5bc0de) 35%, transparent);
+  background: color-mix(in srgb, var(--phase-accent, #5bc0de) 10%, #ffffff);
+}
+
+/* (fin del bloque de armonización visual) */
+
+
+
+/* ================================
+   Paleta única por fase
+   ================================ */
+:root {
+  --phase-radicacion: #6c757d;
+  --phase-estudio: #1971c2;
+  --phase-notificacion: #15aabf;
+  --phase-correcciones: #e67700;
+  --phase-viabilidad: #6f42c1;
+  --phase-pagos: #e03131;
+  --phase-resolucion: #0056b3;
+  --phase-recurso: #fd7e14;
+  --phase-entrega: #2f9e44;
+  --phase-desist: #c92a2a;
+  --phase-soft-alpha: 0.08;
+  --phase-hover-alpha: 0.12;
+}
+
+/* Asignación de colores a clases de fase */
+.phase-highlight-radicacion { --phase-accent: var(--phase-radicacion); }
+.phase-highlight-estudio { --phase-accent: var(--phase-estudio); }
+.phase-highlight-notificacion { --phase-accent: var(--phase-notificacion); }
+.phase-highlight-correcciones { --phase-accent: var(--phase-correcciones); }
+.phase-highlight-viabilidad { --phase-accent: var(--phase-viabilidad); }
+.phase-highlight-pagos { --phase-accent: var(--phase-pagos); }
+.phase-highlight-resolucion { --phase-accent: var(--phase-resolucion); }
+.phase-highlight-recurso { --phase-accent: var(--phase-recurso); }
+.phase-highlight-entrega { --phase-accent: var(--phase-entrega); }
+.phase-highlight-desist { --phase-accent: var(--phase-desist); }
+
+/* Acabado base para filas/secciones vinculadas a fase */
+.phase-accent {
+  background-color: color-mix(in srgb, var(--phase-accent, #dee2e6) calc(var(--phase-soft-alpha) * 100%), #fff) !important;
+  border-left: 4px solid var(--phase-accent, #dee2e6);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.phase-accent:hover {
+  background-color: color-mix(in srgb, var(--phase-accent, #dee2e6) calc(var(--phase-hover-alpha) * 100%), #fff) !important;
+}
+
+/* Resaltado solo cuando la fase está activa (seleccionada) */
+.phase-highlight-active {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--phase-accent, #1971c2) 30%, transparent);
+  background-color: color-mix(in srgb, var(--phase-accent, #1971c2) 12%, #fff) !important;
+}
+
+/* ========================================
+   Layout general
+   ======================================== */
+.exp-wrapper { overflow-x: hidden; width: 100%; }
+.exp-container { display: flex; gap: 1.5rem; width: 100%; align-items: flex-start; }
+.exp-main-content { flex: 1; min-width: 0; }
+.exp-sidebar { flex: 0 0 380px; min-width: 380px; position: sticky; }
+
+/* Tabla maestra */
+.exp-card {
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+.exp-head {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: 40px;
+  background: #EBEBEB;
+  color: #495057;
+  padding: 0 1rem;
+  display: flex;
+  border-bottom: 1px solid #dee2e6;
+}
+.header-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  display: flex;
+  align-items: center;
+}
+.col-eventos { flex: 1.5; min-width: 220px; padding-right: .5rem; padding-left: 1.5rem; }
+.col-fecha { width: 150px; flex-shrink: 0; padding-left: 0.5rem; }
+.col-limite { width: 150px; flex-shrink: 0; padding-left: 0.5rem; }
+.col-programado { width: 170px; flex-shrink: 0; padding-left: 0.5rem; }
+.col-alarma { width: 200px; flex-shrink: 0; padding-left: 0.5rem; padding-right: 1rem; }
+
+.exp-scroll { overflow-y: auto; overflow-x: hidden; font-size: .95rem; }
+
+.exp-section-header {
+  background-color: #F9F9F9;
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f3f5;
+  user-select: none;
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.exp-row-custom {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f3f5;
+  background: #fff;
+  font-size: 0.85rem;
+}
+.exp-row-custom:hover { background-color: #fafafa; }
+
+.row-icon-container { width: 30px; display: flex; align-items: center; justify-content: flex-start; flex-shrink: 0; }
+.row-title { cursor: pointer; color: #212529; font-weight: 400; }
+.row-title:hover { color: #000; }
+
+.section-options { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+.compact-radio-group { display: flex; background-color: #e9ecef; border-radius: 6px; padding: 3px; }
+.compact-radio-group .form-check { margin: 0; padding: 0; }
+.compact-radio-group .form-check-input { display: none; }
+.compact-radio-group .form-check-label {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #495057;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease-out;
+  margin-bottom: 0;
+}
+.compact-radio-group .form-check-input + .form-check-label { background-color: transparent; }
+.compact-radio-group .form-check-input:checked + .form-check-label {
+  background-color: #fff;
+  color: #1971c2;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.compact-sub-option { padding-left: 0.5rem; border-left: 2px solid #e9ecef; }
+
+/* Sidebar cards */
+.sidebar-card {
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+.sidebar-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 600;
+  color: #495057;
+  padding: 0.58rem 0.65rem;
+  border-bottom: 1px solid #f1f3f5;
+  background-color: #EBEBEB;
+  border-radius: 4px 4px 0 0 ;
+}
+.sidebar-card-body { padding: 0.75rem; }
+
+/* Phase card compact */
+.phase-card-compact {
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.phase-card-compact-header {
+  padding: 0.85rem 0.9rem 0.65rem 0.9rem;
+  border-bottom: 1px solid #e9ecef;
+  background: #fff;
+}
+.phase-title-row { display: flex; align-items: center; gap: 0.6rem; }
+.phase-title-compact { margin: 0; font-size: 0.98rem; font-weight: 800; color: #343a40; flex: 1; }
+.phase-status-pill {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.25rem 0.55rem; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 800; border: 1px solid #dee2e6; background: #f8f9fa; color: #495057;
+}
+.phase-sub-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+.phase-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.22rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; border: 1px solid #dee2e6; background: #f8f9fa; color: #495057; }
+.phase-pill-primary { background: #e7f5ff; border-color: #a5d8ff; color: #1864ab; }
+.phase-pill-info { background: #e3fafc; border-color: #99e9f2; color: #0c8599; }
+.phase-pill-secondary { background: #f1f3f5; border-color: #dee2e6; color: #495057; }
+.phase-date-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.22rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; border: 1px solid #e9ecef; background: #f8f9fa; color: #6c757d; }
+
+.phase-context-compact {
+  margin-top: 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid #d0ebff;
+  background: #e7f5ff;
+  color: #1864ab;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.phase-actors-compact { padding: 0.75rem; }
+.phase-actors-grid { display: grid; gap: 0.55rem; }
+.phase-actors-grid.one { grid-template-columns: 1fr; }
+.phase-actors-stack { display: flex; flex-direction: column; gap: 0.75rem; }
+
+/* Actor compact */
+.actor-compact {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 0.65rem 0.7rem;
+  background: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.actor-compact:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+.actor-compact-top { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.actor-compact-name { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 900; color: #343a40; min-width: 0; }
+.actor-compact-name i { width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; background: #f1f3f5; color: #495057; }
+.actor-compact-status {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.2rem 0.5rem; border-radius: 999px;
+  font-size: 0.7rem; font-weight: 900; white-space: nowrap; border: 1px solid #dee2e6; background: #f8f9fa; color: #495057;
+}
+.actor-compact-task { margin-top: 0.45rem; display: flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; color: #6c757d; }
+.actor-compact-metrics { margin-top: 0.55rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.45rem; }
+.actor-compact-metrics .m { border: 1px solid #f1f3f5; background: #f8f9fa; border-radius: 8px; padding: 0.35rem 0.45rem; }
+.actor-compact-metrics .k { display: block; font-size: 0.62rem; font-weight: 900; letter-spacing: 0.3px; text-transform: uppercase; color: #868e96; line-height: 1.1; }
+.actor-compact-metrics .v { display: block; font-size: 0.85rem; font-weight: 900; color: #343a40; line-height: 1.2; }
+.actor-compact-bar { margin-top: 0.55rem; }
+.actor-compact-bar .track { height: 8px; border-radius: 6px; background: #e9ecef; overflow: hidden; }
+
+/* Utility buttons */
+.sidebar-utilities { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
+.btn-sidebar-utility {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  color: #495057;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 0.6rem;
+}
+.btn-sidebar-utility:hover { background-color: #e9ecef; color: #212529; border-color: #dee2e6; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+.btn-sidebar-utility i { color: #868e96; transition: color 0.2s; }
+
+/* Time travel widget */
+.time-travel-floating-widget {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1056;
+  min-width: 550px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  border: 1px solid #e9ecef;
+  padding: 0.5rem;
+}
+
+/* FAB alarms */
+.alarms-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #5bc0de;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(91,192,222,0.4);
+  z-index: 1054;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-out;
+}
+.alarms-fab:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(91,192,222,0.5); }
+.fab-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #e03131;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .exp-container { flex-direction: column; }
+  .exp-sidebar { width: 100%; position: static; min-width: auto; }
+  .exp-scroll { height: auto; max-height: 80vh; }
+}
+@media (max-width: 992px) {
+  .exp-head, .exp-row-custom { min-width: 900px; }
+  .exp-card { overflow-x: auto; }
+}
+@media (max-width: 768px) {
+  .exp-row .col-6, .exp-row .col-5 { font-size: 0.85rem; }
+  .exp-row .col-2, .exp-row .col-1 { font-size: 0.75rem; padding: 0.25rem !important; }
+  .time-travel-floating-widget { min-width: auto; left: 15px; right: 15px; bottom: 15px; width: auto; }
+}

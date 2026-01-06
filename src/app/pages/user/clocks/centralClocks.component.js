@@ -31,16 +31,16 @@ export default function EXP_CLOCKS(props) {
   const [clocksData, setClocksData] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [sidebarHeight, setSidebarHeight] = useState('auto');
-  
+
   const [showTimeTravel, setShowTimeTravel] = useState(false);
   const [showAlarms, setShowAlarms] = useState(false);
-  
+
   const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
-  
+
   // Estado para secciones colapsables (Acordeón)
   const [collapsedSections, setCollapsedSections] = useState({});
 
-  // --- NUEVO ESTADO: Almacena el ID de la fase activa para el resaltado ---
+  // ID fase activa para el resaltado
   const [activePhaseId, setActivePhaseId] = useState(null);
   const [showGanttModal, setShowGanttModal] = useState(false);
 
@@ -48,21 +48,15 @@ export default function EXP_CLOCKS(props) {
 
   const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
 
-
   useEffect(() => {
     if (currentItem?.fun_clocks) {
       const clock1001FromProps = currentItem.fun_clocks.find(c => String(c.state) === '1001');
       const clock1001FromState = clocksData.find(c => String(c.state) === '1001');
-      
-      // SOLO actualizar si el 1001 del state es diferente al de las props
-      // Esto previene que se sobrescriba el estado local durante una actualización optimista
+
       if (!clock1001FromState || (clock1001FromProps && clock1001FromProps.desc !== clock1001FromState.desc)) {
-         setClocksData([...currentItem.fun_clocks]);
-         setRefreshTrigger(prev => prev + 1);
-      } 
-      // else {
-      //   //  console.log('%c[EFFECT 1] `fun_clocks` recibido, pero se omite la actualización del state para prevenir sobreescritura.', 'color: #007BFF');
-      // }
+        setClocksData([...currentItem.fun_clocks]);
+        setRefreshTrigger(prev => prev + 1);
+      }
     }
   }, [currentItem?.fun_clocks]);
 
@@ -76,18 +70,17 @@ export default function EXP_CLOCKS(props) {
     }
   }, [clocksData]);
 
-  // Ahora pasamos phaseOptions al manager
   const manager = useClocksManager(currentItem, clocksData, currentVersion, systemDate, phaseOptions);
 
   const conGI = _GLOBAL_ID === 'cb1';
   const namePayment = conGI ? 'Impuestos Municipales' : 'Impuesto Delineacion';
 
   const clocksToShowRaw = generateClocks({
-      ...manager,
-      currentItem,
-      namePayment,
-      conGI,
-      phaseOptions // Pasamos las opciones a las definiciones
+    ...manager,
+    currentItem,
+    namePayment,
+    conGI,
+    phaseOptions
   });
 
   const alarms = useAlarms(manager, scheduleConfig, clocksToShowRaw, systemDate);
@@ -98,73 +91,57 @@ export default function EXP_CLOCKS(props) {
         setSidebarHeight(sidebarRef.current.offsetHeight - 44);
       }
     };
-    
-    handleResize(); 
-    const timer = setTimeout(handleResize, 200); 
+
+    handleResize();
+    const timer = setTimeout(handleResize, 200);
 
     window.addEventListener('resize', handleResize);
     return () => {
-        clearTimeout(timer);
-        window.removeEventListener('resize', handleResize);
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
     };
   }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, alarms]);
 
-  // Este hook se va a encargar de sincronizar el campo de fecha de valla del informe juridico con un state,
-  // TODO: Como trabajo futuro se va a corregir para que directamente desde el formulario juridico el guardado en el state
   useEffect(() => {
-      const syncVallaDate = () => {
-          // Evita ejecuciones si los datos no están listos
-          if (!currentItem || !currentItem.fun_law) return;
+    const syncVallaDate = () => {
+      if (!currentItem || !currentItem.fun_law) return;
 
-          // --- Obtener fechas de ambas fuentes ---
-          const signArray = currentItem.fun_law.sign ? currentItem.fun_law.sign.split(',') : [];
-          const formDate = signArray.length > 1 && signArray[1] ? signArray[1] : null;
+      const signArray = currentItem.fun_law.sign ? currentItem.fun_law.sign.split(',') : [];
+      const formDate = signArray.length > 1 && signArray[1] ? signArray[1] : null;
 
-          const clock503 = (clocksData || []).find(c => c.state == 503);
-          const clockDate = clock503 ? clock503.date_start : null;
-          
-          // --- Lógica de Sincronización Bidireccional ---
-          
-          // Caso 1: El formulario tiene la fecha y el reloj no, o son diferentes.
-          // El formulario es la fuente de verdad y actualiza el reloj.
-          if (formDate && (!clockDate || formDate !== clockDate)) {
-              const formData = new FormData();
-              formData.set('date_start', formDate);
-              formData.set('state', 503);
-              formData.set('name', 'Instalación y Registro de la Valla Informativa'); // Desde clock.definitions.js
-              formData.set('desc', 'Instalación de la valla informativa del proyecto'); // Desde clock.definitions.js
-              
-              // Reutiliza la función existente para crear/actualizar el reloj
-              manage_clock(false, 503, undefined, formData, true);
-          }
-          
-          // Caso 2: El reloj tiene la fecha pero el formulario no.
-          // El reloj actualiza al formulario.
-          else if (clockDate && !formDate) {
-              const funLawId = currentItem.fun_law.id;
-              if (!funLawId) return; // No se puede actualizar sin un ID
+      const clock503 = (clocksData || []).find(c => c.state == 503);
+      const clockDate = clock503 ? clock503.date_start : null;
 
-              const newSign = [signArray[0] || '-1', clockDate].join(',');
-              
-              const formData = new FormData();
-              formData.set('sign', newSign);
-              
-              FUN_SERVICE.update_sign(funLawId, formData)
-                  .then(response => {
-                      if (response.data === 'OK') {
-                          props.requestUpdate(currentItem.id);
-                      }
-                  })
-                  .catch(e => console.error("Error sincronizando formulario desde reloj:", e));
-          }
-      };
+      if (formDate && (!clockDate || formDate !== clockDate)) {
+        const formData = new FormData();
+        formData.set('date_start', formDate);
+        formData.set('state', 503);
+        formData.set('name', 'Instalación y Registro de la Valla Informativa');
+        formData.set('desc', 'Instalación de la valla informativa del proyecto');
+        manage_clock(false, 503, undefined, formData, true);
+      } else if (clockDate && !formDate) {
+        const funLawId = currentItem.fun_law.id;
+        if (!funLawId) return;
 
-      // Llama a la función de sincronización. El timeout previene carreras de datos al inicio.
-      const timer = setTimeout(syncVallaDate, 100);
-      return () => clearTimeout(timer);
+        const newSign = [signArray[0] || '-1', clockDate].join(',');
 
+        const formData = new FormData();
+        formData.set('sign', newSign);
+
+        FUN_SERVICE.update_sign(funLawId, formData)
+          .then(response => {
+            if (response.data === 'OK') {
+              props.requestUpdate(currentItem.id);
+            }
+          })
+          .catch(e => console.error("Error sincronizando formulario desde reloj:", e));
+      }
+    };
+
+    const timer = setTimeout(syncVallaDate, 100);
+    return () => clearTimeout(timer);
   }, [currentItem, clocksData, props.requestUpdate]);
-  
+
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa } = manager;
 
   const filterAfterDesist = (items) => {
@@ -208,17 +185,16 @@ export default function EXP_CLOCKS(props) {
 
   const toggleSection = (title) => {
     setCollapsedSections(prev => ({
-        ...prev,
-        [title]: !prev[title]
+      ...prev,
+      [title]: !prev[title]
     }));
   };
 
   const applyLocalClockChange = (state, changes, version) => {
-    
     setClocksData(prev => {
       const arr = Array.isArray(prev) ? [...prev] : [];
       const idx = arr.findIndex(c => String(c.state) === String(state) && (version !== undefined ? String(c.version) === String(version) : true));
-      
+
       let newClock;
       if (idx >= 0) {
         newClock = { ...arr[idx], ...changes };
@@ -227,14 +203,8 @@ export default function EXP_CLOCKS(props) {
         newClock = { ...changes, state, version };
         arr.push(newClock);
       }
-      
-      // Si estamos actualizando el clock 1001, refrescamos el trigger
-      // para forzar el re-renderizado completo con las nuevas opciones.
-      if (String(state) === '1001') {
-        setRefreshTrigger(p => p + 1);
-      }
-      
-      console.groupEnd();
+
+      if (String(state) === '1001') setRefreshTrigger(p => p + 1);
       return arr;
     });
   };
@@ -248,13 +218,13 @@ export default function EXP_CLOCKS(props) {
 
     if (dateVal) formDataClock.set('date_start', dateVal);
     formDataClock.set('state', value.state);
-    
+
     if (value.version !== undefined) {
-        formDataClock.set('version', value.version);
+      formDataClock.set('version', value.version);
     }
 
     let descBase = value.desc || '';
-    
+
     if ((value.state === 350 || value.state === 351) && dateVal) {
       const startSusp = (value.state === 350) ? suspensionPreActa.start?.date_start : suspensionPostActa.start?.date_start;
       if (startSusp) {
@@ -263,11 +233,11 @@ export default function EXP_CLOCKS(props) {
       }
     }
     if (value.state === 401 && dateVal) {
-        const startExt = manager.extension.start?.date_start;
-        if (startExt) {
-          const days = dateParser_dateDiff(startExt, dateVal);
-          descBase = `Fin de prórroga (${days} días)`;
-        }
+      const startExt = manager.extension.start?.date_start;
+      if (startExt) {
+        const days = dateParser_dateDiff(startExt, dateVal);
+        descBase = `Fin de prórroga (${days} días)`;
+      }
     }
 
     formDataClock.set('desc', descBase);
@@ -281,34 +251,30 @@ export default function EXP_CLOCKS(props) {
     }, value.version);
 
     manage_clock(false, value.state, value.version, formDataClock, true);
-  }
+  };
 
   const manage_clock = (useMySwal, findOne, version, formDataClock, triggerUpdate = false) => {
-    console.groupCollapsed('%c[manage_clock] Guardando en backend', 'color: #17a2b8');
-    
     var _CHILD = getClockVersion(findOne, version) || getClock(findOne);
     formDataClock.set('fun0Id', currentItem.id);
 
     if (useMySwal) MySwal.fire({ title: swaMsg.title_wait, text: swaMsg.text_wait, icon: 'info', showConfirmButton: false });
-    
+
     const onOk = () => {
       if (useMySwal) MySwal.fire({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer, icon: 'success', confirmButtonText: swaMsg.text_btn });
       props.requestUpdate(currentItem.id);
       if (triggerUpdate) setTimeout(() => props.requestUpdate(currentItem.id), 150);
-      console.groupEnd();
-    }
+    };
     const onErr = (e) => {
       console.error('Error guardando clock en backend:', e);
       if (useMySwal) MySwal.fire({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning', confirmButtonText: swaMsg.text_btn });
-      console.groupEnd();
-    }
+    };
 
     if (_CHILD && _CHILD.id) {
       FUN_SERVICE.update_clock(_CHILD.id, formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
     } else {
       FUN_SERVICE.create_clock(formDataClock).then(r => r.data === 'OK' ? onOk() : onErr(r)).catch(onErr);
     }
-  }
+  };
 
   const delete_clock = (value) => {
     MySwal.fire({
@@ -323,7 +289,7 @@ export default function EXP_CLOCKS(props) {
     }).then((result) => {
       if (result.isConfirmed) {
         const formDataClock = new FormData();
-        
+
         formDataClock.set('state', value.state);
         if (value.version !== undefined) {
           formDataClock.set('version', value.version);
@@ -331,10 +297,10 @@ export default function EXP_CLOCKS(props) {
 
         formDataClock.set('date_start', '');
         formDataClock.set('desc', value.desc || '');
-        
-        applyLocalClockChange(value.state, { 
-            date_start: '',
-            desc: value.desc || ''
+
+        applyLocalClockChange(value.state, {
+          date_start: '',
+          desc: value.desc || ''
         }, value.version);
 
         manage_clock(false, value.state, value.version, formDataClock, true);
@@ -343,10 +309,10 @@ export default function EXP_CLOCKS(props) {
   };
 
   const addTimeControl = (type) => {
-     if (type === 'suspension') {
+    if (type === 'suspension') {
       const availableDays = 10 - totalSuspensionDays;
       if (availableSuspensionTypes.length === 0) return MySwal.fire({ title: 'No disponible', text: 'No hay espacios para añadir suspensiones', icon: 'warning' });
-      
+
       const typeSelectHtml = availableSuspensionTypes.length > 1
         ? `<div class="col-12"><label class="form-label">Ubicación</label><select id="susp_type" class="form-select">${availableSuspensionTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}</select></div>`
         : `<input type="hidden" id="susp_type" value="${availableSuspensionTypes[0].value}">`;
@@ -382,54 +348,54 @@ export default function EXP_CLOCKS(props) {
       });
 
     } else if (type === 'extension') {
-        MySwal.fire({
-            title: 'Nueva Prórroga por Complejidad',
-            html: `<div class="row g-3">
+      MySwal.fire({
+        title: 'Nueva Prórroga por Complejidad',
+        html: `<div class="row g-3">
                 <div class="col-12"><div class="alert alert-info"><i class="fas fa-clock me-2"></i>Otorga hasta <strong>22 días hábiles</strong> adicionales.</div></div>
                 <div class="col-12"><label class="form-label">Fecha de Inicio</label><input type="date" id="ext_start" class="form-control" value="${systemDate}"/></div>
                 <div class="col-12"><label class="form-label">Fecha de Fin (Opcional)</label><input type="date" id="ext_end" class="form-control"/></div>
             </div>`,
-            showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
-            preConfirm: () => {
-                const startDate = document.getElementById('ext_start').value;
-                const endDate = document.getElementById('ext_end').value;
-                if (!startDate) { Swal.showValidationMessage('La fecha de inicio es obligatoria'); return false; }
-                if (endDate && moment(endDate).isBefore(startDate)) {
-                    Swal.showValidationMessage('La fecha de fin no puede ser anterior a la fecha de inicio');
-                    return false;
-                }
-                return { startDate, endDate };
-            }
-        }).then(result => {
-            if (result.isConfirmed) {
-                const { startDate, endDate } = result.value;
-                
-                const formDataStart = new FormData();
-                formDataStart.set('state', 400);
-                formDataStart.set('date_start', startDate);
-                formDataStart.set('desc', 'Prórroga por complejidad técnica');
-                formDataStart.set('name', 'Inicio Prórroga por Complejidad');
-                applyLocalClockChange(400, { date_start: startDate, desc: 'Prórroga por complejidad técnica', name: 'Inicio Prórroga por Complejidad' });
-                manage_clock(false, 400, false, formDataStart, true);
+        showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+          const startDate = document.getElementById('ext_start').value;
+          const endDate = document.getElementById('ext_end').value;
+          if (!startDate) { Swal.showValidationMessage('La fecha de inicio es obligatoria'); return false; }
+          if (endDate && moment(endDate).isBefore(startDate)) {
+            Swal.showValidationMessage('La fecha de fin no puede ser anterior a la fecha de inicio');
+            return false;
+          }
+          return { startDate, endDate };
+        }
+      }).then(result => {
+        if (result.isConfirmed) {
+          const { startDate, endDate } = result.value;
 
-                if (endDate) {
-                    const days = dateParser_dateDiff(startDate, endDate);
-                    const formDataEnd = new FormData();
-                    formDataEnd.set('state', 401);
-                    formDataEnd.set('date_start', endDate);
-                    formDataEnd.set('desc', `Fin de prórroga (${days} días)`);
-                    formDataEnd.set('name', 'Fin Prórroga por Complejidad');
-                    applyLocalClockChange(401, { date_start: endDate, desc: `Fin de prórroga (${days} días)`, name: 'Fin Prórroga por Complejidad' });
-                    setTimeout(() => manage_clock(false, 401, false, formDataEnd, true), 200);
-                }
-            }
-        });
+          const formDataStart = new FormData();
+          formDataStart.set('state', 400);
+          formDataStart.set('date_start', startDate);
+          formDataStart.set('desc', 'Prórroga por complejidad técnica');
+          formDataStart.set('name', 'Inicio Prórroga por Complejidad');
+          applyLocalClockChange(400, { date_start: startDate, desc: 'Prórroga por complejidad técnica', name: 'Inicio Prórroga por Complejidad' });
+          manage_clock(false, 400, false, formDataStart, true);
+
+          if (endDate) {
+            const days = dateParser_dateDiff(startDate, endDate);
+            const formDataEnd = new FormData();
+            formDataEnd.set('state', 401);
+            formDataEnd.set('date_start', endDate);
+            formDataEnd.set('desc', `Fin de prórroga (${days} días)`);
+            formDataEnd.set('name', 'Fin Prórroga por Complejidad');
+            applyLocalClockChange(401, { date_start: endDate, desc: `Fin de prórroga (${days} días)`, name: 'Fin Prórroga por Complejidad' });
+            setTimeout(() => manage_clock(false, 401, false, formDataEnd, true), 200);
+          }
+        }
+      });
     }
   };
 
   const openScheduleModal = () => {
     let localScheduleData = scheduleConfig?.times || {};
-    
+
     const modalContainer = document.createElement('div');
     modalContainer.id = 'schedule-modal-root';
 
@@ -438,11 +404,11 @@ export default function EXP_CLOCKS(props) {
     };
 
     const legalLimits = {};
-    
+
     clocksToShow.forEach(clockValue => {
       if (!clockValue.title && clockValue.state !== undefined && clockValue.state !== false) {
         const limitDate = calculateLegalLimit(clockValue.state, clockValue, manager);
-        
+
         if (limitDate) {
           legalLimits[clockValue.state] = {
             limitDate: limitDate
@@ -457,9 +423,9 @@ export default function EXP_CLOCKS(props) {
       width: 1000,
       showCancelButton: true,
       showDenyButton: hasSchedule,
-      confirmButtonText: '<i class="fas fa-save me-2"></i>Guardar Programación',
+      confirmButtonText: '<i className="fas fa-save me-2"></i>Guardar Programación',
       cancelButtonText: 'Cancelar',
-      denyButtonText: '<i class="fas fa-trash me-2"></i>Eliminar Programación',
+      denyButtonText: '<i className="fas fa-trash me-2"></i>Eliminar Programación',
       didOpen: () => {
         ReactDOM.render(
           <ScheduleModal
@@ -525,8 +491,7 @@ export default function EXP_CLOCKS(props) {
             });
           });
       } else if (result.isDenied) {
-        // ... (Logica de eliminación igual)
-         MySwal.fire({
+        MySwal.fire({
           title: '¿Estás seguro?',
           text: 'Se eliminará toda la programación de tiempos para este expediente.',
           icon: 'warning',
@@ -544,7 +509,7 @@ export default function EXP_CLOCKS(props) {
               .then(() => {
                 clearScheduleConfig();
                 setRefreshTrigger(prev => prev + 1);
-                
+
                 MySwal.fire({
                   title: 'Programación Eliminada',
                   text: 'Se ha eliminado la configuración de programación del proceso.',
@@ -568,43 +533,31 @@ export default function EXP_CLOCKS(props) {
   };
 
   const handleOptionChange = (phaseKey, option, value) => {
-
-    // 1. Clonar las opciones actuales desde el estado para una UI optimista
     let allOptions = { ...(phaseOptions || {}) };
 
-    // 2. Preparar la estructura para la fase si no existe
-    if (!allOptions[phaseKey]) {
-        allOptions[phaseKey] = {};
-    }
+    if (!allOptions[phaseKey]) allOptions[phaseKey] = {};
 
-    // 3. Actualizar la opción específica
     let phaseSpecificOptions = { ...allOptions[phaseKey], [option]: value };
 
-    // 4. Lógica excluyente
     if (option === 'notificationType' && value === 'comunicar') {
-        phaseSpecificOptions.byAviso = false;
+      phaseSpecificOptions.byAviso = false;
     }
 
-    // 5. Unir todo en el objeto principal
     const newAllOptions = { ...allOptions, [phaseKey]: phaseSpecificOptions };
     const newDesc = JSON.stringify(newAllOptions);
 
     applyLocalClockChange('1001', { name: 'phase_options', desc: newDesc }, undefined);
 
-    // 7. Guardar en backend en segundo plano
     const formData = new FormData();
     formData.set('name', 'phase_options');
     formData.set('desc', newDesc);
-    
-    // El 'false' en triggerUpdate es importante para evitar una solicitud de actualización extra
-    manage_clock(false, '1001', undefined, formData, false);
-    console.groupEnd();
-  };
 
+    manage_clock(false, '1001', undefined, formData, false);
+  };
 
   const _FIND_6 = (id) => (currentItem.fun_6s || []).find(f => f.id == id) || null;
   const _CHILD_6_SELECT = () => (currentItem.fun_6s || []).map(f => <option key={f.id} value={f.id}>{f.description}</option>);
-  
+
   const getNewestDate = (states) => {
     let newDate = null;
     states.forEach((element) => {
@@ -613,12 +566,12 @@ export default function EXP_CLOCKS(props) {
       else if (date && moment(date).isAfter(newDate)) newDate = date;
     });
     return newDate;
-  }
-  
+  };
+
   const handleDateChange = (newDate) => {
     setSystemDate(newDate);
   };
-  
+
   const handleDateShift = (days) => {
     setSystemDate(prevDate => moment(prevDate).add(days, 'days').format('YYYY-MM-DD'));
   };
@@ -626,50 +579,89 @@ export default function EXP_CLOCKS(props) {
   const resetDate = () => {
     setSystemDate(moment().format('YYYY-MM-DD'));
   };
-  
-  // -- NUEVO HEADER CON ALINEACIÓN A LA IZQUIERDA --
+
   const Header = () => (
     <div className="exp-head d-flex align-items-center">
       <div className="col-eventos header-title">
         <i className="fas fa-list me-2"></i> Evento
       </div>
       <div className="col-fecha header-title">
-         <i className="far fa-calendar me-2"></i> Fecha evento
+        <i className="far fa-calendar me-2"></i> Fecha evento
       </div>
       <div className="col-limite header-title">
-         <i className="fas fa-history me-2"></i> Límite legal
+        <i className="fas fa-history me-2"></i> Límite legal
       </div>
       <div className="col-programado header-title">
-         <i className="fas fa-calendar-check me-2"></i> Límite Programado
+        <i className="fas fa-calendar-check me-2"></i> Límite Programado
       </div>
-       <div className="col-alarma header-title">
-         <i className="far fa-clock me-2"></i> Alarmas
+      <div className="col-alarma header-title">
+        <i className="far fa-clock me-2"></i> Alarmas
       </div>
     </div>
   );
 
-  let lastTitle = '';
+  // ==============================
+  // NUEVO: state -> phase mapping (fijo)
+  // ==============================
+  const stateToPhaseClass = useMemo(() => {
+    const map = new Map();
+
+    (manager.processPhases || []).forEach((p) => {
+      const cls = p.highlightClass; // ej: "phase-highlight-estudio"
+      (p.relatedStates || []).forEach((st) => {
+        const key = String(st);
+        if (!map.has(key)) map.set(key, cls);
+      });
+    });
+
+    return map;
+  }, [manager.processPhases]);
+
+  // Helper: obtiene phase class por state
+  const getPhaseClassForState = (state) => {
+    const key = String(state);
+    return stateToPhaseClass.get(key) || '';
+  };
+
+  // Helper: para un header/section, elegir una fase dominante por sus estados hijos.
+  const getPhaseClassForSectionStates = (sectionStates) => {
+    const counts = new Map();
+    sectionStates.forEach((st) => {
+      const cls = getPhaseClassForState(st);
+      if (!cls) return;
+      counts.set(cls, (counts.get(cls) || 0) + 1);
+    });
+
+    let best = '';
+    let bestCount = 0;
+    counts.forEach((count, cls) => {
+      if (count > bestCount) {
+        bestCount = count;
+        best = cls;
+      }
+    });
+
+    return best;
+  };
+
   const renderClockList = () => {
     let isCurrentGroupCollapsed = false;
 
-    // --- Lógica para encontrar la clase de resaltado ---
-    const activePhase = manager.processPhases.find(p => p.id === activePhaseId);
-    const highlightClass = activePhase ? activePhase.highlightClass : '';
-    const relatedStates = activePhase ? activePhase.relatedStates : [];
+    const activePhase = (manager.processPhases || []).find(p => p.id === activePhaseId);
+    const activeRelatedStates = activePhase ? (activePhase.relatedStates || []) : [];
 
-    // Esta función renderiza la cinta de opciones
     const renderOptionsRibbon = (phaseKey) => {
       const phaseSpecificOptions = phaseOptions[phaseKey] || {};
       const notificationType = phaseSpecificOptions.notificationType || 'notificar';
       const byAviso = phaseSpecificOptions.byAviso === true;
-      
+
       return (
         <div className="section-options" onClick={(e) => e.stopPropagation()}>
           <div className="compact-radio-group">
             <div className="form-check">
-              <input 
-                type="radio" 
-                className="form-check-input" 
+              <input
+                type="radio"
+                className="form-check-input"
                 name={`notificationType_${phaseKey}`}
                 id={`type_notificar_${phaseKey}`}
                 value="notificar"
@@ -679,9 +671,9 @@ export default function EXP_CLOCKS(props) {
               <label className="form-check-label" htmlFor={`type_notificar_${phaseKey}`}>Notificar</label>
             </div>
             <div className="form-check">
-              <input 
-                type="radio" 
-                className="form-check-input" 
+              <input
+                type="radio"
+                className="form-check-input"
                 name={`notificationType_${phaseKey}`}
                 id={`type_comunicar_${phaseKey}`}
                 value="comunicar"
@@ -693,94 +685,117 @@ export default function EXP_CLOCKS(props) {
           </div>
 
           {notificationType === 'notificar' && (
-             <div className="compact-sub-option">
-               <div className="form-check form-switch">
-                 <input 
-                   className="form-check-input" 
-                   type="checkbox" 
-                   role="switch" 
-                   id={`checkByAviso_${phaseKey}`}
-                   checked={byAviso}
-                   onChange={(e) => handleOptionChange(phaseKey, 'byAviso', e.target.checked)}
-                 />
-                 <label className="form-check-label" htmlFor={`checkByAviso_${phaseKey}`}>Por Aviso</label>
-               </div>
-             </div>
+            <div className="compact-sub-option">
+              <div className="form-check form-switch">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id={`checkByAviso_${phaseKey}`}
+                  checked={byAviso}
+                  onChange={(e) => handleOptionChange(phaseKey, 'byAviso', e.target.checked)}
+                />
+                <label className="form-check-label" htmlFor={`checkByAviso_${phaseKey}`}>Por Aviso</label>
+              </div>
+            </div>
           )}
         </div>
       );
     };
 
     return clocksToShow.map((value, i) => {
-        const clock = value.version !== undefined
-          ? getClockVersion(value.state, value.version)
-          : getClock(value.state);
-        
-        if (value.title) {
-            // AÑADIDO: Si el título tiene show: false, no renderizarlo y colapsar el grupo
-            if (value.show === false) {
-                isCurrentGroupCollapsed = true;
-                return null;
-            }
-            
-            lastTitle = value.title;
-            const isCollapsed = collapsedSections[value.title];
-            isCurrentGroupCollapsed = isCollapsed;
+      const clock = value.version !== undefined
+        ? getClockVersion(value.state, value.version)
+        : getClock(value.state);
 
-            const isEstudioValla = value.title === 'Estudio y Observaciones';
-            const isRevisionCorrecciones = value.title === 'Revisión y Viabilidad';
-            
-            // --- NUEVO: Determinar si la sección está resaltada ---
-            const isSectionHighlighted = relatedStates.length > 0;
-
-            return (
-                <div 
-                  key={`section-${i}`} 
-                  className={`exp-section-header ${isSectionHighlighted ? highlightClass : ''}`} 
-                  onClick={() => toggleSection(value.title)}
-                >
-                    <div className="d-flex align-items-center">
-                        <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} me-3 text-muted`}></i>
-                        <span className="fw-normal">{value.title}</span>
-                    </div>
-
-                    {!isCollapsed && isEstudioValla && renderOptionsRibbon('phase_estudio')}
-                    {!isCollapsed && isRevisionCorrecciones && renderOptionsRibbon('phase_correcciones')}
-                </div>
-            );
+      // TITULOS / SECCIONES
+      if (value.title) {
+        if (value.show === false) {
+          isCurrentGroupCollapsed = true;
+          return null;
         }
 
-        if (isCurrentGroupCollapsed) {
-            return null;
+        const isCollapsed = collapsedSections[value.title];
+        isCurrentGroupCollapsed = isCollapsed;
+
+        const isEstudioValla = value.title === 'Estudio y Observaciones';
+        const isRevisionCorrecciones = value.title === 'Revisión y Viabilidad';
+
+        const sectionStates = [];
+        for (let j = i + 1; j < clocksToShow.length; j++) {
+          if (clocksToShow[j].title) break;
+          if (clocksToShow[j].state !== false && clocksToShow[j].state !== undefined) {
+            sectionStates.push(clocksToShow[j].state);
+          }
         }
 
-        // --- NUEVO: Determinar si la fila está resaltada ---
-        const isRowHighlighted = relatedStates.includes(value.state);
+        const sectionPhaseClass = getPhaseClassForSectionStates(sectionStates);
+        const isSectionInActivePhase = activeRelatedStates.some(st => sectionStates.includes(st));
+
+        const sectionClassName = [
+          'exp-section-header',
+          'phase-accent',
+          sectionPhaseClass,
+          isSectionInActivePhase ? 'phase-active phase-highlight-active' : '',
+        ].filter(Boolean).join(' ');
 
         return (
-          <ClockRow
-            key={`row-${i}-${value.state ?? 'no-state'}-${value.version ?? 'no-version'}-${refreshTrigger}-${systemDate}`}
-            value={value} i={i} clock={clock} onSave={save_clock} onDelete={delete_clock}
-            outCodes={outCodes} _CHILD_6_SELECT={_CHILD_6_SELECT} _FIND_6={_FIND_6}
-            helpers={{ getClock, getNewestDate, ...manager, currentItem }}
-            scheduleConfig={scheduleConfig}
-            systemDate={systemDate}
-            // --- NUEVO: Pasar la clase de resaltado ---
-            highlightClass={isRowHighlighted ? highlightClass : ''}
-          />
+          <div
+            key={`section-${i}`}
+            className={sectionClassName}
+            onClick={() => toggleSection(value.title)}
+          >
+            <div className="d-flex align-items-center">
+              <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} me-3 text-muted`}></i>
+              <span className="fw-normal">{value.title}</span>
+            </div>
+
+            {!isCollapsed && isEstudioValla && renderOptionsRibbon('phase_estudio')}
+            {!isCollapsed && isRevisionCorrecciones && renderOptionsRibbon('phase_correcciones')}
+          </div>
         );
+      }
+
+      if (isCurrentGroupCollapsed) return null;
+
+      const rowPhaseClass = getPhaseClassForState(value.state);
+      const isRowInActivePhase = activeRelatedStates.includes(value.state);
+
+      const rowClassName = [
+        'phase-accent',
+        rowPhaseClass,
+        isRowInActivePhase ? 'phase-active phase-highlight-active' : '',
+      ].filter(Boolean).join(' ');
+
+      return (
+        <ClockRow
+          key={`row-${i}-${value.state ?? 'no-state'}-${value.version ?? 'no-version'}-${refreshTrigger}-${systemDate}`}
+          value={value}
+          i={i}
+          clock={clock}
+          onSave={save_clock}
+          onDelete={delete_clock}
+          outCodes={outCodes}
+          _CHILD_6_SELECT={_CHILD_6_SELECT}
+          _FIND_6={_FIND_6}
+          helpers={{ getClock, getNewestDate, ...manager, currentItem }}
+          scheduleConfig={scheduleConfig}
+          systemDate={systemDate}
+          highlightClass={rowClassName}
+        />
+      );
     });
-  }
+  };
 
   return (
     <div className="exp-wrapper">
       {showAlarms && (
-        <AlarmsWidget 
-          alarms={alarms} 
-          onClose={() => setShowAlarms(false)} 
+        <AlarmsWidget
+          alarms={alarms}
+          onClose={() => setShowAlarms(false)}
         />
       )}
-      
+
       {!showAlarms && alarms.length > 0 && (
         <button className="alarms-fab" onClick={() => setShowAlarms(true)} title="Mostrar Alertas">
           <i className="fas fa-bell"></i>
@@ -790,15 +805,15 @@ export default function EXP_CLOCKS(props) {
 
       {showTimeTravel && (
         <div className="time-travel-floating-widget">
-            <ControlBar 
-                timeTravel={{
-                    systemDate,
-                    onDateChange: handleDateChange,
-                    onDateShift: handleDateShift,
-                    onDateReset: resetDate,
-                }}
-                onClose={() => setShowTimeTravel(false)}
-            />
+          <ControlBar
+            timeTravel={{
+              systemDate,
+              onDateChange: handleDateChange,
+              onDateShift: handleDateShift,
+              onDateReset: resetDate,
+            }}
+            onClose={() => setShowTimeTravel(false)}
+          />
         </div>
       )}
 
@@ -817,10 +832,12 @@ export default function EXP_CLOCKS(props) {
         <div className="exp-main-content">
           <div className="card exp-card">
             <Header />
-            <div className="exp-scroll" style={{ height: sidebarHeight, maxHeight: sidebarHeight }}>{renderClockList()}</div>
+            <div className="exp-scroll" style={{ height: sidebarHeight, maxHeight: sidebarHeight }}>
+              {renderClockList()}
+            </div>
           </div>
         </div>
-        
+
         <div className="exp-sidebar" ref={sidebarRef}>
           <SidebarInfo
             manager={manager}
@@ -830,19 +847,19 @@ export default function EXP_CLOCKS(props) {
             }}
             onActivePhaseChange={setActivePhaseId}
             activePhaseId={activePhaseId}
-          onOpenGanttModal={() => setShowGanttModal(true)}
+            onOpenGanttModal={() => setShowGanttModal(true)}
           />
 
           <HolidayCalendar />
-          
+
           <div className="sidebar-utilities">
-            <button 
-              className="btn-sidebar-utility" 
+            <button
+              className="btn-sidebar-utility"
               onClick={() => setShowTimeTravel(true)}
               title="Activar emulador de fecha"
             >
-               <i className="fas fa-user-clock"></i>
-               Emulador de Fecha
+              <i className="fas fa-user-clock"></i>
+              Emulador de Fecha
             </button>
           </div>
         </div>
