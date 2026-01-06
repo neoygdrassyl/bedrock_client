@@ -7326,7 +7326,7 @@ from { opacity: 0; transform: translateY(-5px); }
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 3000; /* PRIORIDAD MÁXIMA */
+  z-index: 8000; /* PRIORIDAD MÁXIMA */
   padding: 20px;
 }
 
@@ -8127,3 +8127,229 @@ from { opacity: 0; transform: translateY(-5px); }
   box-shadow: 0 0 0 3px rgba(91, 192, 222, 0.3);
   background: rgba(91, 192, 222, 0.05);
 }
+
+
+/* ============================================================
+   GANTT - AJUSTES DE COMPACIDAD Y MODAL DE DETALLES
+   ============================================================ */
+
+/* CORRECCIÓN: Columna de títulos más estrecha en modo compacto */
+.gantt-compact .gantt-title-column,
+.gantt-compact .gantt-phase-title-column {
+  width: 40px; /* Reducido de 60px */
+  padding: 6px 4px;
+}
+
+.gantt-compact .gantt-phase-title-column {
+    justify-content: center;
+    text-align: center;
+}
+
+/* Ocultar el título de la fase en modo compacto, dejando solo el número */
+.gantt-compact .gantt-phase-title {
+  display: none;
+}
+
+.gantt-compact .gantt-phase-number {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+}
+
+/* CORRECCIÓN: Hacer las filas de actores paralelos más compactas */
+.gantt-block {
+    gap: 2px; /* Reducir espacio entre barras de actores */
+}
+
+.gantt-row {
+    min-height: 20px; /* Reducir altura mínima de la fila de actor */
+}
+
+.gantt-compact .gantt-row {
+    min-height: 10px;
+}
+
+.gantt-progress-container {
+    height: 14px; /* Reducir altura de la barra de progreso */
+}
+
+.gantt-compact .gantt-progress-container {
+    height: 10px;
+}
+
+.gantt-phase-bars {
+  min-height: 50px;
+  padding: 4px 0;
+}
+
+.gantt-compact .gantt-phase-bars {
+  min-height: 28px;
+  padding: 2px 0;
+}
+
+/* ========== MODAL DEL GANTT - PANEL DE DETALLES ========== */
+
+/* Ajustar el cuerpo del modal para que contenga el gráfico y el panel */
+.gantt-modal-body {
+  display: flex;
+  gap: 20px;
+  overflow: hidden; /* Evitar doble scrollbar */
+}
+
+.gantt-modal-chart-container {
+  flex: 1;
+  min-width: 0;
+  overflow: auto; /* El scroll ahora está aquí */
+}
+
+/* Panel de detalles de fase */
+.gantt-phase-detail {
+  width: 320px;
+  background: #f8f9fa;
+  border-left: 1px solid #dee2e6;
+  flex-shrink: 0;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+}
+
+/* Estado cuando el panel está oculto */
+.gantt-phase-detail.hidden {
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-left: none;
+}
+
+.gantt-phase-detail-content {
+    padding: 16px;
+}
+
+.gantt-phase-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.gantt-phase-detail-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.gantt-close-btn-small {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.gantt-close-btn-small:hover {
+  background: #dee2e6;
+  color: #212529;
+}
+
+.gantt-phase-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gantt-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.gantt-detail-label {
+  font-weight: 600;
+  color: #6c757d;
+}
+
+.gantt-status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.gantt-status-pendiente { background: #6c757d; color: white; }
+.gantt-status-activo { background: #007bff; color: white; }
+.gantt-status-completado { background: #28a745; color: white; }
+.gantt-status-pausado { background: #ffc107; color: #212529; }
+.gantt-status-vencido { background: #dc3545; color: white; }
+
+.gantt-detail-actors h5 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 12px;
+  margin-top: 16px;
+}
+
+.gantt-actor-card {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.gantt-actor-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #212529;
+  font-size: 13px;
+}
+
+.gantt-actor-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.gantt-detail-extras {
+  margin-top: 16px;
+}
+
+.gantt-detail-extras h5 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 12px;
+}
+
+.gantt-extra-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.gantt-extra-suspension { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+.gantt-extra-extension { background: #d1ecf1; color: #0c5460; border: 1px solid #17a2b8; }
