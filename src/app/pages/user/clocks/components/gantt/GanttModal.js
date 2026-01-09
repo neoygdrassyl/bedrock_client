@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { GanttChart } from './GanttChart';
 import moment from 'moment';
+import { sumarDiasHabiles } from '../../hooks/useClocksManager';
 
 // Panel de detalle (ahora muestra ancho/posiciones y retraso)
 const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostActa, extension }) => {
@@ -196,14 +197,53 @@ export const GanttModal = ({
   suspensionPostActa,
   extension,
   currentItem,
+  scheduleConfig,
+  manager
 }) => {
-  const [adjustedWidthMode, setAdjustedWidthMode] = useState(false);
+  const [viewMode, setViewMode] = useState('legal'); // 'legal' (antes standard) | 'real' (antes adjustedWidth)
   const [selectedPhase, setSelectedPhase] = useState(null);
 
   useEffect(() => {
     // Resetear selección cuando cambia el modo para evitar confusión en los datos mostrados
     setSelectedPhase(null);
-  }, [adjustedWidthMode]);
+  }, [viewMode]);
+
+  // CÁLCULO DE FECHA ESTIMADA DE ENTREGA
+  const projectedFinishData = useMemo(() => {
+    if (!ldfDate || phases.length === 0) return null;
+
+    let totalProjectedDays = 0;
+
+    phases.forEach(phase => {
+        // Lógica de proyección:
+        // 1. Si la fase está COMPLETADA, sumamos los días que realmente se tomaron (usedDays).
+        //    (Si se tomó menos del legal, ganamos tiempo. Si se tomó más, perdimos tiempo).
+        // 2. Si la fase está PENDIENTE o ACTIVA, sumamos los días legales/planeados (totalDays).
+        //    (Asumimos el mejor escenario futuro: no habrá más retrasos de los que ya existan).
+        // 3. NO sumamos 'delayDays' extra para el futuro, porque el 'standard' es la meta.
+        
+        let daysToAdd = 0;
+        if (phase.status === 'COMPLETADO') {
+            daysToAdd = phase.usedDays || 0;
+        } else {
+            // Activo, Pendiente, Pausado, Vencido (pero no terminado)
+            // Tomamos el total legal esperado.
+            daysToAdd = (phase.totalDays || 0) + (phase.extraDays || 0);
+        }
+        
+        totalProjectedDays += daysToAdd;
+    });
+
+    // Calcular fecha calendario desde LDF
+    const projectedDate = sumarDiasHabiles(ldfDate, totalProjectedDays);
+
+    return {
+        date: projectedDate,
+        totalDays: totalProjectedDays
+    };
+
+  }, [phases, ldfDate]);
+
 
   if (!isOpen) return null;
 
@@ -213,18 +253,34 @@ export const GanttModal = ({
     <div className="gantt-modal-overlay" onClick={onClose}>
       <div className="gantt-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="gantt-modal-header">
-          <h3>
-            <i className="fas fa-chart-gantt" /> Diagrama de Gantt - Cronograma del Proceso
-          </h3>
+          <div className="gantt-modal-title-group">
+             <h3><i className="fas fa-chart-gantt" /> Diagrama de Gantt</h3>
+             {projectedFinishData && (
+                 <div className="gantt-header-stats">
+                     <div className="gantt-stat-item">
+                         <span className="gantt-stat-label">Entrega Estimada:</span>
+                         <span className="gantt-stat-value">{moment(projectedFinishData.date).format('DD MMM YYYY')}</span>
+                     </div>
+                     <div className="gantt-stat-item">
+                         <span className="gantt-stat-label">Duración Proyectada:</span>
+                         <span className="gantt-stat-value">{projectedFinishData.totalDays} días hábiles</span>
+                     </div>
+                 </div>
+             )}
+          </div>
 
           <div className="gantt-modal-controls">
-            <label className="gantt-toggle" title="Expande las barras para mostrar todo el tiempo usado, evitando superposiciones">
-              <input
-                type="checkbox"
-                checked={adjustedWidthMode}
-                onChange={(e) => setAdjustedWidthMode(e.target.checked)}
-              />
-              <span>Ajustar anchos (Ver real)</span>
+            <label className="gantt-toggle" title="Alternar entre vista de límites legales completos vs. tiempos reales ejecutados">
+              <span className={`gantt-toggle-label ${viewMode === 'legal' ? 'active' : ''}`}>Legal</span>
+              <div className="gantt-switch">
+                <input
+                    type="checkbox"
+                    checked={viewMode === 'real'}
+                    onChange={(e) => setViewMode(e.target.checked ? 'real' : 'legal')}
+                />
+                <span className="gantt-slider round"></span>
+              </div>
+              <span className={`gantt-toggle-label ${viewMode === 'real' ? 'active' : ''}`}>Real</span>
             </label>
 
             <button className="gantt-close-btn" onClick={onClose}>
@@ -242,9 +298,11 @@ export const GanttModal = ({
               suspensionPostActa={suspensionPostActa}
               extension={extension}
               compactMode={false}
-              adjustedWidthMode={adjustedWidthMode}
+              viewMode={viewMode} // PASAMOS EL MODO ('legal' o 'real')
               onPhaseClick={handlePhaseClick}
               activePhaseId={selectedPhase?.id}
+              scheduleConfig={scheduleConfig} // PASAMOS SCHEDULE CONFIG
+              manager={manager} // PASAMOS MANAGER PARA CÁLCULOS
             />
           </div>
 
@@ -294,6 +352,11 @@ export const GanttModal = ({
               <div className="gantt-legend-item" style={{ marginLeft: '16px' }}>
                 <div style={{ width: '20px', height: '4px', background: '#dc3545', marginTop: '4px' }} />
                 <span>Exceso/Retraso</span>
+              </div>
+               {/* LEYENDA DEL PUNTO DE PROGRAMACION */}
+              <div className="gantt-legend-item" style={{ marginLeft: '16px' }}>
+                 <div className="gantt-scheduled-marker-legend"></div>
+                 <span>Programado</span>
               </div>
             </div>
           </div>

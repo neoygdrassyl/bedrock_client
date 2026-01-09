@@ -799,6 +799,8 @@ export default function EXP_CLOCKS(props) {
         suspensionPostActa={manager.suspensionPostActa}
         extension={manager.extension}
         currentItem={currentItem}
+        scheduleConfig={scheduleConfig} // PASAMOS LA CONFIGURACIÓN DE HORARIOS
+        manager={manager} // PASAMOS EL MANAGER COMPLETO
       />
       
       <ToolsMenu 
