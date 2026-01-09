@@ -7141,3 +7141,199 @@ from { opacity: 0; transform: translateY(-5px); }
     font-size: 0.85rem;
     background: #fff;
 }
+
+
+/* --- ESTILOS EXISTENTES ... --- */
+
+/* PEGAR AL FINAL DEL ARCHIVO */
+
+/* ============================================================
+   CALENDARIO FLOTANTE Y HEADER COMPACTO
+   ============================================================ */
+
+/* Modo Flotante: Posicionamiento absoluto abajo-izquierda */
+.calendar-widget.floating-mode {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 260px; /* Un poco más angosto */
+  z-index: 9999;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background-color: #fff;
+  animation: calPopIn 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes calPopIn {
+  from { transform: scale(0.9) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Header Compacto (Todo en una línea) */
+.calendar-header-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.8rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  height: 44px;
+}
+
+.calendar-title-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #343a40;
+}
+
+.calendar-nav-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 2px;
+}
+
+.current-month-label-compact {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  min-width: 65px;
+  text-align: center;
+}
+
+.nav-btn-compact {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #6c757d;
+  font-size: 0.65rem;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.nav-btn-compact:hover {
+  background-color: #e9ecef;
+  color: #1971c2;
+}
+
+.btn-close-compact {
+    background: transparent;
+    border: none;
+    color: #adb5bd;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 0;
+}
+.btn-close-compact:hover { color: #dc3545; }
+
+/* Ajustes al cuerpo del calendario para modo flotante */
+.calendar-widget.floating-mode .calendar-body {
+    padding: 0.4rem;
+}
+.calendar-widget.floating-mode .day-cell {
+    height: 24px;
+    font-size: 0.7rem;
+}
+.calendar-widget.floating-mode .calendar-grid {
+    gap: 2px;
+}
+
+
+/* ============================================================
+   MODAL DE PROGRAMACIÓN REDISEÑADO
+   ============================================================ */
+
+/* Popup de SweetAlert personalizado */
+.schedule-modal-popup {
+    padding: 0 !important;
+    max-height: 95vh; /* Máxima altura permitida */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden !important; 
+}
+
+/* Wrapper del contenido del modal */
+.schedule-modal-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* Altura fija calculada: 80vh aprox, o flex-grow dentro del swal */
+    min-height: 400px;
+    max-height: 75vh;
+}
+
+/* Panel superior (Instrucciones) - Altura fija */
+.schedule-modal-header-panel {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    flex-shrink: 0;
+    background-color: #fff;
+}
+
+/* Área de tabla (Scrollable) - Ocupa el resto */
+.schedule-modal-table-area {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0;
+    background-color: #fcfcfc;
+}
+
+/* Tabla con header sticky */
+.table-fixed-header thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #f1f3f5;
+    color: #495057;
+    font-weight: 700;
+    font-size: 0.8rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    padding: 0.75rem 0.5rem;
+    vertical-align: middle;
+}
+
+.table-fixed-header tbody td {
+    vertical-align: middle;
+    border-color: #e9ecef;
+    padding: 0.5rem;
+}
+
+/* Hint de conversión */
+.conversion-hint {
+    font-size: 0.7rem;
+    color: #1971c2;
+    font-weight: 600;
+    padding-left: 0.25rem;
+}
+
+.bg-success-subtle {
+    background-color: #d3f9d8 !important;
+}
+
+/* Scrollbar personalizado para la tabla */
+.schedule-modal-table-area::-webkit-scrollbar {
+    width: 8px;
+}
+.schedule-modal-table-area::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.schedule-modal-table-area::-webkit-scrollbar-thumb {
+    background: #ced4da;
+    border-radius: 4px;
+}
+.schedule-modal-table-area::-webkit-scrollbar-thumb:hover {
+    background: #adb5bd;
+}

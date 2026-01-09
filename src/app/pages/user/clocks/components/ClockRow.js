@@ -169,13 +169,13 @@ export const ClockRow = (props) => {
     })();
 
     // =====================================================
-    // CÁLCULO DE ALARMA (CORREGIDO PARA USAR systemDate)
+    // CÁLCULO DE ALARMA (USANDO LÍMITES LEGALES)
     // =====================================================
     const getAlarmInfo = () => {
-        if (!scheduledData || !scheduledData.limitDate) return null;
-        const { limitDate } = scheduledData;
+        // CAMBIO SOLICITADO: Usar legalData.limitDate en lugar de scheduledData
+        if (!legalData || !legalData.limitDate) return null;
+        const { limitDate } = legalData;
         const isCompleted = !!clock?.date_start;
-        // AQUÍ ESTABA EL PROBLEMA: Usamos systemDate en lugar de moment()
         const today = systemDate; 
         
         let text = '';
@@ -185,7 +185,7 @@ export const ClockRow = (props) => {
         if (isCompleted) {
             const diff = calcularDiasHabiles(limitDate, clock.date_start, true);
             if (diff <= 0) {
-                text = `A tiempo (${Math.abs(diff)} días antes)`;
+                text = `A tiempo`;
                 color = '#2f9e44';
                 icon = 'fa-check';
             } else {
@@ -204,8 +204,16 @@ export const ClockRow = (props) => {
                  icon = 'fa-exclamation-circle';
             } else {
                  text = `${remaining} días restantes`;
-                 color = '#f08c00';
+                 color = '#f08c00'; // Naranja por defecto
                  icon = 'fa-hourglass-half';
+                 
+                 // Aplicar lógica de urgencia (rojo si queda poco) - Similar a useAlarms.js
+                 // Si quedan 2 días o menos, se marca en rojo
+                 // Nota: useAlarms usa 7 días como umbral para mostrar, pero aquí mostramos siempre el estado.
+                 if (remaining <= 2 && remaining >= 0) {
+                     color = '#e03131';
+                     icon = 'fa-exclamation-triangle';
+                 }
             }
         }
         return { text, color, icon };
@@ -419,7 +427,7 @@ export const ClockRow = (props) => {
                 </span>
             </div>
 
-             {/* COL 5: Alarma */}
+             {/* COL 5: Alarma (LEGAL) */}
              <div className="col-alarma d-flex align-items-center">
                 {renderAlarmColumn()}
             </div>
