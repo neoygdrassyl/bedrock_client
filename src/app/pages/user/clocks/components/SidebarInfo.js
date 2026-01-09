@@ -7,9 +7,8 @@ import { GanttModal } from './gantt/GanttModal';
 
 const MySwal = withReactContent(Swal);
 
-// ... (El resto de tus componentes y funciones como PhaseCard, ActorCompactRow, etc. se mantienen igual) ...
-
-// ... PEGA AQUÍ TODO EL CÓDIGO EXISTENTE DE SidebarInfo.js HASTA LA FUNCIÓN PRINCIPAL ...
+// --- COPIAR Y PEGAR TODOS LOS COMPONENTES AUXILIARES (STATUS_MAP, ResponsiblePill, etc.) ---
+// ... (Estos componentes no cambian)
 const STATUS_MAP = {
   PENDIENTE: { text: 'Pendiente', color: 'secondary', icon: 'fa-hourglass-start' },
   ACTIVO: { text: 'En curso', color: 'primary', icon: 'fa-running' },
@@ -268,26 +267,18 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
     </div>
   );
 };
+// --- FIN DE COMPONENTES AUXILIARES ---
 
-
-export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhaseId, onOpenGanttModal }) => {
+export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExpandGantt }) => {
   const {
     processPhases,
     curaduriaDetails,
-    canAddSuspension,
-    canAddExtension,
-    isDesisted,
-    FUN_0_TYPE_TIME, // CORRECCIÓN: Nombre corregido
-    suspensionPreActa,
-    suspensionPostActa,
-    extension,
+    FUN_0_TYPE_TIME,
     getClock,
     currentItem,
   } = manager || {};
 
-  const { onAddTimeControl, onOpenScheduleModal } = actions || {};
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
-  // const [showGanttModal, setShowGanttModal] = useState(false);
 
   useEffect(() => {
     if (!processPhases || processPhases.length === 0) return;
@@ -315,7 +306,7 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
     );
   };
   
-    const showDebug = () => {
+  const showDebug = () => {
     const info = processPhases?.debugInfo;
     if (!info) return Swal.fire('No info', 'No hay información de debug disponible.', 'warning');
 
@@ -359,7 +350,6 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
     const phase4 = processPhases?.find((p) => p.id === 'phase4');
     const context = phase4?.daysContext;
 
-    // CORRECCIÓN: Nombre de constante a FUN_0_TYPE_TIME
     const baseDays =
       (FUN_0_TYPE_TIME && typeof FUN_0_TYPE_TIME === 'object' ? FUN_0_TYPE_TIME[manager?.currentItem?.type] : 45) ?? 45;
     const suspDays = manager?.totalSuspensionDays || 0;
@@ -373,7 +363,7 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
     const totalUsed = phase1Used + phase4Used;
     const totalRemaining = Math.max(0, totalDays - totalUsed);
 
-    return MySwal.fire({
+    MySwal.fire({
       title: 'Control de Tiempos - Curaduría',
       width: 560,
       showCloseButton: true,
@@ -519,9 +509,7 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
     const used = Number(phase.usedDays) || 0;
     const remaining = totalAvailable - used;
     const st = getResolvedStatus(phase.status, remaining);
-
     const respCfg = getResponsibleCfg(phase.responsible);
-
     const isParallel = !!phase.parallelActors?.primary && !!phase.parallelActors?.secondary;
     const actorsForModal = isParallel
       ? [
@@ -649,13 +637,18 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
   if (!curaduriaDetails || !processPhases || processPhases.length === 0) {
     return (
       <div className="sidebar-card">
-        {/* ... Loading state ... */}
+        {/* Loading state */}
       </div>
     );
   }
 
   const currentPhase = processPhases[currentPhaseIndex];
   const ldfDate = getClock?.(5)?.date_start || currentItem?.date;
+  
+  // Guardamos la referencia a la función para pasarla al ToolsMenu
+  if (curaduriaDetails) {
+      curaduriaDetails.showDaysDetailsModal = showDaysDetailsModal;
+  }
 
   return (
     <>
@@ -713,40 +706,9 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
             isActive={currentPhase?.id === activePhaseId}
           />
         </div>
+        
+        {/* ELIMINADO: El footer con los botones de acción se ha movido a ToolsMenu */}
 
-        <div className="sidebar-card-footer sidebar-card-footer-grid">
-          <button type="button" className="btn-footer-action" onClick={showDaysDetailsModal}>
-            <i className="fas fa-chart-pie" />
-            <span>Desglose</span>
-          </button>
-
-          <button type="button" className="btn-footer-action" onClick={onOpenScheduleModal}>
-            <i className="fas fa-calendar-check" />
-            <span>Programar</span>
-          </button>
-
-          {!isDesisted && canAddSuspension && (
-            <button
-              type="button"
-              className="btn-footer-action action-suspension"
-              onClick={() => onAddTimeControl?.('suspension')}
-            >
-              <i className="fas fa-pause" />
-              <span>Suspensión</span>
-            </button>
-          )}
-
-          {!isDesisted && canAddExtension && (
-            <button
-              type="button"
-              className="btn-footer-action action-extension"
-              onClick={() => onAddTimeControl?.('extension')}
-            >
-              <i className="fas fa-clock" />
-              <span>Prórroga</span>
-            </button>
-          )}
-        </div>
       </div>
 
       <div className="sidebar-card mt-3">
@@ -755,33 +717,24 @@ export const SidebarInfo = ({ manager, actions, onActivePhaseChange, activePhase
             <i className="fas fa-chart-gantt me-2" />
             Diagrama de Gantt
           </h6>
-          <button className="btn-expand" onClick={() => onOpenGanttModal?.()}>
-           <i className="fas fa-expand-alt me-1" /> Expandir
-         </button>
+          {/* ELIMINADO: El botón de expandir ahora está en el ToolsMenu */}
+          <button className="gantt-expand-btn" onClick={onExpandGantt} title="Ver diagrama completo">
+            <i className="fas fa-expand-alt" />
+            Expandir
+          </button>
         </div>
-        <div className="sidebar-card-body p-2">
+        <div className="sidebar-card-body ">
           <GanttPreview
             phases={processPhases}
             ldfDate={ldfDate}
-            suspensionPreActa={suspensionPreActa}
-            suspensionPostActa={suspensionPostActa}
-            extension={extension}
+            suspensionPreActa={manager.suspensionPreActa}
+            suspensionPostActa={manager.suspensionPostActa}
+            extension={manager.extension}
             activePhaseId={activePhaseId}
-            onPhaseClick={openPhaseDetailModal} // <-- CONECTAMOS EL CLICK
+            onPhaseClick={openPhaseDetailModal}
           />
         </div>
       </div>
-
-      {/* <GanttModal
-        isOpen={showGanttModal}
-        onClose={() => setShowGanttModal(false)}
-        phases={processPhases}
-        ldfDate={ldfDate}
-        suspensionPreActa={suspensionPreActa}
-        suspensionPostActa={suspensionPostActa}
-        extension={extension}
-        currentItem={currentItem}
-      /> */}
     </>
   );
 };

@@ -16,6 +16,7 @@
     "bootstrap": "^5.3.7",
     "env-cmd": "^10.1.0",
     "file-saver": "^2.0.5",
+    "frappe-gantt": "^1.0.4",
     "i18next": "^20.2.2",
     "i18next-browser-languagedetector": "^6.1.0",
     "jodit-pro": "^4.6.9",

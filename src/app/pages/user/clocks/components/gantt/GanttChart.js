@@ -3,12 +3,10 @@ import moment from 'moment';
 import { sumarDiasHabiles } from '../../hooks/useClocksManager';
 
 /**
- * GanttChart
- * Cambios clave:
- * - Cuadrícula vertical solo en el cuerpo (barras) para alinear visualmente días/columnas.
- * - Se elimina el "bloque blanco" y el "contenedor blanco": se renderiza SOLO barra(s).
- * - Barras paralelas centradas dentro de la fila, sin crecer altura.
- * - Se elimina el espaciado entre filas (sin conectores y sin margin-bottom).
+ * GanttChart (Versión Corregida)
+ * - Estructura de layout robusta para alineación perfecta.
+ * - Sincronización de scroll mejorada.
+ * - CSS simplificado y basado en `box-sizing: border-box`.
  */
 export const GanttChart = ({
   phases = [],
@@ -25,23 +23,32 @@ export const GanttChart = ({
 
   const headerScrollRef = useRef(null);
   const bodyScrollRef = useRef(null);
+  const isSyncing = useRef(false); // Flag para evitar bucles de scroll
 
   useLayoutEffect(() => {
     const headerEl = headerScrollRef.current;
     const bodyEl = bodyScrollRef.current;
     if (!headerEl || !bodyEl) return;
 
-    const syncScroll = (e) => {
-      if (e.target === headerEl) bodyEl.scrollLeft = headerEl.scrollLeft;
-      else headerEl.scrollLeft = bodyEl.scrollLeft;
+    const syncScroll = (source, target) => (event) => {
+      if (isSyncing.current) return;
+      isSyncing.current = true;
+      target.scrollLeft = event.target.scrollLeft;
+      // Usamos requestAnimationFrame para resetear el flag en el próximo frame
+      requestAnimationFrame(() => {
+        isSyncing.current = false;
+      });
     };
+    
+    const headerSync = syncScroll(headerEl, bodyEl);
+    const bodySync = syncScroll(bodyEl, headerEl);
 
-    headerEl.addEventListener('scroll', syncScroll);
-    bodyEl.addEventListener('scroll', syncScroll);
+    headerEl.addEventListener('scroll', headerSync);
+    bodyEl.addEventListener('scroll', bodySync);
 
     return () => {
-      headerEl.removeEventListener('scroll', syncScroll);
-      bodyEl.removeEventListener('scroll', syncScroll);
+      headerEl.removeEventListener('scroll', headerSync);
+      bodyEl.removeEventListener('scroll', bodySync);
     };
   }, []);
 
@@ -137,7 +144,7 @@ export const GanttChart = ({
       cumulativeDays += blockWidth;
     });
 
-    const maxDays = cumulativeDays;
+    const maxDays = cumulativeDays > 0 ? cumulativeDays : 50; // Asegurar un ancho mínimo
 
     const dateColumns = [];
     const intervalDays = compactMode ? 10 : 5;
@@ -150,7 +157,8 @@ export const GanttChart = ({
       });
     }
 
-    if (dateColumns.length === 0 || dateColumns[dateColumns.length - 1].day !== maxDays) {
+    // Asegurarse de que el último marcador exista si no cae exactamente en el intervalo
+    if (dateColumns.length > 0 && dateColumns[dateColumns.length - 1].day < maxDays) {
       dateColumns.push({
         day: maxDays,
         date: sumarDiasHabiles(ldfDate, maxDays),
@@ -161,7 +169,7 @@ export const GanttChart = ({
     return { phases: processedPhases, maxDays, dateColumns, intervalDays };
   }, [phases, ldfDate, adjustedWidthMode, compactMode, suspensionPreActa, suspensionPostActa, extension]);
 
-  const scaleFactor = useMemo(() => (compactMode ? 2 : 8), [compactMode]);
+  const scaleFactor = useMemo(() => (compactMode ? 3 : 8), [compactMode]);
 
   const totalWidthPx = ganttData.maxDays * scaleFactor;
 
@@ -170,7 +178,7 @@ export const GanttChart = ({
     return {
       '--gantt-day-width': `${scaleFactor}px`,
       '--gantt-major-step': `${majorStepPx}px`,
-      '--gantt-grid-minor-alpha': compactMode ? 0 : 0.04,
+      '--gantt-grid-minor-alpha': compactMode ? 0.04 : 0.04,
       '--gantt-grid-major-alpha': compactMode ? 0.12 : 0.10,
     };
   }, [scaleFactor, ganttData.intervalDays, compactMode]);
@@ -225,60 +233,71 @@ export const GanttChart = ({
         </div>
 
         <div className="gantt-chart-column" ref={headerScrollRef}>
-          <div className="gantt-header" style={{ width: `${totalWidthPx}px` }}>
-            <div className="gantt-timeline">
-              {ganttData.dateColumns.map((col) => (
-                <div
-                  key={`mk-${col.day}`}
-                  className="gantt-timeline-marker"
-                  style={{ left: `${col.position * scaleFactor}px` }}
-                  onMouseEnter={() => setHoveredDay(col)}
-                  onMouseLeave={() => setHoveredDay(null)}
-                >
-                  <div className="gantt-timeline-tick" />
-                  <span className="gantt-timeline-label">
-                    {compactMode ? `${col.day}d` : `Día ${col.day}`}
-                  </span>
+          <div className="gantt-header-timeline" style={{ width: `${totalWidthPx}px` }}>
+            {ganttData.dateColumns.map((col) => (
+              <div
+                key={`mk-${col.day}`}
+                className="gantt-timeline-marker"
+                style={{ left: `${col.position * scaleFactor}px` }}
+                onMouseEnter={() => setHoveredDay(col)}
+                onMouseLeave={() => setHoveredDay(null)}
+              >
+                <div className="gantt-timeline-tick" />
+                <span className="gantt-timeline-label">
+                  {compactMode ? `${col.day}d` : `Día ${col.day}`}
+                </span>
 
-                  {!compactMode && hoveredDay?.day === col.day && (
-                    <div className="gantt-timeline-tooltip">{moment(col.date).format('DD/MM/YYYY')}</div>
-                  )}
-                </div>
-              ))}
-            </div>
+                {!compactMode && hoveredDay?.day === col.day && (
+                  <div className="gantt-timeline-tooltip">{moment(col.date).format('DD/MM/YYYY')}</div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
       {/* BODY */}
-      <div className="gantt-body-scroll-wrapper" ref={bodyScrollRef}>
-        {ganttData.phases.map((phase) => {
-          const leftPx = phase.startPosition * scaleFactor;
-          const widthPx = phase.blockWidth * scaleFactor;
-
-          const isActive = activePhaseId === phase.id;
-
-          return (
-            <div
-              key={phase.id}
-              className={`gantt-phase ${phase.highlightClass || ''} ${isActive ? 'gantt-phase-active' : ''}`}
-              onClick={() => onPhaseClick?.(phase)}
-            >
-              <div className="gantt-phase-title-column">
-                <div className="gantt-phase-number">{phase.phaseIndex}</div>
-                {!compactMode && <span className="gantt-phase-title">{phase.title}</span>}
-              </div>
-
-              <div className="gantt-phase-bars-container">
+      <div className="gantt-body-wrapper">
+        <div className="gantt-body-scroll-wrapper" ref={bodyScrollRef}>
+          <div className="gantt-body-content">
+            {ganttData.phases.map((phase) => {
+              const isActive = activePhaseId === phase.id;
+              return (
                 <div
-                  className="gantt-phase-bars gantt-grid"
-                  style={{
-                    width: `${totalWidthPx}px`,
-                    ...gridVars,
-                  }}
+                  key={phase.id}
+                  className={`gantt-phase ${phase.highlightClass || ''} ${isActive ? 'gantt-phase-active' : ''}`}
+                  onClick={() => onPhaseClick?.(phase)}
                 >
-                  {/* SOLO BARRAS */}
-                  <div className="gantt-task" style={{ left: `${leftPx}px`, width: `${widthPx}px` }}>
+                  <div className="gantt-phase-title-column">
+                    <div className="gantt-phase-number">{phase.phaseIndex}</div>
+                    {!compactMode && <span className="gantt-phase-title">{phase.title}</span>}
+                  </div>
+                  {/* El contenedor de las barras ahora está fuera de la columna de título */}
+                </div>
+              );
+            })}
+             {/* Las barras y la grilla se renderizan por separado para un posicionamiento absoluto preciso */}
+            <div
+              className="gantt-phase-bars gantt-grid"
+              style={{
+                width: `${totalWidthPx}px`,
+                height: '100%',
+                ...gridVars,
+              }}
+            >
+              {ganttData.phases.map((phase, index) => {
+                const leftPx = phase.startPosition * scaleFactor;
+                const widthPx = phase.blockWidth * scaleFactor;
+                // La posición 'top' se calcula dinámicamente según la altura de las filas anteriores
+                const topPx = compactMode ? index * (26 + 12) : index * 45; // 44px de alto + 1px de borde
+                const heightPx = compactMode ? 26 : 44;
+
+                return (
+                  <div 
+                    key={`task-${phase.id}`}
+                    className="gantt-task" 
+                    style={{ left: `${leftPx}px`, width: `${widthPx}px`, top: `${topPx}px`, height: `${heightPx}px` }}
+                  >
                     {phase.hasParallelActors ? (
                       <div className="gantt-bar-stack" aria-label="Actores paralelos">
                         <div className={`gantt-bar ${statusToClass(phase.rows[0]?.status)}`} />
@@ -287,14 +306,13 @@ export const GanttChart = ({
                     ) : (
                       <div className={`gantt-bar ${statusToClass(phase.rows[0]?.status)}`} />
                     )}
-
                     {renderExtraSegments(phase)}
                   </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        </div>
       </div>
     </div>
   );

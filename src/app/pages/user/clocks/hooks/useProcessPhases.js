@@ -278,7 +278,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         endDate: ldfDate, 
         parallelActors: null,
         highlightClass: 'phase-highlight-radicacion',
-        relatedStates: [3, -1, 5, 501, 502],
+        relatedStates: [false,3, -1, 5, 501, 502, 504],
     });
 
     // --- CASO 1: INCOMPLETO (-1) ---
@@ -329,7 +329,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 } 
             },
             highlightClass: 'phase-highlight-estudio',
-            relatedStates: [503, 300, 350, 400, 401],
+            relatedStates: [503, 300, 350] //, estudioOptions.notificationType !== 'notificar' ? 33 : null], //400, 401,
         });
 
         // Luego fases de desistimiento
@@ -360,7 +360,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             endDate: acta1Date,
             parallelActors: null,
             highlightClass: 'phase-highlight-estudio',
-            relatedStates: [503, 30, 300, 350, 400, 401],
+            relatedStates: [503, 30, 300, 350, estudioOptions.notificationType !== 'notificar' ? 33 : null], //400, 401,
         });
 
         // FASE 2: Notificación Observaciones
@@ -477,7 +477,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 } 
             },
             highlightClass: 'phase-highlight-estudio',
-            relatedStates: [503, 30, 300, 350, 400, 401], // Incluye suspensión pre-acta y prórroga
+            relatedStates: [503, 30, 300, 350, estudioOptions.notificationType !== 'notificar' ? 33 : null], // 400, 401,
         });
 
         const isCumple = checkCompliance(acta1?.desc);
@@ -537,7 +537,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           daysContext: { totalCuraduria: totalCuraduriaDays, usedInPhase1: phase1UsedDays, availableForPhase4: phase4AvailableDays },
           parallelActors: null,
           highlightClass: 'phase-highlight-viabilidad',
-          relatedStates: [49, 61, 301, 351, 400, 401], // Incluye suspensión post-acta y prórroga
+          relatedStates: [49, 61, 301, 351, 400, 401, correccionesOptions.notificationType !== 'notificar' ? 57 : null], // Incluye suspensión post-acta y prórroga
         });
 
         const notificaVia = correccionesOptions.notificationType === 'notificar';

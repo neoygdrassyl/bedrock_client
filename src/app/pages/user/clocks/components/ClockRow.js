@@ -8,7 +8,7 @@ import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 const MySwal = withReactContent(Swal);
 
 export const ClockRow = (props) => {
-    const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, highlightClass } = props;
+    const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, isHighlighted } = props;
     const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
 
     moment.locale('es');
@@ -37,12 +37,6 @@ export const ClockRow = (props) => {
         if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) {
              return <i className="fas fa-minus-circle" style={{ color: '#EBEBEB', fontSize: '0.6rem' }}></i>;
         }
-
-        // const isCritical = ['Citación', 'Notificación'].some(k => (value.name || '').includes(k)); 
-        
-        // if (isCritical) {
-        //     return <i className="fas fa-exclamation-circle" style={{ color: '#C52D2D', fontSize: '0.6rem' }}></i>;
-        // }
 
         return <i className="fas fa-minus-circle" style={{ color: '#F0D228', fontSize: '0.6rem' }}></i>;
     };
@@ -296,16 +290,21 @@ export const ClockRow = (props) => {
 
     // Icono inicial
     const rowIcon = getRowIcon();
+    
+    // Clase condicional para resaltar el título
+    const titleClassName = `row-title text-truncate ${isHighlighted ? 'title-highlight' : ''}`;
+    const blockClassName = `exp-row-custom ${isHighlighted ? 'active-row-container' : ''}`;
+    const dateInputClassName = `form-control form-control-sm border-0 bg-transparent dates-input-class ${currentDate ? '' : 'padding-date-input'}`;
 
     return (
-        <div className={`exp-row-custom ${highlightClass}`}>
+        <div className={blockClassName}>
             {/* COL 1: Evento (Icono + Texto) */}
             <div className="col-eventos d-flex align-items-center">
                 <div className="row-icon-container">
                     {rowIcon}
                 </div>
                 <div 
-                    className="row-title text-truncate" 
+                    className={titleClassName} 
                     onClick={openDetailModal}
                     title="Ver detalles"
                 >
@@ -314,28 +313,30 @@ export const ClockRow = (props) => {
             </div>
 
             {/* COL 2: Fecha Evento (Input Restaurado) */}
-            <div className="col-fecha d-flex align-items-center">
-                {canEditDate ? (
-                     <div className="input-group input-group-sm" style={{maxWidth: '130px'}}>
-                        <input 
-                            type="date" 
-                            className="form-control form-control-sm border-0 bg-transparent px-1"
-                            style={{fontSize: '0.85rem', color: '#495057', fontWeight: 500}}
-                            id={'clock_exp_date_' + i} 
-                            defaultValue={currentDate} 
-                            max="2100-01-01" 
-                            onBlur={() => onSave(value, i)} 
-                        />
-                        {currentDate && (
-                            <button className="btn btn-link text-danger p-0 ms-1" onClick={() => onDelete(value)} title="Eliminar fecha">
-                                <i className="fas fa-eraser"></i>
-                            </button>
-                        )}
+            {canEditDate ? (
+                <div className="col-fecha d-flex align-items-center date-input-container">
+                    <div className="input-group input-group-sm pl-0" style={{maxWidth: 'auto'}}>
+                    <input 
+                        type="date" 
+                        className={dateInputClassName}
+                        style={{fontSize: '0.85rem', color: '#495057', fontWeight: 500}}
+                        id={'clock_exp_date_' + i} 
+                        defaultValue={currentDate} 
+                        max="2100-01-01" 
+                        onBlur={() => onSave(value, i)} 
+                    />
+                    {currentDate && (
+                        <button className="btn btn-link text-dark p-0 d-flex align-items-center justify-content-center" onClick={() => onDelete(value)} title="Eliminar fecha">
+                            <i className="fas fa-eraser fa-xs"></i>
+                        </button>
+                    )}
                     </div>
-                ) : (
-                     <span className="text-dark fw-bold ps-2">{formatDate(currentDate)}</span>
-                )}
-            </div>
+                </div>
+            ) : (
+                <div className="col-fecha d-flex align-items-center">
+                    <span className="text-dark fw-bold">{formatDate(currentDate)}</span>
+                </div>
+            )}
 
             {/* COL 3: Límite Legal */}
             <div className="col-limite d-flex align-items-center">

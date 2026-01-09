@@ -71,7 +71,7 @@ const getSuspensionClocks = (suspensionData, type) => {
     const title = type === 'pre' ? 'Suspensión antes del acta' : 'Suspensión después de correcciones';
 
     return [
-        { title },
+        // { title },
         {
             state: startState, 
             name: 'Inicio de Suspensión', 
@@ -95,7 +95,7 @@ const getSuspensionClocks = (suspensionData, type) => {
 const getExtensionClocks = (extensionData) => {
     if (!extensionData.exists) return [];
     return [
-        { title: 'Prórroga por complejidad' },
+        // { title: 'Prórroga por complejidad' },
         { 
             state: 400, 
             name: 'Inicio de Prórroga', 
@@ -126,7 +126,6 @@ const extraClocks = (props) => {
 
     // Opciones para la fase de Revisión de Correcciones
     const correccionesOptions = phaseOptions?.phase_correcciones || { notificationType: 'notificar', byAviso: false };
-    console.log("correccionesOptions:", correccionesOptions);
 
 
     const getRadicacionFecha = () => {
@@ -250,9 +249,9 @@ const extraClocks = (props) => {
       },
       ...buildDesistSection('-1', getClockVersion),
       ...buildDesistSection('-2', getClockVersion),
-      ...preActaSusp,
-      ...preActaExt,
+    //   ...preActaExt,
       { title: 'Estudio y Observaciones' },
+      ...preActaSusp,
       { 
         state: 503, 
         name: 'Instalación y Registro de la Valla Informativa', 
@@ -335,11 +334,9 @@ const extraClocks = (props) => {
         hasAnnexSelect: false, 
         spentDaysConfig: { startState: [33, 32] } 
       },
-      
+      { title: 'Revisión y Viabilidad' },
       ...postActaSusp,
       ...postActaExt,
-      
-      { title: 'Revisión y Viabilidad' },
       { 
         state: 49, 
         name: 'Acta Parte 2: Correcciones', 
