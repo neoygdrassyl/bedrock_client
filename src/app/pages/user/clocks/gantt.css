@@ -1354,4 +1354,33 @@
 
 .gantt-progress-error { background: #dc3545; height: 2px !important; margin-top: 5px; }
 
-/* ... Resto del CSS igual ... */
+/* ========================================
+   TOOLTIP FLOTANTE INTERACTIVO
+   ======================================== */
+.gantt-floating-tooltip {
+  position: fixed; /* Fixed para evitar problemas de scroll/overflow en el modal */
+  z-index: 10000;
+  background: rgba(33, 37, 41, 0.95);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  pointer-events: none; /* Importante para que no parpadee al moverse */
+  white-space: nowrap;
+  animation: tooltip-fade-in 0.1s ease-out;
+}
+
+@keyframes tooltip-fade-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Ajuste cursor */
+.gantt-bar-bg, 
+.gantt-bar-fill-overlay, 
+.gantt-error-line,
+.gantt-segment {
+    cursor: crosshair; /* Indica precisión */
+}

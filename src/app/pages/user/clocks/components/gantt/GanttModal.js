@@ -92,18 +92,13 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
 
         {/* Debug visual de layout */}
         <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Ancho bloque</span>
+          <span className="gantt-detail-label">Ancho Visual</span>
           <span>{blockWidth ?? '—'} d</span>
         </div>
 
         <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Ancho base</span>
+          <span className="gantt-detail-label">Base Legal</span>
           <span>{blockBaseDays ?? '—'} d</span>
-        </div>
-
-        <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Posición inicio</span>
-          <span>{startPosition ?? '—'} d</span>
         </div>
 
         {!!parallelActors && (
@@ -206,7 +201,7 @@ export const GanttModal = ({
   const [selectedPhase, setSelectedPhase] = useState(null);
 
   useEffect(() => {
-    // Evita que el panel muestre anchos viejos cuando cambia el modo
+    // Resetear selección cuando cambia el modo para evitar confusión en los datos mostrados
     setSelectedPhase(null);
   }, [adjustedWidthMode]);
 
@@ -223,19 +218,14 @@ export const GanttModal = ({
           </h3>
 
           <div className="gantt-modal-controls">
-            <label className="gantt-toggle">
+            <label className="gantt-toggle" title="Expande las barras para mostrar todo el tiempo usado, evitando superposiciones">
               <input
                 type="checkbox"
                 checked={adjustedWidthMode}
                 onChange={(e) => setAdjustedWidthMode(e.target.checked)}
               />
-              <span>Ajustar anchos</span>
+              <span>Ajustar anchos (Ver real)</span>
             </label>
-
-            <i
-              className="fas fa-info-circle gantt-info-icon"
-              title="Activa para ver el ancho del bloque según el tiempo realmente usado (si hay fecha fin)."
-            />
 
             <button className="gantt-close-btn" onClick={onClose}>
               <i className="fas fa-times" />
