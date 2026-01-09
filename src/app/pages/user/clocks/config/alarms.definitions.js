@@ -35,16 +35,16 @@ export const ALARM_SUGGESTIONS = {
             vencido: { suggestion: "Te has retrasado en la fecha programada para el Acta. Reprograma o completa la tarea con urgencia." }
         }
     },
-    35: { // Radicacion correcciones solicitante
-        legal: {
-            porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
-            vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
-        },
-        scheduled: {
-            porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
-            vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
-        }
-    },
+    // 35: { // Radicacion correcciones solicitante
+    //     legal: {
+    //         porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
+    //         vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
+    //     },
+    //     scheduled: {
+    //         porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
+    //         vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
+    //     }
+    // },
     61: { // Viabilidad
         legal: {
             porVencer: { suggestion: "El plazo para declarar la viabilidad es crítico. Añadir suspensión de términos o prórroga por complejidad." },
@@ -69,6 +69,12 @@ export const ALARM_SUGGESTIONS = {
         legal: {
             porVencer: { suggestion: "El solicitante está cerca del límite para registrar la instalación de la valla. Considera enviar un recordatorio." },
             vencido: { suggestion: "El plazo para instalar la valla ha vencido. Inicia el proceso de desistimiento por valla." }
+        }
+    },
+    35: { // Radiacion de correcciones solicitante
+        legal: {
+            porVencer: { suggestion: "Se acerca el límite para presentar correcciones del solicitante, activar prórroga." },
+            vencido: { suggestion: "Se ha vencido el término para presentar correcciones del solicitante. Desistir el proceso." }
         }
     },
 
