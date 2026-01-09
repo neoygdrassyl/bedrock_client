@@ -858,7 +858,7 @@
   width: 24px;
   height: 24px;
   font-size: 12px;
-  background: #1d4ed8;
+  background: #e9ecef;
   box-shadow: 0 4px 10px rgba(29, 78, 216, 0.25);
 }
 .gantt-preview-body .gantt-phase-title { display: none; }
@@ -1065,6 +1065,7 @@
   width: 24px;
   height: 24px;
   background: #e9ecef;
+  color: #495057;
   border-radius: 50%;
   font-size: 12px;
   font-weight: 700;

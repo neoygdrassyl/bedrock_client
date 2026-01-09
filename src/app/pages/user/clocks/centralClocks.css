@@ -1238,9 +1238,9 @@ from {
   /* margin-bottom: 1rem; */
 }
 
-.sidebar-card-header i {
+/* .sidebar-card-header i {
   color: #868e96;
-}
+} */
 
 .sidebar-card-body .value-row {
   display: flex;
@@ -6984,4 +6984,160 @@ from { opacity: 0; transform: translateY(-5px); }
 
 .padding-date-input{
   padding-right: 11px !important;
+}
+
+/* ============================================================
+   NUEVO MODAL DETALLE TIEMPO (Estilo Desglose)
+   Pegar AL FINAL de centralClocks.css
+   ============================================================ */
+
+.tdm-popup {
+    border-radius: 12px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.tdm-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+.time-detail-modal {
+    text-align: left;
+    background-color: #fff;
+}
+
+/* Header */
+.tdm-header {
+    background-color: #f8f9fa;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.tdm-title-group {
+    display: flex;
+    gap: 0.85rem;
+}
+
+.tdm-icon-box {
+    width: 42px;
+    height: 42px;
+    background-color: #e7f5ff;
+    color: #1971c2;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.tdm-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #343a40;
+    line-height: 1.2;
+}
+
+.tdm-subtitle {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.tdm-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.tdm-badge.status-success { background: #d3f9d8; color: #2b8a3e; border: 1px solid #8ce99a; }
+.tdm-badge.status-secondary { background: #f1f3f5; color: #495057; border: 1px solid #dee2e6; }
+.tdm-badge.status-danger { background: #ffe3e3; color: #c92a2a; border: 1px solid #ffa8a8; }
+
+/* Grid de Tarjetas */
+.tdm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    background-color: #fff;
+}
+
+.tdm-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fcfcfc;
+}
+
+.tdm-card-header {
+    background: #f8f9fa;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #6c757d;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tdm-card-body {
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.tdm-big-value {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #343a40;
+    margin-bottom: 0.2rem;
+}
+
+.tdm-sub-value {
+    font-size: 0.7rem;
+    color: #868e96;
+    line-height: 1.2;
+}
+
+/* Sections (Legal Support & Obs) */
+.tdm-section {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.tdm-section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tdm-legal-text {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #495057;
+    line-height: 1.5;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.tdm-textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-size: 0.85rem;
+    background: #fff;
 }
