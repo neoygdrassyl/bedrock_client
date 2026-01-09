@@ -4428,20 +4428,6 @@ from { transform: translateY(30px); opacity: 0; }
 
 /* --- COLUMNS WIDTHS (Ajustado) --- */
 
-.col-eventos {
-  flex: 1.5;
-  min-width: 220px;
-  padding-right: .5rem;
-  padding-left: 1.5rem;
-  overflow: hidden;
-}
-
-.col-fecha {
-  width: 150px;
-  flex-shrink: 0;
-  padding-left: 0.5rem;
-}
-
 .col-limite {
   width: 150px;
   flex-shrink: 0;
@@ -4462,17 +4448,6 @@ from { transform: translateY(30px); opacity: 0; }
 }
 
 /* --- SECTION / ACCORDION --- */
-
-.exp-section-header {
-  background-color: #F9F9F9;
-  padding: 0.8rem 1.5rem;
-  cursor: pointer;
-  border-bottom: 1px solid #f1f3f5;
-  transition: background-color 0.2s;
-  user-select: none;
-  min-height: 45px;
-  max-height: 50px;
-}
 
 .exp-section-header:hover {
   background-color: #f1f3f5;
@@ -4514,15 +4489,6 @@ from { transform: translateY(30px); opacity: 0; }
 }
 
 /* --- ICON & TITLE --- */
-
-.row-icon-container {
-  width: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  /* margin-right: 0.5rem; */
-  flex-shrink: 0;
-}
 
 .row-title {
   cursor: pointer;
@@ -5831,13 +5797,6 @@ from { opacity: 0; transform: translateY(-5px); }
   align-items: center;
 }
 
-/* Contenedor para las opciones en línea */
-.section-options {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-left: 1rem;
-}
 
 /* Grupo de Radio-Buttons compacto */
 .compact-radio-group {
@@ -6549,8 +6508,24 @@ from { opacity: 0; transform: translateY(-5px); }
   display: flex;
   align-items: center;
 }
-.col-eventos { flex: 1.5; min-width: 220px; padding-right: .5rem; padding-left: 1.5rem; }
-.col-fecha { width: 150px; flex-shrink: 0; padding-left: 0.5rem; }
+.col-eventos { 
+  flex: 1.5;
+  min-width: 220px; 
+  /* padding-right: .5rem;  */
+  padding-left:  0; 
+  min-width: 220px;
+  overflow: hidden; 
+}
+.col-fecha { 
+  width: 150px; 
+  flex-shrink: 0; 
+  padding-left: 0.5rem; 
+}
+.col-fecha-header { 
+  width: 150px; 
+  flex-shrink: 0; 
+  padding-left: 0.5rem; 
+}
 .col-limite { width: 150px; flex-shrink: 0; padding-left: 0.5rem; }
 .col-programado { width: 170px; flex-shrink: 0; padding-left: 0.5rem; }
 .col-alarma { width: 200px; flex-shrink: 0; padding-left: 0.5rem; padding-right: 1rem; }
@@ -6559,30 +6534,46 @@ from { opacity: 0; transform: translateY(-5px); }
 
 .exp-section-header {
   background-color: #F9F9F9;
-  padding: 0.8rem 1.5rem;
+  padding: 0.3rem 0.3rem;
   cursor: pointer;
   border-bottom: 1px solid #f1f3f5;
   user-select: none;
-  min-height: 45px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  transition: background-color 0.2s;
+  min-height: 35px;
+  max-height: 35px;
 }
 .exp-row-custom {
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
+  padding-left: 2rem;
   border-bottom: 1px solid #f1f3f5;
   background: #fff;
   font-size: 0.85rem;
 }
 .exp-row-custom:hover { background-color: #fafafa; }
 
-.row-icon-container { width: 30px; display: flex; align-items: center; justify-content: flex-start; flex-shrink: 0; }
+.row-icon-container { 
+  width: 20px !important; 
+  display: flex; 
+  align-items: center; 
+  justify-content: flex-start; 
+  flex-shrink: 0; 
+  
+}
 .row-title { cursor: pointer; color: #212529; font-weight: 400; }
 .row-title:hover { color: #000; }
 
-.section-options { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+.section-options { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.75rem; 
+  margin-left: auto; 
+  margin-left: 1rem; 
+}
 .compact-radio-group { display: flex; background-color: #e9ecef; border-radius: 6px; padding: 3px; }
 .compact-radio-group .form-check { margin: 0; padding: 0; }
 .compact-radio-group .form-check-input { display: none; }
@@ -6623,7 +6614,7 @@ from { opacity: 0; transform: translateY(-5px); }
   background-color: #EBEBEB;
   border-radius: 4px 4px 0 0 ;
 }
-.sidebar-card-body { padding: 0.75rem; }
+
 
 /* Phase card compact */
 .phase-card-compact {
@@ -6784,4 +6775,213 @@ from { opacity: 0; transform: translateY(-5px); }
   .exp-row .col-6, .exp-row .col-5 { font-size: 0.85rem; }
   .exp-row .col-2, .exp-row .col-1 { font-size: 0.75rem; padding: 0.25rem !important; }
   .time-travel-floating-widget { min-width: auto; left: 15px; right: 15px; bottom: 15px; width: auto; }
+}
+
+/* ... (MANTENER TODO EL CSS EXISTENTE) ... */
+
+/* ========================================
+   NUEVOS ESTILOS PARA MENÚ DE HERRAMIENTAS
+   ======================================== */
+
+.tools-menu-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1055;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.tools-fab {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #343a40;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin-top: 1rem; /* Espacio si el menú está abierto */
+}
+
+.tools-fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.tools-fab i {
+    transition: transform 0.3s ease;
+}
+
+.tools-fab .fa-times {
+    transform: rotate(45deg);
+}
+
+.tools-menu {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    border: 1px solid #e9ecef;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 240px;
+    animation: slideInUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.tools-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tools-menu-item:hover {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.tools-menu-item i {
+    width: 20px;
+    text-align: center;
+    color: #868e96;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+}
+
+.tools-menu-item:hover i {
+    color: #5bc0de;
+}
+
+.tools-menu-divider {
+    height: 1px;
+    background-color: #e9ecef;
+    margin: 0.5rem 1rem;
+}
+
+/* Ajustes para el FAB de alarmas para que no colisione */
+.alarms-fab {
+    bottom: 7rem; /* Sube el FAB de alarmas para dejar espacio al nuevo menú */
+    right: 2rem;
+    transition: bottom 0.3s ease;
+}
+
+/* En móvil, el menú es más ancho y el FAB de herramientas se posiciona sobre el de alarmas */
+@media (max-width: 768px) {
+    .tools-menu-container {
+        right: 1rem;
+        bottom: 1rem;
+    }
+    .tools-menu {
+        width: 280px;
+    }
+    .alarms-fab {
+        bottom: 6rem;
+        right: 1rem;
+    }
+}
+
+
+/* ============================================================
+   AJUSTE DE ESTILOS DE FASES (TÍTULOS RESALTADOS)
+   (Pegar al final del archivo CSS)
+   ============================================================ */
+
+/* 1. Fondo más oscuro para los encabezados de sección (siempre) */
+.exp-section-header {
+  background-color: #f0f2f5 !important; /* Un gris un poco más oscuro que el fondo de fila normal */
+  border-left: 4px solid transparent; /* Eliminamos el borde de color por defecto */
+}
+
+.exp-section-header:hover {
+  background-color: #e9ecef !important; /* Un poco más oscuro en hover */
+}
+
+/* 2. Estilo para el resaltado de títulos */
+.title-highlight {
+  text-decoration-color: var(--phase-accent, #1971c2); /* Usa el color de la fase para el subrayado */
+  color: #000 !important; /* Asegura que el texto sea oscuro y legible */
+}
+
+/* 3. Aseguramos que las filas y secciones ya no tengan colores de fondo de fase */
+.exp-row-custom,
+.exp-section-header {
+  background-image: none !important;
+}
+
+/* Si una fila está activa, ya no debe cambiar su fondo, el resaltado es solo en el título */
+.exp-row-custom.phase-highlight-active,
+.exp-section-header.phase-highlight-active {
+  box-shadow: none !important; /* Quitamos el anillo de resaltado */
+  background-color: inherit !important; /* Forzamos a heredar el color de fondo normal */
+}
+
+.exp-row-custom.phase-highlight-active:hover {
+  background-color: #fafafa !important; /* Mantenemos el hover normal */
+}
+
+/* Neutralizamos los estilos de borde y fondo que se aplicaban antes */
+.phase-accent,
+.exp-row-custom.phase-accent {
+  background-color: #fff !important; /* Fondo blanco para las filas de eventos */
+  border-left: none; /* Quitamos el borde de color de las filas */
+}
+
+.exp-row-custom.phase-accent:hover {
+  background-color: #fafafa !important; /* Mantenemos el hover normal de las filas */
+}
+
+/* El pseudo-elemento 'before' que ponía una barra de color ahora es transparente */
+.exp-row-custom::before {
+  background: transparent !important;
+}
+
+.active-title-container {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.active-title-container:hover {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.active-row-container{
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.active-row-container:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.exp-section-header{
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.date-input-container{
+  padding-left: 0.32rem !important;
+}
+
+.dates-input-class{
+  padding: 0 !important;
+  padding-right: 0.2rem !important;
+}
+
+.padding-date-input{
+  padding-right: 11px !important;
 }

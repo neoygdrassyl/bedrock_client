@@ -7,9 +7,9 @@ import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol.js';
 moment.locale('es');
 const businessDaysCalculator = new DiasHabilesColombia();
 
-export const HolidayCalendar = () => {
+// Se añade la prop `isFloating` y `onClose`
+export const HolidayCalendar = ({ isFloating = false, onClose }) => {
     const [currentDate, setCurrentDate] = useState(moment());
-    const [isFloating, setIsFloating] = useState(false); // Estado para modo flotante
     
     // --- Lógica del Calendario ---
     const allHolidays = useMemo(() => {
@@ -90,20 +90,25 @@ export const HolidayCalendar = () => {
                     <i className="fas fa-calendar-check"></i>
                     <span>Días Hábiles</span>
                 </div>
-                <button 
-                    className="btn-float-toggle" 
-                    onClick={() => setIsFloating(!isFloating)}
-                    title={isFloating ? "Anclar al panel" : "Desacoplar (Flotante)"}
-                >
-                    <i className={`fas ${isFloating ? 'fa-thumbtack' : 'fa-external-link-alt'}`}></i>
-                </button>
+                {/* Solo mostramos el botón de cerrar si es flotante */}
+                {isFloating && (
+                    <button 
+                        className="btn-float-toggle" 
+                        onClick={onClose}
+                        title="Cerrar calendario"
+                    >
+                        <i className="fas fa-times"></i>
+                    </button>
+                )}
             </div>
 
             {/* Navegación */}
             <div className="calendar-nav-row">
-                <button className="nav-btn" onClick={() => changeMonth(-1)}><i className="fas fa-chevron-left"></i></button>
+                <div className="calendar-nav-actions">
+                  <button className="nav-btn" onClick={() => changeMonth(-1)}><i className="fas fa-chevron-left"></i></button>
+                  <button className="nav-btn" onClick={() => changeMonth(1)}><i className="fas fa-chevron-right"></i></button>
+                </div>
                 <div className="current-month-label">{currentDate.format('MMMM YYYY')}</div>
-                <button className="nav-btn" onClick={() => changeMonth(1)}><i className="fas fa-chevron-right"></i></button>
             </div>
 
             {/* Cuerpo */}
@@ -147,22 +152,10 @@ export const HolidayCalendar = () => {
         </div>
     );
 
-    // Si está flotando, usamos un Portal para que salga del sidebar visualmente, 
-    // pero dejamos un placeholder en el sidebar.
     if (isFloating) {
-        return (
-            <>
-                <div className="calendar-placeholder">
-                    <i className="fas fa-calendar-alt fa-2x text-muted"></i>
-                    <span>Calendario flotante activo</span>
-                    <button className="btn btn-sm btn-link text-muted" onClick={() => setIsFloating(false)}>
-                        <small>Restaurar aquí</small>
-                    </button>
-                </div>
-                {ReactDOM.createPortal(<CalendarContent />, document.body)}
-            </>
-        );
+        return ReactDOM.createPortal(<CalendarContent />, document.body);
     }
-
+    
+    // Si no es flotante, se renderiza normalmente (este caso ya no se usa desde centralClocks)
     return <div className="sidebar-card" style={{padding:0, overflow:'hidden', border:'none'}}><CalendarContent /></div>;
 };

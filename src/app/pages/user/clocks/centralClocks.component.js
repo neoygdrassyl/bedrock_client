@@ -12,6 +12,7 @@ import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
 import { ScheduleModal } from './components/ScheduleModal';
 import { AlarmsWidget } from './components/AlarmsWidget';
+import { ToolsMenu } from './components/ToolsMenu'; // Importamos el nuevo menú
 import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles } from './hooks/useClocksManager';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
@@ -34,6 +35,7 @@ export default function EXP_CLOCKS(props) {
 
   const [showTimeTravel, setShowTimeTravel] = useState(false);
   const [showAlarms, setShowAlarms] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false); // Nuevo estado para el calendario
 
   const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
 
@@ -585,7 +587,7 @@ export default function EXP_CLOCKS(props) {
       <div className="col-eventos header-title">
         <i className="fas fa-list me-2"></i> Evento
       </div>
-      <div className="col-fecha header-title">
+      <div className="col-fecha-header header-title">
         <i className="far fa-calendar me-2"></i> Fecha evento
       </div>
       <div className="col-limite header-title">
@@ -599,50 +601,6 @@ export default function EXP_CLOCKS(props) {
       </div>
     </div>
   );
-
-  // ==============================
-  // NUEVO: state -> phase mapping (fijo)
-  // ==============================
-  const stateToPhaseClass = useMemo(() => {
-    const map = new Map();
-
-    (manager.processPhases || []).forEach((p) => {
-      const cls = p.highlightClass; // ej: "phase-highlight-estudio"
-      (p.relatedStates || []).forEach((st) => {
-        const key = String(st);
-        if (!map.has(key)) map.set(key, cls);
-      });
-    });
-
-    return map;
-  }, [manager.processPhases]);
-
-  // Helper: obtiene phase class por state
-  const getPhaseClassForState = (state) => {
-    const key = String(state);
-    return stateToPhaseClass.get(key) || '';
-  };
-
-  // Helper: para un header/section, elegir una fase dominante por sus estados hijos.
-  const getPhaseClassForSectionStates = (sectionStates) => {
-    const counts = new Map();
-    sectionStates.forEach((st) => {
-      const cls = getPhaseClassForState(st);
-      if (!cls) return;
-      counts.set(cls, (counts.get(cls) || 0) + 1);
-    });
-
-    let best = '';
-    let bestCount = 0;
-    counts.forEach((count, cls) => {
-      if (count > bestCount) {
-        bestCount = count;
-        best = cls;
-      }
-    });
-
-    return best;
-  };
 
   const renderClockList = () => {
     let isCurrentGroupCollapsed = false;
@@ -721,33 +679,27 @@ export default function EXP_CLOCKS(props) {
         const isEstudioValla = value.title === 'Estudio y Observaciones';
         const isRevisionCorrecciones = value.title === 'Revisión y Viabilidad';
 
+        // Determinar si la sección está activa
         const sectionStates = [];
         for (let j = i + 1; j < clocksToShow.length; j++) {
-          if (clocksToShow[j].title) break;
-          if (clocksToShow[j].state !== false && clocksToShow[j].state !== undefined) {
-            sectionStates.push(clocksToShow[j].state);
-          }
+            if (clocksToShow[j].title) break;
+            if (clocksToShow[j].state !== false && clocksToShow[j].state !== undefined) {
+                sectionStates.push(clocksToShow[j].state);
+            }
         }
-
-        const sectionPhaseClass = getPhaseClassForSectionStates(sectionStates);
         const isSectionInActivePhase = activeRelatedStates.some(st => sectionStates.includes(st));
-
-        const sectionClassName = [
-          'exp-section-header',
-          'phase-accent',
-          sectionPhaseClass,
-          isSectionInActivePhase ? 'phase-active phase-highlight-active' : '',
-        ].filter(Boolean).join(' ');
+        const titleClassName = `fw-normal ${isSectionInActivePhase ? 'title-highlight' : ''}`;
+        const BlockClassName = `exp-section-header ${isSectionInActivePhase ? 'active-title-container' : ''}`;
 
         return (
           <div
             key={`section-${i}`}
-            className={sectionClassName}
+            className={BlockClassName}
             onClick={() => toggleSection(value.title)}
           >
             <div className="d-flex align-items-center">
-              <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} me-3 text-muted`}></i>
-              <span className="fw-normal">{value.title}</span>
+              <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} me-1 text-muted`}></i>
+              <span className={titleClassName}>{value.title}</span>
             </div>
 
             {!isCollapsed && isEstudioValla && renderOptionsRibbon('phase_estudio')}
@@ -758,14 +710,7 @@ export default function EXP_CLOCKS(props) {
 
       if (isCurrentGroupCollapsed) return null;
 
-      const rowPhaseClass = getPhaseClassForState(value.state);
       const isRowInActivePhase = activeRelatedStates.includes(value.state);
-
-      const rowClassName = [
-        'phase-accent',
-        rowPhaseClass,
-        isRowInActivePhase ? 'phase-active phase-highlight-active' : '',
-      ].filter(Boolean).join(' ');
 
       return (
         <ClockRow
@@ -781,11 +726,39 @@ export default function EXP_CLOCKS(props) {
           helpers={{ getClock, getNewestDate, ...manager, currentItem }}
           scheduleConfig={scheduleConfig}
           systemDate={systemDate}
-          highlightClass={rowClassName}
+          isHighlighted={isRowInActivePhase}
         />
       );
     });
   };
+
+  const handleToolAction = (action) => {
+    switch (action) {
+        case 'suspension':
+            if (manager.canAddSuspension) addTimeControl('suspension');
+            break;
+        case 'extension':
+            if (manager.canAddExtension) addTimeControl('extension');
+            break;
+        case 'schedule':
+            openScheduleModal();
+            break;
+        case 'gantt':
+            setShowGanttModal(true);
+            break;
+        case 'time-travel':
+            setShowTimeTravel(true);
+            break;
+        case 'calendar':
+            setShowCalendar(prev => !prev);
+            break;
+        case 'breakdown':
+            if(manager.curaduriaDetails) manager.curaduriaDetails.showDaysDetailsModal();
+            break;
+        default:
+            break;
+    }
+};
 
   return (
     <div className="exp-wrapper">
@@ -827,6 +800,13 @@ export default function EXP_CLOCKS(props) {
         extension={manager.extension}
         currentItem={currentItem}
       />
+      
+      <ToolsMenu 
+        onAction={handleToolAction}
+        canAddSuspension={manager.canAddSuspension}
+        canAddExtension={manager.canAddExtension}
+        isDesisted={manager.isDesisted}
+      />
 
       <div className="exp-container">
         <div className="exp-main-content">
@@ -841,27 +821,13 @@ export default function EXP_CLOCKS(props) {
         <div className="exp-sidebar" ref={sidebarRef}>
           <SidebarInfo
             manager={manager}
-            actions={{
-              onAddTimeControl: addTimeControl,
-              onOpenScheduleModal: openScheduleModal,
-            }}
+            // Las acciones ahora se gestionan a través de ToolsMenu, por lo que el prop `actions` se puede eliminar.
             onActivePhaseChange={setActivePhaseId}
             activePhaseId={activePhaseId}
-            onOpenGanttModal={() => setShowGanttModal(true)}
+            onExpandGantt={() => setShowGanttModal(true)} 
           />
-
-          <HolidayCalendar />
-
-          <div className="sidebar-utilities">
-            <button
-              className="btn-sidebar-utility"
-              onClick={() => setShowTimeTravel(true)}
-              title="Activar emulador de fecha"
-            >
-              <i className="fas fa-user-clock"></i>
-              Emulador de Fecha
-            </button>
-          </div>
+          {/* El calendario se muestra condicionalmente */}
+          {showCalendar && <HolidayCalendar />}
         </div>
       </div>
     </div>

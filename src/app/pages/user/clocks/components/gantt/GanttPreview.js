@@ -8,7 +8,7 @@ export const GanttPreview = ({
   suspensionPostActa,
   extension,
   activePhaseId,
-  onPhaseClick // <-- Añadido
+  onPhaseClick
 }) => {
   return (
     <div className="gantt-preview-body">
@@ -20,7 +20,7 @@ export const GanttPreview = ({
         extension={extension}
         compactMode={true}
         activePhaseId={activePhaseId}
-        onPhaseClick={onPhaseClick} // <-- Pasamos el handler
+        onPhaseClick={onPhaseClick}
       />
     </div>
   );
