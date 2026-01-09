@@ -1384,3 +1384,131 @@
 .gantt-segment {
     cursor: crosshair; /* Indica precisión */
 }
+
+/* ========================================
+   HEADER STATS (FECHA ESTIMADA)
+   ======================================== */
+.gantt-modal-title-group {
+    display: flex;
+    flex-direction: column;
+}
+.gantt-header-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 4px;
+}
+.gantt-stat-item {
+    font-size: 13px;
+    color: #495057;
+    display: flex;
+    gap: 6px;
+}
+.gantt-stat-label {
+    color: #6c757d;
+}
+.gantt-stat-value {
+    font-weight: 700;
+    color: #2f9e44;
+}
+
+/* ========================================
+   TOGGLE SWITCH MODIFICADO
+   ======================================== */
+.gantt-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background: #f8f9fa;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #e9ecef;
+}
+.gantt-toggle-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #adb5bd;
+    transition: color 0.3s;
+}
+.gantt-toggle-label.active {
+    color: #495057;
+}
+
+.gantt-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+.gantt-switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.gantt-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+.gantt-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+}
+input:checked + .gantt-slider {
+  background-color: #2196F3;
+}
+input:focus + .gantt-slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .gantt-slider:before {
+  transform: translateX(16px);
+}
+.gantt-slider.round {
+  border-radius: 20px;
+}
+.gantt-slider.round:before {
+  border-radius: 50%;
+}
+
+/* ========================================
+   MARCADORES DE PROGRAMACIÓN
+   ======================================== */
+.gantt-scheduled-marker {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background-color: #fcc419; /* Amarillo fuerte */
+    border: 2px solid #fff;
+    border-radius: 50%;
+    z-index: 10; /* Encima de todo */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.gantt-scheduled-marker:hover {
+    transform: translate(-50%, -50%) scale(1.4);
+    background-color: #fab005;
+}
+
+.gantt-scheduled-marker-legend {
+    width: 10px;
+    height: 10px;
+    background-color: #fcc419;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
