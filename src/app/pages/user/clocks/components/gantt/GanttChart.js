@@ -1,12 +1,9 @@
 import React, { useMemo, useState, useRef, useLayoutEffect } from 'react';
 import moment from 'moment';
-import { sumarDiasHabiles } from '../../hooks/useClocksManager';
+import { sumarDiasHabiles, calcularDiasHabiles } from '../../hooks/useClocksManager';
 
 /**
- * GanttChart (Versión Corregida)
- * - Estructura de layout robusta para alineación perfecta.
- * - Sincronización de scroll mejorada.
- * - CSS simplificado y basado en `box-sizing: border-box`.
+ * GanttChart (Fixed Alignment Version with Error Lines & Shifted Schedule)
  */
 export const GanttChart = ({
   phases = [],
@@ -23,8 +20,9 @@ export const GanttChart = ({
 
   const headerScrollRef = useRef(null);
   const bodyScrollRef = useRef(null);
-  const isSyncing = useRef(false); // Flag para evitar bucles de scroll
+  const isSyncing = useRef(false);
 
+  // Sync scroll logic
   useLayoutEffect(() => {
     const headerEl = headerScrollRef.current;
     const bodyEl = bodyScrollRef.current;
@@ -34,7 +32,6 @@ export const GanttChart = ({
       if (isSyncing.current) return;
       isSyncing.current = true;
       target.scrollLeft = event.target.scrollLeft;
-      // Usamos requestAnimationFrame para resetear el flag en el próximo frame
       requestAnimationFrame(() => {
         isSyncing.current = false;
       });
@@ -59,6 +56,7 @@ export const GanttChart = ({
 
   const ensureMinWidth = (n) => Math.max(1, safeInt(n, 1));
 
+  // Determine bar class based on status
   const statusToClass = (status) => {
     if (status === 'COMPLETADO') return 'gantt-bar-completed';
     if (status === 'ACTIVO') return 'gantt-bar-active';
@@ -72,8 +70,10 @@ export const GanttChart = ({
       return { phases: [], maxDays: 0, dateColumns: [] };
     }
 
-    let cumulativeDays = 0;
+    let cumulativeDays = 0; // Posición teórica (sin retrasos acumulados)
+    let currentShift = 0;   // Desplazamiento acumulado por retrasos anteriores
     const processedPhases = [];
+    const today = moment().format('YYYY-MM-DD');
 
     phases.forEach((phase, index) => {
       const {
@@ -82,19 +82,43 @@ export const GanttChart = ({
         usedDays = 0,
         ganttBlockDays,
         parallelActors,
-        endDate,
         relatedStates,
+        startDate,
+        endDate
       } = phase;
 
-      const blockBaseDays = safeInt(ganttBlockDays ?? totalDays, 0);
+      // Días base (planificados/legales)
+      const baseDays = safeInt(ganttBlockDays ?? totalDays, 0);
+      
+      // Días reales (usados)
+      const actualDays = safeInt(usedDays, 0);
 
-      let rawBlockWidth = blockBaseDays;
-      if (adjustedWidthMode && endDate) rawBlockWidth = safeInt(usedDays, 0);
+      // El ancho del bloque base sigue siendo el planificado o el usado si es mayor,
+      // pero para el "empuje" solo nos importa cuánto nos pasamos de lo legal.
+      // Para dibujar la caja, usamos el maximo para contener el error visualmente.
+      const containerWidth = Math.max(baseDays, actualDays);
+      const blockWidth = ensureMinWidth(containerWidth);
 
-      const blockWidth = ensureMinWidth(rawBlockWidth);
+      // Lógica de cálculo de retraso (Overdue)
+      const calculateOverdue = (uDays, tDays, pStartDate, pEndDate) => {
+          let overdue = 0;
+          const u = safeInt(uDays, 0);
+          const t = safeInt(tDays, 1);
+          
+          if (pEndDate) {
+              // Caso Completado
+              if (u > t) overdue = u - t;
+          } else if (pStartDate) {
+              // Caso Activo
+              const limitDate = sumarDiasHabiles(pStartDate, t);
+              if (moment(today).isAfter(limitDate)) {
+                  overdue = calcularDiasHabiles(limitDate, today);
+              }
+          }
+          return Math.max(0, overdue);
+      };
 
-      const hasParallelActors = !!parallelActors?.primary && !!parallelActors?.secondary;
-
+      // Check extra segments
       let hasSuspensionPreActa = false;
       let hasSuspensionPostActa = false;
       let hasExtension = false;
@@ -108,12 +132,17 @@ export const GanttChart = ({
         hasExtension = !!extension?.exists;
       }
 
+      const hasParallelActors = !!parallelActors?.primary && !!parallelActors?.secondary;
+
+      // Posición de inicio: Acumulado teórico + Desplazamiento por errores previos
+      const visualStartPosition = cumulativeDays + currentShift;
+
       const phaseData = {
         ...phase,
         phaseIndex: index + 1,
-        startPosition: cumulativeDays,
+        startPosition: visualStartPosition,
         blockWidth,
-        blockBaseDays: ensureMinWidth(blockBaseDays),
+        blockBaseDays: ensureMinWidth(baseDays), // Guardamos la base legal original
         hasParallelActors,
         hasSuspensionPreActa,
         hasSuspensionPostActa,
@@ -121,31 +150,96 @@ export const GanttChart = ({
         rows: [],
       };
 
+      // Helper para calcular métricas de fila
+      const calculateRowMetrics = (actorUsed, actorTotal) => {
+        const u = safeInt(actorUsed, 0);
+        const t = safeInt(actorTotal, 1);
+        
+        // El bloque visual tiene ancho = blockWidth (que es max(u, t))
+        // PERO, la barra "Legal" (gris) siempre debe representar 't'.
+        // Si 't' es menor que el bloque, la barra gris será más corta que el contenedor.
+        
+        const refWidth = blockWidth;
+
+        // 1. Ancho del track gris (Límite legal) relativo al contenedor
+        const trackPct = (t / refWidth) * 100;
+
+        // 2. Progreso verde DENTRO del track gris
+        const progressPctInTrack = (Math.min(u, t) / t) * 100;
+
+        // 3. Cálculo de error
+        // Usamos las fechas de la fase general si no hay especificas por actor, 
+        // asumiendo que el actor sigue el ciclo de vida de la fase.
+        const overdue = calculateOverdue(u, t, startDate, endDate);
+        
+        // 4. Ancho de la línea roja relativo al contenedor
+        const errorPct = (overdue / refWidth) * 100;
+
+        return {
+          trackPct,
+          progressPctInTrack,
+          errorPct,
+          overdueDays: overdue
+        };
+      };
+
+      let maxOverdueInPhase = 0;
+
       if (hasParallelActors) {
+        const row1Metrics = calculateRowMetrics(parallelActors.primary.usedDays, parallelActors.primary.totalDays);
+        const row2Metrics = calculateRowMetrics(parallelActors.secondary.usedDays, parallelActors.secondary.totalDays);
+
         phaseData.rows.push({
           type: 'primary',
-          actor: parallelActors.primary,
           status: parallelActors.primary.status,
+          ...row1Metrics
         });
+
         phaseData.rows.push({
           type: 'secondary',
-          actor: parallelActors.secondary,
           status: parallelActors.secondary.status,
+          ...row2Metrics
         });
+
+        // El retraso que empuja a la siguiente fase es el máximo retraso de los paralelos
+        maxOverdueInPhase = Math.max(row1Metrics.overdueDays, row2Metrics.overdueDays);
+
       } else {
+        const metrics = calculateRowMetrics(usedDays, totalDays);
         phaseData.rows.push({
           type: 'single',
-          actor: { name: phase.responsible },
           status: phase.status,
+          ...metrics
         });
+        
+        maxOverdueInPhase = metrics.overdueDays;
       }
 
       processedPhases.push(phaseData);
-      cumulativeDays += blockWidth;
+      
+      // Actualizamos acumuladores para la siguiente iteración
+      // 1. La posición teórica avanza lo que debía durar esta fase (su base legal)
+      //    OJO: Usamos blockBaseDays (lo legal) para el avance 'normal'.
+      //    Si usáramos blockWidth (que incluye el error), estaríamos duplicando el efecto.
+      cumulativeDays += ensureMinWidth(baseDays);
+
+      // 2. El desplazamiento (shift) aumenta si hubo error en ESTA fase.
+      //    Así la siguiente fase empezará más tarde.
+      // currentShift += maxOverdueInPhase;
     });
 
-    const maxDays = cumulativeDays > 0 ? cumulativeDays : 50; // Asegurar un ancho mínimo
+    // Calcular el ancho total del gráfico para el scroll
+    let maxVisualDay = 0;
+    if (processedPhases.length > 0) {
+        const lastPhase = processedPhases[processedPhases.length - 1];
+        // El fin visual es donde empieza la ultima + su ancho + posibles errores visuales remanentes
+        // Como blockWidth ya incluye el error (porque es max(u,t)), startPosition + blockWidth es el fin visual.
+        maxVisualDay = lastPhase.startPosition + lastPhase.blockWidth;
+    }
 
+    const maxDays = maxVisualDay > 0 ? maxVisualDay + 5 : 50; 
+
+    // Header markers
     const dateColumns = [];
     const intervalDays = compactMode ? 10 : 5;
 
@@ -156,21 +250,19 @@ export const GanttChart = ({
         position: i,
       });
     }
-
-    // Asegurarse de que el último marcador exista si no cae exactamente en el intervalo
+    // Asegurar último marcador
     if (dateColumns.length > 0 && dateColumns[dateColumns.length - 1].day < maxDays) {
-      dateColumns.push({
-        day: maxDays,
-        date: sumarDiasHabiles(ldfDate, maxDays),
-        position: maxDays,
-      });
+        dateColumns.push({
+          day: maxDays,
+          date: sumarDiasHabiles(ldfDate, maxDays),
+          position: maxDays,
+        });
     }
 
     return { phases: processedPhases, maxDays, dateColumns, intervalDays };
   }, [phases, ldfDate, adjustedWidthMode, compactMode, suspensionPreActa, suspensionPostActa, extension]);
 
   const scaleFactor = useMemo(() => (compactMode ? 3 : 8), [compactMode]);
-
   const totalWidthPx = ganttData.maxDays * scaleFactor;
 
   const gridVars = useMemo(() => {
@@ -185,34 +277,52 @@ export const GanttChart = ({
 
   const renderExtraSegments = (phase) => {
     if (compactMode) return null;
-
     const segments = [];
-    if (phase.hasSuspensionPreActa) {
-      segments.push(
-        <div
-          key="susp-pre"
-          className="gantt-segment gantt-segment-suspension"
-          title="Suspensión (pre-acta)"
-        />
-      );
-    }
-    if (phase.hasSuspensionPostActa) {
-      segments.push(
-        <div
-          key="susp-post"
-          className="gantt-segment gantt-segment-suspension"
-          title="Suspensión (post-acta)"
-        />
-      );
-    }
-    if (phase.hasExtension) {
-      segments.push(
-        <div key="extension" className="gantt-segment gantt-segment-extension" title="Prórroga" />
-      );
-    }
-
+    if (phase.hasSuspensionPreActa) segments.push(<div key="s1" className="gantt-segment gantt-segment-suspension" title="Suspensión" />);
+    if (phase.hasSuspensionPostActa) segments.push(<div key="s2" className="gantt-segment gantt-segment-suspension" title="Suspensión" />);
+    if (phase.hasExtension) segments.push(<div key="ext" className="gantt-segment gantt-segment-extension" title="Prórroga" />);
+    
     if (segments.length === 0) return null;
     return <div className="gantt-extra-segments">{segments}</div>;
+  };
+
+  const renderBarWithTrack = (rowInfo) => {
+    const barClass = statusToClass(rowInfo.status);
+    
+    // Ancho del track gris (Límite legal)
+    const trackStyle = { width: `${rowInfo.trackPct}%` };
+    
+    // Ancho del progreso dentro del track
+    const fillStyle = { width: `${rowInfo.progressPctInTrack}%` };
+    
+    // Línea de error
+    const hasError = rowInfo.overdueDays > 0;
+    const errorStyle = {
+        left: `${rowInfo.trackPct}%`, // Empieza al final del track legal
+        width: `${rowInfo.errorPct}%` // Ancho del error
+    };
+
+    return (
+      <div className="gantt-bar-single">
+         {/* La barra gris (Límite / Track) */}
+         <div className="gantt-bar-bg" style={trackStyle}>
+             <div className="gantt-bar-track" />
+             <div 
+               className={`gantt-bar-fill ${barClass}`} 
+               style={fillStyle} 
+             />
+         </div>
+         
+         {/* La línea de error (Exceso) */}
+         {hasError && (
+             <div 
+                className="gantt-error-line" 
+                style={errorStyle} 
+                title={`Exceso: ${rowInfo.overdueDays} días`}
+             />
+         )}
+      </div>
+    );
   };
 
   if (!ldfDate || ganttData.phases.length === 0) {
@@ -224,10 +334,13 @@ export const GanttChart = ({
     );
   }
 
+  const ROW_HEIGHT = compactMode ? 34 : 50; 
+  const HEADER_HEIGHT = compactMode ? 32 : 56;
+
   return (
     <div className={`gantt-container ${compactMode ? 'gantt-compact' : ''}`}>
-      {/* HEADER */}
-      <div className="gantt-header-wrapper">
+      {/* HEADER SECTION */}
+      <div className="gantt-header-wrapper" style={{ height: `${HEADER_HEIGHT}px` }}>
         <div className="gantt-title-column">
           <div className="gantt-title-header">{!compactMode && <span>Fases</span>}</div>
         </div>
@@ -244,9 +357,8 @@ export const GanttChart = ({
               >
                 <div className="gantt-timeline-tick" />
                 <span className="gantt-timeline-label">
-                  {compactMode ? `${col.day}d` : `Día ${col.day}`}
+                  {compactMode ? `${col.day}` : `Día ${col.day}`}
                 </span>
-
                 {!compactMode && hoveredDay?.day === col.day && (
                   <div className="gantt-timeline-tooltip">{moment(col.date).format('DD/MM/YYYY')}</div>
                 )}
@@ -256,61 +368,78 @@ export const GanttChart = ({
         </div>
       </div>
 
-      {/* BODY */}
+      {/* BODY SECTION */}
       <div className="gantt-body-wrapper">
-        <div className="gantt-body-scroll-wrapper" ref={bodyScrollRef}>
-          <div className="gantt-body-content">
-            {ganttData.phases.map((phase) => {
+        
+        {/* LEFT COLUMN (Titles) */}
+        <div className="gantt-body-titles">
+           {ganttData.phases.map((phase) => {
               const isActive = activePhaseId === phase.id;
               return (
                 <div
                   key={phase.id}
-                  className={`gantt-phase ${phase.highlightClass || ''} ${isActive ? 'gantt-phase-active' : ''}`}
+                  className={`gantt-phase-row-title ${phase.highlightClass || ''} ${isActive ? 'gantt-phase-active' : ''}`}
                   onClick={() => onPhaseClick?.(phase)}
+                  style={{ height: `${ROW_HEIGHT}px` }}
                 >
-                  <div className="gantt-phase-title-column">
-                    <div className="gantt-phase-number">{phase.phaseIndex}</div>
-                    {!compactMode && <span className="gantt-phase-title">{phase.title}</span>}
-                  </div>
-                  {/* El contenedor de las barras ahora está fuera de la columna de título */}
+                  <div className="gantt-phase-number">{phase.phaseIndex}</div>
+                  {!compactMode && <span className="gantt-phase-title-text">{phase.title}</span>}
                 </div>
               );
             })}
-             {/* Las barras y la grilla se renderizan por separado para un posicionamiento absoluto preciso */}
-            <div
-              className="gantt-phase-bars gantt-grid"
-              style={{
+        </div>
+
+        {/* RIGHT COLUMN (Chart Scrollable) */}
+        <div className="gantt-body-scroll-wrapper" ref={bodyScrollRef}>
+          <div 
+            className="gantt-body-content gantt-grid"
+            style={{
                 width: `${totalWidthPx}px`,
-                height: '100%',
+                height: `${ganttData.phases.length * ROW_HEIGHT}px`,
                 ...gridVars,
-              }}
-            >
-              {ganttData.phases.map((phase, index) => {
+            }}
+          >
+            {ganttData.phases.map((phase, index) => {
                 const leftPx = phase.startPosition * scaleFactor;
                 const widthPx = phase.blockWidth * scaleFactor;
-                // La posición 'top' se calcula dinámicamente según la altura de las filas anteriores
-                const topPx = compactMode ? index * (26 + 12) : index * 45; // 44px de alto + 1px de borde
-                const heightPx = compactMode ? 26 : 44;
+                const topPx = index * ROW_HEIGHT;
+                
+                const contentHeight = compactMode ? 26 : 40; 
+                const barHeight = compactMode ? 10 : 16;
+                const paddingY = ((ROW_HEIGHT - contentHeight) / 2) - (compactMode ? 4 : 0);
 
                 return (
                   <div 
                     key={`task-${phase.id}`}
-                    className="gantt-task" 
-                    style={{ left: `${leftPx}px`, width: `${widthPx}px`, top: `${topPx}px`, height: `${heightPx}px` }}
+                    className="gantt-task-container"
+                    style={{ 
+                        left: `${leftPx}px`, 
+                        width: `${widthPx}px`, 
+                        top: `${topPx}px`, 
+                        height: `${ROW_HEIGHT}px`,
+                        paddingTop: `${paddingY}px`
+                    }}
+                    onClick={() => onPhaseClick?.(phase)}
                   >
                     {phase.hasParallelActors ? (
-                      <div className="gantt-bar-stack" aria-label="Actores paralelos">
-                        <div className={`gantt-bar ${statusToClass(phase.rows[0]?.status)}`} />
-                        <div className={`gantt-bar ${statusToClass(phase.rows[1]?.status)}`} />
+                      <div className="gantt-bar-stack" style={{ gap: compactMode ? '2px' : '4px' }}>
+                        <div style={{ height: `${barHeight}px`, width: '100%' }}>
+                          {renderBarWithTrack(phase.rows[0])}
+                        </div>
+                        <div style={{ height: `${barHeight}px`, width: '100%' }}>
+                          {renderBarWithTrack(phase.rows[1])}
+                        </div>
                       </div>
                     ) : (
-                      <div className={`gantt-bar ${statusToClass(phase.rows[0]?.status)}`} />
+                      <div style={{ height: `${barHeight}px`, width: '100%' }}>
+                          {renderBarWithTrack(phase.rows[0])}
+                      </div>
                     )}
+                    
                     {renderExtraSegments(phase)}
                   </div>
                 );
               })}
-            </div>
           </div>
         </div>
       </div>

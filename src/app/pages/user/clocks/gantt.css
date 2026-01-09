@@ -361,16 +361,6 @@
 /* ========================================
    SEGMENTOS EXTRA (SUSPENSIÓN / PRÓRROGA)
    ======================================== */
-.gantt-extra-segments {
-  position: absolute;
-  right: 2px;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  pointer-events: none;
-}
 .gantt-segment {
   width: 6px;
   height: 70%;
@@ -927,3 +917,440 @@
   .gantt-modal-body { padding: 16px; }
   .gantt-phase-title { font-size: 12px; }
 }
+
+/* ========================================
+   VARIABLES DE COLOR - ULTIMO CONTENIDO
+   ======================================== */
+:root {
+  --preview-bg: #fdfefe;
+  --preview-border: #e5e9f2;
+  --preview-shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+  --preview-header-bg: linear-gradient(90deg, #f7f9fc 0%, #eef2f7 100%);
+  --preview-title: #4b5563;
+  --preview-accent: #1677ff;
+  --preview-tick: #c8d0dc;
+  --preview-label: #6b7280;
+}
+
+/* ========================================
+   CONTENEDOR GLOBAL
+   ======================================== */
+.gantt-container {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.gantt-container *, .gantt-container *::before, .gantt-container *::after {
+  box-sizing: border-box;
+}
+
+.gantt-container.gantt-compact {
+  font-size: 11px;
+}
+
+.gantt-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+/* ========================================
+   HEADER SECTION
+   ======================================== */
+.gantt-header-wrapper {
+  display: flex;
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.gantt-title-column {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid #e9ecef;
+  background: #f8f9fa;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 12px 8px 12px;
+  z-index: 2;
+}
+.gantt-compact .gantt-title-column { width: 50px; padding: 0 4px 4px 4px; }
+
+.gantt-title-header {
+  font-weight: 700;
+  color: #495057;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.gantt-compact .gantt-title-header { font-size: 9px; }
+
+.gantt-chart-column {
+  flex: 1;
+  overflow: hidden; /* Hide scrollbar in header, controlled by JS sync */
+  position: relative;
+}
+
+.gantt-header-timeline {
+  position: relative;
+  height: 100%;
+}
+
+.gantt-timeline-marker {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 4px;
+  transform: translateX(-50%); /* Center marker on tick */
+}
+
+.gantt-timeline-tick {
+  width: 1px;
+  height: 8px;
+  background: #adb5bd;
+  margin-bottom: 4px;
+}
+.gantt-timeline-label {
+  font-size: 10px;
+  color: #6c757d;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ========================================
+   BODY SECTION
+   ======================================== */
+.gantt-body-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* LEFT SIDE: TITLES */
+.gantt-body-titles {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid #e9ecef;
+  background: #fff;
+  z-index: 2; /* Above grid scroll */
+}
+.gantt-compact .gantt-body-titles { width: 50px; }
+
+.gantt-phase-row-title {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid #f1f3f5;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.gantt-compact .gantt-phase-row-title { padding: 0 6px; justify-content: center; }
+
+.gantt-phase-row-title:hover { background: #f8f9fa; }
+.gantt-phase-active { background: #e7f5ff !important; }
+
+.gantt-phase-number {
+  width: 24px;
+  height: 24px;
+  background: #e9ecef;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+.gantt-compact .gantt-phase-number { width: 20px; height: 20px; font-size: 10px; margin-right: 0; }
+
+.gantt-phase-active .gantt-phase-number {
+  background: #1971c2;
+  color: #fff;
+}
+
+.gantt-phase-title-text {
+  font-size: 13px;
+  color: #343a40;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* RIGHT SIDE: CHART CONTENT */
+.gantt-body-scroll-wrapper {
+  flex: 1;
+  overflow: auto; /* The only scrollbar */
+  position: relative;
+}
+
+/* Background Grid */
+.gantt-grid {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(0, 0, 0, var(--gantt-grid-minor-alpha, 0.04)) 0px,
+      rgba(0, 0, 0, var(--gantt-grid-minor-alpha, 0.04)) 1px,
+      transparent 1px,
+      transparent var(--gantt-day-width, 8px)
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(0, 0, 0, var(--gantt-grid-major-alpha, 0.10)) 0px,
+      rgba(0, 0, 0, var(--gantt-grid-major-alpha, 0.10)) 1px,
+      transparent 1px,
+      transparent var(--gantt-major-step, 40px)
+    );
+    background-attachment: local;
+}
+
+/* Tasks Containers */
+.gantt-task-container {
+  position: absolute;
+  /* top/left/width/height set inline */
+  padding-left: 1px; /* Slight offset to see start line */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ========================================
+   BARS & PROGRESS
+   ======================================== */
+.gantt-bar-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.gantt-bar-single {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.gantt-bar-bg {
+  width: 100%;
+  height: 100%; /* Fill container height */
+  min-height: 6px;
+  background: #e9ecef; /* Track color */
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.gantt-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Colors */
+.gantt-bar-pending { background: #adb5bd; }
+.gantt-bar-active { background: #339af0; }
+.gantt-bar-completed { background: #51cf66; }
+.gantt-bar-paused { background: #fcc419; }
+.gantt-bar-overdue { background: #ff6b6b; }
+
+/* Extra Segments */
+.gantt-extra-segments {
+  position: absolute;
+  align-items: center;
+  pointer-events: none;
+  height: 5px;
+  width: 10px;
+  top: 17px;
+  bottom: 6px;
+  right: 8px; /* Offset right */
+  display: flex;
+  gap: 2px;
+}
+.gantt-segment {
+  width: 10px;
+  height: 100%;
+  border-radius: 2px;
+}
+.gantt-segment-suspension { background: #fcc419; }
+.gantt-segment-extension { background: #66d9e8; }
+
+
+/* ========================================
+   MODAL SPECIFIC
+   ======================================== */
+.gantt-modal-chart-container {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gantt-modal-chart-container .gantt-container {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  height: 100%;
+}
+
+/* ========================================
+   PREVIEW SPECIFIC
+   ======================================== */
+.gantt-preview-body .gantt-container {
+  border: 1px solid #eef2f7;
+  box-shadow: none;
+}
+.gantt-preview-body .gantt-phase-row-title {
+  border-bottom: 1px solid #f1f3f5;
+}
+.gantt-preview-body .gantt-bar-bg {
+  border-radius: 3px;
+}
+.gantt-preview-body .gantt-bar-fill {
+  border-radius: 3px;
+}
+
+/* ... MANTENER TODO EL CSS ANTERIOR IGUAL HASTA LLEGAR A LA SECCIÓN DE BARRAS ... */
+
+/* ========================================
+   BARRAS (MODO LIMPIO)
+   ======================================== */
+.gantt-task {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+}
+.gantt-compact .gantt-task {
+  padding: 4px 0;
+}
+
+.gantt-bar {
+  width: 100%;
+  height: 14px;
+  border-radius: 7px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+.gantt-compact .gantt-bar { height: 8px; border-radius: 5px; }
+
+.gantt-bar-stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 4px;
+}
+.gantt-compact .gantt-bar-stack { gap: 2px; }
+
+.gantt-bar-single {
+  /* CAMBIO: Ahora permite contener elementos absolutos fuera del flujo normal si es necesario */
+  position: relative; 
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* ESTILO NUEVO: Línea de Error */
+.gantt-error-line {
+  position: absolute;
+  height: 4px; /* Línea delgada */
+  background-color: #dc3545; /* Rojo peligro */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5; /* Por encima de la barra */
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+/* Opcional: Pequeña marca vertical al final del error */
+.gantt-error-line::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -3px;
+  height: 10px;
+  width: 2px;
+  background-color: #dc3545;
+  border-radius: 1px;
+}
+
+.gantt-bar-pending { background: #6c757d; }
+.gantt-bar-active { background: #007bff; }
+.gantt-bar-completed { background: #28a745; }
+.gantt-bar-paused { background: #ffc107; }
+.gantt-bar-overdue { background: #dc3545; }
+
+/* ... EL RESTO DEL ARCHIVO SE MANTIENE IGUAL ... */
+
+/* ... Variables y contenedores iguales ... */
+
+/* ESTILOS DE BARRAS */
+
+.gantt-bar-bg {
+  width: 100%;
+  height: 100%;
+  min-height: 6px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: visible; /* IMPORTANTE: Permitir que la línea salga del contenedor */
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.gantt-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+/* Colors */
+.gantt-bar-pending { background: #adb5bd; }
+.gantt-bar-active { background: #339af0; }
+.gantt-bar-completed { background: #51cf66; }
+.gantt-bar-paused { background: #fcc419; }
+.gantt-bar-overdue { background: #ff6b6b; }
+
+/* LÍNEA DE ERROR */
+.gantt-error-line {
+  position: absolute;
+  height: 2px;
+  background-color: #dc3545; 
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.gantt-error-line::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 6px;
+  background-color: #dc3545;
+}
+
+.gantt-progress-error { background: #dc3545; height: 2px !important; margin-top: 5px; }
+
+/* ... Resto del CSS igual ... */
