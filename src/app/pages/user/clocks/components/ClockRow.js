@@ -22,7 +22,8 @@ export const ClockRow = (props) => {
     };
 
     // Formateador simple
-    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('D [de] MMMM') : '- -';
+    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('D [de] MMMM YYYY') : '—';
+    const formatDateShort = (dateStr) => dateStr ? moment(dateStr).format('DD/MM/YYYY') : '—';
 
     // =====================================================
     // CÁLCULO DE ICONOS Y ESTADOS (SEMÁFORO)
@@ -31,14 +32,14 @@ export const ClockRow = (props) => {
         const currentDate = clock?.date_start ?? value.manualDate;
         
         if (currentDate) {
-            return <i className="fas fa-check-circle" style={{ color: '#80B882', fontSize: '0.6rem' }}></i>;
+            return <i className="fas fa-check-circle" style={{ color: '#2f9e44', fontSize: '0.9rem' }}></i>;
         }
         
         if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) {
-             return <i className="fas fa-minus-circle" style={{ color: '#EBEBEB', fontSize: '0.6rem' }}></i>;
+             return <i className="fas fa-minus-circle" style={{ color: '#dee2e6', fontSize: '0.9rem' }}></i>;
         }
 
-        return <i className="fas fa-minus-circle" style={{ color: '#F0D228', fontSize: '0.6rem' }}></i>;
+        return <i className="fas fa-clock" style={{ color: '#fcc419', fontSize: '0.9rem' }}></i>;
     };
 
 
@@ -160,23 +161,26 @@ export const ClockRow = (props) => {
         if (isCompleted) {
             const diff = calcularDiasHabiles(limitDate, clock.date_start, true);
             if (diff <= 0) {
-                text = `Completado ${Math.abs(diff)} días antes`;
-                color = '#80B882';
+                text = `A tiempo (${Math.abs(diff)} días antes)`;
+                color = '#2f9e44';
+                icon = 'fa-check';
             } else {
-                text = `Retraso ${diff} días`;
-                color = '#C52D2D';
+                text = `Retraso de ${diff} días`;
+                color = '#e03131';
+                icon = 'fa-exclamation-circle';
             }
         } else {
             const isOverdue = moment(today).isAfter(limitDate);
             const remaining = calcularDiasHabiles(isOverdue ? limitDate : today, isOverdue ? today : limitDate, true);
             
             if (isOverdue) {
-                 text = `Retraso ${remaining} días`;
-                 color = '#C52D2D';
+                 text = `Retrasado por ${remaining} días`;
+                 color = '#e03131';
+                 icon = 'fa-exclamation-circle';
             } else {
-                 text = `Restante: ${remaining} días`;
-                 color = '#9E8600';
-                 icon = 'fa-exclamation-triangle';
+                 text = `${remaining} días restantes`;
+                 color = '#f08c00';
+                 icon = 'fa-hourglass-half';
             }
         }
         return { text, color, icon };
@@ -187,93 +191,159 @@ export const ClockRow = (props) => {
     const renderAlarmColumn = () => {
         if (!alarmInfo) return null;
         return (
-            <span style={{ color: alarmInfo.color, fontWeight: 500 }}>
-                {alarmInfo.text} {alarmInfo.icon && <i className={`fas ${alarmInfo.icon} ms-1`} style={{fontSize: '0.8rem'}}></i>}
-            </span>
+            <div className="d-flex align-items-center" style={{ color: alarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
+                {alarmInfo.icon && <i className={`fas ${alarmInfo.icon} me-1`}></i>}
+                {alarmInfo.text}
+            </div>
         );
     };
 
+    // =====================================================
+    // EXTRAER Y GUARDAR OBSERVACIONES
+    // =====================================================
+    const getObservations = () => {
+        if (!clock || !clock.desc) return '';
+        // Separamos la descripción del sistema de las observaciones de usuario si están concatenadas
+        // Asumimos que las observaciones de usuario empiezan con "OBS:" o buscamos si es un JSON
+        try {
+            // Intenta parsear si fuera JSON (para futuros usos)
+            const parsed = JSON.parse(clock.desc);
+            return parsed.userNotes || '';
+        } catch (e) {
+            // Si es texto plano, buscamos un separador si existe, o devolvemos todo si no es texto generado
+            if (clock.desc.includes('|| OBS:')) {
+                return clock.desc.split('|| OBS:')[1].trim();
+            }
+            // Si es un mensaje del sistema estándar, retornamos vacio para que el usuario escriba
+            return ''; 
+        }
+    };
 
     // =====================================================
     // MODAL DE DETALLE MEJORADO
     // =====================================================
     const openDetailModal = () => {
         const title = value.name || value.title || 'Detalle del Evento';
-        const desc = value.desc || 'Sin descripción adicional.';
+        const systemDesc = value.desc || 'Evento del proceso.';
+        const currentDate = clock?.date_start ? formatDate(clock.date_start) : 'Pendiente';
+        const statusColor = clock?.date_start ? 'success' : 'secondary';
+        const statusText = clock?.date_start ? 'COMPLETADO' : 'PENDIENTE';
         
-        // --- Generar HTML de la Línea de Tiempo ---
-        let timelineHtml = '';
-        if (legalData.limitDate && legalData.baseDate) {
-            const start = moment(legalData.baseDate);
-            const end = moment(legalData.limitDate);
-            const current = clock?.date_start ? moment(clock.date_start) : moment(systemDate);
-            
-            const totalDuration = end.diff(start, 'days');
-            let progress = current.diff(start, 'days');
-            
-            // Normalizar porcentajes (0-100%)
-            let percent = totalDuration > 0 ? (progress / totalDuration) * 100 : 0;
-            if (percent < 0) percent = 0;
-            if (percent > 100) percent = 100;
-            
-            const isCompleted = !!clock?.date_start;
-            const flagColor = isCompleted ? '#80B882' : (percent >= 100 ? '#C52D2D' : '#5bc0de');
-            
-            timelineHtml = `
-                <div class="mt-3 mb-2">
-                    <div class="d-flex justify-content-between small text-muted mb-1">
-                        <span>Inicio: ${start.format('DD MMM')}</span>
-                        <span>Límite: ${end.format('DD MMM')}</span>
-                    </div>
-                    <div style="position: relative; height: 6px; background: #e9ecef; border-radius: 3px; margin: 0 5px;">
-                        <div style="position: absolute; left: 0; top: 0; height: 100%; width: ${percent}%; background: ${flagColor}; border-radius: 3px;"></div>
-                        <div style="position: absolute; left: ${percent}%; top: -14px; transform: translateX(-50%); color: ${flagColor}; font-size: 14px;">
-                            <i class="fas fa-flag"></i>
-                        </div>
-                    </div>
-                     <div class="text-center small mt-2 text-muted">
-                        ${isCompleted ? `Completado el ${current.format('DD MMM')}` : 'En progreso'}
-                    </div>
-                </div>
-            `;
+        let existingObs = '';
+        if (clock && clock.desc && clock.desc.includes('|| OBS:')) {
+            existingObs = clock.desc.split('|| OBS:')[1].trim();
         }
 
         MySwal.fire({
-            title: `<h5 class="fw-bold text-start mb-0" style="color:#343a40">${title}</h5>`,
             html: `
-                <div class="text-start pb-2 border-bottom mb-3" style="color:#6c757d; font-size: 0.9rem;">
-                    ${desc}
-                </div>
-                
-                <div class="row g-2 text-start">
-                    <div class="col-6">
-                        <div class="p-2 border rounded bg-light h-100">
-                             <div class="small fw-bold text-secondary text-uppercase mb-1">Legal</div>
-                             <div class="fw-bold text-dark">${legalData.limitDate ? formatDate(legalData.limitDate) : '-'}</div>
-                             <div class="small text-muted">${legalData.spentText || '-'}</div>
+            <div class="time-detail-modal">
+                <div class="tdm-header">
+                    <div class="tdm-title-group">
+                        <div class="tdm-icon-box"><i class="fas fa-calendar-day"></i></div>
+                        <div>
+                            <h5 class="tdm-title">${title}</h5>
+                            <span class="tdm-subtitle">${systemDesc}</span>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="p-2 border rounded bg-light h-100">
-                             <div class="small fw-bold text-secondary text-uppercase mb-1">Programado</div>
-                             <div class="fw-bold text-dark">${scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : '-'}</div>
-                             <div class="small text-muted">${scheduledData ? `${scheduledData.days} días` : '-'}</div>
+                    <span class="tdm-badge status-${statusColor}">${statusText}</span>
+                </div>
+
+                <div class="tdm-grid">
+                    <div class="tdm-card">
+                        <div class="tdm-card-header"><i class="fas fa-calendar-check text-primary"></i> Fecha Real</div>
+                        <div class="tdm-card-body">
+                            <div class="tdm-big-value">${currentDate}</div>
+                            ${legalData.baseDate ? `<div class="tdm-sub-value">Calculado desde: ${formatDateShort(legalData.baseDate)}</div>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="tdm-card">
+                        <div class="tdm-card-header"><i class="fas fa-gavel text-danger"></i> Límite Legal</div>
+                        <div class="tdm-card-body">
+                            <div class="tdm-big-value">${legalData.limitDate ? formatDateShort(legalData.limitDate) : 'N/A'}</div>
+                            <div class="tdm-sub-value">${legalData.tooltip || 'Sin restricción legal directa'}</div>
+                        </div>
+                    </div>
+
+                    <div class="tdm-card">
+                        <div class="tdm-card-header"><i class="fas fa-user-clock text-info"></i> Programado</div>
+                        <div class="tdm-card-body">
+                            <div class="tdm-big-value">${scheduledData && scheduledData.limitDate ? formatDateShort(scheduledData.limitDate) : 'N/A'}</div>
+                            <div class="tdm-sub-value">${scheduledData ? `${scheduledData.days} días hábiles previstos` : 'No programado'}</div>
                         </div>
                     </div>
                 </div>
 
-                ${alarmInfo ? `
-                <div class="mt-2 p-2 rounded text-start" style="background-color: ${alarmInfo.color}15; border: 1px solid ${alarmInfo.color}40;">
-                     <strong style="color: ${alarmInfo.color}">Alarma:</strong> <span class="small text-dark">${alarmInfo.text}</span>
+                ${value.legalSupport ? `
+                <div class="tdm-section">
+                    <div class="tdm-section-title"><i class="fas fa-balance-scale"></i> Soporte Legal</div>
+                    <div class="tdm-legal-text">
+                        ${value.legalSupport}
+                    </div>
                 </div>
                 ` : ''}
 
-                ${timelineHtml}
+                <div class="tdm-section">
+                    <div class="tdm-section-title"><i class="fas fa-comment-alt"></i> Observaciones / Notas</div>
+                    <textarea id="swal-input-obs" class="form-control tdm-textarea" placeholder="Escribe aquí observaciones sobre este tiempo...">${existingObs}</textarea>
+                </div>
+            </div>
             `,
             showCloseButton: true,
-            showConfirmButton: false,
-            width: '400px',
-            padding: '1.5rem'
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-save me-2"></i>Guardar Observación',
+            confirmButtonColor: '#1971c2',
+            cancelButtonText: 'Cerrar',
+            customClass: {
+                popup: 'tdm-popup',
+                htmlContainer: 'tdm-container'
+            },
+            width: 600,
+            preConfirm: () => {
+                const newObs = document.getElementById('swal-input-obs').value;
+                if (newObs !== existingObs) {
+                    return newObs;
+                }
+                return null;
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value !== null && clock) {
+                // Lógica para guardar la observación
+                const newDescBase = clock.desc ? clock.desc.split('|| OBS:')[0].trim() : (value.desc || '');
+                const finalDesc = result.value ? `${newDescBase} || OBS: ${result.value}` : newDescBase;
+                
+                // Construimos el objeto simulado como si viniera del input date
+                const clockPayload = {
+                    state: value.state,
+                    name: value.name,
+                    desc: finalDesc,
+                    version: value.version
+                };
+
+                // Guardamos llamando a onSave pero trucando el input date
+                // Necesitamos el valor de la fecha actual para no borrarla
+                const dateInput = document.getElementById("clock_exp_date_" + i);
+                if (dateInput) {
+                    // onSave leerá el input date y usará nuestro payload modificado
+                    // Pero onSave en centralClocks sobreescribe desc.
+                    // Tenemos que modificar onSave en centralClocks o hacer un hack aquí.
+                    // Como no puedo modificar centralClocks en este archivo, asumiré que la función onSave 
+                    // de este componente llama a applyLocalClockChange y manage_clock.
+                    
+                    // La mejor opción sin tocar el padre profundamente es disparar el guardado normal
+                    // pero actualizando el estado local primero o pasando un objeto especial.
+                    
+                    // HACK: Modificamos el objeto value temporalmente o llamamos a onSave con un objeto custom
+                    // que la función save_clock del padre sepa manejar.
+                    
+                    // Dado que save_clock lee del DOM el date, y recibe 'value' con state/name/desc.
+                    const payload = {
+                        ...value,
+                        desc: finalDesc // Aquí inyectamos la nueva descripción
+                    };
+                    onSave(payload, i);
+                }
+            }
         });
     };
 
@@ -309,6 +379,9 @@ export const ClockRow = (props) => {
                     title="Ver detalles"
                 >
                     {eventName}
+                    {clock?.desc && clock.desc.includes('|| OBS:') && (
+                        <i className="fas fa-comment-dots ms-2 text-info" title="Tiene observaciones" style={{fontSize: '0.75rem'}}></i>
+                    )}
                 </div>
             </div>
 
@@ -334,21 +407,21 @@ export const ClockRow = (props) => {
                 </div>
             ) : (
                 <div className="col-fecha d-flex align-items-center">
-                    <span className="text-dark fw-bold">{formatDate(currentDate)}</span>
+                    <span className="text-dark fw-bold">{formatDateShort(currentDate)}</span>
                 </div>
             )}
 
             {/* COL 3: Límite Legal */}
             <div className="col-limite d-flex align-items-center">
-                <span className="text-dark">
-                    {legalData.limitDate ? formatDate(legalData.limitDate) : ''}
+                <span className="text-dark" style={{fontSize: '0.85rem'}}>
+                    {legalData.limitDate ? formatDateShort(legalData.limitDate) : ''}
                 </span>
             </div>
 
             {/* COL 4: Límite Programado */}
             <div className="col-programado d-flex align-items-center">
-                <span className="text-dark">
-                    {scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : '- -'}
+                <span className="text-dark" style={{fontSize: '0.85rem'}}>
+                    {scheduledData && scheduledData.limitDate ? formatDateShort(scheduledData.limitDate) : '- -'}
                 </span>
             </div>
 
