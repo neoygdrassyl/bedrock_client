@@ -228,6 +228,7 @@ export const ClockRow = (props) => {
         const currentDate = clock?.date_start ? formatDate(clock.date_start) : 'Pendiente';
         const statusColor = clock?.date_start ? 'success' : 'secondary';
         const statusText = clock?.date_start ? 'COMPLETADO' : 'PENDIENTE';
+        const state = clock?.state ?? value.state;
         
         let existingObs = '';
         if (clock && clock.desc && clock.desc.includes('|| OBS:')) {
@@ -261,7 +262,7 @@ export const ClockRow = (props) => {
                         <div class="tdm-card-header"><i class="fas fa-gavel text-danger"></i> Límite Legal</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${legalData.limitDate ? formatDateShort(legalData.limitDate) : 'N/A'}</div>
-                            <div class="tdm-sub-value">${legalData.tooltip || 'Sin restricción legal directa'}</div>
+                            <div class="tdm-sub-value">${(state === 501 ? 'Límite legal con holgura de 2 días' : state === 502 ? 'Límite legal con holgura de 1 día' : '') || ''}</div>
                         </div>
                     </div>
 
