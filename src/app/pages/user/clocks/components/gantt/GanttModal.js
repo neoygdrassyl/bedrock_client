@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GanttChart } from './GanttChart';
 import moment from 'moment';
 
-// Panel de detalle (ahora muestra ancho/posiciones)
+// Panel de detalle (ahora muestra ancho/posiciones y retraso)
 const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostActa, extension }) => {
   if (!phase) return null;
 
@@ -15,9 +15,9 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
     usedDays,
     responsible,
     parallelActors,
-    blockWidth,      // <-- viene desde GanttChart (fase procesada)
-    blockBaseDays,   // <-- viene desde GanttChart (debug)
-    startPosition,   // <-- viene desde GanttChart
+    blockWidth,      
+    blockBaseDays,   
+    startPosition,   
     phaseIndex,
   } = phase;
 
@@ -38,6 +38,9 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
     default:
       break;
   }
+
+  // Cálculo de retraso general de la fase
+  const delayDays = Math.max(0, (usedDays || 0) - (totalDays || 0));
 
   return (
     <div className="gantt-phase-detail-content">
@@ -79,7 +82,15 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
           <span>{(usedDays ?? 0)} / {(totalDays ?? 0)} días</span>
         </div>
 
-        {/* NUEVO: Debug visual de layout */}
+        {/* ALERTA DE RETRASO PRINCIPAL */}
+        {delayDays > 0 && (
+           <div className="gantt-detail-row" style={{ backgroundColor: '#fff5f5', border: '1px solid #ffc9c9' }}>
+             <span className="gantt-detail-label" style={{ color: '#dc3545' }}>Retraso</span>
+             <span style={{ color: '#dc3545', fontWeight: 'bold' }}>{delayDays} días</span>
+           </div>
+        )}
+
+        {/* Debug visual de layout */}
         <div className="gantt-detail-row">
           <span className="gantt-detail-label">Ancho bloque</span>
           <span>{blockWidth ?? '—'} d</span>
@@ -99,31 +110,55 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
           <div className="gantt-detail-actors">
             <h5>Actores Paralelos</h5>
 
-            <div className="gantt-actor-card">
-              <div className="gantt-actor-header">
-                <i className={`fas ${parallelActors.primary.icon}`} />
-                <span>{parallelActors.primary.name}</span>
-              </div>
-              <div className="gantt-actor-info">
-                <span>
-                  {parallelActors.primary.usedDays} / {parallelActors.primary.totalDays} días
-                </span>
-                <span>{parallelActors.primary.status}</span>
-              </div>
-            </div>
+            {/* ACTOR PRIMARIO */}
+            {(() => {
+                const pDelay = Math.max(0, (parallelActors.primary.usedDays || 0) - (parallelActors.primary.totalDays || 0));
+                return (
+                    <div className="gantt-actor-card">
+                        <div className="gantt-actor-header">
+                            <i className={`fas ${parallelActors.primary.icon}`} />
+                            <span>{parallelActors.primary.name}</span>
+                        </div>
+                        <div className="gantt-actor-info">
+                            <span>
+                            {parallelActors.primary.usedDays} / {parallelActors.primary.totalDays} días
+                            </span>
+                            <span>{parallelActors.primary.status}</span>
+                        </div>
+                        {pDelay > 0 && (
+                            <div style={{ marginTop: '8px', fontSize: '12px', color: '#dc3545', fontWeight: '600' }}>
+                                <i className="fas fa-exclamation-triangle me-1"></i>
+                                {pDelay} días de retraso
+                            </div>
+                        )}
+                    </div>
+                );
+            })()}
 
-            <div className="gantt-actor-card">
-              <div className="gantt-actor-header">
-                <i className={`fas ${parallelActors.secondary.icon}`} />
-                <span>{parallelActors.secondary.name}</span>
-              </div>
-              <div className="gantt-actor-info">
-                <span>
-                  {parallelActors.secondary.usedDays} / {parallelActors.secondary.totalDays} días
-                </span>
-                <span>{parallelActors.secondary.status}</span>
-              </div>
-            </div>
+            {/* ACTOR SECUNDARIO */}
+            {(() => {
+                const sDelay = Math.max(0, (parallelActors.secondary.usedDays || 0) - (parallelActors.secondary.totalDays || 0));
+                return (
+                    <div className="gantt-actor-card">
+                        <div className="gantt-actor-header">
+                            <i className={`fas ${parallelActors.secondary.icon}`} />
+                            <span>{parallelActors.secondary.name}</span>
+                        </div>
+                        <div className="gantt-actor-info">
+                            <span>
+                            {parallelActors.secondary.usedDays} / {parallelActors.secondary.totalDays} días
+                            </span>
+                            <span>{parallelActors.secondary.status}</span>
+                        </div>
+                        {sDelay > 0 && (
+                            <div style={{ marginTop: '8px', fontSize: '12px', color: '#dc3545', fontWeight: '600' }}>
+                                <i className="fas fa-exclamation-triangle me-1"></i>
+                                {sDelay} días de retraso
+                            </div>
+                        )}
+                    </div>
+                );
+            })()}
           </div>
         )}
 
@@ -265,6 +300,10 @@ export const GanttModal = ({
               <div className="gantt-legend-item">
                 <div className="gantt-legend-color gantt-segment-extension" />
                 <span>Prórroga</span>
+              </div>
+              <div className="gantt-legend-item" style={{ marginLeft: '16px' }}>
+                <div style={{ width: '20px', height: '4px', background: '#dc3545', marginTop: '4px' }} />
+                <span>Exceso/Retraso</span>
               </div>
             </div>
           </div>
