@@ -400,6 +400,7 @@ export default function EXP_CLOCKS(props) {
 
     const modalContainer = document.createElement('div');
     modalContainer.id = 'schedule-modal-root';
+    modalContainer.className = 'schedule-modal-wrapper'; // Clase para estilos específicos
 
     const handleScheduleChange = (newSchedule) => {
       localScheduleData = newSchedule;
@@ -422,12 +423,15 @@ export default function EXP_CLOCKS(props) {
     MySwal.fire({
       title: 'Programar Tiempos del Proceso',
       html: modalContainer,
-      width: 1000,
+      width: '90vw', // Usamos un ancho relativo al viewport para mayor espacio
       showCancelButton: true,
       showDenyButton: hasSchedule,
       confirmButtonText: '<i className="fas fa-save me-2"></i>Guardar Programación',
       cancelButtonText: 'Cancelar',
       denyButtonText: '<i className="fas fa-trash me-2"></i>Eliminar Programación',
+      customClass: {
+        popup: 'schedule-modal-popup', // Clase para control de altura y scroll
+      },
       didOpen: () => {
         ReactDOM.render(
           <ScheduleModal
@@ -828,8 +832,13 @@ export default function EXP_CLOCKS(props) {
             activePhaseId={activePhaseId}
             onExpandGantt={() => setShowGanttModal(true)} 
           />
-          {/* El calendario se muestra condicionalmente */}
-          {showCalendar && <HolidayCalendar />}
+          {/* El calendario se muestra condicionalmente y flotante */}
+          {showCalendar && (
+            <HolidayCalendar 
+              isFloating={true} 
+              onClose={() => setShowCalendar(false)} 
+            />
+          )}
         </div>
       </div>
     </div>

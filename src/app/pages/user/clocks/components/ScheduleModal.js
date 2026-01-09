@@ -98,15 +98,12 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
 
   // Obtener límite legal para referencia desde tabla maestra
   const getLegalLimitForReference = (clockValue) => {
-    // Primero intentar obtener desde los límites legales pasados desde la tabla maestra
     if (legalLimits && legalLimits[clockValue.state]) {
       const limitData = legalLimits[clockValue.state];
       if (limitData.limitDate) {
         return moment(limitData.limitDate).format('DD/MM/YYYY');
       }
     }
-
-    // Si no está en legalLimits, no mostrar nada (celda vacía)
     return '';
   };
 
@@ -115,10 +112,6 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
     const clockState = clockValue.state;
     const scheduled = localSchedule[clockState] || {};
     
-    const clock = clockValue.version !== undefined
-      ? getClockVersion(clockValue.state, clockValue.version)
-      : getClock(clockValue.state);
-
     // Obtener fecha de referencia para cálculos
     const refDate = getReferenceDate(
       clockState,
@@ -151,78 +144,73 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
     return (
       <tr key={`schedule-row-${clockState}-${index}`} className={hasSchedule ? 'table-active' : ''}>
         <td className="align-middle">
-          <div className="d-flex align-items-center">
-            <span className="fw-semibold">{clockValue.name}</span>
+          <div className="d-flex flex-column">
+            <span className="fw-semibold text-truncate" title={clockValue.name} style={{maxWidth: '350px'}}>{clockValue.name}</span>
             {clockValue.desc && (
-              <span 
-                className="ms-2 text-muted small" 
-                style={{ fontSize: '0.75rem' }}
-                title={clockValue.desc}
-              >
-                <i className="fas fa-info-circle"></i>
-              </span>
+              <small className="text-muted text-truncate" style={{maxWidth: '350px'}} title={clockValue.desc}>
+                {clockValue.desc}
+              </small>
             )}
           </div>
         </td>
         
         <td className="align-middle">
-          <input
-            type="number"
-            className="form-control form-control-sm"
-            placeholder="Ej: 5"
-            min="1"
-            value={daysValue || ''}
-            onChange={(e) => handleInputChange(clockState, 'days', e.target.value)}
-            disabled={dateValue ? true : false}
-          />
-          {refDate && displayDate && daysValue && (
-            <small className="text-muted d-block mt-1">
-              = {moment(displayDate).format('DD/MM/YYYY')}
-            </small>
-          )}
-          {!refDate && daysValue && (
-            <small className="text-warning d-block mt-1">
-              <i className="fas fa-exclamation-triangle me-1"></i>
-              Sin fecha ref.
-            </small>
-          )}
+            <div className="input-group input-group-sm">
+                <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Días"
+                    min="1"
+                    value={daysValue || ''}
+                    onChange={(e) => handleInputChange(clockState, 'days', e.target.value)}
+                    disabled={dateValue ? true : false}
+                />
+                <span className="input-group-text bg-light"><i className="fas fa-hashtag"></i></span>
+            </div>
+            {refDate && displayDate && daysValue && (
+                <div className="conversion-hint mt-1">
+                 <i className="fas fa-arrow-right me-1"></i> {moment(displayDate).format('DD/MM/YYYY')}
+                </div>
+            )}
         </td>
         
         <td className="align-middle">
-          <input
-            type="date"
-            className="form-control form-control-sm"
-            value={dateValue || ''}
-            onChange={(e) => handleInputChange(clockState, 'date', e.target.value)}
-            disabled={daysValue ? true : false}
-          />
-          {refDate && displayDays && dateValue && (
-            <small className="text-muted d-block mt-1">
-              = {displayDays} días hábiles
-            </small>
-          )}
-          {!refDate && dateValue && (
-            <small className="text-warning d-block mt-1">
-              <i className="fas fa-exclamation-triangle me-1"></i>
-              Sin fecha ref.
-            </small>
-          )}
+            <div className="input-group input-group-sm">
+                <input
+                    type="date"
+                    className="form-control"
+                    value={dateValue || ''}
+                    onChange={(e) => handleInputChange(clockState, 'date', e.target.value)}
+                    disabled={daysValue ? true : false}
+                />
+            </div>
+             {refDate && displayDays && dateValue && (
+                <div className="conversion-hint mt-1">
+                 <i className="fas fa-arrow-right me-1"></i> {displayDays} días hábiles
+                </div>
+            )}
         </td>
         
         <td className="align-middle text-center">
-          <span className="text-muted small">{legalLimit}</span>
+            {legalLimit ? (
+                <span className="badge bg-light text-dark border">{legalLimit}</span>
+            ) : (
+                <span className="text-muted">-</span>
+            )}
         </td>
         
         <td className="align-middle text-center">
-          {hasSchedule && (
+          {hasSchedule ? (
             <button
               type="button"
-              className="btn btn-sm btn-outline-danger"
+              className="btn btn-sm btn-icon btn-outline-danger border-0"
               onClick={() => handleDelete(clockState)}
               title="Eliminar programación"
             >
               <i className="fas fa-trash-alt"></i>
             </button>
+          ) : (
+             <span className="text-muted small"><i className="fas fa-circle" style={{fontSize: '5px'}}></i></span> 
           )}
         </td>
       </tr>
@@ -232,46 +220,48 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
   const scheduledCount = Object.keys(localSchedule).length;
 
   return (
-    <div className="schedule-modal-table-container">
-      <div className="alert alert-info mb-3">
-        <div className="d-flex align-items-center">
-          <i className="fas fa-info-circle me-2"></i>
-          <div>
-            <strong>Instrucciones:</strong> Programa cada tiempo ingresando <strong>días disponibles</strong> O <strong>fecha específica</strong>.
-            <br/>
-            <small className="text-muted">
-              Los campos se convierten automáticamente para visualización. Guarda al final para aplicar todos los cambios.
-            </small>
+    <div className="schedule-modal-layout">
+      {/* 1. Header & Instructions Panel */}
+      <div className="schedule-modal-header-panel">
+          <div className="row g-2 align-items-center">
+              <div className="col-md-8">
+                  <div className="alert alert-info mb-0 py-2 px-3 small">
+                      <div className="d-flex align-items-center">
+                          <i className="fas fa-info-circle fs-4 me-3 text-info"></i>
+                          <div>
+                              <strong>Instrucciones:</strong> Define los tiempos usando <strong>días hábiles</strong> O una <strong>fecha específica</strong>.<br/>
+                              Los tiempos sin fecha de referencia esperarán a que exista para calcular la conversión.
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div className="col-md-4">
+                 <div className={`card text-center py-2 ${scheduledCount > 0 ? 'border-success bg-success-subtle' : 'bg-light'}`}>
+                    <h3 className="m-0 fw-bold">{scheduledCount}</h3>
+                    <small className="text-muted text-uppercase">Tiempos Programados</small>
+                 </div>
+              </div>
           </div>
-        </div>
       </div>
 
-      {scheduledCount > 0 && (
-        <div className="alert alert-success mb-3">
-          <i className="fas fa-check-circle me-2"></i>
-          <strong>{scheduledCount}</strong> tiempo{scheduledCount !== 1 ? 's' : ''} programado{scheduledCount !== 1 ? 's' : ''}
-        </div>
-      )}
-
-      <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-        <table className="table table-sm table-hover table-bordered">
-          <thead className="table-light" style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+      {/* 2. Scrollable Table Area */}
+      <div className="schedule-modal-table-area">
+        <table className="table table-sm table-hover table-bordered mb-0 table-fixed-header">
+          <thead className="table-light">
             <tr>
-              <th style={{ width: '30%' }}>Evento</th>
-              <th style={{ width: '20%' }}>Días Disponibles</th>
-              <th style={{ width: '20%' }}>Fecha Especificada</th>
-              <th style={{ width: '20%' }} className="text-center">Límite Legal (Ref.)</th>
-              <th style={{ width: '10%' }} className="text-center">Acciones</th>
+              <th style={{ width: '40%' }}>Evento / Hito</th>
+              <th style={{ width: '18%' }}>Días Disponibles</th>
+              <th style={{ width: '22%' }}>Fecha Objetivo</th>
+              <th style={{ width: '15%' }} className="text-center">Límite Legal</th>
+              <th style={{ width: '5%' }} className="text-center"></th>
             </tr>
           </thead>
           <tbody>
             {schedulableClocks.length === 0 ? (
               <tr>
-                <td colSpan="5" className="text-center text-muted py-4">
-                  <i className="fas fa-info-circle me-2"></i>
-                  No hay tiempos programables disponibles. 
-                  <br/>
-                  <small>Los tiempos ya ejecutados no pueden programarse.</small>
+                <td colSpan="5" className="text-center text-muted py-5">
+                  <i className="fas fa-calendar-times fa-2x mb-2"></i><br/>
+                  No hay tiempos programables disponibles en este momento.
                 </td>
               </tr>
             ) : (
@@ -279,33 +269,6 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
             )}
           </tbody>
         </table>
-      </div>
-
-      <div className="mt-3 p-3 bg-light rounded">
-        <div className="row">
-          <div className="col-md-6">
-            <h6 className="mb-2 text-muted">
-              <i className="fas fa-lightbulb me-2"></i>
-              Información Importante
-            </h6>
-            <ul className="small mb-0">
-              <li>Los campos <strong>Días</strong> y <strong>Fecha</strong> son excluyentes</li>
-              <li>La conversión es solo para visualización, se guarda el dato original</li>
-              <li>Los tiempos sin fecha de referencia esperarán a que exista</li>
-            </ul>
-          </div>
-          <div className="col-md-6">
-            <h6 className="mb-2 text-muted">
-              <i className="fas fa-exclamation-triangle me-2"></i>
-              Validaciones
-            </h6>
-            <ul className="small mb-0">
-              <li>No se pueden programar tiempos ya ejecutados</li>
-              <li>Los días deben ser números positivos</li>
-              <li>Las fechas deben ser válidas y futuras</li>
-            </ul>
-          </div>
-        </div>
       </div>
     </div>
   );
