@@ -21,9 +21,8 @@ export const ClockRow = (props) => {
         return getClock(state);
     };
 
-    // Formateador simple
-    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('D [de] MMMM YYYY') : '—';
-    const formatDateShort = (dateStr) => dateStr ? moment(dateStr).format('DD/MM/YYYY') : '—';
+    // Formateador textual
+    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('D [de] MMMM') : '- -';
 
     // =====================================================
     // CÁLCULO DE ICONOS Y ESTADOS (SEMÁFORO)
@@ -44,26 +43,50 @@ export const ClockRow = (props) => {
 
 
     // =====================================================
-    // CÁLCULO DE LÍMITES LEGALES
+    // CÁLCULO DE LÍMITES LEGALES (Incluyendo tu corrección de -1 día)
     // =====================================================
     const calculateLegalData = () => {
         let limitDate = null;
         let tooltip = '';
-        let baseDate = null; // Para la línea de tiempo
+        let baseDate = null; 
 
+        // --- Lógica Especial para Suspensiones (350/351) ---
         if (value.state === 350 || value.state === 351) {
             const isEndPre = value.state === 350;
             const thisSusp = isEndPre ? suspensionPreActa : suspensionPostActa;
             if (thisSusp.start?.date_start) {
                 baseDate = thisSusp.start.date_start;
                 const otherUsedDays = isEndPre 
-                ? (suspensionPostActa.end?.date_start ?  suspensionPostActa.days : 0)
+                ? (suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0)
                 : (suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0);
+                
                 const availableForThis = 10 - otherUsedDays;
-                limitDate = sumarDiasHabiles(thisSusp.start.date_start, availableForThis);
-                tooltip = `Suspensión: Máximo ${availableForThis} días hábiles`;
+                
+                // Corrección: Inclusivo, restamos 1 día
+                const daysToAdd = Math.max(0, availableForThis - 1);
+                
+                limitDate = sumarDiasHabiles(thisSusp.start.date_start, daysToAdd);
+                tooltip = `Suspensión: Máximo ${availableForThis} días hábiles (Inclusivo)`;
             }
         } 
+        // --- Lógica Especial para Prórroga (401) ---
+        else if (value.state === 401) {
+             const startExt = getClockScoped(400)?.date_start;
+             let extDuration = 0;
+             if (value.limit && Array.isArray(value.limit) && value.limit[0] && typeof value.limit[0][1] === 'number') {
+                 extDuration = value.limit[0][1];
+             } else {
+                 extDuration = 22; 
+             }
+
+             if (startExt) {
+                 baseDate = startExt;
+                 // Corrección: Inclusivo, restamos 1 día
+                 const daysToAdd = Math.max(0, extDuration - 1); 
+                 limitDate = sumarDiasHabiles(startExt, daysToAdd);
+                 tooltip = `Prórroga: ${extDuration} días hábiles (Inclusivo)`;
+             }
+        }
         else if (value.state === 30) {
             const ldf = getClockScoped(5)?.date_start;
             if (ldf) {
@@ -95,7 +118,7 @@ export const ClockRow = (props) => {
                          tooltip = `Viabilidad (Cumple): Notificación + ${viaTime} días`;
                      }
                  } else if (isCumple || !hasActa) {
-                     baseDate = acta1?.date_start || ldf; // Fallback a ldf si es proyección
+                     baseDate = acta1?.date_start || ldf; 
                      limitDate = sumarDiasHabiles(acta1?.date_start || ldf, viaTime);
                      tooltip = `Viabilidad (Proyección): Acta 1 + ${viaTime} días`;
                  } else if (hasActa && !isCumple && corrDate) {
@@ -114,7 +137,7 @@ export const ClockRow = (props) => {
                     for (const st of startStates) {
                         const c = getClockScoped(st);
                         if (c?.date_start) {
-                            baseDate = c.date_start; // Capturamos la fecha base
+                            baseDate = c.date_start; 
                             return sumarDiasHabiles(c.date_start, days);
                         }
                     }
@@ -146,13 +169,14 @@ export const ClockRow = (props) => {
     })();
 
     // =====================================================
-    // CÁLCULO DE ALARMA
+    // CÁLCULO DE ALARMA (CORREGIDO PARA USAR systemDate)
     // =====================================================
     const getAlarmInfo = () => {
         if (!scheduledData || !scheduledData.limitDate) return null;
         const { limitDate } = scheduledData;
         const isCompleted = !!clock?.date_start;
-        const today = systemDate;
+        // AQUÍ ESTABA EL PROBLEMA: Usamos systemDate en lugar de moment()
+        const today = systemDate; 
         
         let text = '';
         let color = '';
@@ -170,6 +194,7 @@ export const ClockRow = (props) => {
                 icon = 'fa-exclamation-circle';
             }
         } else {
+            // Comparar contra systemDate
             const isOverdue = moment(today).isAfter(limitDate);
             const remaining = calcularDiasHabiles(isOverdue ? limitDate : today, isOverdue ? today : limitDate, true);
             
@@ -203,18 +228,13 @@ export const ClockRow = (props) => {
     // =====================================================
     const getObservations = () => {
         if (!clock || !clock.desc) return '';
-        // Separamos la descripción del sistema de las observaciones de usuario si están concatenadas
-        // Asumimos que las observaciones de usuario empiezan con "OBS:" o buscamos si es un JSON
         try {
-            // Intenta parsear si fuera JSON (para futuros usos)
             const parsed = JSON.parse(clock.desc);
             return parsed.userNotes || '';
         } catch (e) {
-            // Si es texto plano, buscamos un separador si existe, o devolvemos todo si no es texto generado
             if (clock.desc.includes('|| OBS:')) {
                 return clock.desc.split('|| OBS:')[1].trim();
             }
-            // Si es un mensaje del sistema estándar, retornamos vacio para que el usuario escriba
             return ''; 
         }
     };
@@ -254,14 +274,14 @@ export const ClockRow = (props) => {
                         <div class="tdm-card-header"><i class="fas fa-calendar-check text-primary"></i> Fecha Real</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${currentDate}</div>
-                            ${legalData.baseDate ? `<div class="tdm-sub-value">Calculado desde: ${formatDateShort(legalData.baseDate)}</div>` : ''}
+                            ${legalData.baseDate ? `<div class="tdm-sub-value">Calculado desde: ${formatDate(legalData.baseDate)}</div>` : ''}
                         </div>
                     </div>
 
                     <div class="tdm-card">
                         <div class="tdm-card-header"><i class="fas fa-gavel text-danger"></i> Límite Legal</div>
                         <div class="tdm-card-body">
-                            <div class="tdm-big-value">${legalData.limitDate ? formatDateShort(legalData.limitDate) : 'N/A'}</div>
+                            <div class="tdm-big-value">${legalData.limitDate ? formatDate(legalData.limitDate) : 'N/A'}</div>
                             <div class="tdm-sub-value">${(state === 501 ? 'Límite legal con holgura de 2 días' : state === 502 ? 'Límite legal con holgura de 1 día' : '') || ''}</div>
                         </div>
                     </div>
@@ -269,7 +289,7 @@ export const ClockRow = (props) => {
                     <div class="tdm-card">
                         <div class="tdm-card-header"><i class="fas fa-user-clock text-info"></i> Programado</div>
                         <div class="tdm-card-body">
-                            <div class="tdm-big-value">${scheduledData && scheduledData.limitDate ? formatDateShort(scheduledData.limitDate) : 'N/A'}</div>
+                            <div class="tdm-big-value">${scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : 'N/A'}</div>
                             <div class="tdm-sub-value">${scheduledData ? `${scheduledData.days} días hábiles previstos` : 'No programado'}</div>
                         </div>
                     </div>
@@ -309,41 +329,14 @@ export const ClockRow = (props) => {
             }
         }).then((result) => {
             if (result.isConfirmed && result.value !== null && clock) {
-                // Lógica para guardar la observación
                 const newDescBase = clock.desc ? clock.desc.split('|| OBS:')[0].trim() : (value.desc || '');
                 const finalDesc = result.value ? `${newDescBase} || OBS: ${result.value}` : newDescBase;
                 
-                // Construimos el objeto simulado como si viniera del input date
-                const clockPayload = {
-                    state: value.state,
-                    name: value.name,
-                    desc: finalDesc,
-                    version: value.version
+                const payload = {
+                    ...value,
+                    desc: finalDesc
                 };
-
-                // Guardamos llamando a onSave pero trucando el input date
-                // Necesitamos el valor de la fecha actual para no borrarla
-                const dateInput = document.getElementById("clock_exp_date_" + i);
-                if (dateInput) {
-                    // onSave leerá el input date y usará nuestro payload modificado
-                    // Pero onSave en centralClocks sobreescribe desc.
-                    // Tenemos que modificar onSave en centralClocks o hacer un hack aquí.
-                    // Como no puedo modificar centralClocks en este archivo, asumiré que la función onSave 
-                    // de este componente llama a applyLocalClockChange y manage_clock.
-                    
-                    // La mejor opción sin tocar el padre profundamente es disparar el guardado normal
-                    // pero actualizando el estado local primero o pasando un objeto especial.
-                    
-                    // HACK: Modificamos el objeto value temporalmente o llamamos a onSave con un objeto custom
-                    // que la función save_clock del padre sepa manejar.
-                    
-                    // Dado que save_clock lee del DOM el date, y recibe 'value' con state/name/desc.
-                    const payload = {
-                        ...value,
-                        desc: finalDesc // Aquí inyectamos la nueva descripción
-                    };
-                    onSave(payload, i);
-                }
+                onSave(payload, i);
             }
         });
     };
@@ -408,21 +401,21 @@ export const ClockRow = (props) => {
                 </div>
             ) : (
                 <div className="col-fecha d-flex align-items-center">
-                    <span className="text-dark fw-bold">{formatDateShort(currentDate)}</span>
+                    <span className="text-dark fw-bold">{formatDate(currentDate)}</span>
                 </div>
             )}
 
             {/* COL 3: Límite Legal */}
             <div className="col-limite d-flex align-items-center">
                 <span className="text-dark" style={{fontSize: '0.85rem'}}>
-                    {legalData.limitDate ? formatDateShort(legalData.limitDate) : ''}
+                    {legalData.limitDate ? formatDate(legalData.limitDate) : ''}
                 </span>
             </div>
 
             {/* COL 4: Límite Programado */}
             <div className="col-programado d-flex align-items-center">
                 <span className="text-dark" style={{fontSize: '0.85rem'}}>
-                    {scheduledData && scheduledData.limitDate ? formatDateShort(scheduledData.limitDate) : '- -'}
+                    {scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : '- -'}
                 </span>
             </div>
 

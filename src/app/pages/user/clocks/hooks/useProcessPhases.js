@@ -30,14 +30,35 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     const radicacionDate = currentItem.date;
     const ldfDate = getClock(5)?.date_start;
     const vallaDate = getClock(503)?.date_start;
+    
+    // Fase 1 y Transición a Fase 3
     const acta1 = getClock(30);
     const acta1Date = acta1?.date_start;
-    const notificacionActa1Date =  estudioOptions.byAviso ? getClock(33)?.date_start : getClock(32)?.date_start;
+    
+    // Lógica dinámica para determinar el fin de la notificación/comunicación de observaciones
+    let endOfNotification1Date = null;
+    if (estudioOptions.notificationType === 'comunicar') {
+        // Si es comunicar, usamos el reloj de comunicación (33 en config de comunicar) o el acta misma si no hay fecha aun
+        endOfNotification1Date = getClock(33)?.date_start || acta1Date;
+    } else {
+        // Si es notificar, usamos personal (32) o aviso (33)
+        endOfNotification1Date = estudioOptions.byAviso ? getClock(33)?.date_start : getClock(32)?.date_start;
+    }
+
     const corrDate = getClock(35)?.date_start;
     
-    // Viabilidad
+    // Viabilidad y Transición a Fase 6
     const viabilidadDate = getClock(61)?.date_start;
-    const notificacionViaDate = correccionesOptions.byAviso ? getClock(57)?.date_start : getClock(56)?.date_start;
+    
+    // Lógica dinámica para determinar el fin de la notificación/comunicación de viabilidad
+    let endOfNotificationViaDate = null;
+    if (correccionesOptions.notificationType === 'comunicar') {
+        // Si es comunicar, usamos el reloj de comunicación (57 en config comunicar) o la viabilidad misma
+        endOfNotificationViaDate = getClock(57)?.date_start || viabilidadDate;
+    } else {
+        // Si es notificar, usamos personal (56) o aviso (57)
+        endOfNotificationViaDate = correccionesOptions.byAviso ? getClock(57)?.date_start : getClock(56)?.date_start;
+    }
     
     // Pagos
     const pagosDate = getClock(69)?.date_start;
@@ -62,6 +83,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         return desc.trim().toUpperCase().includes("ACTA PARTE 1 OBSERVACIONES: CUMPLE");
     };
 
+    // Usamos 'today' (fecha del sistema/emulador) para calcular días usados si no hay fecha fin
     const calculateUsedDaysFromNextDay = (startDate, endDate, defaultEnd = today) => {
       if (!startDate) return 0;
       const calcEnd = endDate || defaultEnd;
@@ -89,7 +111,6 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     };
 
     // --- 3. GENERADOR DE FASES DE DESISTIMIENTO ---
-    // Esta función encapsula toda la lógica nueva solicitada para los bloques de desistimiento
     const generateDesistimientoPhases = (version) => {
         const dPhases = [];
         
@@ -99,16 +120,15 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         const dCitacion = getClockVersion(-5, version)?.date_start; // Citación (-5)
         const dNotifPersonal = getClockVersion(-7, version)?.date_start;
         const dNotifAviso = getClockVersion(-8, version)?.date_start;
-        const dNotif = dNotifPersonal || dNotifAviso; // Fecha efectiva de notificación
+        const dNotif = dNotifPersonal || dNotifAviso; 
         
-        const dRecurso = getClockVersion(-10, version)?.date_start; // Interponer recurso (-10)
-        const dResRecurso = getClockVersion(-17, version)?.date_start; // Resolución Recurso (-17)
+        const dRecurso = getClockVersion(-10, version)?.date_start; 
+        const dResRecurso = getClockVersion(-17, version)?.date_start; 
         
-        const dNotifRecurso = getClockVersion(-22, version)?.date_start || getClockVersion(-21, version)?.date_start; // Notificación 2da vez
-        const dFinal = getClockVersion(-30, version)?.date_start; // Finalización (-30)
+        const dNotifRecurso = getClockVersion(-22, version)?.date_start || getClockVersion(-21, version)?.date_start; 
+        const dFinal = getClockVersion(-30, version)?.date_start; 
 
         // FASE D1: Resolución Desistida
-        // "Cuenta el tiempo desde el state -50 hasta que hay resolucion desistida"
         dPhases.push({
             id: `desist_${version}_res`,
             title: 'Resolución Desistida',
@@ -125,8 +145,6 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         });
 
         // FASE D2: Notificación Resolución
-        // "Dura 15 días y comprende las fechas desde la citación hasta la notificacion"
-        // Usamos -5 (Citación) o -6 (Resolución) como inicio, hasta -7/-8 (Notificación)
         const startNotif = dCitacion || dRes;
         dPhases.push({
             id: `desist_${version}_notif`,
@@ -144,22 +162,15 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         });
 
         // FASE D3: Ejecutoria y Plazo Recurso
-        // "Importante que modeles el comportamiento... cuando hay recurso"
-        // Aquí usamos actores paralelos para evitar el "Mixto"
-        
-        // Determinar fin de ejecutoria: Si hay recurso, termina cuando se interpone. Si no, calculamos fecha.
-        let dEjecutoriaEnd = ejecutoriaDate || dRecurso; //|| (dNotif ? sumarDiasHabiles(dNotif, 10) : null);
-        // Si el proceso ya finalizó sin recurso, la ejecutoria se asume cumplida
+        let dEjecutoriaEnd = ejecutoriaDate || dRecurso; 
         if (!dRecurso && dFinal) dEjecutoriaEnd = dFinal; 
 
         const dPhase3Status = checkStatus(dNotif, dRecurso || (dFinal ? dFinal : null));
         
-        // Estado Recurso
         let recursoStatus = 'PENDIENTE';
-        if (dNotif && !dRecurso && !dFinal) recursoStatus = 'ACTIVO'; // Corriendo tiempo
+        if (dNotif && !dRecurso && !dFinal) recursoStatus = 'ACTIVO'; 
         if (dRecurso) recursoStatus = 'COMPLETADO';
         
-        // Estado Ejecutoria
         let ejecutoriaStatus = 'PENDIENTE';
         if (dNotif && !dFinal) ejecutoriaStatus = 'ACTIVO';
         if (dFinal || dRecurso) ejecutoriaStatus = 'COMPLETADO';
@@ -167,7 +178,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         dPhases.push({
             id: `desist_${version}_exec`,
             title: 'Ejecutoria y Recurso',
-            responsible: 'Curaduría', // Se marca curaduría como principal, pero se desglosa abajo
+            responsible: 'Curaduría', 
             status: dPhase3Status,
             totalDays: 10,
             usedDays: calculateUsedDaysFromNextDay(dNotif, dRecurso || dEjecutoriaEnd),
@@ -200,15 +211,13 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             relatedStates: [-10],
         });
 
-        // FASES ADICIONALES SI HAY RECURSO
         if (dRecurso) {
-            // FASE D4: Resolver Recurso
             dPhases.push({
                 id: `desist_${version}_res_rec`,
                 title: 'Resolver Recurso de Reposición',
                 responsible: 'Curaduría',
                 status: checkStatus(dRecurso, dResRecurso),
-                totalDays: 45, // Plazo legal típico para resolver recursos
+                totalDays: 45, 
                 usedDays: calculateUsedDaysFromNextDay(dRecurso, dResRecurso),
                 extraDays: 0,
                 startDate: dRecurso,
@@ -218,7 +227,6 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 relatedStates: [-17],
             });
 
-            // FASE D5: Notificación Recurso
             dPhases.push({
                 id: `desist_${version}_notif_rec`,
                 title: 'Notificación Respuesta Recurso',
@@ -234,7 +242,6 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 relatedStates: [-20, -21, -22],
             });
 
-            // FASE D6: Cierre / Fase Final
             dPhases.push({
                 id: `desist_${version}_final`,
                 title: 'Cierre y Archivo',
@@ -258,12 +265,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     let phases = [];
     const addPhase = (phase) => { phases.push(phase); };
 
-    // ==========================================================
-    // LÓGICA DE BIFURCACIÓN SEGÚN CAUSAL DE DESISTIMIENTO
-    // ==========================================================
-
-    // FASE 0: Radicación (Común para todos)
-    // >>> CORRECCIÓN: Si es desistimiento por incompleto (-1) o valla (-2), no esperamos LDF, forzamos completado.
+    // FASE 0: Radicación 
     const skipPhase0 = ['-1', '-2'].includes(desistimientoVersion);
     
     addPhase({ 
@@ -283,16 +285,11 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
 
     // --- CASO 1: INCOMPLETO (-1) ---
     if (desistimientoVersion === '-1') {
-        // "Incompleto: Radicacion (Fase inicial ya existente) - Resolución Desistida..."
-        // Saltamos directamente a las fases de desistimiento
         const dPhases = generateDesistimientoPhases('-1');
         dPhases.forEach(p => addPhase(p));
     }
     // --- CASO 2: VALLA INFORMATIVA (-2) ---
     else if (desistimientoVersion === '-2') {
-        // "Valla informativa: ...proceso de acta y valla quiero que se muestre que seria la segunda fase"
-        // >>> CORRECCIÓN: "tampoco deberia esperar que haya acta". Forzamos completado para avanzar.
-        
         const phase1Status = 'COMPLETADO';
         const vallaUsedDays = calculateUsedDaysFromNextDay(ldfDate, vallaDate);
         
@@ -329,17 +326,15 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 } 
             },
             highlightClass: 'phase-highlight-estudio',
-            relatedStates: [503, 300, 350] //, estudioOptions.notificationType !== 'notificar' ? 33 : null], //400, 401,
+            relatedStates: [503, 300, 350] 
         });
 
-        // Luego fases de desistimiento
         const dPhases = generateDesistimientoPhases('-2');
         dPhases.forEach(p => addPhase(p));
     }
     // --- CASOS: NO CUMPLE (-3), VOLUNTARIO (-5), NEGADO (-6) ---
-    // Estos comparten la lógica de ir hasta correcciones/viabilidad
     else if (['-3', '-5', '-6'].includes(desistimientoVersion)) {
-        // FASE 1: Estudio (Normal)
+        // FASE 1: Estudio
         let phase1Status = checkStatus(ldfDate, acta1Date);
         if (phase1Status === 'ACTIVO' && suspensionPreActa.isActive) phase1Status = 'PAUSADO';
         const suspensionDays = (suspensionPreActa.exists && suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0) +
@@ -360,29 +355,32 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             endDate: acta1Date,
             parallelActors: null,
             highlightClass: 'phase-highlight-estudio',
-            relatedStates: [503, 30, 300, 350, estudioOptions.notificationType !== 'notificar' ? 33 : null], //400, 401,
+            relatedStates: [503, 30, 300, 350, estudioOptions.notificationType !== 'notificar' ? 33 : null], 
         });
 
-        // FASE 2: Notificación Observaciones
-        addPhase({
-          id: 'phase2', 
-          title: 'Notificación Observaciones', 
-          responsible: 'Curaduría',
-          status: checkStatus(acta1Date, notificacionActa1Date), 
-          totalDays: 15,
-          usedDays: calculateUsedDaysFromNextDay(acta1Date, notificacionActa1Date), 
-          extraDays: 0,
-          startDate: acta1Date, 
-          endDate: notificacionActa1Date, 
-          parallelActors: null,
-          highlightClass: 'phase-highlight-notificacion',
-          relatedStates: [31, 32, 33],
-        });
+        // FASE 2: Notificación Observaciones (Solo si es notificar)
+        if (estudioOptions.notificationType === 'notificar') {
+            addPhase({
+              id: 'phase2', 
+              title: 'Notificación Observaciones', 
+              responsible: 'Curaduría',
+              status: checkStatus(acta1Date, endOfNotification1Date), 
+              totalDays: 15,
+              usedDays: calculateUsedDaysFromNextDay(acta1Date, endOfNotification1Date), 
+              extraDays: 0,
+              startDate: acta1Date, 
+              endDate: endOfNotification1Date, 
+              parallelActors: null,
+              highlightClass: 'phase-highlight-notificacion',
+              relatedStates: [31, 32, 33],
+            });
+        }
 
         // FASE 3: Correcciones
-        // >>> CORRECCIÓN: "no se espera la fecha de radicacion por lo que esa fase deberia marcarse como completa automaticamente"
         const hasProrrogaCorr = !!getClock(34)?.date_start;
-        let phase3Status = checkStatus(notificacionActa1Date, corrDate);
+        // La fecha de inicio de correcciones depende de si hubo notificación o comunicación
+        const startPhase3 = endOfNotification1Date;
+        let phase3Status = checkStatus(startPhase3, corrDate);
         if (['-3', '-5', '-6'].includes(desistimientoVersion)) phase3Status = 'COMPLETADO';
 
         addPhase({
@@ -391,9 +389,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           responsible: 'Solicitante',
           status: phase3Status, 
           totalDays: hasProrrogaCorr ? 45 : 30,
-          usedDays: calculateUsedDaysFromNextDay(notificacionActa1Date, corrDate), 
+          usedDays: calculateUsedDaysFromNextDay(startPhase3, corrDate), 
           extraDays: 0,
-          startDate: notificacionActa1Date, 
+          startDate: startPhase3, 
           endDate: corrDate, 
           parallelActors: null,
           highlightClass: 'phase-highlight-correcciones',
@@ -401,9 +399,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         });
 
         // FASE 4: Correcciones y Viabilidad (RENOMBRADA y DETENIDA AQUÍ)
-        // "La fase no se llama viabilidad... sino correcciones y viabilidad"
-        // El desistimiento ocurre durante o después de esta fase
-        const startPhase4 = corrDate || notificacionActa1Date; // Si no corrigió, arranca desde notif
+        const startPhase4 = corrDate || startPhase3; 
         const endPhase4 = viabilidadDate || getClockVersion(-50, desistimientoVersion)?.date_start || today;
         let phase4Status = checkStatus(startPhase4, endPhase4);
         
@@ -419,10 +415,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           endDate: endPhase4, 
           parallelActors: null,
           highlightClass: 'phase-highlight-viabilidad',
-          relatedStates: [49, 61, 301, 351, 400, 401], // Reutiliza la prórroga si aplica aquí
+          relatedStates: [49, 61, 301, 351, 400, 401],
         });
 
-        // Fases de Desistimiento
         const dPhases = generateDesistimientoPhases(desistimientoVersion);
         dPhases.forEach(p => addPhase(p));
     }
@@ -477,40 +472,47 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 } 
             },
             highlightClass: 'phase-highlight-estudio',
-            relatedStates: [503, 30, 300, 350, estudioOptions.notificationType !== 'notificar' ? 33 : null], // 400, 401,
+            relatedStates: [503, 30, 300, 350, estudioOptions.notificationType !== 'notificar' ? 33 : null], 
         });
 
         const isCumple = checkCompliance(acta1?.desc);
         const notificaActa = estudioOptions.notificationType === 'notificar';
 
         // FASE 2 & 3 (Solo si NO CUMPLE)
+        let startPhase3 = endOfNotification1Date;
+
         if (!isCumple) {
+            // Si hay notificación, agregamos la fase intermedia
             if(notificaActa){
-            addPhase({
-              id: 'phase2', 
-              title: 'Notificación Observaciones', 
-              responsible: 'Curaduría',
-              status: checkStatus(acta1Date, notificacionActa1Date), 
-              totalDays: estudioOptions.byAviso ? 15 : 10,
-              usedDays: calculateUsedDaysFromNextDay(acta1Date, notificacionActa1Date), 
-              extraDays: 0,
-              startDate: acta1Date, 
-              endDate: notificacionActa1Date, 
-              parallelActors: null,
-              highlightClass: 'phase-highlight-notificacion',
-              relatedStates: [31, 32, 33],
-            });}
+                addPhase({
+                  id: 'phase2', 
+                  title: 'Notificación Observaciones', 
+                  responsible: 'Curaduría',
+                  status: checkStatus(acta1Date, endOfNotification1Date), 
+                  totalDays: estudioOptions.byAviso ? 15 : 10,
+                  usedDays: calculateUsedDaysFromNextDay(acta1Date, endOfNotification1Date), 
+                  extraDays: 0,
+                  startDate: acta1Date, 
+                  endDate: endOfNotification1Date, 
+                  parallelActors: null,
+                  highlightClass: 'phase-highlight-notificacion',
+                  relatedStates: [31, 32, 33],
+                });
+            } else {
+                // Si es Comunicar, la fase 3 empieza tras el Acta
+                startPhase3 = acta1Date;
+            }
 
             const hasProrrogaCorr = !!getClock(34)?.date_start;
             addPhase({
               id: 'phase3', 
               title: 'Correcciones del Solicitante', 
               responsible: 'Solicitante',
-              status: checkStatus(notificacionActa1Date, corrDate), 
+              status: checkStatus(startPhase3, corrDate), 
               totalDays: hasProrrogaCorr ? 45 : 30,
-              usedDays: calculateUsedDaysFromNextDay(notificacionActa1Date, corrDate), 
+              usedDays: calculateUsedDaysFromNextDay(startPhase3, corrDate), 
               extraDays: 0,
-              startDate: notificacionActa1Date, 
+              startDate: startPhase3, 
               endDate: corrDate, 
               parallelActors: null,
               highlightClass: 'phase-highlight-correcciones',
@@ -519,7 +521,11 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         }
 
         // FASE 4: Revisión y Viabilidad
+        // Si CUMPLE, arrancamos tras el acta. Si no, tras la corrección.
+        // OJO: Si NO CUMPLE y NO corrigió (desistimiento), esto ya se manejó arriba.
+        // Aquí asumimos flujo normal.
         let triggerDate = isCumple ? acta1Date : corrDate;
+        
         let phase4AvailableDays = totalCuraduriaDays - phase1UsedDays;
         let phase4Status = checkStatus(triggerDate, viabilidadDate);
         if (phase4Status === 'ACTIVO' && suspensionPostActa.isActive) phase4Status = 'PAUSADO';
@@ -537,23 +543,23 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           daysContext: { totalCuraduria: totalCuraduriaDays, usedInPhase1: phase1UsedDays, availableForPhase4: phase4AvailableDays },
           parallelActors: null,
           highlightClass: 'phase-highlight-viabilidad',
-          relatedStates: [49, 61, 301, 351, 400, 401, correccionesOptions.notificationType !== 'notificar' ? 57 : null], // Incluye suspensión post-acta y prórroga
+          relatedStates: [49, 61, 301, 351, 400, 401, correccionesOptions.notificationType !== 'notificar' ? 57 : null], 
         });
 
         const notificaVia = correccionesOptions.notificationType === 'notificar';
 
-        // FASE 5: Notificación Viabilidad
+        // FASE 5: Notificación Viabilidad (Solo si es notificar)
         if(notificaVia){
             addPhase({
                 id: 'phase5_notif',
                 title: 'Notificación de Viabilidad',
                 responsible: 'Curaduría',
-                status: checkStatus(viabilidadDate, notificacionViaDate),
+                status: checkStatus(viabilidadDate, endOfNotificationViaDate),
                 totalDays: correccionesOptions.byAviso ? 15 : 10,
-                usedDays: calculateUsedDaysFromNextDay(viabilidadDate, notificacionViaDate),
+                usedDays: calculateUsedDaysFromNextDay(viabilidadDate, endOfNotificationViaDate),
                 extraDays: 0,
                 startDate: viabilidadDate,
-                endDate: notificacionViaDate,
+                endDate: endOfNotificationViaDate,
                 parallelActors: null,
                 highlightClass: 'phase-highlight-notificacion',
                 relatedStates: [55, 56, 57],
@@ -561,8 +567,10 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         }
 
         // FASE 6: Liquidación y Pagos
-        // >>> CORRECCIÓN: "cuando no se paga expensas tampoco debe esperarse la ultima fecha de pago a expensas"
-        let phase6Status = checkStatus(notificacionViaDate, pagosDate);
+        // Determinamos inicio: si hubo notificación, tras ella. Si hubo comunicación, tras ella o tras viabilidad.
+        const startPhase6 = notificaVia ? endOfNotificationViaDate : (endOfNotificationViaDate || viabilidadDate);
+        
+        let phase6Status = checkStatus(startPhase6, pagosDate);
         if (desistimientoVersion === '-4') phase6Status = 'COMPLETADO';
 
         addPhase({
@@ -571,9 +579,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             responsible: 'Solicitante',
             status: phase6Status,
             totalDays: 30,
-            usedDays: calculateUsedDaysFromNextDay(notificacionViaDate, pagosDate),
+            usedDays: calculateUsedDaysFromNextDay(startPhase6, pagosDate),
             extraDays: 0,
-            startDate: notificacionViaDate,
+            startDate: startPhase6, 
             endDate: pagosDate,
             parallelActors: null,
             highlightClass: 'phase-highlight-pagos',
@@ -584,7 +592,6 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         if (desistimientoVersion === '-4') {
             const dPhases = generateDesistimientoPhases('-4');
             dPhases.forEach(p => addPhase(p));
-            // Detenemos aquí para no agregar fases de resolución normal
         } else {
             // --- FLUJO NORMAL FINAL ---
             
@@ -621,7 +628,6 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             });
 
             // FASE 9: Ejecutoria y Recurso (Lógica Paralela Estándar)
-            // ... (Lógica de cálculo de expiración de recurso mantenida del original) ...
             let recursoExpired = false;
             if (notificacionResDate && !recursoDate && !renunciaTerminos) {
                 const recursoLimitDate = sumarDiasHabiles(notificacionResDate, RECURSO_LIMIT_DAYS);

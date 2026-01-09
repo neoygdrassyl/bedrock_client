@@ -111,7 +111,7 @@ const getExtensionClocks = (extensionData) => {
             editableDate: true, 
             hasConsecutivo: false, 
             hasAnnexSelect: true, 
-            limit: [[400, 21]],
+            limit: [[400, 22]],
             spentDaysConfig: { startState: 400 } 
         },
     ];
@@ -415,7 +415,7 @@ const paymentsClocks = (props) => {
             name: 'Expensas Variables', 
             desc: "Pago de expensas variables", 
             // limit: [[[56, 57], 30]], 
-            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             show: conOA, 
             spentDaysConfig: { startState: [56, 57] } 
         },
@@ -423,7 +423,7 @@ const paymentsClocks = (props) => {
             state: 63, 
             name: namePayment, 
             desc: "Pago de impuestos municipales o delineación", 
-            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             show: conOA, 
             spentDaysConfig: { startState: [56, 57] } 
         },
@@ -431,14 +431,14 @@ const paymentsClocks = (props) => {
             state: 64, 
             name: 'Estampilla PRO-UIS', 
             desc: "Pago de estampilla PRO-UIS", 
-            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             spentDaysConfig: { startState: [56, 57] } 
         },
         { 
             state: 65, 
             name: 'Deberes Urbanísticos', 
             desc: "Pago de deberes urbanísticos", 
-            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]], 
             show: !conGI, 
             spentDaysConfig: { startState: [56, 57] } 
         },
@@ -446,7 +446,7 @@ const paymentsClocks = (props) => {
             state: 69, 
             name: 'Radicación de último pago', 
             desc: "Radicación de todos los pagos requeridos (INICIA PLAZO RESOLUCIÓN)", 
-            limit: correccionesOptions.notificationType === 'comunicar' ? [[[57], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             spentDaysConfig: { startState: [56, 57] } 
         },
         ...buildDesistSection('-4', getClockVersion),

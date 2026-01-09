@@ -451,7 +451,10 @@ export const calculateLegalLimit = (clockState, clockValue, manager) => {
       : (suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0);
     
     const availableForThis = 10 - otherUsedDays;
-    return sumarDiasHabiles(thisSusp.start.date_start, availableForThis);
+    
+    // MODIFICADO: Se resta 1 día porque la suspensión cuenta desde el MISMO día de inicio (inclusivo)
+    // Si tengo 10 días y empiezo el Lunes, termino el próximo Viernes (10 días total), no el próximo Lunes (+10 días).
+    return sumarDiasHabiles(thisSusp.start.date_start, Math.max(0, availableForThis - 1));
   }
   
   // Caso general: usar limit config
