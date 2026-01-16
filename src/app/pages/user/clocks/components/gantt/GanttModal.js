@@ -3,7 +3,7 @@ import { GanttChart } from './GanttChart';
 import moment from 'moment';
 import { sumarDiasHabiles } from '../../hooks/useClocksManager';
 
-// Panel de detalle (ahora muestra ancho/posiciones y retraso)
+// Panel de detalle (Muestra información específica al hacer click en una fase)
 const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostActa, extension }) => {
   if (!phase) return null;
 
@@ -18,7 +18,6 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
     parallelActors,
     blockWidth,      
     blockBaseDays,   
-    startPosition,   
     phaseIndex,
   } = phase;
 
@@ -238,6 +237,7 @@ export const GanttModal = ({
   return (
     <div className="gantt-modal-overlay" onClick={onClose}>
       <div className="gantt-modal-content" onClick={(e) => e.stopPropagation()}>
+        {/* HEADER */}
         <div className="gantt-modal-header">
           <div className="gantt-modal-title-group">
              <h3><i className="fas fa-chart-gantt" /> Diagrama de Gantt</h3>
@@ -275,6 +275,7 @@ export const GanttModal = ({
           </div>
         </div>
 
+        {/* BODY */}
         <div className="gantt-modal-body">
           <div className="gantt-modal-chart-container">
             <GanttChart
@@ -303,54 +304,28 @@ export const GanttModal = ({
           </div>
         </div>
 
+        {/* FOOTER (LEYENDA COMPACTA) */}
         <div className="gantt-modal-footer">
-          <div className="gantt-legend">
-            <h5>Leyenda de Estados</h5>
-            <div className="gantt-legend-items">
-              <div className="gantt-legend-item">
-                <div className="gantt-legend-color gantt-progress-pending" />
-                <span>Pendiente</span>
-              </div>
-              <div className="gantt-legend-item">
-                <div className="gantt-legend-color gantt-progress-active" />
-                <span>En curso</span>
-              </div>
-              <div className="gantt-legend-item">
-                <div className="gantt-legend-color gantt-progress-paused" />
-                <span>Pausado</span>
-              </div>
-              <div className="gantt-legend-item">
-                <div className="gantt-legend-color gantt-progress-completed" />
-                <span>Completado</span>
-              </div>
-              <div className="gantt-legend-item">
-                <div className="gantt-legend-color gantt-progress-overdue" />
-                <span>Vencido</span>
-              </div>
-              <div className="gantt-legend-item">
-                <div className="gantt-legend-color gantt-segment-suspension" />
-                <span>Suspensión</span>
-              </div>
-              <div className="gantt-legend-item">
-                <div className="gantt-legend-color" style={{backgroundColor: '#339af0'}} />
-                <span>Prórroga</span>
-              </div>
-              <div className="gantt-legend-item" style={{ marginLeft: '16px' }}>
-                <div style={{ width: '20px', height: '4px', background: '#dc3545', marginTop: '4px' }} />
-                <span>Exceso/Retraso</span>
-              </div>
-              <div className="gantt-legend-item" style={{ marginLeft: '16px' }}>
-                 <div className="gantt-scheduled-marker-legend" style={{width:10, height:10, borderRadius:'50%', background:'#fcc419', border:'1px solid #fff'}}></div>
-                 <span>Programado</span>
-              </div>
-            </div>
+          <div className="gantt-legend-compact-wrapper">
+             <span className="gantt-legend-compact-title">Leyenda:</span>
+             <div className="gantt-legend-compact-items">
+                <div className="gl-item"><span className="gl-dot bg-pending"></span>Pendiente</div>
+                <div className="gl-item"><span className="gl-dot bg-active"></span>En curso</div>
+                <div className="gl-item"><span className="gl-dot bg-paused"></span>Pausado</div>
+                <div className="gl-item"><span className="gl-dot bg-completed"></span>Completado</div>
+                <div className="gl-item"><span className="gl-dot bg-overdue"></span>Vencido</div>
+                <div className="gl-item"><span className="gl-dot bg-suspension"></span>Suspensión</div>
+                <div className="gl-item"><span className="gl-dot bg-extension"></span>Prórroga</div>
+                <div className="gl-item"><span className="gl-dot bg-error-line"></span>Exceso</div>
+                <div className="gl-item"><span className="gl-marker"></span>Programado</div>
+             </div>
+             
+             {!!currentItem?.id && (
+                <div style={{ marginLeft: 'auto', fontSize: '10px', color: '#adb5bd', fontWeight: '600' }}>
+                    Ref: {currentItem.id}
+                </div>
+             )}
           </div>
-
-          {!!currentItem?.id && (
-            <small className="text-muted">
-              Expediente: {currentItem.id}
-            </small>
-          )}
         </div>
       </div>
     </div>

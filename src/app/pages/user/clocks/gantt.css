@@ -1828,3 +1828,71 @@ input:checked + .gantt-slider:before {
 .gantt-error-line:not(.scheduled) {
   top: 30%; /* La legal la movemos un poco arriba */
 }
+
+/* ========================================
+   LEYENDA COMPACTA (MINI)
+   Añadir al final del archivo CSS
+   ======================================== */
+
+.gantt-modal-footer {
+    padding: 8px 16px; /* Reducir padding */
+    background: #fff;
+    border-top: 1px solid #e9ecef;
+}
+
+.gantt-legend-compact-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    color: #495057;
+    flex-wrap: nowrap;
+    overflow-x: auto; /* Permite scroll si la pantalla es muy pequeña */
+    scrollbar-width: none; /* Ocultar scrollbar visualmente */
+}
+
+.gantt-legend-compact-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #868e96;
+    flex-shrink: 0;
+}
+
+.gantt-legend-compact-items {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+}
+
+.gl-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.gl-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.gl-marker {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fcc419;
+    border: 1px solid #dee2e6;
+}
+
+/* Colores utilitarios para la leyenda compacta */
+.bg-pending { background-color: #adb5bd; }
+.bg-active { background-color: #339af0; }
+.bg-paused { background-color: #fcc419; }
+.bg-completed { background-color: #51cf66; }
+.bg-overdue { background-color: #ff6b6b; }
+.bg-suspension { background-color: #fcc419; border: 1px solid #f08c00; }
+.bg-extension { background-color: #339af0; opacity: 0.8; }
+.bg-error-line { height: 3px !important; width: 12px; background-color: #dc3545; }
