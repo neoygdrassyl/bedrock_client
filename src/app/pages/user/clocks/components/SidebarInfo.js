@@ -269,13 +269,14 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
 };
 // --- FIN DE COMPONENTES AUXILIARES ---
 
-export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExpandGantt }) => {
+export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExpandGantt, radDate }) => {
   const {
     processPhases,
     curaduriaDetails,
     FUN_0_TYPE_TIME,
     getClock,
     currentItem,
+    calcularDiasHabiles
   } = manager || {};
 
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
@@ -307,43 +308,70 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
   };
   
   const showDebug = () => {
-    const info = processPhases?.debugInfo;
-    if (!info) return Swal.fire('No info', 'No hay información de debug disponible.', 'warning');
+      const info = processPhases?.debugInfo;
+      if (!info || !manager) return Swal.fire('No info', 'No hay información de debug disponible.', 'warning');
 
-    const system = info.system || {};
-    const cumplimiento = info.cumplimiento || {};
-    const fechas = info.fechas || {};
-    const totales = info.totales || {};
+      const system = info.system || {};
+      const { getClock, calcularDiasHabiles, currentItem } = manager;
+      
+      const radicacionDate = currentItem?.date;
+      const ldfDate = getClock(5)?.date_start;
+      const vallaDate = getClock(503)?.date_start;
+      const acta1Date = getClock(30)?.date_start;
+      const corrDate = getClock(35)?.date_start;
 
-    const fmt = (d) => (d ? moment(d).format('YYYY-MM-DD') : '—');
+      const diasRadLDF = radicacionDate && ldfDate ? calcularDiasHabiles(radicacionDate, ldfDate, true) : 'N/A';
+      const diasLDFValla = ldfDate && vallaDate ? calcularDiasHabiles(ldfDate, vallaDate, true) : 'N/A';
+      const diasLDFActa1 = ldfDate && acta1Date ? calcularDiasHabiles(ldfDate, acta1Date, true) : 'N/A';
+      const diasActa1Corr = acta1Date && corrDate ? calcularDiasHabiles(acta1Date, corrDate, true) : 'N/A';
+      
+      const fmt = (d) => (d ? moment(d).format('YYYY-MM-DD') : '—');
 
-    return MySwal.fire({
-      title: 'Diagnóstico de Fases',
-      width: 680,
-      html: `
-        <div style="text-align:left;font-size:0.85rem;">
-          <div class="row mb-2">
-            <div class="col-4">Hoy: <b>${escapeHtml(system.today || '—')}</b></div>
-            <div class="col-8">Cumple?: <b>${cumplimiento.isCumple ? 'SÍ' : 'NO'}</b></div>
-          </div>
+      MySwal.fire({
+          title: 'Diagnóstico de Fases y Tiempos',
+          width: 720,
+          html: `
+              <div style="text-align:left;font-size:0.85rem;">
+                  <div class="row mb-2">
+                      <div class="col-6">Hoy (emulado): <b>${escapeHtml(system.today || '—')}</b></div>
+                      <div class="col-6">Tipo Proceso: <b>${escapeHtml(currentItem?.type || '—')}</b></div>
+                  </div>
 
-          <h6 class="text-primary border-bottom pb-1 mt-2">Fechas clave</h6>
-          <div class="row mb-1">
-            <div class="col-4">LDF: ${escapeHtml(fmt(fechas.ldf))}</div>
-            <div class="col-4">Acta 1: ${escapeHtml(fmt(fechas.acta1))}</div>
-            <div class="col-4">Corr: ${escapeHtml(fmt(fechas.corr))}</div>
-          </div>
+                  <h6 class="text-primary border-bottom pb-1 mt-3">Eventos Clave y Días Consumidos</h6>
+                  
+                  <div class="pdm-block" style="font-size: 0.8rem;">
+                      <div class="pdm-block-body">
+                          <div class="pdm-inline">
+                              <span>Radicación: <b>${escapeHtml(fmt(radicacionDate))}</b></span>
+                              <span>LDF: <b>${escapeHtml(fmt(ldfDate))}</b></span>
+                              <span>Consumido: <b>${diasRadLDF}d</b></span>
+                          </div>
+                          <div class="pdm-inline">
+                              <span>LDF: <b>${escapeHtml(fmt(ldfDate))}</b></span>
+                              <span>Valla: <b>${escapeHtml(fmt(vallaDate))}</b></span>
+                              <span>Consumido: <b>${diasLDFValla}d</b></span>
+                          </div>
+                          <div class="pdm-inline">
+                              <span>LDF: <b>${escapeHtml(fmt(ldfDate))}</b></span>
+                              <span>Acta 1: <b>${escapeHtml(fmt(acta1Date))}</b></span>
+                              <span>Consumido: <b>${diasLDFActa1}d</b></span>
+                          </div>
+                           <div class="pdm-inline">
+                              <span>Acta 1: <b>${escapeHtml(fmt(acta1Date))}</b></span>
+                              <span>Correcciones: <b>${escapeHtml(fmt(corrDate))}</b></span>
+                              <span>Consumido: <b>${diasActa1Corr}d</b></span>
+                          </div>
+                      </div>
+                  </div>
 
-          <h6 class="text-primary border-bottom pb-1 mt-2">Balance</h6>
-          <div>Total Disponible: <b>${escapeHtml(totales.totalDisponible ?? 0)}</b></div>
-          <div>Restante Fase 4: <b>${escapeHtml(totales.restanteFase4 ?? 0)}</b></div>
-        </div>
-      `,
-      showCloseButton: true,
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#5bc0de',
-    });
+              </div>
+          `,
+          showCloseButton: true,
+          confirmButtonText: 'Cerrar',
+          confirmButtonColor: '#5bc0de',
+      });
   };
+
 
   const showDaysDetailsModal = () => {
     const phase1 = processPhases?.find((p) => p.id === 'phase1');
@@ -643,7 +671,6 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
   }
 
   const currentPhase = processPhases[currentPhaseIndex];
-  const ldfDate = getClock?.(5)?.date_start || currentItem?.date;
   
   // Guardamos la referencia a la función para pasarla al ToolsMenu
   if (curaduriaDetails) {
@@ -726,7 +753,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
         <div className="sidebar-card-body ">
           <GanttPreview
             phases={processPhases}
-            ldfDate={ldfDate}
+            radDate={radDate} // Cambio: Usar radDate
             suspensionPreActa={manager.suspensionPreActa}
             suspensionPostActa={manager.suspensionPostActa}
             extension={manager.extension}

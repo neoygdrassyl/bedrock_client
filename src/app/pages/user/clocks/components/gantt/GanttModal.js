@@ -192,7 +192,7 @@ export const GanttModal = ({
   isOpen,
   onClose,
   phases = [],
-  ldfDate,
+  radDate,
   suspensionPreActa,
   suspensionPostActa,
   extension,
@@ -210,7 +210,7 @@ export const GanttModal = ({
 
   // CÁLCULO DE FECHA ESTIMADA DE ENTREGA
   const projectedFinishData = useMemo(() => {
-    if (!ldfDate || phases.length === 0) return null;
+    if (!radDate || phases.length === 0) return null;
 
     let totalProjectedDays = 0;
 
@@ -234,15 +234,15 @@ export const GanttModal = ({
         totalProjectedDays += daysToAdd;
     });
 
-    // Calcular fecha calendario desde LDF
-    const projectedDate = sumarDiasHabiles(ldfDate, totalProjectedDays);
+    // Calcular fecha calendario desde la fecha de radicación
+    const projectedDate = sumarDiasHabiles(radDate, totalProjectedDays);
 
     return {
         date: projectedDate,
         totalDays: totalProjectedDays
     };
 
-  }, [phases, ldfDate]);
+  }, [phases, radDate]);
 
 
   if (!isOpen) return null;
@@ -293,7 +293,7 @@ export const GanttModal = ({
           <div className="gantt-modal-chart-container">
             <GanttChart
               phases={phases}
-              ldfDate={ldfDate}
+              radDate={radDate} // Cambio: Usar radDate
               suspensionPreActa={suspensionPreActa}
               suspensionPostActa={suspensionPostActa}
               extension={extension}
