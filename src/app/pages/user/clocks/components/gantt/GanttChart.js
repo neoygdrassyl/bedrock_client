@@ -104,7 +104,7 @@ export const GanttChart = ({
 
   const ganttData = useMemo(() => {
     if (!radDate || phases.length === 0) { // Cambio: ldfDate -> radDate
-      return { phases: [], maxDays: 0, dateColumns: [], todayOffset: -1 };
+      return { phases: [], maxDays: 0, dateColumns: [], todayOffset: -1, intervalDays: compactMode ? 10 : 5 };
     }
 
     let cumulativeDays = 0; // Posición de inicio para la siguiente fase
@@ -131,55 +131,34 @@ export const GanttChart = ({
       let containerWidth = baseDays; 
 
       if (viewMode === 'real') {
-         // En vista REAL: El contenedor crece si nos pasamos, o se encoge si terminamos antes.
          if (status === 'COMPLETADO') {
              containerWidth = actualDays;
          } else {
              containerWidth = Math.max(baseDays, actualDays);
          }
       } 
-      // En vista LEGAL: containerWidth siempre es baseDays (el límite legal), 
-      // a menos que queramos mostrar el desborde visualmente (lo cual maneja el CSS con overflow visible).
-      // Aquí mantenemos baseDays para que la barra gris represente la norma.
 
       const blockWidth = ensureMinWidth(containerWidth);
       const blockBaseDays = ensureMinWidth(baseDays);
 
-      // --- LÓGICA DE CONTINUIDAD (Shift de la siguiente fase) ---
-      // Calculamos cuánto tiempo "real" consumió esta fase para saber dónde empieza la siguiente.
       let shiftDays = 0;
 
       if (viewMode === 'legal') {
-          // MODIFICACIÓN SOLICITADA:
-          // En modo legal, la barra conserva su ancho (legal), PERO el inicio de la siguiente
-          // fase depende de cuándo terminó REALMENTE la actual.
-          
           if (status === 'COMPLETADO') {
-              // Si terminó, la siguiente empieza cuando esta acabó (sea antes o después del límite).
-              // Lógica para paralelos: Tomar el mayor tiempo usado.
               if (parallelActors) {
                   const p1Used = safeInt(parallelActors.primary?.usedDays, 0);
                   const p2Used = safeInt(parallelActors.secondary?.usedDays, 0);
-                  
-                  // Caso especial Ejecutoria (phase9_exec): Si existen ambos, el mayor.
-                  // (La lógica general de Math.max funciona bien para Ejecutoria y Recurso también)
                   shiftDays = Math.max(p1Used, p2Used);
               } else {
                   shiftDays = actualDays;
               }
           } else {
-              // Si NO ha terminado (Activo/Pendiente), en el diagrama Legal solemos proyectar 
-              // el espacio legal completo para no "superponer" prematuramente el futuro.
-              // O si está activo, usamos lo que lleve (max(used, base)).
-              // Para mantener el orden visual limpio de lo pendiente:
               shiftDays = baseDays; 
           }
       } else {
-          // Modo Real: El desplazamiento es igual al ancho del bloque visualizado.
           shiftDays = blockWidth;
       }
 
-      // Cálculo de Overdue (igual que antes)
       const calculateOverdue = (uDays, tDays, pStartDate, pEndDate) => {
           let overdue = 0;
           const u = safeInt(uDays, 0);
@@ -195,18 +174,37 @@ export const GanttChart = ({
           return Math.max(0, overdue);
       };
 
-      // Segmentos extra
-      let hasSuspensionPreActa = false;
-      let hasSuspensionPostActa = false;
-      let hasExtension = false;
-      if (id === 'phase1' && relatedStates?.includes(300)) {
-        hasSuspensionPreActa = !!suspensionPreActa?.exists;
-        hasExtension = !!extension?.exists;
+      // --- NUEVA LÓGICA DE SUSPENSIONES ---
+      let suspensionInfo = null;
+      let relevantSuspension = null;
+      if (id === 'phase1' && suspensionPreActa?.exists) {
+        relevantSuspension = suspensionPreActa;
+      } else if (id === 'phase4' && suspensionPostActa?.exists) {
+        relevantSuspension = suspensionPostActa;
       }
-      if (id === 'phase4' && relatedStates?.includes(301)) {
-        hasSuspensionPostActa = !!suspensionPostActa?.exists;
-        hasExtension = !!extension?.exists;
+      
+      if (relevantSuspension && relevantSuspension.start?.date_start) {
+        const susStartDate = relevantSuspension.start.date_start;
+        const susEndDate = relevantSuspension.end?.date_start;
+
+        if(moment(susStartDate).isSameOrAfter(radDate)) {
+            const startOffset = calcularDiasHabiles(radDate, susStartDate);
+            let duration = 0;
+            if (susEndDate) {
+                duration = calcularDiasHabiles(susStartDate, susEndDate, true);
+            } else if (moment(today).isAfter(susStartDate)) {
+                duration = calcularDiasHabiles(susStartDate, today, true);
+            }
+
+            suspensionInfo = {
+                startOffset,
+                duration: Math.max(1, duration),
+                label: `Suspensión (${relevantSuspension.days || duration}d)`
+            };
+        }
       }
+      // --- FIN LÓGICA SUSPENSIÓN ---
+
 
       const hasParallelActors = !!parallelActors?.primary && !!parallelActors?.secondary;
       const visualStartPosition = cumulativeDays;
@@ -218,14 +216,11 @@ export const GanttChart = ({
         blockWidth,      
         blockBaseDays,   
         hasParallelActors,
-        hasSuspensionPreActa,
-        hasSuspensionPostActa,
-        hasExtension,
+        suspensionInfo, // <-- AÑADIDO
         rows: [],
         markers: []
       };
 
-      // Marcadores (Schedule)
       if (scheduleConfig && scheduleConfig.times && manager && startDate) {
           const markers = [];
           (relatedStates || []).forEach(state => {
@@ -258,7 +253,6 @@ export const GanttChart = ({
           phaseData.markers = markers;
       }
 
-      // Métricas de fila
       const calculateRowMetrics = (actorUsed, actorTotal) => {
         const u = safeInt(actorUsed, 0);
         const t = safeInt(actorTotal, 1);
@@ -272,6 +266,7 @@ export const GanttChart = ({
       };
 
       if (hasParallelActors) {
+        // CORRECCIÓN: Pasar la posición de inicio a calculateRowMetrics para el recorte
         const row1Metrics = calculateRowMetrics(parallelActors.primary.usedDays, parallelActors.primary.totalDays);
         const row2Metrics = calculateRowMetrics(parallelActors.secondary.usedDays, parallelActors.secondary.totalDays);
 
@@ -279,12 +274,14 @@ export const GanttChart = ({
           type: 'primary',
           status: parallelActors.primary.status,
           label: parallelActors.primary.name,
+          startPosition: visualStartPosition, // Añadir para cálculo de recorte
           ...row1Metrics
         });
         phaseData.rows.push({
           type: 'secondary',
           status: parallelActors.secondary.status,
           label: parallelActors.secondary.name,
+          startPosition: visualStartPosition, // Añadir para cálculo de recorte
           ...row2Metrics
         });
       } else {
@@ -293,63 +290,59 @@ export const GanttChart = ({
           type: 'single',
           status: phase.status,
           label: 'Progreso',
+          startPosition: visualStartPosition, // Añadir para cálculo de recorte
           ...metrics
         });
       }
 
       processedPhases.push(phaseData);
       
-      // ACTUALIZAR ACUMULADOR con el valor "shift" calculado
       cumulativeDays += shiftDays;
     });
 
-    // Calcular ancho total y columnas
     let maxVisualDay = 0;
     if (processedPhases.length > 0) {
-        // Encontrar la fase que visualmente termina más lejos
         processedPhases.forEach(p => {
             const endPos = p.startPosition + p.blockWidth;
             if (endPos > maxVisualDay) maxVisualDay = endPos;
         });
         
-        // Margen extra
         maxVisualDay += 15;
     }
 
     const maxDays = maxVisualDay > 0 ? maxVisualDay : 50; 
 
-    // Header markers
     const dateColumns = [];
-    // Usamos intervalo 1 para tener precisión de ticks, pero labels controlados
     const step = 1; 
 
     for (let i = 0; i <= maxDays; i += step) {
       dateColumns.push({
         day: i,
-        date: sumarDiasHabiles(radDate, i), // Cambio: ldfDate -> radDate
+        date: sumarDiasHabiles(radDate, i),
         position: i,
-        isMajor: i % (compactMode ? 10 : 5) === 0 // Multiplos de 5 o 10
+        isMajor: i % (compactMode ? 10 : 5) === 0
       });
     }
 
-    // Calcular posición de HOY relativo a la fecha de radicación
     let todayOffset = -1;
-    if (radDate && systemToday) { // Cambio: ldfDate -> radDate
-        // Si hoy es antes de la fecha de radicación, negativo (no se muestra o se muestra al inicio)
-        // Si hoy es despues, calculamos dias habiles
-        if (moment(systemToday).isSameOrAfter(radDate)) { // Cambio: ldfDate -> radDate
-            todayOffset = calcularDiasHabiles(radDate, systemToday, false); // Cambio: ldfDate -> radDate
+    if (radDate && systemToday) {
+        if (moment(systemToday).isSameOrAfter(radDate)) {
+            todayOffset = calcularDiasHabiles(radDate, systemToday, false);
         }
     }
 
     return { phases: processedPhases, maxDays, dateColumns, todayOffset, intervalDays: compactMode ? 10 : 5 };
-  }, [phases, radDate, viewMode, compactMode, suspensionPreActa, suspensionPostActa, extension, scheduleConfig, systemToday]); // Cambio: ldfDate -> radDate
+  }, [phases, radDate, viewMode, compactMode, suspensionPreActa, suspensionPostActa, extension, scheduleConfig, systemToday]);
 
   const scaleFactor = useMemo(() => (compactMode ? 3 : 8), [compactMode]);
   const totalWidthPx = ganttData.maxDays * scaleFactor;
 
+  const ROW_HEIGHT_BASE = compactMode ? 34 : 50; 
+  const getRowHeight = (phase) => phase.suspensionInfo ? ROW_HEIGHT_BASE + (compactMode ? 16 : 25) : ROW_HEIGHT_BASE;
+  const HEADER_HEIGHT = compactMode ? 32 : 56; 
+  const totalBodyHeight = useMemo(() => ganttData.phases.reduce((acc, p) => acc + getRowHeight(p), 0), [ganttData.phases, compactMode]);
+
   const gridVars = useMemo(() => {
-    // Grid visual de fondo sigue siendo multiplos de 5
     const majorStepPx = ganttData.intervalDays * scaleFactor;
     return {
       '--gantt-day-width': `${scaleFactor}px`,
@@ -359,46 +352,17 @@ export const GanttChart = ({
     };
   }, [scaleFactor, ganttData.intervalDays, compactMode]);
 
-  const renderExtraSegments = (phase) => {
-    if (compactMode) return null;
-    const segments = [];
-    const getExtraTooltip = (type, obj) => {
-        if(!obj) return "";
-        const fechaFin = obj.end?.date_start ? moment(obj.end.date_start).format('DD/MM/YYYY') : 'En curso';
-        const fechaIni = obj.start?.date_start ? moment(obj.start.date_start).format('DD/MM/YYYY') : '';
-        return (
-            <div>
-               <strong>{type}</strong><br/>
-               <span style={{fontSize:'11px'}}>Inicio: {fechaIni}</span><br/>
-               <span style={{fontSize:'11px'}}>Fin: {fechaFin}</span><br/>
-               <span style={{fontSize:'11px'}}>Duración: {obj.days} días</span>
-            </div>
-        );
-    };
-    if (phase.hasSuspensionPreActa) 
-        segments.push(
-            <div key="s1" className="gantt-segment gantt-segment-suspension" 
-                 onMouseMove={(e) => handleMouseMove(e, getExtraTooltip("Suspensión Pre-Acta", suspensionPreActa))}
-                 onMouseLeave={handleMouseLeave}
-            />
-        );
-    if (phase.hasSuspensionPostActa) 
-        segments.push(
-            <div key="s2" className="gantt-segment gantt-segment-suspension"
-                 onMouseMove={(e) => handleMouseMove(e, getExtraTooltip("Suspensión Post-Acta", suspensionPostActa))}
-                 onMouseLeave={handleMouseLeave}
-            />
-        );
-    if (phase.hasExtension) 
-        segments.push(
-            <div key="ext" className="gantt-segment gantt-segment-extension"
-                 onMouseMove={(e) => handleMouseMove(e, getExtraTooltip("Prórroga", extension))}
-                 onMouseLeave={handleMouseLeave}
-            />
-        );
-    if (segments.length === 0) return null;
-    return <div className="gantt-extra-segments">{segments}</div>;
-  };
+  // <<<<<<<<<<<<<<<< INICIO DE LA CORRECCIÓN >>>>>>>>>>>>>>>>
+  // Mover el bloque de retorno anticipado aquí, después de todos los hooks.
+  if (!radDate || ganttData.phases.length === 0) {
+    return (
+      <div className="gantt-empty">
+        <i className="fas fa-calendar-times" />
+        <p>No hay datos disponibles para el diagrama</p>
+      </div>
+    );
+  }
+  // <<<<<<<<<<<<<<<< FIN DE LA CORRECCIÓN >>>>>>>>>>>>>>>>
 
   const renderMarkers = (phase) => {
       if (compactMode || !phase.markers || phase.markers.length === 0) return null;
@@ -425,7 +389,7 @@ export const GanttChart = ({
       });
   };
 
-  const renderBarWithTrack = (rowInfo, phaseStartDate) => {
+  const renderBarWithTrack = (rowInfo, phaseStartDate, suspensionInfo) => {
     const barClass = statusToClass(rowInfo.status);
     const trackStyle = { width: `${rowInfo.trackPct}%` };
     const fillStyle = { width: `${rowInfo.progressPct}%` };
@@ -458,6 +422,25 @@ export const GanttChart = ({
         </div>
     ) : null;
 
+    // --- RENDERIZADO DEL CORTE DE SUSPENSIÓN ---
+    let suspensionCutout = null;
+    if (suspensionInfo && rowInfo.actorTotal > 0) {
+        // El `startOffset` es desde el inicio del GANTT. Hay que ajustarlo a la fase.
+        const startOffsetInPhase = suspensionInfo.startOffset - rowInfo.startPosition;
+
+        const leftPct = (startOffsetInPhase / rowInfo.actorTotal) * 100;
+        const widthPct = (suspensionInfo.duration / rowInfo.actorTotal) * 100;
+
+        if(leftPct >= 0 && leftPct < 100){
+            suspensionCutout = (
+                <div 
+                    className="gantt-progress-cutout"
+                    style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
+                />
+            );
+        }
+    }
+
     return (
       <div className="gantt-bar-single">
          <div 
@@ -465,7 +448,10 @@ export const GanttChart = ({
             style={trackStyle}
             onMouseMove={(e) => handleMouseMove(e, tooltipTrack)}
             onMouseLeave={handleMouseLeave}
-         ></div>
+         >
+            {/* El corte de suspensión se renderiza aquí dentro */}
+            {suspensionCutout}
+         </div>
          <div 
              className={`gantt-bar-fill-overlay ${barClass}`} 
              style={{ ...fillStyle, position: 'absolute', top: 0, left: 0, height: '100%', borderRadius: '4px', opacity: 0.8, pointerEvents: 'auto' }} 
@@ -484,23 +470,43 @@ export const GanttChart = ({
     );
   };
 
-  if (!radDate || ganttData.phases.length === 0) { // Cambio: ldfDate -> radDate
-    return (
-      <div className="gantt-empty">
-        <i className="fas fa-calendar-times" />
-        <p>No hay datos disponibles para el diagrama</p>
+  // --- NUEVA FUNCIÓN PARA RENDERIZAR LA BARRA DE SUSPENSIÓN ---
+  const renderSuspensionRow = (phase) => {
+    if (!phase.suspensionInfo) return null;
+
+    const { startOffset, duration, label } = phase.suspensionInfo;
+    const leftPx = startOffset * scaleFactor;
+    const widthPx = duration * scaleFactor;
+
+    const tooltipContent = (
+      <div>
+        <strong>Suspensión de Términos</strong><br />
+        <span>{duration} días hábiles</span>
       </div>
     );
-  }
 
-  const ROW_HEIGHT = compactMode ? 34 : 50; 
-  const HEADER_HEIGHT = compactMode ? 32 : 56; 
+    return (
+      <div className="gantt-suspension-track">
+        <div
+          className="gantt-suspension-bar"
+          style={{ left: `${leftPx}px`, width: `${widthPx}px` }}
+          onMouseMove={(e) => handleMouseMove(e, tooltipContent)}
+          onMouseLeave={handleMouseLeave}
+        >
+          {!compactMode && <span>S</span>}
+        </div>
+        {/* Líneas guía verticales */}
+        <div className="gantt-suspension-guideline" style={{ left: `${leftPx}px` }} />
+        <div className="gantt-suspension-guideline" style={{ left: `${leftPx + widthPx}px` }} />
+      </div>
+    );
+  };
+
 
   return (
     <div className={`gantt-container ${compactMode ? 'gantt-compact' : ''}`}>
       <FloatingTooltip {...tooltip} />
 
-      {/* HEADER SECTION */}
       <div className="gantt-header-wrapper" style={{ height: `${HEADER_HEIGHT}px` }}>
         <div className="gantt-title-column">
           <div className="gantt-title-header">{!compactMode && <span>Fases</span>}</div>
@@ -532,7 +538,6 @@ export const GanttChart = ({
               </div>
             ))}
 
-            {/* LÍNEA DE HOY EN HEADER */}
              {ganttData.todayOffset >= 0 && (
                 <div 
                     className="gantt-today-marker-head"
@@ -546,7 +551,6 @@ export const GanttChart = ({
         </div>
       </div>
 
-      {/* BODY SECTION */}
       <div className="gantt-body-wrapper">
         <div className="gantt-body-titles">
            {ganttData.phases.map((phase) => {
@@ -554,9 +558,9 @@ export const GanttChart = ({
               return (
                 <div
                   key={phase.id}
-                  className={`gantt-phase-row-title ${phase.highlightClass || ''} ${isActive ? 'gantt-phase-active' : ''}`}
+                  className={`gantt-phase-row-title ${phase.highlightClass || ''} ${isActive ? 'gantt-phase-active' : ''} ${phase.suspensionInfo ? 'gantt-phase-with-suspension' : ''}`}
                   onClick={() => onPhaseClick?.(phase)}
-                  style={{ height: `${ROW_HEIGHT}px` }}
+                  style={{ height: `${getRowHeight(phase)}px` }}
                 >
                   <div className="gantt-phase-number">{phase.phaseIndex}</div>
                   {!compactMode && <span className="gantt-phase-title-text">{phase.title}</span>}
@@ -570,11 +574,10 @@ export const GanttChart = ({
             className="gantt-body-content gantt-grid"
             style={{
                 width: `${totalWidthPx}px`,
-                height: `${ganttData.phases.length * ROW_HEIGHT}px`,
+                height: `${totalBodyHeight}px`,
                 ...gridVars,
             }}
           >
-            {/* LÍNEA TRANSVERSAL DE HOY */}
             {ganttData.todayOffset >= 0 && (
                 <div 
                     className="gantt-today-line"
@@ -582,47 +585,55 @@ export const GanttChart = ({
                 />
             )}
 
-            {ganttData.phases.map((phase, index) => {
-                const leftPx = phase.startPosition * scaleFactor;
-                const widthPx = phase.blockWidth * scaleFactor;
-                const topPx = index * ROW_HEIGHT;
-                
-                const contentHeight = compactMode ? 26 : 40; 
-                const barHeight = compactMode ? 10 : 16;
-                const paddingY = ((ROW_HEIGHT - contentHeight) / 2) - (compactMode ? 4 : 0);
+            {(() => {
+                let cumulativeTop = 0;
+                return ganttData.phases.map((phase) => {
+                    const rowHeight = getRowHeight(phase);
+                    const leftPx = phase.startPosition * scaleFactor;
+                    const widthPx = phase.blockWidth * scaleFactor;
+                    const topPx = cumulativeTop;
+                    cumulativeTop += rowHeight;
+                    
+                    const barHeight = compactMode ? 10 : 16;
+                    const mainBarTopPadding = phase.suspensionInfo ? '10%' : '50%';
+                    const mainBarTransform = phase.suspensionInfo ? 'translateY(-60%)' : 'translateY(-50%)';
 
-                return (
-                  <div 
-                    key={`task-${phase.id}`}
-                    className="gantt-task-container"
-                    style={{ 
-                        left: `${leftPx}px`, 
-                        width: `${widthPx}px`, 
-                        top: `${topPx}px`, 
-                        height: `${ROW_HEIGHT}px`,
-                        paddingTop: `${paddingY}px`
-                    }}
-                    onClick={() => onPhaseClick?.(phase)}
-                  >
-                    {phase.hasParallelActors ? (
-                      <div className="gantt-bar-stack" style={{ gap: compactMode ? '2px' : '4px' }}>
-                        <div style={{ height: `${barHeight}px`, width: '100%', position: 'relative' }}>
-                          {renderBarWithTrack(phase.rows[0], phase.startDate)}
-                        </div>
-                        <div style={{ height: `${barHeight}px`, width: '100%', position: 'relative' }}>
-                          {renderBarWithTrack(phase.rows[1], phase.startDate)}
-                        </div>
+                    return (
+                      <div 
+                        key={`task-container-${phase.id}`}
+                        className={`gantt-task-container ${phase.suspensionInfo ? 'gantt-phase-with-suspension' : ''}`}
+                        style={{ 
+                            left: `${phase.startPosition * scaleFactor}px`, 
+                            width: `${phase.blockWidth * scaleFactor}px`, 
+                            top: `${topPx}px`, 
+                            height: `${rowHeight}px`,
+                        }}
+                        onClick={() => onPhaseClick?.(phase)}
+                      >
+                         <div style={{ position: 'absolute', top: mainBarTopPadding, transform: mainBarTransform, width: '100%' }}>
+                            {phase.hasParallelActors ? (
+                              <div className="gantt-bar-stack" style={{ gap: compactMode ? '2px' : '4px' }}>
+                                <div style={{ height: `${barHeight}px`, width: '100%', position: 'relative' }}>
+                                  {renderBarWithTrack(phase.rows[0], phase.startDate, phase.suspensionInfo)}
+                                </div>
+                                <div style={{ height: `${barHeight}px`, width: '100%', position: 'relative' }}>
+                                  {renderBarWithTrack(phase.rows[1], phase.startDate, phase.suspensionInfo)}
+                                </div>
+                              </div>
+                            ) : (
+                              <div style={{ height: `${barHeight}px`, width: '100%', position: 'relative' }}>
+                                  {renderBarWithTrack(phase.rows[0], phase.startDate, phase.suspensionInfo)}
+                              </div>
+                            )}
+                         </div>
+
+                        {renderMarkers(phase)}
+                        {/* La fila de suspensión se renderiza aquí, dentro del contenedor de la fase */}
+                        {renderSuspensionRow(phase)}
                       </div>
-                    ) : (
-                      <div style={{ height: `${barHeight}px`, width: '100%', position: 'relative' }}>
-                          {renderBarWithTrack(phase.rows[0], phase.startDate)}
-                      </div>
-                    )}
-                    {renderExtraSegments(phase)}
-                    {renderMarkers(phase)}
-                  </div>
-                );
-              })}
+                    );
+                });
+            })()}
           </div>
         </div>
       </div>
