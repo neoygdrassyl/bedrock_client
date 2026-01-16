@@ -172,48 +172,53 @@ export const ClockRow = (props) => {
     // CÁLCULO DE ALARMA (USANDO LÍMITES LEGALES)
     // =====================================================
     const getAlarmInfo = () => {
-        // CAMBIO SOLICITADO: Usar legalData.limitDate en lugar de scheduledData
         if (!legalData || !legalData.limitDate) return null;
-        const { limitDate } = legalData;
-        const isCompleted = !!clock?.date_start;
-        const today = systemDate; 
         
+        const { limitDate } = legalData;
+        const limitMoment = moment(limitDate);
+        const isCompleted = !!clock?.date_start;
+        const today = moment(systemDate);
+
         let text = '';
         let color = '';
         let icon = null;
 
         if (isCompleted) {
-            const diff = calcularDiasHabiles(limitDate, clock.date_start, true);
-            if (diff <= 0) {
+            const completionDate = moment(clock.date_start);
+            
+            // Si la fecha de finalización es DESPUÉS de la fecha límite, hay retraso.
+            if (completionDate.isAfter(limitMoment, 'day')) {
+                // Contamos los días hábiles ENTRE la fecha límite y la de finalización.
+                // No se incluye el día límite (tercer argumento false o no presente).
+                const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
+                text = `Retraso de ${delayDays} día(s)`;
+                color = '#e03131';
+                icon = 'fa-exclamation-circle';
+            } else {
+                // Si es el mismo día o antes, está a tiempo.
                 text = `A tiempo`;
                 color = '#2f9e44';
                 icon = 'fa-check';
-            } else {
-                text = `Retraso de ${diff} días`;
-                color = '#e03131';
-                icon = 'fa-exclamation-circle';
             }
         } else {
-            // Comparar contra systemDate
-            const isOverdue = moment(today).isAfter(limitDate);
-            const remaining = calcularDiasHabiles(isOverdue ? limitDate : today, isOverdue ? today : limitDate, true);
+            // Lógica para eventos pendientes (no se modifica)
+            const isOverdue = today.isAfter(limitMoment, 'day');
             
             if (isOverdue) {
-                 text = `Retrasado por ${remaining} días`;
-                 color = '#e03131';
-                 icon = 'fa-exclamation-circle';
+                const overdueDays = calcularDiasHabiles(limitMoment.toDate(), today.toDate());
+                text = `Retrasado por ${overdueDays} día(s)`;
+                color = '#e03131';
+                icon = 'fa-exclamation-circle';
             } else {
-                 text = `${remaining} días restantes`;
-                 color = '#f08c00'; // Naranja por defecto
-                 icon = 'fa-hourglass-half';
-                 
-                 // Aplicar lógica de urgencia (rojo si queda poco) - Similar a useAlarms.js
-                 // Si quedan 2 días o menos, se marca en rojo
-                 // Nota: useAlarms usa 7 días como umbral para mostrar, pero aquí mostramos siempre el estado.
-                 if (remaining <= 2 && remaining >= 0) {
-                     color = '#e03131';
-                     icon = 'fa-exclamation-triangle';
-                 }
+                const remainingDays = calcularDiasHabiles(today.toDate(), limitMoment.toDate());
+                text = `${remainingDays} día(s) restante(s)`;
+                color = '#f08c00'; // Naranja por defecto
+                icon = 'fa-hourglass-half';
+                
+                if (remainingDays <= 2) {
+                    color = '#e03131';
+                    icon = 'fa-exclamation-triangle';
+                }
             }
         }
         return { text, color, icon };
