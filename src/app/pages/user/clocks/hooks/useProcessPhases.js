@@ -88,7 +88,10 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
       if (!startDate) return 0;
       const calcEnd = endDate || defaultEnd;
       if (moment(calcEnd).isBefore(startDate)) return 0;
-      return calcularDiasHabiles(startDate, calcEnd);
+      console.log("Calculating used days from", startDate, "to", calcEnd);
+      let usedDays = calcularDiasHabiles(startDate, calcEnd);
+      console.log("Used days calculated:", usedDays);
+      return usedDays;
     };
 
     let isProcessActive = true; 

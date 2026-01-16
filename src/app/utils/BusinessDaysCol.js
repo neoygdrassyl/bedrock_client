@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 class DiasHabilesColombia {
     constructor() {
         // Festivos fijos de Colombia
@@ -178,26 +180,35 @@ class DiasHabilesColombia {
     }
 
     /**
-     * Cuenta los días hábiles entre dos fechas (inclusivo).
+     * Cuenta los días hábiles entre dos fechas.
      * @param {string} startDate - Fecha de inicio 'YYYY-MM-DD'
      * @param {string} endDate - Fecha de fin 'YYYY-MM-DD'
+     * @param {boolean} [include=false] - Si es true, cuenta también el día de inicio. Por defecto es false.
      * @returns {number}
      */
-    contarDiasHabiles(startDate, endDate) {
-        const start = new Date(startDate + 'T00:00:00Z');
-        const end = new Date(endDate + 'T00:00:00Z');
+    contarDiasHabiles(startDate, endDate, include = false) {
+        let current = moment(startDate).startOf('day');
+        const end = moment(endDate).startOf('day');
+        if (!current.isValid() || !end.isValid() || current.isAfter(end)) {
+            return 0;
+        }
+
         let count = 0;
         
-        const current = new Date(start.getTime());
+        if (!include) {
+            current.add(1, 'day');
+        }
         
-        while (current <= end) {
-            const fechaStr = current.toISOString().split('T')[0];
-            const festivos = this.obtenerFestivos(current.getUTCFullYear());
-            if (this.esDiaHabil(fechaStr, festivos)) {
+        while (current.isSameOrBefore(end, 'day')) {
+            const festivos = this.obtenerFestivos(current.year());
+            
+            if (this.esDiaHabil(current.format('YYYY-MM-DD'), festivos)) {
                 count++;
             }
-            current.setUTCDate(current.getUTCDate() + 1);
+
+            current.add(1, 'day');
         }
+        
         return count;
     }
 
@@ -278,3 +289,5 @@ function procesarFechaRestar(fechaInicial, diasHabiles = 10) {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { procesarFecha, procesarFechaRestar, DiasHabilesColombia };
 }
+
+export {DiasHabilesColombia, procesarFecha, procesarFechaRestar}
