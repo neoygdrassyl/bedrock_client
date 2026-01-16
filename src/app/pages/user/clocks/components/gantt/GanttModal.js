@@ -83,7 +83,6 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
           <span>{(usedDays ?? 0)} / {(totalDays ?? 0)} días</span>
         </div>
 
-        {/* ALERTA DE RETRASO PRINCIPAL */}
         {delayDays > 0 && (
            <div className="gantt-detail-row" style={{ backgroundColor: '#fff5f5', border: '1px solid #ffc9c9' }}>
              <span className="gantt-detail-label" style={{ color: '#dc3545' }}>Retraso</span>
@@ -91,7 +90,6 @@ const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostAct
            </div>
         )}
 
-        {/* Debug visual de layout */}
         <div className="gantt-detail-row">
           <span className="gantt-detail-label">Ancho Visual</span>
           <span>{blockWidth ?? '—'} d</span>
@@ -200,41 +198,29 @@ export const GanttModal = ({
   scheduleConfig,
   manager
 }) => {
-  const [viewMode, setViewMode] = useState('legal'); // 'legal' (antes standard) | 'real' (antes adjustedWidth)
+  const [viewMode, setViewMode] = useState('legal'); 
   const [selectedPhase, setSelectedPhase] = useState(null);
 
   useEffect(() => {
-    // Resetear selección cuando cambia el modo para evitar confusión en los datos mostrados
     setSelectedPhase(null);
   }, [viewMode]);
 
-  // CÁLCULO DE FECHA ESTIMADA DE ENTREGA
   const projectedFinishData = useMemo(() => {
     if (!radDate || phases.length === 0) return null;
 
     let totalProjectedDays = 0;
 
     phases.forEach(phase => {
-        // Lógica de proyección:
-        // 1. Si la fase está COMPLETADA, sumamos los días que realmente se tomaron (usedDays).
-        //    (Si se tomó menos del legal, ganamos tiempo. Si se tomó más, perdimos tiempo).
-        // 2. Si la fase está PENDIENTE o ACTIVA, sumamos los días legales/planeados (totalDays).
-        //    (Asumimos el mejor escenario futuro: no habrá más retrasos de los que ya existan).
-        // 3. NO sumamos 'delayDays' extra para el futuro, porque el 'standard' es la meta.
-        
         let daysToAdd = 0;
         if (phase.status === 'COMPLETADO') {
             daysToAdd = phase.usedDays || 0;
         } else {
-            // Activo, Pendiente, Pausado, Vencido (pero no terminado)
-            // Tomamos el total legal esperado.
             daysToAdd = (phase.totalDays || 0) + (phase.extraDays || 0);
         }
         
         totalProjectedDays += daysToAdd;
     });
 
-    // Calcular fecha calendario desde la fecha de radicación
     const projectedDate = sumarDiasHabiles(radDate, totalProjectedDays);
 
     return {
@@ -293,16 +279,16 @@ export const GanttModal = ({
           <div className="gantt-modal-chart-container">
             <GanttChart
               phases={phases}
-              radDate={radDate} // Cambio: Usar radDate
+              radDate={radDate}
               suspensionPreActa={suspensionPreActa}
               suspensionPostActa={suspensionPostActa}
               extension={extension}
               compactMode={false}
-              viewMode={viewMode} // PASAMOS EL MODO ('legal' o 'real')
+              viewMode={viewMode}
               onPhaseClick={handlePhaseClick}
               activePhaseId={selectedPhase?.id}
-              scheduleConfig={scheduleConfig} // PASAMOS SCHEDULE CONFIG
-              manager={manager} // PASAMOS MANAGER PARA CÁLCULOS
+              scheduleConfig={scheduleConfig}
+              manager={manager}
             />
           </div>
 
@@ -353,9 +339,8 @@ export const GanttModal = ({
                 <div style={{ width: '20px', height: '4px', background: '#dc3545', marginTop: '4px' }} />
                 <span>Exceso/Retraso</span>
               </div>
-               {/* LEYENDA DEL PUNTO DE PROGRAMACION */}
               <div className="gantt-legend-item" style={{ marginLeft: '16px' }}>
-                 <div className="gantt-scheduled-marker-legend"></div>
+                 <div className="gantt-scheduled-marker-legend" style={{width:10, height:10, borderRadius:'50%', background:'#fcc419', border:'1px solid #fff'}}></div>
                  <span>Programado</span>
               </div>
             </div>
