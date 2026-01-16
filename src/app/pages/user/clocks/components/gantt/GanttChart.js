@@ -236,37 +236,38 @@ export const GanttChart = ({
           phaseData.markers = markers;
       }
 
+      // --- CORRECCIÓN AQUÍ: Cálculo de Métricas ---
       const calculateRowMetrics = (actorUsed, actorTotal, rowType) => {
         const u = safeInt(actorUsed, 0);
         const t = safeInt(actorTotal, 1);
         const refWidth = blockWidth;
-        const trackPct = (t / refWidth) * 100;
-        const progressPct = (Math.min(u, t) / refWidth) * 100;
         
-        // Error Legal
+        // El track (fondo) es relativo al ancho del bloque contenedor (fase)
+        const trackPct = (t / refWidth) * 100;
+        
+        // ¡FIX! El progreso (fill) debe ser relativo al track (actorTotal), no al bloque contenedor
+        // porque en el DOM 'gantt-bar-fill' es hijo de 'gantt-bar-bg'.
+        const progressPct = t > 0 ? (Math.min(u, t) / t) * 100 : 0;
+        
+        // Error Legal (Límite normativo)
         const overdue = calculateOverdue(u, t, startDate, endDate);
+        // El error es relativo al bloque contenedor porque se dibuja fuera del track
         const errorPct = (overdue / refWidth) * 100;
 
-        // --- NUEVA LÓGICA: Error de Programación (Scheduled Error) ---
         let scheduledOverdue = 0;
         let scheduledOverduePct = 0;
 
-        // Solo calculamos error programado si hay marcadores en esta fase
         if (phaseData.markers && phaseData.markers.length > 0) {
-             // Buscamos el marcador que tenga el mayor offset (asumiendo que es el final de fase/hito clave)
-             // Opcional: Podríamos filtrar por si el marcador pertenece al actor, pero asumiremos generalidad de fase
              const maxScheduledMarker = phaseData.markers.reduce((prev, current) => (prev.offsetDays > current.offsetDays) ? prev : current, phaseData.markers[0]);
              
              if (maxScheduledMarker) {
                  const scheduledLimit = maxScheduledMarker.offsetDays;
-                 // Si los días usados superan lo programado
                  if (u > scheduledLimit) {
                      scheduledOverdue = u - scheduledLimit;
                  }
              }
         }
         
-        // Convertir a porcentaje visual
         scheduledOverduePct = (scheduledOverdue / refWidth) * 100;
 
         return { 
@@ -376,22 +377,19 @@ export const GanttChart = ({
   const renderBarWithTrack = (rowInfo, phase, phaseStartDate) => {
     const barClass = statusToClass(rowInfo.status);
     const trackStyle = { width: `${rowInfo.trackPct}%` };
-    const fillStyle = { width: `${rowInfo.progressPct}%` };
+    const fillStyle = { width: `${rowInfo.progressPct}%` }; // Ahora esto es relativo al track, no al contenedor
     
-    // Error Legal (Límite normativo)
+    // Error Legal
     const hasError = rowInfo.overdueDays > 0;
     const errorStyle = { left: `${rowInfo.trackPct}%`, width: `${rowInfo.errorPct}%` };
 
-    // Error Programado (Scheduled Deviation)
+    // Error Programado
     const hasScheduledError = rowInfo.scheduledOverdueDays > 0;
-    // La barra de error programado empieza donde termina lo programado, o desde el final del track si es menor
-    // Para simplificar visualmente, la posicionamos al final del fill menos el exceso, o simplemente al final del scheduled marker.
-    // Una forma robusta: Calcular el pct del scheduled limit
     const scheduledLimitPct = ( (rowInfo.actorUsed - rowInfo.scheduledOverdueDays) / phase.blockWidth ) * 100;
     const scheduledErrorStyle = { 
         left: `${scheduledLimitPct}%`, 
         width: `${rowInfo.scheduledOverduePct}%`,
-        zIndex: 6 // Encima del error normal si se solapan, o debajo según preferencia
+        zIndex: 6 
     };
 
     const dateLimit = phaseStartDate ? sumarDiasHabiles(phaseStartDate, rowInfo.actorTotal) : null;
@@ -404,7 +402,7 @@ export const GanttChart = ({
     const tooltipScheduledError = hasScheduledError ? (
         <div> 
             <strong style={{color: '#fd7e14'}}>Desviación de Programación</strong><br/> 
-            Días excedidos: {rowInfo.scheduledOverdueDays}<br/> 
+            D��as excedidos: {rowInfo.scheduledOverdueDays}<br/> 
             <small>Respecto al tiempo programado</small>
         </div> 
     ) : null;
@@ -461,7 +459,6 @@ export const GanttChart = ({
             {extensionSegment}
             {markersElement}
          </div>
-         {/* Renderizamos el error programado si existe */}
          {hasScheduledError && ( 
              <div 
                 className="gantt-error-line scheduled" 
@@ -470,7 +467,6 @@ export const GanttChart = ({
                 onMouseLeave={handleMouseLeave} 
              /> 
          )}
-         {/* Renderizamos el error legal si existe */}
          {hasError && ( 
              <div 
                 className="gantt-error-line" 
@@ -561,7 +557,6 @@ export const GanttChart = ({
 
                     return (
                       <React.Fragment key={`task-wrapper-${phase.id}`}>
-                        {/* SEPARADOR VISUAL DE FILA (GUÍA) */}
                         <div 
                           className="gantt-grid-row-line" 
                           style={{ top: `${topPx + rowHeight}px`, width: '100%' }} 
