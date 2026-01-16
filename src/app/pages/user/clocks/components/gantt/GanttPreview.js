@@ -3,7 +3,7 @@ import { GanttChart } from './GanttChart';
 
 export const GanttPreview = ({
   phases,
-  ldfDate,
+  radDate,
   suspensionPreActa,
   suspensionPostActa,
   extension,
@@ -14,7 +14,7 @@ export const GanttPreview = ({
     <div className="gantt-preview-body">
       <GanttChart
         phases={phases}
-        ldfDate={ldfDate}
+        radDate={radDate}
         suspensionPreActa={suspensionPreActa}
         suspensionPostActa={suspensionPostActa}
         extension={extension}

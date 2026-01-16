@@ -764,6 +764,9 @@ export default function EXP_CLOCKS(props) {
     }
 };
 
+
+  const radDate = currentItem?.date;
+
   return (
     <div className="exp-wrapper">
       {showAlarms && (
@@ -798,7 +801,7 @@ export default function EXP_CLOCKS(props) {
         isOpen={showGanttModal}
         onClose={() => setShowGanttModal(false)}
         phases={manager.processPhases}
-        ldfDate={getClock(5)?.date_start || currentItem?.date}
+        radDate={currentItem?.date}
         suspensionPreActa={manager.suspensionPreActa}
         suspensionPostActa={manager.suspensionPostActa}
         extension={manager.extension}
@@ -831,6 +834,7 @@ export default function EXP_CLOCKS(props) {
             onActivePhaseChange={setActivePhaseId}
             activePhaseId={activePhaseId}
             onExpandGantt={() => setShowGanttModal(true)} 
+            radDate={radDate}
           />
           {/* El calendario se muestra condicionalmente y flotante */}
           {showCalendar && (

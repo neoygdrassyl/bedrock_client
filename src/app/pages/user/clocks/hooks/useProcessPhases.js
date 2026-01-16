@@ -27,7 +27,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     const correccionesOptions = phaseOptions?.phase_correcciones || { notificationType: 'notificar', byAviso: false };
 
     // --- 1. EXTRACCIÓN DE FECHAS ESTÁNDAR ---
-    const radicacionDate = currentItem.date;
+    const radDate = currentItem.date; // CAMBIO CLAVE: Esta es ahora nuestra fecha de inicio global
+    console.log("Radicación Date:", radDate);
     const ldfDate = getClock(5)?.date_start;
     const vallaDate = getClock(503)?.date_start;
     
@@ -266,7 +267,16 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
 
     // --- 4. CONSTRUCCIÓN DEL FLUJO DE FASES ---
     let phases = [];
-    const addPhase = (phase) => { phases.push(phase); };
+    const addPhase = (phase) => { 
+        // CAMBIO CLAVE: El startPosition de cada fase ahora es la diferencia
+        // en días hábiles desde la fecha de radicación inicial.
+        if (phase.startDate && radDate) {
+            phase.startPosition = calcularDiasHabiles(radDate, phase.startDate, false);
+        } else {
+            phase.startPosition = 0;
+        }
+        phases.push(phase); 
+    };
 
     // FASE 0: Radicación 
     const skipPhase0 = ['-1', '-2'].includes(desistimientoVersion);
@@ -275,11 +285,11 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         id: 'phase0', 
         title: 'Radicación de Legal y debida forma', 
         responsible: 'Solicitante', 
-        status: skipPhase0 ? 'COMPLETADO' : checkStatus(radicacionDate, ldfDate), 
+        status: skipPhase0 ? 'COMPLETADO' : checkStatus(radDate, ldfDate), 
         totalDays: 30, 
-        usedDays: calculateUsedDaysFromNextDay(radicacionDate, ldfDate), 
+        usedDays: calculateUsedDaysFromNextDay(radDate, ldfDate), 
         extraDays: 0, 
-        startDate: radicacionDate, 
+        startDate: radDate, 
         endDate: ldfDate, 
         parallelActors: null,
         highlightClass: 'phase-highlight-radicacion',

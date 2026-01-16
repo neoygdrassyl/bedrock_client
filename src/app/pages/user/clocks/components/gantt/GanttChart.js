@@ -11,7 +11,7 @@ const FloatingTooltip = ({ visible, x, y, content }) => {
   return (
     <div 
       className="gantt-floating-tooltip"
-      style={{ top: y + 15, left: x + 15 }} // Un poco desplazado del mouse
+      style={{ top: y + 15, left: x + 15 }} 
     >
       {content}
     </div>
@@ -19,11 +19,11 @@ const FloatingTooltip = ({ visible, x, y, content }) => {
 };
 
 /**
- * GanttChart (Fixed Alignment Version with Interactive Tooltips)
+ * GanttChart (Updated: Real Waterfall Logic + Today Line + Precision Header)
  */
 export const GanttChart = ({
   phases = [],
-  ldfDate,
+  radDate, // Cambio: ldfDate -> radDate
   suspensionPreActa,
   suspensionPostActa,
   extension,
@@ -36,12 +36,16 @@ export const GanttChart = ({
 }) => {
   const [hoveredDay, setHoveredDay] = useState(null);
   
-  // Estado para el tooltip flotante
   const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, content: null });
 
   const headerScrollRef = useRef(null);
   const bodyScrollRef = useRef(null);
   const isSyncing = useRef(false);
+
+  // Fecha del sistema (Hoy emulado o real)
+  const systemToday = useMemo(() => {
+      return manager?.systemDate ? moment(manager.systemDate).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
+  }, [manager]);
 
   // Sync scroll logic
   useLayoutEffect(() => {
@@ -77,7 +81,6 @@ export const GanttChart = ({
 
   const ensureMinWidth = (n) => Math.max(1, safeInt(n, 1));
 
-  // Determine bar class based on status
   const statusToClass = (status) => {
     if (status === 'COMPLETADO') return 'gantt-bar-completed';
     if (status === 'ACTIVO') return 'gantt-bar-active';
@@ -86,7 +89,6 @@ export const GanttChart = ({
     return 'gantt-bar-pending';
   };
 
-  // Manejadores del mouse para el tooltip
   const handleMouseMove = (e, content) => {
     setTooltip({
       visible: true,
@@ -101,13 +103,13 @@ export const GanttChart = ({
   };
 
   const ganttData = useMemo(() => {
-    if (!ldfDate || phases.length === 0) {
-      return { phases: [], maxDays: 0, dateColumns: [] };
+    if (!radDate || phases.length === 0) { // Cambio: ldfDate -> radDate
+      return { phases: [], maxDays: 0, dateColumns: [], todayOffset: -1 };
     }
 
-    let cumulativeDays = 0; // Posición acumulada en el eje X
+    let cumulativeDays = 0; // Posición de inicio para la siguiente fase
     const processedPhases = [];
-    const today = moment().format('YYYY-MM-DD');
+    const today = systemToday;
 
     phases.forEach((phase, index) => {
       const {
@@ -122,41 +124,69 @@ export const GanttChart = ({
         status
       } = phase;
 
-      // Días base (planificados/legales)
-      const baseDays = safeInt(ganttBlockDays ?? totalDays, 0);
-      
-      // Días reales (usados)
-      const actualDays = safeInt(usedDays, 0);
+      const baseDays = safeInt(ganttBlockDays ?? totalDays, 0); // Límite Legal
+      const actualDays = safeInt(usedDays, 0); // Tiempo Real
 
-      // --- LOGICA DE VISTAS (LEGAL vs REAL) ---
-      let containerWidth = baseDays; // Por defecto Legal
+      // --- LOGICA DE VISTAS ---
+      let containerWidth = baseDays; 
 
       if (viewMode === 'real') {
+         // En vista REAL: El contenedor crece si nos pasamos, o se encoge si terminamos antes.
          if (status === 'COMPLETADO') {
-             // Si terminó, la caja es del tamaño real (si fue menos tiempo, se corta)
-             // Si fue más tiempo, la caja crece.
              containerWidth = actualDays;
          } else {
-             // Si está activo o pendiente, mostramos el legal O el usado si ya se pasó.
              containerWidth = Math.max(baseDays, actualDays);
          }
       } 
-      // En modo 'legal', siempre respetamos el baseDays (el exceso se desborda visualmente pero no empuja la siguiente fase)
+      // En vista LEGAL: containerWidth siempre es baseDays (el límite legal), 
+      // a menos que queramos mostrar el desborde visualmente (lo cual maneja el CSS con overflow visible).
+      // Aquí mantenemos baseDays para que la barra gris represente la norma.
 
       const blockWidth = ensureMinWidth(containerWidth);
       const blockBaseDays = ensureMinWidth(baseDays);
 
-      // Lógica de cálculo de retraso (Overdue)
+      // --- LÓGICA DE CONTINUIDAD (Shift de la siguiente fase) ---
+      // Calculamos cuánto tiempo "real" consumió esta fase para saber dónde empieza la siguiente.
+      let shiftDays = 0;
+
+      if (viewMode === 'legal') {
+          // MODIFICACIÓN SOLICITADA:
+          // En modo legal, la barra conserva su ancho (legal), PERO el inicio de la siguiente
+          // fase depende de cuándo terminó REALMENTE la actual.
+          
+          if (status === 'COMPLETADO') {
+              // Si terminó, la siguiente empieza cuando esta acabó (sea antes o después del límite).
+              // Lógica para paralelos: Tomar el mayor tiempo usado.
+              if (parallelActors) {
+                  const p1Used = safeInt(parallelActors.primary?.usedDays, 0);
+                  const p2Used = safeInt(parallelActors.secondary?.usedDays, 0);
+                  
+                  // Caso especial Ejecutoria (phase9_exec): Si existen ambos, el mayor.
+                  // (La lógica general de Math.max funciona bien para Ejecutoria y Recurso también)
+                  shiftDays = Math.max(p1Used, p2Used);
+              } else {
+                  shiftDays = actualDays;
+              }
+          } else {
+              // Si NO ha terminado (Activo/Pendiente), en el diagrama Legal solemos proyectar 
+              // el espacio legal completo para no "superponer" prematuramente el futuro.
+              // O si está activo, usamos lo que lleve (max(used, base)).
+              // Para mantener el orden visual limpio de lo pendiente:
+              shiftDays = baseDays; 
+          }
+      } else {
+          // Modo Real: El desplazamiento es igual al ancho del bloque visualizado.
+          shiftDays = blockWidth;
+      }
+
+      // Cálculo de Overdue (igual que antes)
       const calculateOverdue = (uDays, tDays, pStartDate, pEndDate) => {
           let overdue = 0;
           const u = safeInt(uDays, 0);
           const t = safeInt(tDays, 1);
-          
           if (pEndDate) {
-              // Caso Completado
               if (u > t) overdue = u - t;
           } else if (pStartDate) {
-              // Caso Activo
               const limitDate = sumarDiasHabiles(pStartDate, t);
               if (moment(today).isAfter(limitDate)) {
                   overdue = calcularDiasHabiles(limitDate, today);
@@ -165,11 +195,10 @@ export const GanttChart = ({
           return Math.max(0, overdue);
       };
 
-      // Check extra segments
+      // Segmentos extra
       let hasSuspensionPreActa = false;
       let hasSuspensionPostActa = false;
       let hasExtension = false;
-
       if (id === 'phase1' && relatedStates?.includes(300)) {
         hasSuspensionPreActa = !!suspensionPreActa?.exists;
         hasExtension = !!extension?.exists;
@@ -180,36 +209,31 @@ export const GanttChart = ({
       }
 
       const hasParallelActors = !!parallelActors?.primary && !!parallelActors?.secondary;
-
-      // La posición visual de inicio
       const visualStartPosition = cumulativeDays;
 
       const phaseData = {
         ...phase,
         phaseIndex: index + 1,
         startPosition: visualStartPosition,
-        blockWidth,      // Ancho visual de la caja
-        blockBaseDays,   // Ancho lógico legal
+        blockWidth,      
+        blockBaseDays,   
         hasParallelActors,
         hasSuspensionPreActa,
         hasSuspensionPostActa,
         hasExtension,
         rows: [],
-        markers: [] // Array para los puntos de programación
+        markers: []
       };
 
-      // --- CÁLCULO DE MARCADORES DE PROGRAMACIÓN ---
+      // Marcadores (Schedule)
       if (scheduleConfig && scheduleConfig.times && manager && startDate) {
           const markers = [];
           (relatedStates || []).forEach(state => {
-              // Si el estado está programado
               if (scheduleConfig.times[state]) {
-                  // Obtenemos definición del clock para labels
                   const clockDef = manager.clocksData.find(c => c.state === state);
-                  // Usamos el util para calcular fecha
                   const scheduledInfo = calculateScheduledLimitForDisplay(
                       state, 
-                      clockDef || { state, allowSchedule: true }, // fallback simple
+                      clockDef || { state, allowSchedule: true },
                       manager.getClock(state),
                       scheduleConfig,
                       manager.getClock,
@@ -218,13 +242,7 @@ export const GanttChart = ({
                   );
 
                   if (scheduledInfo && scheduledInfo.limitDate) {
-                      // Calcular offset en días hábiles desde el inicio de la fase
-                      // Nota: usamos startDate de la fase.
-                      // Si la fecha programada es ANTES del inicio, offset negativo (no se ve)
-                      // Si es DESPUES, se ve.
-                      const offset = calcularDiasHabiles(startDate, scheduledInfo.limitDate, false); // false = exlusivo diff
-                      
-                      // Solo agregar si cae dentro de una ventana razonable (no negativo extremo)
+                      const offset = calcularDiasHabiles(startDate, scheduledInfo.limitDate, false);
                       if (offset >= 0) {
                           markers.push({
                               state,
@@ -240,39 +258,17 @@ export const GanttChart = ({
           phaseData.markers = markers;
       }
 
-
-      // Helper para calcular métricas de fila
+      // Métricas de fila
       const calculateRowMetrics = (actorUsed, actorTotal) => {
         const u = safeInt(actorUsed, 0);
         const t = safeInt(actorTotal, 1);
-        
-        // Referencia para porcentajes: Depende de viewMode
-        // En Real Mode: La caja es dinámica.
-        // En Legal Mode: La caja es fija.
         const refWidth = blockWidth; 
-
-        // 1. Ancho del track gris (Límite legal)
         const trackPct = (t / refWidth) * 100;
-
-        // 2. Progreso verde
         const progressPct = (Math.min(u, t) / refWidth) * 100;
-
-        // 3. Cálculo de error
         const overdue = calculateOverdue(u, t, startDate, endDate);
-        
-        // 4. Ancho de la línea roja
-        // En Real Mode: Si completado y overdue, el error está "dentro" del ancho total (que creció).
-        // En Legal Mode: El error se sale de la caja.
         const errorPct = (overdue / refWidth) * 100;
 
-        return {
-          trackPct,
-          progressPct, // Relativo al container
-          errorPct,
-          overdueDays: overdue,
-          actorUsed: u,
-          actorTotal: t
-        };
+        return { trackPct, progressPct, errorPct, overdueDays: overdue, actorUsed: u, actorTotal: t };
       };
 
       if (hasParallelActors) {
@@ -285,14 +281,12 @@ export const GanttChart = ({
           label: parallelActors.primary.name,
           ...row1Metrics
         });
-
         phaseData.rows.push({
           type: 'secondary',
           status: parallelActors.secondary.status,
           label: parallelActors.secondary.name,
           ...row2Metrics
         });
-
       } else {
         const metrics = calculateRowMetrics(usedDays, totalDays);
         phaseData.rows.push({
@@ -305,46 +299,57 @@ export const GanttChart = ({
 
       processedPhases.push(phaseData);
       
-      // Actualizamos acumuladores para la siguiente fase.
-      // viewMode === 'real': Empuja según el ancho real calculado.
-      // viewMode === 'legal': Empuja según el ancho legal (estándar).
-      cumulativeDays += viewMode === 'real' ? blockWidth : blockBaseDays;
-
+      // ACTUALIZAR ACUMULADOR con el valor "shift" calculado
+      cumulativeDays += shiftDays;
     });
 
-    // Calcular el ancho total del gráfico para el scroll
+    // Calcular ancho total y columnas
     let maxVisualDay = 0;
     if (processedPhases.length > 0) {
-        const lastPhase = processedPhases[processedPhases.length - 1];
-        maxVisualDay = lastPhase.startPosition + lastPhase.blockWidth;
+        // Encontrar la fase que visualmente termina más lejos
+        processedPhases.forEach(p => {
+            const endPos = p.startPosition + p.blockWidth;
+            if (endPos > maxVisualDay) maxVisualDay = endPos;
+        });
         
-        // Margen extra si hay errores en modo legal
-        if(viewMode === 'legal' && lastPhase.rows.some(r => r.overdueDays > 0)){
-             maxVisualDay += 20; 
-        }
+        // Margen extra
+        maxVisualDay += 15;
     }
 
-    const maxDays = maxVisualDay > 0 ? maxVisualDay + 5 : 50; 
+    const maxDays = maxVisualDay > 0 ? maxVisualDay : 50; 
 
     // Header markers
     const dateColumns = [];
-    const intervalDays = compactMode ? 10 : 5;
+    // Usamos intervalo 1 para tener precisión de ticks, pero labels controlados
+    const step = 1; 
 
-    for (let i = 0; i <= maxDays; i += intervalDays) {
+    for (let i = 0; i <= maxDays; i += step) {
       dateColumns.push({
         day: i,
-        date: sumarDiasHabiles(ldfDate, i),
+        date: sumarDiasHabiles(radDate, i), // Cambio: ldfDate -> radDate
         position: i,
+        isMajor: i % (compactMode ? 10 : 5) === 0 // Multiplos de 5 o 10
       });
     }
 
-    return { phases: processedPhases, maxDays, dateColumns, intervalDays };
-  }, [phases, ldfDate, viewMode, compactMode, suspensionPreActa, suspensionPostActa, extension, scheduleConfig]);
+    // Calcular posición de HOY relativo a la fecha de radicación
+    let todayOffset = -1;
+    if (radDate && systemToday) { // Cambio: ldfDate -> radDate
+        // Si hoy es antes de la fecha de radicación, negativo (no se muestra o se muestra al inicio)
+        // Si hoy es despues, calculamos dias habiles
+        if (moment(systemToday).isSameOrAfter(radDate)) { // Cambio: ldfDate -> radDate
+            todayOffset = calcularDiasHabiles(radDate, systemToday, false); // Cambio: ldfDate -> radDate
+        }
+    }
+
+    return { phases: processedPhases, maxDays, dateColumns, todayOffset, intervalDays: compactMode ? 10 : 5 };
+  }, [phases, radDate, viewMode, compactMode, suspensionPreActa, suspensionPostActa, extension, scheduleConfig, systemToday]); // Cambio: ldfDate -> radDate
 
   const scaleFactor = useMemo(() => (compactMode ? 3 : 8), [compactMode]);
   const totalWidthPx = ganttData.maxDays * scaleFactor;
 
   const gridVars = useMemo(() => {
+    // Grid visual de fondo sigue siendo multiplos de 5
     const majorStepPx = ganttData.intervalDays * scaleFactor;
     return {
       '--gantt-day-width': `${scaleFactor}px`,
@@ -354,13 +359,9 @@ export const GanttChart = ({
     };
   }, [scaleFactor, ganttData.intervalDays, compactMode]);
 
-  // Renderizadores de Elementos Interactivos
-
   const renderExtraSegments = (phase) => {
     if (compactMode) return null;
     const segments = [];
-    
-    // Función helper para tooltip de segmentos extra
     const getExtraTooltip = (type, obj) => {
         if(!obj) return "";
         const fechaFin = obj.end?.date_start ? moment(obj.end.date_start).format('DD/MM/YYYY') : 'En curso';
@@ -374,7 +375,6 @@ export const GanttChart = ({
             </div>
         );
     };
-
     if (phase.hasSuspensionPreActa) 
         segments.push(
             <div key="s1" className="gantt-segment gantt-segment-suspension" 
@@ -382,7 +382,6 @@ export const GanttChart = ({
                  onMouseLeave={handleMouseLeave}
             />
         );
-    
     if (phase.hasSuspensionPostActa) 
         segments.push(
             <div key="s2" className="gantt-segment gantt-segment-suspension"
@@ -390,7 +389,6 @@ export const GanttChart = ({
                  onMouseLeave={handleMouseLeave}
             />
         );
-    
     if (phase.hasExtension) 
         segments.push(
             <div key="ext" className="gantt-segment gantt-segment-extension"
@@ -398,22 +396,15 @@ export const GanttChart = ({
                  onMouseLeave={handleMouseLeave}
             />
         );
-    
     if (segments.length === 0) return null;
     return <div className="gantt-extra-segments">{segments}</div>;
   };
 
   const renderMarkers = (phase) => {
       if (compactMode || !phase.markers || phase.markers.length === 0) return null;
-
       return phase.markers.map((marker, i) => {
-          // Posición en porcentaje relativo al ancho del bloque visual
           const posPct = (marker.offsetDays / phase.blockWidth) * 100;
-          
-          // Si el marcador está fuera del bloque visual (ej: programación > tiempo real en vista real)
-          // lo ocultamos o lo clippeamos
           if (posPct > 100 && viewMode === 'real') return null;
-
           const tooltipContent = (
               <div>
                   <strong style={{color: '#fcc419'}}>Programación</strong><br/>
@@ -422,16 +413,12 @@ export const GanttChart = ({
                   {marker.offsetDays} días desde inicio fase
               </div>
           );
-
           return (
               <div 
                 key={`mk-${i}`}
                 className="gantt-scheduled-marker"
                 style={{ left: `${posPct}%` }}
-                onMouseMove={(e) => {
-                    e.stopPropagation();
-                    handleMouseMove(e, tooltipContent);
-                }}
+                onMouseMove={(e) => { e.stopPropagation(); handleMouseMove(e, tooltipContent); }}
                 onMouseLeave={handleMouseLeave}
               />
           );
@@ -440,25 +427,14 @@ export const GanttChart = ({
 
   const renderBarWithTrack = (rowInfo, phaseStartDate) => {
     const barClass = statusToClass(rowInfo.status);
-    
-    // Ancho del track gris (Límite legal)
     const trackStyle = { width: `${rowInfo.trackPct}%` };
-    
-    // Ancho del progreso dentro del contenedor
     const fillStyle = { width: `${rowInfo.progressPct}%` };
-    
-    // Línea de error
     const hasError = rowInfo.overdueDays > 0;
-    const errorStyle = {
-        left: `${rowInfo.trackPct}%`, // Empieza al final del track legal
-        width: `${rowInfo.errorPct}%` // Ancho del error
-    };
+    const errorStyle = { left: `${rowInfo.trackPct}%`, width: `${rowInfo.errorPct}%` };
 
-    // Calculo de fechas para el tooltip
     const dateLimit = phaseStartDate ? sumarDiasHabiles(phaseStartDate, rowInfo.actorTotal) : null;
     const dateActual = phaseStartDate ? sumarDiasHabiles(phaseStartDate, rowInfo.actorUsed) : null;
     
-    // Contenido del tooltip
     const tooltipTrack = (
         <div>
             <strong>Límite Legal</strong><br/>
@@ -466,7 +442,6 @@ export const GanttChart = ({
             Fecha: {dateLimit ? moment(dateLimit).format('DD/MM/YYYY') : '--'}
         </div>
     );
-
     const tooltipFill = (
         <div>
             <strong>{rowInfo.label || 'Progreso'}</strong><br/>
@@ -475,7 +450,6 @@ export const GanttChart = ({
             Fecha Corte: {dateActual ? moment(dateActual).format('DD/MM/YYYY') : '--'}
         </div>
     );
-
     const tooltipError = hasError ? (
         <div>
             <strong style={{color: '#ff6b6b'}}>Retraso / Exceso</strong><br/>
@@ -486,37 +460,18 @@ export const GanttChart = ({
 
     return (
       <div className="gantt-bar-single">
-         {/* La barra gris (Límite / Track) */}
          <div 
             className="gantt-bar-bg" 
             style={trackStyle}
             onMouseMove={(e) => handleMouseMove(e, tooltipTrack)}
             onMouseLeave={handleMouseLeave}
-         >
-             {/* El relleno de progreso (Verde/Azul) */}
-         </div>
-
-         {/* Renderizamos el fill visual independiente */}
+         ></div>
          <div 
              className={`gantt-bar-fill-overlay ${barClass}`} 
-             style={{ 
-                 ...fillStyle, 
-                 position: 'absolute', 
-                 top: 0, 
-                 left: 0, 
-                 height: '100%',
-                 borderRadius: '4px',
-                 opacity: 0.8,
-                 pointerEvents: 'auto' 
-             }} 
-             onMouseMove={(e) => {
-                 e.stopPropagation(); 
-                 handleMouseMove(e, tooltipFill);
-             }}
+             style={{ ...fillStyle, position: 'absolute', top: 0, left: 0, height: '100%', borderRadius: '4px', opacity: 0.8, pointerEvents: 'auto' }} 
+             onMouseMove={(e) => { e.stopPropagation(); handleMouseMove(e, tooltipFill); }}
              onMouseLeave={handleMouseLeave}
          />
-         
-         {/* La línea de error (Exceso) */}
          {hasError && (
              <div 
                 className="gantt-error-line" 
@@ -529,7 +484,7 @@ export const GanttChart = ({
     );
   };
 
-  if (!ldfDate || ganttData.phases.length === 0) {
+  if (!radDate || ganttData.phases.length === 0) { // Cambio: ldfDate -> radDate
     return (
       <div className="gantt-empty">
         <i className="fas fa-calendar-times" />
@@ -539,11 +494,10 @@ export const GanttChart = ({
   }
 
   const ROW_HEIGHT = compactMode ? 34 : 50; 
-  const HEADER_HEIGHT = compactMode ? 32 : 56;
+  const HEADER_HEIGHT = compactMode ? 32 : 56; 
 
   return (
     <div className={`gantt-container ${compactMode ? 'gantt-compact' : ''}`}>
-      {/* Tooltip Global */}
       <FloatingTooltip {...tooltip} />
 
       {/* HEADER SECTION */}
@@ -557,28 +511,43 @@ export const GanttChart = ({
             {ganttData.dateColumns.map((col) => (
               <div
                 key={`mk-${col.day}`}
-                className="gantt-timeline-marker"
+                className={`gantt-timeline-marker ${col.isMajor ? 'major' : 'minor'}`}
                 style={{ left: `${col.position * scaleFactor}px` }}
-                onMouseEnter={() => setHoveredDay(col)}
-                onMouseLeave={() => setHoveredDay(null)}
+                onMouseMove={(e) => handleMouseMove(e, <div><strong>Día Hábil: {col.day}</strong><br/>Fecha: {moment(col.date).format('DD/MM/YYYY')}</div>)}
+                onMouseLeave={handleMouseLeave}
               >
-                <div className="gantt-timeline-tick" />
-                <span className="gantt-timeline-label">
-                  {compactMode ? `${col.day}` : `Día ${col.day}`}
-                </span>
-                {!compactMode && hoveredDay?.day === col.day && (
-                  <div className="gantt-timeline-tooltip">{moment(col.date).format('DD/MM/YYYY')}</div>
+                <div className={`gantt-timeline-tick ${col.isMajor ? '' : 'minor-tick'}`} />
+                
+                {col.isMajor && (
+                    <span className="gantt-timeline-label">
+                    {compactMode ? `${col.day}` : `Día ${col.day}`}
+                    </span>
+                )}
+
+                {!compactMode && col.isMajor && (
+                    <span className="gantt-header-date-label">
+                        {moment(col.date).format('DD/MM')}
+                    </span>
                 )}
               </div>
             ))}
+
+            {/* LÍNEA DE HOY EN HEADER */}
+             {ganttData.todayOffset >= 0 && (
+                <div 
+                    className="gantt-today-marker-head"
+                    style={{ left: `${ganttData.todayOffset * scaleFactor}px` }}
+                    title={`Hoy: ${moment(systemToday).format('DD/MM/YYYY')}`}
+                >
+                    <div className="gantt-today-triangle"></div>
+                </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* BODY SECTION */}
       <div className="gantt-body-wrapper">
-        
-        {/* LEFT COLUMN (Titles) */}
         <div className="gantt-body-titles">
            {ganttData.phases.map((phase) => {
               const isActive = activePhaseId === phase.id;
@@ -596,7 +565,6 @@ export const GanttChart = ({
             })}
         </div>
 
-        {/* RIGHT COLUMN (Chart Scrollable) */}
         <div className="gantt-body-scroll-wrapper" ref={bodyScrollRef}>
           <div 
             className="gantt-body-content gantt-grid"
@@ -606,6 +574,14 @@ export const GanttChart = ({
                 ...gridVars,
             }}
           >
+            {/* LÍNEA TRANSVERSAL DE HOY */}
+            {ganttData.todayOffset >= 0 && (
+                <div 
+                    className="gantt-today-line"
+                    style={{ left: `${ganttData.todayOffset * scaleFactor}px` }}
+                />
+            )}
+
             {ganttData.phases.map((phase, index) => {
                 const leftPx = phase.startPosition * scaleFactor;
                 const widthPx = phase.blockWidth * scaleFactor;
@@ -642,7 +618,6 @@ export const GanttChart = ({
                           {renderBarWithTrack(phase.rows[0], phase.startDate)}
                       </div>
                     )}
-                    
                     {renderExtraSegments(phase)}
                     {renderMarkers(phase)}
                   </div>
