@@ -1427,10 +1427,6 @@ input:checked + .gantt-slider:before {
     cursor: pointer;
     transition: transform 0.2s;
 }
-.gantt-scheduled-marker:hover {
-    transform: translate(-50%, -50%) scale(1.4);
-    background-color: #fab005;
-}
 
 .gantt-scheduled-marker-legend {
     width: 10px;
@@ -1722,7 +1718,7 @@ input:checked + .gantt-slider:before {
   );
   border: 1px solid #117a8b;
   opacity: 1 !important; /* Forzar opacidad completa */
-  z-index: 10; /* Asegurar que esté por encima de la barra base */
+  z-index: 6; /* Asegurar que esté por encima de la barra base */
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
@@ -1739,4 +1735,96 @@ input:checked + .gantt-slider:before {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+/* Asegura que el contenedor de la fila sea relativo para posicionar los marcadores */
+.gantt-task-container {
+  position: absolute;
+  /* ... otros estilos existentes ... */
+}
+
+
+/* El icono visual del marcador (el diamante o círculo) */
+.gantt-marker-icon {
+  width: 10px;
+  height: 10px;
+  background-color: #fcc419; /* Amarillo advertencia */
+  border: 2px solid #fff;
+  border-radius: 50%; /* Círculo */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  /* Si prefieres un rombo/diamante: */
+  /* transform: rotate(45deg); border-radius: 2px; */
+}
+
+.gantt-marker-icon:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  transition: transform 0.2s ease;
+}
+
+/* Ajuste para la columna de títulos para permitir scroll pero ocultar barra si se desea */
+.gantt-body-titles {
+  overflow-y: hidden; /* Oculta scrollbar nativo pero permite scroll via JS */
+  /* Asegura que responda al scroll programático */
+  scrollbar-width: none; 
+}
+.gantt-body-titles::-webkit-scrollbar {
+  display: none;
+}
+
+/* Asegura que la barra track tenga contexto de posicionamiento */
+.gantt-bar-bg {
+  position: relative; 
+  /* ... tus otros estilos de background gris ... */
+}
+
+/* Marcador flotante dentro de la barra */
+.gantt-scheduled-marker {
+  position: absolute; 
+  top: 50%; /* Centrado vertical exacto en la barra de color */
+  transform: translate(-50%, -50%); 
+  z-index: 50; /* Muy por encima del fill y extensiones */
+  cursor: pointer;
+  pointer-events: auto; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ... (Todo el CSS existente se mantiene arriba) ... */
+
+/* ========================================
+   ESTILOS PARA ERROR DE PROGRAMACIÓN Y GUÍAS
+   ======================================== */
+
+/* Barra de error de programación (diferente a la legal) */
+.gantt-error-line.scheduled {
+  background-color: #fd7e14; /* Naranja fuerte */
+  top: 70%; /* Un poco desplazada hacia abajo para que se vea junto a la legal si ambas existen */
+  height: 3px;
+  z-index: 10;
+  background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+  background-size: 1rem 1rem;
+}
+
+.gantt-error-line.scheduled::after {
+  background-color: #fd7e14;
+  height: 8px;
+  top: -2px;
+}
+
+/* Guía visual de separador de fila */
+.gantt-grid-row-line {
+  position: absolute;
+  left: 0;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.05); /* Gris muy sutil */
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.05); /* Opcional: punteado para ser menos invasivo */
+  pointer-events: none;
+  z-index: 1;
+  width: 100%;
+}
+
+/* Ajuste para que la línea de error legal y programada no colisionen visualmente demasiado */
+.gantt-error-line:not(.scheduled) {
+  top: 30%; /* La legal la movemos un poco arriba */
 }
