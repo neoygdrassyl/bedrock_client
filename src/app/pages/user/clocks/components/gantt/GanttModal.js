@@ -346,7 +346,7 @@ export const GanttModal = ({
                 <span>Suspensión</span>
               </div>
               <div className="gantt-legend-item">
-                <div className="gantt-legend-color gantt-segment-extension" />
+                <div className="gantt-legend-color" style={{backgroundColor: '#339af0'}} />
                 <span>Prórroga</span>
               </div>
               <div className="gantt-legend-item" style={{ marginLeft: '16px' }}>

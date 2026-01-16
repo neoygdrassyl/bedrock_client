@@ -1683,3 +1683,60 @@ input:checked + .gantt-slider:before {
     background-color: #fcc419;
     border: 1px solid #f59f00;
 }
+
+/* Segmento de Prórroga dentro de la barra */
+.gantt-extension-segment {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: #339af0; /* Azul solicitado */
+  opacity: 0.9;
+  z-index: 5; /* Por encima del track base pero bajo control */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid rgba(255,255,255,0.3);
+  border-right: 1px solid rgba(255,255,255,0.3);
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
+  pointer-events: auto; /* Para el tooltip */
+}
+
+.gantt-extension-label {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  user-select: none;
+}
+
+/* --- EXTENSION VISUALS (PRÓRROGA) --- */
+
+.gantt-extension-segment.striped-extension {
+  /* Fondo rayado para distinguirlo de barras sólidas normales */
+  background: repeating-linear-gradient(
+    45deg,
+    #17a2b8,
+    #17a2b8 5px,
+    #138496 5px,
+    #138496 10px
+  );
+  border: 1px solid #117a8b;
+  opacity: 1 !important; /* Forzar opacidad completa */
+  z-index: 10; /* Asegurar que esté por encima de la barra base */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.gantt-extension-label {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  user-select: none;
+  padding: 0 4px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
