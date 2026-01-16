@@ -29,6 +29,8 @@ export const GanttChart = ({
   manager
 }) => {
   const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, content: null });
+  // Estado para alternar la visualización de las líneas de finalización (Hitos)
+  const [showMilestones, setShowMilestones] = useState(true); // Por defecto true para ver los labels
 
   const headerScrollRef = useRef(null);
   const bodyScrollRef = useRef(null);
@@ -77,12 +79,21 @@ export const GanttChart = ({
   };
   const ensureMinWidth = (n) => Math.max(1, safeInt(n, 1));
 
-  const statusToClass = (status) => {
-    if (status === 'COMPLETADO') return 'gantt-bar-completed';
-    if (status === 'ACTIVO') return 'gantt-bar-active';
-    if (status === 'PAUSADO') return 'gantt-bar-paused';
-    if (status === 'VENCIDO') return 'gantt-bar-overdue';
-    return 'gantt-bar-pending';
+  // --- IMPLEMENTACIÓN SEMÁFORO ---
+  const getSemaphoreClass = (status, used, total) => {
+    if (status === 'COMPLETADO') return 'gantt-bar-completed'; 
+    if (status === 'VENCIDO') return 'gantt-bar-danger'; 
+    if (status === 'PAUSADO') return 'gantt-bar-paused'; 
+
+    const u = safeInt(used, 0);
+    const t = safeInt(total, 1);
+    const percentage = (u / t) * 100;
+    const remaining = t - u;
+
+    if (percentage >= 100) return 'gantt-bar-danger';
+    if (percentage > 80 || remaining <= 3) return 'gantt-bar-warning'; 
+    
+    return 'gantt-bar-success'; 
   };
 
   const handleMouseMove = (e, content) => {
@@ -92,7 +103,7 @@ export const GanttChart = ({
 
   const ganttData = useMemo(() => {
     if (!radDate || phases.length === 0) {
-      return { phases: [], maxDays: 0, dateColumns: [], todayOffset: -1, intervalDays: compactMode ? 10 : 5 };
+      return { phases: [], maxDays: 0, dateColumns: [], todayOffset: -1, intervalDays: compactMode ? 10 : 5, elapsedDays: 0, todaySuggestion: null, todaySeverity: 'normal' };
     }
 
     let cumulativeDays = 0;
@@ -130,6 +141,20 @@ export const GanttChart = ({
           }
       } else {
           shiftDays = blockWidth;
+      }
+
+      // --- CÁLCULO DE HITO LOCAL (Milestone) ---
+      // Se agrega al objeto de la fase para renderizarlo junto a su barra
+      let phaseMilestone = null;
+      if (status === 'COMPLETADO' && endDate) {
+          const offset = calcularDiasHabiles(radDate, endDate, false);
+          phaseMilestone = {
+              title: phase.title,
+              date: endDate,
+              offset: offset,
+              duration: actualDays,
+              isPhase1: id === 'phase0' // Flag para posicionamiento
+          };
       }
 
       const calculateOverdue = (uDays, tDays, pStartDate, pEndDate) => {
@@ -214,6 +239,7 @@ export const GanttChart = ({
         hasParallelActors,
         suspensionInfo,
         extensionInfo, 
+        phaseMilestone, // Añadido
         rows: [],
         markers: []
       };
@@ -236,22 +262,14 @@ export const GanttChart = ({
           phaseData.markers = markers;
       }
 
-      // --- CORRECCIÓN AQUÍ: Cálculo de Métricas ---
       const calculateRowMetrics = (actorUsed, actorTotal, rowType) => {
         const u = safeInt(actorUsed, 0);
         const t = safeInt(actorTotal, 1);
         const refWidth = blockWidth;
         
-        // El track (fondo) es relativo al ancho del bloque contenedor (fase)
         const trackPct = (t / refWidth) * 100;
-        
-        // ¡FIX! El progreso (fill) debe ser relativo al track (actorTotal), no al bloque contenedor
-        // porque en el DOM 'gantt-bar-fill' es hijo de 'gantt-bar-bg'.
         const progressPct = t > 0 ? (Math.min(u, t) / t) * 100 : 0;
-        
-        // Error Legal (Límite normativo)
         const overdue = calculateOverdue(u, t, startDate, endDate);
-        // El error es relativo al bloque contenedor porque se dibuja fuera del track
         const errorPct = (overdue / refWidth) * 100;
 
         let scheduledOverdue = 0;
@@ -319,11 +337,40 @@ export const GanttChart = ({
     }
 
     let todayOffset = -1;
+    let elapsedDays = 0;
     if (radDate && systemToday) {
-        if (moment(systemToday).isSameOrAfter(radDate)) todayOffset = calcularDiasHabiles(radDate, systemToday, false);
+        if (moment(systemToday).isSameOrAfter(radDate)) {
+            todayOffset = calcularDiasHabiles(radDate, systemToday, false);
+            elapsedDays = todayOffset;
+        }
+    }
+    
+    // --- LÓGICA DE ALARMA DE "HOY" ---
+    let todaySuggestion = null;
+    let todaySeverity = 'normal';
+    
+    // Buscar si hay una fase activa "cerca" de vencerse
+    const activeP = processedPhases.find(p => p.status === 'ACTIVO' || p.status === 'PAUSADO');
+    if (activeP) {
+        const remaining = (activeP.totalDays || 0) - (activeP.usedDays || 0);
+        if (activeP.status === 'VENCIDO' || remaining < 0) {
+             todaySuggestion = `Vencido: ${activeP.title}`;
+             todaySeverity = 'danger';
+        } else if (remaining <= 3) {
+             todaySuggestion = `${activeP.title} vence en ${remaining} días`;
+             todaySeverity = 'warning';
+        } else {
+             todaySuggestion = `En curso: ${activeP.title}`;
+        }
+    } else if (processedPhases.every(p => p.status === 'PENDIENTE')) {
+         todaySuggestion = "Proceso no iniciado";
+         todaySeverity = 'secondary';
+    } else {
+         todaySuggestion = "Sin actividad crítica";
+         todaySeverity = 'success';
     }
 
-    return { phases: processedPhases, maxDays, dateColumns, todayOffset, intervalDays: compactMode ? 10 : 5 };
+    return { phases: processedPhases, maxDays, dateColumns, todayOffset, intervalDays: compactMode ? 10 : 5, elapsedDays, todaySuggestion, todaySeverity };
   }, [phases, radDate, viewMode, compactMode, suspensionPreActa, suspensionPostActa, extension, scheduleConfig, systemToday, manager]);
 
   const scaleFactor = useMemo(() => (compactMode ? 3 : 8), [compactMode]);
@@ -345,7 +392,7 @@ export const GanttChart = ({
     return ( <div className="gantt-empty"> <i className="fas fa-calendar-times" /> <p>No hay datos disponibles para el diagrama</p> </div> );
   }
 
-  // --- FUNCIÓN DE RENDERIZADO DE MARCADORES ---
+  // --- RENDERIZADO DE MARCADORES (PUNTOS) ---
   const renderMarkersInternal = (markers, blockWidth) => {
     if (!markers || markers.length === 0) return null;
     return markers.map((marker, i) => {
@@ -374,16 +421,16 @@ export const GanttChart = ({
     });
   };
 
+  // --- RENDERIZADO DE BARRAS PRINCIPALES ---
   const renderBarWithTrack = (rowInfo, phase, phaseStartDate) => {
-    const barClass = statusToClass(rowInfo.status);
-    const trackStyle = { width: `${rowInfo.trackPct}%` };
-    const fillStyle = { width: `${rowInfo.progressPct}%` }; // Ahora esto es relativo al track, no al contenedor
+    const barClass = getSemaphoreClass(rowInfo.status, rowInfo.actorUsed, rowInfo.actorTotal);
     
-    // Error Legal
+    const trackStyle = { width: `${rowInfo.trackPct}%` };
+    const fillStyle = { width: `${rowInfo.progressPct}%` }; 
+    
     const hasError = rowInfo.overdueDays > 0;
     const errorStyle = { left: `${rowInfo.trackPct}%`, width: `${rowInfo.errorPct}%` };
 
-    // Error Programado
     const hasScheduledError = rowInfo.scheduledOverdueDays > 0;
     const scheduledLimitPct = ( (rowInfo.actorUsed - rowInfo.scheduledOverdueDays) / phase.blockWidth ) * 100;
     const scheduledErrorStyle = { 
@@ -402,7 +449,7 @@ export const GanttChart = ({
     const tooltipScheduledError = hasScheduledError ? (
         <div> 
             <strong style={{color: '#fd7e14'}}>Desviación de Programación</strong><br/> 
-            D��as excedidos: {rowInfo.scheduledOverdueDays}<br/> 
+            Días excedidos: {rowInfo.scheduledOverdueDays}<br/> 
             <small>Respecto al tiempo programado</small>
         </div> 
     ) : null;
@@ -499,6 +546,32 @@ export const GanttChart = ({
     );
   };
 
+  // --- RENDERIZADO DE ETIQUETA DE FASE (HITO/MILESTONE) ---
+  const renderPhaseMilestone = (phase) => {
+    if (!phase.phaseMilestone || !showMilestones) return null;
+    const { offset, title, date, duration, isPhase1 } = phase.phaseMilestone;
+    
+    // Posición absoluta dentro de la fila de la fase
+    const leftPx = (offset - phase.startPosition) * scaleFactor;
+
+    // Determina si la tarjeta va arriba o abajo
+    const positionClass = isPhase1 ? 'bottom' : 'top';
+
+    return (
+        <div 
+            className="gantt-row-milestone" 
+            style={{ left: `${leftPx}px` }}
+        >
+            <div className="gantt-row-milestone-line"></div>
+            <div className={`gantt-row-milestone-card ${positionClass}`}>
+                <strong>{title}</strong>
+                <span className="milestone-date">Fin: {moment(date).format('DD MMM YYYY')}</span><br/>
+                <span className="milestone-duration">Duración: {duration} días</span>
+            </div>
+        </div>
+    );
+  };
+
   return (
     <div className={`gantt-container ${compactMode ? 'gantt-compact' : ''}`}>
       <FloatingTooltip {...tooltip} />
@@ -517,13 +590,18 @@ export const GanttChart = ({
                 {!compactMode && col.isMajor && ( <span className="gantt-header-date-label"> {moment(col.date).format('DD/MM')} </span> )}
               </div>
             ))}
-             {ganttData.todayOffset >= 0 && (
-                <div className="gantt-today-marker-head" style={{ left: `${ganttData.todayOffset * scaleFactor}px` }} title={`Hoy: ${moment(systemToday).format('DD/MM/YYYY')}`} >
-                    <div className="gantt-today-triangle"></div>
-                </div>
-            )}
           </div>
         </div>
+        
+        {!compactMode && (
+          <button 
+             className={`gantt-milestone-toggle ${showMilestones ? 'active' : ''}`}
+             onClick={() => setShowMilestones(!showMilestones)}
+             title={showMilestones ? "Ocultar Hitos" : "Ver Hitos de Finalización"}
+          >
+             <i className="fas fa-flag-checkered"></i>
+          </button>
+        )}
       </div>
 
       <div className="gantt-body-wrapper">
@@ -532,7 +610,7 @@ export const GanttChart = ({
               const isActive = activePhaseId === phase.id;
               const rowHeight = getRowHeight(phase);
               return (
-                <div key={phase.id} className={`gantt-phase-row-title ${phase.highlightClass || ''} ${isActive ? 'gantt-phase-active' : ''} ${phase.suspensionInfo ? 'gantt-phase-with-suspension' : ''}`} onClick={() => onPhaseClick?.(phase)} style={{ height: `${rowHeight}px` }} >
+                <div key={phase.id} className={`gantt-phase-row-title ${phase.highlightClass || ''} ${isActive ? 'gantt-phase-active gantt-row-highlighted' : ''} ${phase.suspensionInfo ? 'gantt-phase-with-suspension' : ''}`} onClick={() => onPhaseClick?.(phase)} style={{ height: `${rowHeight}px` }} >
                   <div className="gantt-phase-number">{phase.phaseIndex}</div>
                   {!compactMode && <span className="gantt-phase-title-text">{phase.title}</span>}
                 </div>
@@ -542,11 +620,35 @@ export const GanttChart = ({
 
         <div className="gantt-body-scroll-wrapper" ref={bodyScrollRef}>
           <div className="gantt-body-content gantt-grid" style={{ width: `${totalWidthPx}px`, height: `${totalBodyHeight}px`, ...gridVars }} >
-            {ganttData.todayOffset >= 0 && ( <div className="gantt-today-line" style={{ left: `${ganttData.todayOffset * scaleFactor}px` }} /> )}
+            
+            {/* --- LINEA DE HOY + TARJETA INFORMATIVA --- */}
+            {ganttData.todayOffset >= 0 && ( 
+                <div className="gantt-today-line" style={{ left: `${ganttData.todayOffset * scaleFactor}px` }}>
+                    {!compactMode && (
+                        <div className={`gantt-today-card ${ganttData.todaySeverity}`}>
+                            <div className="today-header">
+                                <strong>HOY</strong>
+                                <span>{moment(systemToday).format('DD MMM')}</span>
+                            </div>
+                            <div className="today-stat">
+                                {ganttData.elapsedDays} días transcurridos
+                            </div>
+                            <div className="today-footer">
+                                {ganttData.todaySuggestion}
+                            </div>
+                        </div>
+                    )}
+                    {/* Flecha inferior */}
+                    <div className="gantt-today-marker-head">
+                       <div className="gantt-today-triangle"></div>
+                    </div>
+                </div> 
+            )}
 
             {(() => {
                 let cumulativeTop = 0;
                 return ganttData.phases.map((phase) => {
+                    const isActive = activePhaseId === phase.id;
                     const rowHeight = getRowHeight(phase);
                     const topPx = cumulativeTop;
                     cumulativeTop += rowHeight;
@@ -558,10 +660,11 @@ export const GanttChart = ({
                     return (
                       <React.Fragment key={`task-wrapper-${phase.id}`}>
                         <div 
-                          className="gantt-grid-row-line" 
+                          className={`gantt-grid-row-line ${isActive ? 'gantt-row-highlighted-bg' : ''}`} 
                           style={{ top: `${topPx + rowHeight}px`, width: '100%' }} 
                         />
                         
+                        {/* Contenedor relativo para posicionar barra y milestone dentro de la misma fila */}
                         <div 
                             className={`gantt-task-container ${phase.suspensionInfo ? 'gantt-phase-with-suspension' : ''}`} 
                             style={{ left: `${phase.startPosition * scaleFactor}px`, width: `${phase.blockWidth * scaleFactor}px`, top: `${topPx}px`, height: `${rowHeight}px` }} 
@@ -583,7 +686,11 @@ export const GanttChart = ({
                                 </div>
                               )}
                            </div>
+                          
                           {renderSuspensionRow(phase)}
+                          
+                          {/* Renderizar Milestone localmente en la fila */}
+                          {renderPhaseMilestone(phase)}
                         </div>
                       </React.Fragment>
                     );
