@@ -418,7 +418,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         
         addPhase({
           id: 'phase4_desist', 
-          title: 'Correcciones y Viabilidad', 
+          title: 'Revisión y Viabilidad', 
           responsible: 'Curaduría', 
           status: phase4Status, 
           totalDays: Math.max(0, totalCuraduriaDays - phase1UsedDays), 

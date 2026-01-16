@@ -19,14 +19,14 @@ const FloatingTooltip = ({ visible, x, y, content }) => {
 };
 
 /**
- * GanttChart (Versión Unificada y Corregida)
+ * GanttChart (Versión Corregida: Prórrogas Visualmente Distintas)
  */
 export const GanttChart = ({
   phases = [],
   radDate,
   suspensionPreActa,
   suspensionPostActa,
-  extension,
+  extension, // Objeto de extensión/prórroga
   compactMode = false,
   viewMode = 'legal', // 'legal' | 'real'
   onPhaseClick,
@@ -106,6 +106,10 @@ export const GanttChart = ({
     let cumulativeDays = 0;
     const processedPhases = [];
     const today = systemToday;
+    
+    // Identificar el inicio de la Fase 2 (o Acta) para decidir dónde va la prórroga
+    const phase2Ref = phases.find(p => p.title === 'Revisión y Viabilidad');
+    const splitDateForExtension = phase2Ref?.startDate ? phase2Ref.startDate : null;
 
     phases.forEach((phase, index) => {
       const {
@@ -167,7 +171,7 @@ export const GanttChart = ({
           return Math.max(0, overdue);
       };
 
-      // --- LÓGICA DE SUSPENSIONES UNIFICADA ---
+      // --- LÓGICA DE SUSPENSIONES ---
       let suspensionInfo = null;
       let relevantSuspension = null;
       if (id === 'phase1' && suspensionPreActa?.exists) {
@@ -181,23 +185,64 @@ export const GanttChart = ({
         const susEndDate = relevantSuspension.end?.date_start;
 
         if(moment(susStartDate).isSameOrAfter(radDate)) {
-            // Se cuentan los días hábiles desde la radicación hasta el inicio de la suspensión (sin incluir el último día).
             const startOffset = calcularDiasHabiles(radDate, susStartDate, false);
             let duration = 0;
             if (susEndDate) {
-                // Duración en días hábiles, incluyendo inicio y fin.
                 duration = calcularDiasHabiles(susStartDate, susEndDate, true);
             } else if (moment(today).isAfter(susStartDate)) {
-                // Si está activa, la duración es hasta hoy.
                 duration = calcularDiasHabiles(susStartDate, today, true);
             }
 
             suspensionInfo = {
                 startOffset,
-                duration: Math.max(1, duration), // Mínimo 1 día visualmente.
+                duration: Math.max(1, duration),
                 label: `Suspensión (${relevantSuspension.days || duration}d)`
             };
         }
+      }
+
+      // --- LÓGICA DE PRÓRROGAS (MODIFICADA: DISTINCIÓN CLARA) ---
+      let extensionInfo = null;
+      
+      if (extension?.exists && extension.start?.date_start && startDate) {
+          const extDate = extension.start.date_start;
+          let assignToThisPhase = false;
+          let phaseContextLabel = "";
+          
+          // 1. Fase 1 (Pre-Acta)
+          if (id === 'phase1') {
+            console.log('Evaluando prórroga para Fase 1:', extDate, splitDateForExtension);
+              if (!splitDateForExtension || moment(extDate).isBefore(splitDateForExtension)) {
+                  assignToThisPhase = true;
+                  phaseContextLabel = "Fase 1 (Pre-Acta)";
+              }
+          } 
+          // 2. Fase 4 (Post-Acta)
+          else if (['phase4', 'phase4_desist'].includes(id)) {
+            console.log('Evaluando prórroga para Fase 1:', extDate, splitDateForExtension);
+              // Si hay fecha de corte, la prórroga debe ser posterior o igual a ella
+              if (splitDateForExtension && moment(extDate).isSameOrAfter(splitDateForExtension)) {
+                  assignToThisPhase = true;
+                  phaseContextLabel = "Fase 4 (Post-Acta)";
+              }
+          }
+
+          if (assignToThisPhase) {
+               // Calculamos el offset relativo al inicio de la fase
+               const extOffset = calcularDiasHabiles(startDate, extDate, false);
+               const extDuration = safeInt(extension.days, 0);
+               
+               // Validación básica para evitar offsets negativos extraños
+               if (extOffset >= 0 || id === 'phase1') {
+                   extensionInfo = {
+                       offset: Math.max(0, extOffset), // Asegurar no negativo
+                       days: extDuration,
+                       label: `Prórroga ${extDuration}d - ${phaseContextLabel}`,
+                       date: extDate,
+                       phaseContext: phaseContextLabel
+                   };
+               }
+          }
       }
 
       const hasParallelActors = !!parallelActors?.primary && !!parallelActors?.secondary;
@@ -211,6 +256,7 @@ export const GanttChart = ({
         blockBaseDays,   
         hasParallelActors,
         suspensionInfo,
+        extensionInfo, 
         rows: [],
         markers: []
       };
@@ -259,6 +305,7 @@ export const GanttChart = ({
       cumulativeDays += shiftDays;
     });
 
+    // Calcular ancho máximo visual
     let maxVisualDay = 0;
     if (processedPhases.length > 0) {
         processedPhases.forEach(p => {
@@ -352,9 +399,7 @@ export const GanttChart = ({
 
     let suspensionCutout = null;
     if (phase.suspensionInfo && rowInfo.actorTotal > 0 && phase.startDate) {
-        // Lógica de recorte restaurada para mayor precisión.
         const susStartOffsetFromPhaseStart = calcularDiasHabiles(phase.startDate, sumarDiasHabiles(radDate, phase.suspensionInfo.startOffset), false);
-        
         const leftPct = (susStartOffsetFromPhaseStart / rowInfo.actorTotal) * 100;
         const widthPct = (phase.suspensionInfo.duration / rowInfo.actorTotal) * 100;
 
@@ -363,11 +408,54 @@ export const GanttChart = ({
         }
     }
 
+    // --- EXTENSION SEGMENT (Lógica Mejorada) ---
+    let extensionSegment = null;
+    const shouldShowExtensionOnThisRow = (rowInfo.type === 'primary' || rowInfo.type === 'single');
+
+    if (phase.extensionInfo && rowInfo.actorTotal > 0 && phase.startDate && shouldShowExtensionOnThisRow) {
+        // En lugar de calcular el offset exacto de la fecha (que puede caer en medio),
+        // posicionamos la prórroga visualmente al FINAL del periodo base, 
+        // ya que la prórroga extiende el límite legal.
+        
+        const extDays = phase.extensionInfo.days;
+        
+        // El ancho de la extensión relativo al ancho total de la barra (base + extension)
+        const widthPct = (extDays / rowInfo.actorTotal) * 100;
+        
+        // La posición es: 100% - widthPct (es decir, se pega al final derecho)
+        const leftPct = 100 - widthPct;
+        
+        const tooltipExtension = (
+            <div>
+                <strong style={{color: '#66d9e8'}}>PRÓRROGA POR COMPLEJIDAD</strong><br/>
+                Ubicación: <strong>{phase.extensionInfo.phaseContext}</strong><br/>
+                Días adicionales: {extDays}<br/>
+                Inicio Prórroga: {moment(phase.extensionInfo.date).format('DD/MM/YYYY')}
+            </div>
+        );
+
+        if (widthPct > 0) {
+            extensionSegment = (
+                <div 
+                    className="gantt-extension-segment striped-extension" 
+                    style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
+                    onMouseMove={(e) => { e.stopPropagation(); handleMouseMove(e, tooltipExtension); }}
+                    onMouseLeave={handleMouseLeave}
+                >
+                    {!compactMode && widthPct > 15 && <span className="gantt-extension-label">PRÓRROGA</span>}
+                    {!compactMode && widthPct <= 15 && <span className="gantt-extension-label">P</span>}
+                </div>
+            );
+        }
+    }
+
     return (
       <div className="gantt-bar-single">
          <div className="gantt-bar-bg" style={trackStyle} onMouseMove={(e) => handleMouseMove(e, tooltipTrack)} onMouseLeave={handleMouseLeave} >
+            {/* Capa de relleno normal */}
             <div className={`gantt-bar-fill ${barClass}`} style={fillStyle} onMouseMove={(e) => { e.stopPropagation(); handleMouseMove(e, tooltipFill); }} onMouseLeave={handleMouseLeave} />
             {suspensionCutout}
+            {extensionSegment}
          </div>
          {hasError && ( <div className="gantt-error-line" style={errorStyle} onMouseMove={(e) => handleMouseMove(e, tooltipError)} onMouseLeave={handleMouseLeave} /> )}
       </div>
