@@ -11,8 +11,6 @@ export const ClockRow = (props) => {
     const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, isHighlighted } = props;
     const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
 
-    moment.locale('es');
-
     // Resolver reloj según versión
     const getClockScoped = (state) => {
         if (value.version !== undefined) {
@@ -21,8 +19,8 @@ export const ClockRow = (props) => {
         return getClock(state);
     };
 
-    // Formateador textual
-    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('D [de] MMMM') : '- -';
+    // Formateador textual MODIFICADO para usar formato de fecha corta (L)
+    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('DD/MM/YYYY') : '- -';
 
     // =====================================================
     // CÁLCULO DE ICONOS Y ESTADOS (SEMÁFORO)
