@@ -144,7 +144,6 @@ export const GanttChart = ({
       }
 
       // --- CÁLCULO DE HITO LOCAL (Milestone) ---
-      // Se agrega al objeto de la fase para renderizarlo junto a su barra
       let phaseMilestone = null;
       if (status === 'COMPLETADO' && endDate) {
           const offset = calcularDiasHabiles(radDate, endDate, false);
@@ -239,26 +238,83 @@ export const GanttChart = ({
         hasParallelActors,
         suspensionInfo,
         extensionInfo, 
-        phaseMilestone, // Añadido
+        phaseMilestone, 
         rows: [],
         markers: []
       };
 
-      // Marcadores y Programación
+      // --- LOGICA MEJORADA DE MARCADORES (SCHEDULED LIMITS) ---
+      // Busca tanto por ID relacionado como por coincidencia de rango de fechas
       if (scheduleConfig && scheduleConfig.times && manager && startDate) {
           const markers = [];
-          (relatedStates || []).forEach(state => {
-              if (scheduleConfig.times[state]) {
+          
+          // Obtener todos los keys programados
+          const scheduledKeys = Object.keys(scheduleConfig.times);
+
+          console.log(scheduledKeys);
+
+          scheduledKeys.forEach(stateStr => {
+              const state = Number(stateStr);
+              let shouldInclude = false;
+
+              console.log("Related state y los relacionados", state, relatedStates, relatedStates.includes(state));
+
+              // 1. Verificar si está explícitamente relacionado
+              if (relatedStates && relatedStates.includes(state)) {
+                  shouldInclude = true;
+              }
+
+              // 2. Si no está relacionado, verificar si la fecha calculada cae dentro de la fase (solo si la fase tiene fechas definidas)
+              // Esto es útil si olvidamos agregar un state al array relatedStates en useProcessPhases
+              // if (!shouldInclude && startDate) {
+              //     // Calculamos la fecha límite programada para este state
+              //     const clockDef = manager.clocksData.find(c => c.state === state);
+              //     // Usamos la utilidad para calcular fecha sin efectos secundarios de visualización
+              //     const scheduledInfo = calculateScheduledLimitForDisplay(state, clockDef || { state, allowSchedule: true }, manager.getClock(state), scheduleConfig, manager.getClock, manager.getClockVersion, manager);
+                  
+              //     if (scheduledInfo && scheduledInfo.limitDate) {
+              //         const limitMoment = moment(scheduledInfo.limitDate);
+              //         const startMoment = moment(startDate);
+              //         // Si tiene fecha fin, verificamos rango cerrado. Si no, verificamos si es posterior al inicio
+              //         // (Asumiendo que pertenece a la fase activa actual)
+              //         if (endDate) {
+              //             const endMoment = moment(endDate);
+              //             if (limitMoment.isSameOrAfter(startMoment) && limitMoment.isSameOrBefore(endMoment)) {
+              //                 shouldInclude = true;
+              //             }
+              //         } else {
+              //             // Fase abierta (en curso): incluimos si es posterior al inicio y "parece" pertenecer 
+              //             // (esto es más heurístico, mejor confiar en relatedStates, pero sirve de fallback)
+              //             if (limitMoment.isSameOrAfter(startMoment)) {
+              //                 // Verificamos que no pertenezca a una fase futura (muy simplificado)
+              //                 shouldInclude = true; 
+              //             }
+              //         }
+              //     }
+              // }
+
+              if (shouldInclude) {
                   const clockDef = manager.clocksData.find(c => c.state === state);
                   const scheduledInfo = calculateScheduledLimitForDisplay(state, clockDef || { state, allowSchedule: true }, manager.getClock(state), scheduleConfig, manager.getClock, manager.getClockVersion, manager);
+                  console.log("Scheduled info para marcador", state, scheduledInfo, scheduledInfo.limitDate);
                   if (scheduledInfo && scheduledInfo.limitDate) {
+                      // Calcular offset relativo al inicio de la FASE
                       const offset = calcularDiasHabiles(startDate, scheduledInfo.limitDate, false);
-                      if (offset >= 0) {
-                          markers.push({ state, label: clockDef?.name || `Evento ${state}`, date: scheduledInfo.limitDate, offsetDays: offset, display: scheduledInfo.display });
+                      
+                      // Solo agregar si el offset es lógico (no negativo extremo, indicando pasado lejano)
+                      if (offset >= -5) { 
+                          markers.push({ 
+                              state, 
+                              label: clockDef?.name || `Evento ${state}`, 
+                              date: scheduledInfo.limitDate, 
+                              offsetDays: Math.max(0, offset), // Visualmente no permitir negativos
+                              display: scheduledInfo.display 
+                          });
                       }
                   }
               }
           });
+          
           phaseData.markers = markers;
       }
 
@@ -276,6 +332,9 @@ export const GanttChart = ({
         let scheduledOverduePct = 0;
 
         if (phaseData.markers && phaseData.markers.length > 0) {
+             // Encontrar el marcador más lejano que se haya excedido
+             // Nota: Esto es una simplificación. Idealmente comparamos el "progreso actual" contra el "marcador más próximo".
+             // Pero como la barra es un acumulado, tomamos el marcador más grande como referencia visual del "deber ser" total de la fase.
              const maxScheduledMarker = phaseData.markers.reduce((prev, current) => (prev.offsetDays > current.offsetDays) ? prev : current, phaseData.markers[0]);
              
              if (maxScheduledMarker) {
@@ -397,7 +456,9 @@ export const GanttChart = ({
     if (!markers || markers.length === 0) return null;
     return markers.map((marker, i) => {
         const posPct = (marker.offsetDays / blockWidth) * 100;
-        if (posPct > 100 && viewMode === 'real') return null;
+        // Solo ocultar si excede demasiado visualmente el bloque, 
+        // pero permitir un poco de desborde para mostrar retrasos programados visualmente
+        if (posPct > 120 && viewMode === 'real') return null;
 
         const tooltipContent = (
             <div>

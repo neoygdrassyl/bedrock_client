@@ -2271,3 +2271,40 @@ input:checked + .gantt-slider:before {
     border-left: none;
     box-shadow: 0 0 4px rgba(224, 49, 49, 0.4);
 }
+
+/* --- MARCADORES PROGRAMADOS --- */
+.gantt-scheduled-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #fcc419; /* Amarillo advertencia */
+  border: 2px solid #fff;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  cursor: help;
+  transition: transform 0.2s ease;
+}
+
+.gantt-scheduled-marker:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  z-index: 12;
+}
+
+/* Marcador Crítico (Final de fase) */
+.gantt-scheduled-marker.critical {
+  background-color: #fd7e14; /* Naranja más oscuro */
+  border-color: #fff5f5;
+  width: 12px;
+  height: 12px;
+}
+
+/* --- OVERFLOW EN BARRA --- */
+/* Importante: Permitir que los marcadores se vean fuera del ancho de la barra si están programados para después */
+.gantt-bar-bg {
+  overflow: visible !important; 
+}
+
+/* ... (resto de tus estilos) */
