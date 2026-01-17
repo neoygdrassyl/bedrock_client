@@ -266,32 +266,32 @@ export const GanttChart = ({
 
               // 2. Si no está relacionado, verificar si la fecha calculada cae dentro de la fase (solo si la fase tiene fechas definidas)
               // Esto es útil si olvidamos agregar un state al array relatedStates en useProcessPhases
-              // if (!shouldInclude && startDate) {
-              //     // Calculamos la fecha límite programada para este state
-              //     const clockDef = manager.clocksData.find(c => c.state === state);
-              //     // Usamos la utilidad para calcular fecha sin efectos secundarios de visualización
-              //     const scheduledInfo = calculateScheduledLimitForDisplay(state, clockDef || { state, allowSchedule: true }, manager.getClock(state), scheduleConfig, manager.getClock, manager.getClockVersion, manager);
+              if (!shouldInclude && startDate) {
+                  // Calculamos la fecha límite programada para este state
+                  const clockDef = manager.clocksData.find(c => c.state === state);
+                  // Usamos la utilidad para calcular fecha sin efectos secundarios de visualización
+                  const scheduledInfo = calculateScheduledLimitForDisplay(state, clockDef || { state, allowSchedule: true }, manager.getClock(state), scheduleConfig, manager.getClock, manager.getClockVersion, manager);
                   
-              //     if (scheduledInfo && scheduledInfo.limitDate) {
-              //         const limitMoment = moment(scheduledInfo.limitDate);
-              //         const startMoment = moment(startDate);
-              //         // Si tiene fecha fin, verificamos rango cerrado. Si no, verificamos si es posterior al inicio
-              //         // (Asumiendo que pertenece a la fase activa actual)
-              //         if (endDate) {
-              //             const endMoment = moment(endDate);
-              //             if (limitMoment.isSameOrAfter(startMoment) && limitMoment.isSameOrBefore(endMoment)) {
-              //                 shouldInclude = true;
-              //             }
-              //         } else {
-              //             // Fase abierta (en curso): incluimos si es posterior al inicio y "parece" pertenecer 
-              //             // (esto es más heurístico, mejor confiar en relatedStates, pero sirve de fallback)
-              //             if (limitMoment.isSameOrAfter(startMoment)) {
-              //                 // Verificamos que no pertenezca a una fase futura (muy simplificado)
-              //                 shouldInclude = true; 
-              //             }
-              //         }
-              //     }
-              // }
+                  if (scheduledInfo && scheduledInfo.limitDate) {
+                      const limitMoment = moment(scheduledInfo.limitDate);
+                      const startMoment = moment(startDate);
+                      // Si tiene fecha fin, verificamos rango cerrado. Si no, verificamos si es posterior al inicio
+                      // (Asumiendo que pertenece a la fase activa actual)
+                      if (endDate) {
+                          const endMoment = moment(endDate);
+                          if (limitMoment.isSameOrAfter(startMoment) && limitMoment.isSameOrBefore(endMoment)) {
+                              shouldInclude = true;
+                          }
+                      } else {
+                          // Fase abierta (en curso): incluimos si es posterior al inicio y "parece" pertenecer 
+                          // (esto es más heurístico, mejor confiar en relatedStates, pero sirve de fallback)
+                          if (limitMoment.isSameOrAfter(startMoment)) {
+                              // Verificamos que no pertenezca a una fase futura (muy simplificado)
+                              shouldInclude = true; 
+                          }
+                      }
+                  }
+              }
 
               if (shouldInclude) {
                   const clockDef = manager.clocksData.find(c => c.state === state);

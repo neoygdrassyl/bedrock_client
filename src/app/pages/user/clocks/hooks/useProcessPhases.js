@@ -28,7 +28,6 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
 
     // --- 1. EXTRACCIÓN DE FECHAS ESTÁNDAR ---
     const radDate = currentItem.date; // CAMBIO CLAVE: Esta es ahora nuestra fecha de inicio global
-    console.log("Radicación Date:", radDate);
     const ldfDate = getClock(5)?.date_start;
     const vallaDate = getClock(503)?.date_start;
     
@@ -89,9 +88,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
       if (!startDate) return 0;
       const calcEnd = endDate || defaultEnd;
       if (moment(calcEnd).isBefore(startDate)) return 0;
-      console.log("Calculating used days from", startDate, "to", calcEnd);
       let usedDays = calcularDiasHabiles(startDate, calcEnd);
-      console.log("Used days calculated:", usedDays);
       return usedDays;
     };
 
@@ -718,9 +715,6 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         system: { today, type: currentItem.type },
         desistimiento: { active: !!desistimientoVersion, version: desistimientoVersion }
     };
-
-    console.log('Process Phases Computed:', phases);
-
     return phases;
   }, [clocksData, currentItem, today, extension, suspensionPreActa, suspensionPostActa]);
 

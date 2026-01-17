@@ -1,35 +1,75 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import moment from 'moment';
-import { isTimeSchedulable, getReferenceDate, calculateScheduledDateFromDays, calculateDaysFromScheduledDate, getTotalAvailableDaysWithExtensions, COMPLIANCE_STRING, HIDDEN_STATES_IN_CUMPLE } from '../utils/scheduleUtils';
+import { 
+  getReferenceDate, 
+  calculateScheduledDateFromDays, 
+  calculateDaysFromScheduledDate, 
+  COMPLIANCE_STRING, 
+  HIDDEN_STATES_IN_CUMPLE 
+} from '../utils/scheduleUtils';
 
 export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConfig, onScheduleChange, legalLimits }) => {
-  const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension } = manager;
+  const { getClock, getClockVersion, phaseOptions } = manager;
   
   // Estado local para programación
   const [localSchedule, setLocalSchedule] = useState(() => {
     return scheduleConfig?.times || {};
   });
 
-  // Filtrar tiempos programables y ocultar según caso CUMPLE
+  // Opciones de configuración de fases para ocultar/mostrar notificaciones
+  const estudioOptions = phaseOptions?.phase_estudio || { notificationType: 'notificar', byAviso: false };
+  const correccionesOptions = phaseOptions?.phase_correcciones || { notificationType: 'notificar', byAviso: false };
+
+  // Filtrar tiempos programables
   const schedulableClocks = useMemo(() => {
     const acta1 = getClock(30);
     const isCumple = acta1?.desc?.includes(COMPLIANCE_STRING);
     
     return clocksToShow.filter(clockValue => {
+      // 1. Descartar títulos/secciones
       if (clockValue.title) return false;
       
-      const clock = clockValue.version !== undefined
-        ? getClockVersion(clockValue.state, clockValue.version)
-        : getClock(clockValue.state);
+      // 2. Verificar flag allowSchedule (definido en clocks.definitions.js)
+      // NOTA: Ya NO filtramos si clock.date_start existe, para que se vean los ejecutados.
+      if (!clockValue.allowSchedule) return false;
       
-      // Si es caso CUMPLE, ocultar tiempos intermedios
+      // 3. Validar estado existente
+      if (clockValue.state === false || clockValue.state === undefined) return false;
+
+      // 4. Lógica de ocultamiento por "CUMPLE"
       if (isCumple && HIDDEN_STATES_IN_CUMPLE.includes(clockValue.state)) {
         return false;
       }
+
+      // 5. Lógica de ocultamiento de Notificaciones (Estudio)
+      // Si es "Comunicar", ocultar todo lo de notificación
+      if (estudioOptions.notificationType === 'comunicar') {
+        if ([31, 32, 33].includes(clockValue.state)) return false; // Oculta Citación, Personal, Aviso
+      } else {
+        // Si es "Notificar"
+        if (estudioOptions.byAviso) {
+           // Si es por Aviso, ocultamos Personal (32) pero mostramos Aviso (33) y Citación (31)
+           if (clockValue.state === 32) return false; 
+        } else {
+           // Si es Personal, ocultamos Aviso (33) pero mostramos Personal (32) y Citación (31)
+           if (clockValue.state === 33) return false;
+        }
+      }
+
+      // 6. Lógica de ocultamiento de Notificaciones (Viabilidad)
+      if (correccionesOptions.notificationType === 'comunicar') {
+        if ([55, 56, 57].includes(clockValue.state)) return false;
+      } else {
+        if (correccionesOptions.byAviso) {
+           if (clockValue.state === 56) return false; 
+        } else {
+           if (clockValue.state === 57) return false;
+        }
+      }
       
-      return isTimeSchedulable(clockValue, clock);
+      return true;
     });
-  }, [clocksToShow, getClock, getClockVersion]);
+  }, [clocksToShow, getClock, estudioOptions, correccionesOptions]);
 
   // Actualizar schedule cuando cambia un input
   const handleInputChange = (clockState, field, value) => {
@@ -90,7 +130,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
   };
 
   // Notificar cambios al padre
-  React.useEffect(() => {
+  useEffect(() => {
     if (onScheduleChange) {
       onScheduleChange(localSchedule);
     }
@@ -140,14 +180,21 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
 
     const legalLimit = getLegalLimitForReference(clockValue);
     const hasSchedule = scheduled.type && scheduled.value;
+    
+    // Verificar si ya está ejecutado para indicarlo visualmente (opcional)
+    const isExecuted = getClock(clockState)?.date_start;
 
     return (
       <tr key={`schedule-row-${clockState}-${index}`} className={hasSchedule ? 'table-active' : ''}>
-        <td className="align-middle">
-          <div className="d-flex flex-column">
-            <span className="fw-semibold text-truncate" title={clockValue.name} style={{maxWidth: '350px'}}>{clockValue.name}</span>
+        {/* Nombre alineado a la izquierda explícitamente */}
+        <td className="align-middle text-start">
+          <div className="d-flex flex-column align-items-start text-start ps-2">
+            <span className="fw-semibold text-truncate" title={clockValue.name} style={{maxWidth: '350px'}}>
+                {clockValue.name} 
+                {isExecuted && <i className="fas fa-check-circle text-success ms-2 small" title="Evento ya ejecutado"></i>}
+            </span>
             {clockValue.desc && (
-              <small className="text-muted text-truncate" style={{maxWidth: '350px'}} title={clockValue.desc}>
+              <small className="text-muted text-truncate text-start" style={{maxWidth: '350px'}} title={clockValue.desc}>
                 {clockValue.desc}
               </small>
             )}
@@ -168,7 +215,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
                 <span className="input-group-text bg-light"><i className="fas fa-hashtag"></i></span>
             </div>
             {refDate && displayDate && daysValue && (
-                <div className="conversion-hint mt-1">
+                <div className="conversion-hint mt-1 text-start">
                  <i className="fas fa-arrow-right me-1"></i> {moment(displayDate).format('DD/MM/YYYY')}
                 </div>
             )}
@@ -185,7 +232,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
                 />
             </div>
              {refDate && displayDays && dateValue && (
-                <div className="conversion-hint mt-1">
+                <div className="conversion-hint mt-1 text-start">
                  <i className="fas fa-arrow-right me-1"></i> {displayDays} días hábiles
                 </div>
             )}
@@ -224,7 +271,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
       {/* 1. Header & Instructions Panel */}
       <div className="schedule-modal-header-panel">
           <div className="row g-2 align-items-center">
-              <div className="col-md-8">
+              <div className="col-md-8 text-start">
                   <div className="alert alert-info mb-0 py-2 px-3 small">
                       <div className="d-flex align-items-center">
                           <i className="fas fa-info-circle fs-4 me-3 text-info"></i>
@@ -249,7 +296,7 @@ export const ScheduleModal = ({ clocksToShow, currentItem, manager, scheduleConf
         <table className="table table-sm table-hover table-bordered mb-0 table-fixed-header">
           <thead className="table-light">
             <tr>
-              <th style={{ width: '40%' }}>Evento / Hito</th>
+              <th style={{ width: '40%' }} className="text-start ps-3">Evento / Hito</th>
               <th style={{ width: '18%' }}>Días Disponibles</th>
               <th style={{ width: '22%' }}>Fecha Objetivo</th>
               <th style={{ width: '15%' }} className="text-center">Límite Legal</th>
