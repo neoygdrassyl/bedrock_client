@@ -208,13 +208,36 @@ export const GanttModal = ({
     if (!radDate || phases.length === 0) return null;
 
     let totalProjectedDays = 0;
+    
+    // Identificar si existe Acta 1 (Fin de fase 1)
+    const phase1 = phases.find(p => p.id === 'phase1');
+    const hasActa1 = phase1?.endDate ? true : false;
 
     phases.forEach(phase => {
         let daysToAdd = 0;
-        if (phase.status === 'COMPLETADO') {
-            daysToAdd = phase.usedDays || 0;
+        
+        // CORRECCIÓN LÓGICA: Si es Fase 4 (Viabilidad) y no hay Acta 1, 
+        // asumimos que el proceso no ha llegado ahí y no sumamos días fantasma
+        // si se basa en la resta de días de curaduría.
+        if (phase.id === 'phase4' || phase.id === 'phase4_desist') {
+             if (!hasActa1 && phase.status === 'PENDIENTE') {
+                 // Si no hay Acta 1, la Fase 4 aun no tiene días disponibles reales calculables
+                 // para proyección futura hasta que cierre F1. Se toma como 0 para no duplicar.
+                 daysToAdd = 0; 
+             } else {
+                 if (phase.status === 'COMPLETADO') {
+                     daysToAdd = phase.usedDays || 0;
+                 } else {
+                     // Si hay programación o tiempos definidos, calculamos lo que falta
+                     daysToAdd = (phase.totalDays || 0) + (phase.extraDays || 0);
+                 }
+             }
         } else {
-            daysToAdd = (phase.totalDays || 0) + (phase.extraDays || 0);
+            if (phase.status === 'COMPLETADO') {
+                daysToAdd = phase.usedDays || 0;
+            } else {
+                daysToAdd = (phase.totalDays || 0) + (phase.extraDays || 0);
+            }
         }
         
         totalProjectedDays += daysToAdd;
@@ -256,7 +279,7 @@ export const GanttModal = ({
           </div>
 
           <div className="gantt-modal-controls">
-            <label className="gantt-toggle" title="Alternar entre vista de límites legales completos vs. tiempos reales ejecutados">
+            {/* <label className="gantt-toggle" title="Alternar entre vista de límites legales completos vs. tiempos reales ejecutados">
               <span className={`gantt-toggle-label ${viewMode === 'legal' ? 'active' : ''}`}>Legal</span>
               <div className="gantt-switch">
                 <input
@@ -267,7 +290,7 @@ export const GanttModal = ({
                 <span className="gantt-slider round"></span>
               </div>
               <span className={`gantt-toggle-label ${viewMode === 'real' ? 'active' : ''}`}>Real</span>
-            </label>
+            </label> */}
 
             <button className="gantt-close-btn" onClick={onClose}>
               <i className="fas fa-times" />
