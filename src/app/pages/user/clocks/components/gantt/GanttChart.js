@@ -26,11 +26,12 @@ export const GanttChart = ({
   onPhaseClick,
   activePhaseId,
   scheduleConfig,
-  manager
+  manager,
+  disableTooltips = false
 }) => {
   const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, content: null });
   // Estado para alternar la visualización de las líneas de finalización (Hitos)
-  const [showMilestones, setShowMilestones] = useState(true); // Por defecto true para ver los labels
+  const [showMilestones, setShowMilestones] = useState(true); 
 
   const headerScrollRef = useRef(null);
   const bodyScrollRef = useRef(null);
@@ -97,6 +98,7 @@ export const GanttChart = ({
   };
 
   const handleMouseMove = (e, content) => {
+    if (disableTooltips) return;
     setTooltip({ visible: true, x: e.clientX, y: e.clientY, content: content });
   };
   const handleMouseLeave = () => setTooltip(prev => ({ ...prev, visible: false }));
@@ -108,9 +110,7 @@ export const GanttChart = ({
 
     let cumulativeDays = 0;
     const processedPhases = [];
-    const today = systemToday;
-    const phase2Ref = phases.find(p => p.title === 'Revisión y Viabilidad');
-    const splitDateForExtension = phase2Ref?.startDate ? phase2Ref.startDate : null;
+    const splitDateForExtension = phases.find(p => p.title === 'Revisión y Viabilidad')?.startDate || null;
 
     phases.forEach((phase, index) => {
       const { id, totalDays = 0, usedDays = 0, ganttBlockDays, parallelActors, relatedStates, startDate, endDate, status } = phase;
@@ -152,7 +152,7 @@ export const GanttChart = ({
               date: endDate,
               offset: offset,
               duration: actualDays,
-              isPhase1: id === 'phase0' // Flag para posicionamiento
+              isPhase1: id === 'phase0' // Flag para posicionamiento especial si es la primera
           };
       }
 
@@ -164,7 +164,7 @@ export const GanttChart = ({
               if (u > t) overdue = u - t;
           } else if (pStartDate) {
               const limitDate = sumarDiasHabiles(pStartDate, t);
-              if (moment(today).isAfter(limitDate)) overdue = calcularDiasHabiles(limitDate, today);
+              if (moment(systemToday).isAfter(limitDate)) overdue = calcularDiasHabiles(limitDate, systemToday);
           }
           return Math.max(0, overdue);
       };
@@ -182,7 +182,7 @@ export const GanttChart = ({
             const startOffset = calcularDiasHabiles(radDate, susStartDate, false);
             let duration = 0;
             if (susEndDate) duration = calcularDiasHabiles(susStartDate, susEndDate, true);
-            else if (moment(today).isAfter(susStartDate)) duration = calcularDiasHabiles(susStartDate, today, true);
+            else if (moment(systemToday).isAfter(susStartDate)) duration = calcularDiasHabiles(susStartDate, systemToday, true);
 
             suspensionInfo = {
                 startOffset,
@@ -243,50 +243,33 @@ export const GanttChart = ({
         markers: []
       };
 
-      // --- LOGICA MEJORADA DE MARCADORES (SCHEDULED LIMITS) ---
-      // Busca tanto por ID relacionado como por coincidencia de rango de fechas
+      // --- LOGICA DE MARCADORES (SCHEDULED LIMITS) ---
       if (scheduleConfig && scheduleConfig.times && manager && startDate) {
           const markers = [];
-          
-          // Obtener todos los keys programados
           const scheduledKeys = Object.keys(scheduleConfig.times);
-
-          console.log(scheduledKeys);
 
           scheduledKeys.forEach(stateStr => {
               const state = Number(stateStr);
               let shouldInclude = false;
 
-              console.log("Related state y los relacionados", state, relatedStates, relatedStates.includes(state));
-
-              // 1. Verificar si está explícitamente relacionado
               if (relatedStates && relatedStates.includes(state)) {
                   shouldInclude = true;
               }
 
-              // 2. Si no está relacionado, verificar si la fecha calculada cae dentro de la fase (solo si la fase tiene fechas definidas)
-              // Esto es útil si olvidamos agregar un state al array relatedStates en useProcessPhases
               if (!shouldInclude && startDate) {
-                  // Calculamos la fecha límite programada para este state
                   const clockDef = manager.clocksData.find(c => c.state === state);
-                  // Usamos la utilidad para calcular fecha sin efectos secundarios de visualización
                   const scheduledInfo = calculateScheduledLimitForDisplay(state, clockDef || { state, allowSchedule: true }, manager.getClock(state), scheduleConfig, manager.getClock, manager.getClockVersion, manager);
                   
                   if (scheduledInfo && scheduledInfo.limitDate) {
                       const limitMoment = moment(scheduledInfo.limitDate);
                       const startMoment = moment(startDate);
-                      // Si tiene fecha fin, verificamos rango cerrado. Si no, verificamos si es posterior al inicio
-                      // (Asumiendo que pertenece a la fase activa actual)
                       if (endDate) {
                           const endMoment = moment(endDate);
                           if (limitMoment.isSameOrAfter(startMoment) && limitMoment.isSameOrBefore(endMoment)) {
                               shouldInclude = true;
                           }
                       } else {
-                          // Fase abierta (en curso): incluimos si es posterior al inicio y "parece" pertenecer 
-                          // (esto es más heurístico, mejor confiar en relatedStates, pero sirve de fallback)
                           if (limitMoment.isSameOrAfter(startMoment)) {
-                              // Verificamos que no pertenezca a una fase futura (muy simplificado)
                               shouldInclude = true; 
                           }
                       }
@@ -296,18 +279,15 @@ export const GanttChart = ({
               if (shouldInclude) {
                   const clockDef = manager.clocksData.find(c => c.state === state);
                   const scheduledInfo = calculateScheduledLimitForDisplay(state, clockDef || { state, allowSchedule: true }, manager.getClock(state), scheduleConfig, manager.getClock, manager.getClockVersion, manager);
-                  console.log("Scheduled info para marcador", state, scheduledInfo, scheduledInfo.limitDate);
+                  
                   if (scheduledInfo && scheduledInfo.limitDate) {
-                      // Calcular offset relativo al inicio de la FASE
                       const offset = calcularDiasHabiles(startDate, scheduledInfo.limitDate, false);
-                      
-                      // Solo agregar si el offset es lógico (no negativo extremo, indicando pasado lejano)
                       if (offset >= -5) { 
                           markers.push({ 
                               state, 
                               label: clockDef?.name || `Evento ${state}`, 
                               date: scheduledInfo.limitDate, 
-                              offsetDays: Math.max(0, offset), // Visualmente no permitir negativos
+                              offsetDays: Math.max(0, offset),
                               display: scheduledInfo.display 
                           });
                       }
@@ -318,7 +298,7 @@ export const GanttChart = ({
           phaseData.markers = markers;
       }
 
-      const calculateRowMetrics = (actorUsed, actorTotal, rowType) => {
+      const calculateRowMetrics = (actorUsed, actorTotal) => {
         const u = safeInt(actorUsed, 0);
         const t = safeInt(actorTotal, 1);
         const refWidth = blockWidth;
@@ -332,11 +312,7 @@ export const GanttChart = ({
         let scheduledOverduePct = 0;
 
         if (phaseData.markers && phaseData.markers.length > 0) {
-             // Encontrar el marcador más lejano que se haya excedido
-             // Nota: Esto es una simplificación. Idealmente comparamos el "progreso actual" contra el "marcador más próximo".
-             // Pero como la barra es un acumulado, tomamos el marcador más grande como referencia visual del "deber ser" total de la fase.
              const maxScheduledMarker = phaseData.markers.reduce((prev, current) => (prev.offsetDays > current.offsetDays) ? prev : current, phaseData.markers[0]);
-             
              if (maxScheduledMarker) {
                  const scheduledLimit = maxScheduledMarker.offsetDays;
                  if (u > scheduledLimit) {
@@ -408,7 +384,6 @@ export const GanttChart = ({
     let todaySuggestion = null;
     let todaySeverity = 'normal';
     
-    // Buscar si hay una fase activa "cerca" de vencerse
     const activeP = processedPhases.find(p => p.status === 'ACTIVO' || p.status === 'PAUSADO');
     if (activeP) {
         const remaining = (activeP.totalDays || 0) - (activeP.usedDays || 0);
@@ -456,8 +431,6 @@ export const GanttChart = ({
     if (!markers || markers.length === 0) return null;
     return markers.map((marker, i) => {
         const posPct = (marker.offsetDays / blockWidth) * 100;
-        // Solo ocultar si excede demasiado visualmente el bloque, 
-        // pero permitir un poco de desborde para mostrar retrasos programados visualmente
         if (posPct > 120 && viewMode === 'real') return null;
 
         const tooltipContent = (
@@ -609,7 +582,9 @@ export const GanttChart = ({
 
   // --- RENDERIZADO DE ETIQUETA DE FASE (HITO/MILESTONE) ---
   const renderPhaseMilestone = (phase) => {
-    if (!phase.phaseMilestone || !showMilestones) return null;
+    // Si estamos en modo compacto (disableTooltips activo), ocultamos estos hitos para limpiar la vista
+    if (!phase.phaseMilestone || !showMilestones || disableTooltips) return null;
+    
     const { offset, title, date, duration, isPhase1 } = phase.phaseMilestone;
     
     // Posición absoluta dentro de la fila de la fase
@@ -617,6 +592,9 @@ export const GanttChart = ({
 
     // Determina si la tarjeta va arriba o abajo
     const positionClass = isPhase1 ? 'bottom' : 'top';
+    
+    // Si es la Fase 1 o el offset es muy pequeño, alineamos a la izquierda para que no se corte
+    const alignmentClass = (isPhase1 || offset < 5) ? 'align-left' : '';
 
     return (
         <div 
@@ -624,10 +602,11 @@ export const GanttChart = ({
             style={{ left: `${leftPx}px` }}
         >
             <div className="gantt-row-milestone-line"></div>
-            <div className={`gantt-row-milestone-card ${positionClass}`}>
+            <div className={`gantt-row-milestone-card ${positionClass} ${alignmentClass}`}>
                 <strong>{title}</strong>
-                <span className="milestone-date">Fin: {moment(date).format('DD MMM YYYY')}</span><br/>
-                <span className="milestone-duration">Duración: {duration} días</span>
+                <span className="milestone-date">{moment(date).format('DD/MM/YY')}</span>
+                {/* Nuevo: Días consumidos */}
+                <span className="milestone-duration">{duration} días</span>
             </div>
         </div>
     );
@@ -635,7 +614,7 @@ export const GanttChart = ({
 
   return (
     <div className={`gantt-container ${compactMode ? 'gantt-compact' : ''}`}>
-      <FloatingTooltip {...tooltip} />
+      {!disableTooltips && <FloatingTooltip {...tooltip} />}
 
       <div className="gantt-header-wrapper" style={{ height: `${HEADER_HEIGHT}px` }}>
         <div className="gantt-title-column">
@@ -685,7 +664,7 @@ export const GanttChart = ({
             {/* --- LINEA DE HOY + TARJETA INFORMATIVA --- */}
             {ganttData.todayOffset >= 0 && ( 
                 <div className="gantt-today-line" style={{ left: `${ganttData.todayOffset * scaleFactor}px` }}>
-                    {!compactMode && (
+                    {!compactMode && !disableTooltips && (
                         <div className={`gantt-today-card ${ganttData.todaySeverity}`}>
                             <div className="today-header">
                                 <strong>HOY</strong>

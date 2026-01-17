@@ -19,6 +19,7 @@ export const GanttPreview = ({
         suspensionPostActa={suspensionPostActa}
         extension={extension}
         compactMode={true}
+        disableTooltips={true}
         activePhaseId={activePhaseId}
         onPhaseClick={onPhaseClick}
       />
