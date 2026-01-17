@@ -7337,3 +7337,54 @@ from { opacity: 0; transform: translateY(-5px); }
 .schedule-modal-table-area::-webkit-scrollbar-thumb:hover {
     background: #adb5bd;
 }
+
+/* ...existing css... */
+
+/* ============================================================
+   AJUSTES MODAL DE PROGRAMACIÓN REDISEÑADO
+   ============================================================ */
+
+/* Asegurar alineación izquierda en la columna de títulos */
+.schedule-modal-table-area .table th.text-start,
+.schedule-modal-table-area .table td.text-start {
+    text-align: left !important;
+}
+
+/* Alineación específica para el contenedor flex dentro de la celda */
+.schedule-modal-table-area td .d-flex.align-items-start {
+    align-items: flex-start !important;
+}
+
+/* Forzar alineación de texto truncado */
+.schedule-modal-table-area .text-truncate.text-start {
+    text-align: left !important;
+}
+
+/* ============================================================
+   MODAL DE PROGRAMACIÓN REDISEÑADO (FIXES)
+   ============================================================ */
+
+/* Alineación explícita para la columna de nombre */
+.schedule-modal-table-container th.text-start,
+.schedule-modal-table-container td.text-start {
+    text-align: left !important;
+}
+
+/* Ajuste del padding para que no quede pegado al borde */
+.schedule-modal-table-container td.text-start {
+    padding-left: 1rem !important;
+}
+
+/* Indicador de ejecutado en la tabla */
+.fa-check-circle.text-success {
+    font-size: 0.8em;
+    vertical-align: middle;
+}
+
+/* Hint de conversión */
+.conversion-hint {
+    font-size: 0.7rem;
+    color: #1971c2;
+    font-weight: 600;
+    padding-left: 0.25rem;
+}
