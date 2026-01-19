@@ -20,6 +20,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
         // --- Helper para añadir alarmas evitando duplicados ---
         const addAlarm = (alarmData) => {
+            console.log("Adding alarm", alarmData);
             const { state, type } = alarmData;
             const id = `${type}-${state}`;
             
@@ -34,6 +35,9 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
             const isOverdue = remainingDays < 0;
             const suggestionKey = isOverdue ? 'vencido' : 'porVencer';
+            
+            // --- CORRECCIÓN APLICADA AQUÍ ---
+            // La lógica ahora busca correctamente dentro de `ALARM_SUGGESTIONS[state][type]`
             const suggestionDef = (ALARM_SUGGESTIONS[state] && ALARM_SUGGESTIONS[state][type])
                 ? ALARM_SUGGESTIONS[state][type][suggestionKey]
                 : (ALARM_SUGGESTIONS.default[type] ? ALARM_SUGGESTIONS.default[type][suggestionKey] : null);

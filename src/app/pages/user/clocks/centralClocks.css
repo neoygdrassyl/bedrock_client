@@ -5269,8 +5269,8 @@ from { opacity: 0; transform: translateY(-5px); }
   font-weight: 800;
   white-space: nowrap;
   border: 1px solid #dee2e6;
-  background: #f8f9fa;
-  color: #495057;
+  /* background: #f8f9fa;
+  color: #495057; */
 }
 
 .phase-sub-row {
@@ -6634,7 +6634,7 @@ from { opacity: 0; transform: translateY(-5px); }
 .phase-status-pill {
   display: inline-flex; align-items: center; gap: 0.35rem;
   padding: 0.25rem 0.55rem; border-radius: 999px;
-  font-size: 0.72rem; font-weight: 800; border: 1px solid #dee2e6; background: #f8f9fa; color: #495057;
+  font-size: 0.72rem; font-weight: 800; border: 1px solid #dee2e6;
 }
 .phase-sub-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
 .phase-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.22rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; border: 1px solid #dee2e6; background: #f8f9fa; color: #495057; }
