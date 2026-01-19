@@ -31,20 +31,23 @@ const STEPS_TO_CHECK = ['-50', '-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18
 export const NEGATIVE_PROCESS_TITLE = { '-1': 'INCOMPLETO', '-2': 'FALTA VALLA INFORMATIVA', '-3': 'NO CUMPLE ACTA CORRECCIONES', '-4': 'NO PAGA EXPENSAS', '-5': 'VOLUNTARIO', '-6': 'NEGADA' };
 
 export const useScheduleConfig = (expedienteId) => {
-    const storageKey = `curaduria_programacion_${expedienteId}`;
+    const storageKey = expedienteId ? `curaduria_programacion_${expedienteId}` : null;
     const [scheduleConfig, setScheduleConfig] = useState(() => {
+      if (!storageKey) return null;
       try {
         const stored = localStorage.getItem(storageKey);
         return stored ? JSON.parse(stored) : null;
       } catch { return null; }
     });
     const saveScheduleConfig = (config) => {
+      if (!storageKey) return;
       try {
         localStorage.setItem(storageKey, JSON.stringify(config));
         setScheduleConfig(config);
       } catch (error) { console.warn('Error al guardar config de programación:', error); }
     };
     const clearScheduleConfig = () => {
+      if (!storageKey) return;
       try {
         localStorage.removeItem(storageKey);
         setScheduleConfig(null);
