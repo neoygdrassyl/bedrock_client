@@ -50,17 +50,18 @@ export default function EXP_CLOCKS(props) {
 
   const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
 
+  // SOLUCIÓN: useEffect mejorado para sincronizar estado desde las props.
+  // Esta es ahora la principal fuente de verdad para clocksData.
   useEffect(() => {
-    if (currentItem?.fun_clocks) {
-      const clock1001FromProps = currentItem.fun_clocks.find(c => String(c.state) === '1001');
-      const clock1001FromState = clocksData.find(c => String(c.state) === '1001');
-
-      if (!clock1001FromState || (clock1001FromProps && clock1001FromProps.desc !== clock1001FromState.desc)) {
-        setClocksData([...currentItem.fun_clocks]);
-        setRefreshTrigger(prev => prev + 1);
-      }
+    const propsClocks = currentItem?.fun_clocks || [];
+    // Compara si los datos de las props son diferentes a los del estado.
+    // Una comparación simple de longitud o JSON stringify es suficiente para detectar cambios.
+    if (JSON.stringify(propsClocks) !== JSON.stringify(clocksData)) {
+      setClocksData(propsClocks);
+      // Eliminamos el refreshTrigger de aquí para no causar ciclos extra.
     }
   }, [currentItem?.fun_clocks]);
+
 
   const phaseOptions = useMemo(() => {
     const phaseOptionsClock = clocksData.find(c => String(c.state) === '1001');
@@ -104,6 +105,10 @@ export default function EXP_CLOCKS(props) {
     };
   }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, alarms]);
 
+  // Estado para rastrear eliminaciones recientes y evitar re-sincronización inmediata
+  const [recentDeletions, setRecentDeletions] = useState(new Set());
+  const deletionTimeoutRef = useRef(null);
+
   useEffect(() => {
     const syncVallaDate = () => {
       if (!currentItem || !currentItem.fun_law) return;
@@ -114,14 +119,25 @@ export default function EXP_CLOCKS(props) {
       const clock503 = (clocksData || []).find(c => c.state == 503);
       const clockDate = clock503 ? clock503.date_start : null;
 
+      // SOLUCIÓN: No sincronizar si el reloj fue eliminado recientemente
+      if (recentDeletions.has(503)) {
+        console.log('⏸️ Sincronización de valla pausada - eliminación reciente detectada');
+        return;
+      }
+
+      // CASO 1: Hay fecha en formulario pero no en reloj -> Crear reloj
       if (formDate && (!clockDate || formDate !== clockDate)) {
+        console.log('📝 Sincronizando valla: formulario → reloj', { formDate, clockDate });
         const formData = new FormData();
         formData.set('date_start', formDate);
         formData.set('state', 503);
         formData.set('name', 'Instalación y Registro de la Valla Informativa');
         formData.set('desc', 'Instalación de la valla informativa del proyecto');
         manage_clock(false, 503, undefined, formData, true);
-      } else if (clockDate && !formDate) {
+      } 
+      // CASO 2: Hay fecha en reloj pero no en formulario -> Actualizar formulario
+      else if (clockDate && !formDate) {
+        console.log('📝 Sincronizando valla: reloj → formulario', { clockDate, formDate });
         const funLawId = currentItem.fun_law.id;
         if (!funLawId) return;
 
@@ -138,11 +154,15 @@ export default function EXP_CLOCKS(props) {
           })
           .catch(e => console.error("Error sincronizando formulario desde reloj:", e));
       }
+      // CASO 3: Ambos vacíos o iguales -> No hacer nada
+      else {
+        console.log('✅ Valla sincronizada', { formDate, clockDate });
+      }
     };
 
     const timer = setTimeout(syncVallaDate, 100);
     return () => clearTimeout(timer);
-  }, [currentItem, clocksData, props.requestUpdate]);
+  }, [currentItem, clocksData, props.requestUpdate, recentDeletions]);
 
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa } = manager;
 
@@ -191,7 +211,9 @@ export default function EXP_CLOCKS(props) {
       [title]: !prev[title]
     }));
   };
-
+  
+  // SOLUCIÓN: applyLocalClockChange se conserva para cambios que no dependen de una API (como las opciones de fase),
+  // pero ya no se usará para el guardado/borrado de fechas para evitar el conflicto.
   const applyLocalClockChange = (state, changes, version) => {
     setClocksData(prev => {
       const arr = Array.isArray(prev) ? [...prev] : [];
@@ -244,14 +266,10 @@ export default function EXP_CLOCKS(props) {
 
     formDataClock.set('desc', descBase);
     formDataClock.set('name', value.name);
-
-    applyLocalClockChange(value.state, {
-      date_start: dateVal,
-      desc: descBase,
-      name: value.name,
-      version: value.version,
-    }, value.version);
-
+    
+    // SOLUCIÓN: No llamamos a applyLocalClockChange aquí.
+    // La UI se actualizará cuando las props cambien después de requestUpdate().
+    // Esto evita la condición de carrera y el "parpadeo".
     manage_clock(false, value.state, value.version, formDataClock, true);
   };
 
@@ -263,8 +281,10 @@ export default function EXP_CLOCKS(props) {
 
     const onOk = () => {
       if (useMySwal) MySwal.fire({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer, icon: 'success', confirmButtonText: swaMsg.text_btn });
-      props.requestUpdate(currentItem.id);
-      if (triggerUpdate) setTimeout(() => props.requestUpdate(currentItem.id), 150);
+      // SOLUCIÓN: Se mantiene una única llamada a requestUpdate para refrescar las props.
+      if (triggerUpdate) {
+        props.requestUpdate(currentItem.id);
+      }
     };
     const onErr = (e) => {
       console.error('Error guardando clock en backend:', e);
@@ -297,18 +317,67 @@ export default function EXP_CLOCKS(props) {
           formDataClock.set('version', value.version);
         }
 
+        // Se establece la fecha como vacía para eliminarla en el backend.
         formDataClock.set('date_start', '');
         formDataClock.set('desc', value.desc || '');
+        
+        // SOLUCIÓN: Marcar como eliminado recientemente para evitar re-sincronización
+        setRecentDeletions(prev => new Set(prev).add(value.state));
+        
+        // Limpiar la marca después de 3 segundos
+        if (deletionTimeoutRef.current) {
+          clearTimeout(deletionTimeoutRef.current);
+        }
+        deletionTimeoutRef.current = setTimeout(() => {
+          setRecentDeletions(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(value.state);
+            return newSet;
+          });
+          console.log('🔄 Sincronización de valla reactivada');
+        }, 3000);
 
-        applyLocalClockChange(value.state, {
-          date_start: '',
-          desc: value.desc || ''
-        }, value.version);
+        // CASO ESPECIAL: Si es la valla (503), también limpiar el formulario
+        if (value.state === 503 && currentItem?.fun_law?.id) {
+          console.log('🗑️ Eliminando valla: limpiando reloj Y formulario');
+          
+          const funLawId = currentItem.fun_law.id;
+          const signArray = currentItem.fun_law.sign ? currentItem.fun_law.sign.split(',') : [];
+          const newSign = [signArray[0] || '-1', ''].join(','); // Vaciar segunda posición
 
-        manage_clock(false, value.state, value.version, formDataClock, true);
+          const formDataSign = new FormData();
+          formDataSign.set('sign', newSign);
+
+          // Eliminar del formulario primero
+          FUN_SERVICE.update_sign(funLawId, formDataSign)
+            .then(response => {
+              if (response.data === 'OK') {
+                console.log('✅ Formulario de valla limpiado');
+                // Luego eliminar el reloj
+                manage_clock(false, value.state, value.version, formDataClock, true);
+              }
+            })
+            .catch(e => {
+              console.error("❌ Error limpiando formulario de valla:", e);
+              // Intentar eliminar el reloj de todas formas
+              manage_clock(false, value.state, value.version, formDataClock, true);
+            });
+        } else {
+          // Para otros relojes, eliminar normalmente
+          manage_clock(false, value.state, value.version, formDataClock, true);
+        }
       }
     });
   };
+
+  // Limpiar timeout al desmontar
+  useEffect(() => {
+    return () => {
+      if (deletionTimeoutRef.current) {
+        clearTimeout(deletionTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const addTimeControl = (type) => {
     if (type === 'suspension') {
@@ -344,7 +413,7 @@ export default function EXP_CLOCKS(props) {
           formDataStart.set('date_start', startDate);
           formDataStart.set('desc', info || `Suspensión ${isPreActa ? 'antes' : 'después'} del acta`);
           formDataStart.set('name', `Inicio Suspensión ${isPreActa ? 'Pre-Acta' : 'Post-Acta'}`);
-          applyLocalClockChange(startState, { date_start: startDate, desc: formDataStart.get('desc'), name: formDataStart.get('name') });
+          // SOLUCIÓN: Sin llamada a applyLocalClockChange
           manage_clock(false, startState, false, formDataStart, true);
         }
       });
@@ -377,7 +446,7 @@ export default function EXP_CLOCKS(props) {
           formDataStart.set('date_start', startDate);
           formDataStart.set('desc', 'Prórroga por complejidad técnica');
           formDataStart.set('name', 'Inicio Prórroga por Complejidad');
-          applyLocalClockChange(400, { date_start: startDate, desc: 'Prórroga por complejidad técnica', name: 'Inicio Prórroga por Complejidad' });
+          // SOLUCIÓN: Sin llamada a applyLocalClockChange
           manage_clock(false, 400, false, formDataStart, true);
 
           if (endDate) {
@@ -387,15 +456,15 @@ export default function EXP_CLOCKS(props) {
             formDataEnd.set('date_start', endDate);
             formDataEnd.set('desc', `Fin de prórroga (${days} días)`);
             formDataEnd.set('name', 'Fin Prórroga por Complejidad');
-            applyLocalClockChange(401, { date_start: endDate, desc: `Fin de prórroga (${days} días)`, name: 'Fin Prórroga por Complejidad' });
+            // SOLUCIÓN: Sin llamada a applyLocalClockChange. El setTimeout con requestUpdate() en la primera llamada será suficiente.
             setTimeout(() => manage_clock(false, 401, false, formDataEnd, true), 200);
           }
         }
       });
     }
   };
-
-  const openScheduleModal = () => {
+  
+    const openScheduleModal = () => {
     let localScheduleData = scheduleConfig?.times || {};
 
     const modalContainer = document.createElement('div');
@@ -426,9 +495,9 @@ export default function EXP_CLOCKS(props) {
       width: '90vw', // Usamos un ancho relativo al viewport para mayor espacio
       showCancelButton: true,
       showDenyButton: hasSchedule,
-      confirmButtonText: '<i className="fas fa-save me-2"></i>Guardar Programación',
+      confirmButtonText: '<i class="fas fa-save me-2"></i>Guardar Programación',
       cancelButtonText: 'Cancelar',
-      denyButtonText: '<i className="fas fa-trash me-2"></i>Eliminar Programación',
+      denyButtonText: '<i class="fas fa-trash me-2"></i>Eliminar Programación',
       customClass: {
         popup: 'schedule-modal-popup', // Clase para control de altura y scroll
       },
