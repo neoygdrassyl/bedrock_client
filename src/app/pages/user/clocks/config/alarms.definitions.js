@@ -15,7 +15,7 @@ export const ALARM_THRESHOLD_DAYS = {
  */
 export const ALARM_SUGGESTIONS = {
     // --- Sugerencias específicas por STATE del clock ---
-    502: { // Legal y debida forma
+    5: { // Legal y debida forma
         legal: {
             porVencer: { suggestion: "El tiempo está pronto a vencer, en caso de no quedar en Legal y debida forma el proyecto deberá desistirse." },
             vencido: { suggestion: "El tiempo legal para el solicitante ha finalizado, por favor iniciar el desistimiento" }

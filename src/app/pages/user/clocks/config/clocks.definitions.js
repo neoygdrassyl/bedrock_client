@@ -212,7 +212,7 @@ const extraClocks = (props) => {
         hasAnnexSelect: false, 
         legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.1.1 (…) PARÁGRAFO 1. Se entenderá que una solicitud de licencia o su modificación está radicada en Legal y debida forma si a la fecha de radicación se allega la totalidad de los documentos exigidos en el presente Capítulo, aun cuando estén sujetos a posteriores correcciones. (…) DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.3.1 Término para resolver las solicitudes de licencias, sus modificaciones y revalidación de licencias. Los curadores urbanos y la entidad municipal o distrital encargada del estudio, trámite y expedición de las licencias, según el caso. tendrán un plazo máximo de cuarenta y cinco (45) días hábiles para resolver las solicitudes de licencias y de modificación de licencia vigente pronunciándose sobre su viabilidad, negación o desistimiento contados desde la fecha en que la solicitud haya sido radicada en legal y debida forma. Nota: La curaduría cuenta según el sistema de categorización del proyecto un plazo que esta entre 20 y 45 días hábiles contados a partir de la radicación en legal y debida forma; en este periodo se debe realizar el proceso de revisión como el pronunciamiento sobre la solicitud",
         rest: 2, 
-        spentDaysConfig: { startState: regexChecker_isOA_2(child1) ? 4 : 3 } 
+        spentDaysConfig: { startState: regexChecker_isOA_2(child1) ? 4 : 3 },
       },
       { 
         state: 502,
@@ -247,8 +247,8 @@ const extraClocks = (props) => {
         spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] },
         allowSchedule: true
       },
-      ...buildDesistSection('-1', getClockVersion),
-      ...buildDesistSection('-2', getClockVersion),
+      ...buildDesistSection('-1', getClockVersion), // Radicacion incompleto
+      ...buildDesistSection('-2', getClockVersion), // Valla informativa
     //   ...preActaExt,
       { title: 'Estudio y Observaciones' },
       ...preActaSusp,
