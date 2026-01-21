@@ -204,7 +204,7 @@ export const ClockRow = (props) => {
             
             if (isOverdue) {
                 const overdueDays = calcularDiasHabiles(limitMoment.toDate(), today.toDate());
-                text = `Retrasado por ${overdueDays} día(s)`;
+                text = `Vencido por ${overdueDays} día(s)`;
                 color = '#e03131';
                 icon = 'fa-exclamation-circle';
             } else {

@@ -14,7 +14,7 @@ import { ScheduleModal } from './components/ScheduleModal';
 import { AlarmsWidget } from './components/AlarmsWidget';
 import { ToolsMenu } from './components/ToolsMenu'; // Importamos el nuevo menú
 import { useAlarms } from './hooks/useAlarms';
-import { calcularDiasHabiles } from './hooks/useClocksManager';
+import { calcularDiasHabiles, sumarDiasHabiles } from './hooks/useClocksManager';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
 import { GanttModal } from './components/gantt/GanttModal';
 
@@ -248,21 +248,28 @@ export default function EXP_CLOCKS(props) {
     }
 
     let descBase = value.desc || '';
+    if (value.state === 350 || value.state === 351) {
+        if (dateVal) {
+            const startSusp = (value.state === 350) ? suspensionPreActa.start?.date_start : suspensionPostActa.start?.date_start;
+            if (startSusp) {
+                const days = calcularDiasHabiles(startSusp, dateVal, true);
+                descBase = `Fin de suspensión (${days} día(s) hábiles)`;
+            }
+        } else {
+            descBase = `Finalización de suspensión de términos (${value.state === 350 ? 'Pre-Acta' : 'Post-Correcciones'})`;
+        }
+    } else if (value.state === 401) {
+        if (dateVal) {
+            const startExt = manager.extension.start?.date_start;
+            if (startExt) {
+                const days = sumarDiasHabiles(startExt, dateVal);
+                descBase = `Fin de prórroga (${days} día(s) hábiles)`;
+            }
+        } else {
+            descBase = 'Finalización de prórroga por complejidad técnica';
+        }
+    }
 
-    if ((value.state === 350 || value.state === 351) && dateVal) {
-      const startSusp = (value.state === 350) ? suspensionPreActa.start?.date_start : suspensionPostActa.start?.date_start;
-      if (startSusp) {
-        const days = calcularDiasHabiles(startSusp, dateVal);
-        descBase = `Fin de suspensión (${days} días hábiles)`;
-      }
-    }
-    if (value.state === 401 && dateVal) {
-      const startExt = manager.extension.start?.date_start;
-      if (startExt) {
-        const days = dateParser_dateDiff(startExt, dateVal);
-        descBase = `Fin de prórroga (${days} días)`;
-      }
-    }
 
     formDataClock.set('desc', descBase);
     formDataClock.set('name', value.name);

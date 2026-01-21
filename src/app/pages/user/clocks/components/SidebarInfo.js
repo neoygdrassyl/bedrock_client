@@ -16,6 +16,7 @@ const STATUS_MAP = {
   COMPLETADO: { text: 'Completado', color: 'success', icon: 'fa-check-circle' },
   ESPERANDO_NOTIFICACION: { text: 'Esperando notif.', color: 'info', icon: 'fa-envelope' },
   VENCIDO: { text: 'Vencido', color: 'danger', icon: 'fa-exclamation-triangle' },
+  RETRASADO: { text: 'Retrasado', color: 'danger', icon: 'fa-exclamation-circle' }
 };
 
 const escapeHtml = (s) => {
@@ -30,7 +31,10 @@ const escapeHtml = (s) => {
 
 const formatShortDate = (d) => (d ? moment(d).format('DD MMM YY') : '—');
 
-const getResolvedStatus = (status, remainingDays) => {
+const getResolvedStatus = (status, remainingDays, endDate, limitDate) => {
+  if (status === 'COMPLETADO' && limitDate && endDate && moment(endDate).isAfter(limitDate, 'day')) {
+    return STATUS_MAP.VENCIDO;
+  }
   if (status === 'ACTIVO' && remainingDays < 0) return STATUS_MAP.VENCIDO;
   return STATUS_MAP[status] || STATUS_MAP.PENDIENTE;
 };
@@ -68,12 +72,14 @@ const ActorCompactRow = ({ actor, onActorClick, dense = false }) => {
     extraDays = 0,
     status = 'PENDIENTE',
     taskDescription,
+    endDate,
+    limitDate,
   } = actor || {};
 
   const totalAvailable = (Number(totalDays) || 0) + (Number(extraDays) || 0);
   const used = Number(usedDays) || 0;
   const remaining = totalAvailable - used;
-  const st = getResolvedStatus(status, remaining);
+  const st = getResolvedStatus(status, remaining, endDate, limitDate);
 
   const pct = totalAvailable > 0 ? Math.min(100, (used / totalAvailable) * 100) : 0;
 
@@ -146,6 +152,7 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
     extraDays = 0,
     startDate,
     endDate,
+    limitDate,
     parallelActors,
     daysContext,
     highlightClass, // <--- Recibimos la clase de resaltado
@@ -155,7 +162,7 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
   const used = Number(usedDays) || 0;
   const remaining = totalAvailable - used;
 
-  const st = getResolvedStatus(status, remaining);
+  const st = getResolvedStatus(status, remaining, endDate, limitDate);
   const isParallel = !!parallelActors?.primary && !!parallelActors?.secondary;
 
   let compactActors = [];
@@ -189,6 +196,8 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
         extraDays,
         status,
         taskDescription: null,
+        endDate,
+        limitDate,
       },
     ];
   }
@@ -472,7 +481,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
     const totalAvailable = (Number(actor.totalDays) || 0) + (Number(actor.extraDays) || 0);
     const used = Number(actor.usedDays) || 0;
     const remaining = totalAvailable - used;
-    const st = getResolvedStatus(actor.status, remaining);
+    const st = getResolvedStatus(actor.status, remaining, actor.endDate, actor.limitDate);
 
     const phaseTitle = phase?.title ? escapeHtml(phase.title) : '—';
 
@@ -536,7 +545,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
     const totalAvailable = (Number(phase.totalDays) || 0) + (Number(phase.extraDays) || 0);
     const used = Number(phase.usedDays) || 0;
     const remaining = totalAvailable - used;
-    const st = getResolvedStatus(phase.status, remaining);
+    const st = getResolvedStatus(phase.status, remaining, phase.endDate, phase.limitDate);
     const respCfg = getResponsibleCfg(phase.responsible);
     const isParallel = !!phase.parallelActors?.primary && !!phase.parallelActors?.secondary;
     const actorsForModal = isParallel
@@ -632,7 +641,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
                     const t = (Number(a.totalDays) || 0) + (Number(a.extraDays) || 0);
                     const u = Number(a.usedDays) || 0;
                     const r = t - u;
-                    const ast = getResolvedStatus(a.status, r);
+                    const ast = getResolvedStatus(a.status, r, a.endDate, a.limitDate);
                     return `
                       <div class="pdm-actor">
                         <div class="pdm-actor-top">
