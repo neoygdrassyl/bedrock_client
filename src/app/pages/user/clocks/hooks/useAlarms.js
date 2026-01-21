@@ -13,11 +13,36 @@ import { calcularDiasHabiles } from '../hooks/useClocksManager';
  * @returns {array} Una lista de objetos de alarma.
  */
 export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => {
-    const { curaduriaDetails, getClock, getClockVersion } = manager;
+    const { curaduriaDetails, getClock, getClockVersion, phaseOptions } = manager;
 
     const alarms = useMemo(() => {
         const allAlarms = [];
         const today = moment(systemDate);
+
+        // --- CONFIGURACIÓN DE NOTIFICACIÓN ---
+        const estudioOptions = phaseOptions?.phase_estudio || { notificationType: 'notificar', byAviso: false };
+        const correccionesOptions = phaseOptions?.phase_correcciones || { notificationType: 'notificar', byAviso: false };
+
+        // --- ESTADOS DE NOTIFICACIÓN A EXCLUIR SEGÚN CONFIGURACIÓN ---
+        const excludedStates = new Set();
+
+        // Fase 2: Notificación Observaciones (States 31, 32, 33)
+        if (estudioOptions.notificationType === 'comunicar') {
+            excludedStates.add(31); // Citación
+            excludedStates.add(32); // Notificación Personal
+            // El state 33 se usa tanto para aviso como para comunicación, lo manejamos más adelante
+        } else if (estudioOptions.notificationType === 'notificar' && !estudioOptions.byAviso) {
+            excludedStates.add(33); // Notificación por Aviso
+        }
+
+        // Fase 5: Notificación Viabilidad (States 55, 56, 57)
+        if (correccionesOptions.notificationType === 'comunicar') {
+            excludedStates.add(55); // Citación Viabilidad
+            excludedStates.add(56); // Notificación Personal Viabilidad
+            // El state 57 se usa tanto para aviso como para comunicación
+        } else if (correccionesOptions.notificationType === 'notificar' && !correccionesOptions.byAviso) {
+            excludedStates.add(57); // Notificación por Aviso Viabilidad
+        }
 
         // --- Helper para añadir alarmas evitando duplicados ---
         const addAlarm = (alarmData) => {
@@ -54,9 +79,35 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
             });
         };
 
-        // --- TIPO 1: ALARMAS LEGALES ---
+        // --- TIPO 1: ALARMAS LEGALES (CON FILTRO DINÁMICO) ---
         clocksToShow.forEach(clockDef => {
             if (clockDef && (clockDef.hasLegalAlarm || clockDef.limit) && !clockDef.title) {
+                
+                // --- FILTRO CRÍTICO: Excluir eventos según configuración ---
+                if (excludedStates.has(clockDef.state)) {
+                    return;
+                }
+
+                // --- CASO ESPECIAL: State 33 (dual uso: comunicación y notificación por aviso) ---
+                if (clockDef.state === 33) {
+                    // Solo generar alarma si:
+                    // 1. Se seleccionó "comunicar" en estudio, O
+                    // 2. Se seleccionó "notificar" + "por aviso" en estudio
+                    const shouldInclude33 = estudioOptions.notificationType === 'comunicar' || 
+                                           (estudioOptions.notificationType === 'notificar' && estudioOptions.byAviso);
+                    if (!shouldInclude33) return;
+                }
+
+                // --- CASO ESPECIAL: State 57 (dual uso: comunicación y notificación por aviso) ---
+                if (clockDef.state === 57) {
+                    // Solo generar alarma si:
+                    // 1. Se seleccionó "comunicar" en correcciones, O
+                    // 2. Se seleccionó "notificar" + "por aviso" en correcciones
+                    const shouldInclude57 = correccionesOptions.notificationType === 'comunicar' || 
+                                           (correccionesOptions.notificationType === 'notificar' && correccionesOptions.byAviso);
+                    if (!shouldInclude57) return;
+                }
+
                 const clock = clockDef.version !== undefined ? getClockVersion(clockDef.state, clockDef.version) : getClock(clockDef.state);
                 const legalLimit = calculateLegalLimit(clockDef.state, clockDef, manager);
 
@@ -75,7 +126,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                             typeLabel: 'Legal',
                             eventName: clockDef.name,
                             limitDate: legalLimit,
-                            remainingDays: -delayDays, // Representa el retraso como días "vencidos"
+                            remainingDays: -delayDays,
                         });
                     }
                 } else {
@@ -95,10 +146,26 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
             }
         });
 
-        // --- TIPO 2: ALARMAS DE PROGRAMACIÓN ---
+        // --- TIPO 2: ALARMAS DE PROGRAMACIÓN (sin cambios) ---
         if (scheduleConfig && scheduleConfig.times) {
             Object.keys(scheduleConfig.times).forEach(stateStr => {
                 const state = Number(stateStr);
+                
+                // Aplicar el mismo filtro de exclusión para programación
+                if (excludedStates.has(state)) return;
+                
+                // Aplicar lógica especial para states duales
+                if (state === 33) {
+                    const shouldInclude33 = estudioOptions.notificationType === 'comunicar' || 
+                                           (estudioOptions.notificationType === 'notificar' && estudioOptions.byAviso);
+                    if (!shouldInclude33) return;
+                }
+                if (state === 57) {
+                    const shouldInclude57 = correccionesOptions.notificationType === 'comunicar' || 
+                                           (correccionesOptions.notificationType === 'notificar' && correccionesOptions.byAviso);
+                    if (!shouldInclude57) return;
+                }
+
                 const clockDef = clocksToShow.find(c => c.state === state);
                 const clock = getClock(state);
 
@@ -122,7 +189,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
             });
         }
         
-        // --- TIPO 3: ALARMA DE PROCESO GENERAL ---
+        // --- TIPO 3: ALARMA DE PROCESO GENERAL (sin cambios) ---
         const { status, remaining, activePhaseName } = curaduriaDetails;
         if ((status === 'ACTIVO' || status === 'VENCIDO') && remaining <= ALARM_THRESHOLD_DAYS.process) {
             const isOverdue = remaining < 0;
@@ -144,7 +211,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
         return allAlarms.sort((a, b) => a.remainingDays - b.remainingDays);
 
-    }, [manager, scheduleConfig, clocksToShow, systemDate, curaduriaDetails, getClock, getClockVersion]);
+    }, [manager, scheduleConfig, clocksToShow, systemDate, curaduriaDetails, getClock, getClockVersion, phaseOptions]);
 
     return alarms;
 };
