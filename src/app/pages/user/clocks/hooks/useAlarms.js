@@ -88,7 +88,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
             });
         };
 
-        // --- TIPO 1: ALARMAS LEGALES (CON FILTROS DINÁMICOS) ---
+        // --- TIPO 1: ALARMAS LEGALES ---
         clocksToShow.forEach(clockDef => {
             if (clockDef && (clockDef.hasLegalAlarm || clockDef.limit) && !clockDef.title) {
                 
@@ -153,7 +153,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
             }
         });
 
-        // --- TIPO 2: ALARMAS DE PROGRAMACIÓN (con filtros dinámicos) ---
+        // --- TIPO 2: ALARMAS DE PROGRAMACIÓN ---
         if (scheduleConfig && scheduleConfig.times) {
             Object.keys(scheduleConfig.times).forEach(stateStr => {
                 const state = Number(stateStr);
@@ -224,5 +224,20 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
     }, [manager, scheduleConfig, clocksToShow, systemDate, curaduriaDetails, getClock, getClockVersion, phaseOptions]);
 
-    return alarms;
+    // NUEVO: Separar alarmas de notificación (legal + programadas) de las de proceso
+    const notificationAlarms = useMemo(() => 
+        alarms.filter(a => a.type === 'legal' || a.type === 'scheduled'),
+        [alarms]
+    );
+
+    const processAlarms = useMemo(() => 
+        alarms.filter(a => a.type === 'process'),
+        [alarms]
+    );
+
+    return { 
+        allAlarms: alarms, 
+        notificationAlarms, 
+        processAlarms 
+    };
 };

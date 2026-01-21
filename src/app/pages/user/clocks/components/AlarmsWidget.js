@@ -50,9 +50,9 @@ const AlarmTableRow = ({ alarm }) => {
     );
 };
 
-// --- Componente para la vista previa (tarjeta pequeña) ---
+// --- Componente para la vista previa (tarjeta pequeña) MEJORADO ---
 const AlarmPreviewCard = ({ alarm }) => {
-    const { eventName, remainingDays, suggestion, severity } = alarm;
+    const { eventName, remainingDays, suggestion, severity, type, typeLabel } = alarm;
     let statusText, statusIcon, statusColor;
 
     if (remainingDays < 0) {
@@ -69,12 +69,22 @@ const AlarmPreviewCard = ({ alarm }) => {
         statusColor = 'text-warning';
     }
 
+    // NUEVO: Clases y estilos específicos por tipo
+    const cardTypeClass = type === 'legal' ? 'alarm-card-legal' : 'alarm-card-scheduled';
+    const typeBadgeClass = type === 'legal' ? 'type-badge-legal' : 'type-badge-scheduled';
+    const typeIcon = type === 'legal' ? 'fa-gavel' : 'fa-calendar-check';
+
     return (
-        <div className={`alarm-preview-card severity-${severity}`}>
+        <div className={`alarm-preview-card severity-${severity} ${cardTypeClass}`}>
             <div className="alarm-preview-header">
-                <h6 className="alarm-preview-title">{eventName}</h6>
+                <div className="d-flex align-items-center gap-2">
+                    <span className={`alarm-type-badge-small ${typeBadgeClass}`}>
+                        <i className={`fas ${typeIcon}`}></i>
+                    </span>
+                    <h6 className="alarm-preview-title mb-0">{eventName}</h6>
+                </div>
                 <div className={`alarm-preview-status ${statusColor}`}>
-                    <i className={`fas ${statusIcon} me-2`}></i>
+                    <i className={`fas ${statusIcon} me-1`}></i>
                     <span>{statusText}</span>
                 </div>
             </div>
@@ -85,7 +95,7 @@ const AlarmPreviewCard = ({ alarm }) => {
     );
 };
 
-// --- Componente principal del Widget ---
+// --- Componente principal del Widget ACTUALIZADO ---
 export const AlarmsWidget = ({ alarms, onClose }) => {
     
     const openExpandedModal = () => {
@@ -130,7 +140,7 @@ export const AlarmsWidget = ({ alarms, onClose }) => {
     );
 };
 
-// --- Componente para el Modal Expandido con Tabla ---
+// --- Componente para el Modal Expandido ACTUALIZADO ---
 const ExpandedAlarmsModal = ({ alarms }) => {
     const [filter, setFilter] = useState('all');
     const [sort, setSort] = useState({ key: 'remainingDays', order: 'asc' });
@@ -181,7 +191,6 @@ const ExpandedAlarmsModal = ({ alarms }) => {
                     <button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>Todos</button>
                     <button className={filter === 'legal' ? 'active' : ''} onClick={() => setFilter('legal')}>Legal</button>
                     <button className={filter === 'scheduled' ? 'active' : ''} onClick={() => setFilter('scheduled')}>Programado</button>
-                    <button className={filter === 'process' ? 'active' : ''} onClick={() => setFilter('process')}>Proceso</button>
                 </div>
             </div>
             <div className="alarm-modal-table-container">
