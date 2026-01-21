@@ -361,7 +361,7 @@ const extraClocks = (props) => {
         // show: false, 
         name: 'Comunicación (Viabilidad)', 
         desc: "Comunicación del acto de viabilidad", 
-        limit: [[55, 10]], 
+        limit: [[61, 5]], 
         icon: "empty", 
         spentDaysConfig: { startState: 55 },
         allowSchedule: true,
