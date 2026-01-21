@@ -7,6 +7,55 @@ import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 
 const MySwal = withReactContent(Swal);
 
+// NUEVO: Componente para el encabezado de la tabla
+export const ClockTableHeader = () => {
+    const headerStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0.75rem 1rem',
+        backgroundColor: '#f8f9fa',
+        borderBottom: '2px solid #dee2e6',
+        fontWeight: 600,
+        fontSize: '0.85rem',
+        color: '#495057',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+    };
+
+    const colStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+    };
+
+    return (
+        <div style={headerStyle}>
+            <div style={{ ...colStyle, flex: '0 0 280px', minWidth: '280px' }}>
+                <i className="fas fa-list"></i> Evento
+            </div>
+            <div style={{ ...colStyle, flex: '0 0 130px', minWidth: '130px' }}>
+                <i className="far fa-calendar"></i> Fecha evento
+            </div>
+            <div style={{ ...colStyle, flex: '0 0 130px', minWidth: '130px' }}>
+                <i className="fas fa-gavel"></i> Límite legal
+            </div>
+            <div style={{ ...colStyle, flex: '0 0 150px', minWidth: '150px' }}>
+                <i className="fas fa-exclamation-triangle"></i> Alarma legal
+            </div>
+            <div style={{ ...colStyle, flex: '0 0 140px', minWidth: '140px' }}>
+                <i className="fas fa-calendar-check"></i> Límite programado
+            </div>
+            <div style={{ ...colStyle, flex: '0 0 150px', minWidth: '150px' }}>
+                <i className="far fa-bell"></i> Alarma programada
+            </div>
+            <div style={{ ...colStyle, flex: '1', minWidth: '180px' }}>
+                <i className="fas fa-arrow-right"></i> Siguiente paso
+            </div>
+        </div>
+    );
+};
+
 export const ClockRow = (props) => {
     const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, isHighlighted } = props;
     const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
@@ -235,6 +284,133 @@ export const ClockRow = (props) => {
     };
 
     // =====================================================
+    // CÁLCULO DE ALARMA PROGRAMADA (NUEVA FUNCIÓN)
+    // =====================================================
+    const getScheduledAlarmInfo = () => {
+        if (!scheduledData || !scheduledData.limitDate) return null;
+        
+        const limitMoment = moment(scheduledData.limitDate);
+        const isCompleted = !!clock?.date_start;
+        const today = moment(systemDate);
+
+        let text = '';
+        let color = '';
+        let icon = null;
+
+        if (isCompleted) {
+            const completionDate = moment(clock.date_start);
+            
+            if (completionDate.isAfter(limitMoment, 'day')) {
+                const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
+                text = `Retraso de ${delayDays} día(s)`;
+                color = '#e03131';
+                icon = 'fa-exclamation-circle';
+            } else {
+                text = `A tiempo`;
+                color = '#2f9e44';
+                icon = 'fa-check';
+            }
+        } else {
+            const isOverdue = today.isAfter(limitMoment, 'day');
+            
+            if (isOverdue) {
+                const overdueDays = calcularDiasHabiles(limitMoment.toDate(), today.toDate());
+                text = `Vencido por ${overdueDays} día(s)`;
+                color = '#e03131';
+                icon = 'fa-exclamation-circle';
+            } else {
+                const remainingDays = calcularDiasHabiles(today.toDate(), limitMoment.toDate());
+                text = `${remainingDays} día(s) restante(s)`;
+                color = '#f08c00';
+                icon = 'fa-hourglass-half';
+                
+                if (remainingDays <= 2) {
+                    color = '#e03131';
+                    icon = 'fa-exclamation-triangle';
+                }
+            }
+        }
+        return { text, color, icon };
+    };
+
+    const scheduledAlarmInfo = getScheduledAlarmInfo();
+
+    // =====================================================
+    // CÁLCULO DE SIGUIENTE PASO (NUEVA FUNCIÓN)
+    // =====================================================
+    const getNextStepInfo = () => {
+        // Si este evento está completado, no hay siguiente paso para él
+        if (clock?.date_start) return null;
+
+        // Buscar el siguiente evento pendiente en la lista
+        const allClocks = helpers.clocksData || [];
+        const currentState = value.state;
+        
+        // Determinar qué evento debe completarse antes de este
+        if (value.limit) {
+            const getDependentStates = (limitConfig) => {
+                if (!Array.isArray(limitConfig)) return [];
+                if (typeof limitConfig[1] === 'number') {
+                    const [states] = limitConfig;
+                    return Array.isArray(states) ? states : [states];
+                }
+                let allStates = [];
+                limitConfig.forEach(opt => {
+                    allStates = [...allStates, ...getDependentStates(opt)];
+                });
+                return allStates;
+            };
+
+            const dependentStates = getDependentStates(value.limit);
+            
+            // Verificar si hay algún evento dependiente pendiente
+            for (const depState of dependentStates) {
+                const depClock = getClock(depState);
+                if (!depClock || !depClock.date_start) {
+                    // Encontramos un evento dependiente que está pendiente
+                    const depClockDef = helpers.clocksToShow?.find(c => c.state === depState);
+                    if (depClockDef) {
+                        return {
+                            text: `Espera: ${depClockDef.name || 'Evento previo'}`,
+                            icon: 'fa-pause-circle',
+                            color: '#868e96'
+                        };
+                    }
+                }
+            }
+        }
+
+        // Si no hay dependencias pendientes, este es el siguiente paso
+        return {
+            text: 'Acción requerida',
+            icon: 'fa-play-circle',
+            color: '#1971c2'
+        };
+    };
+
+    const nextStepInfo = getNextStepInfo();
+
+    const renderScheduledAlarmColumn = () => {
+        if (!scheduledAlarmInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem' }}>- -</span>;
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', color: scheduledAlarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
+                {scheduledAlarmInfo.icon && <i className={`fas ${scheduledAlarmInfo.icon}`} style={{ marginRight: '0.35rem' }}></i>}
+                {scheduledAlarmInfo.text}
+            </div>
+        );
+    };
+
+    const renderNextStepColumn = () => {
+        if (!nextStepInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem', fontStyle: 'italic' }}>Completado</span>;
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', color: nextStepInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
+                {nextStepInfo.icon && <i className={`fas ${nextStepInfo.icon}`} style={{ marginRight: '0.35rem' }}></i>}
+                {nextStepInfo.text}
+            </div>
+        );
+    };
+
+    // =====================================================
     // EXTRAER Y GUARDAR OBSERVACIONES
     // =====================================================
     const getObservations = () => {
@@ -368,20 +544,36 @@ export const ClockRow = (props) => {
     
     // Clase condicional para resaltar el título
     const titleClassName = `row-title text-truncate ${isHighlighted ? 'title-highlight' : ''}`;
-    const blockClassName = `exp-row-custom ${isHighlighted ? 'active-row-container' : ''}`;
     const dateInputClassName = `form-control form-control-sm border-0 bg-transparent dates-input-class ${currentDate ? '' : 'padding-date-input'}`;
 
+    // ESTILOS INLINE PARA LA FILA
+    const rowStyle = {
+        display: 'flex',
+        alignItems: 'stretch',
+        padding: '0.5rem 1rem',
+        backgroundColor: isHighlighted ? '#e7f5ff' : '#fff',
+        borderBottom: '1px solid #f1f3f5',
+        transition: 'background-color 0.2s',
+    };
+
+    const colStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 0.5rem',
+    };
+
     return (
-        <div className={blockClassName}>
-            {/* COL 1: Evento (Icono + Texto) */}
-            <div className="col-eventos d-flex align-items-center">
-                <div className="row-icon-container">
+        <div style={rowStyle} className={isHighlighted ? 'active-row-container' : ''}>
+            {/* COL 1: Evento (280px) */}
+            <div style={{ ...colStyle, flex: '0 0 280px', minWidth: '280px' }}>
+                <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.5rem' }}>
                     {rowIcon}
                 </div>
                 <div 
                     className={titleClassName} 
                     onClick={openDetailModal}
                     title="Ver detalles"
+                    style={{ flex: 1, cursor: 'pointer', minWidth: 0 }}
                 >
                     {eventName}
                     {clock?.desc && clock.desc.includes('|| OBS:') && (
@@ -390,49 +582,63 @@ export const ClockRow = (props) => {
                 </div>
             </div>
 
-            {/* COL 2: Fecha Evento (Input Restaurado) */}
-            {canEditDate ? (
-                <div className="col-fecha d-flex align-items-center date-input-container">
-                    <div className="input-group input-group-sm pl-0" style={{maxWidth: 'auto'}}>
-                    <input 
-                        type="date" 
-                        className={dateInputClassName}
-                        style={{fontSize: '0.85rem', color: '#495057', fontWeight: 500}}
-                        id={'clock_exp_date_' + i} 
-                        defaultValue={currentDate} 
-                        max="2100-01-01" 
-                        onBlur={() => onSave(value, i)} 
-                    />
-                    {currentDate && (
-                        <button className="btn btn-link text-dark p-0 d-flex align-items-center justify-content-center" onClick={() => onDelete(value)} title="Eliminar fecha">
-                            <i className="fas fa-eraser fa-xs"></i>
-                        </button>
-                    )}
+            {/* COL 2: Fecha Evento (130px) */}
+            <div style={{ ...colStyle, flex: '0 0 130px', minWidth: '130px' }}>
+                {canEditDate ? (
+                    <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                        <input 
+                            type="date" 
+                            className={dateInputClassName}
+                            style={{fontSize: '0.85rem', color: '#495057', fontWeight: 500, flex: 1}}
+                            id={'clock_exp_date_' + i} 
+                            defaultValue={currentDate} 
+                            max="2100-01-01" 
+                            onBlur={() => onSave(value, i)} 
+                        />
+                        {currentDate && (
+                            <button 
+                                style={{ background: 'none', border: 'none', padding: '0 0.25rem', cursor: 'pointer', color: '#6c757d' }}
+                                onClick={() => onDelete(value)} 
+                                title="Eliminar fecha"
+                            >
+                                <i className="fas fa-eraser fa-xs"></i>
+                            </button>
+                        )}
                     </div>
-                </div>
-            ) : (
-                <div className="col-fecha d-flex align-items-center">
-                    <span className="text-dark fw-bold">{formatDate(currentDate)}</span>
-                </div>
-            )}
+                ) : (
+                    <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#495057' }}>
+                        {formatDate(currentDate)}
+                    </span>
+                )}
+            </div>
 
-            {/* COL 3: Límite Legal */}
-            <div className="col-limite d-flex align-items-center">
-                <span className="text-dark" style={{fontSize: '0.85rem'}}>
-                    {legalData.limitDate ? formatDate(legalData.limitDate) : ''}
+            {/* COL 3: Límite Legal (130px) */}
+            <div style={{ ...colStyle, flex: '0 0 130px', minWidth: '130px' }}>
+                <span style={{ fontSize: '0.85rem', color: '#495057' }}>
+                    {legalData.limitDate ? formatDate(legalData.limitDate) : '- -'}
                 </span>
             </div>
 
-            {/* COL 4: Límite Programado */}
-            <div className="col-programado d-flex align-items-center">
-                <span className="text-dark" style={{fontSize: '0.85rem'}}>
+            {/* COL 4: Alarma Legal (150px) */}
+            <div style={{ ...colStyle, flex: '0 0 150px', minWidth: '150px' }}>
+                {renderAlarmColumn()}
+            </div>
+
+            {/* COL 5: Límite Programado (140px) */}
+            <div style={{ ...colStyle, flex: '0 0 140px', minWidth: '140px' }}>
+                <span style={{ fontSize: '0.85rem', color: '#495057' }}>
                     {scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : '- -'}
                 </span>
             </div>
 
-             {/* COL 5: Alarma (LEGAL) */}
-             <div className="col-alarma d-flex align-items-center">
-                {renderAlarmColumn()}
+            {/* COL 6: Alarma Programada (150px) */}
+            <div style={{ ...colStyle, flex: '0 0 150px', minWidth: '150px' }}>
+                {renderScheduledAlarmColumn()}
+            </div>
+
+            {/* COL 7: Siguiente Paso (flex 1) */}
+            <div style={{ ...colStyle, flex: '1', minWidth: '180px' }}>
+                {renderNextStepColumn()}
             </div>
         </div>
     );

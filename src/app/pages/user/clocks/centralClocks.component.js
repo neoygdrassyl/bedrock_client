@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import { useClocksManager, useScheduleConfig } from './hooks/useClocksManager';
 import { generateClocks } from './config/clocks.definitions';
-import { ClockRow } from './components/ClockRow';
+import { ClockRow, ClockTableHeader } from './components/ClockRow';
 import { SidebarInfo } from './components/SidebarInfo';
 import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
@@ -668,26 +668,6 @@ export default function EXP_CLOCKS(props) {
     setSystemDate(moment().format('YYYY-MM-DD'));
   };
 
-  const Header = () => (
-    <div className="exp-head d-flex align-items-center">
-      <div className="col-eventos header-title">
-        <i className="fas fa-list me-2"></i> Evento
-      </div>
-      <div className="col-fecha-header header-title">
-        <i className="far fa-calendar me-2"></i> Fecha evento
-      </div>
-      <div className="col-limite header-title">
-        <i className="fas fa-history me-2"></i> Límite legal
-      </div>
-      <div className="col-programado header-title">
-        <i className="fas fa-calendar-check me-2"></i> Límite Programado
-      </div>
-      <div className="col-alarma header-title">
-        <i className="far fa-clock me-2"></i> Alarmas
-      </div>
-    </div>
-  );
-
   const renderClockList = () => {
     let isCurrentGroupCollapsed = false;
 
@@ -809,7 +789,7 @@ export default function EXP_CLOCKS(props) {
           outCodes={outCodes}
           _CHILD_6_SELECT={_CHILD_6_SELECT}
           _FIND_6={_FIND_6}
-          helpers={{ getClock, getNewestDate, ...manager, currentItem }}
+          helpers={{ getClock, getNewestDate, ...manager, currentItem, clocksData, clocksToShow }}
           scheduleConfig={scheduleConfig}
           systemDate={systemDate}
           isHighlighted={isRowInActivePhase}
@@ -902,7 +882,9 @@ export default function EXP_CLOCKS(props) {
       <div className="exp-container">
         <div className="exp-main-content">
           <div className="card exp-card">
-            <Header />
+            {/* NUEVO: Usar el encabezado del componente ClockRow */}
+            <ClockTableHeader />
+            
             <div className="exp-scroll" style={{ height: sidebarHeight, maxHeight: sidebarHeight }}>
               {renderClockList()}
             </div>
