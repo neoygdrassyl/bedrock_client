@@ -45,6 +45,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         endOfNotification1Date = estudioOptions.byAviso ? getClock(33)?.date_start : getClock(32)?.date_start;
     }
 
+    let endDatePhase1 = estudioOptions.notificationType === 'comunicar' ? getClock(33)?.date_start : acta1Date;
+    console.log("FIN DE FASE ", endDatePhase1);
+
     const corrDate = getClock(35)?.date_start;
     
     // Viabilidad y Transición a Fase 6
@@ -362,13 +365,13 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     // --- CASOS: NO CUMPLE (-3), VOLUNTARIO (-5), NEGADO (-6) ---
     else if (['-3', '-5', '-6'].includes(desistimientoVersion)) {
         // FASE 1: Estudio
-        let phase1Status = checkStatus(ldfDate, acta1Date);
+        let phase1Status = checkStatus(ldfDate, endDatePhase1);
         if (phase1Status === 'ACTIVO' && suspensionPreActa.isActive) phase1Status = 'PAUSADO';
         const suspensionDays = (suspensionPreActa.exists && suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0) +
                                (suspensionPostActa.exists && suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0);
         const extensionDays = extension.exists && extension.end?.date_start ? extension.days : 0;
         const totalCuraduriaDays = baseDaysCuraduria + suspensionDays + extensionDays;
-        const phase1UsedDays = ldfDate ? calculateUsedDaysFromNextDay(ldfDate, acta1Date || today) : 0;
+        const phase1UsedDays = ldfDate ? calculateUsedDaysFromNextDay(ldfDate, endDatePhase1 || today) : 0;
 
         addPhase({ 
             id: 'phase1', 
@@ -379,7 +382,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             usedDays: phase1UsedDays, 
             extraDays: 0, 
             startDate: ldfDate, 
-            endDate: acta1Date,
+            endDate: endDatePhase1,
             limitDate: ldfDate ? sumarDiasHabiles(ldfDate, totalCuraduriaDays) : null,
             parallelActors: null,
             highlightClass: 'phase-highlight-estudio',
@@ -463,11 +466,11 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         const extensionDays = extension.exists && extension.end?.date_start ? extension.days : 0;
         const totalCuraduriaDays = baseDaysCuraduria + totalSuspensionDays + extensionDays;
         
-        let phase1UsedDays = ldfDate && acta1Date ? calculateUsedDaysFromNextDay(ldfDate, acta1Date) : 
+        let phase1UsedDays = ldfDate && endDatePhase1 ? calculateUsedDaysFromNextDay(ldfDate, endDatePhase1) : 
                              (ldfDate ? calculateUsedDaysFromNextDay(ldfDate, today) : 0);
 
         // FASE 1
-        let phase1Status = checkStatus(ldfDate, acta1Date);
+        let phase1Status = checkStatus(ldfDate, endDatePhase1);
         if (phase1Status === 'ACTIVO' && suspensionPreActa.isActive) phase1Status = 'PAUSADO';
         
         addPhase({ 
@@ -479,7 +482,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             usedDays: phase1UsedDays, 
             extraDays: 0, 
             startDate: ldfDate, 
-            endDate: acta1Date, 
+            endDate: endDatePhase1, 
             limitDate: ldfDate ? sumarDiasHabiles(ldfDate, totalCuraduriaDays) : null,
             parallelActors: { 
                 primary: { 
