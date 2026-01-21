@@ -26,6 +26,8 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
         // --- ESTADOS DE NOTIFICACIÓN A EXCLUIR SEGÚN CONFIGURACIÓN ---
         const excludedStates = new Set();
 
+        excludedStates.add(64); // Excluir estampilla PRO-UIS ya que la fecha de control es la rad. ultimo pago
+
         // Fase 2: Notificación Observaciones (States 31, 32, 33)
         if (estudioOptions.notificationType === 'comunicar') {
             excludedStates.add(31); // Citación
