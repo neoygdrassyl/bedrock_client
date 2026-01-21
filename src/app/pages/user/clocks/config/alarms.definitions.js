@@ -37,13 +37,23 @@ export const ALARM_SUGGESTIONS = {
     },
     35: { // Radicacion correcciones solicitante
         legal: {
-            porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
+            porVencer: { suggestion: "El plazo para que el solicitante allegue correcciones está pronto a vencer, enviar recordatorio y añadir prórroga." },
             vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
         },
         scheduled: {
-            porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
+            porVencer: { suggestion: "El plazo para que el solicitante allegue correcciones está pronto a vencer, enviar recordatorio y añadir prórroga." },
             vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
         }
+    },
+    69: { // Radicación último pago
+        legal: {
+            porVencer: { suggestion: "El plazo para los pagos está pronto a vencer, enviar recordatorio al solicitante para evitar desistimiento." },
+            vencido: { suggestion: "El plazo para los pagos ha expirado. Desistir por pagos." }
+        },
+        scheduled: {
+            porVencer: { suggestion: "El plazo para los pagos está pronto a vencer, enviar recordatorio al solicitante para evitar desistimiento." },
+            vencido: { suggestion: "El plazo para los pagos ha expirado. Desistir por pagos." }
+        },
     },
     61: { // Viabilidad
         legal: {
