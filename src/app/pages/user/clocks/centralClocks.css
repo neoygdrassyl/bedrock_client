@@ -433,794 +433,6 @@ from {
 
 /* --- SIDEBAR CARDS --- */
 
-/* Specific card styles */
-
-/* --- CALENDAR WIDGET --- */
-
-/* --- CALCULATOR --- */
-
-/* --- LAYOUT & MAIN STYLES --- */
-
-@media (max-width: 1200px) {
-.exp-container {
-  flex-direction: column;
-}
-
-.exp-sidebar {
-  width: 100%;
-  position: static;
-  flex: 0 0 auto;
-  min-width: auto;
-}
-
-.exp-scroll {
-  height: auto;
-  max-height: 80vh;
-}
-}
-
-/* --- MEJORAS ADICIONALES --- */
-
-/* Estado de fecha límite según cumplimiento */
-
-/* Animación sutil para cambios de estado */
-
-@keyframes pulse-subtle {
-0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-/* Responsive mejoras */
-
-@media (max-width: 768px) {
-.exp-row .col-6, .exp-row .col-5 {
-  font-size: 0.85rem;
-}
-
-.exp-row .col-2, .exp-row .col-1 {
-  font-size: 0.75rem;
-  padding: 0.25rem !important;
-}
-
-.info-icon-tooltip {
-  font-size: 0.65rem;
-  width: 14px;
-  height: 14px;
-}
-}
-
-/* Mejora de contraste para fechas límite */
-
-/* Estilos para alertas proactivas en sidebar */
-
-/* Estilo para el tipo de proceso */
-
-/* ========================================
-   ESTILOS PARA PROGRAMACIÓN DE PROCESO
-   ======================================== */
-
-/* --- NUEVOS ESTILOS PARA EL LAYOUT DE 2 FILAS --- */
-
-/* --------------------------------------------- */
-
-/* Estilo para cuando solo hay días (sin ref. date) */
-
-/* Responsive para columnas unificadas */
-
-@media (max-width: 768px) {
-.legal-limit-cell,
-    .days-spent-cell,
-    .scheduled-limit-cell {
-  font-size: 0.7rem;
-}
-
-.limit-date,
-    .scheduled-date,
-    .days-number {
-  font-size: 0.7rem;
-}
-
-.limit-status,
-    .days-alert,
-    .days-progress,
-    .scheduled-remaining {
-  font-size: 0.6rem;
-}
-}
-
-/* --- AÑADIR ESTOS ESTILOS PARA EL CARRUSEL DE FASES --- */
-
-/* --- ESTILOS MEJORADOS PARA NAVEGACIÓN DE FASES --- */
-
-/* Centrado perfecto para íconos en botones outline */
-
-/* Estilos para btn-outline-primary */
-
-/* Estilos para btn-outline-primary */
-
-/* Asegura que el ícono herede el color del botón */
-
-/* ========================================
-   ESTILOS UNIFICADOS PARA PANELES DE FASE
-   ======================================== */
-
-/* Tarjeta de fase moderna */
-
-/* Indicador de tiempos paralelos */
-
-/* Contenedor de paneles paralelos */
-
-/* ========================================
-   PANEL DE ACTOR (COMPONENTE REUTILIZABLE)
-   ======================================== */
-
-/* Cabecera del actor */
-
-/* Badge de estado del actor */
-
-/* Descripción de tarea */
-
-/* Métricas del actor */
-
-/* Barra de progreso mejorada */
-
-/* Divisor entre paneles paralelos */
-
-/* Timeline de la fase */
-
-/* Animaciones */
-
-@keyframes slideIn {
-from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Animación para badge activo */
-
-@keyframes pulse-icon {
-0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
-}
-
-/* Hover effects mejorados */
-
-/* Responsive para paneles */
-
-@media (max-width: 576px) {
-.actor-panel {
-  padding: 0.75rem;
-}
-
-.actor-name {
-  font-size: 0.85rem;
-}
-
-.metric-row {
-  padding: 0.3rem 0.5rem;
-}
-
-.metric-label,
-    .metric-value {
-  font-size: 0.75rem;
-}
-
-.timeline-date span {
-  font-size: 0.7rem;
-}
-}
-
-/* ========================================
-   ESTILOS ADICIONALES PARA RESPONSABLE MIXTO
-   ======================================== */
-
-/* ========================================
-   ESTILOS MEJORADOS PARA SIDEBAR FOOTER
-   ======================================== */
-
-/* Estilos específicos para acciones dinámicas (Suspensión y Prórroga) */
-
-/* Chip de contexto para Fase 4 */
-
-/* Badge de días extra */
-
-/* ========================================
-   MODAL DE DESGLOSE - INTEGRADO CON ESTILOS GENERALES
-   ======================================== */
-
-.days-modal-popup .swal2-html-container {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.days-modal-close {
-  color: #fff !important;
-  opacity: 0.8;
-  font-size: 1.25rem !important;
-  top: 0.75rem !important;
-  right: 0.75rem !important;
-}
-
-.days-modal-close:hover {
-  opacity: 1;
-}
-
-.days-modal {
-  font-family: inherit;
-}
-
-/* Header del modal - usando color principal de la app */
-
-.days-modal-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.25rem 1.5rem;
-  background: #5bc0de;
-  color: #fff;
-}
-
-.header-icon {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  font-size: 1.1rem;
-}
-
-.header-content {
-  flex: 1;
-}
-
-.header-content h4 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.header-content p {
-  margin: 0;
-  font-size: 0.8rem;
-  opacity: 0.9;
-}
-
-.header-total {
-  text-align: center;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-}
-
-.total-number {
-  display: block;
-  font-size: 1.6rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.total-label {
-  font-size: 0.7rem;
-  opacity: 0.9;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-/* Barra principal */
-
-.days-main-bar {
-  padding: 1.25rem 1.5rem;
-  background: #fff;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.bar-track {
-  display: flex;
-  height: 10px;
-  border-radius: 5px;
-  overflow: hidden;
-  background: #e9ecef;
-}
-
-.bar-segment {
-  position: relative;
-  min-width: 3px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.bar-segment:hover {
-  filter: brightness(1.1);
-}
-
-.seg-phase1 {
-  background: #fd7e14;
-}
-
-.seg-phase4 {
-  background: #6f42c1;
-}
-
-.seg-remaining {
-  background: #28a745;
-}
-
-.seg-tooltip {
-  display: none;
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  white-space: nowrap;
-  z-index: 10;
-}
-
-.seg-tooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 4px solid transparent;
-  border-top-color: #333;
-}
-
-.bar-segment:hover .seg-tooltip {
-  display: block;
-}
-
-.bar-legend {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 0.75rem;
-}
-
-.dot-phase1 {
-  background: #fd7e14;
-}
-
-.dot-phase4 {
-  background: #6f42c1;
-}
-
-.dot-remaining {
-  background: #28a745;
-}
-
-/* Grid de tarjetas */
-
-.days-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  padding: 1.25rem 1.5rem;
-  background: #f8f9fa;
-}
-
-.days-card {
-  background: #fff;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.days-card .card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 0.75rem;
-  background: #fff;
-  border-bottom: 1px solid #e9ecef;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #495057;
-}
-
-.days-card .card-header i {
-  color: #5bc0de;
-  font-size: 0.85rem;
-}
-
-.days-card .card-body {
-  padding: 0.75rem;
-}
-
-/* Composición del plazo */
-
-.comp-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.4rem 0;
-  border-bottom: 1px solid #f1f3f5;
-}
-
-.comp-row:last-of-type {
-  border-bottom: none;
-}
-
-.comp-row.muted {
-  opacity: 0.5;
-}
-
-.comp-row.active {
-  opacity: 1;
-}
-
-.comp-label {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.8rem;
-  color: #495057;
-}
-
-.comp-label i {
-  width: 14px;
-  text-align: center;
-  color: #adb5bd;
-  font-size: 0.75rem;
-}
-
-.comp-value {
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: #212529;
-}
-
-.comp-value.text-warning {
-  color: #f08c00;
-}
-
-.comp-value.text-info {
-  color: #17a2b8;
-}
-
-.comp-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 0.5rem;
-  padding-top: 0.6rem;
-  border-top: 2px solid #e9ecef;
-}
-
-.comp-total .comp-label {
-  font-weight: 600;
-  color: #212529;
-}
-
-.comp-total .comp-value {
-  font-size: 0.95rem;
-  color: #5bc0de;
-  font-weight: 700;
-}
-
-/* Uso por fase */
-
-.phase-row {
-  padding: 0.5rem 0;
-}
-
-.phase-row:first-child {
-  padding-top: 0;
-}
-
-.phase-info {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0.35rem;
-}
-
-.phase-name {
-  font-weight: 600;
-  font-size: 0.8rem;
-  color: #212529;
-}
-
-.phase-desc {
-  font-size: 0.7rem;
-  color: #868e96;
-}
-
-.phase-stats {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.phase-bar {
-  flex: 1;
-  height: 6px;
-  background: #e9ecef;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.phase-bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.4s ease;
-}
-
-.fill-phase1 {
-  background: #fd7e14;
-}
-
-.fill-phase4 {
-  background: #6f42c1;
-}
-
-.phase-numbers {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #6c757d;
-  min-width: 45px;
-  text-align: right;
-}
-
-.phase-transfer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0;
-  margin: 0.35rem 0;
-  background: #f8f9fa;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  color: #868e96;
-}
-
-.phase-transfer i {
-  color: #5bc0de;
-  font-size: 0.65rem;
-}
-
-/* Footer del modal */
-
-.days-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 1.5rem;
-  background: #343a40;
-  color: #fff;
-}
-
-.footer-stat {
-  flex: 1;
-  text-align: center;
-}
-
-.stat-value {
-  display: block;
-  font-size: 1.35rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.stat-label {
-  font-size: 0.65rem;
-  opacity: 0.7;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.text-used {
-  color: #ffc107;
-}
-
-.text-remaining {
-  color: #28a745;
-}
-
-.text-percent {
-  color: #5bc0de;
-}
-
-.footer-divider {
-  width: 1px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.15);
-  margin: 0 0.75rem;
-}
-
-/* Responsive */
-
-@media (max-width: 600px) {
-.days-grid {
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
-}
-
-.days-modal-header {
-  flex-wrap: wrap;
-  padding: 1rem;
-}
-
-.header-total {
-  width: 100%;
-  margin-top: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.header-total .total-number {
-  font-size: 1.4rem;
-}
-
-.bar-legend {
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.days-footer {
-  padding: 0.75rem 1rem;
-}
-
-.stat-value {
-  font-size: 1.1rem;
-}
-
-.footer-divider {
-  margin: 0 0.5rem;
-  height: 30px;
-}
-
-.days-main-bar,
-    .days-grid {
-  padding: 1rem;
-}
-}
-
-/* ========================================
-   MODAL DE DESGLOSE DE DÍAS - DISEÑO LIMPIO
-   ======================================== */
-
-/* Resumen superior */
-
-/* Barra de progreso */
-
-/* Grid de información */
-
-/* Filas de información */
-
-/* Detalle de fases */
-
-/* Responsive */
-
-@media (max-width: 576px) {
-.days-info-grid {
-  grid-template-columns: 1fr;
-}
-
-.days-summary-row {
-  gap: 1rem;
-}
-
-.summary-value {
-  font-size: 1.4rem;
-}
-
-.progress-legend {
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-}
-
-/* --- NUEVO ESTILOS PARA CONTROL BAR --- */
-
-/* --- ESTILO BOTÓN TOGGLE TIME TRAVEL --- */
-
-/* ... (MANTÉN TODO EL CSS ANTERIOR) ... */
-
-/* --- ESTILO MEJORADO PARA EL BOTÓN DE CONTROL DE TIEMPO --- */
-
-/* Estado Hover */
-
-/* Estado Activo/Click */
-
-/* ... (MANTÉN TODO EL CSS ANTERIOR) ... */
-
-/* --- ESTILOS PARA WIDGET FLOTANTE FIJO --- */
-
-/* Ajustes para que ControlBar se vea bien dentro del widget */
-
-/* --- ANIMACIÓN DESLIZAR --- */
-
-@keyframes slideInUp {
-from { 
-        transform: translateY(20px); 
-        opacity: 0; 
-    }
-    to { 
-        transform: translateY(0); 
-        opacity: 1; 
-    }
-}
-
-/* --- ESTILO BOTÓN SIDEBAR (Utility Style) --- */
-
-/* Responsive para el widget flotante */
-
-@media (max-width: 768px) {
-.time-travel-floating-widget {
-  min-width: auto;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-  width: auto;
-}
-
-.time-travel-floating-widget .control-bar .bar-inner {
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.time-travel-floating-widget .time-travel-controls {
-  flex-wrap: wrap;
-  justify-content: center;
-}
-}
-
-/* ========================================
-   ESTILOS PARA MODAL DE PROGRAMACIÓN INDIVIDUAL
-   ======================================== */
-
-/* Estilos para inputs en la tabla */
-
-/* Texto de conversión automática */
-
-/* Footer informativo */
-
-/* Mejoras para el scroll */
-
-/* Contador de tiempos programados */
-
-/* Responsive para modal de programación */
-
-@media (max-width: 768px) {
-.schedule-modal-table-container .table {
-  font-size: 0.75rem;
-}
-
-.schedule-modal-table-container .table thead th {
-  font-size: 0.7rem;
-  padding: 0.5rem 0.25rem;
-}
-
-.schedule-modal-table-container .table tbody td {
-  padding: 0.5rem 0.25rem;
-}
-
-.schedule-modal-table-container .form-control-sm {
-  font-size: 0.75rem;
-}
-}
-
-/* ========================================
-   BADGES DE CUMPLIMIENTO/RETRASO EN EVENTOS COMPLETADOS
-   ======================================== */
-
-/* --- SIDEBAR CARDS --- */
-
 .sidebar-card-header {
   display: flex;
   align-items: center;
@@ -2524,6 +1736,790 @@ from {
   border-color: #99e9f2;
   background: linear-gradient(135deg, #f8f9fa 0%, #e3fafc 100%);
 }
+
+.actor-panel.single:hover {
+  border-color: #a5d8ff;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e7f5ff 100%);
+}
+
+/* Responsive para paneles */
+
+@media (max-width: 576px) {
+.actor-panel {
+  padding: 0.75rem;
+}
+
+.actor-name {
+  font-size: 0.85rem;
+}
+
+.metric-row {
+  padding: 0.3rem 0.5rem;
+}
+
+.metric-label,
+    .metric-value {
+  font-size: 0.75rem;
+}
+
+.timeline-date span {
+  font-size: 0.7rem;
+}
+}
+
+/* ========================================
+   ESTILOS ADICIONALES PARA RESPONSABLE MIXTO
+   ======================================== */
+
+.actor-header-purple .actor-name {
+  color: #862e9c;
+}
+
+.actor-panel.single[data-responsible="Mixto"]::before {
+  background: linear-gradient(180deg, #9c36b5, #862e9c);
+}
+
+/* ========================================
+   ESTILOS MEJORADOS PARA SIDEBAR FOOTER
+   ======================================== */
+
+.sidebar-card-footer {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.sidebar-card-footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.btn-footer-action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  color: #495057;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-footer-action:hover {
+  background: #e9ecef;
+  border-color: #dee2e6;
+  color: #212529;
+}
+
+.btn-footer-action i {
+  font-size: 0.9rem;
+  color: #5bc0de;
+}
+
+/* Estilos específicos para acciones dinámicas (Suspensión y Prórroga) */
+
+.btn-footer-action.action-suspension {
+  background-color: #fff9db;
+  border-color: #ffec99;
+  color: #e67700;
+}
+
+.btn-footer-action.action-suspension:hover {
+  background-color: #ffec99;
+  border-color: #ffd43b;
+}
+
+.btn-footer-action.action-suspension i {
+  color: #f08c00;
+}
+
+.btn-footer-action.action-extension {
+  background-color: #e3fafc;
+  border-color: #99e9f2;
+  color: #0c8599;
+}
+
+.btn-footer-action.action-extension:hover {
+  background-color: #c5f6fa;
+  border-color: #66d9e8;
+}
+
+.btn-footer-action.action-extension i {
+  color: #15aabf;
+}
+
+/* Chip de contexto para Fase 4 */
+
+.phase-context-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  color: #495057;
+}
+
+.chip-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  color: #5bc0de;
+}
+
+.chip-text strong {
+  color: #5bc0de;
+}
+
+/* Badge de días extra */
+
+.days-extra-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #d4edda;
+  color: #155724;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 10px;
+  margin-left: 0.25rem;
+}
+
+/* ========================================
+   MODAL DE DESGLOSE DE DÍAS - DISEÑO LIMPIO
+   ======================================== */
+
+.days-modal-popup {
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1) !important;
+  padding: 0 !important;
+}
+
+.days-modal-title {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: #343a40 !important;
+  padding: 1rem 1.25rem !important;
+  margin: 0 !important;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.days-modal-container {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.days-modal-btn {
+  padding: 0.5rem 1.5rem !important;
+  font-weight: 600 !important;
+}
+
+.days-modal-content {
+  padding: 1.25rem;
+}
+
+/* Resumen superior */
+
+.days-summary-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 1.25rem;
+}
+
+.summary-item {
+  text-align: center;
+}
+
+.summary-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #343a40;
+  line-height: 1;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-item.used .summary-value {
+  color: #fd7e14;
+}
+
+.summary-item.remaining .summary-value {
+  color: #28a745;
+}
+
+/* Barra de progreso */
+
+.days-progress-section {
+  margin-bottom: 1.25rem;
+}
+
+.progress-bar-container {
+  display: flex;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e9ecef;
+}
+
+.progress-segment {
+  transition: width 0.3s ease;
+}
+
+.progress-segment.phase1 {
+  background: #fd7e14;
+}
+
+.progress-segment.phase4 {
+  background: #6f42c1;
+}
+
+.progress-segment.available {
+  background: #28a745;
+}
+
+.progress-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 0.6rem;
+}
+
+.legend-item .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.dot.phase1 {
+  background: #fd7e14;
+}
+
+.dot.phase4 {
+  background: #6f42c1;
+}
+
+.dot.available {
+  background: #28a745;
+}
+
+/* Grid de información */
+
+.days-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.info-card {
+  background: #f8f9fa;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.info-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.info-card-title i {
+  color: #5bc0de;
+}
+
+.info-card-body {
+  padding: 0.75rem;
+}
+
+/* Filas de información */
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+  font-size: 0.8rem;
+  color: #495057;
+}
+
+.info-row span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.info-row i {
+  width: 14px;
+  color: #adb5bd;
+  font-size: 0.7rem;
+}
+
+.info-row strong {
+  color: #212529;
+}
+
+.info-row.muted {
+  opacity: 0.5;
+}
+
+.info-row.total {
+  margin-top: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid #dee2e6;
+  font-weight: 600;
+}
+
+.info-row.total strong {
+  color: #5bc0de;
+}
+
+.text-warning {
+  color: #f08c00 !important;
+}
+
+.text-info {
+  color: #17a2b8 !important;
+}
+
+/* Detalle de fases */
+
+.phase-detail {
+  margin-bottom: 0.5rem;
+}
+
+.phase-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.phase-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.phase-count {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+.phase-mini-bar {
+  height: 6px;
+  background: #dee2e6;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.phase-mini-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.phase-mini-fill.phase1 {
+  background: #fd7e14;
+}
+
+.phase-mini-fill.phase4 {
+  background: #6f42c1;
+}
+
+.phase-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0;
+  font-size: 0.7rem;
+  color: #868e96;
+}
+
+.phase-arrow i {
+  color: #5bc0de;
+  font-size: 0.65rem;
+}
+
+/* Responsive */
+
+@media (max-width: 576px) {
+.days-info-grid {
+  grid-template-columns: 1fr;
+}
+
+.days-summary-row {
+  gap: 1rem;
+}
+
+.summary-value {
+  font-size: 1.4rem;
+}
+
+.progress-legend {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+}
+
+/* --- NUEVO ESTILOS PARA CONTROL BAR --- */
+
+/* --- ESTILO BOTÓN TOGGLE TIME TRAVEL --- */
+
+/* ... (MANTÉN TODO EL CSS ANTERIOR) ... */
+
+/* --- ESTILO MEJORADO PARA EL BOTÓN DE CONTROL DE TIEMPO --- */
+
+.time-travel-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.btn-time-travel-toggle i {
+  color: #adb5bd;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+/* Estado Hover */
+
+.btn-time-travel-toggle:hover {
+  background-color: #fff;
+  color: #343a40;
+  border-color: #a5d8ff;
+  box-shadow: 0 4px 12px rgba(25, 113, 194, 0.15);
+  transform: translateY(-2px);
+}
+
+.btn-time-travel-toggle:hover i {
+  color: #15aabf;
+  transform: rotate(-15deg) scale(1.1);
+}
+
+/* Estado Activo/Click */
+
+.btn-time-travel-toggle:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  background-color: #f8f9fa;
+}
+
+/* ... (MANTÉN TODO EL CSS ANTERIOR) ... */
+
+/* --- ESTILOS PARA WIDGET FLOTANTE FIJO --- */
+
+/* Ajustes para que ControlBar se vea bien dentro del widget */
+
+/* --- ANIMACIÓN DESLIZAR --- */
+
+@keyframes slideInUp {
+from { 
+        transform: translateY(20px); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateY(0); 
+        opacity: 1; 
+    }
+}
+
+/* --- ESTILO BOTÓN SIDEBAR (Utility Style) --- */
+
+/* Responsive para el widget flotante */
+
+@media (max-width: 768px) {
+.time-travel-floating-widget {
+  min-width: auto;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  width: auto;
+}
+
+.time-travel-floating-widget .control-bar .bar-inner {
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.time-travel-floating-widget .time-travel-controls {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+}
+
+/* ========================================
+   ESTILOS PARA MODAL DE PROGRAMACIÓN INDIVIDUAL
+   ======================================== */
+
+/* Estilos para inputs en la tabla */
+
+/* Texto de conversión automática */
+
+/* Footer informativo */
+
+/* Mejoras para el scroll */
+
+/* Contador de tiempos programados */
+
+/* Responsive para modal de programación */
+
+@media (max-width: 768px) {
+.schedule-modal-table-container .table {
+  font-size: 0.75rem;
+}
+
+.schedule-modal-table-container .table thead th {
+  font-size: 0.7rem;
+  padding: 0.5rem 0.25rem;
+}
+
+.schedule-modal-table-container .table tbody td {
+  padding: 0.5rem 0.25rem;
+}
+
+.schedule-modal-table-container .form-control-sm {
+  font-size: 0.75rem;
+}
+}
+
+/* ========================================
+   BADGES DE CUMPLIMIENTO/RETRASO EN EVENTOS COMPLETADOS
+   ======================================== */
+
+/* --- SIDEBAR CARDS --- */
+
+.sidebar-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 600;
+  color: #495057;
+  padding-bottom: 0.58rem;
+  padding-top: 0.58rem;
+  height: 40px; 
+  padding-left: 0.65rem;
+  padding-right: 0.65rem;
+  border-bottom: 1px solid #f1f3f5;
+  background-color: #EBEBEB;
+  border-radius: 4px 4px 0 0 ;
+  /* margin-bottom: 1rem; */
+}
+
+/* .sidebar-card-header i {
+  color: #868e96;
+} */
+
+.sidebar-card-body .value-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0.25rem;
+}
+
+.sidebar-card-body .value-row .label {
+  color: #6c757d;
+}
+
+.sidebar-card-body .value-row .value {
+  font-weight: 600;
+}
+
+.sidebar-card-body .value-row .value.text-danger {
+  color: #e03131 !important;
+}
+
+.sidebar-card-body .value-row .value.text-success {
+  color: #2f9e44 !important;
+}
+
+/* Specific card styles */
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+.status-Vencido {
+  color: #e03131;
+}
+
+.status-icon-Vencido {
+  color: #e03131;
+}
+
+.status-Finalizado {
+  color: #2f9e44;
+}
+
+.status-icon-Finalizado {
+  color: #2f9e44;
+}
+
+.status-Pausado {
+  color: #f08c00;
+}
+
+.status-icon-Pausado {
+  color: #f08c00;
+}
+
+.status-Desistido {
+  color: #c92a2a;
+}
+
+.status-icon-Desistido {
+  color: #c92a2a;
+}
+
+.status-default {
+  color: #1971c2;
+}
+
+.status-icon-default {
+  color: #1971c2;
+}
+
+.quick-actions-card .sidebar-card-body {
+  padding: 0;
+}
+
+.btn-action {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 0.6rem;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color .2s;
+}
+
+.btn-action:not(:last-child) {
+  margin-bottom: .5rem;
+}
+
+.btn-suspension {
+  background-color: #f08c00;
+}
+
+.btn-suspension:hover {
+  background-color: #e67700;
+}
+
+.btn-prorroga {
+  background-color: #17a2b8;
+}
+
+.btn-prorroga:hover {
+  background-color: #138496;
+}
+
+.btn-detail-link {
+  background: none;
+  border: none;
+  color: #1971c2;
+  font-weight: 600;
+  padding: 0;
+  text-align: left;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.btn-detail-link:hover {
+  text-decoration: underline;
+}
+
+/* --- CALENDAR WIDGET --- */
+
+.calendar-widget .sidebar-card-body {
+  padding: 0;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  text-transform: capitalize;
+}
+
+.calendar-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #868e96;
+  padding: 0 .5rem;
+}
+
+.calendar-header .current-month {
+  font-weight: 600;
+}
+
+.calendar-legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #868e96;
+  justify-content: center;
+  margin-top: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid #f1f3f5;
+}
+
+.legend-box {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 0.3rem;
+}
+
+.legend-box.holiday {
+  background-color: #ffe066;
+}
+
+.legend-box.weekend {
+  background-color: #f1f3f5;
+}
+
+
 
 .actor-panel.single:hover {
   border-color: #a5d8ff;

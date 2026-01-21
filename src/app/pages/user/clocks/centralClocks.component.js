@@ -34,8 +34,8 @@ export default function EXP_CLOCKS(props) {
   const [sidebarHeight, setSidebarHeight] = useState('auto');
 
   const [showTimeTravel, setShowTimeTravel] = useState(false);
-  const [showAlarms, setShowAlarms] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false); // Nuevo estado para el calendario
+  const [showAlarms, setShowAlarms] = useState(true); // CAMBIO: true por defecto
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
 
@@ -86,7 +86,13 @@ export default function EXP_CLOCKS(props) {
     phaseOptions
   });
 
-  const alarms = useAlarms(manager, scheduleConfig, clocksToShowRaw, systemDate);
+  // CAMBIO: Usamos el nuevo formato de retorno del hook
+  const { notificationAlarms, processAlarms, allAlarms } = useAlarms(
+    manager, 
+    scheduleConfig, 
+    clocksToShowRaw, 
+    systemDate
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -103,7 +109,7 @@ export default function EXP_CLOCKS(props) {
       clearTimeout(timer);
       window.removeEventListener('resize', handleResize);
     };
-  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, alarms]);
+  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, allAlarms]);
 
   // Estado para rastrear eliminaciones recientes y evitar re-sincronización inmediata
   const [recentDeletions, setRecentDeletions] = useState(new Set());
@@ -847,15 +853,15 @@ export default function EXP_CLOCKS(props) {
     <div className="exp-wrapper">
       {showAlarms && (
         <AlarmsWidget
-          alarms={alarms}
+          alarms={notificationAlarms} // CAMBIO: Solo alarmas de notificación
           onClose={() => setShowAlarms(false)}
         />
       )}
 
-      {!showAlarms && alarms.length > 0 && (
+      {!showAlarms && notificationAlarms.length > 0 && ( // CAMBIO: Referencia a notificationAlarms
         <button className="alarms-fab" onClick={() => setShowAlarms(true)} title="Mostrar Alertas">
           <i className="fas fa-bell"></i>
-          <span className="fab-badge">{alarms.length}</span>
+          <span className="fab-badge">{notificationAlarms.length}</span>
         </button>
       )}
 
