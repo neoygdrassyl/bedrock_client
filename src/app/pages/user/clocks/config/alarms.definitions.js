@@ -32,7 +32,7 @@ export const ALARM_SUGGESTIONS = {
         },
         scheduled: {
             porVencer: { suggestion: "La fecha que programaste para el Acta de Observaciones se acerca. Asegúrate de cumplir con tu planificación." },
-            vencido: { suggestion: "Te has retrasado en la fecha programada para el Acta. Reprograma o completa la tarea con urgencia." }
+            vencido: { suggestion: "El plazo programado para el Acta de Observaciones Parte 1 ha expirado. Añadir suspensión de términos o prórroga por complejidad." }
         }
     },
     // 35: { // Radicacion correcciones solicitante
@@ -68,7 +68,7 @@ export const ALARM_SUGGESTIONS = {
     503: { // Instalación de Valla
         legal: {
             porVencer: { suggestion: "El solicitante está cerca del límite para registrar la instalación de la valla. Considera enviar un recordatorio." },
-            vencido: { suggestion: "El plazo para instalar la valla ha vencido. Inicia el proceso de desistimiento por valla." }
+            vencido: { suggestion: "El plazo para allegar la valla ha vencido. Inicia el proceso de desistimiento por valla." }
         }
     },
     35: { // Radiacion de correcciones solicitante

@@ -25,7 +25,7 @@ export const ToolsMenu = ({ onAction, canAddSuspension, canAddExtension, isDesis
     const menuItems = [
         { id: 'schedule', label: 'Programar Tiempos', icon: 'fa-calendar-check', show: true },
         { id: 'breakdown', label: 'Desglose de Días', icon: 'fa-chart-pie', show: true },
-        { id: 'gantt', label: 'Ver Gantt', icon: 'fa-chart-gantt', show: true },
+        { id: 'gantt', label: 'Ver Gantt', icon: 'fa-project-diagram', show: true },
         { id: 'time-travel', label: 'Emulador de Fecha', icon: 'fa-user-clock', show: true },
         { id: 'calendar', label: 'Calendario', icon: 'fa-calendar-alt', show: true },
         { isDivider: true, show: !isDesisted && (canAddSuspension || canAddExtension) },

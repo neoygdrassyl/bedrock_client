@@ -84,11 +84,11 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     };
 
     // Usamos 'today' (fecha del sistema/emulador) para calcular días usados si no hay fecha fin
-    const calculateUsedDaysFromNextDay = (startDate, endDate, defaultEnd = today) => {
+    const calculateUsedDaysFromNextDay = (startDate, endDate, defaultEnd = today, include_today=false) => {
       if (!startDate) return 0;
       const calcEnd = endDate || defaultEnd;
       if (moment(calcEnd).isBefore(startDate)) return 0;
-      let usedDays = calcularDiasHabiles(startDate, calcEnd);
+      let usedDays = calcularDiasHabiles(startDate, calcEnd, include_today);
       return usedDays;
     };
 
@@ -140,6 +140,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0,
             startDate: dStart,
             endDate: dRes,
+            limitDate: dStart ? sumarDiasHabiles(dStart, 5) : null,
             parallelActors: null,
             highlightClass: 'phase-highlight-desist',
             relatedStates: [-50, -6],
@@ -157,6 +158,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0,
             startDate: startNotif,
             endDate: dNotif,
+            limitDate: startNotif ? sumarDiasHabiles(startNotif, 15) : null,
             parallelActors: null,
             highlightClass: 'phase-highlight-desist',
             relatedStates: [-5, -7, -8],
@@ -186,6 +188,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0,
             startDate: dNotif,
             endDate: dRecurso || dEjecutoriaEnd,
+            limitDate: dNotif ? sumarDiasHabiles(dNotif, 10) : null,
             parallelActors: {
                 primary: {
                     name: 'Ejecutoria',
@@ -196,6 +199,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     extraDays: 0,
                     status: ejecutoriaStatus,
                     taskDescription: 'Firmeza del acto',
+                    endDate: dEjecutoriaEnd,
+                    limitDate: dNotif ? sumarDiasHabiles(dNotif, 10) : null,
                 },
                 secondary: {
                     name: 'Recurso',
@@ -206,6 +211,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     extraDays: 0,
                     status: recursoStatus,
                     taskDescription: 'Interposición de recurso',
+                    endDate: dRecurso,
+                    limitDate: dNotif ? sumarDiasHabiles(dNotif, 10) : null,
                 }
             },
             highlightClass: 'phase-highlight-desist',
@@ -223,6 +230,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0,
                 startDate: dRecurso,
                 endDate: dResRecurso,
+                limitDate: dRecurso ? sumarDiasHabiles(dRecurso, 45) : null,
                 parallelActors: null,
                 highlightClass: 'phase-highlight-desist',
                 relatedStates: [-17],
@@ -238,6 +246,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0,
                 startDate: dResRecurso,
                 endDate: dNotifRecurso,
+                limitDate: dResRecurso ? sumarDiasHabiles(dResRecurso, 15) : null,
                 parallelActors: null,
                 highlightClass: 'phase-highlight-desist',
                 relatedStates: [-20, -21, -22],
@@ -253,6 +262,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0,
                 startDate: dNotifRecurso,
                 endDate: dFinal,
+                limitDate: dNotifRecurso ? sumarDiasHabiles(dNotifRecurso, 1) : null,
                 parallelActors: null,
                 highlightClass: 'phase-highlight-desist',
                 relatedStates: [-30],
@@ -283,12 +293,14 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         title: 'Radicación de Legal y debida forma', 
         responsible: 'Solicitante', 
         status: skipPhase0 ? 'COMPLETADO' : checkStatus(radDate, ldfDate), 
-        totalDays: 30, 
-        usedDays: calculateUsedDaysFromNextDay(radDate, ldfDate), 
+        totalDays: 29, 
+        usedDays: calculateUsedDaysFromNextDay(radDate, ldfDate),
         extraDays: 0, 
         startDate: radDate, 
         endDate: ldfDate, 
+        limitDate: radDate ? sumarDiasHabiles(radDate, 29) : null,
         parallelActors: null,
+        ganttBlockDays: 29,
         highlightClass: 'phase-highlight-radicacion',
         relatedStates: [false,3, -1, 5, 501, 502, 504],
     });
@@ -313,6 +325,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0, 
             startDate: ldfDate, 
             endDate: vallaDate, 
+            limitDate: ldfDate ? sumarDiasHabiles(ldfDate, baseDaysCuraduria) : null,
             parallelActors: {
                 primary: { 
                     name: 'Curaduría', 
@@ -322,7 +335,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     usedDays: calculateUsedDaysFromNextDay(ldfDate, vallaDate || today), 
                     extraDays: 0, 
                     status: phase1Status, 
-                    taskDescription: 'Revisión preliminar'
+                    taskDescription: 'Revisión preliminar',
+                    endDate: vallaDate,
+                    limitDate: ldfDate ? sumarDiasHabiles(ldfDate, baseDaysCuraduria) : null,
                 }, 
                 secondary: { 
                     name: 'Solicitante', 
@@ -333,6 +348,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     extraDays: 0, 
                     status: phase1Status === 'PENDIENTE' ? 'PENDIENTE' : (vallaDate ? 'COMPLETADO' : 'ACTIVO'), 
                     taskDescription: 'Falta Valla Informativa', 
+                    endDate: vallaDate,
+                    limitDate: ldfDate ? sumarDiasHabiles(ldfDate, VALLA_LIMIT_DAYS) : null,
                 } 
             },
             highlightClass: 'phase-highlight-estudio',
@@ -363,6 +380,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0, 
             startDate: ldfDate, 
             endDate: acta1Date,
+            limitDate: ldfDate ? sumarDiasHabiles(ldfDate, totalCuraduriaDays) : null,
             parallelActors: null,
             highlightClass: 'phase-highlight-estudio',
             relatedStates: [503, 30, 300, 350, estudioOptions.notificationType !== 'notificar' ? 33 : null], 
@@ -380,6 +398,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
               extraDays: 0,
               startDate: acta1Date, 
               endDate: endOfNotification1Date, 
+              limitDate: acta1Date ? sumarDiasHabiles(acta1Date, 15) : null,
               parallelActors: null,
               highlightClass: 'phase-highlight-notificacion',
               relatedStates: [31, 32, 33],
@@ -403,6 +422,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           extraDays: 0,
           startDate: startPhase3, 
           endDate: corrDate, 
+          limitDate: startPhase3 ? sumarDiasHabiles(startPhase3, hasProrrogaCorr ? 45 : 30) : null,
           parallelActors: null,
           highlightClass: 'phase-highlight-correcciones',
           relatedStates: [34, 35],
@@ -423,6 +443,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           extraDays: 0, 
           startDate: startPhase4, 
           endDate: endPhase4, 
+          limitDate: startPhase4 ? sumarDiasHabiles(startPhase4, Math.max(0, totalCuraduriaDays - phase1UsedDays)) : null,
           parallelActors: null,
           highlightClass: 'phase-highlight-viabilidad',
           relatedStates: [49, 61, 301, 351, 400, 401],
@@ -459,6 +480,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0, 
             startDate: ldfDate, 
             endDate: acta1Date, 
+            limitDate: ldfDate ? sumarDiasHabiles(ldfDate, totalCuraduriaDays) : null,
             parallelActors: { 
                 primary: { 
                     name: 'Curaduría', 
@@ -469,6 +491,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     extraDays: 0, 
                     status: phase1Status, 
                     taskDescription: 'Acta parte 1: Observaciones',
+                    endDate: acta1Date,
+                    limitDate: ldfDate ? sumarDiasHabiles(ldfDate, totalCuraduriaDays) : null,
                 }, 
                 secondary: { 
                     name: 'Solicitante', 
@@ -478,7 +502,9 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                     usedDays: calculateUsedDaysFromNextDay(ldfDate, vallaDate), 
                     extraDays: 0, 
                     status: checkParallelStatus(ldfDate, vallaDate), 
-                    taskDescription: 'Instalación de valla', 
+                    taskDescription: 'Instalación de valla',
+                    endDate: vallaDate,
+                    limitDate: ldfDate ? sumarDiasHabiles(ldfDate, VALLA_LIMIT_DAYS) : null, 
                 } 
             },
             highlightClass: 'phase-highlight-estudio',
@@ -504,6 +530,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                   extraDays: 0,
                   startDate: acta1Date, 
                   endDate: endOfNotification1Date, 
+                  limitDate: acta1Date ? sumarDiasHabiles(acta1Date, estudioOptions.byAviso ? 15 : 10) : null,
                   parallelActors: null,
                   highlightClass: 'phase-highlight-notificacion',
                   relatedStates: [31, 32, 33],
@@ -524,6 +551,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
               extraDays: 0,
               startDate: startPhase3, 
               endDate: corrDate, 
+              limitDate: startPhase3 ? sumarDiasHabiles(startPhase3, hasProrrogaCorr ? 45 : 30) : null,
               parallelActors: null,
               highlightClass: 'phase-highlight-correcciones',
               relatedStates: [34, 35],
@@ -550,6 +578,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
           extraDays: 0, 
           startDate: triggerDate, 
           endDate: viabilidadDate, 
+          limitDate: triggerDate ? sumarDiasHabiles(triggerDate, Math.max(0, phase4AvailableDays)) : null,
           daysContext: { totalCuraduria: totalCuraduriaDays, usedInPhase1: phase1UsedDays, availableForPhase4: phase4AvailableDays },
           parallelActors: null,
           highlightClass: 'phase-highlight-viabilidad',
@@ -570,6 +599,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0,
                 startDate: viabilidadDate,
                 endDate: endOfNotificationViaDate,
+                limitDate: viabilidadDate ? sumarDiasHabiles(viabilidadDate, correccionesOptions.byAviso ? 15 : 10) : null,
                 parallelActors: null,
                 highlightClass: 'phase-highlight-notificacion',
                 relatedStates: [55, 56, 57],
@@ -593,6 +623,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             extraDays: 0,
             startDate: startPhase6, 
             endDate: pagosDate,
+            limitDate: startPhase6 ? sumarDiasHabiles(startPhase6, 30) : null,
             parallelActors: null,
             highlightClass: 'phase-highlight-pagos',
             relatedStates: [62, 63, 64, 65, 69],
@@ -616,6 +647,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0, 
                 startDate: pagosDate, 
                 endDate: resolucionDate, 
+                limitDate: pagosDate ? sumarDiasHabiles(pagosDate, 5) : null,
                 parallelActors: null,
                 highlightClass: 'phase-highlight-resolucion',
                 relatedStates: [70],
@@ -632,6 +664,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0, 
                 startDate: resolucionDate, 
                 endDate: notificacionResDate, 
+                limitDate: resolucionDate ? sumarDiasHabiles(resolucionDate, 15) : null,
                 parallelActors: null,
                 highlightClass: 'phase-highlight-notificacion',
                 relatedStates: [71, 72, 73, 731, 85],
@@ -666,6 +699,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0,
                 startDate: notificacionResDate,
                 endDate: ejecutoriaEndDate,
+                limitDate: notificacionResDate ? sumarDiasHabiles(notificacionResDate, 10) : null,
                 parallelActors: {
                     primary: {
                         name: 'Ejecutoria',
@@ -676,6 +710,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                         extraDays: 0,
                         status: ejecutoriaStatus,
                         taskDescription: 'Licencia queda en firme',
+                        endDate: ejecutoriaEndDate,
+                        limitDate: notificacionResDate ? sumarDiasHabiles(notificacionResDate, 10) : null,
                     },
                     secondary: {
                         name: 'Recurso',
@@ -686,6 +722,8 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                         extraDays: 0,
                         status: recursoStatus,
                         taskDescription: recursoDate ? 'Recurso presentado' : (recursoExpired ? 'Derecho agotado' : 'Plazo disponible'),
+                        endDate: recursoDate,
+                        limitDate: notificacionResDate ? sumarDiasHabiles(notificacionResDate, 10) : null,
                     }
                 },
                 highlightClass: 'phase-highlight-recurso',
@@ -703,6 +741,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
                 extraDays: 0, 
                 startDate: ejecutoriaDate, 
                 endDate: entregaDate, 
+                limitDate: ejecutoriaDate ? sumarDiasHabiles(ejecutoriaDate, 1) : null,
                 parallelActors: null,
                 highlightClass: 'phase-highlight-entrega',
                 relatedStates: [98],

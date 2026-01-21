@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import moment from 'moment';
 import { calculateLegalLimit, calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 import { ALARM_SUGGESTIONS, ALARM_THRESHOLD_DAYS } from '../config/alarms.definitions';
+import { calcularDiasHabiles } from '../hooks/useClocksManager';
 
 /**
  * Hook para generar y gestionar las alarmas del proceso.
@@ -20,24 +21,18 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
         // --- Helper para añadir alarmas evitando duplicados ---
         const addAlarm = (alarmData) => {
-            console.log("Adding alarm", alarmData);
             const { state, type } = alarmData;
             const id = `${type}-${state}`;
             
-            // Evitar duplicados
             if (allAlarms.some(a => a.id === id)) return;
 
             const limitMoment = moment(alarmData.limitDate);
             if (!limitMoment.isValid()) return;
             
-            // Días restantes (sin contar hoy)
-            const remainingDays = limitMoment.diff(today, 'days');
-
+            const remainingDays = alarmData.remainingDays;
             const isOverdue = remainingDays < 0;
             const suggestionKey = isOverdue ? 'vencido' : 'porVencer';
             
-            // --- CORRECCIÓN APLICADA AQUÍ ---
-            // La lógica ahora busca correctamente dentro de `ALARM_SUGGESTIONS[state][type]`
             const suggestionDef = (ALARM_SUGGESTIONS[state] && ALARM_SUGGESTIONS[state][type])
                 ? ALARM_SUGGESTIONS[state][type][suggestionKey]
                 : (ALARM_SUGGESTIONS.default[type] ? ALARM_SUGGESTIONS.default[type][suggestionKey] : null);
@@ -61,21 +56,39 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
         // --- TIPO 1: ALARMAS LEGALES ---
         clocksToShow.forEach(clockDef => {
-            // Solo procesar eventos que tienen la bandera hasLegalAlarm y no son títulos
-            if (clockDef && clockDef.hasLegalAlarm && !clockDef.title) {
+            if (clockDef && (clockDef.hasLegalAlarm || clockDef.limit) && !clockDef.title) {
                 const clock = clockDef.version !== undefined ? getClockVersion(clockDef.state, clockDef.version) : getClock(clockDef.state);
+                const legalLimit = calculateLegalLimit(clockDef.state, clockDef, manager);
+
+                if (!legalLimit) return;
                 
-                // Si el evento no se ha completado
-                if (!clock || !clock.date_start) {
-                    const legalLimit = calculateLegalLimit(clockDef.state, clockDef, manager);
-                    
-                    if (legalLimit && moment(legalLimit).diff(today, 'days') <= ALARM_THRESHOLD_DAYS.legal) {
+                const limitMoment = moment(legalLimit);
+
+                if (clock && clock.date_start) {
+                    // --- EVENTO COMPLETADO: VERIFICAR SI HUBO RETRASO ---
+                    const completionDate = moment(clock.date_start);
+                    if (completionDate.isAfter(limitMoment, 'day')) {
+                        const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
                         addAlarm({
                             state: clockDef.state,
                             type: 'legal',
                             typeLabel: 'Legal',
                             eventName: clockDef.name,
                             limitDate: legalLimit,
+                            remainingDays: -delayDays, // Representa el retraso como días "vencidos"
+                        });
+                    }
+                } else {
+                    // --- EVENTO PENDIENTE: VERIFICAR SI ESTÁ PRÓXIMO A VENCER ---
+                    const remaining = limitMoment.diff(today, 'days');
+                    if (remaining <= ALARM_THRESHOLD_DAYS.legal) {
+                        addAlarm({
+                            state: clockDef.state,
+                            type: 'legal',
+                            typeLabel: 'Legal',
+                            eventName: clockDef.name,
+                            limitDate: legalLimit,
+                            remainingDays: remaining,
                         });
                     }
                 }
@@ -89,18 +102,21 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                 const clockDef = clocksToShow.find(c => c.state === state);
                 const clock = getClock(state);
 
-                // Si está programado pero no completado
                 if (clockDef && (!clock || !clock.date_start)) {
                     const scheduledData = calculateScheduledLimitForDisplay(state, clockDef, clock, scheduleConfig, getClock, getClockVersion, manager);
                     
-                    if (scheduledData && scheduledData.limitDate && moment(scheduledData.limitDate).diff(today, 'days') <= ALARM_THRESHOLD_DAYS.scheduled) {
-                        addAlarm({
-                            state: state,
-                            type: 'scheduled',
-                            typeLabel: 'Programado',
-                            eventName: clockDef.name,
-                            limitDate: scheduledData.limitDate,
-                        });
+                    if (scheduledData && scheduledData.limitDate) {
+                        const remaining = moment(scheduledData.limitDate).diff(today, 'days');
+                        if (remaining <= ALARM_THRESHOLD_DAYS.scheduled) {
+                            addAlarm({
+                                state: state,
+                                type: 'scheduled',
+                                typeLabel: 'Programado',
+                                eventName: clockDef.name,
+                                limitDate: scheduledData.limitDate,
+                                remainingDays: remaining,
+                            });
+                        }
                     }
                 }
             });
@@ -117,7 +133,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                 id: 'process-general',
                 type: 'process',
                 typeLabel: 'Proceso',
-                eventName: activePhaseName, // Usamos el nombre de la fase activa
+                eventName: activePhaseName,
                 state: 'process',
                 remainingDays: remaining,
                 limitDate: moment(systemDate).add(remaining, 'days').format('DD/MM/YYYY'),
@@ -126,10 +142,9 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
             });
         }
 
-        // Ordenar por urgencia (días restantes ascendente)
         return allAlarms.sort((a, b) => a.remainingDays - b.remainingDays);
 
-    }, [manager, scheduleConfig, clocksToShow, systemDate, curaduriaDetails]);
+    }, [manager, scheduleConfig, clocksToShow, systemDate, curaduriaDetails, getClock, getClockVersion]);
 
     return alarms;
 };

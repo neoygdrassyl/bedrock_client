@@ -314,90 +314,74 @@ export const getTotalAvailableDaysWithExtensions = (clockState, manager, baseDay
 export const calculateLegalLimit = (clockState, clockValue, manager) => {
   const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, viaTime } = manager;
   
-  const getClockScoped = (state) => {
-    if (clockValue.version !== undefined) {
-      return getClockVersion(state, clockValue.version) || getClock(state);
+  const getClockScoped = (state, version) => {
+    if (version !== undefined) {
+      return getClockVersion(state, version) || getClock(state);
     }
     return getClock(state);
   };
   
-  if (clockState === 30) {
-    const ldf = getClockScoped(5)?.date_start;
-    if (!ldf) return null;
-    
-    const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
-    let totalDays = baseDays;
-    
-    if (suspensionPreActa.exists && suspensionPreActa.end?.date_start) {
-      totalDays += suspensionPreActa.days;
-    }
-    
-    if (extension.exists && extension.end?.date_start && !extension.isActive) {
-      const acta1Date = getClockScoped(30)?.date_start;
-      if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) {
-        totalDays += extension.days;
-      }
-    }
-    
-    return sumarDiasHabiles(ldf, totalDays);
-  }
-  
-  if (clockState === 49 || clockState === 61) {
-    const ldf = getClockScoped(5)?.date_start;
-    const acta1 = getClockScoped(30);
-    const corrDate = getClockScoped(35)?.date_start;
-    
-    if (!ldf) return null;
-    
-    const isCumple = acta1?.desc?.includes(COMPLIANCE_STRING);
-    const hasActa = !!acta1?.date_start;
-    
-    if (clockState === 61 && isCumple) {
-      const notificacionAviso = getClockScoped(32)?.date_start;
-      const notificacionPersonal = getClockScoped(33)?.date_start;
-      const notificacionEfectiva = notificacionAviso || notificacionPersonal;
-      
-      if (notificacionEfectiva && viaTime !== null) {
-        return sumarDiasHabiles(notificacionEfectiva, viaTime);
-      }
-      return null;
-    }
-    
-    if (isCumple || !hasActa) {
-      if (acta1?.date_start && viaTime !== null) {
-        return sumarDiasHabiles(acta1.date_start, viaTime);
-      }
-      return null;
-    }
-    
-    if (hasActa && !isCumple && corrDate && viaTime !== null) {
-      return sumarDiasHabiles(corrDate, viaTime);
-    }
-    
-    return null;
-  }
-  
+  // --- Lógica Especial para Suspensiones (350/351) ---
   if (clockState === 350 || clockState === 351) {
-    const isEndPre = clockState === 350;
-    const thisSusp = isEndPre ? suspensionPreActa : suspensionPostActa;
-    
-    if (!thisSusp.start?.date_start) return null;
-    
-    const otherUsedDays = isEndPre 
-      ? (suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0)
-      : (suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0);
-    
-    const availableForThis = 10 - otherUsedDays;
-    
-    return sumarDiasHabiles(thisSusp.start.date_start, Math.max(0, availableForThis - 1));
+      const isEndPre = clockState === 350;
+      const thisSusp = isEndPre ? suspensionPreActa : suspensionPostActa;
+      if (thisSusp.start?.date_start) {
+          const otherUsedDays = isEndPre 
+          ? (suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0)
+          : (suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0);
+          const availableForThis = 10 - otherUsedDays;
+          const daysToAdd = Math.max(0, availableForThis - 1);
+          return sumarDiasHabiles(thisSusp.start.date_start, daysToAdd);
+      }
+  } 
+  // --- Lógica Especial para Prórroga (401) ---
+  else if (clockState === 401) {
+       const startExt = getClockScoped(400)?.date_start;
+       if (startExt) {
+           let extDuration = (clockValue.limit && Array.isArray(clockValue.limit) && clockValue.limit[0] && typeof clockValue.limit[0][1] === 'number') ? clockValue.limit[0][1] : 22;
+           const daysToAdd = Math.max(0, extDuration - 1); 
+           return sumarDiasHabiles(startExt, daysToAdd);
+       }
   }
-  
-  if (clockValue.limit) {
-    return resolveLegalLimitFromConfig(clockValue.limit, getClockScoped, clockValue.version);
+  else if (clockState === 30) {
+      const ldf = getClockScoped(5)?.date_start;
+      if (ldf) {
+          const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
+          let totalDays = baseDays;
+          if (suspensionPreActa.exists && suspensionPreActa.end?.date_start) totalDays += suspensionPreActa.days;
+          if (extension.exists && extension.end?.date_start && !extension.isActive) {
+              const acta1Date = getClockScoped(30)?.date_start;
+              if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) totalDays += extension.days;
+          }
+          return sumarDiasHabiles(ldf, totalDays);
+      }
+  } 
+  else if (clockState === 49 || clockState === 61) {
+       const ldf = getClockScoped(5)?.date_start;
+       if (ldf) {
+           const acta1 = getClockScoped(30);
+           const isCumple = acta1?.desc?.includes(COMPLIANCE_STRING);
+           const hasActa = !!acta1?.date_start;
+           const corrDate = getClockScoped(35)?.date_start;
+
+           if (clockState === 61 && isCumple) {
+               const notif = getClockScoped(32)?.date_start || getClockScoped(33)?.date_start;
+               if (notif) return sumarDiasHabiles(notif, viaTime);
+           } else if (isCumple || !hasActa) {
+               const baseDate = acta1?.date_start || ldf; 
+               return sumarDiasHabiles(baseDate, viaTime);
+           } else if (hasActa && !isCumple && corrDate) {
+               return sumarDiasHabiles(corrDate, viaTime);
+           }
+       }
+  }
+  else if (clockValue.limit) {
+      return resolveLegalLimitFromConfig(clockValue.limit, getClockScoped, clockValue.version);
   }
   
   return null;
 };
+
 
 const resolveLegalLimitFromConfig = (limitConfig, getClockScoped, version) => {
   if (!limitConfig || !Array.isArray(limitConfig)) return null;
