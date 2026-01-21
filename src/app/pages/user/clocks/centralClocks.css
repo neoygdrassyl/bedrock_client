@@ -7384,3 +7384,81 @@ from { opacity: 0; transform: translateY(-5px); }
     font-weight: 600;
     padding-left: 0.25rem;
 }
+
+/* ============================================================
+   ESTILOS PARA TABLA UNIFICADA CON NUEVAS COLUMNAS
+============================================================ */
+
+/* Contenedor principal de la tarjeta */
+.exp-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Área de scroll para las filas */
+.exp-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Scrollbar personalizado */
+.exp-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.exp-scroll::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.exp-scroll::-webkit-scrollbar-thumb {
+  background: #dee2e6;
+  border-radius: 4px;
+}
+
+.exp-scroll::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
+}
+
+/* Efecto hover en filas */
+.exp-scroll > div:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* Resaltado de fila activa */
+.active-row-container {
+  box-shadow: inset 4px 0 0 #1971c2;
+}
+
+/* Ajustes para inputs de fecha */
+.dates-input-class {
+  min-width: 110px;
+  max-width: 130px;
+}
+
+.padding-date-input {
+  padding-left: 0.5rem !important;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 1400px) {
+  /* Ajustar tamaños de columnas en pantallas medianas */
+  .exp-card {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 992px) {
+  /* En pantallas pequeñas, permitir scroll horizontal */
+  .exp-scroll {
+    overflow-x: auto;
+  }
+  
+  /* Establecer ancho mínimo para evitar colapso */
+  .exp-scroll > div {
+    min-width: 1200px;
+  }
+}
