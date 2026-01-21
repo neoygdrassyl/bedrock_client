@@ -31,20 +31,20 @@ export const ALARM_SUGGESTIONS = {
             vencido: { suggestion: "El plazo para el Acta de Observaciones ha expirado. Añadir suspensión de términos o prórroga por complejidad." }
         },
         scheduled: {
-            porVencer: { suggestion: "La fecha que programaste para el Acta de Observaciones se acerca. Asegúrate de cumplir con tu planificación." },
-            vencido: { suggestion: "El plazo programado para el Acta de Observaciones Parte 1 ha expirado. Añadir suspensión de términos o prórroga por complejidad." }
+            porVencer: { suggestion: "La programación para el Acta de Observaciones se acerca. Considere añadir suspensión de términos o prórroga por complejidad." },
+            vencido: { suggestion: "La programacion para el Acta de Observaciones Parte 1 se venció. Añadir suspensión de términos o prórroga por complejidad." }
         }
     },
-    // 35: { // Radicacion correcciones solicitante
-    //     legal: {
-    //         porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
-    //         vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
-    //     },
-    //     scheduled: {
-    //         porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
-    //         vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
-    //     }
-    // },
+    35: { // Radicacion correcciones solicitante
+        legal: {
+            porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
+            vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
+        },
+        scheduled: {
+            porVencer: { suggestion: "El plazo para presentar las correcciones está pronto a vencer, es necesario añadir prórroga." },
+            vencido: { suggestion: "El plazo para las correcciones ha expirado. Desistir por no atender las observaciones." }
+        }
+    },
     61: { // Viabilidad
         legal: {
             porVencer: { suggestion: "El plazo para declarar la viabilidad es crítico. Añadir suspensión de términos o prórroga por complejidad." },
