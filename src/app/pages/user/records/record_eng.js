@@ -503,9 +503,8 @@ class RECORD_ENG extends Component {
                                             <option value="rule">NO REQUIERE ESTUDIO</option>
                                             <option value="2">CERTIFICACIÓN</option>
                                             <option value="1">ESTUDIO</option>
-                                            {
-                                               // <option value="3">ESTUDIO 2.0</option>
-                                            }
+                                            <option value="3">ESTUDIO 2.0</option>
+
                                         </select>
                                     </div>
                                 </div>
@@ -774,7 +773,7 @@ class RECORD_ENG extends Component {
                                                     version={2}
                                                 />
 
-                                                  <ENG_FUEGO
+                                                <ENG_FUEGO
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                                     currentItem={currentItem}
                                                     currentVersion={currentVersion}

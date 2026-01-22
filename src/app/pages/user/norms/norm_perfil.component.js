@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import DataTable from 'react-data-table-component';
 import NORM_ELEMENT from './norm_element.component';
-import PERFILES from "./PERFILES.json"
+import PERFILES from "../../../components/jsons/PERFILES.json"
 
 const MySwal = withReactContent(Swal);
 const CARDS = [

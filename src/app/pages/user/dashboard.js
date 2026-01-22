@@ -71,11 +71,18 @@ class Dashboard extends Component {
                             <MDBCol className={classnameCards}>
                                 <DashBoardCard title="Gestionar Licencias" image="fas fa-folder fa-3x" link={"/funmanage"} imageColor=" DodgerBlue" />
                             </MDBCol>
-                            <MDBCol className={classnameCards}>
-                                {_GLOBAL_ID == "cb1" ?
+
+                            {_GLOBAL_ID == "cb1" ?
+                                <MDBCol className={classnameCards}>
                                     <DashBoardCard title="Normas Urbanas" image="fas fa-home fa-3x" link={"/norms"} imageColor=" darkcyan" />
-                                    : null}
-                            </MDBCol>
+                                </MDBCol>
+                                : null}
+                            {_GLOBAL_ID == "cb1" ?
+                                <MDBCol className={classnameCards}>
+                                    <DashBoardCard title="Uso de Suelo" image="fas fa-cube fa-3x" link={"/zone_use"} imageColor=" darkcyan" />
+                                </MDBCol>
+                                : null}
+
                         </div>
 
                         <div className="d-flex justify-content-around">

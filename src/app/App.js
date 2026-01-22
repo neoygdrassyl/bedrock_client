@@ -68,6 +68,7 @@ import GUIDE_USER from './pages/user/guide_user/guide_user.page';
 import { infoCud } from './components/jsons/vars';
 import NORMS from './pages/user/norms/norms.page';
 import CERTIFICATE_WORKER from './pages/user/certifications/certification.page';
+import ZONE_USE from './pages/user/zone_use/zone_use.page';
 
 
 const MySwal = withReactContent(Swal);
@@ -294,6 +295,17 @@ export default function App() {
                               />
                             )}
                           />
+
+                           <Route exact path='/zone_use'
+                            render={(props) => (
+                              <ZONE_USE {...props}
+                                translation={t("login", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            )}
+                          />
+
 
                           <Route exact path='/'
                             render={(props) => (

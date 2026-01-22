@@ -11,6 +11,7 @@ import SUBMIT_LIST from './submit_list.component';
 import { formsParser1 } from '../../../components/customClasses/typeParse';
 
 const MySwal = withReactContent(Swal);
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 
 class SUBMIT_MANAGE extends Component {
     constructor(props) {
@@ -343,6 +344,22 @@ class SUBMIT_MANAGE extends Component {
                                 <option value={4} selected={_CHILD.list_type == 4}>TRAMITE</option>
                                 <option value={5} selected={_CHILD.list_type == 5}>PQRS</option>
                                 <option value={0} selected={_CHILD.list_type == 0}>OTRO</option>
+                                {_GLOBAL_ID == 'cp1' ?
+                                    <>
+                                        <option value={6} selected={_CHILD.list_type == 6}>FOTO VALLA</option>
+                                        <option value={7} selected={_CHILD.list_type == 7}>SOLICITUD LICENCIAS URBANISTICA </option>
+                                        <option value={8} selected={_CHILD.list_type == 8}>SOLICITUD MODIFICACION LICENCIA VIGENTE</option>
+                                        <option value={9} selected={_CHILD.list_type == 9}>SOLICITUD DE CONCEPTO DE USO</option>
+                                        <option value={10} selected={_CHILD.list_type == 10}>SOLICITUD DE NORMA URBANA</option>
+                                        <option value={11} selected={_CHILD.list_type == 11}>SOLICITUD OTRAS ACTUACIONES</option>
+                                        <option value={12} selected={_CHILD.list_type == 12}>SOLICITUD PRORROGA</option>
+                                        <option value={13} selected={_CHILD.list_type == 13}>SOLICITUD REVALIDACION</option>
+                                        <option value={14} selected={_CHILD.list_type == 14}>PAGO EXPENSAS Y/O IMPUESTOS / OTROS</option>
+                                        <option value={15} selected={_CHILD.list_type == 15}>DOCUMENTOS PARA RLDF</option>
+                                        <option value={16} selected={_CHILD.list_type == 16}>DOCUMENTOS ACTAS OBSERVACIONES</option>
+                                        <option value={17} selected={_CHILD.list_type == 17}>DOCUMENTOS TRAMITE</option>
+                                    </>
+                                    : null}
                             </select>
                         </div>
                     </div>

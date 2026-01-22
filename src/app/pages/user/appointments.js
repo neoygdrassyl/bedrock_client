@@ -87,7 +87,7 @@ class Appointments extends Component {
     loadUsers() {
         UserslDataService.getAllWorkers()
         .then(response => {
-            if(response.data) this.setState({users: response.data.filter(user => user.active == 1)})
+            if(response.data) this.setState({users: response.data})
         })
         .catch(console.log);
 
@@ -156,6 +156,14 @@ class Appointments extends Component {
                 cell: row => <label>{row.profesional}</label>
             },
             {
+                name: <h4>DESCRIPCIÓN</h4>,
+                selector: 'profesional',
+                sortable: true,
+                center: true,
+                minWidth: '100px',
+                cell: row => <label>{row.content}</label>
+            },
+                        {
                 name: <h4>OBSERVACIONES</h4>,
                 selector: 'profesional',
                 sortable: true,

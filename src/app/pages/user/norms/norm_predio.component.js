@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import DataTable from 'react-data-table-component';
-import BICS from "./BICS.json"
+import BICS from "../../../components/jsons/BICS.json"
 
 const MySwal = withReactContent(Swal);
 export default function NORM_PREDIOS(props) {
