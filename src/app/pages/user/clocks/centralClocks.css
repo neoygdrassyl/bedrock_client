@@ -18,10 +18,7 @@
   position: static;
 }
 
-.exp-scroll {
-  height: auto;
-  max-height: 80vh;
-}
+
 }
 
 /* --- MEJORAS ADICIONALES --- */
@@ -872,10 +869,6 @@ from {
   min-width: auto;
 }
 
-.exp-scroll {
-  height: auto;
-  max-height: 80vh;
-}
 }
 
 /* --- MEJORAS ADICIONALES --- */
@@ -4346,9 +4339,6 @@ from { transform: translateY(30px); opacity: 0; }
   min-width: 800px;
 }
 
-.exp-card {
-  overflow-x: auto;
-}
 }
 
 /* --- LAYOUT & MAIN STYLES --- */
@@ -4380,16 +4370,6 @@ from { transform: translateY(30px); opacity: 0; }
 
 /* --- CARD TABLE STYLE --- */
 
-.exp-card {
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  overflow: hidden;
-  border: 1px solid #e9ecef;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: #fff;
-}
 
 /* --- HEADER --- */
 
@@ -4463,11 +4443,6 @@ from { transform: translateY(30px); opacity: 0; }
 
 /* --- ROW STYLE --- */
 
-.exp-scroll {
-  overflow-y: auto;
-  overflow-x: hidden;
-  font-size: .95rem;
-}
 
 .exp-row-custom {
   display: flex;
@@ -4545,9 +4520,6 @@ from { transform: translateY(30px); opacity: 0; }
   min-width: 900px;
 }
 
-.exp-card {
-  overflow-x: auto;
-}
 }
 
 /* ============================================================
@@ -6476,16 +6448,6 @@ from { opacity: 0; transform: translateY(-5px); }
 .exp-main-content { flex: 1; min-width: 0; }
 .exp-sidebar { flex: 0 0 380px; min-width: 380px; position: sticky; }
 
-/* Tabla maestra */
-.exp-card {
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  overflow: hidden;
-  border: 1px solid #e9ecef;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-}
 .exp-head {
   position: sticky;
   top: 0;
@@ -7389,20 +7351,6 @@ from { opacity: 0; transform: translateY(-5px); }
    ESTILOS PARA TABLA UNIFICADA CON NUEVAS COLUMNAS
 ============================================================ */
 
-/* Contenedor principal de la tarjeta */
-.exp-card {
-  display: flex;
-  flex-direction: column;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-/* Área de scroll para las filas */
-.exp-scroll {
-  overflow-y: auto;
-  overflow-x: hidden;
-}
 
 /* Scrollbar personalizado */
 .exp-scroll::-webkit-scrollbar {
@@ -7461,4 +7409,103 @@ from { opacity: 0; transform: translateY(-5px); }
   .exp-scroll > div {
     min-width: 1200px;
   }
+}
+
+.exp-card {
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  overflow: hidden; /* IMPORTANTE: Quitamos el scroll de la tarjeta general */
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  position: relative; /* Necesario para el sticky header */
+}
+
+.exp-scroll {
+  overflow-y: auto;
+  overflow-x: auto; /* Permitir ambos scrolls aquí */
+  font-size: .95rem;
+  position: relative; /* Para contexto del sticky */
+}
+
+.top-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+  flex-shrink: 0; /* Que no se colapse */
+}
+
+.top-scroll-content {
+  height: 1px; /* Invisible, solo para generar ancho */
+}
+
+
+/* ============================================================
+   ESTILOS PARA TABLA CON SCROLL SUPERIOR SINCRONIZADO
+   ============================================================ */
+
+/* Contenedor principal de la tabla */
+.exp-card {
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  overflow: hidden; /* IMPORTANTE: El scroll se manejará internamente */
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+
+/* --- Scroll Superior (Nuevo) --- */
+.top-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: #f8f9fa;
+  flex-shrink: 0; /* Evita que se colapse */
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* Contenido "fantasma" que le da el ancho al scroll superior */
+.top-scroll-content {
+  height: 1px; /* Es invisible, solo para generar el ancho total */
+}
+
+/* Contenedor del scroll principal (cuerpo de la tabla) */
+.exp-scroll {
+  overflow-y: auto;
+  overflow-x: auto; /* Ambos scrolls aquí */
+  -webkit-overflow-scrolling: touch; /* Scroll suave en móviles */
+}
+
+/* --- Scrollbars personalizados para un look más limpio --- */
+.top-scroll-wrapper::-webkit-scrollbar,
+.exp-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.top-scroll-wrapper::-webkit-scrollbar-track,
+.exp-scroll::-webkit-scrollbar-track {
+  background: #f1f3f5;
+}
+
+.top-scroll-wrapper::-webkit-scrollbar-thumb,
+.exp-scroll::-webkit-scrollbar-thumb {
+  background: #d0d3d6;
+  border-radius: 4px;
+  border: 2px solid #f1f3f5;
+}
+
+.top-scroll-wrapper::-webkit-scrollbar-thumb:hover,
+.exp-scroll::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
+}
+
+/* Para navegadores Firefox */
+.top-scroll-wrapper, .exp-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #d0d3d6 #f1f3f5;
 }
