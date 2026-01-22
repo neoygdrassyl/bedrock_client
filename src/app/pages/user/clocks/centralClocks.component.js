@@ -199,10 +199,6 @@ export default function EXP_CLOCKS(props) {
           })
           .catch(e => console.error("Error sincronizando formulario desde reloj:", e));
       }
-      // CASO 3: Ambos vacíos o iguales -> No hacer nada
-      else {
-        console.log('✅ Valla sincronizada', { formDate, clockDate });
-      }
     };
 
     const timer = setTimeout(syncVallaDate, 100);

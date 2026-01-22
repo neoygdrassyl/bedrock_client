@@ -46,7 +46,6 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     }
 
     let endDatePhase1 = estudioOptions.notificationType === 'comunicar' ? getClock(33)?.date_start : acta1Date;
-    console.log("FIN DE FASE ", endDatePhase1);
 
     const corrDate = getClock(35)?.date_start;
     
