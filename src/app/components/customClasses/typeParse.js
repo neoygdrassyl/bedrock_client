@@ -899,7 +899,7 @@ export function _GET_SERIE_STR(_CHILD) {
     let _SERIES_STR = [];
     for (var i = 0; i < _SERIES.length; i++) {
         if (infoCud.codeDictionary) {
-            if (_GLOBAL_ID == "cb1")  _SERIES_STR.push(SERIES_CB1.NEW[_SERIES[i]])
+            if (_GLOBAL_ID == "cb1") _SERIES_STR.push(SERIES_CB1.NEW[_SERIES[i]])
         }
         else _SERIES_STR.push(COD_SERIES[_SERIES[i]])
     }
@@ -928,7 +928,7 @@ export function _GET_SUBSERIE_STR(_CHILD) {
     let _SERIES_STR = [];
     for (var i = 0; i < _SERIES.length; i++) {
         if (infoCud.codeDictionary) {
-            if (_GLOBAL_ID == "cb1")  _SERIES_STR.push(SERIES_CB1.NEW[_SERIES[i]])
+            if (_GLOBAL_ID == "cb1") _SERIES_STR.push(SERIES_CB1.NEW[_SERIES[i]])
         }
         else _SERIES_STR.push(COD_SERIES[_SERIES[i]])
     }
@@ -1200,10 +1200,26 @@ export function _GET_EXPENSES_DATA(year) {
         '2023': { value: 42412, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
         '2024': { value: 47065, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
         '2025': { value: 49799, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
+        '2026': { value: 52374, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
     }
 
     if (!values[year]) return values[Object.keys(values)[Object.keys(values).length - 1]] // return last entry of values
     else return values[year]
+}
+
+export function get_SMMV(year) {
+if (year == '2020') return 877803
+else if (year == '2021') return 908526
+else if (year == '2022') return 1000000
+else if (year == '2023') return 1160000
+else if (year == '2024') return 1300000
+else if (year == '2025') return 1423500
+else if (year == '2026') return 1750905
+else return 1750905
+}
+
+export function get_UVT(year) {
+    return _GET_EXPENSES_DATA(year).value
 }
 
 export function _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year) {

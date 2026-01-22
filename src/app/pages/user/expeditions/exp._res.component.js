@@ -9,9 +9,10 @@ import FUN_SERVICE from '../../../services/fun.service';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
 import { MDBBtn } from 'mdb-react-ui-kit';
-import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
+import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
+import moment from "moment";
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -98,6 +99,14 @@ export default function EXP_RES(props) {
     }
     let _GET_CHILD_51 = () => {
         var _CHILD = currentItem.fun_51s;
+        var _LIST = [];
+        if (_CHILD) {
+            _LIST = _CHILD;
+        }
+        return _LIST;
+    }
+    let _GET_CHILD_52 = () => {
+        var _CHILD = currentItem.fun_52s;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
@@ -495,11 +504,11 @@ export default function EXP_RES(props) {
                     let cat2 = f2.item_232.split('/')[i] || '';
                     let mat = f2.item_22.split('/')[i] || '';
                     let dir = f2.item_211.split('/')[i] || '';
-    
+
                     text += `${i + 1} | ${cat || cat2} | ${mat} | ${dir} | ${f2.item_261} | XXX m2\n`;
                 }
             }
-            
+
 
             return text;
         }
@@ -524,12 +533,12 @@ export default function EXP_RES(props) {
         const sexto_a3_dv = sexto_v[2] || duty.charge || '';
 
         const sexto_b_dv_1 = reso.sexto_b ?? 'Deee acuerdo con el área generadora para la actividad de comercio y las unidades de uso xxx en estrato xxx se requieren xx unidades de parqueo. El proyecto presenta 2 cupos en el sitio y queda por compensar 1. De esta obligación se notifica al titular del presente acto de reconocimiento para que dé cumplimiento en el momento procesal exigible, esto es como condición para poder desarrollar el uso del suelo (licencia de funcionamiento), por cuanto que para expedir la presente actuación se verificó el cumplimiento de la norma vigente de carácter municipal, art. 471 del POT. Lo anterior debe realizarse de conformidad con lo establecido en las normas vigentes (Acuerdo 065 de 2006 y del Decreto 0198 de 2015 que reglamenta los artículos 363 y 364 del POT).';
-        
+
         const data_sexto = ['xx', _CHILD_2.item_267 ?? 'xx', 'xx'];
 
         let indice = 0;
         const sexto_b_dv = sexto_b_dv_1.replace(/x{2,3}/g, () => {
-        return data_sexto[indice++] ?? 'xx';
+            return data_sexto[indice++] ?? 'xx';
         });
 
 
@@ -597,7 +606,7 @@ export default function EXP_RES(props) {
                     <div className="col-2"></div>
                     <div className="col-1">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={segundo_cb[1] == 1 ? true : false}  name="expedition_doc_res_segundo_cb"/>
+                            <input class="form-check-input" type="checkbox" defaultChecked={segundo_cb[1] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
                             <label>B.</label>
                         </div>
                     </div>
@@ -3022,36 +3031,62 @@ export default function EXP_RES(props) {
             </div>
         </>
     }
+
+    let _MODEL_AOI = () => { return <></> }
+
+    let _MODEL_CTO = () => { return <></> }
+
+    let _MODEL_REC_SIMPLE = () => { return <></> }
+
+    let _MODEL_REC_ORDEN = () => { return <></> }
+
+    let _MODEL_REC_RURAL = () => {
+        var reso = _GET_EXPEDITION_JSON('reso');
+        let dv = reso.primero_5 || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso ___________________ de acuerdo a lo establecido por Acuerdo N° 028 de 2003 PBOT. `
+        
+        return <>
+            <div className="row mb-1">
+                <label className='fw-bold'>CONSIDERATIVA 5</label>
+                <div className="col">
+                    <textarea className='form-control' rows="4" id="expedition_doc_res_primero_5" defaultValue={dv} />
+                </div>
+            </div>
+
+        </>
+    }
     // ******************************* JSX ***************************** // 
+    function getModel(model) {
+        if (model == 'open') return _MODEL_OPEN();
+        else if (model == 'neg') return _MODEL_NEG();
+        else if (model == 'des') return _MODEL_DES();
+        else if (model == 'onn' || model == 'rec' || model == 'demon' || model == 'rdm') return _MODEL_ONN();
+        else if (model == 'reccon') return _MODEL_RECCON();
+        else if (model == 'parcon' || model == 'par') return _MODEL_PARCON();
+        else if (model == 'sub') return _MODEL_SUB();
+        else if (model == 'ons') return _MODEL_ONS();
+        else if (model == 'upvigon') return _MODEL_UPVIG();
+        else if (model == 'upvigam') return _MODEL_UPVIG_2();
+        else if (model == 'neg1') return _MODEL_NEG1();
+        else if (model == 'neg5') return _MODEL_NEG5();
+        else if (model == 'pro') return _MODEL_PRO();
+        else if (model == 'licup') return _MODEL_LICUP();
+        else if (model == 'eje') return _MODEL_EJE();
+        else if (model == 'clear') return _MODEL_CLEAR();
+        else if (model == 'rev') return _MODEL_REV();
+        else if (model == 'rev0') return _MODEL_REV0();
+        else if (model == 'rev2') return _MODEL_REV2();
+        else if (model == 'update') return _MODEL_UPDATE();
+        else if (model == 'res') return _MODEL_RES();
+        else if (model == 'cota') return _MODEL_COTA();
+        else if (model == 'rural') return _MODEL_REC_RURAL();
+        else return _MODEL_OTHER();
+
+    }
+
     let _COMPONENT_DOC_RES = () => {
         var model = currentRecord.model || 'open';
         let canSave = (window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2) || _GLOBAL_ID == 'cb1';
-        function getModel(model) {
-            if (model == 'open') return _MODEL_OPEN();
-            if (model == 'neg') return _MODEL_NEG();
-            if (model == 'des') return _MODEL_DES();
-            if (model == 'onn' || model == 'rec' || model == 'demon' || model == 'rdm') return _MODEL_ONN();
-            if (model == 'reccon') return _MODEL_RECCON();
-            if (model == 'parcon' || model == 'par') return _MODEL_PARCON();
-            if (model == 'sub') return _MODEL_SUB();
-            if (model == 'ons') return _MODEL_ONS();
-            if (model == 'upvigon') return _MODEL_UPVIG();
-            if (model == 'upvigam') return _MODEL_UPVIG_2();
-            if (model == 'neg1') return _MODEL_NEG1();
-            if (model == 'neg5') return _MODEL_NEG5();
-            if (model == 'pro') return _MODEL_PRO();
-            if (model == 'licup') return _MODEL_LICUP();
-            if (model == 'eje') return _MODEL_EJE();
-            if (model == 'clear') return _MODEL_CLEAR();
-            if (model == 'rev') return _MODEL_REV();
-            if (model == 'rev0') return _MODEL_REV0();
-            if (model == 'rev2') return _MODEL_REV2();
-            if (model == 'update') return _MODEL_UPDATE();
-            if (model == 'res') return _MODEL_RES();
-            if (model == 'cota') return _MODEL_COTA();
-            return _MODEL_OTHER();
 
-        }
 
         function getOptions(model) {
             let defaultOp = <>
@@ -3283,47 +3318,47 @@ export default function EXP_RES(props) {
                     </div>
                 </div>
                 {process.env.REACT_APP_GLOBAL_ID == 'cb1' ? (
-                <>
-                    <div className="col d-flex justify-content-center">
-                    <div className="input-group-sm my-1">
-                        <label className="form-check-label">Saltos entre párrafos</label>
-                        <input
-                        type="number"
-                        min={1}
-                        step={1}
-                        className="form-control-sm"
-                        id="record_page_step"
-                        defaultValue={1}
-                        />
-                    </div>
-                    </div>
-                    <div className="col d-flex justify-content-center">
-                    <div className="input-group-sm my-1">
-                        <label className="form-check-label">Espaciado encabezado</label>
-                        <input
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        className="form-control-sm"
-                        id="record_header_spacing"
-                        defaultValue={6}
-                        />
-                    </div>
-                    </div>
-                </>
+                    <>
+                        <div className="col d-flex justify-content-center">
+                            <div className="input-group-sm my-1">
+                                <label className="form-check-label">Saltos entre párrafos</label>
+                                <input
+                                    type="number"
+                                    min={1}
+                                    step={1}
+                                    className="form-control-sm"
+                                    id="record_page_step"
+                                    defaultValue={1}
+                                />
+                            </div>
+                        </div>
+                        <div className="col d-flex justify-content-center">
+                            <div className="input-group-sm my-1">
+                                <label className="form-check-label">Espaciado encabezado</label>
+                                <input
+                                    type="number"
+                                    min={0}
+                                    step={0.01}
+                                    className="form-control-sm"
+                                    id="record_header_spacing"
+                                    defaultValue={6}
+                                />
+                            </div>
+                        </div>
+                    </>
                 ) : null}
             </div>
             <div className="row text-center">
                 <div className="col d-flex justify-content-center">
                     <div className="d-flex gap-3"> {/* Espaciado entre botones */}
-                    <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
-                        <i className="far fa-file-pdf"></i> GENERAR PDF
-                    </MDBBtn>
-                    {process.env.REACT_APP_GLOBAL_ID == 'cb1' && (
-                    <MDBBtn className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
-                        <i className="fas fa-edit"></i> EDITAR PDF
-                    </MDBBtn>
-                    )}
+                        <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
+                            <i className="far fa-file-pdf"></i> GENERAR PDF
+                        </MDBBtn>
+                        {process.env.REACT_APP_GLOBAL_ID == 'cb1' && (
+                            <MDBBtn className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
+                                <i className="fas fa-edit"></i> EDITAR PDF
+                            </MDBBtn>
+                        )}
                     </div>
                 </div>
             </div>
@@ -3343,6 +3378,7 @@ export default function EXP_RES(props) {
 
         }
         if (_GLOBAL_ID == 'cp1') {
+
             models.push({
                 group: 'RESOLUCIONES', items: [
                     { value: 'onn', label: 'OBRA NUEVA SIN SUPERVISIÓN' },
@@ -3352,10 +3388,19 @@ export default function EXP_RES(props) {
             });
 
             models.push({
+                group: 'LICENCIA DE CONSTRUCCION', items: [
+                    { value: 'aoi', label: 'CON AOI' },
+                    { value: 'cto', label: 'CON CTO' },
+                ]
+            });
+
+            models.push({
                 group: 'ACTOS DE RECONOCIMIENTO', items: [
                     { value: 'rec', label: 'ACTO DE RECONOCIMIENTO CON LICENCIA DE CONSTRUCCIÓN' },
                     { value: 'reccon', label: 'ACTO DE RECONOCIMIENTO SIMPLE Y SIN VIGENCIA' },
-                    { value: 'rdm', label: 'ACTO DE RECONOCIMIENTO, DEMOLICIÓN PARCIAL Y MODIFICACIÓN - SIN SUPERVICIÓN' }
+                    { value: 'rdm', label: 'ACTO DE RECONOCIMIENTO, DEMOLICIÓN PARCIAL Y MODIFICACIÓN - SIN SUPERVICIÓN' },
+                    { value: 'rec_simple', label: 'ACTO DE RECONOCIMIENTO SIMPLE' },
+                    { value: 'rec_orden', label: 'ACTO DE RECONOCIMIENTO POR ORDEN' },
                 ]
             });
 
@@ -3363,7 +3408,8 @@ export default function EXP_RES(props) {
                 group: 'LICENCIAS', items: [
                     { value: 'parcon', label: 'LICENCIA PARCELACIÓN Y CONSTRUCCIÓN' },
                     { value: 'par', label: 'LICENCIA PARCELACIÓN' },
-                    { value: 'sub', label: 'LICENCIA DE SUBDIVISION' }
+                    { value: 'sub', label: 'LICENCIA DE SUBDIVISION' },
+                    { value: 'rural', label: 'LICENCIA DE SUBDIVISION (RURAL) 2026' }
                 ]
             });
 
@@ -3423,9 +3469,6 @@ export default function EXP_RES(props) {
     var formData = new FormData();
     let pdf_gen_res = (editDocument = null) => {
         formData = new FormData();
-        console.log("Here 1")
-        formData.set('type_not', document.getElementById("type_not").value);
-
         let date_payment = _GET_CLOCK_STATE(3).date_start || '';
         let r_simple = document.getElementById("record_rew_simple").checked;
         formData.set('r_simple', r_simple);
@@ -3447,172 +3490,286 @@ export default function EXP_RES(props) {
         formData.set('r_pages', document.getElementById('record_page_step') ? document.getElementById("record_page_step").value : 1);
         const spacingInput = document.getElementById("record_header_spacing");
         formData.set(
-        "record_header_spacing",
-        spacingInput && spacingInput.value ? spacingInput.value : 6
+            "record_header_spacing",
+            spacingInput && spacingInput.value ? spacingInput.value : 6
         );
 
         formData.set('date_payment', date_payment);
         formData.set('tipo', document.getElementById('expedition_doc_res_1').value);
         formData.set('reso_date', document.getElementById('expedition_doc_res_2').value);
+        formData.set('reso_date_text', dateParser(document.getElementById('expedition_doc_res_2').value));
         formData.set('reso_id', document.getElementById('expedition_doc_res_id').value);
         formData.set('id_public', document.getElementById('expedition_doc_res_3').value);
         formData.set('reso_pot', document.getElementById('expedition_doc_res_pot').value);
         formData.set('reso_state', document.getElementById('expedition_doc_res_state').value);
         formData.set('special_rule_1', infoCud.res_extras.art1p);
-
-        if (document.getElementById('expedition_doc_res_old_lic')) formData.set('old_lic', document.getElementById('expedition_doc_res_old_lic').value);
-        if (document.getElementById('expedition_doc_res_primero')) formData.set('primero', document.getElementById('expedition_doc_res_primero').value);
-        if (document.getElementById('expedition_doc_res_primero_1')) formData.set('pimero_1', document.getElementById('expedition_doc_res_primero_1').value);
-        if (document.getElementById('expedition_doc_res_primero_2')) formData.set('pimero_2', document.getElementById('expedition_doc_res_primero_2').value);
-        if (document.getElementById('expedition_doc_res_primero_3')) formData.set('pimero_3', document.getElementById('expedition_doc_res_primero_3').value);
-        if (document.getElementById('expedition_doc_res_primero_4')) formData.set('pimero_4', document.getElementById('expedition_doc_res_primero_4').value);
-        if (document.getElementById('expedition_doc_res_primero_5')) formData.set('pimero_5', document.getElementById('expedition_doc_res_primero_5').value);
-        if (document.getElementById('expedition_doc_res_primero_6')) formData.set('pimero_6', document.getElementById('expedition_doc_res_primero_6').value);
-        if (document.getElementById('expedition_doc_res_primero_7')) formData.set('pimero_7', document.getElementById('expedition_doc_res_primero_7').value);
-        if (document.getElementById('expedition_doc_res_primero_8')) formData.set('pimero_8', document.getElementById('expedition_doc_res_primero_8').value);
-        if (document.getElementById('expedition_doc_res_negative_id')) formData.set('negative_id', document.getElementById('expedition_doc_res_negative_id').value);
-        if (document.getElementById('expedition_doc_res_negative_user')) formData.set('negative_user', document.getElementById('expedition_doc_res_negative_user').value);
-
-        if (document.getElementById('expedition_doc_res_segundo_1')) formData.set('segundo_1', document.getElementById('expedition_doc_res_segundo_1').value);
-        if (document.getElementById('expedition_doc_res_segundo_2')) formData.set('segundo_2', document.getElementById('expedition_doc_res_segundo_2').value);
-        if (document.getElementById('expedition_doc_res_segundo_a')) formData.set('segundo_a', document.getElementById('expedition_doc_res_segundo_a').value);
-
-        if (document.getElementById('expedition_doc_res_tercero_1')) formData.set('tercero_1', document.getElementById('expedition_doc_res_tercero_1').value);
-        if (document.getElementById('expedition_doc_res_tercero_2')) formData.set('tercero_2', document.getElementById('expedition_doc_res_tercero_2').value);
-        if (document.getElementById('expedition_doc_res_tercero_3')) formData.set('tercero_3', document.getElementById('expedition_doc_res_tercero_3').value);
-
-        if (document.getElementById('expedition_doc_res_quinto')) formData.set('quinto', document.getElementById('expedition_doc_res_quinto').value);
-        if (document.getElementById('expedition_doc_res_cuarto_1')) formData.set('cuarto_1', document.getElementById('expedition_doc_res_cuarto_1').value);
-        if (document.getElementById('expedition_doc_res_cuarto_cb')) formData.set('cuarto_cb', document.getElementById('expedition_doc_res_cuarto_cb').checked ? true : false);
-
-        if (document.getElementById('expedition_doc_res_sexto_b')) formData.set('sexto_b', document.getElementById('expedition_doc_res_sexto_b').value);
-
-        if (document.getElementById('expedition_doc_res_duty_2')) formData.set('duty_2', document.getElementById('expedition_doc_res_duty_2').value);
-        if (document.getElementById('expedition_doc_res_duty_6')) formData.set('duty_6', document.getElementById('expedition_doc_res_duty_6').value);
-        if (document.getElementById('expedition_doc_res_duty_9')) formData.set('duty_9', document.getElementById('expedition_doc_res_duty_9').value);
-        if (document.getElementById('expedition_doc_res_duty_10')) formData.set('duty_10', document.getElementById('expedition_doc_res_duty_10').value);
-        if (document.getElementById('expedition_doc_res_duty_17')) formData.set('duty_17', document.getElementById('expedition_doc_res_duty_17').value);
-        if (document.getElementById('expedition_doc_res_duty_18')) formData.set('duty_18', document.getElementById('expedition_doc_res_duty_18').value);
-        if (document.getElementById('expedition_doc_res_duty_19')) formData.set('duty_19', document.getElementById('expedition_doc_res_duty_19').value);
-        if (document.getElementById('expedition_doc_res_duty_20')) formData.set('duty_20', document.getElementById('expedition_doc_res_duty_20').value);
-        if (document.getElementById('expedition_doc_res_duty_21')) formData.set('duty_21', document.getElementById('expedition_doc_res_duty_21').value);
-
-
-        if (document.getElementById('expedition_doc_res_art_1p')) formData.set('art_1p', document.getElementById('expedition_doc_res_art_1p').value);
-        if (document.getElementById('expedition_doc_res_art_1_text')) formData.set('art_1_txt', document.getElementById('expedition_doc_res_art_1_text').value);
-        if (document.getElementById('expedition_doc_res_art_1_cb_tb')) formData.set('art_1_cb_tb', document.getElementById('expedition_doc_res_art_1_cb_tb').checked ? true : false);
-        if (document.getElementById('expedition_doc_res_art_1_text_tb')) formData.set('art_1_txt_tb', document.getElementById('expedition_doc_res_art_1_text_tb').value);
-
-        if (document.getElementById('expedition_doc_res_art_4_1_dv')) formData.set('art_4_1', document.getElementById('expedition_doc_res_art_4_1_dv').value);
-        if (document.getElementById('expedition_doc_res_art_4_2_dv')) formData.set('art_4_2', document.getElementById('expedition_doc_res_art_4_2_dv').value);
-        if (document.getElementById('expedition_doc_res_art_4_p')) formData.set('art_4_p', document.getElementById('expedition_doc_res_art_4_p').value);
-
-        if (document.getElementById('expedition_doc_res_art_5')) formData.set('art_5', document.getElementById('expedition_doc_res_art_5').value);
-        if (document.getElementById('expedition_doc_res_art_7')) formData.set('art_7', document.getElementById('expedition_doc_res_art_7').value);
-        if (document.getElementById('expedition_doc_res_art_8')) formData.set('art_8', document.getElementById('expedition_doc_res_art_8').value);
-        if (document.getElementById('expedition_doc_res_art_8p')) formData.set('art_8p', document.getElementById('expedition_doc_res_art_8p').value);
-        if (document.getElementById('expedition_doc_res_art_8p1')) formData.set('art_8p1', document.getElementById('expedition_doc_res_art_8p1').value);
-        if (document.getElementById('expedition_doc_res_art_9')) formData.set('art_9', document.getElementById('expedition_doc_res_art_9').value);
-
-        if (document.getElementById('expedition_doc_res_open_1')) formData.set('open_1', document.getElementById('expedition_doc_res_open_1').value);
-        if (document.getElementById('expedition_doc_res_open_2')) formData.set('open_2', document.getElementById('expedition_doc_res_open_2').value);
-        if (document.getElementById('expedition_doc_res_open_3')) formData.set('open_3', document.getElementById('expedition_doc_res_open_3').value);
-
         let values = []
-        let values_html = document.getElementsByName('expedition_doc_res_sexto_v');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.value)
+
+        // 2026 UPDATE
+        let model = currentRecord.model || 'open';
+        let f1 = _GET_CHILD_1();
+        let f2 = _GET_CHILD_2();
+        let f51 = _GET_CHILD_51();
+        let f52 = _GET_CHILD_52();
+        let f53 = _GET_CHILD_53();
+        let taxes = _GET_EXPEDITION_JSON('taxes');
+
+        let text_arq = _GET_STEP_TYPE('s33', 'value')[0] || '';
+        let text_eng = (_GET_STEP_TYPE('s33', 'value')[1] + (_GET_CHILD_ENG_REW().desc ? '\n' + _GET_CHILD_ENG_REW().desc : '')) || '';
+
+        if (model == 'aoi' || model == 'cto') {
+            formData.set('clock_payment', _GET_CLOCK_STATE(3, 1).date_start);
+            formData.set('clock_lydf', _GET_CLOCK_STATE(5, 1).date_start);
+
+            formData.set('f1_tipo', _FUN_6_PARSER(f1.item_6, true));
+
+            formData.set('f2_address', f2.item_211);
+            formData.set('f2_matricula', f2.item_22);
+            formData.set('f2_catastral', f2.item_232);
+            formData.set('f2_catastral_2', f2.item_23);
+
+            formData.set('f52_names', f52.map(i => (`${i.name} ${i.surname}`)).join(','));
+            formData.set('f52_ids', f52.map(i => (i.registration)).join(','));
+            formData.set('f52_roles', f52.map(i => (i.role)).join(','));
+
+            formData.set('f53_name', `${f53.item_5311} ${f53.item_5312}`);
+            formData.set('f53_id', f53.item_532);
+            formData.set('f53_calidad', f53.item_533);
+
+            formData.set('exp_fijas_id', currentItem.id_payment);
+            formData.set('exp_fijas_date', moment(_GET_CLOCK_STATE(3, 1).date_start).format('DD/MM/YYYY'));
+            formData.set('exp_variable_id', taxes.id_payment_1);
+            formData.set('exp_variable_date', moment(taxes.id_payment_1_date).format('DD/MM/YYYY'));
+            formData.set('exp_delineacion_id', taxes.del_number);
+            formData.set('exp_delineacion_date', moment(taxes.del_date).format('DD/MM/YYYY'));
+            formData.set('exp_delineacion_n', addDecimalPoints(taxes.del_pay));
+            formData.set('exp_uis_id', taxes.id_payment_2);
+            formData.set('exp_uis_date', moment(taxes.uis_date).format('DD/MM/YYYY'));
+            formData.set('exp_uis_n', addDecimalPoints(Number(taxes.uis) + Number(taxes.id_payment_2_p)));
+
+            formData.set('text_arq', text_arq);
+            formData.set('text_eng', text_eng);
+
         }
+        else if (model == 'rural') {
+            formData.set('clock_payment', _GET_CLOCK_STATE(3, 1).date_start);
+            formData.set('clock_lydf', _GET_CLOCK_STATE(5, 1).date_start);
 
-        formData.set('sexto_v', values.join(';'));
+            formData.set('f2_address', f2.item_211);
+            formData.set('f2_matricula', f2.item_22);
+            formData.set('f2_catastral', f2.item_232);
+            formData.set('f2_catastral_2', f2.item_23);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_segundo_cb');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.checked)
+            formData.set('f53_name', `${f53.item_5311} ${f53.item_5312}`);
+            formData.set('f53_id', f53.item_532);
+            formData.set('f53_calidad', f53.item_533);
+
+            formData.set('exp_fijas_id', currentItem.id_payment);
+            formData.set('exp_fijas_date', moment(_GET_CLOCK_STATE(3, 1).date_start).format('DD/MM/YYYY'));
+
+            formData.set('f51_names', f51.map(i => (`${i.name} ${i.surname}`)).join(','));
+            formData.set('f51_ids', f51.map(i => (i.id_number)).join(','));
+            formData.set('f51_roles', f51.map(i => (i.role)).join(','));
+
+            formData.set('f53_name', `${f53.item_5311} ${f53.item_5312}`);
+            formData.set('f53_id', f53.item_532);
+            formData.set('f53_calidad', f53.item_533);
+
+            formData.set('primero_5',  document.getElementById("expedition_doc_res_primero_5").value );
+
+            formData.set('text_arq', text_arq);
+
         }
-        formData.set('segundo_cb', values.join(','));
+        else if (model == 'rec_simple' || model == 'rec_orden') {
+            formData.set('clock_payment', _GET_CLOCK_STATE(3, 1).date_start);
+            formData.set('clock_lydf', _GET_CLOCK_STATE(5, 1).date_start);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_tercero_cb');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.checked)
+            formData.set('f2_address', f2.item_211);
+            formData.set('f2_matricula', f2.item_22);
+            formData.set('f2_catastral', f2.item_232);
+            formData.set('f2_catastral_2', f2.item_23);
+
+            formData.set('f53_name', `${f53.item_5311} ${f53.item_5312}`);
+            formData.set('f53_id', f53.item_532);
+            formData.set('f53_calidad', f53.item_533);
+
+            formData.set('exp_fijas_id', currentItem.id_payment);
+            formData.set('exp_fijas_date', moment(_GET_CLOCK_STATE(3, 1).date_start).format('DD/MM/YYYY'));
+            formData.set('exp_variable_id', taxes.id_payment_1);
+            formData.set('exp_variable_date', moment(taxes.id_payment_1_date).format('DD/MM/YYYY'));
+            formData.set('exp_uis_id', taxes.id_payment_2);
+            formData.set('exp_uis_date', moment(taxes.uis_date).format('DD/MM/YYYY'));
+            formData.set('exp_uis_n', addDecimalPoints(Number(taxes.uis) + Number(taxes.id_payment_2_p)));
+
+            formData.set('f1_tipo', _FUN_6_PARSER(f1.item_6, true));
+
+            formData.set('f51_names', f51.map(i => (`${i.name} ${i.surname}`)).join(','));
+            formData.set('f51_ids', f51.map(i => (i.id_number)).join(','));
+            formData.set('f51_roles', f51.map(i => (i.role)).join(','));
+
+            formData.set('f53_name', `${f53.item_5311} ${f53.item_5312}`);
+            formData.set('f53_id', f53.item_532);
+            formData.set('f53_calidad', f53.item_533);
+
+            formData.set('text_arq', text_arq);
+            formData.set('text_eng', text_eng);
+
         }
-        formData.set('tercero_cb', values.join(','));
+        else {
+            if (document.getElementById('expedition_doc_res_old_lic')) formData.set('old_lic', document.getElementById('expedition_doc_res_old_lic').value);
+            if (document.getElementById('expedition_doc_res_primero')) formData.set('primero', document.getElementById('expedition_doc_res_primero').value);
+            if (document.getElementById('expedition_doc_res_primero_1')) formData.set('pimero_1', document.getElementById('expedition_doc_res_primero_1').value);
+            if (document.getElementById('expedition_doc_res_primero_2')) formData.set('pimero_2', document.getElementById('expedition_doc_res_primero_2').value);
+            if (document.getElementById('expedition_doc_res_primero_3')) formData.set('pimero_3', document.getElementById('expedition_doc_res_primero_3').value);
+            if (document.getElementById('expedition_doc_res_primero_4')) formData.set('pimero_4', document.getElementById('expedition_doc_res_primero_4').value);
+            if (document.getElementById('expedition_doc_res_primero_5')) formData.set('pimero_5', document.getElementById('expedition_doc_res_primero_5').value);
+            if (document.getElementById('expedition_doc_res_primero_6')) formData.set('pimero_6', document.getElementById('expedition_doc_res_primero_6').value);
+            if (document.getElementById('expedition_doc_res_primero_7')) formData.set('pimero_7', document.getElementById('expedition_doc_res_primero_7').value);
+            if (document.getElementById('expedition_doc_res_primero_8')) formData.set('pimero_8', document.getElementById('expedition_doc_res_primero_8').value);
+            if (document.getElementById('expedition_doc_res_negative_id')) formData.set('negative_id', document.getElementById('expedition_doc_res_negative_id').value);
+            if (document.getElementById('expedition_doc_res_negative_user')) formData.set('negative_user', document.getElementById('expedition_doc_res_negative_user').value);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_sexto_cb');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.checked)
-        }
-        formData.set('sexto_cb', values.join(','));
+            if (document.getElementById('expedition_doc_res_segundo_1')) formData.set('segundo_1', document.getElementById('expedition_doc_res_segundo_1').value);
+            if (document.getElementById('expedition_doc_res_segundo_2')) formData.set('segundo_2', document.getElementById('expedition_doc_res_segundo_2').value);
+            if (document.getElementById('expedition_doc_res_segundo_a')) formData.set('segundo_a', document.getElementById('expedition_doc_res_segundo_a').value);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_sexto_v_cb');
-        for (let i = 0; i < values_html.length; i++) {
-            const element = values_html[i];
-            if (element.checked == true) values.push(1)
-            else values.push(0)
-        }
-        formData.set('sexto_v_cb', values.join(','));
+            if (document.getElementById('expedition_doc_res_tercero_1')) formData.set('tercero_1', document.getElementById('expedition_doc_res_tercero_1').value);
+            if (document.getElementById('expedition_doc_res_tercero_2')) formData.set('tercero_2', document.getElementById('expedition_doc_res_tercero_2').value);
+            if (document.getElementById('expedition_doc_res_tercero_3')) formData.set('tercero_3', document.getElementById('expedition_doc_res_tercero_3').value);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_duty_cb');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.checked)
-        }
-        formData.set('duty_cb', values.join(','));
+            if (document.getElementById('expedition_doc_res_quinto')) formData.set('quinto', document.getElementById('expedition_doc_res_quinto').value);
+            if (document.getElementById('expedition_doc_res_cuarto_1')) formData.set('cuarto_1', document.getElementById('expedition_doc_res_cuarto_1').value);
+            if (document.getElementById('expedition_doc_res_cuarto_cb')) formData.set('cuarto_cb', document.getElementById('expedition_doc_res_cuarto_cb').checked ? true : false);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_art_1_cb');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.checked)
-        }
-        formData.set('art_1_cb', values.join(','));
+            if (document.getElementById('expedition_doc_res_sexto_b')) formData.set('sexto_b', document.getElementById('expedition_doc_res_sexto_b').value);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_arts_cb');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.checked)
-        }
-        formData.set('arts_cb', values.join(','));
+            if (document.getElementById('expedition_doc_res_duty_2')) formData.set('duty_2', document.getElementById('expedition_doc_res_duty_2').value);
+            if (document.getElementById('expedition_doc_res_duty_6')) formData.set('duty_6', document.getElementById('expedition_doc_res_duty_6').value);
+            if (document.getElementById('expedition_doc_res_duty_9')) formData.set('duty_9', document.getElementById('expedition_doc_res_duty_9').value);
+            if (document.getElementById('expedition_doc_res_duty_10')) formData.set('duty_10', document.getElementById('expedition_doc_res_duty_10').value);
+            if (document.getElementById('expedition_doc_res_duty_17')) formData.set('duty_17', document.getElementById('expedition_doc_res_duty_17').value);
+            if (document.getElementById('expedition_doc_res_duty_18')) formData.set('duty_18', document.getElementById('expedition_doc_res_duty_18').value);
+            if (document.getElementById('expedition_doc_res_duty_19')) formData.set('duty_19', document.getElementById('expedition_doc_res_duty_19').value);
+            if (document.getElementById('expedition_doc_res_duty_20')) formData.set('duty_20', document.getElementById('expedition_doc_res_duty_20').value);
+            if (document.getElementById('expedition_doc_res_duty_21')) formData.set('duty_21', document.getElementById('expedition_doc_res_duty_21').value);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_septimo_cb');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.checked)
-        }
-        formData.set('septimo_cb', values.join(','));
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_c_parcon');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.value)
-        }
-        formData.set('parcon', values.join('&&'));
+            if (document.getElementById('expedition_doc_res_art_1p')) formData.set('art_1p', document.getElementById('expedition_doc_res_art_1p').value);
+            if (document.getElementById('expedition_doc_res_art_1_text')) formData.set('art_1_txt', document.getElementById('expedition_doc_res_art_1_text').value);
+            if (document.getElementById('expedition_doc_res_art_1_cb_tb')) formData.set('art_1_cb_tb', document.getElementById('expedition_doc_res_art_1_cb_tb').checked ? true : false);
+            if (document.getElementById('expedition_doc_res_art_1_text_tb')) formData.set('art_1_txt_tb', document.getElementById('expedition_doc_res_art_1_text_tb').value);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_res_c_sub');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.value)
-        }
-        formData.set('sub', values.join('&&'));
+            if (document.getElementById('expedition_doc_res_art_4_1_dv')) formData.set('art_4_1', document.getElementById('expedition_doc_res_art_4_1_dv').value);
+            if (document.getElementById('expedition_doc_res_art_4_2_dv')) formData.set('art_4_2', document.getElementById('expedition_doc_res_art_4_2_dv').value);
+            if (document.getElementById('expedition_doc_res_art_4_p')) formData.set('art_4_p', document.getElementById('expedition_doc_res_art_4_p').value);
 
-        values = []
-        values_html = document.getElementsByName('expedition_doc_reso_open_cb');
-        for (let i = 0; i < values_html.length; i++) {
-            const html = values_html[i];
-            values.push(html.checked)
+            if (document.getElementById('expedition_doc_res_art_5')) formData.set('art_5', document.getElementById('expedition_doc_res_art_5').value);
+            if (document.getElementById('expedition_doc_res_art_7')) formData.set('art_7', document.getElementById('expedition_doc_res_art_7').value);
+            if (document.getElementById('expedition_doc_res_art_8')) formData.set('art_8', document.getElementById('expedition_doc_res_art_8').value);
+            if (document.getElementById('expedition_doc_res_art_8p')) formData.set('art_8p', document.getElementById('expedition_doc_res_art_8p').value);
+            if (document.getElementById('expedition_doc_res_art_8p1')) formData.set('art_8p1', document.getElementById('expedition_doc_res_art_8p1').value);
+            if (document.getElementById('expedition_doc_res_art_9')) formData.set('art_9', document.getElementById('expedition_doc_res_art_9').value);
+
+            if (document.getElementById('expedition_doc_res_open_1')) formData.set('open_1', document.getElementById('expedition_doc_res_open_1').value);
+            if (document.getElementById('expedition_doc_res_open_2')) formData.set('open_2', document.getElementById('expedition_doc_res_open_2').value);
+            if (document.getElementById('expedition_doc_res_open_3')) formData.set('open_3', document.getElementById('expedition_doc_res_open_3').value);
+
+
+            let values_html = document.getElementsByName('expedition_doc_res_sexto_v');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.value)
+            }
+
+            formData.set('sexto_v', values.join(';'));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_segundo_cb');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.checked)
+            }
+            formData.set('segundo_cb', values.join(','));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_tercero_cb');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.checked)
+            }
+            formData.set('tercero_cb', values.join(','));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_sexto_cb');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.checked)
+            }
+            formData.set('sexto_cb', values.join(','));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_sexto_v_cb');
+            for (let i = 0; i < values_html.length; i++) {
+                const element = values_html[i];
+                if (element.checked == true) values.push(1)
+                else values.push(0)
+            }
+            formData.set('sexto_v_cb', values.join(','));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_duty_cb');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.checked)
+            }
+            formData.set('duty_cb', values.join(','));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_art_1_cb');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.checked)
+            }
+            formData.set('art_1_cb', values.join(','));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_arts_cb');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.checked)
+            }
+            formData.set('arts_cb', values.join(','));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_septimo_cb');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.checked)
+            }
+            formData.set('septimo_cb', values.join(','));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_c_parcon');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.value)
+            }
+            formData.set('parcon', values.join('&&'));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_res_c_sub');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.value)
+            }
+            formData.set('sub', values.join('&&'));
+
+            values = []
+            values_html = document.getElementsByName('expedition_doc_reso_open_cb');
+            for (let i = 0; i < values_html.length; i++) {
+                const html = values_html[i];
+                values.push(html.checked)
+            }
         }
         formData.set('open_cb', values.join(','));
 
@@ -3632,13 +3789,13 @@ export default function EXP_RES(props) {
         EXPEDITION_SERVICE.gen_doc_res(formData)
             .then(response => {
                 // console.log(response.data);
-                if (response.data.status  === 'OK') {
+                if (response.data.status === 'OK') {
                     if (editDocument) {
                         // console.log(response.data);
-                        setResDocData(response.data); 
+                        setResDocData(response.data);
                         MySwal.close();
                     }
-                    else{
+                    else {
                         MySwal.close();
                         window.open(process.env.REACT_APP_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
                     }
@@ -3679,6 +3836,8 @@ export default function EXP_RES(props) {
         reso.pot = document.getElementById("expedition_doc_res_pot").value;
         reso.eje = document.getElementById('exp_pdf_reso_record_version').value;
         reso.header_text = document.getElementById('expedition_doc_header_text').value;
+
+
 
         reso.primero = document.getElementById("expedition_doc_res_primero") ? document.getElementById("expedition_doc_res_primero").value : '';
         reso.primero_1 = document.getElementById("expedition_doc_res_primero_1") ? document.getElementById("expedition_doc_res_primero_1").value : '';
@@ -3724,7 +3883,7 @@ export default function EXP_RES(props) {
             else values.push(0)
         }
         reso.segundo_cb = values.join(';');
-        reso.segundo_a =  document.getElementsByName('expedition_doc_res_segundo_a').value;
+        reso.segundo_a = document.getElementsByName('expedition_doc_res_segundo_a').value;
 
 
         values = [];
@@ -3916,7 +4075,7 @@ export default function EXP_RES(props) {
             </div>
             <div>
                 {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
-                    <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model || 'open'}/>
+                    <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model || 'open'} />
                 )}
             </div>
         </div>

@@ -73,6 +73,7 @@ export const ENG_FUEGO = (props) => {
 
     const COLUMNAS = {
         'Siliceo': {
+            '0': { col: '', res: 0, dim: 0, rec: 0, },
             '1': { col: 'Siliceo 1', res: 1, dim: 200, rec: 20, },
             '1.5': { col: 'Siliceo 1.5', res: 1.5, dim: 230, rec: 20, },
             '2': { col: 'Siliceo 2', res: 2, dim: 250, rec: 30, },
@@ -80,6 +81,7 @@ export const ENG_FUEGO = (props) => {
             '4': { col: 'Siliceo 4', res: 4, dim: 360, rec: 40, },
         },
         'Carbonato': {
+            '0': { col: '', res: 0, dim: 0, rec: 0, },
             '1': { col: 'Carbonato 1', res: 1, dim: 200, rec: 20, },
             '1.5': { col: 'Carbonato 1.5', res: 1.5, dim: 230, rec: 20, },
             '2': { col: 'Carbonato 2', res: 2, dim: 250, rec: 20, },
@@ -87,6 +89,7 @@ export const ENG_FUEGO = (props) => {
             '4': { col: 'Carbonato 4', res: 4, dim: 310, rec: 30, },
         },
         'Liviano': {
+            '0': { col: '', res: 0, dim: 0, rec: 0, },
             '1': { col: 'Carbonato 1', res: 1, dim: 200, rec: 20, },
             '1.5': { col: 'Carbonato 1.5', res: 1.5, dim: 220, rec: 20, },
             '2': { col: 'Carbonato 2', res: 2, dim: 230, rec: 20, },
@@ -96,6 +99,7 @@ export const ENG_FUEGO = (props) => {
     }
     const LOSAS = {
         'Siliceo': {
+            '0': { col: '', res: 0, dim: 0, },
             '1': { col: 'Siliceo 1', res: 1, dim: 90 },
             '1.5': { col: 'Siliceo 1.5', res: 1.5, dim: 110 },
             '2': { col: 'Siliceo 2', res: 2, dim: 130 },
@@ -103,6 +107,7 @@ export const ENG_FUEGO = (props) => {
             '4': { col: 'Siliceo 4', res: 4, dim: 180 },
         },
         'Carbonato': {
+            '0': { col: '', res: 0, dim: 0, },
             '1': { col: 'Carbonato 1', res: 1, dim: 80 },
             '1.5': { col: 'Carbonato 1.5', res: 1.5, dim: 100 },
             '2': { col: 'Carbonato 2', res: 2, dim: 120 },
@@ -110,6 +115,7 @@ export const ENG_FUEGO = (props) => {
             '4': { col: 'Carbonato 4', res: 4, dim: 170 },
         },
         'Finos Livianos': {
+            '0': { col: '', res: 0, dim: 0, },
             '1': { col: 'Carbonato 1', res: 1, dim: 70 },
             '1.5': { col: 'Carbonato 1.5', res: 1.5, dim: 80 },
             '2': { col: 'Carbonato 2', res: 2, dim: 100 },
@@ -117,6 +123,7 @@ export const ENG_FUEGO = (props) => {
             '4': { col: 'Carbonato 4', res: 4, dim: 140 },
         },
         'Gruesos Livianos': {
+            '0': { col: '', res: 0, dim: 0, },
             '1': { col: 'Carbonato 1', res: 1, dim: 60 },
             '1.5': { col: 'Carbonato 1.5', res: 1.5, dim: 80 },
             '2': { col: 'Carbonato 2', res: 2, dim: 90 },

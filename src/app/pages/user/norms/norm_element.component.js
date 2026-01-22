@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import DataTable from 'react-data-table-component';
-import PERFILES from "./PERFILES.json"
+import PERFILES from "../../../components/jsons/PERFILES.json"
 import { ELEMENTS } from './norm.vars'
 
 const MySwal = withReactContent(Swal);

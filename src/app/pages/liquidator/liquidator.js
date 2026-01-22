@@ -17,7 +17,7 @@ class Liquidator extends Component {
       subtotal_cv: 0,
       ledged_rows: 0,
       table: [],
-      version: props.versioni,
+      version: 2026,
       iva: 0.19,
     };
   }
@@ -49,7 +49,19 @@ class Liquidator extends Component {
       '2023': { value: 42412, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
       '2024': { value: 47065, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
       '2025': { value: 49799, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
+      '2026': { value: 53274, units: 'UVT', name: 'UNIDAD DE VALOR TRIBUTARIO', cfi: 10.01, cvi: 20.02 },
     }
+
+    const SMMV = {
+      '2021': { value: 908526 },
+      '2022': { value: 1000000 },
+      '2023': { value: 1160000 },
+      '2024': { value: 1300000 },
+      '2025': { value: 1423500 },
+      '2026': { value: 1750905 },
+    }
+
+
     var smmv = values[version].value; // Mininum wage
     const m = infoCud.m; // Factor m
     const iva = this.state.iva;
@@ -65,71 +77,71 @@ class Liquidator extends Component {
     const model2Table = [
       {
         title: 'Licencia de subdivisión 2.2.6.6.8.10', list: [
-          { name: 'Urbana y Rural, Sin rango. m2', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], } },
-          { name: 'Reloteo, Área útil urbanizable (0 a 1000m2)', const: { '2021': [2 / 30, 'SMLD', 2], '2022': [1.67], '2023': [1.67], '2024': [1.67], '2025': [1.67],  } },
-          { name: 'Reloteo, Área útil urbanizable (1001 a 5000m2)', const: { '2021': [0.5], '2022': [12.51], '2023': [12.51], '2024': [12.51],  '2025': [12.51],} },
-          { name: 'Reloteo, Área útil urbanizable (5001 a 10000m2)', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], } },
-          { name: 'Urbana y Rural, Sin rango. m2', const: { '2021': [1.5], '2022': [37.53], '2023': [37.53], '2024': [37.53], '2025': [37.53], } },
-          { name: 'Urbana y Rural, Sin rango. m2', const: { '2021': [2], '2022': [50.05], '2023': [50.05], '2024': [50.05], '2025': [50.05], } },
+          { name: 'Urbana y Rural, Sin rango. m2', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], '2026': [25.02], } },
+          { name: 'Reloteo, Área útil urbanizable (0 a 1000m2)', const: { '2021': [2 / 30, 'SMLD', 2], '2022': [1.67], '2023': [1.67], '2024': [1.67], '2025': [1.67], '2026': [1.67], } },
+          { name: 'Reloteo, Área útil urbanizable (1001 a 5000m2)', const: { '2021': [0.5], '2022': [12.51], '2023': [12.51], '2024': [12.51], '2025': [12.51], '2026': [12.51], } },
+          { name: 'Reloteo, Área útil urbanizable (5001 a 10000m2)', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], '2026': [25.02], } },
+          { name: 'Urbana y Rural, Sin rango. m2', const: { '2021': [1.5], '2022': [37.53], '2023': [37.53], '2024': [37.53], '2025': [37.53], '2026': [37.53], } },
+          { name: 'Urbana y Rural, Sin rango. m2', const: { '2021': [2], '2022': [50.05], '2023': [50.05], '2024': [50.05], '2025': [50.05], '2026': [50.05], } },
         ]
       },
       {
         title: 'Prorroga o revalidación de licencia', list: [
-          { name: 'Cada Una', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], } },
-          { name: 'Cada Una (VIS)', const: { '2021': false, '2022': [1.67], '2023': [1.67], '2024': [1.67], '2025': [1.67], } },
-          { name: 'Segunda Prorroga o Segunda revalidación', const: { '2021': false, '2022': [50.05], '2023': [50.05], '2024': [50.05],  '2025': [50.05], } },
+          { name: 'Cada Una', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], '2026': [25.02], } },
+          { name: 'Cada Una (VIS)', const: { '2021': false, '2022': [1.67], '2023': [1.67], '2024': [1.67], '2025': [1.67], '2026': [1.67], } },
+          { name: 'Segunda Prorroga o Segunda revalidación', const: { '2021': false, '2022': [50.05], '2023': [50.05], '2024': [50.05], '2025': [50.05], '2026': [50.05], } },
         ]
       },
       { title: model2TableStr1 },
       {
         title: 'Ajuste de cotas', list: [
-          { name: 'Estrato 1 y 2', const: { '2021': [4 * 1 / 30, 'SMLD', 4], '2022': [3.34], '2023': [3.34], '2024': [3.34], '2025': [3.34], } },
-          { name: 'Estrato 3 y 4', const: { '2021': [8 * 1 / 30, 'SMLD', 8], '2022': [6.67], '2023': [6.67], '2024': [6.67], '2025': [6.67], } },
-          { name: 'Estrato 3 y 4', const: { '2021': [1], '2022': [10.01], '2023': [10.01], '2024': [10.01], '2025': [10.01], } },
+          { name: 'Estrato 1 y 2', const: { '2021': [4 * 1 / 30, 'SMLD', 4], '2022': [3.34], '2023': [3.34], '2024': [3.34], '2025': [3.34], '2026': [3.34], } },
+          { name: 'Estrato 3 y 4', const: { '2021': [8 * 1 / 30, 'SMLD', 8], '2022': [6.67], '2023': [6.67], '2024': [6.67], '2025': [6.67], '2026': [6.67], } },
+          { name: 'Estrato 3 y 4', const: { '2021': [1], '2022': [10.01], '2023': [10.01], '2024': [10.01], '2025': [10.01], '2026': [10.01], } },
         ],
         Ids: 'Id_1',
 
       },
       {
         title: 'Copia certificada de Planos', list: [
-          { name: 'Por cada plano', const: { '2021': [1 * 1 / 30, 'SMLD', 1], '2022': [0.834], '2023': [0.834], '2024': [0.834], '2025': [0.834], } },
+          { name: 'Por cada plano', const: { '2021': [1 * 1 / 30, 'SMLD', 1], '2022': [0.834], '2023': [0.834], '2024': [0.834], '2025': [0.834], '2026': [0.834], } },
         ]
       },
       {
         title: 'Visto bueno P.H.', list: [
-          { name: 'Hasta 250 m2', const: { '2021': [0.25], '2022': [6.26], '2023': [6.26], '2024': [6.26], '2025': [6.26], } },
-          { name: 'De 251 a 500 m2', const: { '2021': [0.5], '2022': [12.51], '2023': [12.51], '2024': [12.51], '2025': [12.51], } },
-          { name: 'De 501 a 1000 m2', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], } },
-          { name: 'De 1001 a 5000 m2', const: { '2021': [2], '2022': [50.05], '2023': [50.05], '2024': [50.05], '2025': [50.05], } },
-          { name: 'De 5001 a 10000 m2', const: { '2021': [3], '2022': [75.07], '2023': [75.07], '2024': [75.07], '2025': [75.07], } },
-          { name: 'De 10001 a 20000 m2', const: { '2021': [4], '2022': [100.09], '2023': [100.09], '2024': [100.09], '2025': [100.09], } },
-          { name: 'Mas de 20000 m2', const: { '2021': [5], '2022': [125.11], '2023': [125.11], '2024': [125.11], '2025': [125.11], } },
+          { name: 'Hasta 250 m2', const: { '2021': [0.25], '2022': [6.26], '2023': [6.26], '2024': [6.26], '2025': [6.26], '2026': [6.26], } },
+          { name: 'De 251 a 500 m2', const: { '2021': [0.5], '2022': [12.51], '2023': [12.51], '2024': [12.51], '2025': [12.51], '2026': [12.51], } },
+          { name: 'De 501 a 1000 m2', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], '2026': [25.02], } },
+          { name: 'De 1001 a 5000 m2', const: { '2021': [2], '2022': [50.05], '2023': [50.05], '2024': [50.05], '2025': [50.05], '2026': [50.05], } },
+          { name: 'De 5001 a 10000 m2', const: { '2021': [3], '2022': [75.07], '2023': [75.07], '2024': [75.07], '2025': [75.07], '2026': [75.07], } },
+          { name: 'De 10001 a 20000 m2', const: { '2021': [4], '2022': [100.09], '2023': [100.09], '2024': [100.09], '2025': [100.09], '2026': [100.09], } },
+          { name: 'Mas de 20000 m2', const: { '2021': [5], '2022': [125.11], '2023': [125.11], '2024': [125.11], '2025': [125.11], '2026': [125.11], } },
         ]
       },
       {
         title: 'Movimiento de tierras y construcción de piscinas', list: [
-          { name: 'Hasta 100 m3', const: { '2021': [2 * 1 / 30, 'SMLD', 2], '2022': [1.67], '2023': [1.67], '2024': [1.67], '2025': [1.67], } },
-          { name: 'De 101 a 500 m3', const: { '2021': [4 * 1 / 30, 'SMLD', 4], '2022': [3.34], '2023': [3.34], '2024': [3.34], '2025': [3.34] } },
-          { name: 'De 501 a 1000 m3', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02],} },
-          { name: 'De 1001 a 5000 m3', const: { '2021': [2], '2022': [50.05], '2023': [50.05], '2024': [50.05], '2025': [50.05],} },
-          { name: 'De 5001 a 10000 m3', const: { '2021': [3], '2022': [75.07], '2023': [75.07], '2024': [75.07], '2025': [75.07], } },
-          { name: 'De 10001 a 20000 m3', const: { '2021': [4], '2022': [100.09], '2023': [100.09], '2024': [100.09], '2025': [100.09],  } },
-          { name: 'Mas de 20000 m3', const: { '2021': [5], '2022': [125.11], '2023': [125.11], '2024': [125.11], '2025': [125.11], } },
+          { name: 'Hasta 100 m3', const: { '2021': [2 * 1 / 30, 'SMLD', 2], '2022': [1.67], '2023': [1.67], '2024': [1.67], '2025': [1.67], '2026': [1.67], } },
+          { name: 'De 101 a 500 m3', const: { '2021': [4 * 1 / 30, 'SMLD', 4], '2022': [3.34], '2023': [3.34], '2024': [3.34], '2026': [3.34], '2026': [3.34], } },
+          { name: 'De 501 a 1000 m3', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], '2026': [25.02], } },
+          { name: 'De 1001 a 5000 m3', const: { '2021': [2], '2022': [50.05], '2023': [50.05], '2024': [50.05], '2025': [50.05], '2026': [50.05], } },
+          { name: 'De 5001 a 10000 m3', const: { '2021': [3], '2022': [75.07], '2023': [75.07], '2024': [75.07], '2025': [75.07], '2026': [75.07], } },
+          { name: 'De 10001 a 20000 m3', const: { '2021': [4], '2022': [100.09], '2023': [100.09], '2024': [100.09], '2025': [100.09], '2026': [100.09], } },
+          { name: 'Mas de 20000 m3', const: { '2021': [5], '2022': [125.11], '2023': [125.11], '2024': [125.11], '2025': [125.11], '2026': [125.11], } },
         ]
       },
       {
         title: 'Modificación Planos Urbanisticos', list: [
-          { name: 'Cada Una', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], } },
+          { name: 'Cada Una', const: { '2021': [1], '2022': [25.02], '2023': [25.02], '2024': [25.02], '2025': [25.02], '2026': [25.02], } },
         ]
       },
       {
         title: 'Concepto Norma Urbanistica', list: [
-          { name: 'Cada Uno', const: { '2021': [10 * 1 / 30, 'SMLD', 10], '2022': [8.34], '2023': [8.34], '2024': [8.34], '2025': [8.34], } },
+          { name: 'Cada Uno', const: { '2021': [10 * 1 / 30, 'SMLD', 10], '2022': [8.34], '2023': [8.34], '2024': [8.34], '2025': [8.34], '2026': [8.34], } },
         ]
       },
       {
         title: 'Concepto Uso del suelo', list: [
-          { name: 'Cada Uno', const: { '2021': [2 * 1 / 30, 'SMLD', 2], '2022': [1.67], '2023': [1.67], '2024': [1.67],  '2025': [1.67], } },
+          { name: 'Cada Uno', const: { '2021': [2 * 1 / 30, 'SMLD', 2], '2022': [1.67], '2023': [1.67], '2024': [1.67], '2025': [1.67], '2026': [1.67], } },
         ]
       },
     ]
@@ -571,11 +583,13 @@ class Liquidator extends Component {
               ? <div class="form-group my-2 col-4">
                 <h4 for="exampleFormControlSelect1">VERSION DE LA CALCULADORA</h4>
                 <select class="form-select" onChange={(e) => this.setState({ version: e.target.value })}
-                  defaultValue={this.state.version}>
+                  defaultValue={version}>
                   <option>2021</option>
                   <option>2022</option>
                   <option>2023</option>
                   <option>2024</option>
+                  <option>2025</option>
+                  <option>2026</option>
                 </select>
               </div>
               : ''}
@@ -786,81 +800,10 @@ class Liquidator extends Component {
 
               </tbody>
             </table>
-            <h3 className='text-center'>Tabla de impuestos 2023</h3>
+
+            <h3 className='text-center'>Tabla de impuestos</h3>
             <table className="table table-bordered table-sm table-hover text-center">
-              <thead>
-                <tr className='table-warning'>
-                  <th>USO</th>
-                  <th>ESTRATO</th>
-                  <th>VALOR X M2</th>
-                </tr>
-              </thead>
               <tbody>
-                <tr>
-                  <td>Residencial</td>
-                  <td>1</td>
-                  <td>$530</td>
-                </tr>
-                <tr>
-                  <td>Residencial</td>
-                  <td>2</td>
-                  <td>$790</td>
-                </tr>
-                <tr>
-                  <td>Residencial</td>
-                  <td>3</td>
-                  <td>$1044</td>
-                </tr>
-                <tr>
-                  <td>Residencial</td>
-                  <td>4</td>
-                  <td>$1577</td>
-                </tr>
-                <tr>
-                  <td>Residencial</td>
-                  <td>5</td>
-                  <td>$2287</td>
-                </tr>
-                <tr>
-                  <td>Residencial</td>
-                  <td>6</td>
-                  <td>$3420</td>
-                </tr>
-                <tr>
-                  <td>Industrial</td>
-                  <td>7</td>
-                  <td>$1044</td>
-                </tr>
-                <tr>
-                  <td>Comercio y servicios</td>
-                  <td>8</td>
-                  <td>$1838</td>
-                </tr>
-                <tr>
-                  <td>Institucional</td>
-                  <td>9</td>
-                  <td>$1838</td>
-                </tr>
-                <tr>
-                  <td>Area sub-urbana </td>
-                  <td>10</td>
-                  <td>$1044</td>
-                </tr>
-                <tr>
-                  <td>Area Rural</td>
-                  <td>11</td>
-                  <td>$530</td>
-                </tr>
-                <tr>
-                  <td>Zona centro</td>
-                  <td></td>
-                  <td>$102</td>
-                </tr>
-                <tr>
-                  <td>Zona norte</td>
-                  <td></td>
-                  <td>$210</td>
-                </tr>
                 <tr>
                   <td colSpan={3}></td>
                 </tr>
@@ -935,12 +878,12 @@ class Liquidator extends Component {
                 <tr>
                   <td>Estrato 3 y 4</td>
                   <td>Por M²</td>
-                  <td>$ 1.160</td>
+                  <td>$ {formatNumber(Number(SMMV[version].value / 1000).toFixed(0))}</td>
                 </tr>
                 <tr>
                   <td>Estrato 5 y 6</td>
                   <td>Por M²</td>
-                  <td>$ 2.320</td>
+                  <td>$ {formatNumber(Number(SMMV[version].value / 1000 * 2).toFixed(0))}</td>
                 </tr>
                 <tr>
                   <td colSpan={3}>Estrato 3 y 4 el 1/1000 del SMLM, Estrato 5 y 6 el 2/1000</td>
@@ -967,15 +910,7 @@ class Liquidator extends Component {
                 </tr>
               </tbody>
             </table>
-            {hideInfo ? '' :
-              <MDBTypography note style={{ backgroundColor: '#EDEDED' }}>
-                <h3 className="text-justify text-dark">Nota: Decreto 1077 de 2015</h3>
-                <p className="text-justify">Artículo 2.2.6.6.8.12. Expensas en los casos de expedición de licencias de construcción individual de vivienda de interés social. Modificado por el art. 7, Decreto Nacional 1100 de 2008. Las solicitudes de licencia de construcción individual de vivienda de interés social unifamiliar o bifamiliar en los estratos 1, 2 y 3, generarán en favor del curador una expensa única equivalente a cinco (5) salarios mínimos diarios legales vigentes al momento de la radicación por cada unidad de vivienda. En estos casos no se aplicará lo dispuesto en el artículo 11 de la Ley 810 de 2003.</p>
-                <h3 className="text-justify text-dark">Nota: Decreto 1890 de 2021</h3>
-                <p className="text-justify"> Ministerio de ciudad, vivienda y territorio: Por el cual se modifica parcialmente el Decreto 1077 de 2015 Único Reglamentarío del
-                  Sector Vivienda, Ciudad y Territorio, en lo relacionado con la reglamentación del artículo
-                  49 de la Ley 1955 de 2019 sobre las expensas por trámites ante los curadores urbanos.</p>
-              </MDBTypography>}
+
           </div >
         </div >
       </div >

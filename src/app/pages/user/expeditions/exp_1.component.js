@@ -39,7 +39,7 @@ class EXP_1 extends Component {
             //findOne
             const data1 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
             const data2 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
-            
+
             if (data1) {
                 this.setState({ vrSelected1: data1.vr, cubSelected1: data1.cub, idCUBxVr1: data1.id })
                 document.getElementById("vr_selected").value = data1.vr
@@ -49,7 +49,7 @@ class EXP_1 extends Component {
                 this.setState({ vrSelected2: data2.vr, cubSelected2: data2.cub, idCUBxVr2: data2.id })
             }
 
-           
+
 
         } catch (error) {
             console.log(error);
@@ -349,7 +349,7 @@ class EXP_1 extends Component {
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="expedition_2"
                                             defaultValue={currentRecord.cub1 || this.state.cubSelected1 || ""} />
-                                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
+                                        <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
                                     </div>
                                 </div>
                                 <div className="col-3" >
@@ -470,6 +470,11 @@ class EXP_1 extends Component {
                                 <input type="text" class="form-control" id="expedition_19"
                                     defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_2 ?? ''} />
                             </div>
+                            <div className="col">
+                                <label className="mt-1">Fecha Documento</label>
+                                <input type="date" class="form-control" id="uis_date"
+                                    max="2100-01-01" defaultValue={_GET_EXPEDITION_JSON('taxes').uis_date ?? ''} />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -492,8 +497,8 @@ class EXP_1 extends Component {
                                         <label className="mt-1">{infoCud.serials.end}</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="expedition_11"
-                                                defaultValue={currentRecord.cub2 || this.state.cubSelected2  || ""} />
-                                                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
+                                                defaultValue={currentRecord.cub2 || this.state.cubSelected2 || ""} />
+                                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
                                         </div>
                                     </div>
                                     <div className="col" >
@@ -607,6 +612,7 @@ class EXP_1 extends Component {
             if (document.getElementById("expedition_9")) taxes.uis = document.getElementById("expedition_9").value;
 
             if (document.getElementById("expedition_19")) taxes.id_payment_2 = document.getElementById("expedition_19").value;
+            if (document.getElementById("uis_date")) taxes.uis_date = document.getElementById("uis_date").value;
             if (document.getElementById("expedition_22")) taxes.id_payment_2_p = document.getElementById("expedition_22").value;
             if (document.getElementById("expedition_20")) taxes.id_payment_3 = document.getElementById("expedition_20").value;
             if (document.getElementById("expedition_21")) taxes.id_payment_4 = document.getElementById("expedition_21").value;
@@ -657,10 +663,10 @@ class EXP_1 extends Component {
             let cub1 = cub_selected;
             let cub2 = cub_selected1;
             let vr1 = document.getElementById("vr_selected").value;
-            let vr2 = document.getElementById("vr_selected1") ?  document.getElementById("vr_selected1").value: null;
+            let vr2 = document.getElementById("vr_selected1") ? document.getElementById("vr_selected1").value : null;
 
             let date1 = document.getElementById('expedition_1').value;
-            let date2 = document.getElementById("vr_selected1") ? document.getElementById('expedition_10').value: null;
+            let date2 = document.getElementById("vr_selected1") ? document.getElementById('expedition_10').value : null;
 
             if (cub1) {
                 let formatData1 = new FormData();
@@ -690,11 +696,11 @@ class EXP_1 extends Component {
             */
         }
 
-        let sendDataToCreate = (formatData , type) => {
+        let sendDataToCreate = (formatData, type) => {
 
 
             // Mostrar mensaje inicial de espera
-            if ((type === 1 && this.state.idCUBxVr1) || (type===2 && this.state.idCUBxVr2)){
+            if ((type === 1 && this.state.idCUBxVr1) || (type === 2 && this.state.idCUBxVr2)) {
                 const id = type === 1 ? this.state.idCUBxVr1 : this.state.idCUBxVr2;
 
                 CubXVrDataService.updateCubVr(id, formatData)
