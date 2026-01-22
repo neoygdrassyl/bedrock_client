@@ -47,8 +47,47 @@ export default function EXP_CLOCKS(props) {
   const [showGanttModal, setShowGanttModal] = useState(false);
 
   const sidebarRef = useRef(null);
+  
+  // --- NUEVO: Refs para sincronización de scroll ---
+  const tableScrollRef = useRef(null);
+  const topScrollRef = useRef(null);
+  const contentRef = useRef(null); // Ref para el contenido que define el ancho
 
   const { scheduleConfig, saveScheduleConfig, clearScheduleConfig, hasSchedule } = useScheduleConfig(currentItem?.id);
+
+  // --- NUEVO: useEffect para sincronizar los scrolls ---
+  useEffect(() => {
+    const tableEl = tableScrollRef.current;
+    const topEl = topScrollRef.current;
+    if (!tableEl || !topEl) return;
+
+    let isSyncing = false; // Flag para evitar bucles infinitos
+
+    const handleTableScroll = () => {
+      if (!isSyncing) {
+        isSyncing = true;
+        topEl.scrollLeft = tableEl.scrollLeft;
+        requestAnimationFrame(() => { isSyncing = false; });
+      }
+    };
+
+    const handleTopScroll = () => {
+      if (!isSyncing) {
+        isSyncing = true;
+        tableEl.scrollLeft = topEl.scrollLeft;
+        requestAnimationFrame(() => { isSyncing = false; });
+      }
+    };
+
+    tableEl.addEventListener('scroll', handleTableScroll);
+    topEl.addEventListener('scroll', handleTopScroll);
+
+    return () => {
+      tableEl.removeEventListener('scroll', handleTableScroll);
+      topEl.removeEventListener('scroll', handleTopScroll);
+    };
+  }, []);
+
 
   // SOLUCIÓN: useEffect mejorado para sincronizar estado desde las props.
   // Esta es ahora la principal fuente de verdad para clocksData.
@@ -828,6 +867,7 @@ export default function EXP_CLOCKS(props) {
 
 
   const radDate = currentItem?.date;
+  const totalTableWidth = 1350 - 80;
 
   return (
     <div className="exp-wrapper">
@@ -882,11 +922,16 @@ export default function EXP_CLOCKS(props) {
       <div className="exp-container">
         <div className="exp-main-content">
           <div className="card exp-card">
-            {/* NUEVO: Usar el encabezado del componente ClockRow */}
-            <ClockTableHeader />
+            {/* --- NUEVA ESTRUCTURA DE SCROLL SUPERIOR --- */}
+            <div ref={topScrollRef} className="top-scroll-wrapper">
+              <div className="top-scroll-content" style={{ width: `${totalTableWidth}px` }}></div>
+            </div>
             
-            <div className="exp-scroll" style={{ height: sidebarHeight, maxHeight: sidebarHeight }}>
-              {renderClockList()}
+            <div ref={tableScrollRef} className="exp-scroll" style={{ height: sidebarHeight, maxHeight: sidebarHeight }}>
+               <div ref={contentRef} style={{ minWidth: `${totalTableWidth}px` }}>
+                  <ClockTableHeader />
+                  {renderClockList()}
+               </div>
             </div>
           </div>
         </div>

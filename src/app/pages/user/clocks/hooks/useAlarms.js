@@ -97,6 +97,12 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                     return;
                 }
 
+                if (clockDef.state === 34){
+                    // Si se cumplió el state 35 entonces esta alarma no se muestra
+                    const acta2 = getClock(35);
+                    if (acta2 && acta2.date_start) return; // skip alarm for 34
+                }
+
                 // --- FILTRO 2: Excluir eventos según configuración de notificación ---
                 if (excludedStates.has(clockDef.state)) {
                     return;

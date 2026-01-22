@@ -1,4 +1,4 @@
-import React from 'react';
+import {React, useState} from 'react';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -7,7 +7,13 @@ import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 
 const MySwal = withReactContent(Swal);
 
-// NUEVO: Componente para el encabezado de la tabla
+// --- Anchos de columna centralizados ---
+const COL_WIDTHS = {
+    EVENT: '300px',
+    DATE: '150px', 
+    OTHERS: '150px' 
+};
+
 export const ClockTableHeader = () => {
     const headerStyle = {
         display: 'flex',
@@ -29,37 +35,62 @@ export const ClockTableHeader = () => {
         gap: '0.5rem',
     };
 
+    // --- NUEVO: Estilos para columnas fijas (sticky) en el header ---
+    const stickyColStyle = {
+        position: 'sticky',
+        zIndex: 11, // Debe ser mayor que el zIndex del header (10)
+        backgroundColor: '#f8f9fa', // Fondo opaco para no ver el scroll detrás
+    };
+
     return (
         <div style={headerStyle}>
-            <div style={{ ...colStyle, flex: '0 0 280px', minWidth: '280px' }}>
+            {/* Columna 1 Fija (Evento) */}
+            <div style={{ 
+                ...colStyle, 
+                ...stickyColStyle,
+                left: 0, // Pegado a la izquierda
+                flex: `0 0 ${COL_WIDTHS.EVENT}`, 
+                minWidth: COL_WIDTHS.EVENT 
+            }}>
                 <i className="fas fa-list"></i> Evento
             </div>
-            <div style={{ ...colStyle, flex: '0 0 130px', minWidth: '130px' }}>
+            {/* Columna 2 Fija (Fecha Evento) */}
+            <div style={{ 
+                ...colStyle, 
+                ...stickyColStyle,
+                left: COL_WIDTHS.EVENT, // Desplazado por el ancho de la primera columna
+                flex: `0 0 ${COL_WIDTHS.DATE}`, 
+                minWidth: COL_WIDTHS.DATE
+            }}>
                 <i className="far fa-calendar"></i> Fecha evento
             </div>
-            <div style={{ ...colStyle, flex: '0 0 130px', minWidth: '130px' }}>
+
+            {/* Columnas con scroll */}
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
                 <i className="fas fa-gavel"></i> Límite legal
             </div>
-            <div style={{ ...colStyle, flex: '0 0 150px', minWidth: '150px' }}>
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
                 <i className="fas fa-exclamation-triangle"></i> Alarma legal
             </div>
-            <div style={{ ...colStyle, flex: '0 0 140px', minWidth: '140px' }}>
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
                 <i className="fas fa-calendar-check"></i> Límite programado
             </div>
-            <div style={{ ...colStyle, flex: '0 0 150px', minWidth: '150px' }}>
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
                 <i className="far fa-bell"></i> Alarma programada
             </div>
-            <div style={{ ...colStyle, flex: '1', minWidth: '180px' }}>
+            <div style={{ ...colStyle, flex: '1', minWidth: '220px' }}>
                 <i className="fas fa-arrow-right"></i> Siguiente paso
             </div>
         </div>
     );
 };
 
+
 export const ClockRow = (props) => {
     const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, isHighlighted } = props;
     const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
 
+    // ... (resto de la lógica del componente que no cambia)
     // Resolver reloj según versión
     const getClockScoped = (state) => {
         if (value.version !== undefined) {
@@ -67,6 +98,8 @@ export const ClockRow = (props) => {
         }
         return getClock(state);
     };
+
+    const [isHovered, setIsHovered] = useState(false);
 
     // Formateador textual MODIFICADO para usar formato de fecha corta (L)
     const formatDate = (dateStr) => dateStr ? moment(dateStr).format('DD/MM/YYYY') : '- -';
@@ -535,23 +568,26 @@ export const ClockRow = (props) => {
     const currentDate = clock?.date_start ?? value.manualDate ?? '';
     const canEditDate = value.editableDate !== false;
 
-    // Nombre evento sentence case
     const sentenceCaseEs = (s) => (s && typeof s === 'string') ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s;
     const eventName = value.name ?? sentenceCaseEs(clock?.name) ?? '';
 
-    // Icono inicial
     const rowIcon = getRowIcon();
     
-    // Clase condicional para resaltar el título
-    const titleClassName = `row-title text-truncate ${isHighlighted ? 'title-highlight' : ''}`;
+    const titleClassName = `row-title text-truncate sticky ${isHighlighted ? 'title-highlight' : ''}`;
     const dateInputClassName = `form-control form-control-sm border-0 bg-transparent dates-input-class ${currentDate ? '' : 'padding-date-input'}`;
+    const ACTIVE_BG = 'rgba(245, 245, 245)';   // .active-row-container
+    const ACTIVE_HOVER_BG = 'rgba(242, 242, 242)'; // .active-row-container:hover
 
-    // ESTILOS INLINE PARA LA FILA
+    const backgroundColor = isHighlighted
+    ? (isHovered ? ACTIVE_HOVER_BG : ACTIVE_BG)
+    : '#fff';
+
+
     const rowStyle = {
         display: 'flex',
         alignItems: 'stretch',
         padding: '0.5rem 1rem',
-        backgroundColor: isHighlighted ? '#e7f5ff' : '#fff',
+        backgroundColor: isHighlighted ? '#ffffffff' : '#fff',
         borderBottom: '1px solid #f1f3f5',
         transition: 'background-color 0.2s',
     };
@@ -561,11 +597,27 @@ export const ClockRow = (props) => {
         alignItems: 'center',
         padding: '0 0.5rem',
     };
+    
+    // --- NUEVO: Estilos para columnas fijas (sticky) en cada fila ---
+    const stickyColStyle = {
+        position: 'sticky',
+        zIndex: 1, // z-index para filas, menor que el del header
+        // El color de fondo se toma del estilo de la fila para manejar el resaltado
+        backgroundColor: backgroundColor,
+    };
 
     return (
-        <div style={rowStyle} className={isHighlighted ? 'active-row-container' : ''}>
-            {/* COL 1: Evento (280px) */}
-            <div style={{ ...colStyle, flex: '0 0 280px', minWidth: '280px' }}>
+        <div style={rowStyle} 
+             className={isHighlighted ? 'active-row-container' : ''} 
+             >
+            {/* Columna 1 Fija (Evento) */}
+            <div style={{ 
+                ...colStyle, 
+                ...stickyColStyle,
+                left: 0,
+                flex: `0 0 ${COL_WIDTHS.EVENT}`, 
+                minWidth: COL_WIDTHS.EVENT 
+            }}>
                 <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.5rem' }}>
                     {rowIcon}
                 </div>
@@ -582,8 +634,14 @@ export const ClockRow = (props) => {
                 </div>
             </div>
 
-            {/* COL 2: Fecha Evento (130px) */}
-            <div style={{ ...colStyle, flex: '0 0 130px', minWidth: '130px' }}>
+            {/* Columna 2 Fija (Fecha Evento) */}
+            <div style={{ 
+                ...colStyle,
+                ...stickyColStyle,
+                left: COL_WIDTHS.EVENT,
+                flex: `0 0 ${COL_WIDTHS.DATE}`, 
+                minWidth: COL_WIDTHS.DATE,
+            }}>
                 {canEditDate ? (
                     <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                         <input 
@@ -612,32 +670,28 @@ export const ClockRow = (props) => {
                 )}
             </div>
 
-            {/* COL 3: Límite Legal (130px) */}
-            <div style={{ ...colStyle, flex: '0 0 130px', minWidth: '130px' }}>
+            {/* Columnas con scroll */}
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
                 <span style={{ fontSize: '0.85rem', color: '#495057' }}>
                     {legalData.limitDate ? formatDate(legalData.limitDate) : '- -'}
                 </span>
             </div>
 
-            {/* COL 4: Alarma Legal (150px) */}
-            <div style={{ ...colStyle, flex: '0 0 150px', minWidth: '150px' }}>
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
                 {renderAlarmColumn()}
             </div>
 
-            {/* COL 5: Límite Programado (140px) */}
-            <div style={{ ...colStyle, flex: '0 0 140px', minWidth: '140px' }}>
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
                 <span style={{ fontSize: '0.85rem', color: '#495057' }}>
                     {scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : '- -'}
                 </span>
             </div>
 
-            {/* COL 6: Alarma Programada (150px) */}
-            <div style={{ ...colStyle, flex: '0 0 150px', minWidth: '150px' }}>
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
                 {renderScheduledAlarmColumn()}
             </div>
 
-            {/* COL 7: Siguiente Paso (flex 1) */}
-            <div style={{ ...colStyle, flex: '1', minWidth: '180px' }}>
+            <div style={{ ...colStyle, flex: '1', minWidth: '220px' }}>
                 {renderNextStepColumn()}
             </div>
         </div>
