@@ -9,7 +9,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
     <div className="control-bar">
       <div className="bar-inner">
         <div className="time-travel-controls">
-          <span className="control-label"><i className="fas fa-magic me-2"></i>Modificar fecha actual</span>
+          {/* <span className="control-label"><i className="fas fa-magic me-2"></i>Emulador</span> */}
           
           <button 
             type="button" 

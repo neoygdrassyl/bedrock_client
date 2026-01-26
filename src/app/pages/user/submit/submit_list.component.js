@@ -50,9 +50,10 @@ class SUBMIT_LIST extends Component {
         let _LIST_COMPONENT = () => {
             var _LIST = [];
             for (var ITEM in Lists) {
-                _LIST.push(<option>{Object.keys(Lists[ITEM])}</option>)
+                // FIX: Added key prop for list items
+                _LIST.push(<option key={ITEM}>{Object.keys(Lists[ITEM])}</option>)
             }
-            _LIST.push(<option>LISTA EXTRA</option>)
+            _LIST.push(<option key="LISTA_EXTRA">LISTA EXTRA</option>) // FIX: Added key prop
             return <>{_LIST}</>
         }
 
@@ -273,7 +274,7 @@ class SUBMIT_LIST extends Component {
             const columns = [
                 {
                     name: <label className="text-center">DOCUMENTOS</label>,
-                    selector: 'id',
+                    selector: row => row.id, // FIX: v7→v8 column selector
                     sortable: true,
                     filterable: true,
                     center: true,

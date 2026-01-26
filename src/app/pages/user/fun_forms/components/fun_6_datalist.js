@@ -12,7 +12,8 @@ class FUN6DATALIST extends Component {
         let _SETDATALISTOPTIONS = () => {
             let _COMPONENT = [];
             Object.entries(JSONDATLIST).forEach(([key, value]) => {
-                _COMPONENT.push(<option value={value}> {key} {value}</option>)
+                // FIX: Added key prop for list items
+                _COMPONENT.push(<option key={key} value={value}> {key} {value}</option>)
               });
             return <div>{_COMPONENT}</div>;
         }

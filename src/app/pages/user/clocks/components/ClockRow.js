@@ -1,444 +1,722 @@
-import React from 'react';
+import {React, useState} from 'react';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { FaMinus } from "react-icons/fa6";
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
+import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 
 const MySwal = withReactContent(Swal);
 
+// --- Anchos de columna centralizados ---
+const COL_WIDTHS = {
+    EVENT: '300px',
+    DATE: '150px', 
+    OTHERS: '150px' 
+};
+
+export const ClockTableHeader = () => {
+    const headerStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0.75rem 1rem',
+        backgroundColor: '#f8f9fa',
+        borderBottom: '2px solid #dee2e6',
+        fontWeight: 600,
+        fontSize: '0.85rem',
+        color: '#495057',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+    };
+
+    const colStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+    };
+
+    // --- NUEVO: Estilos para columnas fijas (sticky) en el header ---
+    const stickyColStyle = {
+        position: 'sticky',
+        zIndex: 11, // Debe ser mayor que el zIndex del header (10)
+        backgroundColor: '#f8f9fa', // Fondo opaco para no ver el scroll detrás
+    };
+
+    return (
+        <div style={headerStyle}>
+            {/* Columna 1 Fija (Evento) */}
+            <div style={{ 
+                ...colStyle, 
+                ...stickyColStyle,
+                left: 0, // Pegado a la izquierda
+                flex: `0 0 ${COL_WIDTHS.EVENT}`, 
+                minWidth: COL_WIDTHS.EVENT 
+            }}>
+                <i className="fas fa-list"></i> Evento
+            </div>
+            {/* Columna 2 Fija (Fecha Evento) */}
+            <div style={{ 
+                ...colStyle, 
+                ...stickyColStyle,
+                left: COL_WIDTHS.EVENT, // Desplazado por el ancho de la primera columna
+                flex: `0 0 ${COL_WIDTHS.DATE}`, 
+                minWidth: COL_WIDTHS.DATE
+            }}>
+                <i className="far fa-calendar"></i> Fecha evento
+            </div>
+
+            {/* Columnas con scroll */}
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+                <i className="fas fa-gavel"></i> Límite legal
+            </div>
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+                <i className="fas fa-exclamation-triangle"></i> Alarma legal
+            </div>
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+                <i className="fas fa-calendar-check"></i> Límite programado
+            </div>
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+                <i className="far fa-bell"></i> Alarma programada
+            </div>
+            <div style={{ ...colStyle, flex: '1', minWidth: '220px' }}>
+                <i className="fas fa-arrow-right"></i> Siguiente paso
+            </div>
+        </div>
+    );
+};
+
+
 export const ClockRow = (props) => {
-    const { value, i, clock, onSave, onDelete, cat, outCodes, _CHILD_6_SELECT, _FIND_6, helpers, scheduleConfig } = props;
-    const { getClock, getNewestDate, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, totalSuspensionDays, viaTime } = helpers;
+    const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, isHighlighted } = props;
+    const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
 
-    moment.locale('es');
-
-    const formatDate = (dateStr) => dateStr ?  moment(dateStr). format('DD MMM YYYY') : '';
-
-    // =====================================================
-    // CÁLCULO DEL LÍMITE PARA ACTA PARTE 1 (State 30)
-    // =====================================================
-    const calculateActa1Limit = () => {
-        if (value.state !== 30) return null;
-
-        const ldf = getClock(5)?.date_start;
-        if (!ldf) return null;
-
-        const baseDays = FUN_0_TYPE_TIME[currentItem. type] ?? 45;
-        let totalDays = baseDays;
-
-        // Sumamos días de suspensión pre-acta si están cerrados
-        if (suspensionPreActa.exists && suspensionPreActa. end?.date_start) {
-            totalDays += suspensionPreActa.days;
+    // ... (resto de la lógica del componente que no cambia)
+    // Resolver reloj según versión
+    const getClockScoped = (state) => {
+        if (value.version !== undefined) {
+            return getClockVersion(state, value.version) || getClock(state);
         }
-
-        // Sumamos días de prórroga si aplica antes del acta
-        if (extension.exists && extension. end?.date_start && ! extension.isActive) {
-            const acta1Date = getClock(30)?.date_start;
-            if (! acta1Date || moment(extension.start.date_start). isBefore(acta1Date)) {
-                totalDays += extension.days;
-            }
-        }
-
-        const limitDate = sumarDiasHabiles(ldf, totalDays);
-        const tip = `Base: ${baseDays} + Susp: ${suspensionPreActa.days} + Prórroga: ${extension.exists && ! extension.isActive ? extension.days : 0} = ${totalDays} días hábiles desde LDF`;
-
-        return { limitDate, tooltip: tip };
+        return getClock(state);
     };
 
-    // =====================================================
-    // CÁLCULO DEL LÍMITE PARA SUSPENSIÓN (States 350/351)
-    // =====================================================
-    const calculateSuspensionLimit = () => {
-        const isEndPre = value.state === 350;
-        const isEndPost = value. state === 351;
-        if (!isEndPre && ! isEndPost) return null;
+    const [isHovered, setIsHovered] = useState(false);
 
-        const thisSusp = isEndPre ? suspensionPreActa : suspensionPostActa;
-        if (!thisSusp. start?. date_start) return null;
+    // Formateador textual MODIFICADO para usar formato de fecha corta (L)
+    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('DD/MM/YYYY') : '- -';
 
-        const otherUsedDays = isEndPre 
-            ? (suspensionPostActa.end?.date_start ?  suspensionPostActa.days : 0)
-            : (suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0);
+    // =====================================================
+    // CÁLCULO DE ICONOS Y ESTADOS (SEMÁFORO)
+    // =====================================================
+    const getRowIcon = () => {
+        const currentDate = clock?.date_start ?? value.manualDate;
         
-        const availableForThis = 10 - otherUsedDays;
-        const limitDate = sumarDiasHabiles(thisSusp.start.date_start, availableForThis);
-        const tip = `Días disponibles: ${availableForThis} (Total 10 - Usados otra susp: ${otherUsedDays})`;
+        if (currentDate) {
+            return <i className="fas fa-check-circle" style={{ color: '#2f9e44', fontSize: '0.9rem' }}></i>;
+        }
+        
+        if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) {
+             return <i className="fas fa-minus-circle" style={{ color: '#dee2e6', fontSize: '0.9rem' }}></i>;
+        }
 
-        return { limitDate, tooltip: tip };
+        return <i className="fas fa-clock" style={{ color: '#fcc419', fontSize: '0.9rem' }}></i>;
     };
 
-    // =====================================================
-    // CÁLCULO DEL LÍMITE PARA VIABILIDAD (States 49 y 61)
-    // =====================================================
-    const calculateViabilityLimit = () => {
-        // Solo aplica para estados 49 (Acta 2) y 61 (Viabilidad)
-        if (value.state !== 49 && value.state !== 61) return null;
-
-        const ldf = getClock(5)?.date_start;
-        const acta1 = getClock(30);
-        const corrDate = getClock(35)?.date_start; // Fecha de correcciones
-
-        // Si no hay LDF, no podemos calcular nada
-        if (!ldf) return null;
-
-        // 1. Calcular Días Totales Disponibles para Curaduría
-        const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
-        
-        // Incluimos TODAS las suspensiones cerradas y prórrogas cerradas al total de días
-        const totalSuspension = (suspensionPreActa.exists && suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0) +
-                                (suspensionPostActa.exists && suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0);
-        
-        const totalExtension = (extension.exists && extension.end?.date_start ? extension.days : 0);
-        
-        const totalCuraduriaDays = baseDays + totalSuspension + totalExtension;
-
-        // Determinar escenario: Lógica ESTRICTA de cumplimiento
-        // Solo es verdadero si el texto contiene la frase exacta.
-        const complianceString = "ACTA PARTE 1 OBSERVACIONES: CUMPLE";
-        const isCumple = acta1?.desc?.includes(complianceString);
-        const hasActa = !!acta1?.date_start;
-
-        // ESCENARIO A: ACTA 1 CUMPLE (O no hay acta aún y asumimos proyección ideal desde LDF)
-        // Lógica: Fecha Límite = LDF + Total Días Curaduría
-        if (isCumple || !hasActa) {
-            const limitDate = sumarDiasHabiles(acta1?.date_start, viaTime);
-            const tooltip = `Caso CUMPLE (o proyección inicial): Desde Acta parte 1 (${formatDate(acta1?.date_start)}) + ${viaTime} días totales (Base ${baseDays} + Susp ${totalSuspension} + Prórroga ${totalExtension})`;
-            return { limitDate, tooltip };
-        }
-
-        // ESCENARIO B: ACTA 1 NO CUMPLE (Cualquier otro texto en el acta)
-        // Lógica: Fecha Límite = Fecha Radicación Correcciones + Días Restantes (viaTime)
-        if (hasActa && !isCumple) {
-            if (corrDate) {
-                // Si ya hay correcciones, usamos la fecha de correcciones + días restantes
-                // Nota: viaTime ya viene calculado correctamente (incluyendo regla de día siguiente) desde el hook
-                const limitDate = sumarDiasHabiles(corrDate, viaTime);
-                const tooltip = `Caso CORRECCIONES: Desde Radicación Correcciones (${formatDate(corrDate)}) + ${viaTime} días restantes`;
-                return { limitDate, tooltip };
-            } else {
-                // Si NO hay correcciones aún, pero el acta ya se emitió y no cumple
-                return { limitDate: null, tooltip: "Esperando radicación de correcciones para calcular límite." };
-            }
-        }
-
-        return null;
-    };
 
     // =====================================================
-    // CÁLCULO DINÁMICO DE LÍMITES (GENÉRICO)
+    // CÁLCULO DE LÍMITES LEGALES (Incluyendo tu corrección de -1 día)
     // =====================================================
-    const calculateDynamicLimit = (limitConfig) => {
-        if (!limitConfig || !Array.isArray(limitConfig)) return null;
-
-        const isDirectConfig = typeof limitConfig[1] === 'number';
-
-        if (! isDirectConfig) {
-            for (const option of limitConfig) {
-                const result = calculateDynamicLimit(option);
-                if (result) return result;
-            }
-            return null;
-        }
-
-        const [states, days] = limitConfig;
-        if (states === undefined || days === undefined) return null;
-        
-        const startStates = Array.isArray(states) ? states : [states];
-        const baseDate = getNewestDate(startStates);
-
-        if (baseDate) {
-            return sumarDiasHabiles(baseDate, days);
-        }
-
-        return null;
-    };
-
-    const renderLegalLimit = () => {
+    const calculateLegalData = () => {
         let limitDate = null;
-        let tooltip = 'Límite legal calculado según la normativa. ';
+        let tooltip = '';
+        let baseDate = null; 
 
-        // Caso especial: Suspensiones (350/351)
+        // --- Lógica Especial para Suspensiones (350/351) ---
         if (value.state === 350 || value.state === 351) {
-            const result = calculateSuspensionLimit();
-            if (result) {
-                limitDate = result.limitDate;
-                tooltip = result.tooltip;
+            const isEndPre = value.state === 350;
+            const thisSusp = isEndPre ? suspensionPreActa : suspensionPostActa;
+            if (thisSusp.start?.date_start) {
+                baseDate = thisSusp.start.date_start;
+                const otherUsedDays = isEndPre 
+                ? (suspensionPostActa.end?.date_start ? suspensionPostActa.days : 0)
+                : (suspensionPreActa.end?.date_start ? suspensionPreActa.days : 0);
+                
+                const availableForThis = 10 - otherUsedDays;
+                
+                // Corrección: Inclusivo, restamos 1 día
+                const daysToAdd = Math.max(0, availableForThis - 1);
+                
+                limitDate = sumarDiasHabiles(thisSusp.start.date_start, daysToAdd);
+                tooltip = `Suspensión: Máximo ${availableForThis} días hábiles (Inclusivo)`;
             }
         } 
-        // Caso especial: Acta Parte 1 (30)
+
+        else if (value.state === 504){
+            limitDate = 1;
+        }
+        // --- Lógica Especial para Prórroga (401) ---
+        else if (value.state === 401) {
+             const startExt = getClockScoped(400)?.date_start;
+             let extDuration = 0;
+             if (value.limit && Array.isArray(value.limit) && value.limit[0] && typeof value.limit[0][1] === 'number') {
+                 extDuration = value.limit[0][1];
+             } else {
+                 extDuration = 22; 
+             }
+
+             if (startExt) {
+                 baseDate = startExt;
+                 // Corrección: Inclusivo, restamos 1 día
+                 const daysToAdd = Math.max(0, extDuration - 1); 
+                 limitDate = sumarDiasHabiles(startExt, daysToAdd);
+                 tooltip = `Prórroga: ${extDuration} días hábiles (Inclusivo)`;
+             }
+        }
         else if (value.state === 30) {
-            const result = calculateActa1Limit();
-            if (result) {
-                limitDate = result.limitDate;
-                tooltip = result. tooltip;
+            const ldf = getClockScoped(5)?.date_start;
+            if (ldf) {
+                baseDate = ldf;
+                const baseDays = FUN_0_TYPE_TIME[currentItem.type] ?? 45;
+                let totalDays = baseDays;
+                if (suspensionPreActa.exists && suspensionPreActa.end?.date_start) totalDays += suspensionPreActa.days;
+                if (extension.exists && extension.end?.date_start && !extension.isActive) {
+                    const acta1Date = getClockScoped(30)?.date_start;
+                    if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) totalDays += extension.days;
+                }
+                limitDate = sumarDiasHabiles(ldf, totalDays);
+                tooltip = `Acta 1: ${totalDays} días hábiles desde LDF`;
             }
         } 
-        // Caso especial: Viabilidad (49 y 61) - NUEVA LÓGICA
         else if (value.state === 49 || value.state === 61) {
-            const result = calculateViabilityLimit();
-            if (result) {
-                limitDate = result.limitDate;
-                tooltip = result.tooltip;
-            }
+             const ldf = getClockScoped(5)?.date_start;
+             if (ldf) {
+                 const acta1 = getClockScoped(30);
+                 const isCumple = acta1?.desc?.includes("ACTA PARTE 1 OBSERVACIONES: CUMPLE");
+                 const hasActa = !!acta1?.date_start;
+                 const corrDate = getClockScoped(35)?.date_start;
+
+                 if (value.state === 61 && isCumple) {
+                     const notif = getClockScoped(32)?.date_start || getClockScoped(33)?.date_start;
+                     if (notif) {
+                         baseDate = notif;
+                         limitDate = sumarDiasHabiles(notif, viaTime);
+                         tooltip = `Viabilidad (Cumple): Notificación + ${viaTime} días`;
+                     }
+                 } else if (isCumple || !hasActa) {
+                     baseDate = acta1?.date_start || ldf; 
+                     limitDate = sumarDiasHabiles(acta1?.date_start || ldf, viaTime);
+                     tooltip = `Viabilidad (Proyección): Acta 1 + ${viaTime} días`;
+                 } else if (hasActa && !isCumple && corrDate) {
+                     baseDate = corrDate;
+                     limitDate = sumarDiasHabiles(corrDate, viaTime);
+                     tooltip = `Viabilidad (Correcciones): Radicación + ${viaTime} días`;
+                 }
+             }
         }
-        // Caso general: usar limit config
         else if (value.limit) {
-            limitDate = calculateDynamicLimit(value.limit);
+            const resolveLimit = (cfg) => {
+                if (!Array.isArray(cfg)) return null;
+                if (typeof cfg[1] === 'number') {
+                    const [states, days] = cfg;
+                    const startStates = Array.isArray(states) ? states : [states];
+                    for (const st of startStates) {
+                        const c = getClockScoped(st);
+                        if (c?.date_start) {
+                            baseDate = c.date_start; 
+                            return sumarDiasHabiles(c.date_start, days);
+                        }
+                    }
+                    return null;
+                }
+                for (const opt of cfg) {
+                    const res = resolveLimit(opt);
+                    if (res) return res;
+                }
+                return null;
+            }
+            limitDate = resolveLimit(value.limit);
         }
 
-        // Obtener los días gastados
         const spentDaysResult = calculateDaysSpent(value, clock);
-        let statusText = null;
-
+        let spentText = '';
         if (spentDaysResult) {
-            const { days, startDate } = spentDaysResult;
-            let scheduledTotal = null;
+            const { days } = spentDaysResult;
+            spentText = `${days} días`;
+        }
 
-            if (scheduleConfig) {
-                if (value.state === 30 && scheduleConfig.phase1Days) {
-                    scheduledTotal = scheduleConfig.phase1Days;
-                } else if (value. state === 61 && scheduleConfig.phase2Days) {
-                    scheduledTotal = scheduleConfig.phase2Days;
+        return { limitDate, tooltip, spentText, baseDate };
+    };
+
+    const legalData = calculateLegalData();
+    const scheduledData = (() => {
+        if (!scheduleConfig || !scheduleConfig.times || !scheduleConfig.times[value.state]) return null;
+        return calculateScheduledLimitForDisplay(value.state, value, clock, scheduleConfig, getClock, getClockVersion, helpers);
+    })();
+
+    // =====================================================
+    // CÁLCULO DE ALARMA (USANDO LÍMITES LEGALES)
+    // =====================================================
+    const getAlarmInfo = () => {
+        if (!legalData || !legalData.limitDate) return null;
+        const { limitDate } = legalData;
+        const limitMoment = moment(limitDate);
+        const isCompleted = !!clock?.date_start;
+        const today = moment(systemDate);
+        const state = value.state;
+
+
+        if (state===504){
+            const actoAdministrativo = getClock(70);
+            let text = '';
+            let color = '';
+            let icon = null;
+
+            if (isCompleted) {
+                text = `A tiempo`;
+                color = '#2f9e44';
+                icon = 'fa-check';
+            } else if (!isCompleted && actoAdministrativo?.date_start) {
+                text = 'Vencida';
+                color = '#e03131';
+                icon = 'fa-times-circle';
+            } else {
+                text = 'Pendiente';
+                color = '#f08c00';
+                icon = 'fa-hourglass-half';
+            }
+            return { text, color, icon };
+        }
+
+        // --- LÓGICA ESTÁNDAR ---
+        let text = '';
+        let color = '';
+        let icon = null;
+
+        if (isCompleted) {
+            const completionDate = moment(clock.date_start);
+            
+            if (completionDate.isAfter(limitMoment, 'day')) {
+                const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
+                text = `Retraso de ${delayDays} día(s)`;
+                color = '#e03131';
+                icon = 'fa-exclamation-circle';
+            } else {
+                text = `A tiempo`;
+                color = '#2f9e44';
+                icon = 'fa-check';
+            }
+        } else {
+            const isOverdue = today.isAfter(limitMoment, 'day');
+            
+            if (isOverdue) {
+                const overdueDays = calcularDiasHabiles(limitMoment.toDate(), today.toDate());
+                text = `Vencido por ${overdueDays} día(s)`;
+                color = '#e03131';
+                icon = 'fa-exclamation-circle';
+            } else {
+                const remainingDays = calcularDiasHabiles(today.toDate(), limitMoment.toDate());
+                text = `${remainingDays} día(s) restante(s)`;
+                color = '#f08c00';
+                icon = 'fa-hourglass-half';
+                
+                if (remainingDays <= 2) {
+                    color = '#e03131';
+                    icon = 'fa-exclamation-triangle';
                 }
             }
-            
-            if (scheduledTotal !== null) {
-                statusText = `${days}/${scheduledTotal}d invertidos`;
-            } else {
-                statusText = `${days}d invertidos`;
-            }
         }
+        return { text, color, icon };
+    };
+    
+    const alarmInfo = getAlarmInfo();
 
-        if (! limitDate) {
-            return <div className="legal-limit-cell" title="No aplica un límite legal para este evento o faltan fechas previas.">-</div>;
-        }
-        
+    const renderAlarmColumn = () => {
+        if (!alarmInfo) return null;
         return (
-            <div className="legal-limit-cell" title={tooltip}>
-                <div className="limit-date text-primary">
-                    {formatDate(limitDate)}
-                </div>
-                {statusText && (
-                    <div className="limit-status small text-muted">
-                        {statusText}
-                    </div>
-                )}
+            <div className="d-flex align-items-center" style={{ color: alarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
+                {alarmInfo.icon && <i className={`fas ${alarmInfo.icon} me-1`}></i>}
+                {alarmInfo.text}
             </div>
         );
     };
 
     // =====================================================
-    // RENDERIZADO DE LÍMITE PROGRAMADO
+    // CÁLCULO DE ALARMA PROGRAMADA (NUEVA FUNCIÓN)
     // =====================================================
-    const renderScheduledLimit = () => {
-        if (!scheduleConfig) return <div className="scheduled-limit-cell" title="No hay una programación guardada para este proceso.">-</div>;
-
-        const ldf = getClock(5)?.date_start;
-        if (!ldf) return <div className="scheduled-limit-cell" title="La programación requiere la fecha de Legal y Debida Forma.">-</div>;
-
-        let scheduledDays = null;
-        let scheduledLimitDate = null;
-        let remainingDays = null;
-        let baseDateForSchedule = null;
-        let tooltip = 'Límite según la programación interna.';
-
-        if (value.state === 30 && scheduleConfig.phase1Days) {
-            scheduledDays = scheduleConfig.phase1Days;
-            baseDateForSchedule = ldf;
-        } else if (value.state === 61 && scheduleConfig.phase2Days) {
-            const corrTime = getClock(35)?.date_start;
-            // Ajuste en programación: Si es CUMPLE, la fase 2 arranca desde LDF+Fase1, si es NO CUMPLE arranca desde correcciones
-            const acta1 = getClock(30);
-            const isCumple = acta1?.desc?.includes('CUMPLE') && !acta1?.desc?.includes('NO CUMPLE');
-            
-            if (isCumple) {
-                // Si cumple, la "Fase 2" programada inicia teóricamente tras terminar la Fase 1 programada
-                // O más simple: desde Acta 1
-                baseDateForSchedule = acta1?.date_start;
-                scheduledDays = scheduleConfig.phase2Days;
-            } else if (corrTime) {
-                scheduledDays = scheduleConfig.phase2Days;
-                baseDateForSchedule = corrTime;
-            } else {
-                 tooltip = "Esperando fecha de correcciones o acta favorable para calcular. ";
-            }
-        }
+    const getScheduledAlarmInfo = () => {
+        if (!scheduledData || !scheduledData.limitDate) return null;
         
-        if (scheduledDays && baseDateForSchedule) {
-            scheduledLimitDate = sumarDiasHabiles(baseDateForSchedule, scheduledDays);
-            tooltip = `${scheduledDays} días programados desde ${formatDate(baseDateForSchedule)}.`;
-            const eventDate = clock?. date_start;
+        const limitMoment = moment(scheduledData.limitDate);
+        const isCompleted = !!clock?.date_start;
+        const today = moment(systemDate);
 
-            if (eventDate) {
-                const daysTaken = calcularDiasHabiles(baseDateForSchedule, eventDate);
-                remainingDays = scheduledDays - daysTaken;
+        let text = '';
+        let color = '';
+        let icon = null;
+
+        if (isCompleted) {
+            const completionDate = moment(clock.date_start);
+            
+            if (completionDate.isAfter(limitMoment, 'day')) {
+                const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
+                text = `Retraso de ${delayDays} día(s)`;
+                color = '#e03131';
+                icon = 'fa-exclamation-circle';
             } else {
-                const today = moment(). format('YYYY-MM-DD');
-                const daysUsed = calcularDiasHabiles(baseDateForSchedule, today);
-                remainingDays = scheduledDays - daysUsed;
+                text = `A tiempo`;
+                color = '#2f9e44';
+                icon = 'fa-check';
             }
-        } else if (scheduleConfig && (value.state === 30 || value. state === 61)) {
-            // Caso donde hay plan pero no aplica a esta fila por falta de fechas
         } else {
-            return <div className="scheduled-limit-cell" title={tooltip}>-</div>;
+            const isOverdue = today.isAfter(limitMoment, 'day');
+            
+            if (isOverdue) {
+                const overdueDays = calcularDiasHabiles(limitMoment.toDate(), today.toDate());
+                text = `Vencido por ${overdueDays} día(s)`;
+                color = '#e03131';
+                icon = 'fa-exclamation-circle';
+            } else {
+                const remainingDays = calcularDiasHabiles(today.toDate(), limitMoment.toDate());
+                text = `${remainingDays} día(s) restante(s)`;
+                color = '#f08c00';
+                icon = 'fa-hourglass-half';
+                
+                if (remainingDays <= 2) {
+                    color = '#e03131';
+                    icon = 'fa-exclamation-triangle';
+                }
+            }
         }
-        
-        const isOverdue = remainingDays !== null && remainingDays < 0;
-        const colorClass = isOverdue ? 'text-danger' : (remainingDays === 0 && clock?.date_start) ? 'text-success' : 'text-primary';
+        return { text, color, icon };
+    };
 
+    const scheduledAlarmInfo = getScheduledAlarmInfo();
+
+    // =====================================================
+    // CÁLCULO DE SIGUIENTE PASO (NUEVA FUNCIÓN)
+    // =====================================================
+    const getNextStepInfo = () => {
+        // Si este evento está completado, no hay siguiente paso para él
+        if (clock?.date_start) return null;
+
+        // Buscar el siguiente evento pendiente en la lista
+        const allClocks = helpers.clocksData || [];
+        const currentState = value.state;
+        
+        // Determinar qué evento debe completarse antes de este
+        if (value.limit) {
+            const getDependentStates = (limitConfig) => {
+                if (!Array.isArray(limitConfig)) return [];
+                if (typeof limitConfig[1] === 'number') {
+                    const [states] = limitConfig;
+                    return Array.isArray(states) ? states : [states];
+                }
+                let allStates = [];
+                limitConfig.forEach(opt => {
+                    allStates = [...allStates, ...getDependentStates(opt)];
+                });
+                return allStates;
+            };
+
+            const dependentStates = getDependentStates(value.limit);
+            
+            // Verificar si hay algún evento dependiente pendiente
+            for (const depState of dependentStates) {
+                const depClock = getClock(depState);
+                if (!depClock || !depClock.date_start) {
+                    // Encontramos un evento dependiente que está pendiente
+                    const depClockDef = helpers.clocksToShow?.find(c => c.state === depState);
+                    if (depClockDef) {
+                        return {
+                            text: `Espera: ${depClockDef.name || 'Evento previo'}`,
+                            icon: 'fa-pause-circle',
+                            color: '#868e96'
+                        };
+                    }
+                }
+            }
+        }
+
+        // Si no hay dependencias pendientes, este es el siguiente paso
+        return {
+            text: 'Acción requerida',
+            icon: 'fa-play-circle',
+            color: '#1971c2'
+        };
+    };
+
+    const nextStepInfo = getNextStepInfo();
+
+    const renderScheduledAlarmColumn = () => {
+        if (!scheduledAlarmInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem' }}>- -</span>;
         return (
-            <div className="scheduled-limit-cell" title={tooltip}>
-                {scheduledLimitDate && (
-                    <div className={`scheduled-date ${colorClass}`}>
-                        {formatDate(scheduledLimitDate)}
-                    </div>
-                )}
-                {remainingDays !== null && ! clock?.date_start && (
-                    <div className={`scheduled-remaining small ${isOverdue ? 'text-danger' : 'text-success'}`}>
-                        {isOverdue ? `Retraso: ${Math.abs(remainingDays)}d` : `Quedan: ${remainingDays}d`}
-                    </div>
-                )}
-                 {clock?.date_start && (
-                    <div className="scheduled-remaining small text-muted">Completado</div>
-                )}
+            <div style={{ display: 'flex', alignItems: 'center', color: scheduledAlarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
+                {scheduledAlarmInfo.icon && <i className={`fas ${scheduledAlarmInfo.icon}`} style={{ marginRight: '0.35rem' }}></i>}
+                {scheduledAlarmInfo.text}
+            </div>
+        );
+    };
+
+    const renderNextStepColumn = () => {
+        if (!nextStepInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem', fontStyle: 'italic' }}>Completado</span>;
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', color: nextStepInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
+                {nextStepInfo.icon && <i className={`fas ${nextStepInfo.icon}`} style={{ marginRight: '0.35rem' }}></i>}
+                {nextStepInfo.text}
             </div>
         );
     };
 
     // =====================================================
-    // RENDERIZADO DE NOMBRE DEL EVENTO
+    // EXTRAER Y GUARDAR OBSERVACIONES
     // =====================================================
-    const renderEventName = () => {
-        const eventDesc = value.desc ?  (typeof value.desc === 'string' ? value.desc : '') : '';
-        const sentenceCaseEs = (s) => (s && typeof s === 'string') ? s.charAt(0).toUpperCase() + s. slice(1). toLowerCase() : s;
-        const eventName = value.name ??  sentenceCaseEs(clock?.name) ?? '';
-        
-        if (eventDesc && eventDesc !== false) {
-            return (
-                <div className="d-flex align-items-center">
-                    <span>{eventName}</span>
-                    <span 
-                        className="info-icon-tooltip"
-                        data-tooltip={eventDesc}
-                        title="Más información"
-                    >
-                        <i className="fas fa-info-circle"></i>
-                    </span>
-                </div>
-            );
+    const getObservations = () => {
+        if (!clock || !clock.desc) return '';
+        try {
+            const parsed = JSON.parse(clock.desc);
+            return parsed.userNotes || '';
+        } catch (e) {
+            if (clock.desc.includes('|| OBS:')) {
+                return clock.desc.split('|| OBS:')[1].trim();
+            }
+            return ''; 
         }
-        return <span>{eventName}</span>;
     };
 
-    const get_clockExistIcon = (state, icon) => {
-        const _CHILD = getClock(state);
-        if (_CHILD && icon !== "empty") {
-            if (_CHILD.date_start || _CHILD.name === "RADICACIÓN") {
-                return <i className="far fa-check-circle text-success"></i>;
-            }
-            return <i className="far fa-dot-circle text-warning"></i>;
+    // =====================================================
+    // MODAL DE DETALLE MEJORADO
+    // =====================================================
+    const openDetailModal = () => {
+        const title = value.name || value.title || 'Detalle del Evento';
+        const systemDesc = value.desc || 'Evento del proceso.';
+        const currentDate = clock?.date_start ? formatDate(clock.date_start) : 'Pendiente';
+        const statusColor = clock?.date_start ? 'success' : 'secondary';
+        const statusText = clock?.date_start ? 'COMPLETADO' : 'PENDIENTE';
+        const state = clock?.state ?? value.state;
+        
+        let existingObs = '';
+        if (clock && clock.desc && clock.desc.includes('|| OBS:')) {
+            existingObs = clock.desc.split('|| OBS:')[1].trim();
         }
-        return <i className="far fa-circle text-muted"></i>;
+
+        MySwal.fire({
+            html: `
+            <div class="time-detail-modal">
+                <div class="tdm-header">
+                    <div class="tdm-title-group">
+                        <div class="tdm-icon-box"><i class="fas fa-calendar-day"></i></div>
+                        <div>
+                            <h5 class="tdm-title">${title}</h5>
+                            <span class="tdm-subtitle">${systemDesc}</span>
+                        </div>
+                    </div>
+                    <span class="tdm-badge status-${statusColor}">${statusText}</span>
+                </div>
+
+                <div class="tdm-grid">
+                    <div class="tdm-card">
+                        <div class="tdm-card-header"><i class="fas fa-calendar-check text-primary"></i> Fecha Real</div>
+                        <div class="tdm-card-body">
+                            <div class="tdm-big-value">${currentDate}</div>
+                            ${legalData.baseDate ? `<div class="tdm-sub-value">Calculado desde: ${formatDate(legalData.baseDate)}</div>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="tdm-card">
+                        <div class="tdm-card-header"><i class="fas fa-gavel text-danger"></i> Límite Legal</div>
+                        <div class="tdm-card-body">
+                            <div class="tdm-big-value">${legalData.limitDate ? formatDate(legalData.limitDate) : 'N/A'}</div>
+                            <div class="tdm-sub-value">${(state === 501 ? 'Límite legal con holgura de 2 días' : state === 502 ? 'Límite legal con holgura de 1 día' : '') || ''}</div>
+                        </div>
+                    </div>
+
+                    <div class="tdm-card">
+                        <div class="tdm-card-header"><i class="fas fa-user-clock text-info"></i> Programado</div>
+                        <div class="tdm-card-body">
+                            <div class="tdm-big-value">${scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : 'N/A'}</div>
+                            <div class="tdm-sub-value">${scheduledData ? `${scheduledData.days} días hábiles previstos` : 'No programado'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                ${value.legalSupport ? `
+                <div class="tdm-section">
+                    <div class="tdm-section-title"><i class="fas fa-balance-scale"></i> Soporte Legal</div>
+                    <div class="tdm-legal-text">
+                        ${value.legalSupport}
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="tdm-section">
+                    <div class="tdm-section-title"><i class="fas fa-comment-alt"></i> Observaciones / Notas</div>
+                    <textarea id="swal-input-obs" class="form-control tdm-textarea" placeholder="Escribe aquí observaciones sobre este tiempo...">${existingObs}</textarea>
+                </div>
+            </div>
+            `,
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-save me-2"></i>Guardar Observación',
+            confirmButtonColor: '#1971c2',
+            cancelButtonText: 'Cerrar',
+            customClass: {
+                popup: 'tdm-popup',
+                htmlContainer: 'tdm-container'
+            },
+            width: 600,
+            preConfirm: () => {
+                const newObs = document.getElementById('swal-input-obs').value;
+                if (newObs !== existingObs) {
+                    return newObs;
+                }
+                return null;
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value !== null && clock) {
+                const newDescBase = clock.desc ? clock.desc.split('|| OBS:')[0].trim() : (value.desc || '');
+                const finalDesc = result.value ? `${newDescBase} || OBS: ${result.value}` : newDescBase;
+                
+                const payload = {
+                    ...value,
+                    desc: finalDesc
+                };
+                onSave(payload, i);
+            }
+        });
     };
 
     if (value.show === false) return null;
-    if (value.requiredClock && !getClock(value.requiredClock)?.date_start) return null;
+    if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) return null;
     if (value.optional && !clock) return null;
 
-    const currentDate = clock?.date_start ??  value.manualDate ??  '';
-    const canEditDate = value.editableDate !== false && value.version === undefined;
+    const currentDate = clock?.date_start ?? value.manualDate ?? '';
+    const canEditDate = value.editableDate !== false;
 
-    let indentLevel = 0;
-    if (value. title) {
-        indentLevel = 0;
-    } else if (value.name && (
-        value.name.includes('Comunicación') || 
-        value. name.includes('Notificación') || 
-        value. name.includes('Citación') || 
-        value.name. includes('Prórroga') ||
-        value. name.includes('Radicación de Correcciones') ||
-        value.name.includes('Traslado') ||
-        value. name.includes('Declaracion') ||
-        value.name.includes('superintendencia') ||
-        value.name.includes('Recepción') ||
-        value.name.includes('Fin de')
-    )) {
-        indentLevel = 2;
-    } else {
-        indentLevel = 1;
-    }
+    const sentenceCaseEs = (s) => (s && typeof s === 'string') ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s;
+    const eventName = value.name ?? sentenceCaseEs(clock?.name) ?? '';
+
+    const rowIcon = getRowIcon();
+    
+    const titleClassName = `row-title text-truncate sticky ${isHighlighted ? 'title-highlight' : ''}`;
+    const dateInputClassName = `form-control form-control-sm border-0 bg-transparent dates-input-class ${currentDate ? '' : 'padding-date-input'}`;
+    const ACTIVE_BG = 'rgba(245, 245, 245)';   // .active-row-container
+    const ACTIVE_HOVER_BG = 'rgba(242, 242, 242)'; // .active-row-container:hover
+
+    const backgroundColor = isHighlighted
+    ? (isHovered ? ACTIVE_HOVER_BG : ACTIVE_BG)
+    : '#fff';
+
+
+    const rowStyle = {
+        display: 'flex',
+        alignItems: 'stretch',
+        padding: '0.5rem 1rem',
+        backgroundColor: isHighlighted ? '#ffffffff' : '#fff',
+        borderBottom: '1px solid #f1f3f5',
+        transition: 'background-color 0.2s',
+    };
+
+    const colStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 0.5rem',
+    };
+    
+    // --- NUEVO: Estilos para columnas fijas (sticky) en cada fila ---
+    const stickyColStyle = {
+        position: 'sticky',
+        zIndex: 1, // z-index para filas, menor que el del header
+        // El color de fondo se toma del estilo de la fila para manejar el resaltado
+        backgroundColor: backgroundColor,
+    };
 
     return (
-        <React.Fragment>
-            {value.title ?  (
-                <div className="exp-section" style={{ '--cat': cat. color }}>
-                    <div className="d-flex align-items-center mb-1">
-                        <i className={`fas ${cat.icon} me-2`}></i>
-                        <strong className="text-uppercase">{value.title}</strong>
-                    </div>
+        <div style={rowStyle} 
+             className={isHighlighted ? 'active-row-container' : ''} 
+             >
+            {/* Columna 1 Fija (Evento) */}
+            <div style={{ 
+                ...colStyle, 
+                ...stickyColStyle,
+                left: 0,
+                flex: `0 0 ${COL_WIDTHS.EVENT}`, 
+                minWidth: COL_WIDTHS.EVENT 
+            }}>
+                <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.5rem' }}>
+                    {rowIcon}
                 </div>
-            ) : (
-                <div className="exp-row border-bottom" style={{ '--cat': cat.color }}>
-                    <div className="row g-0 align-items-stretch w-100 m-0">
-                        <div className="col-5 px-1 py-2 cell-border">
-                            <div style={{ paddingLeft: `${indentLevel * 1.1}rem` }} className="d-flex align-items-center h-100">
-                                {indentLevel > 0 && (
-                                    <span className="text-muted me-2" style={{ fontSize: '1rem', display: 'inline-flex', alignItems: 'center' }}>
-                                        {indentLevel === 2 ? <FaMinus /> : ''}
-                                    </span>
-                                )}
-                                <span className="me-2" style={{ minWidth: 16, display: 'flex', alignItems: 'center' }}>
-                                    {get_clockExistIcon(value.state, value.icon)}
-                                </span>
-                                {renderEventName()}
-                            </div>
-                        </div>
-
-                        <div className="col-2 px-1 cell-border">
-                            <div className="exp-row-content">
-                                {canEditDate ?  (
-                                    <>
-                                        <input 
-                                            type="date" 
-                                            className="form-control form-control-sm p-1" 
-                                            id={'clock_exp_date_' + i} 
-                                            max="2100-01-01" 
-                                            defaultValue={currentDate} 
-                                            onBlur={() => onSave(value, i)} 
-                                        />
-                                        {currentDate && (
-                                            <button 
-                                                className="btn-delete-date" 
-                                                title="Eliminar fecha"
-                                                onClick={() => onDelete(value)}
-                                            >
-                                                <i className="fas fa-trash-alt"></i>
-                                            </button>
-                                        )}
-                                    </>
-                                ) : (
-                                    <span className="text-center small">
-                                        {currentDate ?  formatDate(currentDate) : <span className='text-muted'>-</span>}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="col-3 text-center small cell-border">
-                            <div className="exp-row-content">
-                                {renderLegalLimit()}
-                            </div>
-                        </div>
-
-                        <div className="col-2 text-center small">
-                            <div className="exp-row-content">
-                                {renderScheduledLimit()}
-                            </div>
-                        </div>
-                    </div>
+                <div 
+                    className={titleClassName} 
+                    onClick={openDetailModal}
+                    title="Ver detalles"
+                    style={{ flex: 1, cursor: 'pointer', minWidth: 0 }}
+                >
+                    {eventName}
+                    {clock?.desc && clock.desc.includes('|| OBS:') && (
+                        <i className="fas fa-comment-dots ms-2 text-info" title="Tiene observaciones" style={{fontSize: '0.75rem'}}></i>
+                    )}
                 </div>
-            )}
-        </React.Fragment>
+            </div>
+
+            {/* Columna 2 Fija (Fecha Evento) */}
+            <div style={{ 
+                ...colStyle,
+                ...stickyColStyle,
+                left: COL_WIDTHS.EVENT,
+                flex: `0 0 ${COL_WIDTHS.DATE}`, 
+                minWidth: COL_WIDTHS.DATE,
+            }}>
+                {canEditDate ? (
+                    <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                        <input 
+                            type="date" 
+                            className={dateInputClassName}
+                            style={{fontSize: '0.85rem', color: '#495057', fontWeight: 500, flex: 1}}
+                            id={'clock_exp_date_' + i} 
+                            defaultValue={currentDate} 
+                            max="2100-01-01" 
+                            onBlur={() => onSave(value, i)} 
+                        />
+                        {currentDate && (
+                            <button 
+                                style={{ background: 'none', border: 'none', padding: '0 0.25rem', cursor: 'pointer', color: '#6c757d' }}
+                                onClick={() => onDelete(value)} 
+                                title="Eliminar fecha"
+                            >
+                                <i className="fas fa-eraser fa-xs"></i>
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#495057' }}>
+                        {formatDate(currentDate)}
+                    </span>
+                )}
+            </div>
+
+            {/* Columnas con scroll */}
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+                <span style={{ fontSize: '0.85rem', color: '#495057' }}>
+                    {legalData.limitDate ? formatDate(legalData.limitDate) : '- -'}
+                </span>
+            </div>
+
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+                {renderAlarmColumn()}
+            </div>
+
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+                <span style={{ fontSize: '0.85rem', color: '#495057' }}>
+                    {scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : '- -'}
+                </span>
+            </div>
+
+            <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
+                {renderScheduledAlarmColumn()}
+            </div>
+
+            <div style={{ ...colStyle, flex: '1', minWidth: '220px' }}>
+                {renderNextStepColumn()}
+            </div>
+        </div>
     );
 };

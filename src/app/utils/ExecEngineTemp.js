@@ -31,7 +31,7 @@ export class ExecEngineTemp extends BaseDocumentUtils {
             de 2015 se concede una vigencia de ${this._DATA.reso.vn} para ejecutar las 
             obras autorizadas en la licencia de construcción en la(s) precitada(s) modalidad(es) 
             que acompaña(n) el reconocimiento, los cuales van DESDE EL 
-            ${this.dateParser(this.exec_date).toUpperCase()} HASTA EL ${this.dateParser(this._DATA.reso.vig_date).toUpperCase()}.`;
+            ${this.dateParser(this.exec_date).toUpperCase()} HASTA EL ${this.dateParser(this.getDateBussinesDaysCol(this._DATA.reso.vig_date,-1)).toUpperCase()}.`;
             this.setText("exec-act-body-vig", vig_text);
         } else if (this.data.model === "eje_des") {
             this.state = "DESISTIDA";
@@ -125,7 +125,7 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         matrícula inmobiliaria **${matricula}** y nomenclatura **${direccion}**${barrio ? ' barrio **'+barrio+'**' : ''} del municipio de **${ciudad}**.
         Solicitada por ${ownersText}. Actuando en calidad de propietario${(_DATA.fun_51s.length>1) ? 's' : ''} del inmueble, mediante 
         la **${txt_res}**, la solicitud de **${licType}**, la cual se encuentra **EJECUTORIADA**, al haber concluido los términos de 
-        ley y agotarse los recursos el día ${this.dateParser(this.exec_date)}.
+        ley y agotarse los recursos el día ${this.dateParser(this.getDateBussinesDaysCol(this.exec_date,-1))}.
         `;
 
         this.setText("exec-act-body-2", body2);

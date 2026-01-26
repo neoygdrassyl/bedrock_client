@@ -128,14 +128,14 @@ class FUNN3 extends Component {
             const columns_3 = [
                 {
                     name: <label>DIRECCION DEL PREDIO</label>,
-                    selector: 'direccion_1',
+                    selector: row => row.direccion_1, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_1}</label>
                 },
                 {
                     name: <label>DIRECCIÓN DE CORRESPONDENCIA</label>,
-                    selector: 'direccion_2',
+                    selector: row => row.direccion_2, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_2}</label>
@@ -150,21 +150,21 @@ class FUNN3 extends Component {
                 },
                 {
                     name: <label>ESTADO CITACIÓN</label>,
-                    selector: 'row.state',
+                    selector: row => row.state, // FIX: react-data-table v7→v8 (was 'row.state')
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{_GET_NEIGHBOUR_STATE(row.state)}</label>
                 },
                 {
                     name: <label>CUB RELACIONADO</label>,
-                    selector: 'id_cub',
+                    selector: row => row.id_cub, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.id_cub}</label>
                 },
                 {
                     name: <label>GUIA DE CONFIRMACION</label>,
-                    selector: 'id_alerted',
+                    selector: row => row.id_alerted, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.id_alerted == "-1"
@@ -173,7 +173,7 @@ class FUNN3 extends Component {
                 },
                 {
                     name: <label>FECHA RECIBIDO</label>,
-                    selector: 'alerted',
+                    selector: row => row.alerted, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.state == 1 ? dateParser(row.alerted) : ""}</label>

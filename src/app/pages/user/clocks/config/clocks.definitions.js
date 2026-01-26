@@ -2,16 +2,76 @@ import { regexChecker_isOA_2 } from '../../../../components/customClasses/typePa
 import { NEGATIVE_PROCESS_TITLE } from '../hooks/useClocksManager';
 import moment from 'moment';
 
-const STEPS_TO_CHECK = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
+const DESIST_CLOCKS = {
+    '-50': { name: 'Inicio del proceso de desistimiento', desc: 'Inicio formal del proceso de desistimiento.' },
+    '-6':  { name: 'Creación de Resolución', desc: 'Notificación mediante email.' },
+    '-5':  { name: 'Citación', desc: 'Se inicia proceso de desistimiento.' },
+    '-7':  { name: 'Notificación', desc: 'Contacto personal, electrónico o certificada.' },
+    '-8':  { name: 'Notificación por aviso', desc: 'El solicitante no se presentó, se informa por aviso.' },
+    '-10': { name: 'Interponer recurso', desc: 'El solicitante presenta o no el recurso.' },
+    '-17': { name: 'Resolución frente a recurso', desc: 'Respuesta al recurso interpuesto.' },
+    '-20': { name: 'Citación (2° vez)', desc: 'Citación adicional para informar la decisión.' },
+    '-21': { name: 'Notificación por aviso (2° vez)', desc: 'Aviso al solicitante (2° vez).' },
+    '-22': { name: 'Notificación (2° vez)', desc: 'Notificación personal/electrónica (2° vez).' },
+    '-30': { name: 'Finalización', desc: 'El proceso de desistimiento ha finalizado oficialmente.' },
+};
+
+// Límites legales para cada evento de desistimiento
+const getDesistLimit = (state) => {
+    switch (String(state)) {
+        case '-6':
+        case '-5':
+            // 5 días hábiles desde el inicio del desistimiento
+            return [[-50, 5], [-5, 5]];
+        case '-7':
+        case '-8':
+            // 5 días hábiles desde la resolución/citación
+            return [[-6, 5]];
+        case '-10':
+            // 10 días hábiles desde la notificación (personal o aviso)
+            return [[-7, 10], [-8, 10]];
+        case '-21':
+        case '-22':
+            // 5 días hábiles desde la segunda citación
+            return [[-20, 5]];
+        default:
+            return null;
+    }
+};
+
+const buildDesistSection = (version, getClockVersion) => {
+    const hasProcess = getClockVersion(-50, version) || getClockVersion(-5, version) || getClockVersion(-6, version);
+    if (!hasProcess) return [];
+
+    const title = `DESISTIMIENTO - ${NEGATIVE_PROCESS_TITLE[version] || 'MOTIVO NO ESPECIFICADO'}`;
+    const stepsOrder = ['-50', '-6', '-5', '-7', '-8', '-10', '-17', '-20', '-21', '-22', '-30'];
+
+    const section = [{ title }];
+    stepsOrder.forEach((stateKey) => {
+        const meta = DESIST_CLOCKS[stateKey];
+        if (!meta) return;
+        section.push({
+            state: Number(stateKey),
+            version,
+            name: meta.name,
+            desc: meta.desc,
+            editableDate: true,
+            hasAnnexSelect: true,
+            optional: false,
+            limit: getDesistLimit(stateKey),
+        });
+    });
+    return section;
+};
 
 // --- GENERADORES DE SECCIONES DINÁMICAS ---
 const getSuspensionClocks = (suspensionData, type) => {
     if (!suspensionData.exists) return [];
     const [startState, endState] = type === 'pre' ? [300, 350] : [301, 351];
-    const title = type === 'pre' ? 'SUSPENSIÓN ANTES DEL ACTA' : 'SUSPENSIÓN DESPUÉS DE CORRECCIONES';
+    const title = type === 'pre' ? 'Suspensión antes del acta' : 'Suspensión después de correcciones';
 
     return [
-        { title },
+        // { title },
         {
             state: startState, 
             name: 'Inicio de Suspensión', 
@@ -35,47 +95,61 @@ const getSuspensionClocks = (suspensionData, type) => {
 const getExtensionClocks = (extensionData) => {
     if (!extensionData.exists) return [];
     return [
-        { title: 'PRÓRROGA POR COMPLEJIDAD' },
+        // { title: 'Prórroga por complejidad' },
         { 
             state: 400, 
-            name: 'Inicio de Prórroga', 
-            desc: 'Inicio de prórroga por complejidad técnica (hasta 22 días hábiles)',
+            name: 'Inicio de Prórroga por complejidad', 
+            desc: 'Inicio de prórroga por complejidad (hasta 22 días hábiles)',
             editableDate: true, 
             hasConsecutivo: false, 
             hasAnnexSelect: true 
         },
         { 
             state: 401, 
-            name: 'Fin de Prórroga', 
-            desc: 'Finalización de prórroga por complejidad técnica',
+            name: 'Fin de Prórroga por complejidad', 
+            desc: 'Finalización de prórroga por complejidad',
             editableDate: true, 
             hasConsecutivo: false, 
             hasAnnexSelect: true, 
-            limit: [[400, 21]],
+            limit: [[400, 22]],
             spentDaysConfig: { startState: 400 } 
         },
     ];
 };
 
-const getDesistClocks = (version, getClockVersion) => {
-    const hasDesistProcess = getClockVersion(-5, version) || getClockVersion(-6, version);
-    if (!hasDesistProcess) return [];
-    return [
-        { title: `DESISTIDO POR: ${NEGATIVE_PROCESS_TITLE[version] || 'MOTIVO NO ESPECIFICADO'}` },
-        { 
-            state: STEPS_TO_CHECK, 
-            version: version, 
-            editableDate: false, 
-            hasConsecutivo: false, 
-            hasAnnexSelect: false, 
-            optional: true 
-        }
-    ];
-};
-
 // --- DEFINICIONES DE SECCIONES ESTÁTICAS ---
 const extraClocks = (props) => {
-    const { currentItem, child1, getClock, getClockVersion, viaTime, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension } = props;
+    const { currentItem, child1, getClock, getClockVersion, viaTime, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, phaseOptions } = props;
+
+    // Opciones para la fase de Estudio y Valla
+    const estudioOptions = phaseOptions?.phase_estudio || { notificationType: 'notificar', byAviso: false };
+
+    // Opciones para la fase de Revisión de Correcciones
+    const correccionesOptions = phaseOptions?.phase_correcciones || { notificationType: 'notificar', byAviso: false };
+
+
+    const getRadicacionFecha = () => {
+        // 1. Usar "optional chaining" (?.) para acceder a la propiedad de forma segura.
+        // Esto evita errores si `fun_law` no existe.
+        const signString = currentItem?.fun_law?.sign;
+
+        // 2. Verificar si el string existe y no está vacío.
+        if (!signString) {
+            return "Fecha no disponible";
+        }
+
+        // 3. Dividir el string por la coma para obtener un array.
+        const signArray = signString.split(',');
+
+        // 4. Verificar si el array tiene al menos dos elementos y devolver el segundo (la fecha).
+        if (signArray.length > 1) {
+            return signArray[1]; // Esta es la fecha
+        }
+
+        return "Fecha no encontrada";
+    };
+
+    // Obtener fecha de radicación de valla informativa y correlacionarla con el state apartado en la sección finalClocks
     
     if (regexChecker_isOA_2(child1)) return [];
 
@@ -89,14 +163,13 @@ const extraClocks = (props) => {
     const postActaSusp = getSuspensionClocks(suspensionPostActa, 'post');
     
     // La prórroga se muestra donde esté ubicada temporalmente
-    let condition = !acta1 || (extension.exists && extension.start?.date_start && (!acta1.date_start || moment(extension.start.date_start).isBefore(acta1.date_start)));
     const preActaExt = !acta1 || (extension.exists && extension.start?.date_start && (!acta1.date_start || moment(extension.start.date_start).isBefore(acta1.date_start)))
         ? getExtensionClocks(extension) : [];
     const postActaExt = acta1 && extension.exists && extension.start?.date_start && moment(extension.start.date_start).isSameOrAfter(acta1.date_start)
         ? getExtensionClocks(extension) : [];
 
     return [
-      { title: 'RADICACIÓN Y LEGAL Y DEBIDA FORMA' },
+      { title: 'Radicación de Legal y debida forma' },
       { 
         state: false, 
         name: 'Radicación', 
@@ -105,110 +178,148 @@ const extraClocks = (props) => {
         editableDate: false, 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
+        legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.1.2 Radicación de la solicitud. Presentada la solicitud de licencia, se radicará y numerará consecutivamente, en orden cronológico de recibo, dejando constancia de los documentos aportados con la misma. Nota: El solicitante entrega los documentos. La Curaduría los recibe, les asigna un código de ingreso (Ej: VR 21-00000) y expide un soporte del inventario documental recibido.",
       },
       { 
         state: 3, 
-        name: 'Expensas Fijas', 
+        name: 'Liquidación y Pago del Cargo Fijo (Expensas)', 
         desc: "Pago de expensas fijas (inicio del plazo de 30 días para completar documentación)", 
         editableDate: false, 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
+        legalSupport: 'DECRETO 1077 de 2015. ARTÍCULO 2.2.6.6.8.5 Radicación de las solicitudes de licencias. Además de los requisitos contemplados en la Subsección 1 de la Sección 2 del Capítulo 1 del presente Título, será condición para la radicación ante las curadurías urbanas de toda solicitud de licencia de urbanización y construcción o sus modalidades, el pago al curador del cargo fijo "Cf" establecido en el presente decreto.',
         spentDaysConfig: { startState: false, referenceDate: currentItem.date } 
       },
       { 
         state: -1, 
-        name: 'Incompleto', 
-        desc: "Desistimiento por no completar documentación en 30 días hábiles", 
+        name: 'Radicación Incompleta', 
+        desc: "Desiste por no completar documentación en 30 días hábiles", 
         editableDate: false, 
-        limit: [[3, 30]], 
+        limit: [[3, 29]], 
         hasConsecutivo: false, 
-        hasAnnexSelect: false, 
+        hasAnnexSelect: false,
+        legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.1.2 Radicación de la solicitud  (…) En caso de que la solicitud no se encuentre completa, se devolverá la documentación para completarla. Si el peticionario insiste, se radicará dejando constancia de este hecho y advirtiéndole que deberá allanarse a cumplir dentro de los treinta (30) días hábiles siguientes so pena de entenderse desistida la solicitud, lo cuál se hará mediante acto administrativo que ordene su archivo y contra el que procederá el recurso de reposición ante la autoridad que lo expidió. Nota: Se declara si faltan documentos. Se Informa al solicitante, indicando qué debe completar la documentación en un término no superior a 30 días hábiles, contados a partir de la radicación." ,
         icon: "empty", 
         spentDaysConfig: { startState: 3 } 
       },
       { 
-        state: 502, 
-        name: 'Legal y debida forma', 
+        state: 5, 
+        name: 'Radicación en Legal y debida forma', 
         desc: "Último día en que se completó toda la documentación requerida", 
         editableDate: true, 
-        limit: regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]], 
+        limit: regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 29]], 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
+        legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.1.1 (…) PARÁGRAFO 1. Se entenderá que una solicitud de licencia o su modificación está radicada en Legal y debida forma si a la fecha de radicación se allega la totalidad de los documentos exigidos en el presente Capítulo, aun cuando estén sujetos a posteriores correcciones. (…) DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.3.1 Término para resolver las solicitudes de licencias, sus modificaciones y revalidación de licencias. Los curadores urbanos y la entidad municipal o distrital encargada del estudio, trámite y expedición de las licencias, según el caso. tendrán un plazo máximo de cuarenta y cinco (45) días hábiles para resolver las solicitudes de licencias y de modificación de licencia vigente pronunciándose sobre su viabilidad, negación o desistimiento contados desde la fecha en que la solicitud haya sido radicada en legal y debida forma. Nota: La curaduría cuenta según el sistema de categorización del proyecto un plazo que esta entre 20 y 45 días hábiles contados a partir de la radicación en legal y debida forma; en este periodo se debe realizar el proceso de revisión como el pronunciamiento sobre la solicitud",
         rest: 2, 
-        spentDaysConfig: { startState: regexChecker_isOA_2(child1) ? 4 : 3 } 
+        spentDaysConfig: { startState: regexChecker_isOA_2(child1) ? 4 : 3 },
       },
       { 
-        state: 501, 
+        state: 502,
         name: 'Declaración en legal y debida forma', 
         desc: "Fecha del documento formal de legal y debida forma", 
         editableDate: true, 
-        limit: [[502, 1]], 
+        limit: [[5, 1], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 29]]], 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
-        spentDaysConfig: { startState: 502 } 
+        spentDaysConfig: { startState: 502 },
+        allowSchedule: true
       },
       { 
-        state: 5, 
+        state: 501, 
         name: 'Radicación en superintendencia', 
         desc: "Radicación del expediente en legal y debida forma ante la superintendencia (INICIA PLAZO DE CURADURÍA)", 
         editableDate: true, 
-        limit: [[501, 1], [502, 1], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 30]]], 
+        limit: [[5, 2], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 29]]],  // [501, 1], [502, 1],
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
-        spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] } 
+        spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] },
+        allowSchedule: true
       },
       { 
+        state: 504, 
+        name: 'Comunicación a vecinos', 
+        desc: "Comunicación a vecinos", 
+        editableDate: true, 
+        // limit: [[5, 2]],
+        hasConsecutivo: false, 
+        hasAnnexSelect: false, 
+        spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] },
+        allowSchedule: true,
+        hasLegalAlarm: true,
+      },
+      ...buildDesistSection('-1', getClockVersion), // Radicacion incompleto
+      ...buildDesistSection('-2', getClockVersion), // Valla informativa
+    //   ...preActaExt,
+      { title: 'Estudio y Observaciones' },
+      ...preActaSusp,
+      { 
         state: 503, 
-        name: 'Instalación de la valla', 
+        name: 'Instalación y Registro de la Valla Informativa', 
         desc: "Instalación de la valla informativa del proyecto", 
         editableDate: true, 
         limit: [[5, 5]],
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
-        spentDaysConfig: { startState: 5 } 
+        legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.2.1 PARÁGRAFO 1. Desde el día siguiente a la fecha de radicación en legal y debida forma de solicitudes de proyectos de parcelación, urbanización y construcción en cualquiera de sus modalidades, el peticionario de la licencia deberá instalar una valla resistente a la intemperie de fondo amarillo y letras negras (…) Nota: El funcionario a cargo de la radicación le informa al peticionario sobre el deber de publicidad de los actos de licenciamiento urbanístico que incluyen la valla informativa, la citación a los vecinos colindante y terceros interesados etc",
+        spentDaysConfig: { startState: 5 },
+        hasLegalAlarm: true
       },
-      ...getDesistClocks(-1, getClockVersion),
-      ...getDesistClocks(-2, getClockVersion),
-      ...preActaSusp,
-      ...preActaExt,
-      
-      { title: 'ACTA PARTE 1: OBSERVACIONES' },
       { 
         state: 30, 
         name: 'Acta Parte 1: Observaciones', 
         desc: "Acta de observaciones inicial (indica si CUMPLE o NO CUMPLE)", 
         limit: [[5, fun_type]], 
-        spentDaysConfig: { startState: 5 } 
+        spentDaysConfig: { startState: 5 },
+        allowSchedule: true
       },
       { 
+        state: 33, 
+        name: 'Comunicación (Observaciones)', 
+        desc: "Comunicación del acta de observaciones", 
+        limit: [[30, 1]], 
+        icon: "empty", 
+        spentDaysConfig: { startState: 30 },
+        allowSchedule: true,
+        show: estudioOptions.notificationType==='comunicar',
+      },
+      { title: 'Notificación Observaciones', show: estudioOptions.notificationType !== 'comunicar' },
+      {
         state: 31, 
         name: 'Citación (Observaciones)', 
         desc: "Citación para notificar el acta de observaciones", 
         limit: [[30, 5]], 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
-        spentDaysConfig: { startState: 30 } 
+        spentDaysConfig: { startState: 30 },
+        allowSchedule: true,
+        show: estudioOptions.notificationType === 'notificar',
       },
       { 
         state: 32, 
         name: 'Notificación Personal (Observaciones)', 
         desc: "Notificación personal del acta de observaciones", 
         limit: [[31, 5]], 
-        spentDaysConfig: { startState: 31 } 
+        spentDaysConfig: { startState: 31 },
+        allowSchedule: true,
+        show: estudioOptions.notificationType === 'notificar',
       },
       { 
         state: 33, 
         name: 'Notificación por Aviso (Observaciones)', 
         desc: "Notificación por aviso del acta de observaciones (si no se logró notificación personal)", 
-        limit: [[31, 10]], 
+        limit: [[32, 5]], 
         icon: "empty", 
-        spentDaysConfig: { startState: 31 } 
+        spentDaysConfig: { startState: 31 },
+        allowSchedule: true,
+        show: (estudioOptions.notificationType === 'notificar' && estudioOptions.byAviso),
       },
-      { 
+      { title: 'Correcciones del Solicitante' },
+      {
         state: 34, 
         name: 'Prórroga de correcciones', 
         desc: "Prórroga para presentar correcciones (15 días adicionales sobre los 20 días base = 45 días totales)", 
-        limit: [[[33, 32], 30]], //[[[33, 32], 30], [[30], 30]], 
+        limit: estudioOptions.notificationType === 'comunicar' ? [[[33], 30]] : estudioOptions.byAviso ? [[[33], 30]] : [[[32], 30]], //[[[33, 32], 30]], //[[[33, 32], 30], [[30], 30]], 
         icon: "empty", 
         hasConsecutivo: false, 
         hasAnnexSelect: true, 
@@ -218,17 +329,15 @@ const extraClocks = (props) => {
         state: 35, 
         name: 'Radicación de Correcciones', 
         desc: requereCorr() ? "Radicación de los documentos corregidos por el solicitante (CONTINÚA PLAZO DE CURADURÍA)" : false, 
-        limit: [[[33, 32], presentExt() ? 45 : 30]], 
+        limit: estudioOptions.notificationType === 'comunicar' ? [[[33], presentExt() ? 45 : 30]] : estudioOptions.byAviso ? [[[33], presentExt() ? 45 : 30]] : [[[32], presentExt() ? 45 : 30]], 
         icon: requereCorr() ? undefined : "empty", 
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
         spentDaysConfig: { startState: [33, 32] } 
       },
-      
+      { title: 'Revisión y Viabilidad' },
       ...postActaSusp,
       ...postActaExt,
-      
-      { title: 'ACTA PARTE 2: REVISIÓN DE CORRECCIONES' },
       { 
         state: 49, 
         name: 'Acta Parte 2: Correcciones', 
@@ -236,56 +345,78 @@ const extraClocks = (props) => {
         // limit: [[35, 50]], 
         limitValues: viaTime, 
         icon: requereCorr() ? undefined : "empty", 
-        spentDaysConfig: { startState: 35 } 
+        spentDaysConfig: { startState: 35 },
+        allowSchedule: true
       },
-      ...getDesistClocks(-3, getClockVersion),
-      ...getDesistClocks(-5, getClockVersion),
-      
-      { title: 'VIABILIDAD Y LIQUIDACIÓN' },
       { 
         state: 61, 
         name: 'Acto de Trámite de Licencia (Viabilidad)', 
         desc: "Acto de trámite de viabilidad de la licencia (FINALIZA PLAZO DE CURADURÍA)", 
         // limit: [[35, 50]], 
         limitValues: viaTime,
-        spentDaysConfig: { startState: 49 } 
+        spentDaysConfig: { startState: 49 },
+        allowSchedule: true 
       },
+      { 
+        state: 57, 
+        // show: false, 
+        name: 'Comunicación (Viabilidad)', 
+        desc: "Comunicación del acto de viabilidad", 
+        limit: [[61, 1]], 
+        icon: "empty", 
+        spentDaysConfig: { startState: 55 },
+        allowSchedule: true,
+        show: correccionesOptions.notificationType==='comunicar',
+      },
+      ...buildDesistSection('-3', getClockVersion),
+      ...buildDesistSection('-5', getClockVersion),
+      ...buildDesistSection('-6', getClockVersion),
+      
+      { title: "Notificación de Viabilidad", show: correccionesOptions.notificationType !== 'comunicar' },
       { 
         state: 55, 
         name: 'Citación (Viabilidad)', 
         desc: "Citación para notificar el acto de viabilidad", 
         limit: [[61, 5]], 
-        spentDaysConfig: { startState: 61 } 
+        spentDaysConfig: { startState: 61 },
+        allowSchedule: true
       },
       { 
         state: 56, 
         name: 'Notificación Personal (Viabilidad)', 
         desc: "Notificación personal del acto de viabilidad", 
         limit: [[55, 5]], 
-        spentDaysConfig: { startState: 55 } 
+        spentDaysConfig: { startState: 55 },
+        allowSchedule: true 
       },
       { 
         state: 57, 
-        show: false, 
+        // show: false, 
         name: 'Notificación por Aviso (Viabilidad)', 
         desc: "Notificación por aviso del acto de viabilidad", 
         limit: [[55, 10]], 
         icon: "empty", 
-        spentDaysConfig: { startState: 55 } 
+        spentDaysConfig: { startState: 55 },
+        allowSchedule: true,
+        show: (correccionesOptions.notificationType === 'notificar' && correccionesOptions.byAviso),
       },
     ]
 };
 
 const paymentsClocks = (props) => {
-    const { child1, getClockVersion, namePayment, conGI } = props;
+    const { child1, getClockVersion, namePayment, conGI, phaseOptions } = props;
     const conOA = regexChecker_isOA_2(child1);
+    // Opciones para la fase de Revisión de Correcciones
+    const correccionesOptions = phaseOptions?.phase_correcciones || { notificationType: 'notificar', byAviso: false };
+
     return [
-        { title: 'PAGOS (PLAZO SOLICITANTE: 30 DÍAS)' },
+        { title: 'Liquidación y Pagos' },
         { 
             state: 62, 
             name: 'Expensas Variables', 
             desc: "Pago de expensas variables", 
-            limit: [[[56, 57], 30]], 
+            // limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             show: conOA, 
             spentDaysConfig: { startState: [56, 57] } 
         },
@@ -293,7 +424,7 @@ const paymentsClocks = (props) => {
             state: 63, 
             name: namePayment, 
             desc: "Pago de impuestos municipales o delineación", 
-            limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             show: conOA, 
             spentDaysConfig: { startState: [56, 57] } 
         },
@@ -301,14 +432,14 @@ const paymentsClocks = (props) => {
             state: 64, 
             name: 'Estampilla PRO-UIS', 
             desc: "Pago de estampilla PRO-UIS", 
-            limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             spentDaysConfig: { startState: [56, 57] } 
         },
         { 
             state: 65, 
             name: 'Deberes Urbanísticos', 
             desc: "Pago de deberes urbanísticos", 
-            limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]], 
             show: !conGI, 
             spentDaysConfig: { startState: [56, 57] } 
         },
@@ -316,10 +447,10 @@ const paymentsClocks = (props) => {
             state: 69, 
             name: 'Radicación de último pago', 
             desc: "Radicación de todos los pagos requeridos (INICIA PLAZO RESOLUCIÓN)", 
-            limit: [[[56, 57], 30]], 
+            limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
             spentDaysConfig: { startState: [56, 57] } 
         },
-        ...getDesistClocks(-4, getClockVersion),
+        ...buildDesistSection('-4', getClockVersion),
     ];
 };
 
@@ -327,27 +458,31 @@ const finalClocks = (props) => {
     const { getClock } = props;
     
     return [
-        { title: 'RESOLUCIÓN (PLAZO CURADURÍA: 5 DÍAS)' },
+        { title: 'Generación de Resolución' },
         { 
             state: 70, 
             name: "Acto Administrativo / Resolución", 
             desc: "Expedición del acto administrativo de resolución", 
             limit: [[69, 5]], 
-            spentDaysConfig: { startState: 69 } 
+            spentDaysConfig: { startState: 69 },
+            allowSchedule: true 
         },
+        { title: 'Notificación Resolución' },
         { 
             state: 71, 
             name: "Comunicación o Requerimiento (Resolución)", 
             desc: "Comunicación para notificar al solicitante del acto administrativo", 
             limit: [[70, 1]], 
-            spentDaysConfig: { startState: 70 } 
+            spentDaysConfig: { startState: 70 },
+            allowSchedule: true 
         },
         { 
             state: 72, 
             name: "Notificación Personal (Resolución)", 
             desc: "Notificación personal del acto administrativo", 
             limit: [[71, 5]], 
-            spentDaysConfig: { startState: 71 } 
+            spentDaysConfig: { startState: 71 },
+            allowSchedule: true
         },
         { 
             state: 73, 
@@ -355,24 +490,27 @@ const finalClocks = (props) => {
             desc: "Notificación por aviso del acto administrativo (si no se logró notificación personal)", 
             limit: [[71, 10]], 
             icon: "empty",
-            spentDaysConfig: { startState: 71 } 
+            spentDaysConfig: { startState: 71 },
+            allowSchedule: true 
         },
         { 
             state: 731, 
             name: "Notificación a Planeación", 
             desc: "Notificación a la oficina de planeación municipal", 
             limit: [[71, 5]], 
-            spentDaysConfig: { startState: 71 } 
+            spentDaysConfig: { startState: 71 }, 
+            allowSchedule: true
         },
         { 
             state: 85, 
             name: "Publicación", 
             desc: "Publicación de la resolución (DEBE SER EL MISMO DÍA O MÁXIMO 1 DÍA DESPUÉS)", 
             limit: [[70, 1]], 
-            spentDaysConfig: { startState: 70 } 
+            spentDaysConfig: { startState: 70 },
+            allowSchedule: true 
         },
         
-        { title: 'RECURSO DE REPOSICIÓN (OPCIONAL - PLAZO SOLICITANTE: 10 DÍAS)' },
+        { title: 'Recurso de Reposición' },
         { 
             state: 730, 
             name: "Renuncia de Términos", 
@@ -449,7 +587,7 @@ const finalClocks = (props) => {
             requiredClock: 74 
         },
         
-        { title: 'EJECUTORIA Y ENTREGA (PLAZO CURADURÍA: 10 DÍAS + 1 DÍA)' },
+        { title: 'Ejecutoria y Recurso' },
         { 
             state: 99, 
             name: "Ejecutoria - Licencia", 
