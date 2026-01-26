@@ -1110,6 +1110,8 @@ class FUN_MANAGE extends Component {
                     isOpen={this.state.modal_macro}
                     style={customStylesForModalMacro()}
                     ariaHideApp={false}
+                    className="macro-modal-content"
+                    overlayClassName="macro-modal-overlay"
                 >
                     <div className="my-1 d-flex justify-content-between">
                         <label><i class="fas fa-th"></i> Macro tabla de seguimiento: Desde {this.state.date_start} hasta {this.state.date_end}</label>
@@ -1134,6 +1136,8 @@ class FUN_MANAGE extends Component {
                     isOpen={this.state.modal_report}
                     style={customStylesForModalMacro()}
                     ariaHideApp={false}
+                    className="macro-modal-content"
+                    overlayClassName="macro-modal-overlay"
                 >
                     <div className="my-4 d-flex justify-content-around">
                         <div className='row'>

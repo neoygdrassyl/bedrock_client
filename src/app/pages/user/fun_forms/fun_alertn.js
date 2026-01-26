@@ -258,7 +258,8 @@ class FUN_ALERT extends Component {
             let _LIST = _SET_CHILD_3();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={i}>{_LIST[i].direccion_2}</option>)
+                // FIX: Added key prop for list items
+                _COMPONENT.push(<option key={_LIST[i].id || i} value={i}>{_LIST[i].direccion_2}</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -279,7 +280,8 @@ class FUN_ALERT extends Component {
             let _LIST = _SET_CHILD_6();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+                // FIX: Added key prop for list items
+                _COMPONENT.push(<option key={_LIST[i].id || i} value={_LIST[i].id}>{_LIST[i].description}</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -548,7 +550,7 @@ class FUN_ALERT extends Component {
         }
         let _COMPONENT_FUNXPQRS = () => {
             var objectsPQRS = this.state.pqrsxfun;
-            var map = objectsPQRS.map((value) => {
+            var map = objectsPQRS.map((value, index) => { // FIX: Added index parameter for key
                 var solicitors = {
                     names: value.solicitors_names ? value.solicitors_names.split(';') : [],
                     types: value.solicitors_types ? value.solicitors_types.split(';') : [],
@@ -562,7 +564,7 @@ class FUN_ALERT extends Component {
                     phones: value.contacts_phones ? value.contacts_phones.split(';') : [],
                 }
 
-                return <>
+                return <React.Fragment key={value.id || value.id_publico || index}> {/* FIX: Added key prop */}
                     <div className="row border mx-2 py-1 bg-info mt-2">
                         <div className="col text-center text-white">
                             <label className="fw-bold">{value.id_publico}</label>
@@ -599,22 +601,20 @@ class FUN_ALERT extends Component {
                     </div>
                     {solicitors.names.map((value, index) => {
 
-                        return <>
-                            <div className="row border mx-2 py-1">
-                                <div className="col">
-                                    <label>{solicitors.names[index]}</label>
-                                </div>
-                                <div className="col">
-                                    <label>{solicitors.types[index]}</label>
-                                </div>
-                                <div className="col">
-                                    <label>{solicitors.id_numers[index]}</label>
-                                </div>
-                                <div className="col">
-                                    <label>{solicitors.types_id[index]}</label>
-                                </div>
+                        return <div key={index} className="row border mx-2 py-1"> {/* FIX: Added key prop */}
+                            <div className="col">
+                                <label>{solicitors.names[index]}</label>
                             </div>
-                        </>
+                            <div className="col">
+                                <label>{solicitors.types[index]}</label>
+                            </div>
+                            <div className="col">
+                                <label>{solicitors.id_numers[index]}</label>
+                            </div>
+                            <div className="col">
+                                <label>{solicitors.types_id[index]}</label>
+                            </div>
+                        </div>
                     })}
                     <div className="row border mx-2 py-1 border-line border-info">
                         <div className="col">
@@ -631,24 +631,23 @@ class FUN_ALERT extends Component {
                         </div>
                     </div>
                     {contacts.notfies.map((value, index) => {
-                        return <>
-                            <div className="row border mx-2 py-1">
-                                <div className="col">
-                                    <label>{contacts.addresses[index]}</label>
-                                </div>
-                                <div className="col">
-                                    <label>{contacts.emails[index]}</label>
-                                </div>
-                                <div className="col">
-                                    <label>{contacts.phones[index]}</label>
-                                </div>
-                                <div className="col-2 text-center">
-                                    <label>{contacts.notfies[index] ? <i class="fas fa-check text-success"></i> : <i class="fas fa-times text-danger"></i>}</label>
-                                </div>
+                        return <div key={index} className="row border mx-2 py-1"> {/* FIX: Added key prop */}
+                            <div className="col">
+                                <label>{contacts.addresses[index]}</label>
                             </div>
-                        </>
+                            <div className="col">
+                                <label>{contacts.emails[index]}</label>
+                            </div>
+                            <div className="col">
+                                <label>{contacts.phones[index]}</label>
+                            </div>
+                            <div className="col-2 text-center">
+                                <label>{contacts.notfies[index] ? <i class="fas fa-check text-success"></i> : <i class="fas fa-times text-danger"></i>}</label>
+                            </div>
+                        </div>
                     })}
-                </>
+                </React.Fragment>
+                {/* FIX: Changed from fragment to React.Fragment to support key */}
             })
             return <>
                 {map}

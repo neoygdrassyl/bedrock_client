@@ -121,13 +121,13 @@ class FUNCLOCK extends Component {
                     secondary // Prop para mostrar eventos secundarios
                 />
 
-                <EMAILS_COMPONENT  
+                {/* <EMAILS_COMPONENT  
                     translation={translation} 
                     swaMsg={swaMsg}
                     id_public={currentItem.id_public} 
                     process="lic" 
                     users={email_users}
-                />
+                /> */}
 
                 <FUN_MODULE_NAV
                     translation={translation}
