@@ -532,9 +532,6 @@ export default function FUN_DAILY_COMPONENT(props) {
             let conRevPro = regexChecker_isOA_3(row)
             let sign_rules = (row.rules && row.rules.split(";")) ? Number(row.rules.split(";")[0]) : 0;
             let use_sign = sign_rules === 0;
-            console.log(row.id_public, row.rules, use_sign);
-
-
 
             let worker_law = row.asign_law_worker_name ?? row.asign_ph_law_worker_name ?? '';
             let worker_arc = row.asign_arc_worker_name ?? row.asign_ph_arc_worker_name ?? '';
@@ -569,7 +566,7 @@ export default function FUN_DAILY_COMPONENT(props) {
 
                 /** sign + lydf */
                 if (use_sign) {
-                    let date_sign = row.sign && row.sign.split[','] && row.sign.split[','][1] ? row.sign.split[','][1] : null;
+                    let date_sign = (row.sign && row.sign.split(',')) ? row.sign.split(',')[1] : null;
                     if (!date_sign) _datac.sign.push({ ...row, color: 'warning' });
                     else {
                         let days_sign = dateParser_dateDiff(row.clock_payment, date_sign);
@@ -766,7 +763,7 @@ export default function FUN_DAILY_COMPONENT(props) {
 
                         if (use_sign) {
                             /** sign + inc */
-                            let date_sign = row.sign && row.sign.split[','] && row.sign.split[','][1] ? row.sign.split[','][1] : null
+                            let date_sign = (row.sign && row.sign.split(',')) ? row.sign.split(',')[1] : null;
                             if (!date_sign) _datac.sign.push({ ...row, color: 'dark' })
                         }
 
@@ -804,9 +801,9 @@ export default function FUN_DAILY_COMPONENT(props) {
         let con1 = item.id_public;
         let con2 = filterArray.some(_filterStr => {
             let check1 = item.id_public.toLowerCase();
-            let check2 = item.wn || '';
+            let check2 = (String(item.wn) || '').toLowerCase();
             let check3 = [(item.wna || '').toLowerCase(), (item.wna || '').toLowerCase(), (item.wne || '').toLowerCase()]
-            check2 = check2.toLowerCase()
+            // check2 = (check2 || '').toLowerCase();
 
             let con = (_filterStr).toLowerCase().trim()
 
