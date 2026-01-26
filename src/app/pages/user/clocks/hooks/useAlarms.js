@@ -74,6 +74,28 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
             if (isOverdue) severity = 'danger';
             if (remainingDays >= 0 && remainingDays <= 2) severity = 'danger';
 
+            // NUEVO: Detectar si es actividad binaria (desde clockDef o forzado por alarmData)
+            const clockDef = clocksToShow.find(c => c.state === state);
+            const isBinaryActivity = alarmData.isBinaryActivity === true || clockDef?.isBinary === true;
+            
+            // NUEVO: Determinar alarmType y statusText para actividades binarias
+            let alarmType = null;
+            let statusText = null;
+            
+            if (isBinaryActivity) {
+                const clock = getClock(state);
+                if (clock && clock.date_start) {
+                    alarmType = 'completed';
+                    statusText = 'Completada';
+                } else if (alarmData.severity === 'danger' || isOverdue) {
+                    alarmType = 'overdue';
+                    statusText = 'Vencida';
+                } else {
+                    alarmType = 'pending';
+                    statusText = 'Pendiente';
+                }
+            }
+
             allAlarms.push({
                 id,
                 type: alarmData.type,
@@ -84,6 +106,9 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                 limitDate: limitMoment.format('DD/MM/YYYY'),
                 suggestion: suggestionDef ? suggestionDef.suggestion : null,
                 severity,
+                isBinaryActivity,
+                alarmType,
+                statusText,
             });
         };
 
@@ -104,7 +129,6 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
                 if (clockDef.state === 504){
                     const actoAdministrativo = getClock(70);
-
                     const clock504 = getClock(504);
 
                     let severity = 'danger';
@@ -127,6 +151,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                         remainingDays: severity === 'danger' ? 0 : 2,
                         severity,
                         overdue: false,
+                        isBinaryActivity: true, // NUEVO: Marcar explícitamente como binaria
                     });
                     return;
                 }
