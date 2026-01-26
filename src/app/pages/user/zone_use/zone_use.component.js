@@ -45,6 +45,8 @@ export default function ZONE_USE_COMPONENT(props) {
         if (id_out) formData.set('id_out', id_out);
         let solicitor = document.getElementById("zone_use_solicitor").value;
         formData.set('solicitor', solicitor);
+        let date = document.getElementById("zone_use_date").value;
+        formData.set('date', date);
 
         let cla_suelo = document.getElementById("zone_use_cla_suelo").value;
         formData.set('cla_suelo', cla_suelo);
@@ -54,6 +56,12 @@ export default function ZONE_USE_COMPONENT(props) {
         formData.set('trat_urb', trat_urb);
         let zon_rest = document.getElementById("zone_use_zon_rest").value;
         formData.set('zon_rest', zon_rest);
+        let doc_1_date = document.getElementById("zone_use_doc_1_date").value;
+        formData.set('doc_1_date', doc_1_date);
+        let doc_2_date = document.getElementById("zone_use_doc_2_date").value;
+        formData.set('doc_2_date', doc_2_date);
+        let doc_3_date = document.getElementById("zone_use_doc_3_date").value;
+        formData.set('doc_3_date', doc_3_date);
 
         let predial = document.getElementById("zone_use_predial").value;
         formData.set('predial', predial);
@@ -127,6 +135,7 @@ export default function ZONE_USE_COMPONENT(props) {
         let formData = new FormData();
 
         formData.set('id', id);
+        
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -163,7 +172,7 @@ export default function ZONE_USE_COMPONENT(props) {
     const PART_1 = (item) => (
         <>
             <div className="row">
-                <div className="col-4">
+                <div className="col-3">
                     <label >1.1 Nr. Radicación</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
@@ -172,7 +181,7 @@ export default function ZONE_USE_COMPONENT(props) {
                         <input type="text" class="form-control" id="zone_use_id_in" required disabled defaultValue={item.id_in} />
                     </div>
                 </div>
-                <div className="col-4">
+                <div className="col-3">
                     <label >1.2 Nr. Expedición</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
@@ -181,7 +190,7 @@ export default function ZONE_USE_COMPONENT(props) {
                         <input type="text" class="form-control" id="zone_use_id_out" defaultValue={item.id_out} />
                     </div>
                 </div>
-                <div className="col-4">
+                <div className="col-3">
                     <label >1.3 Solicitante</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
@@ -190,11 +199,20 @@ export default function ZONE_USE_COMPONENT(props) {
                         <input type="text" class="form-control" id="zone_use_solicitor" defaultValue={item.solicitor} />
                     </div>
                 </div>
+                <div className="col-3">
+                    <label >1.4 Fecha</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-calendar-alt"></i>
+                        </span>
+                        <input type="date" class="form-control" max="2100-01-01" id="zone_use_date" defaultValue={item.date} />
+                    </div>
+                </div>
             </div>
 
             <div className="row">
                 <div className="col-3">
-                    <label >1.4 Clasificación Suelo</label>
+                    <label >1.5 Clasificación Suelo</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -207,7 +225,7 @@ export default function ZONE_USE_COMPONENT(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.5 Área de actividad</label>
+                    <label >1.6 Área de actividad</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -218,7 +236,7 @@ export default function ZONE_USE_COMPONENT(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.6 Tratamiento Urbanístico</label>
+                    <label >1.7 Tratamiento Urbanístico</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -229,7 +247,7 @@ export default function ZONE_USE_COMPONENT(props) {
                     </div>
                 </div>
                 <div className="col-3">
-                    <label >1.7 Zonif. Restricción Ocupación</label>
+                    <label >1.8 Zonif. Restricción Ocupación</label>
                     <div class="input-group mb-1">
                         <span class="input-group-text bg-info text-white">
                             <i class="fas fa-star-of-life"></i>
@@ -237,6 +255,36 @@ export default function ZONE_USE_COMPONENT(props) {
                         <select className="form-select" id="zone_use_zon_rest" defaultValue={item.zon_rest} >
                             {SUBMIT_ARC_ZONS_RESTRICCION.map(op => <option>{op}</option>)}
                         </select>
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-3">
+                    <label >1.9 Doc. Solicitud</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-calendar-alt"></i>
+                        </span>
+                        <input type="date" class="form-control" max="2100-01-01" id="zone_use_doc_1_date" defaultValue={item.doc_1_date} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.10 Doc. Certificación de tradición</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-calendar-alt"></i>
+                        </span>
+                        <input type="date" class="form-control" max="2100-01-01" id="zone_use_doc_2_date" defaultValue={item.doc_2_date} />
+                    </div>
+                </div>
+                <div className="col-3">
+                    <label >1.11 Doc. Copia Impuesto Predial</label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text bg-info text-white">
+                            <i class="fas fa-calendar-alt"></i>
+                        </span>
+                        <input type="date" class="form-control" max="2100-01-01" id="zone_use_doc_3_date" defaultValue={item.doc_3_date} />
                     </div>
                 </div>
             </div>
@@ -309,7 +357,7 @@ export default function ZONE_USE_COMPONENT(props) {
         </>
     )
 
-    const R_4_USES =  (item) => <>
+    const R_4_USES = (item) => <>
         <div className='row text-center px-2 mx-1' >
             <div className='col-3 border'>COMERCIO</div>
             <div className='col-9'>

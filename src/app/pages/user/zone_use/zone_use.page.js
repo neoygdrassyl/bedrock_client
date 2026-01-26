@@ -171,8 +171,9 @@ export default function ZONE_USE(props) {
             newFilterList = dataOg.filter(row => {
                 let match = false
                 if (row.id_in.includes(search)) match = true
-                if (row.id_out && row.id_out.includes(search)) match = true
-                if (row.solicitor && row.solicitor.includes(search)) match = true
+                else if (row.id_out && row.id_out.includes(search)) match = true
+                else if (row.solicitor && row.solicitor.includes(search)) match = true
+                else if (row.predial && row.predial.includes(search)) match = true
                 return match
             })
             setData(newFilterList)
