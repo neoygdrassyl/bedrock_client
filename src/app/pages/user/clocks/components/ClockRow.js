@@ -149,6 +149,10 @@ export const ClockRow = (props) => {
                 tooltip = `Suspensión: Máximo ${availableForThis} días hábiles (Inclusivo)`;
             }
         } 
+
+        else if (value.state === 504){
+            limitDate = 1;
+        }
         // --- Lógica Especial para Prórroga (401) ---
         else if (value.state === 401) {
              const startExt = getClockScoped(400)?.date_start;
@@ -253,12 +257,36 @@ export const ClockRow = (props) => {
     // =====================================================
     const getAlarmInfo = () => {
         if (!legalData || !legalData.limitDate) return null;
-        
         const { limitDate } = legalData;
         const limitMoment = moment(limitDate);
         const isCompleted = !!clock?.date_start;
         const today = moment(systemDate);
+        const state = value.state;
 
+
+        if (state===504){
+            const actoAdministrativo = getClock(70);
+            let text = '';
+            let color = '';
+            let icon = null;
+
+            if (isCompleted) {
+                text = `A tiempo`;
+                color = '#2f9e44';
+                icon = 'fa-check';
+            } else if (!isCompleted && actoAdministrativo?.date_start) {
+                text = 'Vencida';
+                color = '#e03131';
+                icon = 'fa-times-circle';
+            } else {
+                text = 'Pendiente';
+                color = '#f08c00';
+                icon = 'fa-hourglass-half';
+            }
+            return { text, color, icon };
+        }
+
+        // --- LÓGICA ESTÁNDAR ---
         let text = '';
         let color = '';
         let icon = null;
@@ -266,22 +294,17 @@ export const ClockRow = (props) => {
         if (isCompleted) {
             const completionDate = moment(clock.date_start);
             
-            // Si la fecha de finalización es DESPUÉS de la fecha límite, hay retraso.
             if (completionDate.isAfter(limitMoment, 'day')) {
-                // Contamos los días hábiles ENTRE la fecha límite y la de finalización.
-                // No se incluye el día límite (tercer argumento false o no presente).
                 const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
                 text = `Retraso de ${delayDays} día(s)`;
                 color = '#e03131';
                 icon = 'fa-exclamation-circle';
             } else {
-                // Si es el mismo día o antes, está a tiempo.
                 text = `A tiempo`;
                 color = '#2f9e44';
                 icon = 'fa-check';
             }
         } else {
-            // Lógica para eventos pendientes (no se modifica)
             const isOverdue = today.isAfter(limitMoment, 'day');
             
             if (isOverdue) {
@@ -292,7 +315,7 @@ export const ClockRow = (props) => {
             } else {
                 const remainingDays = calcularDiasHabiles(today.toDate(), limitMoment.toDate());
                 text = `${remainingDays} día(s) restante(s)`;
-                color = '#f08c00'; // Naranja por defecto
+                color = '#f08c00';
                 icon = 'fa-hourglass-half';
                 
                 if (remainingDays <= 2) {

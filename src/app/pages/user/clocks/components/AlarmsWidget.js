@@ -16,15 +16,30 @@ const AlarmTableRow = ({ alarm }) => {
     };
 
     let statusText, statusClass;
-    if (alarm.remainingDays < 0) {
-        statusText = `Vencido por ${Math.abs(alarm.remainingDays)} día(s)`;
-        statusClass = 'text-danger';
-    } else if (alarm.remainingDays === 0) {
-        statusText = 'Vence Hoy';
-        statusClass = 'text-danger';
-    } else {
-        statusText = `Vence en ${alarm.remainingDays} día(s)`;
-        statusClass = 'text-warning';
+    
+    // --- LÓGICA PARA ACTIVIDADES BINARIAS ---
+    if (alarm.isBinaryActivity) {
+        statusText = alarm.statusText; // "Pendiente", "Vencida", "Completada"
+        if (alarm.alarmType === 'overdue') {
+            statusClass = 'text-danger';
+        } else if (alarm.alarmType === 'completed') {
+            statusClass = 'text-success';
+        } else {
+            statusClass = 'text-warning';
+        }
+    } 
+    // --- LÓGICA ESTÁNDAR ---
+    else {
+        if (alarm.remainingDays < 0) {
+            statusText = `Vencido por ${Math.abs(alarm.remainingDays)} día(s)`;
+            statusClass = 'text-danger';
+        } else if (alarm.remainingDays === 0) {
+            statusText = 'Vence Hoy';
+            statusClass = 'text-danger';
+        } else {
+            statusText = `Vence en ${alarm.remainingDays} día(s)`;
+            statusClass = 'text-warning';
+        }
     }
 
     const suggestionText = alarm.suggestion || 'No hay sugerencia.';
@@ -50,23 +65,40 @@ const AlarmTableRow = ({ alarm }) => {
     );
 };
 
-// --- Componente para la vista previa (tarjeta pequeña) MEJORADO ---
+// --- Componente para la vista previa (tarjeta pequeña) ---
 const AlarmPreviewCard = ({ alarm }) => {
-    const { eventName, remainingDays, suggestion, severity, type, typeLabel } = alarm;
-    let statusText, statusIcon, statusColor;
+    const { eventName, suggestion, severity, type, typeLabel, isBinaryActivity, statusText, alarmType } = alarm;
+    let displayStatusText, statusIcon, statusColor;
 
-    if (remainingDays < 0) {
-        statusText = `Vencido por ${Math.abs(remainingDays)}d`;
-        statusIcon = 'fa-exclamation-circle';
-        statusColor = 'text-danger';
-    } else if (remainingDays === 0) {
-        statusText = 'Vence Hoy';
-        statusIcon = 'fa-calendar-times';
-        statusColor = 'text-danger';
-    } else {
-        statusText = `Vence en ${remainingDays}d`;
-        statusIcon = 'fa-hourglass-half';
-        statusColor = 'text-warning';
+    // --- LÓGICA PARA ACTIVIDADES BINARIAS ---
+    if (isBinaryActivity) {
+        displayStatusText = statusText; // "Pendiente", "Vencida", "Completada"
+        if (alarmType === 'overdue') {
+            statusIcon = 'fa-times-circle';
+            statusColor = 'text-danger';
+        } else if (alarmType === 'completed') {
+            statusIcon = 'fa-check-circle';
+            statusColor = 'text-success';
+        } else {
+            statusIcon = 'fa-circle';
+            statusColor = 'text-warning';
+        }
+    } 
+    // --- LÓGICA ESTÁNDAR ---
+    else {
+        if (alarm.remainingDays < 0) {
+            displayStatusText = `Vencido por ${Math.abs(alarm.remainingDays)}d`;
+            statusIcon = 'fa-exclamation-circle';
+            statusColor = 'text-danger';
+        } else if (alarm.remainingDays === 0) {
+            displayStatusText = 'Vence Hoy';
+            statusIcon = 'fa-calendar-times';
+            statusColor = 'text-danger';
+        } else {
+            displayStatusText = `Vence en ${alarm.remainingDays}d`;
+            statusIcon = 'fa-hourglass-half';
+            statusColor = 'text-warning';
+        }
     }
 
     // NUEVO: Clases y estilos específicos por tipo
@@ -85,7 +117,7 @@ const AlarmPreviewCard = ({ alarm }) => {
                 </div>
                 <div className={`alarm-preview-status ${statusColor}`}>
                     <i className={`fas ${statusIcon} me-1`}></i>
-                    <span>{statusText}</span>
+                    <span>{displayStatusText}</span>
                 </div>
             </div>
             <p className="alarm-preview-suggestion">
