@@ -57,16 +57,15 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
         const addAlarm = (alarmData) => {
             const { state, type } = alarmData;
             const id = `${type}-${state}`;
-            
             if (allAlarms.some(a => a.id === id)) return;
 
             const limitMoment = moment(alarmData.limitDate);
             if (!limitMoment.isValid()) return;
-            
+
             const remainingDays = alarmData.remainingDays;
             const isOverdue = remainingDays < 0;
             const suggestionKey = isOverdue ? 'vencido' : 'porVencer';
-            
+
             const suggestionDef = (ALARM_SUGGESTIONS[state] && ALARM_SUGGESTIONS[state][type])
                 ? ALARM_SUGGESTIONS[state][type][suggestionKey]
                 : (ALARM_SUGGESTIONS.default[type] ? ALARM_SUGGESTIONS.default[type][suggestionKey] : null);
@@ -101,6 +100,35 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                     // Si se cumplió el state 35 entonces esta alarma no se muestra
                     const acta2 = getClock(35);
                     if (acta2 && acta2.date_start) return; // skip alarm for 34
+                }
+
+                if (clockDef.state === 504){
+                    const actoAdministrativo = getClock(70);
+
+                    const clock504 = getClock(504);
+
+                    let severity = 'danger';
+                    if (!clock504?.date_start && !actoAdministrativo?.date_start) {
+                        severity = 'warning';
+                    } else if (!clock504?.date_start && actoAdministrativo?.date_start) {
+                        severity = 'danger';
+                    } else if (clock504?.date_start) {
+                        return;
+                    }
+                    // No hay fecha límite legal. Usar una fecha derivada del sistema para que el formato sea válido.
+                    const pseudoLimit = moment(systemDate).add(ALARM_THRESHOLD_DAYS.legal, 'days').toISOString();
+
+                    addAlarm({
+                        state: 504,
+                        type: 'legal',
+                        typeLabel: 'Legal',
+                        eventName: clockDef.name,
+                        limitDate: pseudoLimit,
+                        remainingDays: severity === 'danger' ? 0 : 2,
+                        severity,
+                        overdue: false,
+                    });
+                    return;
                 }
 
                 // --- FILTRO 2: Excluir eventos según configuración de notificación ---

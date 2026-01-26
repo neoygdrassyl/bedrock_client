@@ -239,13 +239,14 @@ const extraClocks = (props) => {
       { 
         state: 504, 
         name: 'Comunicación a vecinos', 
-        desc: "COMUNICACIÓN A VECINOS)", 
+        desc: "Comunicación a vecinos", 
         editableDate: true, 
-        limit: [[5, 2], regexChecker_isOA_2(child1) ? [[4, -30]] : [[3, 29]]],  // [501, 1], [502, 1],
+        // limit: [[5, 2]],
         hasConsecutivo: false, 
         hasAnnexSelect: false, 
         spentDaysConfig: { startState: [501, 502, regexChecker_isOA_2(child1) ? 4 : 3] },
-        allowSchedule: true
+        allowSchedule: true,
+        hasLegalAlarm: true,
       },
       ...buildDesistSection('-1', getClockVersion), // Radicacion incompleto
       ...buildDesistSection('-2', getClockVersion), // Valla informativa
