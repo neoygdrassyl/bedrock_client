@@ -263,7 +263,8 @@ const extraClocks = (props) => {
         hasAnnexSelect: false, 
         legalSupport: "DECRETO 1077 de 2015. ARTÍCULO 2.2.6.1.2.2.1 PARÁGRAFO 1. Desde el día siguiente a la fecha de radicación en legal y debida forma de solicitudes de proyectos de parcelación, urbanización y construcción en cualquiera de sus modalidades, el peticionario de la licencia deberá instalar una valla resistente a la intemperie de fondo amarillo y letras negras (…) Nota: El funcionario a cargo de la radicación le informa al peticionario sobre el deber de publicidad de los actos de licenciamiento urbanístico que incluyen la valla informativa, la citación a los vecinos colindante y terceros interesados etc",
         spentDaysConfig: { startState: 5 },
-        hasLegalAlarm: true
+        hasLegalAlarm: true,
+        allowSchedule: true
       },
       { 
         state: 30, 
@@ -323,7 +324,8 @@ const extraClocks = (props) => {
         icon: "empty", 
         hasConsecutivo: false, 
         hasAnnexSelect: true, 
-        spentDaysConfig: { startState: [33, 32] } 
+        spentDaysConfig: { startState: [33, 32] },
+        allowSchedule: true
       },
       { 
         state: 35, 
@@ -448,7 +450,8 @@ const paymentsClocks = (props) => {
             name: 'Radicación de último pago', 
             desc: "Radicación de todos los pagos requeridos (INICIA PLAZO RESOLUCIÓN)", 
             limit: correccionesOptions.notificationType === 'comunicar' ? [[[61], 30]] : correccionesOptions.byAviso ? [[[57], 30]] : [[[56], 30]],
-            spentDaysConfig: { startState: [56, 57] } 
+            spentDaysConfig: { startState: [56, 57] },
+            allowSchedule: true
         },
         ...buildDesistSection('-4', getClockVersion),
     ];
@@ -593,14 +596,16 @@ const finalClocks = (props) => {
             name: "Ejecutoria - Licencia", 
             desc: "Ejecutoria de la licencia (queda en firme)", 
             limit: [[[72, 73], 10]], 
-            spentDaysConfig: { startState: [72, 73] } 
+            spentDaysConfig: { startState: [72, 73] },
+            allowSchedule: true
         },
         { 
             state: 98, 
             name: "Entrega de Licencia", 
             desc: "Entrega oficial de la licencia al solicitante (FINALIZA EL PROCESO)", 
             limit: [[99, 1]], 
-            spentDaysConfig: { startState: 99 } 
+            spentDaysConfig: { startState: 99 },
+            allowSchedule: true
         },
     ];
 };
