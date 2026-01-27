@@ -757,7 +757,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
         desistimiento: { active: !!desistimientoVersion, version: desistimientoVersion }
     };
     return phases;
-  }, [clocksData, currentItem, today, extension, suspensionPreActa, suspensionPostActa]);
+  }, [clocksData, currentItem, today, extension, suspensionPreActa, suspensionPostActa, phaseOptions]);
 
   return processPhases;
 };
