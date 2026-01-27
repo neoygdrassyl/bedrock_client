@@ -19,7 +19,7 @@ const AlarmTableRow = ({ alarm }) => {
     
     // --- LÓGICA PARA ACTIVIDADES BINARIAS ---
     if (alarm.isBinaryActivity) {
-        statusText = alarm.statusText; // "Pendiente", "Vencida", "Completada"
+        statusText = alarm.statusText;
         if (alarm.alarmType === 'overdue') {
             statusClass = 'text-danger';
         } else if (alarm.alarmType === 'completed') {

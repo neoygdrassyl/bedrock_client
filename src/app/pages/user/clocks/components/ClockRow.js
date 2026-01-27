@@ -286,6 +286,13 @@ export const ClockRow = (props) => {
             return { text, color, icon };
         }
 
+        if (state === 34 && getClock(35)?.date_start){
+            let text = '';
+            let color = '';
+            let icon = null;
+            return { text, color, icon };
+        }
+
         // --- LÓGICA ESTÁNDAR ---
         let text = '';
         let color = '';
