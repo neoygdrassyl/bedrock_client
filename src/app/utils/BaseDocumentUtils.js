@@ -1,4 +1,4 @@
-import { procesarFecha } from './BusinessDaysCol';
+import { procesarFecha, procesarFechaRestar } from './BusinessDaysCol';
 
 export class BaseDocumentUtils {
   constructor(data, htmlString) {
