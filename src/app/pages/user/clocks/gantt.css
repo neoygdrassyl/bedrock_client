@@ -1,0 +1,2505 @@
+/* ========================================
+   VARIABLES DE COLOR POR FASE
+   ======================================== */
+:root {
+  --phase-color-radicacion: rgba(26, 178, 145, 0.08);
+  --phase-color-estudio: rgba(253, 126, 20, 0.07);
+  --phase-color-notificacion: rgba(108, 117, 125, 0.07);
+  --phase-color-correcciones: rgba(23, 162, 184, 0.07);
+  --phase-color-viabilidad: rgba(111, 66, 193, 0.07);
+  --phase-color-pagos: rgba(255, 193, 7, 0.1);
+  --phase-color-resolucion: rgba(0, 86, 179, 0.07);
+  --phase-color-recurso: rgba(100, 43, 107, 0.07);
+  --phase-color-entrega: rgba(40, 167, 69, 0.08);
+  --phase-color-desist: rgba(220, 53, 69, 0.06);
+
+  --phase-border-radicacion: rgba(26, 178, 145, 0.6);
+  --phase-border-estudio: rgba(253, 126, 20, 0.6);
+  --phase-border-notificacion: rgba(108, 117, 125, 0.5);
+  --phase-border-correcciones: rgba(23, 162, 184, 0.6);
+  --phase-border-viabilidad: rgba(111, 66, 193, 0.6);
+  --phase-border-pagos: rgba(255, 193, 7, 0.7);
+  --phase-border-resolucion: rgba(0, 86, 179, 0.6);
+  --phase-border-recurso: rgba(100, 43, 107, 0.6);
+  --phase-border-entrega: rgba(40, 167, 69, 0.6);
+  --phase-border-desist: rgba(220, 53, 69, 0.5);
+
+  --preview-bg: #fdfefe;
+  --preview-border: #e5e9f2;
+  --preview-shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+  --preview-header-bg: linear-gradient(90deg, #f7f9fc 0%, #eef2f7 100%);
+  --preview-title: #4b5563;
+  --preview-accent: #1677ff;
+  --preview-accent-hover: #0d6ae5;
+  --preview-tick: #c8d0dc;
+  --preview-label: #6b7280;
+  --preview-grid-minor: rgba(0, 0, 0, 0.04);
+  --preview-grid-major: rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================
+   CONTENEDOR Y ESTADO VACÍO
+   ======================================== */
+.gantt-container {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* AÑADIDO: Base para el modelo de caja correcto */
+  box-sizing: border-box; 
+}
+/* AÑADIDO: Aplicar box-sizing a todos los hijos */
+.gantt-container *, .gantt-container *::before, .gantt-container *::after {
+  box-sizing: border-box;
+}
+
+.gantt-container.gantt-compact {
+  padding: 8px;
+  font-size: 11px;
+}
+
+.gantt-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+.gantt-empty i {
+  font-size: 48px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* ========================================
+   HEADER (TIMELINE)
+   ======================================== */
+.gantt-header-wrapper {
+  display: flex;
+  height: 56px;
+  border-bottom: 2px solid #dee2e6;
+}
+.gantt-compact .gantt-header-wrapper { height: 32px; }
+
+.gantt-title-column {
+  width: 200px;
+  flex-shrink: 0;
+  padding: 0 12px 8px 0;
+  display: flex;
+  align-items: flex-end;
+  border-right: 2px solid #e9ecef; /* MODIFICADO: Mover borde aquí */
+  background: #f8f9fa; /* MODIFICADO: Mover fondo aquí */
+}
+.gantt-compact .gantt-title-column {
+  width: 40px;
+  padding: 0 4px 4px 4px;
+}
+
+.gantt-title-header {
+  font-weight: 700;
+  color: #495057;
+  font-size: 14px;
+}
+.gantt-compact .gantt-title-header {
+  font-size: 11px;
+}
+
+.gantt-chart-column {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-gutter: stable both-edges;
+}
+.gantt-chart-column::-webkit-scrollbar { height: 8px; }
+.gantt-chart-column::-webkit-scrollbar-track { background: #f1f1f1; }
+.gantt-chart-column::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 4px;
+}
+.gantt-chart-column::-webkit-scrollbar-thumb:hover { background: #9e9e9e; }
+
+.gantt-header-timeline { 
+  position: relative; 
+  height: 100%; 
+}
+.gantt-timeline-marker {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end; /* MODIFICADO: Alinear abajo */
+  cursor: default;
+  padding-bottom: 4px;
+}
+.gantt-timeline-tick {
+  width: 2px;
+  height: 12px;
+  background: #6c757d;
+  margin-bottom: 4px;
+}
+.gantt-compact .gantt-timeline-tick { height: 6px; }
+.gantt-timeline-label {
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.gantt-compact .gantt-timeline-label { font-size: 9px; }
+.gantt-timeline-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px); /* MODIFICADO: Posicionar arriba del marcador */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+.gantt-timeline-tooltip::before {
+  content: '';
+  position: absolute;
+  top: 100%; /* MODIFICADO: Flecha apunta hacia abajo */
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.85); /* MODIFICADO */
+}
+
+/* ========================================
+   CUERPO Y SCROLL
+   ======================================== */
+.gantt-body-wrapper {
+  display: flex;
+  overflow: hidden; /* AÑADIDO: Contener el scroll interno */
+}
+.gantt-body-scroll-wrapper {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
+}
+.gantt-body-scroll-wrapper::-webkit-scrollbar { height: 8px; width: 8px; }
+.gantt-body-scroll-wrapper::-webkit-scrollbar-track { background: #f1f1f1; }
+.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 4px;
+}
+.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: #9e9e9e; }
+
+.gantt-body-content { 
+  position: relative; 
+}
+
+/* ========================================
+   FILAS DE FASE
+   ======================================== */
+.gantt-phase {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid #edf0f2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px; /* AÑADIDO: Altura mínima para consistencia */
+}
+.gantt-compact .gantt-phase { 
+  margin-bottom: 12px;
+  min-height: 26px;
+}
+.gantt-phase:hover { background: rgba(0, 0, 0, 0.02); }
+.gantt-phase.gantt-phase-active {
+  box-shadow: 0 0 0 3px rgba(91, 192, 222, 0.3);
+  background: rgba(91, 192, 222, 0.05);
+  border-radius: 8px;
+}
+.gantt-phase:last-child {
+  border-bottom: none;
+}
+
+.gantt-phase-title-column {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  font-weight: 600;
+  color: #495057;
+  border-right: 2px solid #e9ecef;
+  background: #f8f9fa;
+}
+.gantt-compact .gantt-phase-title-column {
+  width: 40px;
+  padding: 6px;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 4px;
+}
+
+.gantt-phase-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.gantt-compact .gantt-phase-number {
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+}
+.gantt-compact .gantt-phase-number.gantt-compact {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+}
+
+.gantt-phase-title {
+  font-size: 13px;
+  line-height: 1.2;
+  flex: 1;
+}
+.gantt-compact .gantt-phase-title { display: none; }
+
+/* Contenedor de barras */
+.gantt-phase-bars-container { 
+  position: relative; /* CAMBIADO: Antes era flex:1 */
+  height: 100%;
+}
+.gantt-phase-bars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  padding: 8px 0;
+}
+.gantt-compact .gantt-phase-bars {
+  padding: 4px 0;
+}
+
+/* Cuadrícula del cuerpo (usar variables inline) */
+.gantt-phase-bars.gantt-grid {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(0, 0, 0, var(--gantt-grid-minor-alpha, 0.04)) 0px,
+      rgba(0, 0, 0, var(--gantt-grid-minor-alpha, 0.04)) 1px,
+      transparent 1px,
+      transparent var(--gantt-day-width, 8px)
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(0, 0, 0, var(--gantt-grid-major-alpha, 0.10)) 0px,
+      rgba(0, 0, 0, var(--gantt-grid-major-alpha, 0.10)) 1px,
+      transparent 1px,
+      transparent var(--gantt-major-step, 40px)
+    );
+}
+
+/* ========================================
+   BARRAS (MODO LIMPIO)
+   ======================================== */
+.gantt-task {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+}
+.gantt-compact .gantt-task {
+  padding: 4px 0;
+}
+
+.gantt-bar {
+  width: 100%;
+  height: 14px;
+  border-radius: 7px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+.gantt-compact .gantt-bar { height: 8px; border-radius: 5px; }
+
+.gantt-bar-stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 4px;
+}
+.gantt-compact .gantt-bar-stack { gap: 2px; }
+
+.gantt-bar-single {
+  /* CAMBIO: Ahora permite contener elementos absolutos fuera del flujo normal si es necesario */
+  position: relative; 
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* ESTILO NUEVO: Línea de Error */
+.gantt-error-line {
+  position: absolute;
+  height: 4px; /* Línea delgada */
+  background-color: #dc3545; /* Rojo peligro */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5; /* Por encima de la barra */
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+/* Opcional: Pequeña marca vertical al final del error */
+.gantt-error-line::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -3px;
+  height: 10px;
+  width: 2px;
+  background-color: #dc3545;
+  border-radius: 1px;
+}
+
+.gantt-bar-pending { background: #6c757d; }
+.gantt-bar-active { background: #007bff; }
+.gantt-bar-completed { background: #28a745; }
+.gantt-bar-paused { background: #ffc107; }
+.gantt-bar-overdue { background: #dc3545; }
+
+.gantt-phase.gantt-phase-active .gantt-task { filter: saturate(1.05); }
+.gantt-phase.gantt-phase-active .gantt-bar {
+  box-shadow: 0 0 0 2px rgba(91, 192, 222, 0.35), 0 2px 8px rgba(0,0,0,0.18);
+}
+
+/* ========================================
+   BLOQUES Y FILAS (ELIMINADOS)
+   Se simplificó el CSS para usar solo el modo de "barras limpias"
+   ya que el modo "bloque" no se estaba utilizando y complicaba el layout.
+   ======================================== */
+
+/* ========================================
+   SEGMENTOS EXTRA (SUSPENSIÓN / PRÓRROGA)
+   ======================================== */
+.gantt-segment {
+  width: 6px;
+  height: 70%;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+.gantt-segment-suspension { background: #ffc107; }
+.gantt-segment-extension  { background: #17a2b8; }
+
+/* ========================================
+   CONECTORES ENTRE FASES (ELIMINADOS)
+   Esta funcionalidad no estaba activa y añadía complejidad.
+   Se puede reintroducir si es necesario con un enfoque de posicionamiento absoluto.
+   ======================================== */
+
+/* ========================================
+   RESALTADOS POR FASE
+   ======================================== */
+.phase-highlight-radicacion {
+  background: linear-gradient(90deg, rgba(108, 117, 125, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #6c757d;
+}
+.phase-highlight-estudio {
+  background: linear-gradient(90deg, rgba(25, 113, 194, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #1971c2;
+}
+.phase-highlight-notificacion {
+  background: linear-gradient(90deg, rgba(21, 170, 191, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #17a2b8;
+}
+.phase-highlight-correcciones {
+  background: linear-gradient(90deg, rgba(230, 119, 0, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #e67700;
+}
+.phase-highlight-viabilidad {
+  background: linear-gradient(90deg, rgba(47, 158, 68, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #2f9e44;
+}
+.phase-highlight-pagos {
+  background: linear-gradient(90deg, rgba(224, 49, 49, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #e03131;
+}
+.phase-highlight-resolucion {
+  background: linear-gradient(90deg, rgba(111, 66, 193, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #6f42c1;
+}
+.phase-highlight-recurso {
+  background: linear-gradient(90deg, rgba(253, 126, 20, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #fd7e14;
+}
+.phase-highlight-entrega {
+  background: linear-gradient(90deg, rgba(32, 201, 151, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #20c997;
+}
+.phase-highlight-desist {
+  background: linear-gradient(90deg, rgba(233, 30, 99, 0.08) 0%, transparent 50%);
+  border-left: 4px solid #e91e63;
+}
+
+/* Correlación visual en filas externas */
+.exp-row-custom.phase-highlight-radicacion { background-color: var(--phase-color-radicacion); }
+.exp-row-custom.phase-highlight-estudio { background-color: var(--phase-color-estudio); }
+.exp-row-custom.phase-highlight-notificacion { background-color: var(--phase-color-notificacion); }
+.exp-row-custom.phase-highlight-correcciones { background-color: var(--phase-color-correcciones); }
+.exp-row-custom.phase-highlight-viabilidad { background-color: var(--phase-color-viabilidad); }
+.exp-row-custom.phase-highlight-pagos { background-color: var(--phase-color-pagos); }
+.exp-row-custom.phase-highlight-resolucion { background-color: var(--phase-color-resolucion); }
+.exp-row-custom.phase-highlight-recurso { background-color: var(--phase-color-recurso); }
+.exp-row-custom.phase-highlight-entrega { background-color: var(--phase-color-entrega); }
+.exp-row-custom.phase-highlight-desist { background-color: var(--phase-color-desist); }
+
+/* Tarjeta de fase en sidebar */
+.phase-card-compact.highlighted {
+  border-width: 1px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+  animation: pulse-border 1.8s infinite;
+}
+@keyframes pulse-border {
+  0%   { border-color: var(--border-color-start); }
+  50%  { border-color: var(--border-color-end); }
+  100% { border-color: var(--border-color-start); }
+}
+.phase-card-compact.highlighted.phase-highlight-radicacion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-radicacion); }
+.phase-card-compact.highlighted.phase-highlight-estudio    { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-estudio); }
+.phase-card-compact.highlighted.phase-highlight-notificacion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-notificacion); }
+.phase-card-compact.highlighted.phase-highlight-correcciones { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-correcciones); }
+.phase-card-compact.highlighted.phase-highlight-viabilidad { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-viabilidad); }
+.phase-card-compact.highlighted.phase-highlight-pagos      { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-pagos); }
+.phase-card-compact.highlighted.phase-highlight-resolucion { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-resolucion); }
+.phase-card-compact.highlighted.phase-highlight-recurso    { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-recurso); }
+.phase-card-compact.highlighted.phase-highlight-entrega    { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-entrega); }
+.phase-card-compact.highlighted.phase-highlight-desist     { --border-color-start: #e9ecef; --border-color-end: var(--phase-border-desist); }
+
+/* ========================================
+   MODAL DEL GANTT
+   ======================================== */
+.gantt-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+.gantt-modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 95vw;
+  max-height: 90vh;
+  width: 1400px;
+  display: flex;
+  flex-direction: column;
+}
+.gantt-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  border-bottom: 1px solid #dee2e6;
+}
+.gantt-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #343a40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.gantt-modal-header h3 i { color: #007bff; }
+
+.gantt-modal-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gantt-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #495057;
+  cursor: pointer;
+  user-select: none;
+}
+.gantt-toggle input[type="checkbox"] { cursor: pointer; }
+.gantt-info-icon { color: #6c757d; font-size: 16px; cursor: help; }
+
+.gantt-close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #6c757d;
+}
+.gantt-close-btn:hover {
+  background: #e9ecef;
+  color: #dc3545;
+  transform: rotate(90deg);
+}
+
+.gantt-modal-body {
+  flex: 1;
+  padding: 16px;
+  overflow: hidden;
+  display: flex;
+  gap: 20px;
+}
+.gantt-modal-chart-container {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden; /* MODIFICADO: El scroll se maneja adentro */
+  display: flex;
+  flex-direction: column;
+}
+.gantt-modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #dee2e6;
+  background: #f8f9fa;
+}
+.gantt-legend h5 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #495057;
+  margin: 0 0 12px 0;
+}
+.gantt-legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.gantt-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #495057;
+}
+.gantt-legend-color {
+  width: 24px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+/* Panel de detalles */
+.gantt-phase-detail {
+  width: 320px;
+  background: #f8f9fa;
+  border-left: 1px solid #dee2e6;
+  flex-shrink: 0;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+}
+.gantt-phase-detail.hidden {
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-left: none;
+}
+.gantt-phase-detail-content { padding: 16px; }
+
+.gantt-phase-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #dee2e6;
+}
+.gantt-phase-detail-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+}
+.gantt-close-btn-small {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+.gantt-close-btn-small:hover {
+  background: #dee2e6;
+  color: #212529;
+}
+
+.gantt-phase-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gantt-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.gantt-detail-label { font-weight: 600; color: #6c757d; }
+
+.gantt-status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.gantt-status-pendiente { background: #6c757d; color: white; }
+.gantt-status-activo    { background: #007bff; color: white; }
+.gantt-status-completado{ background: #28a745; color: white; }
+.gantt-status-pausado   { background: #ffc107; color: #212529; }
+.gantt-status-vencido   { background: #dc3545; color: white; }
+
+.gantt-detail-actors h5 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 12px;
+  margin-top: 16px;
+}
+.gantt-actor-card {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.gantt-actor-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #212529;
+  font-size: 13px;
+}
+.gantt-actor-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.gantt-detail-extras { margin-top: 16px; }
+.gantt-detail-extras h5 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 12px;
+}
+.gantt-extra-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.gantt-extra-suspension { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+.gantt-extra-extension  { background: #d1ecf1; color: #0c5460; border: 1px solid #17a2b8; }
+
+/* ========================================
+   PREVIEW / SIDEBAR (MEJORA VISUAL)
+   ======================================== */
+.gantt-preview-container {
+  background: var(--preview-bg);
+  border: 1px solid var(--preview-border);
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: var(--preview-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.gantt-preview-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+}
+
+.gantt-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--preview-header-bg);
+  border-bottom: 1px solid var(--preview-border);
+}
+.gantt-preview-header h5 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--preview-title);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gantt-preview-header h5 i { color: var(--preview-accent); }
+
+.gantt-expand-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: var(--preview-accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 6px 12px rgba(22, 119, 255, 0.28);
+}
+.gantt-expand-btn:hover {
+  background: var(--preview-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(22, 119, 255, 0.32);
+}
+.gantt-expand-btn:active { transform: translateY(0); }
+
+.gantt-preview-body {
+  max-height: 280px;
+  overflow: auto;
+  padding: 10px 10px 12px;
+  background: linear-gradient(180deg, #fdfefe 0%, #f7f9fc 100%);
+  scrollbar-gutter: stable both-edges;
+}
+.gantt-preview-body::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.gantt-preview-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 6px;
+}
+.gantt-preview-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+}
+.gantt-preview-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-gantt-container { margin-top: 12px; }
+
+/* Botón de expandir en header de cards */
+.sidebar-card-header .btn-footer-action {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  background: #fff;
+  border-color: #dee2e6;
+  color: #007bff;
+}
+.sidebar-card-header .btn-footer-action:hover {
+  background: #007bff;
+  color: #fff;
+}
+.sidebar-card-header .btn-footer-action i {
+  color: inherit;
+  font-size: 0.8rem;
+}
+
+/* Mejoras visuales específicas para la vista compacta del preview */
+.gantt-preview-body .gantt-container {
+  box-shadow: none;
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  padding: 10px;
+}
+.gantt-preview-body .gantt-header-wrapper {
+  border-bottom: 1px solid #e8ecf3;
+  height: 46px;
+}
+.gantt-preview-body .gantt-title-column {
+  width: 52px;
+  padding: 4px;
+  border-right: 1px solid #e8ecf3;
+}
+.gantt-preview-body .gantt-title-header {
+  padding-bottom: 0;
+  font-size: 12px;
+  color: #707d8f;
+}
+.gantt-preview-body .gantt-chart-column {
+  scrollbar-width: thin;
+  scrollbar-gutter: stable both-edges;
+}
+.gantt-preview-body .gantt-timeline-tick {
+  height: 10px;
+  background: var(--preview-tick);
+}
+.gantt-preview-body .gantt-timeline-label {
+  font-size: 10px;
+  color: var(--preview-label);
+}
+.gantt-preview-body .gantt-phase {
+  border-bottom: 1px solid #eef2f7;
+  transition: background 0.12s ease, box-shadow 0.12s ease;
+}
+.gantt-preview-body .gantt-phase:hover {
+  background: rgba(22, 119, 255, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.gantt-preview-body .gantt-phase-title-column {
+  width: 52px;
+  padding: 6px 4px;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+}
+.gantt-preview-body .gantt-phase-number {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  background: #e9ecef;
+  box-shadow: 0 4px 10px rgba(29, 78, 216, 0.25);
+}
+.gantt-preview-body .gantt-phase-title { display: none; }
+.gantt-preview-body .gantt-phase-bars {
+  height: 100%; /* Ajustado */
+  padding: 6px 0;
+}
+.gantt-preview-body .gantt-task {
+  padding: 6px 0;
+}
+.gantt-preview-body .gantt-phase-bars.gantt-grid {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--preview-grid-minor) 0px,
+      var(--preview-grid-minor) 1px,
+      transparent 1px,
+      transparent var(--gantt-day-width, 8px)
+    ),
+    repeating-linear-gradient(
+      to right,
+      var(--preview-grid-major) 0px,
+      var(--preview-grid-major) 1px,
+      transparent 1px,
+      transparent var(--gantt-major-step, 40px)
+    );
+}
+.gantt-preview-body .gantt-bar {
+  height: 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+}
+.gantt-preview-body .gantt-bar-stack { gap: 3px; }
+.gantt-preview-body .gantt-extra-segments {
+  right: 3px;
+  gap: 3px;
+}
+.gantt-preview-body .gantt-segment { height: 60%; }
+.gantt-preview-body .gantt-phase.gantt-phase-active .gantt-bar {
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.26), 0 4px 10px rgba(22, 119, 255, 0.18);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 1200px) {
+  .gantt-modal-content { width: 100%; }
+  .gantt-phase-detail { width: 280px; }
+}
+@media (max-width: 768px) {
+  .gantt-title-column,
+  .gantt-phase-title-column { width: 150px; }
+  .gantt-modal-body { flex-direction: column; }
+  .gantt-modal-content { width: 100%; max-height: 95vh; }
+  .gantt-modal-header { padding: 16px; }
+  .gantt-modal-body { padding: 16px; }
+  .gantt-phase-title { font-size: 12px; }
+}
+
+/* ========================================
+   VARIABLES DE COLOR - ULTIMO CONTENIDO
+   ======================================== */
+:root {
+  --preview-bg: #fdfefe;
+  --preview-border: #e5e9f2;
+  --preview-shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+  --preview-header-bg: linear-gradient(90deg, #f7f9fc 0%, #eef2f7 100%);
+  --preview-title: #4b5563;
+  --preview-accent: #1677ff;
+  --preview-tick: #c8d0dc;
+  --preview-label: #6b7280;
+}
+
+/* ========================================
+   CONTENEDOR GLOBAL
+   ======================================== */
+.gantt-container {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.gantt-container *, .gantt-container *::before, .gantt-container *::after {
+  box-sizing: border-box;
+}
+
+.gantt-container.gantt-compact {
+  font-size: 11px;
+}
+
+.gantt-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+/* ========================================
+   HEADER SECTION
+   ======================================== */
+.gantt-header-wrapper {
+  display: flex;
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.gantt-title-column {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid #e9ecef;
+  background: #f8f9fa;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 12px 8px 12px;
+  z-index: 2;
+}
+.gantt-compact .gantt-title-column { width: 50px; padding: 0 4px 4px 4px; }
+
+.gantt-title-header {
+  font-weight: 700;
+  color: #495057;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.gantt-compact .gantt-title-header { font-size: 9px; }
+
+.gantt-chart-column {
+  flex: 1;
+  overflow: hidden; /* Hide scrollbar in header, controlled by JS sync */
+  position: relative;
+}
+
+.gantt-header-timeline {
+  position: relative;
+  height: 100%;
+}
+
+.gantt-timeline-marker {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 4px;
+  transform: translateX(-50%); /* Center marker on tick */
+}
+
+.gantt-timeline-tick {
+  width: 1px;
+  height: 8px;
+  background: #adb5bd;
+  margin-bottom: 4px;
+}
+.gantt-timeline-label {
+  font-size: 10px;
+  color: #6c757d;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ========================================
+   BODY SECTION
+   ======================================== */
+.gantt-body-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* LEFT SIDE: TITLES */
+.gantt-body-titles {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid #e9ecef;
+  background: #fff;
+  z-index: 2; /* Above grid scroll */
+}
+.gantt-compact .gantt-body-titles { width: 50px; }
+
+.gantt-phase-row-title {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid #f1f3f5;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.gantt-compact .gantt-phase-row-title { padding: 0 6px; justify-content: center; }
+
+.gantt-phase-row-title:hover { background: #f8f9fa; }
+.gantt-phase-active { background: #e7f5ff !important; }
+
+.gantt-phase-number {
+  width: 24px;
+  height: 24px;
+  background: #e9ecef;
+  color: #495057;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+.gantt-compact .gantt-phase-number { width: 20px; height: 20px; font-size: 10px; margin-right: 0; }
+
+.gantt-phase-active .gantt-phase-number {
+  background: #1971c2;
+  color: #fff;
+}
+
+.gantt-phase-title-text {
+  font-size: 13px;
+  color: #343a40;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* RIGHT SIDE: CHART CONTENT */
+.gantt-body-scroll-wrapper {
+  flex: 1;
+  overflow: auto; /* The only scrollbar */
+  position: relative;
+}
+
+/* Background Grid */
+.gantt-grid {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(0, 0, 0, var(--gantt-grid-minor-alpha, 0.04)) 0px,
+      rgba(0, 0, 0, var(--gantt-grid-minor-alpha, 0.04)) 1px,
+      transparent 1px,
+      transparent var(--gantt-day-width, 8px)
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(0, 0, 0, var(--gantt-grid-major-alpha, 0.10)) 0px,
+      rgba(0, 0, 0, var(--gantt-grid-major-alpha, 0.10)) 1px,
+      transparent 1px,
+      transparent var(--gantt-major-step, 40px)
+    );
+    background-attachment: local;
+}
+
+/* Tasks Containers */
+.gantt-task-container {
+  position: absolute;
+  /* top/left/width/height set inline */
+  padding-left: 1px; /* Slight offset to see start line */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ========================================
+   BARS & PROGRESS
+   ======================================== */
+.gantt-bar-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.gantt-bar-single {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.gantt-bar-bg {
+  width: 100%;
+  height: 100%; /* Fill container height */
+  min-height: 6px;
+  background: #e9ecef; /* Track color */
+  border-radius: 4px;
+  overflow: visible; /* IMPORTANTE: Permitir que la línea salga del contenedor */
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.gantt-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+/* Colors */
+.gantt-bar-pending { background: #adb5bd; }
+.gantt-bar-active { background: #339af0; }
+.gantt-bar-completed { background: #51cf66; }
+.gantt-bar-paused { background: #fcc419; }
+.gantt-bar-overdue { background: #ff6b6b; }
+
+/* LÍNEA DE ERROR */
+.gantt-error-line {
+  position: absolute;
+  height: 2px;
+  background-color: #dc3545; 
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.gantt-error-line::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 6px;
+  background-color: #dc3545;
+}
+
+.gantt-progress-error { background: #dc3545; height: 2px !important; margin-top: 5px; }
+
+
+/* Extra Segments */
+.gantt-extra-segments {
+  position: absolute;
+  align-items: center;
+  pointer-events: none;
+  height: 5px;
+  width: 10px;
+  top: 17px;
+  bottom: 6px;
+  right: 8px; /* Offset right */
+  display: flex;
+  gap: 2px;
+}
+.gantt-segment {
+  width: 10px;
+  height: 100%;
+  border-radius: 2px;
+}
+.gantt-segment-suspension { background: #fcc419; }
+.gantt-segment-extension { background: #66d9e8; }
+
+
+/* ========================================
+   MODAL SPECIFIC
+   ======================================== */
+.gantt-modal-chart-container {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gantt-modal-chart-container .gantt-container {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  height: 100%;
+}
+
+/* ========================================
+   PREVIEW SPECIFIC
+   ======================================== */
+.gantt-preview-body .gantt-container {
+  border: 1px solid #eef2f7;
+  box-shadow: none;
+}
+.gantt-preview-body .gantt-phase-row-title {
+  border-bottom: 1px solid #f1f3f5;
+}
+.gantt-preview-body .gantt-bar-bg {
+  border-radius: 3px;
+}
+.gantt-preview-body .gantt-bar-fill {
+  border-radius: 3px;
+}
+
+/* ========================================
+   TOOLTIP FLOTANTE INTERACTIVO
+   ======================================== */
+.gantt-floating-tooltip {
+  position: fixed; /* Fixed para evitar problemas de scroll/overflow en el modal */
+  z-index: 10000;
+  background: rgba(33, 37, 41, 0.95);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  pointer-events: none; /* Importante para que no parpadee al moverse */
+  white-space: nowrap;
+  animation: tooltip-fade-in 0.1s ease-out;
+}
+
+@keyframes tooltip-fade-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Ajuste cursor */
+.gantt-bar-bg, 
+.gantt-bar-fill-overlay, 
+.gantt-error-line,
+.gantt-segment {
+    cursor: crosshair; /* Indica precisión */
+}
+
+/* ========================================
+   HEADER STATS (FECHA ESTIMADA)
+   ======================================== */
+.gantt-modal-title-group {
+    display: flex;
+    flex-direction: column;
+}
+.gantt-header-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 4px;
+}
+.gantt-stat-item {
+    font-size: 13px;
+    color: #495057;
+    display: flex;
+    gap: 6px;
+}
+.gantt-stat-label {
+    color: #6c757d;
+}
+.gantt-stat-value {
+    font-weight: 700;
+    color: #2f9e44;
+}
+
+/* ========================================
+   TOGGLE SWITCH MODIFICADO
+   ======================================== */
+.gantt-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background: #f8f9fa;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #e9ecef;
+}
+.gantt-toggle-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #adb5bd;
+    transition: color 0.3s;
+}
+.gantt-toggle-label.active {
+    color: #495057;
+}
+
+.gantt-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+.gantt-switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.gantt-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+.gantt-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+}
+input:checked + .gantt-slider {
+  background-color: #2196F3;
+}
+input:focus + .gantt-slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .gantt-slider:before {
+  transform: translateX(16px);
+}
+.gantt-slider.round {
+  border-radius: 20px;
+}
+.gantt-slider.round:before {
+  border-radius: 50%;
+}
+
+/* ========================================
+   MARCADORES DE PROGRAMACIÓN
+   ======================================== */
+.gantt-scheduled-marker {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background-color: #fcc419; /* Amarillo fuerte */
+    border: 2px solid #fff;
+    border-radius: 50%;
+    z-index: 10; /* Encima de todo */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.gantt-scheduled-marker-legend {
+    width: 10px;
+    height: 10px;
+    background-color: #fcc419;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* ========================================
+   LÍNEA DE HOY (TODAY LINE)
+   ======================================== */
+.gantt-today-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e03131; /* Rojo */
+    border-left: 1px dashed #e03131; /* Efecto punteado */
+    background: transparent;
+    z-index: 20; /* Encima de las barras */
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.gantt-today-marker-head {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    z-index: 21;
+}
+
+.gantt-today-triangle {
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 6px solid #e03131;
+}
+
+/* ========================================
+   MEJORAS HEADER (PRECISIÓN Y FECHAS)
+   ======================================== */
+.gantt-timeline-marker.minor {
+    opacity: 1; /* Asegurar visibilidad */
+}
+
+.gantt-timeline-tick.minor-tick {
+    height: 3px; /* Puntos pequeños */
+    width: 2px;  /* Un poco más anchos para que se vean como puntos */
+    border-radius: 50%;
+    background: #dee2e6;
+    margin-bottom: 2px;
+}
+
+.gantt-header-date-label {
+    position: absolute;
+    top: 4px;
+    font-size: 9px;
+    color: #868e96;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0 2px;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+/* Asegurar que el contenedor de tareas permita solapamiento (overflow) */
+.gantt-task-container {
+    /* La posición absoluta ya permite solapamiento natural en CSS. 
+       Añadimos z-index incremental si fuera necesario, 
+       pero por el orden del DOM (phases array order), 
+       las fases posteriores se pintan encima de las anteriores si se solapan, 
+       lo cual es correcto para el efecto cascada. */
+    pointer-events: none; /* Dejar pasar eventos si hay mucho solapamiento hueco? No, necesitamos click. */
+    pointer-events: auto;
+}
+
+/* Ajuste de opacidad en barras para ver si hay algo debajo en caso de solapamiento fuerte */
+.gantt-bar-bg {
+    background: rgba(233, 236, 239, 0.9); /* Un poco transparente el track */
+}
+
+/* Ajuste Z-index para tooltip en header */
+.gantt-timeline-tooltip {
+    z-index: 100;
+}
+
+/* ========================================
+   ESTILOS PARA VISUALIZACIÓN DE SUSPENSIÓN EN GANTT
+   ======================================== */
+
+/* Contenedor de la barra de suspensión, posicionado absolutamente dentro de la fase */
+.gantt-suspension-track {
+    position: absolute;
+    bottom: 4px; /* Lo ubica en la parte inferior de la fila de la fase */
+    height: 30%; /* Ocupa 1/3 de la altura, como pediste */
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    pointer-events: none; /* No interfiere con clics a la barra principal */
+}
+
+/* La barra de suspensión amarilla */
+.gantt-suspension-bar {
+    position: absolute;
+    height: 100%;
+    background-color: #ffc107; /* Amarillo de suspensión */
+    border-radius: 3px;
+    box-shadow: inset 0 -1px 2px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #856404;
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: auto; /* Sí permite eventos sobre ella */
+}
+
+/* El segmento gris en la barra principal que indica el "corte" */
+.gantt-progress-cutout {
+    position: absolute;
+    height: 100%;
+    background-color: #adb5bd; /* Gris para indicar pausa */
+    top: 0;
+    z-index: 3; /* Se superpone a la barra de progreso */
+    border-radius: 0; /* Sin bordes redondeados para que parezca un corte limpio */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* Líneas verticales de guía (rojas) */
+.gantt-suspension-guideline {
+    position: absolute;
+    top: 0;
+    height: 100%; /* Ocupa toda la altura de la fila de la fase */
+    width: 1.5px;
+    background-color: #dc3545; /* Rojo */
+    opacity: 0.6;
+    z-index: 15;
+    pointer-events: none;
+}
+
+/* Ajuste de altura para filas con suspensión */
+.gantt-phase-with-suspension .gantt-phase-row-title,
+.gantt-phase-with-suspension .gantt-task-container {
+    height: 75px !important; /* Aumentamos la altura (50px base + 25px extra) */
+}
+
+/* En modo compacto, el aumento es menor */
+.gantt-compact .gantt-phase-with-suspension .gantt-phase-row-title,
+.gantt-compact .gantt-phase-with-suspension .gantt-task-container {
+    height: 50px !important; /* 34px base + 16px extra */
+}
+
+/* ========================================
+   ESTILOS PARA VISUALIZACIÓN DE SUSPENSIÓN EN GANTT
+   ======================================== */
+
+/* Ajuste en el contenedor de tareas de la fase para manejar la nueva altura y elementos */
+.gantt-task-container {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra el contenido verticalmente por defecto */
+}
+
+/* Cuando una fase tiene suspensión, ajustamos el layout */
+.gantt-phase-with-suspension {
+    justify-content: flex-start; /* Alineamos arriba para dar espacio a la barra de suspensión abajo */
+}
+
+/* El título de la fila también debe crecer en alto */
+.gantt-phase-row-title.gantt-phase-with-suspension {
+    align-items: flex-start;
+    padding-top: 16px;
+}
+.gantt-compact .gantt-phase-row-title.gantt-phase-with-suspension {
+    padding-top: 8px;
+}
+
+
+/* Contenedor para la barra de suspensión, posicionado dentro del contenedor de la tarea */
+.gantt-suspension-track {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 33%; /* Ocupa un tercio de la altura de la fila */
+    pointer-events: none; /* No interfiere con clics por defecto */
+}
+
+/* La barra de suspensión amarilla */
+.gantt-suspension-bar {
+    position: absolute;
+    height: 80%; /* Un poco más pequeña que su track para un mejor visual */
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #fcc419; /* Amarillo de suspensión */
+    border: 1px solid #f59f00;
+    border-radius: 4px;
+    box-shadow: inset 0 -1px 2px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #856404;
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: auto; /* Permite eventos sobre ella para el tooltip */
+    z-index: 10;
+}
+.gantt-compact .gantt-suspension-bar {
+    font-size: 9px;
+    padding: 0 4px;
+}
+
+/* El segmento gris en la barra principal que indica el "corte" */
+.gantt-progress-cutout {
+    position: absolute;
+    height: 100%;
+    background-color: #adb5bd; /* Gris para indicar pausa */
+    top: 0;
+    z-index: 3; /* Se superpone a la barra de progreso */
+    border-radius: 0; /* Sin bordes redondeados para que parezca un corte limpio */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+    pointer-events: none; /* No debe ser interactivo */
+}
+
+
+/* Líneas verticales de guía (rojas) */
+.gantt-suspension-guideline {
+    position: absolute;
+    top: 0;
+    bottom: 0; 
+    width: 1.5px;
+    background-color: rgba(220, 53, 69, 0.5); /* Rojo con opacidad */
+    z-index: 15;
+    pointer-events: none;
+}
+
+
+/* Leyenda para la barra de suspensión */
+.gantt-legend-color.gantt-segment-suspension {
+    background-color: #fcc419;
+    border: 1px solid #f59f00;
+}
+
+/* Segmento de Prórroga dentro de la barra */
+.gantt-extension-segment {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: #339af0; /* Azul solicitado */
+  opacity: 0.9;
+  z-index: 5; /* Por encima del track base pero bajo control */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid rgba(255,255,255,0.3);
+  border-right: 1px solid rgba(255,255,255,0.3);
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
+  pointer-events: auto; /* Para el tooltip */
+}
+
+.gantt-extension-label {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  user-select: none;
+}
+
+/* --- EXTENSION VISUALS (PRÓRROGA) --- */
+
+.gantt-extension-segment.striped-extension {
+  /* Fondo rayado para distinguirlo de barras sólidas normales */
+  background: repeating-linear-gradient(
+    45deg,
+    #17a2b8,
+    #17a2b8 5px,
+    #138496 5px,
+    #138496 10px
+  );
+  border: 1px solid #117a8b;
+  opacity: 1 !important; /* Forzar opacidad completa */
+  z-index: 6; /* Asegurar que esté por encima de la barra base */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.gantt-extension-label {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  user-select: none;
+  padding: 0 4px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Asegura que el contenedor de la fila sea relativo para posicionar los marcadores */
+.gantt-task-container {
+  position: absolute;
+  /* ... otros estilos existentes ... */
+}
+
+
+/* El icono visual del marcador (el diamante o círculo) */
+.gantt-marker-icon {
+  width: 10px;
+  height: 10px;
+  background-color: #fcc419; /* Amarillo advertencia */
+  border: 2px solid #fff;
+  border-radius: 50%; /* Círculo */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  /* Si prefieres un rombo/diamante: */
+  /* transform: rotate(45deg); border-radius: 2px; */
+}
+
+.gantt-marker-icon:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  transition: transform 0.2s ease;
+}
+
+/* Ajuste para la columna de títulos para permitir scroll pero ocultar barra si se desea */
+.gantt-body-titles {
+  overflow-y: hidden; /* Oculta scrollbar nativo pero permite scroll via JS */
+  /* Asegura que responda al scroll programático */
+  scrollbar-width: none; 
+}
+.gantt-body-titles::-webkit-scrollbar {
+  display: none;
+}
+
+/* Asegura que la barra track tenga contexto de posicionamiento */
+.gantt-bar-bg {
+  position: relative; 
+  /* ... tus otros estilos de background gris ... */
+}
+
+/* Marcador flotante dentro de la barra */
+.gantt-scheduled-marker {
+  position: absolute; 
+  top: 50%; /* Centrado vertical exacto en la barra de color */
+  transform: translate(-50%, -50%); 
+  z-index: 50; /* Muy por encima del fill y extensiones */
+  cursor: pointer;
+  pointer-events: auto; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ... (Todo el CSS existente se mantiene arriba) ... */
+
+/* ========================================
+   ESTILOS PARA ERROR DE PROGRAMACIÓN Y GUÍAS
+   ======================================== */
+
+/* Barra de error de programación (diferente a la legal) */
+.gantt-error-line.scheduled {
+  background-color: #fd7e14; /* Naranja fuerte */
+  top: 70%; /* Un poco desplazada hacia abajo para que se vea junto a la legal si ambas existen */
+  height: 3px;
+  z-index: 10;
+  background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+  background-size: 1rem 1rem;
+}
+
+.gantt-error-line.scheduled::after {
+  background-color: #fd7e14;
+  height: 8px;
+  top: -2px;
+}
+
+/* Guía visual de separador de fila */
+.gantt-grid-row-line {
+  position: absolute;
+  left: 0;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.05); /* Gris muy sutil */
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.05); /* Opcional: punteado para ser menos invasivo */
+  pointer-events: none;
+  z-index: 1;
+  width: 100%;
+}
+
+/* Ajuste para que la línea de error legal y programada no colisionen visualmente demasiado */
+.gantt-error-line:not(.scheduled) {
+  top: 30%; /* La legal la movemos un poco arriba */
+}
+
+/* ========================================
+   LEYENDA COMPACTA (MINI)
+   Añadir al final del archivo CSS
+   ======================================== */
+
+.gantt-modal-footer {
+    padding: 8px 16px; /* Reducir padding */
+    background: #fff;
+    border-top: 1px solid #e9ecef;
+}
+
+.gantt-legend-compact-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    color: #495057;
+    flex-wrap: nowrap;
+    overflow-x: auto; /* Permite scroll si la pantalla es muy pequeña */
+    scrollbar-width: none; /* Ocultar scrollbar visualmente */
+}
+
+.gantt-legend-compact-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #868e96;
+    flex-shrink: 0;
+}
+
+.gantt-legend-compact-items {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+}
+
+.gl-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.gl-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.gl-marker {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fcc419;
+    border: 1px solid #dee2e6;
+}
+
+/* Colores utilitarios para la leyenda compacta */
+.bg-pending { background-color: #adb5bd; }
+.bg-active { background-color: #339af0; }
+.bg-paused { background-color: #fcc419; }
+.bg-completed { background-color: #51cf66; }
+.bg-overdue { background-color: #ff6b6b; }
+.bg-suspension { background-color: #fcc419; border: 1px solid #f08c00; }
+.bg-extension { background-color: #339af0; opacity: 0.8; }
+.bg-error-line { height: 3px !important; width: 12px; background-color: #dc3545; }
+
+
+/* --- Semáforo de Barras --- */
+.gantt-bar-success { background: #51cf66; } /* Verde/Exitoso */
+.gantt-bar-warning { background: #fcc419; } /* Amarillo/Alerta */
+.gantt-bar-danger { background: #dc3545; }  /* Rojo/Crítico */
+
+/* --- Resaltado de Fila Activa --- */
+.gantt-row-highlighted {
+  box-shadow: inset 4px 0 0 #339af0;
+  background-color: #f1f8ff !important;
+}
+
+.gantt-row-highlighted-bg {
+  background-color: rgba(51, 154, 240, 0.05); /* Sombra sutil en el grid */
+  height: 100%; /* Asegurar que cubra la fila (lógica aplicada en JS) */
+  pointer-events: none;
+}
+
+/* --- Hitos de Finalización (Líneas verticales) --- */
+.gantt-milestone-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, #868e96 0, #868e96 4px, transparent 4px, transparent 8px);
+  z-index: 15;
+  pointer-events: none;
+}
+
+.gantt-milestone-label {
+  position: absolute;
+  top: 4px;
+  left: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 4px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 9px;
+  color: #495057;
+  line-height: 1.1;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.gantt-milestone-toggle {
+  margin-left: auto;
+  margin-right: 12px;
+  align-self: center;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  color: #adb5bd;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.gantt-milestone-toggle:hover, .gantt-milestone-toggle.active {
+  color: #339af0;
+  border-color: #339af0;
+  background: #e7f5ff;
+}
+
+/* --- Etiqueta del Hoy y Sugerencias --- */
+.gantt-today-suggestion {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  z-index: 25;
+}
+.gantt-today-suggestion::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+}
+
+/* Variantes de sugerencia */
+.gantt-today-suggestion.warning {
+  background: #fff9db;
+  color: #e67700;
+  border: 1px solid #fcc419;
+}
+.gantt-today-suggestion.warning::after { border-top-color: #fcc419; }
+
+.gantt-today-suggestion.danger {
+  background: #fff5f5;
+  color: #c92a2a;
+  border: 1px solid #ff6b6b;
+}
+.gantt-today-suggestion.danger::after { border-top-color: #ff6b6b; }
+
+.gantt-today-suggestion.normal {
+  background: #e7f5ff;
+  color: #1864ab;
+  border: 1px solid #339af0;
+}
+.gantt-today-suggestion.normal::after { border-top-color: #339af0; }
+
+/* ... (Todo tu CSS existente) ... */
+
+
+
+
+
+/* Título de la tarjeta (Nombre de la fase) */
+.gantt-row-milestone-card strong {
+    display: block;
+    color: #28a745;
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+
+/* Fecha */
+.milestone-date {
+    font-weight: 600;
+    color: #343a40;
+}
+
+/* Duración */
+.milestone-duration {
+    font-size: 9px;
+    color: #868e96;
+}
+
+/* --- Variantes de Posición --- */
+
+/* Posición DEFAULT (Arriba): Se asienta SOBRE la fila */
+.gantt-row-milestone-card.top {
+    bottom: 100%; 
+    margin-bottom: 2px; /* Pequeño margen para no tocar el borde */
+}
+/* Flechita inferior para el modo TOP */
+.gantt-row-milestone-card.top::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #28a745;
+}
+
+/* Posición BOTTOM (Para Fase 1): Se asienta DEBAJO de la fila */
+.gantt-row-milestone-card.bottom {
+    top: 100%;
+    margin-top: 2px;
+}
+/* Flechita superior para el modo BOTTOM */
+.gantt-row-milestone-card.bottom::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-bottom-color: #28a745;
+}
+
+
+@keyframes fadeInToday {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.today-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f3f5;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: #868e96;
+}
+
+.today-header strong {
+    color: #e03131; 
+    font-weight: 800;
+}
+
+/* Línea roja continua y visible */
+.gantt-today-line {
+    background-color: #e03131;
+    width: 2px;
+    opacity: 0.8;
+    border-left: none;
+    box-shadow: 0 0 4px rgba(224, 49, 49, 0.4);
+}
+
+/* ========================================
+   NUEVO: ETIQUETAS DE HITO EN FILA (ESTILO TARJETA)
+   ======================================== */
+.gantt-row-milestone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    z-index: 15;
+    pointer-events: none; /* Dejar pasar clic a la barra subyacente */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.gantt-row-milestone-line {
+    width: 1px;
+    height: 100%;
+    background-color: #28a745; /* Verde éxito */
+    opacity: 0.6;
+}
+
+.gantt-row-milestone-card {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid #28a745;
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 10px;
+    color: #495057;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    white-space: nowrap;
+    z-index: 20;
+    line-height: 1.2;
+    text-align: center;
+    min-width: 80px;
+}
+
+/* Título de la tarjeta (Nombre de la fase) */
+.gantt-row-milestone-card strong {
+    display: block;
+    color: #28a745;
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+
+/* Fecha */
+.milestone-date {
+    font-weight: 600;
+    color: #343a40;
+}
+
+/* Duración */
+.milestone-duration {
+    font-size: 9px;
+    color: #868e96;
+}
+
+/* --- Variantes de Posición --- */
+
+/* Posición DEFAULT (Arriba): Se asienta SOBRE la fila */
+.gantt-row-milestone-card.top {
+    bottom: 100%; 
+    margin-bottom: 2px; /* Pequeño margen para no tocar el borde */
+}
+/* Flechita inferior para el modo TOP */
+.gantt-row-milestone-card.top::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #28a745;
+}
+
+/* Posición BOTTOM (Para Fase 1): Se asienta DEBAJO de la fila */
+.gantt-row-milestone-card.bottom {
+    top: 100%;
+    margin-top: 2px;
+}
+/* Flechita superior para el modo BOTTOM */
+.gantt-row-milestone-card.bottom::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-bottom-color: #28a745;
+}
+
+
+/* ========================================
+   NUEVO: TARJETA FLOTANTE "HOY" (ESTILO RICO)
+   ======================================== */
+.gantt-today-card {
+    position: absolute;
+    top: 20px; 
+    left: 8px; 
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 140px;
+    z-index: 50; 
+    border-left: 4px solid #339af0;
+    animation: fadeInToday 0.3s ease-out;
+}
+
+@keyframes fadeInToday {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.today-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f3f5;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: #868e96;
+}
+
+.today-header strong {
+    color: #e03131; 
+    font-weight: 800;
+}
+
+.today-stat {
+    font-size: 13px;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 4px;
+    white-space: nowrap;
+}
+
+.today-footer {
+    font-size: 10px;
+    color: #495057;
+    background: #f8f9fa;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* Variantes de tarjeta HOY */
+.gantt-today-card.warning { border-left-color: #fcc419; }
+.gantt-today-card.warning .today-footer { background: #fff9db; color: #e67700; }
+
+.gantt-today-card.danger { border-left-color: #dc3545; }
+.gantt-today-card.danger .today-footer { background: #fff5f5; color: #c92a2a; }
+
+.gantt-today-card.success { border-left-color: #2f9e44; }
+
+/* Línea roja continua y visible */
+.gantt-today-line {
+    background-color: #e03131;
+    width: 2px;
+    opacity: 0.8;
+    border-left: none;
+    box-shadow: 0 0 4px rgba(224, 49, 49, 0.4);
+}
+
+/* --- MARCADORES PROGRAMADOS --- */
+.gantt-scheduled-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #fcc419; /* Amarillo advertencia */
+  border: 2px solid #fff;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  cursor: help;
+  transition: transform 0.2s ease;
+}
+
+.gantt-scheduled-marker:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  z-index: 12;
+}
+
+/* Marcador Crítico (Final de fase) */
+.gantt-scheduled-marker.critical {
+  background-color: #fd7e14; /* Naranja más oscuro */
+  border-color: #fff5f5;
+  width: 12px;
+  height: 12px;
+}
+
+/* --- OVERFLOW EN BARRA --- */
+/* Importante: Permitir que los marcadores se vean fuera del ancho de la barra si están programados para después */
+.gantt-bar-bg {
+  overflow: visible !important; 
+}
+
+/* ... (resto de tus estilos) */
+
+/* ========================================
+   ESTILOS MEJORADOS PARA HITOS (MILESTONES)
+   ======================================== */
+
+.gantt-row-milestone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    z-index: 15;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.gantt-row-milestone-line {
+    width: 1px; /* Línea más fina */
+    height: 100%;
+    border-right: 1px dashed rgba(0, 0, 0, 0.4); /* Línea negra discontinua sutil */
+    background-color: transparent; /* Quitar fondo sólido */
+}
+
+.gantt-row-milestone-card {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    /* Borde negro fino e intermitente como solicitado */
+    border: 1px dashed rgba(0, 0, 0, 0.6); 
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 10px;
+    color: #212529;
+    /* Sombra suave para levantarla del fondo */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    white-space: nowrap;
+    z-index: 20;
+    line-height: 1.1;
+    text-align: center;
+    min-width: max-content;
+}
+
+/* Título de la fase dentro del hito */
+.gantt-row-milestone-card strong {
+    display: block;
+    color: #000; /* Texto negro para contraste máximo */
+    font-weight: 700;
+    font-size: 10px;
+    margin-bottom: 1px;
+}
+
+/* Fecha dentro del hito */
+.milestone-date {
+    font-weight: 500;
+    color: #495057;
+    font-size: 9px;
+}
+
+/* Posición DEFAULT (Arriba) */
+.gantt-row-milestone-card.top {
+    bottom: 100%; 
+    margin-bottom: 4px;
+}
+/* Flecha CSS simple hacia abajo */
+.gantt-row-milestone-card.top::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #343a40; /* Flecha oscura */
+}
+
+/* Posición BOTTOM (Abajo) */
+.gantt-row-milestone-card.bottom {
+    top: 100%;
+    margin-top: 4px;
+}
+/* Flecha CSS simple hacia arriba */
+.gantt-row-milestone-card.bottom::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-bottom-color: #343a40; /* Flecha oscura */
+}
+
+/* ========================================
+   ESTILOS MEJORADOS PARA HITOS (MILESTONES)
+   ======================================== */
+
+.gantt-row-milestone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    z-index: 15;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.gantt-row-milestone-line {
+    width: 1px; /* Línea más fina */
+    height: 100%;
+    border-right: 1px dashed rgba(0, 0, 0, 0.4); /* Línea negra discontinua sutil */
+    background-color: transparent; /* Quitar fondo sólido */
+}
+
+.gantt-row-milestone-card {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    /* Borde negro fino e intermitente como solicitado */
+    border: 1px dashed rgba(0, 0, 0, 0.6); 
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 10px;
+    color: #212529;
+    /* Sombra suave para levantarla del fondo */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    white-space: nowrap;
+    z-index: 20;
+    line-height: 1.1;
+    text-align: center;
+    min-width: max-content;
+}
+
+/* Título de la fase dentro del hito */
+.gantt-row-milestone-card strong {
+    display: block;
+    color: #000; /* Texto negro para contraste máximo */
+    font-weight: 700;
+    font-size: 10px;
+    margin-bottom: 1px;
+}
+
+/* Fecha dentro del hito */
+.milestone-date {
+    font-weight: 500;
+    color: #495057;
+    font-size: 9px;
+    display: block;
+}
+
+/* Duración dentro del hito */
+.milestone-duration {
+    font-size: 9px;
+    color: #868e96;
+    display: block;
+    margin-top: 1px;
+    font-weight: 400;
+}
+
+/* Posición DEFAULT (Arriba) */
+.gantt-row-milestone-card.top {
+    bottom: 100%; 
+    margin-bottom: 4px;
+}
+/* Flecha CSS simple hacia abajo */
+.gantt-row-milestone-card.top::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #343a40; /* Flecha oscura */
+}
+
+/* Posición BOTTOM (Abajo) */
+.gantt-row-milestone-card.bottom {
+    top: 100%;
+    margin-top: 4px;
+}
+/* Flecha CSS simple hacia arriba */
+.gantt-row-milestone-card.bottom::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-bottom-color: #343a40; /* Flecha oscura */
+}
+

@@ -423,7 +423,7 @@ class FUNN51 extends Component {
             const columns_51 = [
                 {
                     name: <label>TIPO PERSONA</label>,
-                    selector: 'type',
+                    selector: row => row.type, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -432,7 +432,7 @@ class FUNN51 extends Component {
                 },
                 {
                     name: <label>NOMBRE</label>,
-                    selector: 'name',
+                    selector: row => row.name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -441,7 +441,7 @@ class FUNN51 extends Component {
                 },
                 {
                     name: <label>CC/NIT</label>,
-                    selector: 'id_number',
+                    selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -449,7 +449,7 @@ class FUNN51 extends Component {
                 },
                 {
                     name: <label>NOMBRE REP. LEGAL</label>,
-                    selector: 'rep_name',
+                    selector: row => row.rep_name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -458,7 +458,7 @@ class FUNN51 extends Component {
                 },
                 {
                     name: <label>C.C. REP. LEGAL</label>,
-                    selector: 'rep_id_number',
+                    selector: row => row.rep_id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -466,19 +466,19 @@ class FUNN51 extends Component {
                 },
                 {
                     name: <label>TELEFONO/ CELULAR</label>,
-                    selector: 'nunber',
+                    selector: row => row.nunber, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label >{row.nunber}</label>
                 },
                 {
                     name: <label>CORREO</label>,
-                    selector: 'email',
+                    selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label>{row.email}</label>
                 },
                 {
                     name: <label>TIPO TITULAR</label>,
-                    selector: 'role',
+                    selector: row => row.role, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '200px',
                     cell: row => <label>{row.role}</label>
@@ -504,12 +504,28 @@ class FUNN51 extends Component {
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary btn-sm m-0 p-2 shadow-none" onClick={() => this.setState({ edit: row })}>
-                                <i class="far fa-edit fa-2x"></i></MDBBtn>
+                            {/* FIX: button anidado - replaced MDBBtn with span */}
+                            <span 
+                                role="button" 
+                                tabIndex={0} 
+                                className="btn btn-secondary btn-sm m-0 p-2 shadow-none" 
+                                onClick={() => this.setState({ edit: row })}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') this.setState({ edit: row }); }}
+                                style={{cursor: 'pointer'}}>
+                                <i className="far fa-edit fa-2x"></i>
+                            </span>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_51(row.id)}>
-                                <i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                            {/* FIX: button anidado - replaced MDBBtn with span */}
+                            <span 
+                                role="button" 
+                                tabIndex={0} 
+                                className="btn btn-danger btn-sm m-0 p-2 shadow-none" 
+                                onClick={() => delete_51(row.id)}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') delete_51(row.id); }}
+                                style={{cursor: 'pointer'}}>
+                                <i className="far fa-trash-alt fa-2x"></i>
+                            </span>
                         </MDBTooltip>
 
                     </>

@@ -207,6 +207,9 @@ class UserslDataService {
   update_version(id, data) {
     return http.put(`/${route}/funversionA/${id}`, data);
   }
+  updateSchedule(id, data) {
+    return http.put(`/fun/schedule/${id}`, data);
+  }
   update_1(id, data) {
     return http.put(`/${route}/fun1A/${id}`, data);
   }
