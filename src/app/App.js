@@ -65,6 +65,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import { Nav, Navbar } from 'rsuite';
 import PROFESIONALS from './pages/user/profesionals/profesionals.page';
 import GUIDE_USER from './pages/user/guide_user/guide_user.page';
+import DEV_GUIDE from './pages/user/dev_guide/dev_guide.page';
 import { infoCud } from './components/jsons/vars';
 import NORMS from './pages/user/norms/norms.page';
 import CERTIFICATE_WORKER from './pages/user/certifications/certification.page';
@@ -273,6 +274,15 @@ export default function App() {
                               translation={t("liquidator.liquidator", { returnObjects: true })}
                             />
                           </PrivateRoute>
+
+                          <Route path='/dev-guide'>
+                            <DEV_GUIDE
+                              globals={t("globals", { returnObjects: true })}
+                              swaMsg={t("swa_messages", { returnObjects: true })}
+                              breadCrums={t("breadCrums", { returnObjects: true })}
+                              translation={t("liquidator.liquidator", { returnObjects: true })}
+                            />
+                          </Route>
 
 
                           <Route exact path='/norms'
