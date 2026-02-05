@@ -1,37 +1,42 @@
 export const REVIEW_DOCS = [
     {
-        v: 0, c: 0, pid: 'rar_0', rtype: ['con', 'sub', 'cer', 'ph', 'col'], title: false,
+        v: 0, c: 0, pid: 'rar_0', rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], title: false,
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Anteproyecto de intervención en BIENES DE INTERÉS CULTURAL (BIC) o en inmuebles colindantes o localizados dentro de su área de influencia', }
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Anteproyecto de intervención en BIENES DE INTERÉS CULTURAL (BIC) o en inmuebles colindantes o localizados dentro de su área de influencia', }
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_1', rtype: ['con', 'sub', 'cer', 'ph', 'col',], title: 'Rótulo',
+        v: 0, c: 0, pid: 'rar_1', rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], title: 'Rótulo',
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Dirección', },
-            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Firma del arquitecto responsable (indispensable validez)', },
-            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Número de matricula del arquitecto', },
-            { v: 4, c: 4, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Escala', },
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Dirección', },
+            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Firma del arquitecto responsable (indispensable validez)', },
+            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Número de matricula del arquitecto', },
+            { v: 4, c: 4, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Escala', },
             { v: 5, c: 5, rtype: ['sub', 'col',], name: 'Nombre del Predio', },
             { v: 6, c: 6, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: 'Propietario', },
             { v: 7, c: 7, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: 'Tipo de tramite', },
             { v: 8, c: 8, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: 'Contenido del Plano', },
             { v: 9, c: 9, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: 'Numeración del plano', },
             { v: 10, c: 10, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: 'Fecha', },
-            { v: 11, c: 11, rtype: ['con', 'col',], name: 'Firma del diseñador de elementos no estructurales según A.1.5.2.2', },
+            { v: 11, c: 11, rtype: ['con', 'col', 'cre',], name: 'Firma del diseñador de elementos no estructurales según A.1.5.2.2', },
             { v: 12, c: 12, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: 'Todos los planos arquitectónicos deben incluir una nota visible que contenga el Grupo de Uso según A.2.5 del Reglamento NSR-10 (I, II, III o IV)', },
             { v: 13, c: 13, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: 'Grado de Desempeño de los elementos no estructurales (Superior, Bueno o Bajo) que se requiere para el grupo de uso de la edificación según A.9.2 del Reglamento NSR-10', },
-
+            { v: 14, c: 14, rtype: ['cre'], name: 'Código Catastral /matricula inmobiliaria', },
+            { v: 15, c: 15, rtype: ['cre'], name: 'Propietario', },
+            { v: 16, c: 16, rtype: ['cre'], name: 'Tipo de tramite', },
+            { v: 17, c: 17, rtype: ['cre'], name: 'Contenido del Plano', },
+            { v: 18, c: 18, rtype: ['cre'], name: 'Numeración del plano', },
+            { v: 19, c: 19, rtype: ['cre'], name: 'Fecha', },
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_2', rtype: ['con', 'sub', 'cer', 'ph', 'col',], title: 'Características del predio ',
+        v: 0, c: 0, pid: 'rar_2', rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], title: 'Características del predio ',
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Plano de localización e identificación (georreferenciado)', },
-            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Sección vial', },
-            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Nomenclatura vial', },
-            { v: 4, c: 4, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Linderos del predio', },
-            { v: 5, c: 5, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Norte', },
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Plano de localización e identificación (georreferenciado)', },
+            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Sección vial', },
+            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Nomenclatura vial', },
+            { v: 4, c: 4, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Linderos del predio', },
+            { v: 5, c: 5, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Norte', },
             { v: 6, c: 6, rtype: ['con', 'cer', 'ph', 'col',], name: 'Coincide la escala con el dibujo', },
             { v: 7, c: 7, rtype: ['con', 'col',], name: 'Retroceso y/o aislamientos', },
             { v: 8, c: 8, rtype: ['con', 'col',], name: 'Visto bueno de la copropiedad', },
@@ -42,9 +47,9 @@ export const REVIEW_DOCS = [
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_3', rtype: ['con', 'sub', 'cer', 'ph', 'col',], title: 'Cuadro de Áreas',
+        v: 0, c: 0, pid: 'rar_3', rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], title: 'Cuadro de Áreas',
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Cuadro general de las áreas del proyecto arquitectónico', },
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Cuadro general de las áreas del proyecto arquitectónico', },
             { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: 'Área de lote', },
             { v: 3, c: 3, rtype: ['con', 'ph', 'col',], name: 'Área construida por piso', },
             { v: 4, c: 4, rtype: ['con', 'col',], name: 'Retrocesos', },
@@ -63,15 +68,15 @@ export const REVIEW_DOCS = [
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_4', rtype: ['con', 'sub', 'cer', 'ph', 'col',], title: 'Plantas',
+        v: 0, c: 0, pid: 'rar_4', rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], title: 'Plantas',
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Primera planta relacionada con el espacio público', },
-            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Cotas totales y parciales del proyecto', },
-            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Ejes y elementos estructurales proyectados (sistema estructural)', },
-            { v: 4, c: 4, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Niveles', },
-            { v: 5, c: 5, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Usos', },
-            { v: 6, c: 6, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Indicación cortes (longitudinal, transversal relacionad con e.público)', },
-            { v: 7, c: 7, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Planta de cubierta', },
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Primera planta relacionada con el espacio público', },
+            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Cotas totales y parciales del proyecto', },
+            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Ejes y elementos estructurales proyectados (sistema estructural)', },
+            { v: 4, c: 4, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Niveles', },
+            { v: 5, c: 5, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Usos', },
+            { v: 6, c: 6, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Indicación cortes (longitudinal, transversal relacionad con e.público)', },
+            { v: 7, c: 7, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Planta de cubierta', },
             { v: 8, c: 8, rtype: ['con', 'ph', 'col',], name: 'Estructura', },
             { v: 9, c: 9, rtype: ['con', 'sub', 'ph', 'col',], name: 'Coincide la escala con el dibujo', },
             { v: 10, c: 10, rtype: ['con', 'ph', 'col',], name: 'Planta de todos los niveles', },
@@ -118,18 +123,18 @@ export const REVIEW_DOCS = [
             { v: 51, c: 51, rtype: ['ph',], name: 'Linderos del area privada libre', },
             { v: 52, c: 52, rtype: ['ph',], name: 'Nombres de los espacios', },
             { v: 53, c: 53, rtype: ['ph',], name: 'Cuadro de convenciones', },
-            { v: 54, c: 54, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: 'Piscinas', },
+            { v: 54, c: 54, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], name: 'Piscinas', },
             { v: 55, c: 55, rtype: ['con', 'col',], name: 'Cerramiento (detalle, ml, area, cotas, materiales)' },
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_5', rtype: ['con', 'cer', 'col',], title: 'Cortes',
+        v: 0, c: 0, pid: 'rar_5', rtype: ['con', 'cer', 'col', 'cre',], title: 'Cortes',
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'col',], className: 'text-primary', name: 'Relación con el espacio público y privado', },
-            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'col',], className: 'text-primary', name: 'Indicación de la pendiente del terreno', },
-            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'col',], className: 'text-primary', name: 'Niveles por piso', },
-            { v: 4, c: 4, rtype: ['con', 'sub', 'cer', 'col',], className: 'text-primary', name: 'Cotas totales y parciales', },
-            { v: 5, c: 5, rtype: ['con', 'sub', 'cer', 'col',], className: 'text-primary', name: 'Ejes estructurales', },
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'col', 'cre',], className: 'text-primary', name: 'Relación con el espacio público y privado', },
+            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'col', 'cre',], className: 'text-primary', name: 'Indicación de la pendiente del terreno', },
+            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'col', 'cre',], className: 'text-primary', name: 'Niveles por piso', },
+            { v: 4, c: 4, rtype: ['con', 'sub', 'cer', 'col', 'cre',], className: 'text-primary', name: 'Cotas totales y parciales', },
+            { v: 5, c: 5, rtype: ['con', 'sub', 'cer', 'col', 'cre',], className: 'text-primary', name: 'Ejes estructurales', },
             { v: 6, c: 6, rtype: ['con', 'col',], name: 'Corte longitudinal (min1)', },
             { v: 7, c: 7, rtype: ['con', 'col',], name: 'Corte transversal (min 1)', },
             { v: 8, c: 8, rtype: ['con', 'col',], name: 'Cotas verticales', },
@@ -137,11 +142,11 @@ export const REVIEW_DOCS = [
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_6', rtype: ['con', 'cer', 'ph', 'col',], title: 'Fachadas',
+        v: 0, c: 0, pid: 'rar_6', rtype: ['con', 'cer', 'ph', 'col', 'cre',], title: 'Fachadas',
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Indicación de la pendiente el terreno', },
-            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Niveles por piso', },
-            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Cotas totales y parciales', },
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Indicación de la pendiente el terreno', },
+            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Niveles por piso', },
+            { v: 3, c: 3, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Cotas totales y parciales', },
             { v: 4, c: 4, rtype: ['con', 'col',], name: 'Cotas verticales', },
             { v: 5, c: 5, rtype: ['con', 'col',], name: 'La cantidad de fachadas existentes', },
             { v: 6, c: 6, rtype: ['con', 'col'], name: 'Materiales en fachada', },
@@ -151,15 +156,15 @@ export const REVIEW_DOCS = [
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_7', rtype: ['con', 'sub', 'cer', 'ph', 'col',], title: false,
+        v: 0, c: 0, pid: 'rar_7', rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], title: false,
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Plantas, cortes y fachadas a la misma escala', }
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Plantas, cortes y fachadas a la misma escala', }
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_8', rtype: ['con', 'sub', 'cer', 'ph', 'col',], title: false,
+        v: 0, c: 0, pid: 'rar_8', rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], title: false,
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], className: 'text-primary', name: 'Planos arquitectónicos para el reconocimiento de la existencia de edificaciones', }
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], className: 'text-primary', name: 'Planos arquitectónicos para el reconocimiento de la existencia de edificaciones', }
         ]
     },
     {
@@ -182,20 +187,23 @@ export const REVIEW_DOCS = [
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_11', rtype: ['con', 'col',], title: 'Cuadro NSR-10',
+        v: 0, c: 0, pid: 'rar_11', rtype: ['con', 'col', 'cre',], title: 'Cuadro NSR-10',
         items: [
-            { v: 1, c: 1, rtype: ['con', 'col',], name: 'Grupo de ocupación', },
-            { v: 2, c: 2, rtype: ['con', 'col',], name: 'Subgrupo de ocupación', },
-            { v: 3, c: 3, rtype: ['con', 'col',], name: 'Carga de ocupación', },
-            { v: 4, c: 4, rtype: ['con', 'col',], name: 'Distancia a salidas', },
+            { v: 1, c: 1, rtype: ['con', 'col', 'cre',], name: 'Grupo de ocupación', },
+            { v: 2, c: 2, rtype: ['con', 'col', 'cre',], name: 'Subgrupo de ocupación', },
+            { v: 3, c: 3, rtype: ['con', 'col', 'cre',], name: 'Carga de ocupación', },
+            { v: 4, c: 4, rtype: ['con', 'col', 'cre',], name: 'Distancia a salidas', },
+            { v: 5, c: 5, rtype: ['cre',], name: 'Firma del diseñador de elementos no estructurales según A.1.5.2.2', },
+            { v: 6, c: 6, rtype: ['cre',], name: 'Todos los planos arquitectónicos deben incluir una nota visible que contenga el Grupo de Uso según A.2.5 del Reglamento NSR-10 (I, II, III o IV)', },
+            { v: 7, c: 7, rtype: ['cre',], name: 'Grado de Desempeño de los elementos no estructurales (Superior, Bueno o Bajo) que se requiere para el grupo de uso de la edificación según A.9.2 del Reglamento NSR-10', },
         ]
     },
     {
-        v: 0, c: 0, pid: 'rar_12', rtype: ['con', 'sub', 'cer', 'ph', 'col',], title: 'Anexos',
+        v: 0, c: 0, pid: 'rar_12', rtype: ['con', 'sub', 'cer', 'ph', 'col', 'cre',], title: 'Anexos',
         items: [
-            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'col',], name: 'Planos topográficos', },
-            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'col',], name: 'Planos urbanísticos', },
-            { v: 3, c: 3, rtype: ['con', 'cer', 'col',], name: 'Plano licencia anterior', },
+            { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'col', 'cre',], name: 'Planos topográficos', },
+            { v: 2, c: 2, rtype: ['con', 'sub', 'cer', 'col', 'cre',], name: 'Planos urbanísticos', },
+            { v: 3, c: 3, rtype: ['con', 'cer', 'col', 'cre',], name: 'Plano licencia anterior', },
             { v: 4, c: 4, rtype: ['ph',], name: 'Folio', },
             { v: 5, c: 5, rtype: ['ph',], name: 'Impuesto predial', },
             { v: 6, c: 6, rtype: ['ph',], name: 'Licencia y planos aprobados', },
@@ -204,8 +212,8 @@ export const REVIEW_DOCS = [
             { v: 9, c: 9, rtype: ['ph',], name: 'CC del propietario', },
             { v: 10, c: 10, rtype: ['ph',], name: 'Licencia vigente o declaración juramentada de la construcción finalizada', },
             { v: 11, c: 11, rtype: ['ph',], name: 'Formulario diligenciado', },
-            { v: 12, c: 12, rtype: ['con', 'sub', 'cer', 'col',], name: 'Plano topográfico rural o suburbano con ríos, cauces, canales, servidumbres, vías y redes eléctricas', },
-            { v: 13, c: 13, rtype: ['con', 'sub', 'cer', 'col',], name: 'Estudio hidrológico con cota de inundación', },
+            { v: 12, c: 12, rtype: ['con', 'sub', 'cer', 'col', 'cre',], name: 'Plano topográfico rural o suburbano con ríos, cauces, canales, servidumbres, vías y redes eléctricas', },
+            { v: 13, c: 13, rtype: ['con', 'sub', 'cer', 'col', 'cre',], name: 'Estudio hidrológico con cota de inundación', },
         ]
     },
     {
@@ -233,6 +241,53 @@ export const REVIEW_DOCS = [
         v: 0, c: 0, pid: 'rar_15', rtype: ['con', 'sub', 'cer', 'ph', 'col',], title: false,
         items: [
             { v: 1, c: 1, rtype: ['con', 'sub', 'cer', 'ph', 'col',], name: ' Visualización de planos y detalles claros (no borrosos) para verificar su cumplimiento', }
+        ]
+    },
+    {
+        v: 0, c: 0, pid: 'rar_16', rtype: ['cre',], title: false,
+        items: [
+            { v: 1, c: 1, rtype: ['cre',], name: 'Coincide la escala con el dibujo', },
+            { v: 2, c: 2, rtype: ['cre',], name: 'Retroceso y/o aislamientos', },
+            { v: 3, c: 3, rtype: ['cre',], name: 'Visto bueno de la copropiedad', },
+            { v: 4, c: 4, rtype: ['cre',], name: 'Ubicación de la edificación según urbanismo/Reglamento PH', },
+            { v: 5, c: 5, rtype: ['cre',], name: 'Area lote', },
+            { v: 6, c: 6, rtype: ['cre',], name: 'Área construida por piso', },
+            { v: 7, c: 7, rtype: ['cre',], name: 'Cuadro de indices', },
+            { v: 8, c: 8, rtype: ['cre',], name: 'Alzados relacionados con el espacio publico y privado', },
+            { v: 9, c: 9, rtype: ['cre',], name: 'Planta de cubierta', },
+            { v: 10, c: 10, rtype: ['cre',], name: 'Altura máxima', },
+            { v: 11, c: 11, rtype: ['cre',], name: 'Planta de todos los niveles', },
+            { v: 12, c: 12, rtype: ['cre',], name: 'Iluminación y ventilación de los espacios (obra nueva)', },
+            { v: 13, c: 13, rtype: ['cre',], name: 'Voladizo', },
+            { v: 14, c: 14, rtype: ['cre',], name: 'Antejardin', },
+            { v: 15, c: 15, rtype: ['cre',], name: 'Aislamientos laterales', },
+            { v: 16, c: 16, rtype: ['cre',], name: 'Coincidencia con proyecto estructural', },
+            { v: 17, c: 17, rtype: ['cre',], name: 'Ruta de evacuación', },
+            { v: 18, c: 18, rtype: ['cre',], name: 'Accesibilidad', },
+            { v: 19, c: 19, rtype: ['cre',], name: 'Escaleras, ancho, huella, contrahuella, pasamanos y detalle', },
+            { v: 20, c: 20, rtype: ['cre',], name: 'Parqueaderos /cupos', },
+            { v: 21, c: 21, rtype: ['cre',], name: 'Aislamiento antisismico', },
+            { v: 22, c: 22, rtype: ['cre',], name: 'Wc (comerciales 1.80*1.90)', },
+            { v: 23, c: 23, rtype: ['cre',], name: 'Planta rociadores (uso distinto a residencial)', },
+            { v: 24, c: 24, rtype: ['cre',], name: 'Cerramiento (detalle, ml, area, cotas, materiales)', },
+            { v: 25, c: 25, rtype: ['cre',], name: 'Coincide con foto valla', },
+            { v: 26, c: 26, rtype: ['cre',], name: 'Coincidencia de las fachadas con las plantas / plantas y fachadas a la misma escala', },
+            { v: 27, c: 27, rtype: ['cre',], name: 'Materiales en cubierta', },
+            { v: 28, c: 28, rtype: ['cre',], name: 'Plano de Levantamiento', },
+            { v: 29, c: 29, rtype: ['cre',], name: 'EDARFRI', },
+            { v: 30, c: 30, rtype: ['cre',], name: 'PISCINAS', },
+            { v: 31, c: 31, rtype: ['cre',], name: 'NORMA URBANA', },
+            { v: 32, c: 32, rtype: ['cre',], name: 'CUADRO NSR10', },
+            { v: 33, c: 33, rtype: ['cre',], name: 'Categoria  de riesgo', },
+            { v: 34, c: 34, rtype: ['cre',], name: 'Número de salidas requeridas y aplicadas', },
+            { v: 35, c: 35, rtype: ['cre',], name: 'Zona de amenaza sismica', },
+            { v: 36, c: 36, rtype: ['cre',], name: 'Grado de disipación de energia', },
+            { v: 37, c: 37, rtype: ['cre',], name: 'Vecinos', },
+            { v: 38, c: 38, rtype: ['cre',], name: 'Accesos al proyecto', },
+            { v: 39, c: 39, rtype: ['cre',], name: 'Cotas voladizo', },
+            { v: 40, c: 40, rtype: ['cre',], name: 'Área otro uso (local comercial, etc)', },
+            { v: 41, c: 41, rtype: ['cre',], name: 'Nombre de unidades', },
+            { v: 42, c: 42, rtype: ['cre',], name: 'Información clara y legible', },
         ]
     },
 ];

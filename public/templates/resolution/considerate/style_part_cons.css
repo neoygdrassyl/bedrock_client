@@ -1,0 +1,325 @@
+/* Justificación solo fuera de tablas */
+body,
+.document,
+.document p,
+.document strong {
+  font-size: 12pt;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  text-align: justify;
+}
+.titles-general{
+  font-size: 16pt;
+}
+.text-size-small{
+  font-size: 12pt;
+}
+.text-size-smaller{
+  font-size: 9pt;
+}
+.text-justify {
+    text-align: justify;
+  }
+
+/* Tablas sin justificación forzada */
+td, th {
+  font-size: 12pt;
+  word-break: break-word;
+  padding: 4px;
+  text-align: left;
+}
+
+/* Tablas responsivas */
+.responsive-table-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0 auto;
+}
+
+.responsive-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(10px, 1vw, 14px);
+}
+
+/* Agrupación de tablas */
+#determinates-table-1,
+#determinates-table-33,
+#determinates-table-34,
+#areas-table-container,
+.areas-table-container {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12pt !important;
+}
+
+/* Celdas con bordes */
+#determinates-table-1 th,
+#determinates-table-1 td,
+#determinates-table-33 th,
+#determinates-table-33 td,
+#determinates-table-34 th,
+#determinates-table-34 td,
+#areas-table-container th,
+#areas-table-container td,
+.areas-table-container th,
+.areas-table-container td {
+  border: 1px solid #000;
+}
+
+/* Padding para datos */
+#determinates-table-33 td,
+#determinates-table-34 td,
+#areas-table-container td 
+.areas-table-container td {
+  padding: 0 0 0 4px !important;
+}
+
+/* Encabezados con fondo gris */
+#determinates-table-1 th,
+#determinates-table-33 th,
+#determinates-table-34 th,
+#areas-table-container th,
+.areas-table-container th,
+#titles-table-areas-1 th,
+#tabla-f2 th,
+#f52-table th,
+#table-f51 th {
+  text-align: center !important;
+  padding: 0 0 0 8px !important;
+  background-color: #c0c0c0;
+}
+
+#areas-table-container table,
+.areas-table-container table {
+  table-layout:fixed;              /* fija el ancho por columna */
+}
+#areas-table-container th,
+#areas-table-container td,
+.areas-table-container th,
+.areas-table-container td {
+  padding:4px !important;
+  text-align:center;
+  vertical-align:middle;
+  white-space:normal;              /* permite múltiples líneas */
+  overflow-wrap:break-word;        /* corta palabras largas */
+  word-break:break-word;           /* fallback */
+  hyphens:auto;                    /* guiones automáticos si procede */
+}
+
+
+/* Ajuste visual específico 
+#determinates-table-33 {
+  padding-right: 0.4rem;
+}*/
+
+/* Tabla sin bordes especiales */
+#table-geo-info td {
+  border: none !important;
+  text-align: left !important;
+  padding: 0 !important;
+}
+
+/* Contenedor de secciones en columna */
+#art-4-tables-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Utilidades */
+.text-left {
+  text-align: left;
+}
+
+.bold {
+  font-weight: bold !important;
+}
+
+.bg-table {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.table-title {
+  background-color: #c0c0c0;
+  font-weight: bold;
+}
+
+.d-flex.column.space-between {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.inline-section {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+/* Tablas personalizadas */
+.custom-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.custom-table td,
+.custom-table th {
+  border: 1px solid #444;
+  padding: 6px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.custom-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.small-col {
+  width: 7%;
+}
+
+.dynamic-col {
+  width: auto;
+}
+
+.table-visible {
+  display: table !important;
+}
+
+/* Control de saltos de página */
+.avoid-break {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.keep-together {
+  display: block;
+  page-break-before: auto;
+  page-break-after: auto;
+  break-inside: avoid;
+  overflow: visible;
+}
+#table-331 th, 
+#table-331 td,
+#table-341 th,
+#table-341 td,
+#table-3342 th, 
+#table-3342 td, 
+#table-3343 th, 
+#table-3343 td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.relleno-balance {
+  width: 100%;
+  background: #f9f9f9;
+  border: 1px dashed #ccc;
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  display: none; /* Oculto por defecto */
+}
+
+
+.inline-text-strong,
+.inline-text {
+  display: inline;
+  margin: 0;
+}
+
+.inline-text  {
+  margin-left: 1px; /* pequeño espacio tras el strong */
+}
+
+.considerative-list {
+  margin-top: 8px;
+}
+
+.considerative-item, .considerative-subitem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.label, .sublabel {
+  width: 40px; /* ancho fijo para alinear */
+  flex-shrink: 0;
+}
+
+.text, .subtext {
+  flex: 1;
+}
+
+.considerative-subitem {
+  padding-left: 20px; /* segunda indentación */
+}
+
+/* Estilo para el contenedor principal */
+#isNotSub-sixth-section {
+    /* font-family: Arial, sans-serif; */
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+/* Estilo para la lista principal */
+.list-container p {
+    margin: 5px 0;
+    text-indent: -20px;
+    padding-left: 20px;
+}
+
+/* Estilo para la sublista */
+.sublist-container p {
+    margin: 5px 0;
+    text-indent: -30px;
+    padding-left: 35px;
+}
+
+/* Estilo para las secciones abiertas */
+.open-sections-container div {
+    margin: 10px 0;
+}
+
+/* Estilo para los títulos de las secciones abiertas */
+.open-sections-container strong {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Estilo para los párrafos de las secciones abiertas */
+.open-sections-container p {
+    margin: 5px 0;
+    text-indent: -20px;
+    padding-left: 20px;
+}
+
+
+
+
+.considerative-item, .considerative-subitem {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 4px;
+}
+
+.label, .sublabel {
+    width: 25px; /* ancho fijo para alinear */
+    flex-shrink: 0;
+}
+
+.text, .subtext {
+    flex: 1;
+}
+
+.considerative-subitem {
+    padding-left: 20px; /* segunda indentación */
+}
+

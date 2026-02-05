@@ -9,6 +9,7 @@ import withReactContent from 'sweetalert2-react-content'
 import SUBTMIT_MANAGE from './submit_manage'
 import Modal from 'react-modal';
 import moment from 'moment';
+import ListsCodes from '../../../components/jsons/fun6DocsList.json'
 
 const MySwal = withReactContent(Swal);
 
@@ -177,7 +178,7 @@ class SUBMIT extends Component {
                 right: 0,
                 bottom: 0,
                 backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                zIndex: 2,
+                zIndex: 1050,
             },
             content: {
                 position: 'absolute',
@@ -268,6 +269,8 @@ class SUBMIT extends Component {
                 'RADICACIÓN SOLICITUD',
                 'ASESORÍA TÉCNICA',
                 'CORRECCIONES SOLICITUD',
+                'TRAMITE',
+                'PQRS',
             ]
             const rows = [];
 
@@ -279,12 +282,32 @@ class SUBMIT extends Component {
                 'Fecha y hora de ingreso',
                 'Propietario',
                 'Persona que entrega',
+                'Número de Folios',
+                'Descripción',
             ];
 
             rows.push(headRows);
             _data.map(d => {
                 let id = d.id_public;
                 let con = limit_1 <= id && id <= limit_2;
+                let folios = 0
+                let docs = [];
+                if (d.sub_lists && d.sub_lists.length) {
+                    for (let i = 0; i < d.sub_lists.length; i++) {
+                        const element = d.sub_lists[i].list_pages;
+                        var pages = element ? element.split(",") : [];
+                        pages.map(p => folios += Number(p));
+
+                        const doc_codes =  d.sub_lists[i].list_code;
+                         var codes = doc_codes ? doc_codes.split(",") : [];
+                         codes.map(c => {
+                            if ( ListsCodes[c] ) docs.push(ListsCodes[c])
+                         });
+                        
+
+                    }
+                }
+
                 if (con) {
                     let row = [];
                     row.push(d.id_public);
@@ -294,7 +317,8 @@ class SUBMIT extends Component {
                     row.push(`${d.date} - ${d.time ?? ''}`);
                     row.push(d.owner);
                     row.push(d.name_retriever);
-
+                    row.push(folios > 0 ? folios : "");
+                    row.push(docs.join(", "));
                     rows.push(row)
                 }
             })
@@ -314,8 +338,8 @@ class SUBMIT extends Component {
         }
         return (
             <div className="submit  container">
-                <div className="row my-4 d-flex justify-content-center">
-                    <MDBBreadcrumb className="mx-5">
+                <div className="col-12 d-flex justify-content-start p-0">
+                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
                             <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>

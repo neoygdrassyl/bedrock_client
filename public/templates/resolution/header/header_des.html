@@ -1,0 +1,94 @@
+<custom-header>
+  <style>
+    /* Bordes globales (tabla principal) */
+    .header-container table { border-collapse: collapse !important; }
+    .header-container table,
+    .header-container th,
+    .header-container td {
+      border: 0.5px solid #000 !important;
+    }
+
+    /* Subtabla: sin perímetro, sólo divisiones internas */
+    .header-container table.subtable {
+      width: 100% !important;
+      border: none !important;
+      border-collapse: collapse !important;
+    }
+    .header-container table.subtable th,
+    .header-container table.subtable td {
+      border: 0.5px solid #000 !important;   /* líneas internas */
+    }
+    /* Suprime el marco externo para evitar doble borde con el TD contenedor */
+    .header-container table.subtable tr:first-child > * { border-top: 0 !important; }
+    .header-container table.subtable tr:last-child  > * { border-bottom: 0 !important; }
+    .header-container table.subtable tr > :first-child { border-left: 0 !important; }
+    .header-container table.subtable tr > :last-child  { border-right: 0 !important; }
+  </style>
+
+  <div class="header-container" style="display:flex; padding-left:0; align-items:flex-start; width:100%; font-size:12pt !important; font-family:'Arial Narrow', Arial, sans-serif; position:relative;">
+    <!-- Contenedor tabla alineado completamente a la izquierda -->
+    <div style="flex-grow:1; margin:0; padding:0;">
+      <table border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse; width: 78% !important; margin:0; padding:0;">
+        <!-- Fila 1: Título principal y Estado -->
+        <tr>
+          <th colspan="3" style="text-align:center;">
+            Tipo y modalidad de licencia urbanística
+          </th>
+          <th style="text-align:center;">Estado</th>
+        </tr>
+
+        <!-- Fila 2: Descripción larga y estado -->
+        <tr>
+          <td colspan="3" style="text-align:center; font-weight:bold;">
+            {{ reso_tipo }}
+          </td>
+          <td id="reso-state-header" style="text-align:center; font-weight:bold;">
+            {{ _DATA.reso_state }}
+          </td>
+        </tr>
+
+        <!-- Fila 3: Resolución, subtabla y POT -->
+        <tr>
+          <td style="text-align:center; width:38%;" id="reso-header">
+            RESOLUCIÓN 0275 DEL 29 DE NOVIEMBRE DE 2024
+          </td>
+          <td colspan="2" style="padding:0; width:46%;">
+            <!-- SUBTABLA -->
+            <table class="subtable" cellpadding="1" cellspacing="0">
+              <tr>
+                <th colspan="2" style="text-align:center;">
+                  Número único de radicación
+                </th>
+              </tr>
+              <tr>
+                <th id="header-id-cod" colspan="2" style="text-align:center;">
+                  <!-- Código aquí -->
+                </th>
+              </tr>
+              <tr>
+                <td style="text-align:center; width:50%;">Radicación</td>
+                <td style="text-align:center; width:50%;">Desistido</td>
+              </tr>
+            </table>
+          </td>
+          <td id="info-pot-header" rowspan="2" style="text-align:center; vertical-align:middle; width:16%; font-weight:bold;">
+            Conforme al<br>POT Acuerdo<br>011/2014
+          </td>
+        </tr>
+
+        <!-- Fila 4: Licencia + Fechas - CORREGIDO -->
+        <tr>
+          <td style="text-align:center; width:38%;">Actuacion urbanística.</td>
+          <td id="date-header" style="text-align:center; width:23%; font-weight:bold;">2025-04-04</td>
+          <td id="desist-date-header" style="text-align:center; width:23%; font-weight:bold;">2025-05-19</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Texto agregado en el espacio derecho centrado verticalmente -->
+    <div style="position:absolute; left:94%; bottom:0; transform:translateX(-50%);
+                font-size:9pt !important; font-family:'Arial Narrow', Arial, sans-serif;">
+      <p id="autenticidad" style="margin:0; display:none;">ORIGINAL</p>
+    </div>
+  </div>
+</custom-header>

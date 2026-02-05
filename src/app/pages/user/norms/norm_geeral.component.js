@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { NORM_GEN_DATA } from './norm.vars'
 import moment from 'moment';
 import VIEWER from '../../../components/viewer.component';
-import FICHA_NORM from "./FICHA_NORM_1.json"
+import FICHA_NORM from "../../../components/jsons/FICHA_NORM_1.json"
 import { EJES, SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
 
 const MySwal = withReactContent(Swal);
@@ -199,7 +199,7 @@ export default function NORM_GENERAL(props) {
                 if (e.response.data.message == "Validation error") {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });

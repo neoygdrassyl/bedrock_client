@@ -10,6 +10,9 @@ import Collapsible from 'react-collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import moment from 'moment';
 import EXP_RES from './exp._res.component';
+import EXP_ACT_DESIST from './exp_act_desist.component';
+import EXP_RES_2 from './exp_res_2.component';
+import EXP_EJEC from './exp_eje.component';
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
 
@@ -39,8 +42,11 @@ class EXP_DOCS extends Component {
             const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
 
-            if (data) document.getElementById("vr_selected33").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            if (data) {
+                document.getElementById("vr_selected33").value = data.vr
+                this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            }
+            else this.setState({ vrSelected: null, cubSelected: null, idCUBxVr: null })
         } catch (error) {
             console.log(error);
         }
@@ -184,9 +190,9 @@ class EXP_DOCS extends Component {
         }
         let _GET_CLOCK_STATE = (_state, _version) => {
             var _CLOCK = _GET_CLOCK();
-            if (_state == null) return false;
+            if (_state === null) return false;
             for (var i = 0; i < _CLOCK.length; i++) {
-                if (_CLOCK[i].state == _state) return _CLOCK[i];
+                if (_CLOCK[i].state === _state) return _CLOCK[i];
             }
             return false;
         }
@@ -197,7 +203,7 @@ class EXP_DOCS extends Component {
             let fun_51 = _GET_CHILD_51();
             for (let i = 0; i < fun_51.length; i++) {
                 const fun51 = fun_51[i];
-                if (fun51.role == _role) return fun51;
+                if (fun51.role === _role) return fun51;
             }
             return false;
         }
@@ -262,10 +268,10 @@ class EXP_DOCS extends Component {
         }
         let LOAD_STEP = (_id_public, _record) => {
             var _CHILD = [];
-            if (_record == 'arc') _CHILD = currentItem.record_arc_steps || [];
-            if (_record == 'eng') _CHILD = currentItem.record_eng_steps || [];
+            if (_record === 'arc') _CHILD = currentItem.record_arc_steps || [];
+            if (_record === 'eng') _CHILD = currentItem.record_eng_steps || [];
             for (var i = 0; i < _CHILD.length; i++) {
-                if (_CHILD[i].id_public == _id_public) return _CHILD[i]
+                if (_CHILD[i].id_public === _id_public) return _CHILD[i]
             }
             return []
         }
@@ -289,13 +295,28 @@ class EXP_DOCS extends Component {
                     <strong>TIPO DE NOTIFICACIÓN</strong>
 
                     <div className="col-4">
-                        <select className='form-select' id="type_not">
+                        <select className='form-select' id="type_not" onChange={(e) => this.setState({ 'tn': e.target.value })}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
+                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
+                    {this.state.tn == 4 ?
+                        <>
+                         <div className="col-4">
+                                <div class="input-group my-1">
+                                    <label>Fecha Comunicación: </label>
+                                </div>
+                            </div>
+                            <div className="col-4">
+                                <div class="input-group my-1">
+                                    <input type="date" class="form-control" id="type_not_name" placeholder='Fecha' />
+                                </div>
+                            </div>
+                        </>
+                        : ''}
                 </div>
             </>
         }
@@ -1111,8 +1132,8 @@ class EXP_DOCS extends Component {
         }
 
         let createVRxCUB_relation = (cub_selected) => {
-            let vr = document.getElementById("vr_selected33").value;
-            
+            let vr = document.getElementById("vr_selected33") ? document.getElementById("vr_selected33").value : null;
+
             let cub = cub_selected;
             let formatData = new FormData();
 
@@ -1127,7 +1148,7 @@ class EXP_DOCS extends Component {
             let date = document.getElementById('exodfb_date_doc').value;
             formatData.set('date', date);
 
-            
+
             if (this.state.idCUBxVr) {
                 CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
                     .then((response) => {
@@ -1146,7 +1167,7 @@ class EXP_DOCS extends Component {
                         if (response.data === 'OK') {
                             // Refrescar la UI
                             this.props.requestUpdate(currentItem.id, true);
-                        } 
+                        }
                     })
                     .catch((error) => {
                         console.error(error);
@@ -1162,9 +1183,9 @@ class EXP_DOCS extends Component {
                 for (let i = 0; i < _areas.length; i++) {
                     const area = _areas[i];
                     if (_areas[i].payment == 1 || _areas[i].payment == 2) {
-                        if (_GLOBAL_ID == "cb1") sum += Number(area.charge);
-                        if (_GLOBAL_ID == "cp1") sum += Number(area.area * area.charge);
-                        if (_GLOBAL_ID == "fl2") sum += Number(area.charge);
+                        if (_GLOBAL_ID === "cb1") sum += Number(area.charge);
+                        if (_GLOBAL_ID === "cp1") sum += Number(area.area * area.charge);
+                        if (_GLOBAL_ID === "fl2") sum += Number(area.charge);
 
                     }
 
@@ -1175,9 +1196,9 @@ class EXP_DOCS extends Component {
                 if (_areas[i].payment == 1 || _areas[i].payment == 2) {
 
                     let axc = 0
-                    if (_GLOBAL_ID == "cb1") axc = Math.round((Number(_areas[i].charge) ?? 0))
-                    if (_GLOBAL_ID == "cp1") axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
-                    if (_GLOBAL_ID == "fl2") axc = Math.round((Number(_areas[i].charge) ?? 0))
+                    if (_GLOBAL_ID === "cb1") axc = Math.round((Number(_areas[i].charge) ?? 0))
+                    if (_GLOBAL_ID === "cp1") axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
+                    if (_GLOBAL_ID === "fl2") axc = Math.round((Number(_areas[i].charge) ?? 0))
 
                     _COMPONENT.push(<>
                         <div className="row mb-1">
@@ -1890,7 +1911,7 @@ class EXP_DOCS extends Component {
             formData.set('city', document.getElementById('expedition_doc_1_8').value);
 
             formData.set('type_not', document.getElementById("type_not").value);
-
+            if(document.getElementById("type_not_name")) formData.set('type_not_name', document.getElementById("type_not_name").value);
 
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -2563,7 +2584,7 @@ class EXP_DOCS extends Component {
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACION",
-                            text: "El concecutivo CUB de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                            text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
                             icon: 'error',
                             confirmButtonText: swaMsg.text_btn,
                         });
@@ -2769,10 +2790,33 @@ class EXP_DOCS extends Component {
                 </Collapsible>
 
                 <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">EJECUTORIA</label></>}>
-                    {_COMPONENT_EJE()}
+                    {_GLOBAL_ID === 'cb1' ?
+                    <EXP_EJEC
+                        translation={translation} swaMsg={swaMsg} globals={globals}
+                        currentItem={currentItem}
+                        currentVersion={currentVersion}
+                        currentRecord={currentRecord}
+                        currentVersionR={currentVersionR}
+                        requestUpdate={this.props.requestUpdate}
+                        requestUpdateRecord={this.props.requestUpdateRecord}
+                        recordArc={recordArc}
+                    /> : _COMPONENT_EJE()}
                 </Collapsible>
 
-
+                {_GLOBAL_ID === 'cb1' ? 
+                    <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">ACTUACIONES DE DESISTIMIENTO</label></>}>
+                        <EXP_ACT_DESIST
+                            translation={translation} swaMsg={swaMsg} globals={globals}
+                            currentItem={currentItem}
+                            currentVersion={currentVersion}
+                            currentRecord={currentRecord}
+                            currentVersionR={currentVersionR}
+                            requestUpdate={this.props.requestUpdate}
+                            requestUpdateRecord={this.props.requestUpdateRecord}
+                            recordArc={recordArc}
+                        />
+                    </Collapsible> : ''
+                }
             </div >
         );
     }

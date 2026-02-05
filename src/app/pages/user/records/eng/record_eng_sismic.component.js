@@ -389,7 +389,7 @@ class RECORD_ENG_SISMIC extends Component {
             { i: 0, name: 'Tx modal', open: true, calc: () => null },
             {
                 i: 1, name: 'Tajuste x', calc: () => {
-                    let tx_modal = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 0) || document.getElementById('rees_01_0').valie || 0;
+                    let tx_modal = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 0) || document.getElementById('rees_01_0').value || 0;
                     let ta_usado = Number(this._GET_STEP_TYPE_INDEX('s4237', 'value', 8)) || 0;
                     let t_max = Number(this._GET_STEP_TYPE_INDEX('s4237', 'value', 7)) || 0;
 
@@ -400,7 +400,7 @@ class RECORD_ENG_SISMIC extends Component {
             },
             {
                 i: 2, name: 'SaX(g)', calc: () => {
-                    let Tajuste = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 1)) || document.getElementById('rees_01_1').valie || 0;
+                    let Tajuste = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 1)) || document.getElementById('rees_01_1').value || 0;
                     let tc = this._GET_STEP_TYPE_INDEX('s4237', 'value', 12) || 0;
                     let Aa = this._GET_STEP_TYPE_INDEX('s4233', 'value', 0) || 0;
                     let Fa = this._GET_STEP_TYPE_INDEX('s4313', 'value', 19) || 0;
@@ -415,14 +415,14 @@ class RECORD_ENG_SISMIC extends Component {
             {
                 i: 3, name: 'VsX ton', calc: () => {
                     let tot = this._GET_TOTAL().tot;
-                    let SaX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2) || document.getElementById('rees_01_2').valie || 0;
+                    let SaX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2) || document.getElementById('rees_01_2').value || 0;
 
                     return (tot / 9.80665 * SaX).toFixed(2);
                 }
             },
             {
                 i: 4, name: 'VsY * g', calc: () => {
-                    let VsX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 3) || document.getElementById('rees_01_3').valie || 0;
+                    let VsX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 3) || document.getElementById('rees_01_3').value || 0;
                     return (VsX * 9.81).toFixed(2);
                 }
             },
@@ -430,14 +430,14 @@ class RECORD_ENG_SISMIC extends Component {
                 i: 5, name: '90ntaX%', calc: () => {
                     // =(C256/100)*D236
                     let ajuste = 0; // C256
-                    let VsX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 3) || document.getElementById('rees_01_3').valie || 0; // D236
+                    let VsX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 3) || document.getElementById('rees_01_3').value || 0; // D236
 
                     return (ajuste / 100.0 * VsX).toFixed(2);
                 }
             },
             {
                 i: 6, name: '90ntaX% * g', calc: () => {
-                    let _90nta = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 5) || document.getElementById('rees_01_5').valie || 0;
+                    let _90nta = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 5) || document.getElementById('rees_01_5').value || 0;
                     return (_90nta * 9.81).toFixed(2);
                 }
             },
@@ -447,7 +447,7 @@ class RECORD_ENG_SISMIC extends Component {
             { i: 7, name: 'Ty modal', open: true, calc: () => null },
             {
                 i: 8, name: 'Tajuste y', calc: () => {
-                    let ty_modal = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 7) || document.getElementById('rees_01_7').valie || 0;
+                    let ty_modal = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 7) || document.getElementById('rees_01_7').value || 0;
                     let ta_usado = Number(this._GET_STEP_TYPE_INDEX('s4237', 'value', 8)) || 0;
                     let t_max = Number(this._GET_STEP_TYPE_INDEX('s4237', 'value', 7)) || 0;
 
@@ -458,7 +458,7 @@ class RECORD_ENG_SISMIC extends Component {
             },
             {
                 i: 9, name: 'SaY[g]', calc: () => {
-                    let Tajuste = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 1)) || document.getElementById('rees_01_1').valie || 0; // D234
+                    let Tajuste = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 1)) || document.getElementById('rees_01_1').value || 0; // D234
                     let tc = this._GET_STEP_TYPE_INDEX('s4237', 'value', 12) || 0; // K220
                     let Aa = this._GET_STEP_TYPE_INDEX('s4233', 'value', 0) || 0; // E113
                     let Fa = this._GET_STEP_TYPE_INDEX('s4313', 'value', 19) || 0; // E123
@@ -473,28 +473,28 @@ class RECORD_ENG_SISMIC extends Component {
             {
                 i: 10, name: 'VsY', calc: () => {
                     let tot = this._GET_TOTAL().tot; // M296
-                    let SaX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2) || document.getElementById('rees_01_2').valie || 0; // D235
+                    let SaX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2) || document.getElementById('rees_01_2').value || 0; // D235
 
                     return (tot / 9.80665 * SaX).toFixed(2);
                 }
             },
             {
                 i: 11, name: 'VsY * g', calc: () => {
-                    let VsY = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 10) || document.getElementById('rees_01_10').valie || 0;
+                    let VsY = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 10) || document.getElementById('rees_01_10').value || 0;
                     return (VsY * 9.81).toFixed(2);
                 }
             },
             {
                 i: 12, name: '90ntaY%', calc: () => {
                     let ajuste = 0; // C256
-                    let VsY = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 10) || document.getElementById('rees_01_10').valie || 0; // H236
+                    let VsY = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 10) || document.getElementById('rees_01_10').value || 0; // H236
 
                     return (ajuste / 100.0 * VsY).toFixed(2);
                 }
             },
             {
                 i: 13, name: '90nta%Y * g', calc: () => {
-                    let _90ntaY = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 12) || document.getElementById('rees_01_12').valie || 0;
+                    let _90ntaY = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 12) || document.getElementById('rees_01_12').value || 0;
                     return (_90ntaY * 9.81).toFixed(2);
                 }
             },
@@ -503,25 +503,25 @@ class RECORD_ENG_SISMIC extends Component {
         const SISMIC_ELASTIC_DATA_01_Z = [
             {
                 i: 14, name: 'Tx modal', calc: () => {
-                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 0)) || document.getElementById('rees_01_0').valie || 0;
+                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 0)) || document.getElementById('rees_01_0').value || 0;
                     return tx_modal.toFixed(2)
                 }
             },
             {
                 i: 15, name: 'SaX modal (g)', calc: () => {
-                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2)) || document.getElementById('rees_01_2').valie || 0;
+                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2)) || document.getElementById('rees_01_2').value || 0;
                     return tx_modal.toFixed(2)
                 }
             },
             {
                 i: 16, name: 'Ty modal', calc: () => {
-                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 7)) || document.getElementById('rees_01_7').valie || 0;
+                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 7)) || document.getElementById('rees_01_7').value || 0;
                     return tx_modal.toFixed(2)
                 }
             },
             {
                 i: 17, name: 'SaY modal (g)', calc: () => {
-                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 9)) || document.getElementById('rees_01_9').valie || 0;
+                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 9)) || document.getElementById('rees_01_9').value || 0;
                     return tx_modal.toFixed(2)
                 }
             },

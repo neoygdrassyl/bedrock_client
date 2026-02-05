@@ -87,7 +87,7 @@ class Appointments extends Component {
     loadUsers() {
         UserslDataService.getAllWorkers()
         .then(response => {
-            if(response.data) this.setState({users: response.data.filter(user => user.active == 1)})
+            if(response.data) this.setState({users: response.data})
         })
         .catch(console.log);
 
@@ -156,6 +156,14 @@ class Appointments extends Component {
                 cell: row => <label>{row.profesional}</label>
             },
             {
+                name: <h4>DESCRIPCIÓN</h4>,
+                selector: 'profesional',
+                sortable: true,
+                center: true,
+                minWidth: '100px',
+                cell: row => <label>{row.content}</label>
+            },
+                        {
                 name: <h4>OBSERVACIONES</h4>,
                 selector: 'profesional',
                 sortable: true,
@@ -302,16 +310,18 @@ class Appointments extends Component {
         return (
 
             <div className="Publish container">
-                <div className="row my-4 d-flex justify-content-center">
-                    <MDBBreadcrumb className="mx-5">
-                        <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u5}</label></MDBBreadcrumbItem>
-                    </MDBBreadcrumb>
+                <div className="row mb-4 d-flex">
+                    <div className="col-12 d-flex justify-content-start p-0">
+                        <MDBBreadcrumb className="mb-0 p-0 ms-0">
+                            <MDBBreadcrumbItem>
+                                <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                            </MDBBreadcrumbItem>
+                            <MDBBreadcrumbItem>
+                                <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                            </MDBBreadcrumbItem>
+                            <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u5}</label></MDBBreadcrumbItem>
+                        </MDBBreadcrumb>
+                    </div>
                     <div className="col-lg-12 col-md-10">
                         <h1 className="text-center my-4">CALENDARIO DE CITAS</h1>
                         <hr />

@@ -49,10 +49,10 @@ class UserslDataService {
     return http.get(`/${route}/loadMacroSingle/${date_start}&${date_end}&${id}`);
   }
   loadMacroRange(id, id2) {
-    return http.get(`/${route}/loadMacroRange/${id}&${id2}}`);
+    return http.get(`/${route}/loadMacroRange/${id}&${id2}`);
   }
   loadMacroAsigns(id, id2) {
-    return http.get(`/${route}/loadMacroAsigns/${id}&${id2}}`);
+    return http.get(`/${route}/loadMacroAsigns/${id}&${id2}`);
   }
   loadMacronegative(date_start, date_end) {
     return http.get(`/${route}/loadMacronegative/${date_start}&${date_end}`);
@@ -92,6 +92,9 @@ class UserslDataService {
   }
   reportsResume(date_start, date_end) {
     return http.get(`/${route}/reports_resume/${date_start}&${date_end}`);
+  }
+  reportsData_2(date_start, date_end) {
+    return http.get(`/${route}/reports_2/${date_start}&${date_end}`);
   }
   reportsPublicData(id_start, id_end) {
     return http.get(`/${route}/reports_public/${id_start}&${id_end}`);
@@ -203,6 +206,9 @@ class UserslDataService {
   }
   update_version(id, data) {
     return http.put(`/${route}/funversionA/${id}`, data);
+  }
+  updateSchedule(id, data) {
+    return http.put(`/fun/schedule/${id}`, data);
   }
   update_1(id, data) {
     return http.put(`/${route}/fun1A/${id}`, data);

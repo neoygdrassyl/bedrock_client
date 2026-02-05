@@ -160,27 +160,29 @@ class FUN_ICON_PROGRESS extends Component {
 
                 let expSteps = '';
                 let stepCount = 0;
-                expSteps = expSteps + '-VIABILIAD: '
+                expSteps = expSteps + 'VIABILIAD: '
                 if (row.clock_pay2) { expSteps = expSteps + 'EXPEDIDA'; stepCount++ }
                 else expSteps = expSteps + 'FALTA'
                 expSteps = expSteps + '\n'
 
-                expSteps = expSteps + '-RESOLUCION: '
-                if (row.clock_resolution) { expSteps = expSteps + 'EXPEDIDA'; stepCount++ }
+                expSteps = expSteps + 'RESOLUCION: '
+                if (row.clock_license) { expSteps = expSteps + 'EXPEDIDA'; stepCount++ }
                 else expSteps = expSteps + 'FALTA'
                 expSteps = expSteps + '\n'
 
+                /*
                 expSteps = expSteps + '-LICENCIA: '
                 if (row.clock_license) { expSteps = expSteps + 'EXPEDIDA'; stepCount++ }
                 else expSteps = expSteps + 'FALTA'
+                */
 
                 if (stepCount == 0) _COMPONENT.push(<MDBTooltip title='EXPEDICION: FALTA INFORMACION' tag='a' >
                     <i class={`fas fa-file-invoice ${size}`} style={{ fontSize: fontSize }}></i></MDBTooltip>)
 
-                if (stepCount > 0 && stepCount < 3) _COMPONENT.push(<MDBTooltip title={expSteps} tag='a' >
+                if (stepCount > 0 && stepCount < 2) _COMPONENT.push(<MDBTooltip title={expSteps} tag='a' >
                     <i class={`fas fa-file-invoice ${size}`} style={{ color: 'Gold', fontSize: fontSize }}></i></MDBTooltip>)
 
-                if (stepCount > 2) _COMPONENT.push(<MDBTooltip title={expSteps} tag='a' >
+                if (stepCount >= 2) _COMPONENT.push(<MDBTooltip title={expSteps} tag='a' >
                     <i class={`fas fa-file-invoice ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
 
             }

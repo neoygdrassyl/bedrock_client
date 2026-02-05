@@ -52,7 +52,7 @@ export const ENG_MANPOSTERIA = (props) => {
 
     let get_emin = () => {
         let E118 = get_E118()
-        let F344 = document.getElementById('mamposteria_01_2').value || _GET_STEP_TYPE_INDEX('mamposteria_01', 'value', 2) || '';
+        let F344 = document.getElementById('mamposteria_01_2') ? document.getElementById('mamposteria_01_2').value : (_GET_STEP_TYPE_INDEX('mamposteria_01', 'value', 2) || '');
         let dic = {
             "ALTA": [110, 110],
             "MEDIA": [100, 110],
@@ -107,14 +107,14 @@ export const ENG_MANPOSTERIA = (props) => {
         // ROUNDUP((F355*F356)/F357;2)
         let F355 = get_F355() || 0;
         let F356 = get_F356() || 0;
-        let F357 = document.getElementById('mamposteria_02_2').value || _GET_STEP_TYPE_INDEX('mamposteria_02', 'value', 2) || 1;
+        let F357 = document.getElementById('mamposteria_02_2') ? document.getElementById('mamposteria_02_2').value : (_GET_STEP_TYPE_INDEX('mamposteria_02', 'value', 2) || 1);
         return Math.ceil(F355 * F356 / F357 * 100) / 100;
     }
 
     let get_F362 = () => {
         // IF((F358-F360)<=0; 0;(F358-F360))
         let F358 = get_F358()
-        let F360 = document.getElementById('mamposteria_02_4').value || _GET_STEP_TYPE_INDEX('mamposteria_02', 'value', 4) || 0;
+        let F360 = document.getElementById('mamposteria_02_4') ? document.getElementById('mamposteria_02_4').value : (_GET_STEP_TYPE_INDEX('mamposteria_02', 'value', 4) || 0);
         if (F358 - F360 <= 0) return 0
         return (F358 - F360).toFixed(2)
     }
@@ -122,7 +122,7 @@ export const ENG_MANPOSTERIA = (props) => {
     let get_G362 = () => {
         // IF((F358-G360)<=0; 0;(F358-G360))
         let F358 = get_F358()
-        let G360 = document.getElementById('mamposteria_02_5').value || _GET_STEP_TYPE_INDEX('mamposteria_02', 'value', 5) || 0;
+        let G360 = document.getElementById('mamposteria_02_5') ? document.getElementById('mamposteria_02_5').value : (_GET_STEP_TYPE_INDEX('mamposteria_02', 'value', 5) || 0);
         if (F358 - G360 <= 0) return 0
         return (F358 - G360).toFixed(2)
     }
@@ -134,13 +134,13 @@ export const ENG_MANPOSTERIA = (props) => {
 
     let get_F368 = () => {
         // 35*(F357/1000)
-        let F357 = document.getElementById('mamposteria_02_2').value || _GET_STEP_TYPE_INDEX('mamposteria_02', 'value', 2) || 0;
+        let F357 = document.getElementById('mamposteria_02_2') ? document.getElementById('mamposteria_02_2').value : (_GET_STEP_TYPE_INDEX('mamposteria_02', 'value', 2) || 0);
         return Number(35 * F357 / 1000).toFixed(2)
     }
 
     let get_F369 = () => {
         // 1,5*F365
-        let F365 = document.getElementById('mamposteria_p2_0').value || _GET_STEP_TYPE_INDEX('mamposteria_p2', 'value', 0) || 0;
+        let F365 = document.getElementById('mamposteria_02_0') ? document.getElementById('mamposteria_02_0').value : (_GET_STEP_TYPE_INDEX('mamposteria_p2', 'value', 0) || 0);
         return Number(1.5 * F365).toFixed(2)
     }
 
@@ -151,16 +151,16 @@ export const ENG_MANPOSTERIA = (props) => {
 
     let get_H374 = () => {
         // IF((0,35*F373)>F374; "ok";"reducir")
-        let F373 = document.getElementById('mamposteria_p3_0').value || _GET_STEP_TYPE_INDEX('mamposteria_p3', 'value', 0) || 0;
-        let F374 = document.getElementById('mamposteria_p3_1').value || _GET_STEP_TYPE_INDEX('mamposteria_p3', 'value', 1) || 0;
+        let F373 = document.getElementById('mamposteria_p3_0') ? document.getElementById('mamposteria_p3_0').value : (_GET_STEP_TYPE_INDEX('mamposteria_p3', 'value', 0) || 0);
+        let F374 = document.getElementById('mamposteria_p3_1') ? document.getElementById('mamposteria_p3_1').value : (_GET_STEP_TYPE_INDEX('mamposteria_p3', 'value', 1) || 0);
         if (0.35 * F373 > F374) return "OK"
         return "REDUCIR"
     }
 
     let get_H376 = () => {
         // =IF(AND(F376>0,5;F376>=F375/2);"ok";"aumentar")
-        let F375 = document.getElementById('mamposteria_p3_2').value || _GET_STEP_TYPE_INDEX('mamposteria_p3', 'value', 2) || 0;
-        let F376 = document.getElementById('mamposteria_p3_3').value || _GET_STEP_TYPE_INDEX('mamposteria_p3', 'value', 3) || 0;
+        let F375 = document.getElementById('mamposteria_p3_2') ? document.getElementById('mamposteria_p3_2').value : (_GET_STEP_TYPE_INDEX('mamposteria_p3', 'value', 2) || 0);
+        let F376 = document.getElementById('mamposteria_p3_3') ? document.getElementById('mamposteria_p3_3').value : (_GET_STEP_TYPE_INDEX('mamposteria_p3', 'value', 3) || 0);
         if (F376 > 0.5 && F376 >= F375 / 2) return "OK"
         return "AUMENTAR"
     }
@@ -201,7 +201,7 @@ export const ENG_MANPOSTERIA = (props) => {
     ]
 
     const MAMPOSTERIA_PASO_4 = [
-        { i: 0, c:0, name: 'Se realizó el chequeo de distribución simetrica de muros según lo preescrito en E.3.6.6, cumpliendo con la ecuación E.3.6-2 siendo el resultado de este calculo menor a 0.15', },
+        { i: 0, c: 0, name: 'Se realizó el chequeo de distribución simetrica de muros según lo preescrito en E.3.6.6, cumpliendo con la ecuación E.3.6-2 siendo el resultado de este calculo menor a 0.15', },
     ]
 
 

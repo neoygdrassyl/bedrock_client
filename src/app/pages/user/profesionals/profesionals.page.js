@@ -16,7 +16,7 @@ const customStylesForModal = {
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.75)',
-    zIndex: 2,
+    zIndex: 1050,
   },
   content: {
     position: 'absolute',
@@ -270,16 +270,18 @@ export default function PROFESIONALS(props) {
   }
   return (
     <div>
-      <MDBBreadcrumb className="mx-5 my-2">
-        <MDBBreadcrumbItem>
-          <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-        </MDBBreadcrumbItem>
-        <MDBBreadcrumbItem>
-          <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-        </MDBBreadcrumbItem>
-        <MDBBreadcrumbItem active><i class="fas fa-hard-hat"></i>  <label className="text-uppercase">{'Profesionals'}</label></MDBBreadcrumbItem>
-      </MDBBreadcrumb>
-
+      <div className="col-12 d-flex justify-content-start p-0">
+        <MDBBreadcrumb className="mb-0 p-0 ms-0">
+          <MDBBreadcrumbItem>
+            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+          </MDBBreadcrumbItem>
+          <MDBBreadcrumbItem>
+            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+          </MDBBreadcrumbItem>
+          <MDBBreadcrumbItem active><i class="fas fa-hard-hat"></i>  <label className="text-uppercase">{'Profesionals'}</label></MDBBreadcrumbItem>
+        </MDBBreadcrumb>
+      </div>
+      
       <div className='row my-3 d-flex justify-content-center'>
         <div className='col-10'>
           {_BTNS_COMPONENT()}

@@ -69,24 +69,29 @@ class RECORD_LAW_GEN_2_FUN52 extends Component {
             var _COMPONENT = [];
 
             _COMPONENT.push(<>{_array[0] > 0
-                ? 
+                ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} />
+                    icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} />
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[1] > 0
-                ?  <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} />
+                ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
+                    icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} />
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                icon={'fas fa-book fa-2x me-1'} color={'GoldenRod'} />
+                    icon={'fas fa-book fa-2x me-1'} color={'GoldenRod'} />
                 : ""}</>)
 
-            _COMPONENT.push(<>{_array[2] > 0
+            _COMPONENT.push(<>{_array[3] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                icon={'fas fa-file-invoice fa-2x me-1'} color={'LimeGreen'} />
+                    icon={'fas fa-file-invoice fa-2x me-1'} color={'LimeGreen'} />
+                : ""}</>)
+
+            _COMPONENT.push(<>{_array[5] > 0
+                ? <VIZUALIZER url={_FIND_6(_array[5]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
+                    icon={'fas fa-file-invoice fa-2x me-1'} color={'gray'} />
                 : ""}</>)
 
             return <>{_COMPONENT}</>
@@ -248,7 +253,7 @@ class RECORD_LAW_GEN_2_FUN52 extends Component {
         }
 
         let fun_52_check = (_item, _value) => {
-            formData = new FormData();            
+            formData = new FormData();
             formData.set('check', _value);
             manage_52(false, _item.id);
         }
