@@ -1,4 +1,4 @@
-import {React, useState} from 'react';
+import React, { useState, useCallback, useMemo, memo } from 'react';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -86,20 +86,46 @@ export const ClockTableHeader = () => {
 };
 
 
-export const ClockRow = (props) => {
+// Componente ClockRow memoizado para evitar re-renders innecesarios
+export const ClockRow = memo((props) => {
     const { value, i, clock, onSave, onDelete, helpers, scheduleConfig, systemDate, isHighlighted } = props;
     const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
 
-    // ... (resto de la lógica del componente que no cambia)
-    // Resolver reloj según versión
-    const getClockScoped = (state) => {
+    // Resolver reloj según versión - memoizado
+    const getClockScoped = useCallback((state) => {
         if (value.version !== undefined) {
             return getClockVersion(state, value.version) || getClock(state);
         }
         return getClock(state);
-    };
+    }, [value.version, getClockVersion, getClock]);
 
     const [isHovered, setIsHovered] = useState(false);
+    
+    // SOLUCIÓN: Estado local para el input de fecha - evita re-renders del padre
+    const initialDate = clock?.date_start ?? value.manualDate ?? '';
+    const [localDateValue, setLocalDateValue] = useState(initialDate);
+    
+    // Sincronizar estado local cuando cambian las props (solo si es diferente)
+    React.useEffect(() => {
+        const newDate = clock?.date_start ?? value.manualDate ?? '';
+        if (newDate !== localDateValue) {
+            setLocalDateValue(newDate);
+        }
+    }, [clock?.date_start, value.manualDate]); // No incluir localDateValue para evitar ciclos
+
+    // SOLUCIÓN: Handler para cambios en el input de fecha - DEBE estar antes de cualquier return
+    const handleDateChange = useCallback((e) => {
+        setLocalDateValue(e.target.value);
+    }, []);
+    
+    // SOLUCIÓN: Handler para guardar solo cuando hay cambios reales - DEBE estar antes de cualquier return
+    const handleDateBlur = useCallback(() => {
+        const originalDate = clock?.date_start ?? value.manualDate ?? '';
+        // Solo guardar si el valor realmente cambió
+        if (localDateValue !== originalDate) {
+            onSave(value, i);
+        }
+    }, [localDateValue, clock?.date_start, value, i, onSave]);
 
     // Formateador textual MODIFICADO para usar formato de fecha corta (L)
     const formatDate = (dateStr) => dateStr ? moment(dateStr).format('DD/MM/YYYY') : '- -';
@@ -302,7 +328,8 @@ export const ClockRow = (props) => {
             const completionDate = moment(clock.date_start);
             
             if (completionDate.isAfter(limitMoment, 'day')) {
-                const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
                 text = `Retraso de ${delayDays} día(s)`;
                 color = '#e03131';
                 icon = 'fa-exclamation-circle';
@@ -315,12 +342,14 @@ export const ClockRow = (props) => {
             const isOverdue = today.isAfter(limitMoment, 'day');
             
             if (isOverdue) {
-                const overdueDays = calcularDiasHabiles(limitMoment.toDate(), today.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const overdueDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                 text = `Vencido por ${overdueDays} día(s)`;
                 color = '#e03131';
                 icon = 'fa-exclamation-circle';
             } else {
-                const remainingDays = calcularDiasHabiles(today.toDate(), limitMoment.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const remainingDays = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                 text = `${remainingDays} día(s) restante(s)`;
                 color = '#f08c00';
                 icon = 'fa-hourglass-half';
@@ -364,7 +393,8 @@ export const ClockRow = (props) => {
             const completionDate = moment(clock.date_start);
             
             if (completionDate.isAfter(limitMoment, 'day')) {
-                const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
                 text = `Retraso de ${delayDays} día(s)`;
                 color = '#e03131';
                 icon = 'fa-exclamation-circle';
@@ -377,12 +407,14 @@ export const ClockRow = (props) => {
             const isOverdue = today.isAfter(limitMoment, 'day');
             
             if (isOverdue) {
-                const overdueDays = calcularDiasHabiles(limitMoment.toDate(), today.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const overdueDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                 text = `Vencido por ${overdueDays} día(s)`;
                 color = '#e03131';
                 icon = 'fa-exclamation-circle';
             } else {
-                const remainingDays = calcularDiasHabiles(today.toDate(), limitMoment.toDate());
+                // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                const remainingDays = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                 text = `${remainingDays} día(s) restante(s)`;
                 color = '#f08c00';
                 icon = 'fa-hourglass-half';
@@ -604,7 +636,8 @@ export const ClockRow = (props) => {
     const rowIcon = getRowIcon();
     
     const titleClassName = `row-title text-truncate sticky ${isHighlighted ? 'title-highlight' : ''}`;
-    const dateInputClassName = `form-control form-control-sm border-0 bg-transparent dates-input-class ${currentDate ? '' : 'padding-date-input'}`;
+    const dateInputClassName = `form-control form-control-sm border-0 bg-transparent dates-input-class ${localDateValue ? '' : 'padding-date-input'}`;
+    
     const ACTIVE_BG = 'rgba(245, 245, 245)';   // .active-row-container
     const ACTIVE_HOVER_BG = 'rgba(242, 242, 242)'; // .active-row-container:hover
 
@@ -679,11 +712,12 @@ export const ClockRow = (props) => {
                             className={dateInputClassName}
                             style={{fontSize: '0.85rem', color: '#495057', fontWeight: 500, flex: 1}}
                             id={'clock_exp_date_' + i} 
-                            defaultValue={currentDate} 
+                            value={localDateValue} 
                             max="2100-01-01" 
-                            onBlur={() => onSave(value, i)} 
+                            onChange={handleDateChange}
+                            onBlur={handleDateBlur} 
                         />
-                        {currentDate && (
+                        {localDateValue && (
                             <button 
                                 style={{ background: 'none', border: 'none', padding: '0 0.25rem', cursor: 'pointer', color: '#6c757d' }}
                                 onClick={() => onDelete(value)} 
@@ -726,4 +760,4 @@ export const ClockRow = (props) => {
             </div>
         </div>
     );
-};
+});
