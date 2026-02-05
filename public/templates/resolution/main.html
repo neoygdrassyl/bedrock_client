@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<body>
+    <div class="document">
+        <custom-header></custom-header>
+        <!-- Title document -->
+        <div class="document-title">
+            <!-- Cargo / dependencia -->
+            <h3 id="header-job" class="text-center m-0 p-0 text-base bold"></h3>
+            <!-- Título y máster en mayúsculas -->
+            <h4 id="header-title" class="text-center leading-none bold m-0 p-0"></h4>
+            <!-- Línea de llamada más pequeña Arial narrow-->
+            <p id="header-call" class="text-center mt-1 mb-4 m-0 p-0 bold mx-auto" class="text-size-smaller" style="width: 50%;"></p>
+        </div>
+
+        <considerate-section></considerate-section>
+        <resolutive-section></resolutive-section>
+
+        <div id="final-document" class="avoid-break text-size-small" style="text-align: left; line-height: 1.6;">
+            <p id="document-issued" style="font-weight: bold;">Expedida en [CIUDAD] el [FECHA]</p>
+            
+            <br><br><br><br>
+            <div style="margin:0;">
+                <div id="signature-name" style="font-weight:700;"></div>
+                <div id="signature-job" style="font-weight:700; margin:0;"></div>
+                <div class="text-size-smaller" id="signature-name-law">Abg. XXXX</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Convertir a mayúsculas los elementos necesarios
+            document.getElementById("title").textContent = document.getElementById("title").textContent.toUpperCase();
+            document.getElementById("master").textContent = document.getElementById("master").textContent.toUpperCase();
+        });
+    </script>
+</body>
+</html>
+
+

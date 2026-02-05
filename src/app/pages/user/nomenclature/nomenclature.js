@@ -174,7 +174,7 @@ class NOMENCLATURE extends Component {
                 right: 0,
                 bottom: 0,
                 backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                zIndex: 2,
+                zIndex: 1050,
             },
             content: {
                 position: 'absolute',
@@ -353,8 +353,8 @@ class NOMENCLATURE extends Component {
         }
         return (
             <div className="Nomenclature container">
-                <div className="row my-4 d-flex justify-content-center">
-                    <MDBBreadcrumb className="mx-5">
+                <div className="col-12 d-flex justify-content-start p-0">
+                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
                             <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
@@ -363,7 +363,7 @@ class NOMENCLATURE extends Component {
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u9}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
-                </div >
+                </div>
 
                 <div className="row d-flex justify-content-center">
                     <div className="col-10">

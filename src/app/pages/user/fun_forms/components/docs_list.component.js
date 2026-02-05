@@ -3,6 +3,7 @@ import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import { MDBDataTable } from 'mdbreact';
 import Modal from 'react-modal';
 import ListJson from '../../../../components/jsons/fun6DocsList.json';
+import './fun_modal_shared.css';
 
 
 
@@ -24,12 +25,12 @@ class DOCS_LIST extends Component {
                 right: 0,
                 bottom: 0,
                 backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                zIndex: 2,
+                zIndex: 1050,
             },
             content: {
                 position: 'absolute',
                 top: '15%',
-                left: '30%',
+                left: 'var(--fun-sidebar-width)',
                 right: '30%',
                 bottom: '15%',
                 border: '1px solid #ccc',

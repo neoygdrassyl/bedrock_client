@@ -3,8 +3,8 @@ import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { ELEMENTS } from './norm.vars'
-import UU from "./UU.json"
-import FICHA_NORM_JSON from './FICHA_NORM_1.json'
+import UU from "../../../components/jsons/UU.json"
+import FICHA_NORM_JSON from "../../../components/jsons/FICHA_NORM_1.json"
 
 const MySwal = withReactContent(Swal);
 const default_Item = {

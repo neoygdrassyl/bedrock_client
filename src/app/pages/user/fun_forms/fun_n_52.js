@@ -11,6 +11,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import { Divider } from 'rsuite';
 import profesionalsService from '../../../services/profesionals.service';
 
+const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 const moment = require('moment');
 class FUNN51 extends Component {
@@ -60,6 +61,7 @@ class FUNN51 extends Component {
                 document.getElementById("f_52_113_edit").value = _array[2];
                 document.getElementById("f_52_114_edit").value = _array[3];
                 document.getElementById("f_52_115_edit").value = _array[4];
+                document.getElementById("f_52_116_edit").value = _array[5];
             }
 
         }
@@ -141,6 +143,13 @@ class FUNN51 extends Component {
                 <VIZUALIZER url={_FIND_6(_array[4]).path + "/" + _FIND_6(_array[4]).filename} apipath={'/files/'}
                     icon={'far fa-file-alt fa-2x'} color={'tomato'} />
                 : ""}</>)
+
+            _COMPONENT.push(<>{_array[5] > 0
+                ?
+                <VIZUALIZER url={_FIND_6(_array[5]).path + "/" + _FIND_6(_array[5]).filename} apipath={'/files/'}
+                    icon={'far fa-file-alt fa-2x'} color={'gray'} />
+                : ""}</>)
+
 
             return <>{_COMPONENT}</>
         }
@@ -313,12 +322,12 @@ class FUNN51 extends Component {
 
                 <div className="row mb-2">
                     <div className="col-6">
-                        <label>5.2.11.1 Relacionar Documento: Hoja de Vida y Certificados</label>
+                        <label>5.2.11.1 Relacionar Documento: Hoja de Vida</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_114">
+                            <select className='form-select' id="f_52_114" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -331,7 +340,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_111">
+                            <select className='form-select' id="f_52_111" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -344,7 +353,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_112">
+                            <select className='form-select' id="f_52_112" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -357,7 +366,7 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_113">
+                            <select className='form-select' id="f_52_113" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -370,7 +379,20 @@ class FUNN51 extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
                             </span>
-                            <select className='form-select' id="f_52_115">
+                            <select className='form-select' id="f_52_115" defaultValue={_GLOBAL_ID === 'cp1' ? 0 : -1}>
+                                <option value="-1">APORTADO FISICAMENTE</option>
+                                <option value="0">SIN DOCUMENTO</option>
+                                {_CHILD_6_SELECT()}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="col-6">
+                        <label>5.2.11.6 Relacionar Documento: Certificados</label>
+                        <div class="input-group my-1">
+                            <span class="input-group-text bg-info text-white">
+                                <i class="far fa-file"></i>
+                            </span>
+                            <select className='form-select' id="f_52_116" defaultValue={_GLOBAL_ID === 'cp1' ? "0" : "-1"}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -526,7 +548,7 @@ class FUNN51 extends Component {
 
                 <div className="row mb-2">
                     <div className="col-6">
-                        <label>5.2.11.1 Hoja de Vida y Certificados</label>
+                        <label>5.2.11.1 Hoja de Vida</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-file"></i>
@@ -590,7 +612,19 @@ class FUNN51 extends Component {
                             </select>
                         </div>
                     </div>
-
+                    <div className="col-6">
+                        <label>5.2.11.6 Relacionar Documento: Certificados</label>
+                        <div class="input-group my-1">
+                            <span class="input-group-text bg-info text-white">
+                                <i class="far fa-file"></i>
+                            </span>
+                            <select className='form-select' id="f_52_116_edit">
+                                <option value="-1">APORTADO FISICAMENTE</option>
+                                <option value="0">SIN DOCUMENTO</option>
+                                {_CHILD_6_SELECT()}
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </>
         }
@@ -599,7 +633,7 @@ class FUNN51 extends Component {
             const columns_52 = [
                 {
                     name: <label>NOMBRE</label>,
-                    selector: 'surname',
+                    selector: row => row.surname, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -608,7 +642,7 @@ class FUNN51 extends Component {
                 },
                 {
                     name: <label>CC/NIT</label>,
-                    selector: 'id_number',
+                    selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -617,21 +651,21 @@ class FUNN51 extends Component {
                 },
                 {
                     name: <label>TELEFONO/ CELULAR</label>,
-                    selector: 'number',
+                    selector: row => row.number, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.number}</label>
                 },
                 {
                     name: <label>CORREO</label>,
-                    selector: 'email',
+                    selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.email}</label>
                 },
                 {
                     name: <label>PROFESION</label>,
-                    selector: 'role',
+                    selector: row => row.role, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -640,34 +674,34 @@ class FUNN51 extends Component {
                 },
                 {
                     name: <label>MATRICULA</label>,
-                    selector: 'registration',
+                    selector: row => row.registration, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.registration}</label>
                 },
                 {
                     name: <label>EXP. MATRICULA</label>,
-                    selector: 'registration_date',
+                    selector: row => row.registration_date, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{dateParser(row.registration_date)}</label>
                 },
                 {
                     name: <label>EXPERIENCIA</label>,
-                    selector: 'expirience',
+                    selector: row => row.expirience, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{Math.trunc(row.expirience / 12)} año(s)</label>
                 },
                 {
                     name: <label>¿SANCIONADO?</label>,
-                    selector: 'sanction',
+                    selector: row => row.sanction, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label>{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</label>
                 },
                 {
                     name: <label>SUPERVISION</label>,
-                    selector: 'supervision',
+                    selector: row => row.supervision, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label>{row.supervision}</label>
                 },
@@ -675,7 +709,7 @@ class FUNN51 extends Component {
                     name: <label>DOCUMENTOS</label>,
                     button: true,
                     center: true,
-                    minWidth: '150px',
+                    minWidth: '190px',
                     cell: row => <>{_GET_DOCS_BTNS(row.docs)}</>
                 },
                 {
@@ -693,10 +727,28 @@ class FUNN51 extends Component {
                     compact: true,
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary btn-sm  m-0 p-2 shadow-none" onClick={() => this.setState({ edit: row })}><i class="far fa-edit fa-2x"></i></MDBBtn>
+                            {/* FIX: button anidado - replaced MDBBtn with span */}
+                            <span 
+                                role="button" 
+                                tabIndex={0} 
+                                className="btn btn-secondary btn-sm  m-0 p-2 shadow-none" 
+                                onClick={() => this.setState({ edit: row })}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') this.setState({ edit: row }); }}
+                                style={{cursor: 'pointer'}}>
+                                <i className="far fa-edit fa-2x"></i>
+                            </span>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger btn-sm  m-0 p-2 shadow-none" onClick={() => delete_52(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                            {/* FIX: button anidado - replaced MDBBtn with span */}
+                            <span 
+                                role="button" 
+                                tabIndex={0} 
+                                className="btn btn-danger btn-sm  m-0 p-2 shadow-none" 
+                                onClick={() => delete_52(row.id)}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') delete_52(row.id); }}
+                                style={{cursor: 'pointer'}}>
+                                <i className="far fa-trash-alt fa-2x"></i>
+                            </span>
                         </MDBTooltip>
 
                     </>
@@ -785,6 +837,7 @@ class FUNN51 extends Component {
             docs.push(document.getElementById("f_52_113").value);
             docs.push(document.getElementById("f_52_114").value);
             docs.push(document.getElementById("f_52_115").value);
+            docs.push(document.getElementById("f_52_116").value);
             formData.set('docs', docs.join());
 
             MySwal.fire({
@@ -867,6 +920,7 @@ class FUNN51 extends Component {
             docs.push(document.getElementById("f_52_113_edit").value);
             docs.push(document.getElementById("f_52_114_edit").value);
             docs.push(document.getElementById("f_52_115_edit").value);
+            docs.push(document.getElementById("f_52_116_edit").value);
             formData.set('docs', docs.join());
 
             MySwal.fire({
@@ -994,7 +1048,7 @@ class FUNN51 extends Component {
             let name_2 = _name.substring(_name.indexOf(' '), _name.length);
             formData.set('name', name.trim());
             formData.set('name_2', name_2.trim());
-            
+
             let _surname = document.getElementById("f_5212").value;
             _surname = _surname.trim();
             let surname = _surname.substring(0, _surname.indexOf(' '));
@@ -1021,7 +1075,7 @@ class FUNN51 extends Component {
             }
 
             let role_type = {
-                'URBANIZADOR/PARCELADOR' : 'oth',
+                'URBANIZADOR/PARCELADOR': 'oth',
                 'URBANIZADOR O CONSTRUCTOR RESPONSABLE': 'oth',
                 'DIRECTOR DE LA CONSTRUCCION': 'oth',
                 'ARQUITECTO PROYECTISTA': 'arq',
@@ -1036,12 +1090,12 @@ class FUNN51 extends Component {
             formData.set('active', 1);
 
             profesionalsService.createOrFind(formData)
-            .then(data => {
-                return
-            })
-            .catch((err) => {
-                console.log(err)
-            });;
+                .then(data => {
+                    return
+                })
+                .catch((err) => {
+                    console.log(err)
+                });;
         }
 
         let process_dataList = (inputText, dataList, _scope) => {
@@ -1119,8 +1173,9 @@ class FUNN51 extends Component {
                     <label className="me-2"><a><i class="far fa-id-card fa-2x" style={{ "color": "DeepSkyBlue" }}></i></a> : C.C.,</label>
                     <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "DarkOrchid" }}></i></a> : Matrícula,</label>
                     <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "GoldenRod" }}></i></a> : Vigencia Matricular,</label>
-                    <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida y Certificados</label>
+                    <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida</label>
                     <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "tomato" }}></i></a> : Estudios de postgrado</label>
+                     <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "gray" }}></i></a> : Certificados</label>
                 </div>
                 {this.state.edit
                     ? <form id="form_fun_52_edit" onSubmit={edit_52}>

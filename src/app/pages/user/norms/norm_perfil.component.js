@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import DataTable from 'react-data-table-component';
 import NORM_ELEMENT from './norm_element.component';
-import PERFILES from "./PERFILES.json"
+import PERFILES from "../../../components/jsons/PERFILES.json"
 
 const MySwal = withReactContent(Swal);
 const CARDS = [
@@ -91,7 +91,7 @@ export default function NORM_PERFIL(props) {
                 if (e.response.data.message == "Validation error") {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });
@@ -146,7 +146,7 @@ export default function NORM_PERFIL(props) {
                 if (e.response.data.message == "Validation error") {
                     MySwal.fire({
                         title: "ERROR DE DUPLICACION",
-                        text: "El concecutivo de radicado de este formulario ya existe, debe de elegir un concecutivo nuevo",
+                        text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
                         icon: 'error',
                         confirmButtonText: swaMsg.text_btn,
                     });

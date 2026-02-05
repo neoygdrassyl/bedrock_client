@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import SERVICE_CUSTOM from '../../services/custom.service';
 
-import { formsParser1 } from '../../components/customClasses/typeParse';
+import { formsParser1, getJSONFull } from '../../components/customClasses/typeParse';
 import TIPOLOGIA from '../../components/jsons/fun6DocsList.json'
 import SERIES from '../../components/jsons/funCodes.json'
 import SERIES_CB1 from '../../components/jsons/funcCodes.cb1.json'
@@ -130,8 +130,8 @@ export default function DICTIONARY(props) {
     }
     let _HEADER_COMPONENET = () => {
         return <>
-            <div className="row my-4 d-flex justify-content-center">
-                <MDBBreadcrumb className="mx-5">
+            <div className="col-12 d-flex justify-content-start p-0">
+                <MDBBreadcrumb className="mb-0 p-0 ms-0">
                     <MDBBreadcrumbItem>
                         <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                     </MDBBreadcrumbItem>
@@ -140,6 +140,8 @@ export default function DICTIONARY(props) {
                     </MDBBreadcrumbItem>
                     <MDBBreadcrumbItem active><i class="fas fa-book"></i>  <label className="text-uppercase">{breadCrums.bc_u13}</label></MDBBreadcrumbItem>
                 </MDBBreadcrumb>
+            </div>
+            <div className="row my-4 d-flex justify-content-center">
                 <div className="col-lg-11 col-md-12">
                     <h1 className="text-center my-4">DICCIONARIO DE CONSECUTIVOS</h1>
                     <hr />
@@ -628,8 +630,9 @@ export default function DICTIONARY(props) {
                     <div className='row mx-3'>
                         <div className='col text-end'>
                             <MDBBtn onClick={() => generateCVS(
-                                ['CÓDIGO', 'PROCESO', 'DESCRIPCCIÓN'],
-                                LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res}`])),
+                                ['CÓDIGO', 'PROCESO', 'DESCRIPCCIÓN', "FECHA"],
+                                LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res}`, 
+                                    i.res === 'Citacion Notificación Resolución' ? getJSONFull(i.date).date_doc :i.date])),
                                 'LISTADO CONSECUTIVOS DE SALIDA')}
                                 color='success' size='sm' outline><i class="fas fa-table"></i> DESCARGAR CSV</MDBBtn>
                         </div>
@@ -732,7 +735,7 @@ export default function DICTIONARY(props) {
 
         var link = document.createElement("a");
         link.setAttribute("href", fixedEncodedURI);
-        link.setAttribute("download", `${_name}).csv`);
+        link.setAttribute("download", `${_name}.csv`);
         document.body.appendChild(link); // Required for FF
 
         link.click();

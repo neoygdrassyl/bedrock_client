@@ -2,7 +2,7 @@ import { MDBBtn } from 'mdb-react-ui-kit';
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { infoCud } from '../../../components/jsons/vars';
-import { _CALCULATE_EXPENSES } from '../../../components/customClasses/typeParse';
+import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../components/customClasses/typeParse';
 import moment from 'moment';
 
 const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
@@ -14,7 +14,7 @@ const customStylesForModal = {
         right: 0,
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        zIndex: 2,
+        zIndex: 1050,
     },
     content: {
         position: 'absolute',
@@ -33,13 +33,14 @@ const customStylesForModal = {
     }
 };
 const CURRENT_YEAR = moment().format('YYYY')
+const SMMV = get_SMMV(CURRENT_YEAR);
+const UVT = get_UVT(CURRENT_YEAR);
 
-const SMMV = 1423500
 const PORUIS_DATA = {
     name: 'Estampilla PRO-UIS',
     subrules: [
-        { name: 'Estrao 3 y 4', mult: 1423.5, round: true, },
-        { name: 'Estrao 5 y 6', mult: 2847, round: true, },
+        { name: 'Estrao 3 y 4', mult: SMMV / 1000.0, round: true, },
+        { name: 'Estrao 5 y 6', mult: SMMV / 500.0, round: true, },
     ]
 }
 const cur_matrix = [
@@ -162,8 +163,7 @@ const old_2023 = [
         ]},
 ]
 
-let UVT = 47065;
-if (CURRENT_YEAR == '2025') UVT = 49799
+
 
 const rules_matrix = () => {
 
@@ -172,17 +172,17 @@ const rules_matrix = () => {
         {
             name: 'Construcción obra nueva',
             subrules: [
-                { name: 'Residencial estrato 1 y otras modalidades', mult: 2489.95, preFix: '2002', },
-                { name: 'Residencial estrato 2 y otras modalidades', mult: 3485.93, preFix: '2002', },
-                { name: 'Residencial estrato 3 y otras modalidades', mult: 4484.91, preFix: '2003', },
-                { name: 'Residencial estrato 4 y otras modalidades', mult: 6971.86, preFix: '2004', },
-                { name: 'Residencial estrato 5 y otras modalidades', mult: 11453.77, preFix: '2005', },
-                { name: 'Residencial estrato 6 y otras modalidades', mult: 114939.70, preFix: '2006', },
-                { name: 'Construcción obra nueva uso comercio o servicios en sector urbano y otras modalidades', mult: 11453.77, preFix: '2007', },
-                { name: 'Construcción obra nueva uso comercio o servicios en suelo rural, suburbano y expansion urbana, y otras modalidades', mult: 22409.55, preFix: '2007', },
-                { name: 'Construcción obra nueva uso institucional o dotacional y otras modalidades', mult: 8963.82, preFix: '2007', },
-                { name: 'Construcción obra nueva uso industrial y otras modalidades', mult: 19919.60, preFix: '2007', },
-                { name: 'Licencia de cerramiento por metro lineal', mult: 4979.90, preFix: '2015', },
+                { name: 'Residencial estrato 1 y otras modalidades', mult: 0.05 * UVT, preFix: '2002', },
+                { name: 'Residencial estrato 2 y otras modalidades', mult: 0.07 * UVT, preFix: '2002', },
+                { name: 'Residencial estrato 3 y otras modalidades', mult: 0.09 * UVT, preFix: '2003', },
+                { name: 'Residencial estrato 4 y otras modalidades', mult: 0.14 * UVT, preFix: '2004', },
+                { name: 'Residencial estrato 5 y otras modalidades', mult: 0.23 * UVT, preFix: '2005', },
+                { name: 'Residencial estrato 6 y otras modalidades', mult: 0.3 * UVT, preFix: '2006', },
+                { name: 'Construcción obra nueva uso comercio o servicios en sector urbano y otras modalidades', mult: 0.23 * UVT, preFix: '2007', },
+                { name: 'Construcción obra nueva uso comercio o servicios en suelo rural, suburbano y expansion urbana, y otras modalidades', mult: 0.45 * UVT, preFix: '2007', },
+                { name: 'Construcción obra nueva uso institucional o dotacional y otras modalidades', mult: 0.18 * UVT, preFix: '2007', },
+                { name: 'Construcción obra nueva uso industrial y otras modalidades', mult: 0.4 * UVT, preFix: '2007', },
+                { name: 'Licencia de cerramiento por metro lineal', mult: 0.1 * UVT, preFix: '2015', },
 
             ]
         },
@@ -289,7 +289,7 @@ export default function EXP_CALC(props) {
 
         setM2(subrule.mult * (perc / 100));
         let mValue = (subrule.mult * value) * (perc / 100);
-        if (subrule.round) setMt((Math.ceil(mValue / 1000) * 1000).toFixed(0));
+        if (subrule.round) setMt((Math.ceil(mValue / 100) * 100).toFixed(0));
         else setMt((mValue).toFixed(0));
     }
 

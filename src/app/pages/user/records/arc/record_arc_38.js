@@ -46,7 +46,7 @@ class RECORD_ARC_38 extends Component {
                     let review = valuej.list_review ? valuej.list_review.split(",") : []
 
                     review.map((valuek, k) => {
-                        if (valuek == 'SI') newList.push({
+                        if (valuek === 'SI') newList.push({
                             id_public: value.id_public,
                             date: value.date,
                             time: value.time,
@@ -84,7 +84,7 @@ class RECORD_ARC_38 extends Component {
         });
 
         var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
-        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
+        if (Number(model) === 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
         if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra2022";
 
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
@@ -104,7 +104,7 @@ class RECORD_ARC_38 extends Component {
         let pageCount = pdfDoc.getPageCount();
 
         for (let i = 0; i < pageCount; i++) {
-            if (Number(model) == 2021 || i > 0) {
+            if (Number(model) === 2021 || i > 0) {
                 page = pdfDoc.getPage(i);
                 page.moveTo(215, 783)
                 page.drawText(_number, { size: 14 })
@@ -224,7 +224,7 @@ class RECORD_ARC_38 extends Component {
             var _ROLEID = window.user.roleId;
             return window.user.name + " " + window.user.surname
             //THIS ROLES ARE PROGRAMER MASTER, CURATOR AND ARCHITEC
-            if (_ROLEID == 1 || _ROLEID == 2 || _ROLEID == 6) {
+            if (_ROLEID === 1 || _ROLEID === 2 || _ROLEID === 6) {
                 return window.user.name + " " + window.user.surname
             } else {
                 return "NO ESTA AUTORIZADO A REALIZAR ESTA ACCION"
@@ -290,7 +290,7 @@ class RECORD_ARC_38 extends Component {
         }
         let _GET_CLOCK_STATE = (_state, _version) => {
             var _CLOCK = _GET_CLOCK();
-            if (_state == null) return false;
+            if (_state === null) return false;
             for (var i = 0; i < _CLOCK.length; i++) {
                 if (_CLOCK[i].state == _state && _CLOCK[i].version == _version) return _CLOCK[i];
             }
@@ -298,7 +298,7 @@ class RECORD_ARC_38 extends Component {
         }
         let _GET_CLOCK_STATE_VERSION = (_state, version) => {
             var _CLOCK = _GET_CLOCK();
-            if (_state == null) return false;
+            if (_state === null) return false;
             for (var i = 0; i < _CLOCK.length; i++) {
                 if (_CLOCK[i].state == _state && _CLOCK[i].version == version) return _CLOCK[i];
             }
@@ -352,7 +352,8 @@ class RECORD_ARC_38 extends Component {
 
                 _check2.shift();
 
-                if (_check2.includes('0')) {
+                if (_check2.includes('0') || _check2.includes(0)) {
+                    console.log(_value[0])
                     if (_value[0] != 'false') _RESUME += ` - ${_value[0]}\n`
                     _check.map((c, i) => {
                         {

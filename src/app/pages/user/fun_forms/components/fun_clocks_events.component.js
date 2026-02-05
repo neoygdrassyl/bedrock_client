@@ -101,6 +101,36 @@ export default function FUN_CLOCK_EVENTS(props) {
             return curatedText.includes(filter);
         })
     }
+
+    // Helpers seguras (ponlas arriba del componente o en el mismo archivo)
+    const getWindowUserSafe = () => {
+    const user = (typeof window !== 'undefined' && window.user) ? window.user : {};
+    return {
+        name: (user.name || '').toLowerCase(),
+        surname: (user.surname || '').toLowerCase(),
+    };
+    };
+
+    const getAssigneeFromRow = (row) => {
+    // row.name podría no ser string o no tener ';'
+    const raw = String(row?.name ?? '');
+    const parts = raw.split(';');
+    // La parte después del primer ';' (si existe) es el asignado
+    return (parts[1] || '').trim().toLowerCase();
+    };
+
+    const isRowAssignedToCurrentUser = (row) => {
+    const assignee = getAssigneeFromRow(row);
+    const { name, surname } = getWindowUserSafe();
+
+    if (!assignee) return false;
+    // Si falta alguno de los campos del usuario, no reventar:
+    const matchName = name ? assignee.includes(name) : true;
+    const matchSurname = surname ? assignee.includes(surname) : true;
+
+    return matchName && matchSurname;
+    };
+
     // ******************************* JSX ***************************** // 
     let _COMPONENET_NEW = () => {
         return <>
@@ -308,10 +338,9 @@ export default function FUN_CLOCK_EVENTS(props) {
 
             conditionalRowStyles={[
                 {
-                    when: row => (row.name.split(';')[1]).includes(window.user.name) &&
-                        (row.name.split(';')[1]).includes(window.user.surname),
+                    when: row => isRowAssignedToCurrentUser(row),
                     style: {
-                        backgroundColor: 'Skyblue',
+                    backgroundColor: 'Skyblue',
                     },
                 },
             ]}

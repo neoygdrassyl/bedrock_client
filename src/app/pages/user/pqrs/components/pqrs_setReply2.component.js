@@ -257,7 +257,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 console.log(e);
                 MySwal.fire({
                     title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar el concecutivo, intentelo nuevamnte.",
+                    text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                     icon: 'error',
                     confirmButtonText: props.swaMsg.text_btn,
                 });
