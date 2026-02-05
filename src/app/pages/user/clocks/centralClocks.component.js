@@ -19,7 +19,6 @@ import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils
 import { GanttModal } from './components/gantt/GanttModal';
 
 import FUN_SERVICE from '../../../services/fun.service';
-import { dateParser_dateDiff } from '../../../components/customClasses/typeParse';
 
 import './centralClocks.css';
 import './gantt.css';
@@ -153,38 +152,77 @@ export default function EXP_CLOCKS(props) {
   // Estado para rastrear eliminaciones recientes y evitar re-sincronización inmediata
   const [recentDeletions, setRecentDeletions] = useState(new Set());
   const deletionTimeoutRef = useRef(null);
+  
+  // SOLUCIÓN: Ref para rastrear la última sincronización y evitar bucles
+  const lastSyncRef = useRef({ formDate: null, clockDate: null, syncing: false });
 
+  // SOLUCIÓN: useEffect mejorado para sincronización de valla
+  // Este efecto sincroniza bidireccionalemente la fecha de valla entre el formulario (fun_law.sign) y el clock 503
   useEffect(() => {
+    // No ejecutar si está en proceso de sincronización
+    if (lastSyncRef.current.syncing) return;
+    
     const syncVallaDate = () => {
       if (!currentItem || !currentItem.fun_law) return;
 
       const signArray = currentItem.fun_law.sign ? currentItem.fun_law.sign.split(',') : [];
-      const formDate = signArray.length > 1 && signArray[1] ? signArray[1] : null;
+      const formDate = (signArray.length > 1 && signArray[1] && signArray[1].trim()) ? signArray[1].trim() : null;
 
-      const clock503 = (clocksData || []).find(c => c.state == 503);
-      const clockDate = clock503 ? clock503.date_start : null;
+      const clock503 = (clocksData || []).find(c => String(c.state) === '503');
+      const clockDate = (clock503 && clock503.date_start) ? clock503.date_start : null;
 
       // SOLUCIÓN: No sincronizar si el reloj fue eliminado recientemente
       if (recentDeletions.has(503)) {
         console.log('⏸️ Sincronización de valla pausada - eliminación reciente detectada');
         return;
       }
+      
+      // SOLUCIÓN: Verificar si ya sincronizamos estos valores para evitar ciclos
+      if (lastSyncRef.current.formDate === formDate && lastSyncRef.current.clockDate === clockDate) {
+        return; // Ya sincronizado, no hacer nada
+      }
+      
+      // Actualizar ref con valores actuales
+      lastSyncRef.current.formDate = formDate;
+      lastSyncRef.current.clockDate = clockDate;
 
-      // CASO 1: Hay fecha en formulario pero no en reloj -> Crear reloj
-      if (formDate && (!clockDate || formDate !== clockDate)) {
+      // CASO 1: Las fechas son iguales - no hay nada que sincronizar
+      if (formDate === clockDate) {
+        return;
+      }
+
+      // CASO 2: Hay fecha en formulario pero no en reloj (o son diferentes) -> Crear/Actualizar reloj
+      // Prioridad al formulario si tiene fecha y el reloj no, o si son diferentes
+      if (formDate && formDate !== clockDate) {
         console.log('📝 Sincronizando valla: formulario → reloj', { formDate, clockDate });
+        lastSyncRef.current.syncing = true;
+        
         const formData = new FormData();
         formData.set('date_start', formDate);
         formData.set('state', 503);
         formData.set('name', 'Instalación y Registro de la Valla Informativa');
         formData.set('desc', 'Instalación de la valla informativa del proyecto');
+        
+        // Actualizar el ref después de la llamada
         manage_clock(false, 503, undefined, formData, true);
+        
+        // Resetear flag de sincronización después de un delay
+        setTimeout(() => {
+          lastSyncRef.current.syncing = false;
+        }, 500);
+        return;
       } 
-      // CASO 2: Hay fecha en reloj pero no en formulario -> Actualizar formulario
-      else if (clockDate && !formDate) {
+      
+      // CASO 3: Hay fecha en reloj pero no en formulario -> Actualizar formulario
+      if (clockDate && !formDate) {
         console.log('📝 Sincronizando valla: reloj → formulario', { clockDate, formDate });
+        lastSyncRef.current.syncing = true;
+        
         const funLawId = currentItem.fun_law.id;
-        if (!funLawId) return;
+        if (!funLawId) {
+          lastSyncRef.current.syncing = false;
+          return;
+        }
 
         const newSign = [signArray[0] || '-1', clockDate].join(',');
 
@@ -197,13 +235,19 @@ export default function EXP_CLOCKS(props) {
               props.requestUpdate(currentItem.id);
             }
           })
-          .catch(e => console.error("Error sincronizando formulario desde reloj:", e));
+          .catch(e => console.error("Error sincronizando formulario desde reloj:", e))
+          .finally(() => {
+            setTimeout(() => {
+              lastSyncRef.current.syncing = false;
+            }, 500);
+          });
       }
     };
 
-    const timer = setTimeout(syncVallaDate, 100);
+    // Usar un debounce más largo para evitar múltiples ejecuciones
+    const timer = setTimeout(syncVallaDate, 300);
     return () => clearTimeout(timer);
-  }, [currentItem, clocksData, props.requestUpdate, recentDeletions]);
+  }, [currentItem?.fun_law?.sign, clocksData, recentDeletions]);
 
   const { getClock, getClockVersion, availableSuspensionTypes, totalSuspensionDays, suspensionPreActa, suspensionPostActa } = manager;
 
@@ -274,14 +318,30 @@ export default function EXP_CLOCKS(props) {
     });
   };
 
+  // SOLUCIÓN: save_clock ahora lee el valor del DOM pero verifica cambios antes de guardar
   const save_clock = (value, i) => {
     if (value.state === false || value.state == null) return;
-    var formDataClock = new FormData();
-
+    
     const dateInput = document.getElementById("clock_exp_date_" + i);
     const dateVal = dateInput ? String(dateInput.value || '').trim() : '';
+    
+    // Obtener el valor actual del clock para comparar
+    const currentClock = value.version !== undefined
+      ? getClockVersion(value.state, value.version)
+      : getClock(value.state);
+    const currentDate = currentClock?.date_start ?? '';
+    
+    // SOLUCIÓN: Solo guardar si hay un cambio real en la fecha
+    if (dateVal === currentDate) {
+      console.log('⏭️ save_clock: Sin cambios, omitiendo guardado');
+      return;
+    }
+    
+    var formDataClock = new FormData();
 
     if (dateVal) formDataClock.set('date_start', dateVal);
+    else formDataClock.set('date_start', ''); // Permitir borrar fecha
+    
     formDataClock.set('state', value.state);
 
     if (value.version !== undefined) {
@@ -498,11 +558,13 @@ export default function EXP_CLOCKS(props) {
           manage_clock(false, 400, false, formDataStart, true);
 
           if (endDate) {
-            const days = dateParser_dateDiff(startDate, endDate);
+            // CORRECCIÓN: Usar calcularDiasHabiles en lugar de dateParser_dateDiff
+            // para consistencia y correcta exclusión de festivos
+            const days = calcularDiasHabiles(startDate, endDate, true);
             const formDataEnd = new FormData();
             formDataEnd.set('state', 401);
             formDataEnd.set('date_start', endDate);
-            formDataEnd.set('desc', `Fin de prórroga (${days} días)`);
+            formDataEnd.set('desc', `Fin de prórroga (${days} día(s) hábiles)`);
             formDataEnd.set('name', 'Fin Prórroga por Complejidad');
             // SOLUCIÓN: Sin llamada a applyLocalClockChange. El setTimeout con requestUpdate() en la primera llamada será suficiente.
             setTimeout(() => manage_clock(false, 401, false, formDataEnd, true), 200);

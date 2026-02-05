@@ -185,7 +185,8 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                     // --- EVENTO COMPLETADO: VERIFICAR SI HUBO RETRASO ---
                     const completionDate = moment(clock.date_start);
                     if (completionDate.isAfter(limitMoment, 'day')) {
-                        const delayDays = calcularDiasHabiles(limitMoment.toDate(), completionDate.toDate());
+                        // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
+                        const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
                         addAlarm({
                             state: clockDef.state,
                             type: 'legal',
@@ -197,7 +198,8 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                     }
                 } else {
                     // --- EVENTO PENDIENTE: VERIFICAR SI ESTÁ PRÓXIMO A VENCER ---
-                    const remaining = limitMoment.diff(today, 'days');
+                    // CORRECCIÓN: Usar calcularDiasHabiles para consistencia
+                    const remaining = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                     if (remaining <= ALARM_THRESHOLD_DAYS.legal) {
                         addAlarm({
                             state: clockDef.state,
@@ -243,7 +245,12 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                     const scheduledData = calculateScheduledLimitForDisplay(state, clockDef, clock, scheduleConfig, getClock, getClockVersion, manager);
                     
                     if (scheduledData && scheduledData.limitDate) {
-                        const remaining = moment(scheduledData.limitDate).diff(today, 'days');
+                        // CORRECCIÓN: Usar calcularDiasHabiles para consistencia con días hábiles
+                        const limitMoment = moment(scheduledData.limitDate);
+                        const remaining = today.isAfter(limitMoment, 'day') 
+                            ? -calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'))
+                            : calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
+                        
                         if (remaining <= ALARM_THRESHOLD_DAYS.scheduled) {
                             addAlarm({
                                 state: state,
