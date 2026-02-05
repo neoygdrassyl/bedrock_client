@@ -154,8 +154,8 @@ export class ActDesistEngineTemp extends BaseDocumentUtils {
         009 del 19 de diciembre de 2018, expedido por el Consejo Directivo del Archivo General de la 
         Nacion Jorge Palacios Preciado y lo contemplado en el ARTÍCULO 2.2.6.1.2.3.4 del Decreto 1077 
         de 2015. El traslado de los documentos NO implica pronunciamiento sobre la radicacion en legal 
-        y debida forma o cocmpleta, y en todo caso, se esta sujeto a la revision de estos en conjunto 
-        con los prestados en la nueva radicación.`;
+        y debida forma o completa, y en todo caso, se esta sujeto a la revision de estos en conjunto 
+        con los presentados en la nueva radicación.`;
 
         if (data.model === "delete") {
             this.setText("act-des-resol-1", delete_text);
