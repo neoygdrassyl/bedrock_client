@@ -736,8 +736,9 @@ export default function EXP_CLOCKS(props) {
     const formData = new FormData();
     formData.set('name', 'phase_options');
     formData.set('desc', newDesc);
+    formData.set('state', '1001');
 
-    manage_clock(false, '1001', undefined, formData, false);
+    manage_clock(false, '1001', undefined, formData, true);
   };
 
   const _FIND_6 = (id) => (currentItem.fun_6s || []).find(f => f.id == id) || null;
