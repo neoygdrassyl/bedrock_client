@@ -395,7 +395,7 @@ export default function EXP_EJEC(props) {
                             </label>
                             <input
                                 type="number"
-                                defaultValue={14}
+                                defaultValue={10}
                                 className="form-control form-control-sm"
                                 id="record_font_size_body_exec"
                             />
@@ -408,7 +408,7 @@ export default function EXP_EJEC(props) {
                         </label>
                         <input
                             type="number"
-                            defaultValue={10}
+                            defaultValue={8}
                             className="form-control form-control-sm"
                             id="record_font_size_header_exec"
                         />
