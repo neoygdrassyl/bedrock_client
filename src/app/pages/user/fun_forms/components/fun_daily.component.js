@@ -559,6 +559,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 }
                 return _datac.other.push({ ...row, contextTest: days_rad, color: revColor }) /** OTHER */
             }
+
             if (con1 && !con3) {
                 let rowCon_law = _con_law(row, 'law')
                 let rowCon_arc = _con_arc(row, 'arc')
@@ -579,7 +580,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 if (rowCon_arc && !conOA) { _datac.arc.push({ ...row, color: 'success', wn: worker_arc, }); namesFowDataGen[1] = true } /** ARC */
                 if (rowCon_eng && !conOA && rules[1] != 1) { _datac.eng.push({ ...row, color: 'success', wn: worker_est, }); namesFowDataGen[2] = true }/** EST */
 
-                if (rowCon_eng || rowCon_arc || rowCon_law) return;
+                if ((rowCon_eng && rules[1] != 1) || rowCon_arc || rowCon_law) return;
 
                 let lastVR = { date: row.clock_payment || row.clock_date, codes: [], type: 0 };
 
@@ -623,9 +624,11 @@ export default function FUN_DAILY_COMPONENT(props) {
 
                 /** rec */
                 let rowCon = _con_rec(row);
+
                 let con4 = rowCon.arc != null && rowCon.law != null && ((rowCon.eng[0] != null && rowCon.eng[1] != null) || rules[1] == 1);
                 let conNot = rowCon.not_1 || rowCon.not_2;
                 let conActaNot = row.clock_not_1 || row.clock_not_2;
+               
                 if ((rowCon.rec == null || rowCon.rec == undefined) && con4) _datac.rec.push({ ...row })
                 if ((rowCon.rec != null || rowCon.rec != undefined) && con4 && !conActaNot) _datac.rec.push({ ...row, color: 'success' })
 
