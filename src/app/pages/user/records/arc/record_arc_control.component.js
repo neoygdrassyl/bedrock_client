@@ -158,10 +158,26 @@ class RECORD_ARC_CONTROL extends Component {
                     <div className='col'>
 
                         <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">N° Parqueaderos</label>
+                            <label for="staticEmail" class="col-sm-8 col-form-label">N° Parqueaderos (Totales)</label>
                             <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_0" min="0" step="0.01"
+                                <input type="number" class="form-control form-control-sm" id="ra_control_data_0" min="0" step="1"
                                     defaultValue={control.n_parking} onBlur={() => manage_ra_33_control('pym')} />
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="staticEmail" class="col-sm-8 col-form-label">N° Parqueaderos (Privados)</label>
+                            <div class="col-sm-4">
+                                <input type="number" class="form-control form-control-sm" id="ra_control_data_0_1" min="0" step="1"
+                                    defaultValue={control.n_parking_private} onBlur={() => manage_ra_33_control('pym')} />
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="staticEmail" class="col-sm-8 col-form-label">N° Parqueaderos (Visitantes)</label>
+                            <div class="col-sm-4">
+                                <input type="number" class="form-control form-control-sm" id="ra_control_data_0_2" min="0" step="1"
+                                    defaultValue={control.n_parking_visit} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
@@ -336,6 +352,8 @@ class RECORD_ARC_CONTROL extends Component {
             const control = getJSONFull(json);
 
             control.n_parking = document.getElementById('ra_control_data_0').value;
+            control.n_parking_private = document.getElementById('ra_control_data_0_1').value;
+            control.n_parking_visit = document.getElementById('ra_control_data_0_2').value;
             control.m2_predio = document.getElementById('ra_control_data_1').value;
             control.main_use = document.getElementById('ra_control_data_2').value;
             control.n_sub = document.getElementById('ra_control_data_3').value;
