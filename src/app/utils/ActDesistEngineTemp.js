@@ -59,8 +59,8 @@ export class ActDesistEngineTemp extends BaseDocumentUtils {
         this.setText("desist-act-body_res", this.data._BODY || "");
 
         let ejec_header   = this.getDateByState(-30) || this.exec_date || "Fecha Inválida";
-        this.setText("act-desist-date-header", this.desist_date);
-        this.setText("ejec-date-header", ejec_header);
+        this.setText("act-desist-date-header", this.formatYmdToDmy(this.desist_date));
+        this.setText("ejec-date-header", this.formatYmdToDmy(ejec_header));
 
     }
 
