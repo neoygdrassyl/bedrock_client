@@ -355,7 +355,7 @@ export default function EXP_EJEC(props) {
                         </div>
                         <div className="field">
                         <label className="field_label">Inferior</label>
-                        <input type="number" defaultValue={1.2} className="form-control form-control-sm" id="record_maring_bot_exec" />
+                        <input type="number" defaultValue={1.7} className="form-control form-control-sm" id="record_maring_bot_exec" />
                         </div>
                         <div className="field">
                         <label className="field_label">Izquierdo</label>
@@ -395,7 +395,7 @@ export default function EXP_EJEC(props) {
                             </label>
                             <input
                                 type="number"
-                                defaultValue={10}
+                                defaultValue={14}
                                 className="form-control form-control-sm"
                                 id="record_font_size_body_exec"
                             />
@@ -408,7 +408,7 @@ export default function EXP_EJEC(props) {
                         </label>
                         <input
                             type="number"
-                            defaultValue={8}
+                            defaultValue={10}
                             className="form-control form-control-sm"
                             id="record_font_size_header_exec"
                         />
@@ -426,8 +426,8 @@ export default function EXP_EJEC(props) {
                             <select size={1} className="form-select form-select-sm" id="logo_pages_exec">
                                 <option value="impar">Pág Impares</option>
                                 <option value="par">Pág Pares</option>
-                                <option value="all" selected>Todas las pág.</option>
-                                <option value="none">No mostrar</option>
+                                <option value="all">Todas las pág.</option>
+                                <option value="none" selected>No mostrar</option>
                             </select>
                         </div>
 
