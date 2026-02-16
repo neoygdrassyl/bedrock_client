@@ -5,6 +5,7 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         super(data, htmlString);
         this.state = '';
         this.reso_date_exec = this.getDateByState(70) || this._DATA?.reso?.reso_date || "";
+        this.exec_date = this.getDateByState(99) || this.getDateBussinesDaysCol(this.getDateByState(73),11)  || this.getDateBussinesDaysCol(this.getDateByState(72),11) || "Fecha Inválida"; // Ejecutoria, Notificacion, Notificacion por aviso 
     }
 
     modifyTemplateContent() {
@@ -36,7 +37,8 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         } else if (this.data.model === "eje_des") {
             this.state = "DESISTIDA";
             this.setText("exec-act-header-rad-state", "Desistida");
-            this.exec_date = this.getDateByState(-30) || this.getDateBussinesDaysCol(this.notify_date) || "Fecha Inválida";
+            let date_exec_initial = this.exec_date;
+            this.exec_date = this.getDateByState(99) || this.getDateBussinesDaysCol(this.notify_date, 11) || date_exec_initial || "Fecha Inválida";
             this.reso_date_exec = this.getDateByState(-6) || this.getDateByState(70) || "Fecha Inválida";
             this.setText("act-exec-date-header",this.reso_date_exec);
         } else {
@@ -76,7 +78,6 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         let txt_res = `RESOLUCIÓN\n${reso_id} DEL ${this.dateParser(this.reso_date_exec).toUpperCase()}`;
         this.setText("exec-act-reso-header", txt_res);
 
-        this.setText("exec-act-state-header", this.data.formData.reso_state );
         this.setText("exec-act-header-id-cod", `ID ${this._DATA.fun.id_public}`);
         this.setText("exec-act-info-pot-header", `Conforme al ${this.data.curaduriaInfo.pot.pot}\n Acuerdo ${this._DATA.reso.reso_pot}`);
 
@@ -95,7 +96,7 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         let action_word = _DATA.reso.reso_state;
         if (cudaduria_info.id == 'cub1' && action_word == 'OTORGADA') action_word = 'CONCEDE';
 
-        let _BODY_2 = `El ${cudaduria_info.job} ${(cudaduria_info.master).toUpperCase()} en uso de sus facultades legales, derivadas de los actos de posesión y nombramiento y de las 
+        let _BODY_2 = `**El ${cudaduria_info.job} ${(cudaduria_info.master).toUpperCase()}** en uso de sus facultades legales, derivadas de los actos de posesión y nombramiento y de las 
         facultades legales conferidas por las leyes: Ley 9 de 1989; Ley 388 de 1997; Ley 400 de 1997, Ley 810 de 2003, Ley 1796 de 2016; los decretos nacionales: Decreto 1077 de 
         2015 y sus decretos modificatorios que reglamenta el sector de vivienda, ciudad y territorio y en particular aquellos que establecen las condiciones para el estudio y expedición 
         de la licencias urbanísticas; Decreto 926 de 2010 y sus decretos modificatorios del Reglamento Colombiano de Construcción Sismorresistente NSR-10 y el Acuerdo Municipal 

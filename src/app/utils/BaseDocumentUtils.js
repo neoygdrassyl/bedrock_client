@@ -42,7 +42,7 @@ export class BaseDocumentUtils {
       }
       throw new Error('Tipo de dato inesperado');
     } catch (_) {
-      return 'Fecha Inválida';
+      return null;
     }
   }
 
