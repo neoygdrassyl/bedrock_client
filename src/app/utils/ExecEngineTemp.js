@@ -26,7 +26,7 @@ export class ExecEngineTemp extends BaseDocumentUtils {
         if (this.data.model === "eje_open") {
             this.state = "OTORGADA";
             this.setText("exec-act-header-rad-state", "Otorgada");
-            this.setText("act-exec-date-header", this.reso_date_exec);
+            this.setText("act-exec-date-header", this.formatYmdToDmy(this.reso_date_exec));
             this.showDiv("vig-exec-o");
             let vig_text = `Con fundamento en el artículo 2.2.6.1.2.4.1 del Decreto 1077 
             de 2015 se concede una vigencia de ${this._DATA.reso.vn} para ejecutar las 
@@ -40,14 +40,14 @@ export class ExecEngineTemp extends BaseDocumentUtils {
             let date_exec_initial = this.exec_date;
             this.exec_date = this.getDateByState(99) || this.getDateBussinesDaysCol(this.notify_date, 11) || date_exec_initial || "Fecha Inválida";
             this.reso_date_exec = this.getDateByState(-6) || this.getDateByState(70) || "Fecha Inválida";
-            this.setText("act-exec-date-header",this.reso_date_exec);
+            this.setText("act-exec-date-header",this.formatYmdToDmy(this.reso_date_exec));
         } else {
             this.state = "NEGADA";
             this.setText("exec-act-header-rad-state", "Negada");
-            this.setText("act-exec-date-header", this.reso_date_exec);
+            this.setText("act-exec-date-header", this.formatYmdToDmy(this.reso_date_exec));
         }
 
-        this.setText("exec-ejec-date-header", this.exec_date);
+        this.setText("exec-ejec-date-header", this.formatYmdToDmy(this.exec_date));
 
         //Title 
         const cudaduria_info = this.data.curaduriaInfo || { job: "", title: "", master: "", call: "", pot: { pot: "", n: "", yy: "" } };

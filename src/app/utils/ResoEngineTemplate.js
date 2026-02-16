@@ -68,15 +68,15 @@ export class ResoEngineTemplate extends BaseDocumentUtils {
 
         this.setText("reso-state-header", this._DATA.reso.reso_state );
         this.setText("header-id-cod", `ID ${this._DATA.fun.id_public}`);
-        this.setText("date-header", this.data.fun_c.date );
-        this.setText("legal-date-header", this.data.fun_c.legal_date);
+        this.setText("date-header", this.formatYmdToDmy(this.data.fun_c.date) );
+        this.setText("legal-date-header", this.formatYmdToDmy(this.data.fun_c.legal_date));
         this.setText("info-pot-header", `Conforme al ${this.data.curaduriaInfo.pot.pot}\n Acuerdo ${this._DATA.reso.reso_pot}`);
 
         if(this._DATA?.reso?.model === "open") {
             this.setText("body_res", this.data._BODY || "");
         }
         else if(this._DATA?.reso?.model === "des") {
-            this.setText("desist-date-header", this.getDateByState(-6) || "Fecha Inválida");
+            this.setText("desist-date-header",  this.formatYmdToDmy(this.getDateByState(-6)) || "Fecha Inválida");
             this.setText("body_res", this.data._BODY || "");
         }
     }
