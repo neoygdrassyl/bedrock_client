@@ -150,29 +150,43 @@ class EXP_2 extends Component {
                             <input type="text" className="form-control form-control-sm" id="exp_2_5" min="0" step="1"
                                 defaultValue={control.n_norm} onBlur={() => save_exp()} />
                         </div>
-                        <div className="col-md-3">
-                            <label className="mt-1">N° Parqueaderos</label>
-                            <input type="number" className="form-control form-control-sm" id="exp_2_6" min="0" step="1"
-                                defaultValue={control.n_parq} onBlur={() => save_exp()} />
-                        </div>
+
                         <div className="col-md-3">
                             <label className="mt-1">m2 Área predio</label>
-                            <input type="text" className="form-control form-control-sm" id="exp_2_7"
-                                defaultValue={control.area_predio} onBlur={() => save_exp()} />
+                            <input type="text" className="form-control form-control-sm" id="ra_control_data_1"
+                                defaultValue={control.area_predio} onBlur={() => manage_ra_33_control('pym')} />
                         </div>
                         <div className="col-md-3">
                             <label className="mt-1">Uso Principal</label>
-                            <input type="text" className="form-control form-control-sm" id="exp_2_8"
-                                defaultValue={control.uso_principal} onBlur={() => save_exp()} />
+                            <input type="text" className="form-control form-control-sm" id="ra_control_data_2"
+                                defaultValue={control.uso_principal} onBlur={() =>manage_ra_33_control('pym')} />
                         </div>
-                        
+
                         <div className="col-md-3">
                             <label className="mt-1">Número de Subdivisión</label>
                             <input type="number" class="form-control form-control-sm" id="ra_control_data_3"
                                 defaultValue={controlArc.n_sub} onBlur={() => manage_ra_33_control('pym')} />
                         </div>
                     </div>
-                    <div className="mt-3"></div>
+                    <div className="mt-3">
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Parqueaderos (Totales)</label>
+                            <input type="number" className="form-control form-control-sm" id="ra_control_data_0" min="0" step="1"
+                                defaultValue={jsonArc.n_parking} onBlur={() => manage_ra_33_control('pym')} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Parqueaderos (Privados)</label>
+                            <input type="number" className="form-control form-control-sm" id="ra_control_data_0_1" min="0" step="1"
+                                defaultValue={jsonArc.n_parking_private} onBlur={() => manage_ra_33_control('pym')} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="mt-1">N° Parqueaderos (Visitantes)</label>
+                            <input type="number" className="form-control form-control-sm" id="ra_control_data_0_2" min="0" step="1"
+                                defaultValue={jsonArc.n_parking_visit} onBlur={() => manage_ra_33_control('pym')} />
+                        </div>
+
+
+                    </div>
                 </div>
             </>
         }
@@ -299,6 +313,8 @@ class EXP_2 extends Component {
             const control = getJSONFull(json);
 
             control.n_parking = document.getElementById('ra_control_data_0').value;
+            control.n_parking_private = document.getElementById('ra_control_data_0_1').value;
+            control.n_parking_visit = document.getElementById('ra_control_data_0_2').value;
             control.m2_predio = document.getElementById('ra_control_data_1').value;
             control.main_use = document.getElementById('ra_control_data_2').value;
             control.n_sub = document.getElementById('ra_control_data_3').value;

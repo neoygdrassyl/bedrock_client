@@ -532,9 +532,6 @@ export default function FUN_DAILY_COMPONENT(props) {
             let conRevPro = regexChecker_isOA_3(row)
             let sign_rules = (row.rules && row.rules.split(";")) ? Number(row.rules.split(";")[0]) : 0;
             let use_sign = sign_rules === 0;
-            console.log(row.id_public, row.rules, use_sign);
-
-
 
             let worker_law = row.asign_law_worker_name ?? row.asign_ph_law_worker_name ?? '';
             let worker_arc = row.asign_arc_worker_name ?? row.asign_ph_arc_worker_name ?? '';
@@ -562,6 +559,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 }
                 return _datac.other.push({ ...row, contextTest: days_rad, color: revColor }) /** OTHER */
             }
+
             if (con1 && !con3) {
                 let rowCon_law = _con_law(row, 'law')
                 let rowCon_arc = _con_arc(row, 'arc')
@@ -569,7 +567,7 @@ export default function FUN_DAILY_COMPONENT(props) {
 
                 /** sign + lydf */
                 if (use_sign) {
-                    let date_sign = row.sign && row.sign.split[','] && row.sign.split[','][1] ? row.sign.split[','][1] : null;
+                    let date_sign = (row.sign && row.sign.split(',')) ? row.sign.split(',')[1] : null;
                     if (!date_sign) _datac.sign.push({ ...row, color: 'warning' });
                     else {
                         let days_sign = dateParser_dateDiff(row.clock_payment, date_sign);
@@ -582,7 +580,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 if (rowCon_arc && !conOA) { _datac.arc.push({ ...row, color: 'success', wn: worker_arc, }); namesFowDataGen[1] = true } /** ARC */
                 if (rowCon_eng && !conOA && rules[1] != 1) { _datac.eng.push({ ...row, color: 'success', wn: worker_est, }); namesFowDataGen[2] = true }/** EST */
 
-                if (rowCon_eng || rowCon_arc || rowCon_law) return;
+                if ((rowCon_eng && rules[1] != 1) || rowCon_arc || rowCon_law) return;
 
                 let lastVR = { date: row.clock_payment || row.clock_date, codes: [], type: 0 };
 
@@ -626,9 +624,11 @@ export default function FUN_DAILY_COMPONENT(props) {
 
                 /** rec */
                 let rowCon = _con_rec(row);
+
                 let con4 = rowCon.arc != null && rowCon.law != null && ((rowCon.eng[0] != null && rowCon.eng[1] != null) || rules[1] == 1);
                 let conNot = rowCon.not_1 || rowCon.not_2;
                 let conActaNot = row.clock_not_1 || row.clock_not_2;
+               
                 if ((rowCon.rec == null || rowCon.rec == undefined) && con4) _datac.rec.push({ ...row })
                 if ((rowCon.rec != null || rowCon.rec != undefined) && con4 && !conActaNot) _datac.rec.push({ ...row, color: 'success' })
 
@@ -766,7 +766,7 @@ export default function FUN_DAILY_COMPONENT(props) {
 
                         if (use_sign) {
                             /** sign + inc */
-                            let date_sign = row.sign && row.sign.split[','] && row.sign.split[','][1] ? row.sign.split[','][1] : null
+                            let date_sign = (row.sign && row.sign.split(',')) ? row.sign.split(',')[1] : null;
                             if (!date_sign) _datac.sign.push({ ...row, color: 'dark' })
                         }
 
@@ -804,9 +804,9 @@ export default function FUN_DAILY_COMPONENT(props) {
         let con1 = item.id_public;
         let con2 = filterArray.some(_filterStr => {
             let check1 = item.id_public.toLowerCase();
-            let check2 = item.wn || '';
+            let check2 = (String(item.wn) || '').toLowerCase();
             let check3 = [(item.wna || '').toLowerCase(), (item.wna || '').toLowerCase(), (item.wne || '').toLowerCase()]
-            check2 = check2.toLowerCase()
+            // check2 = (check2 || '').toLowerCase();
 
             let con = (_filterStr).toLowerCase().trim()
 

@@ -1539,6 +1539,9 @@ export default function FUN_REPORT_GEN(props) {
         "FECHA DE RESOLUCIÓN",
         "FECHA NOTIFICACIÓN RESOLUCIÓN",
         "FECHA DE EJECUTORIA",
+        "N° PARQUEADEROS",
+        "N° PARQUEADEROS PRIVADOS",
+        "N° PARQUEADEROS VISITANTES",
     ];
     let report_data_15 = (v) => {
         // var regex = /[.,\s]/g;
@@ -1546,6 +1549,8 @@ export default function FUN_REPORT_GEN(props) {
         let isPH = regexChecker_isPh(_CHILD_1, true);
         let taxes = getJSONFull(v.taxes);
         let reso = getJSONFull(v.reso);
+        const arc_control = getJSONFull(v.arc_control);
+        console.log(arc_control)
         // let tmp = getJSONFull(v.tmp);
         return [
             { value: v.id_public }, // NÚMERO DE RADICADO
@@ -1554,13 +1559,16 @@ export default function FUN_REPORT_GEN(props) {
             { value: v.clock_payment }, // FECHA DE RADICACIÓN
             { value: v.clock_ldf }, // LEGAL Y DEBIDA FORMA
             { value: v.clocl_acta_1 }, // FECHA ACTA
-            { value: v.clock_viabilidad || v.clock_viabilidad_2}, // FECHA VIABILIDAD
+            { value: v.clock_viabilidad || v.clock_viabilidad_2 }, // FECHA VIABILIDAD
             { value: taxes.id_payment_1_date }, // FECHA PAGOS
             { value: v.clock_payment_2 }, // FECHA RADUCACION PAGOS
             { value: isPH ? v.id_public_ph : v.exp_id }, // NÚMERO DE RESOLUCIÓN
             { value: isPH ? v.clock_license_ph : v.clock_res_date }, // FECHA DE RESOLUCIÓN
             { value: v.clock_res_not_1 || v.clock_res_not_2 }, // FECHA NOTIFICACIÓN RESOLUCIÓN
             { value: isPH ? v.clock_license_ph : v.clock_license }, // FECHA DE EJECUTORIA
+            { value: v.parking || arc_control.n_parking }, //  N° PARQUEADEROS
+            { value: v.parking_private || arc_control.n_parking_private }, //  N° PARQUEADEROS
+            { value: v.parking_visit || arc_control.n_parking_visit }, //  N° PARQUEADEROS
         ]
     };
 
@@ -1625,7 +1633,7 @@ export default function FUN_REPORT_GEN(props) {
                 console.log(e);
             });
     }
-      let _GET_DATA_RESUME_NEG = () => {
+    let _GET_DATA_RESUME_NEG = () => {
         FUNService.reportsData_2(date_1, date_2)
             .then(response => {
                 _SET_DATA_FINISHED_NEG(response.data)
@@ -1710,7 +1718,7 @@ export default function FUN_REPORT_GEN(props) {
     let _SET_DATA_FINISHED_NEG = (_data) => {
         var superint = [];
         _data.map(v => {
-           superint.push(report_data_15(v));
+            superint.push(report_data_15(v));
         })
         setDataSuperInt(superint);
 
