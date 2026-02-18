@@ -1,6 +1,6 @@
 import { MDBTooltip } from 'mdb-react-ui-kit';
 import moment from 'moment';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import DataTable from 'react-data-table-component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'

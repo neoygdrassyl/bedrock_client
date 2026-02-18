@@ -1,5 +1,5 @@
 import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 import SERVICE_CERTIFICATIONS from '../../../../services/certifications.service';

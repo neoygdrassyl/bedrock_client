@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 class FUN_G_REPORT_MASTER extends Component {
     constructor(props) {

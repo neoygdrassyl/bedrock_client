@@ -1,5 +1,4 @@
 
-import React from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';

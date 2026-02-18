@@ -1,5 +1,5 @@
 import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

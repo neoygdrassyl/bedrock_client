@@ -1,6 +1,6 @@
 import 'react-pdf/dist/umd/Page/AnnotationLayer.css';
 import { PDFDocument } from 'pdf-lib';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 

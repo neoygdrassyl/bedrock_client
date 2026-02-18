@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 import DataTable, { Alignment } from 'react-data-table-component';
 

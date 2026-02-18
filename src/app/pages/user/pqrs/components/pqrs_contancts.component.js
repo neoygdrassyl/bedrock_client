@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import DataTable from 'react-data-table-component';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 

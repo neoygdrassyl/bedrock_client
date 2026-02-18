@@ -1,6 +1,6 @@
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DATATABLE from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

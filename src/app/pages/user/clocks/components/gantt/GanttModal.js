@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { GanttChart } from './GanttChart';
 import moment from 'moment';
 import { sumarDiasHabiles } from '../../hooks/useClocksManager';

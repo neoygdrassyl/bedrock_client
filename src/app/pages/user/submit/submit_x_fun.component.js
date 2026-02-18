@@ -1,7 +1,7 @@
 import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip, MDBTypography } from 'mdb-react-ui-kit';
 import { MDBCollapse } from "mdbreact";
 import moment from 'moment';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
 import FunService from '../../../services/fun.service';
 import PqrsMainDataService from '../../../services/pqrs_main.service';

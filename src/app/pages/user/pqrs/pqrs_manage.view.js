@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'

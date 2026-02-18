@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 
 class SHORT_INFO extends Component {

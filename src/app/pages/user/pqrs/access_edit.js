@@ -1,4 +1,3 @@
-import React from 'react'
 import './components/editorStyles.css'
 import PQRS_SERVICES from '../../../services/pqrs_main.service'
 import Swal from 'sweetalert2'

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBCard, MDBCardBody, MDBCardTitle } from 'mdb-react-ui-kit';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'

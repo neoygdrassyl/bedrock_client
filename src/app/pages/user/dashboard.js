@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem } from 'mdb-react-ui-kit';
 import { Link, Route } from "react-router-dom";
 import { DashBoardCard } from '../../components/dashBoardCards/dashBoardCard.js';

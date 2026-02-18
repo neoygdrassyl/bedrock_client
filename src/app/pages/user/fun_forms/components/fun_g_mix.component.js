@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import FUN_REPORT_DATA from './fun_report_data';
 

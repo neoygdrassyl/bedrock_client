@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { addDecimalPoints, formsParser1 } from '../../../components/customClasses/typeParse';
 import UsersService from '../../../services/users.service';
 import Swal from 'sweetalert2'

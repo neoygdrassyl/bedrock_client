@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react';
 import { dateParser, dateParser_finalDate, formsParser1 } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
 import { MDBBtn } from 'mdb-react-ui-kit';

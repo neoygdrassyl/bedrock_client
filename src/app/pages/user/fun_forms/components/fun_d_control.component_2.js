@@ -1,4 +1,3 @@
-import React from 'react';
 import { MDBBtn } from 'mdb-react-ui-kit';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2';

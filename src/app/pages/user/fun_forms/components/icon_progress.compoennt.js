@@ -1,6 +1,6 @@
 import { MDBTooltip } from 'mdb-react-ui-kit';
 import { findLastMatch } from 'pdf-lib';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { find } from 'rsuite/esm/utils/ReactChildren';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 

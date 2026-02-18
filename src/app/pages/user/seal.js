@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import SealsService from '../../services/seal.service'
 import CustomService from '../../services/custom.service'
 import {

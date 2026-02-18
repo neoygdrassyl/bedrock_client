@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { addDecimalPoints, dateParser } from '../../../../components/customClasses/typeParse';
 
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
 
 class FUNG_NAV extends Component {

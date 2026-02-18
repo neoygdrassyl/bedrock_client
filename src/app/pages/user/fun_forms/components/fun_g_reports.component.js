@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { regexChecker_isPh, regexChecker_movTierra } from '../../../../components/customClasses/typeParse';
 //import VIZUALIZER from '../../../../components/vizualizer.component';
 
