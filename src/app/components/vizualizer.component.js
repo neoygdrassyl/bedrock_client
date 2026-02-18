@@ -67,13 +67,13 @@ class VIZUALIZER extends Component {
         }
 
         let _DOWNLOAD = () => {
-            window.open(process.env.REACT_APP_API_URL + apipath + url, '_blank');
+            window.open(import.meta.env.VITE_API_URL + apipath + url, '_blank');
         }
         let _LOAD_BY_ID = () => {
             FUNService.getFun6(id)
             .then(response => {
                 this.setState({localURL: response.data.path + '/'+response.data.filename})
-                _OPEN_WINDOW(process.env.REACT_APP_API_URL + apipath + response.data.path + '/'+response.data.filename)
+                _OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + response.data.path + '/'+response.data.filename)
             })
             .catch(e => {
                 console.log(e);
@@ -84,9 +84,9 @@ class VIZUALIZER extends Component {
         return (<>
 
             {icon
-                ? <a  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(process.env.REACT_APP_API_URL + apipath + url)}><i class={icon} style={{...iconStyle, color: color }}></i></a>
+                ? <a  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + url)}><i class={icon} style={{...iconStyle, color: color }}></i></a>
                 : <MDBTooltip title='Visualizar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                    <a className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(process.env.REACT_APP_API_URL + apipath + url)}>
+                    <a className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + url)}>
                         <i class="fas fa-search"></i></a> </MDBTooltip>
             }
 

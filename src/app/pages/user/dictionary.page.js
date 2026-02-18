@@ -13,7 +13,7 @@ import DataTable from 'react-data-table-component';
 import VIZUALIZER from '../../components/vizualizer.component';
 import { infoCud } from '../../components/jsons/vars';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function DICTIONARY(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
 

@@ -4,7 +4,7 @@ import { Component } from 'react';
 import { find } from 'rsuite/esm/utils/ReactChildren';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 class FUN_ICON_PROGRESS extends Component {
     constructor(props) {
         super(props);

@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import SERVICE_ARCHIVE from '../../../services/archive.service';
 
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 
 export default function ARCHIVE_FUN_VIEW(props) {

@@ -9,7 +9,7 @@ import { withTranslation } from "react-i18next";
 import LOGO_LIGHT_THEME from '../../img/beckrock/Grises_logo.png'
 import LOGO_DARK_THEME from '../../img/beckrock/Claros_logo.png'
 var pjson = require('../../../../package.json')
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const classnameCards = "px-3 d-flex justify-content-center";
 
 class Dashboard extends Component {

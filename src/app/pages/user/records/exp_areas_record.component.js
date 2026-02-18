@@ -8,7 +8,7 @@ import EXP_CALC from '../expeditions/exp_calc.component';
 
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_AREAS_RECORD(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion } = props;

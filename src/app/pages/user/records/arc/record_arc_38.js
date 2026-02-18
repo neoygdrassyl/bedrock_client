@@ -15,7 +15,7 @@ import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 class RECORD_ARC_38 extends Component {
     constructor(props) {
@@ -83,9 +83,9 @@ class RECORD_ARC_38 extends Component {
             confirmButtonText: 'CONTINUAR',
         });
 
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
-        if (Number(model) === 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
-        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra2022";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
+        if (Number(model) === 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
+        if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra2022";
 
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
@@ -1020,7 +1020,7 @@ class RECORD_ARC_38 extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordarc/" + "INFORME ARQUITECTONICO " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordarc/" + "INFORME ARQUITECTONICO " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,

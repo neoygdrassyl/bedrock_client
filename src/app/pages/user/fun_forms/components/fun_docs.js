@@ -34,7 +34,7 @@ import FUN_D_ABDICATE from './fun_doc_abdicate.component';
 import FUN_D_CONTROL_2 from './fun_d_control.component_2';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 class FUN_DOCS extends Component {
     constructor(props) {
         super(props);

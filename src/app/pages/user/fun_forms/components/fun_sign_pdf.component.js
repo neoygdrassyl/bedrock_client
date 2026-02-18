@@ -441,7 +441,7 @@ class FUN_SIGN_PDF extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/sign/" + "Valla " + id_public + " tamaño " + size + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/sign/" + "Valla " + id_public + " tamaño " + size + ".pdf");
                         MySwal.close();
                     } else {
 

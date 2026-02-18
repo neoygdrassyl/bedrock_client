@@ -237,7 +237,7 @@ class FUN_ARCHIVE extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/stickerarvhive/" + "STICKER DE ARCHIVO - " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/stickerarvhive/" + "STICKER DE ARCHIVO - " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,

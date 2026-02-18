@@ -25,7 +25,7 @@ import CubXVrDataService from '../../../services/cubXvr.service'
 
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 class RECORD_REVIEW extends Component {
     constructor(props) {
@@ -149,19 +149,19 @@ class RECORD_REVIEW extends Component {
         // ****************** CREATES NEW PDF DOC AND PASTE THE OLD PDF ON TOP *********** //
         const mergedPdf = await PDFDocument.create();
 
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordlawextra";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra";
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDocLaw = await PDFDocument.load(formPdfBytes);
         const copiedPagesA = await mergedPdf.copyPages(pdfDocLaw, pdfDocLaw.getPageIndices());
         copiedPagesA.forEach((page) => mergedPdf.addPage(page));
 
-        formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
+        formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
         formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDocArc = await PDFDocument.load(formPdfBytes);
         const copiedPagesB = await mergedPdf.copyPages(pdfDocArc, pdfDocArc.getPageIndices());
         copiedPagesB.forEach((page) => mergedPdf.addPage(page));
 
-        formUrl = process.env.REACT_APP_API_URL + "/pdf/recordengextra";
+        formUrl = import.meta.env.VITE_API_URL + "/pdf/recordengextra";
         formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDocEng = await PDFDocument.load(formPdfBytes);
         const copiedPagesC = await mergedPdf.copyPages(pdfDocEng, pdfDocEng.getPageIndices());
@@ -538,7 +538,7 @@ class RECORD_REVIEW extends Component {
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
                     {this.state.tn == 2 || this.state.tn == 3 ?
@@ -1673,7 +1673,7 @@ class RECORD_REVIEW extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordrew/" + "ACTA OBSERVACIONES Y CORECCIONES " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordrew/" + "ACTA OBSERVACIONES Y CORECCIONES " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,

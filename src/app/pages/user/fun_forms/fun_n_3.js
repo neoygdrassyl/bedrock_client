@@ -90,7 +90,7 @@ class FUNN3 extends Component {
                 if (_alerts_array[i].includes("ALERT_1")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pediódico:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
                             <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                         <br />
                     </>);
@@ -98,7 +98,7 @@ class FUNN3 extends Component {
                 if (_alerts_array[i].includes("ALERT_2")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Radio:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
                             <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                         <br />
                     </>);
@@ -106,7 +106,7 @@ class FUNN3 extends Component {
                 if (_alerts_array[i].includes("ALERT_3")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pagina Web:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
                             <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                         <br />
                     </>);
@@ -114,7 +114,7 @@ class FUNN3 extends Component {
                 if (_alerts_array[i].includes("ALERT_4")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Físico:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
                             <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                     </>);
                 }

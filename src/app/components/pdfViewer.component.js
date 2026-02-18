@@ -39,7 +39,7 @@ class PDF_VIEWER extends Component {
         if (page > 0 && page <= this.state.numPages) this.setState({ pageNumber: page })
     }
     async getPdf() {
-        var formUrl = process.env.REACT_APP_API_URL + this.props.apipath + this.props.url;
+        var formUrl = import.meta.env.VITE_API_URL + this.props.apipath + this.props.url;
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
         const base64String = await pdfDoc.saveAsBase64({ dataUri: true })

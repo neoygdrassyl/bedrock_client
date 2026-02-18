@@ -17,7 +17,7 @@ import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 class RECORD_PH_REVIEW extends Component {
     constructor(props) {
@@ -55,7 +55,7 @@ class RECORD_PH_REVIEW extends Component {
             icon: 'info',
             showConfirmButton: false,
         });
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
@@ -870,7 +870,7 @@ class RECORD_PH_REVIEW extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordph/" + "Informe Revision Propiedad Horizontal " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordph/" + "Informe Revision Propiedad Horizontal " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1526,7 +1526,7 @@ class RECORD_PH_REVIEW extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordphnot/" + "CITACIÓN PARA NOTIFICACIÓN " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordphnot/" + "CITACIÓN PARA NOTIFICACIÓN " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,

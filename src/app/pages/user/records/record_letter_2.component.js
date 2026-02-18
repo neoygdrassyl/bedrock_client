@@ -273,7 +273,7 @@ class RECORD_DOC_LETTER_2 extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/confirmact2/" + "Carta_Ampliacion_Terminos_" + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/confirmact2/" + "Carta_Ampliacion_Terminos_" + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,

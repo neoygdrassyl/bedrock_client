@@ -8,7 +8,7 @@ import moment from 'moment';
 import { cities, domains, domains_number } from '../../../../components/jsons/vars';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 class FUN_PDF_CHECK extends Component {
     constructor(props) {
         super(props);
@@ -243,9 +243,9 @@ class FUN_PDF_CHECK extends Component {
         let m_2022 = Number(model) >= 2022
         // m_2022 = false
 
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
-        // if (m_2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat";
-        if (m_2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funcheckflat2022";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/funcheckflat";
+        // if (m_2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/funcheckflat";
+        if (m_2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/funcheckflat2022";
 
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);

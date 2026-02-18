@@ -13,7 +13,7 @@ import NORM_PERFIL from './norm_perfil.component';
 import NORM_RESUME from './norm_resume.component';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {
     overlay: {
         position: 'fixed',

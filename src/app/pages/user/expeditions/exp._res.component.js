@@ -15,7 +15,7 @@ import EXP_RES_2 from './exp_res_2.component';
 import moment from "moment";
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_RES(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
@@ -3317,7 +3317,7 @@ export default function EXP_RES(props) {
                         <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_right" defaultValue={1.9} />
                     </div>
                 </div>
-                {process.env.REACT_APP_GLOBAL_ID == 'cb1' ? (
+                {import.meta.env.VITE_GLOBAL_ID == 'cb1' ? (
                     <>
                         <div className="col d-flex justify-content-center">
                             <div className="input-group-sm my-1">
@@ -3354,7 +3354,7 @@ export default function EXP_RES(props) {
                         <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
                             <i className="far fa-file-pdf"></i> GENERAR PDF
                         </MDBBtn>
-                        {process.env.REACT_APP_GLOBAL_ID == 'cb1' && (
+                        {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
                             <MDBBtn className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
                                 <i className="fas fa-edit"></i> EDITAR PDF
                             </MDBBtn>
@@ -3797,7 +3797,7 @@ export default function EXP_RES(props) {
                         MySwal.close();
                     } else {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
                     }
                 } else {
                     console.warn('⚠️ Status no es OK:', response.data);
@@ -4095,7 +4095,7 @@ export default function EXP_RES(props) {
                 </form>
             </div>
             <div>
-                {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
+                {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
                     <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model || 'open'} />
                 )}
             </div>

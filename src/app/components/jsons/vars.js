@@ -184,38 +184,38 @@ const info = {
 
 
 export const cities = <>
-    <option>{info[process.env.REACT_APP_GLOBAL_ID].city}</option>
+    <option>{info[import.meta.env.VITE_GLOBAL_ID].city}</option>
 </>
 
 export const rules_opt = <>
-    {info[process.env.REACT_APP_GLOBAL_ID].exp_rules.map((value, index) => <option value={index}>{value}</option>)}
+    {info[import.meta.env.VITE_GLOBAL_ID].exp_rules.map((value, index) => <option value={index}>{value}</option>)}
 </>
 
 export const states = <>
-    <option>{info[process.env.REACT_APP_GLOBAL_ID].state}</option>
+    <option>{info[import.meta.env.VITE_GLOBAL_ID].state}</option>
 </>
 
 export const domains = <>
-    <option>{info[process.env.REACT_APP_GLOBAL_ID].name}</option>
+    <option>{info[import.meta.env.VITE_GLOBAL_ID].name}</option>
 </>
 
 export const domains_number = <>
-    <option value={info[process.env.REACT_APP_GLOBAL_ID].nomens}>{info[process.env.REACT_APP_GLOBAL_ID].name}</option>
+    <option value={info[import.meta.env.VITE_GLOBAL_ID].nomens}>{info[import.meta.env.VITE_GLOBAL_ID].name}</option>
 </>
-export const axisTable = info[process.env.REACT_APP_GLOBAL_ID].axisTable
-export const axisVar =info[process.env.REACT_APP_GLOBAL_ID].axisVar
+export const axisTable = info[import.meta.env.VITE_GLOBAL_ID].axisTable
+export const axisVar =info[import.meta.env.VITE_GLOBAL_ID].axisVar
 
 export const axis = <>
     {axisVar.map((value, index) => <option value={index}>{value}</option>)}
 </>
 
-export const zonesTable = info[process.env.REACT_APP_GLOBAL_ID].zonesTable
-export const zonesVar = info[process.env.REACT_APP_GLOBAL_ID].zonesVar
+export const zonesTable = info[import.meta.env.VITE_GLOBAL_ID].zonesTable
+export const zonesVar = info[import.meta.env.VITE_GLOBAL_ID].zonesVar
 export const zones = <>
     {zonesVar.map((value, index) => <option value={index}>{value}</option>)}
 </>
 
-export const nomens = info[process.env.REACT_APP_GLOBAL_ID].nomen
-export const infoCud = info[process.env.REACT_APP_GLOBAL_ID]
+export const nomens = info[import.meta.env.VITE_GLOBAL_ID].nomen
+export const infoCud = info[import.meta.env.VITE_GLOBAL_ID]
 
 

@@ -250,7 +250,7 @@ class FUN_SEAL extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
                         document.getElementById("app-form").reset();
                         formData = new FormData();
                         this.refreshList();

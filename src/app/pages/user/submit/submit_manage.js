@@ -11,7 +11,7 @@ import SUBMIT_LIST from './submit_list.component';
 import { formsParser1 } from '../../../components/customClasses/typeParse';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 class SUBMIT_MANAGE extends Component {
     constructor(props) {

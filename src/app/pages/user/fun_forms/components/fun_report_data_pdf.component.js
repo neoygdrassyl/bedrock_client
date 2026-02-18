@@ -516,7 +516,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/planing/" + "Informe Planeacion " + _GET_CHILD_LAW().report_cub + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/planing/" + "Informe Planeacion " + _GET_CHILD_LAW().report_cub + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -669,7 +669,7 @@ class FUN_REPORT_DATA_PDF extends Component {
             <div className="fun_report_pdf container py-3 border border-danger p-2">
                 <form id="form_report_data_edit" onSubmit={save_reportData}>
 
-                    {process.env.REACT_APP_GLOBAL_ID == 'cb1' ?
+                    {import.meta.env.VITE_GLOBAL_ID == 'cb1' ?
                         <>
                             {_PAGE_1_COMPONENT()}
                             <label className="fw-bold py-3">INVENTARIO</label>
@@ -681,7 +681,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                         </>
                         : ''}
 
-                    {process.env.REACT_APP_GLOBAL_ID == 'cp1' ?
+                    {import.meta.env.VITE_GLOBAL_ID == 'cp1' ?
                         <>
                             {_PAGE_CUP1_COMPONENT()}
                         </>

@@ -34,7 +34,7 @@ import RECORD_ARC_CONTROL from './arc/record_arc_control.component';
 import RECORD_ARC_GEN_2_REVIEW from './arc/record_arc_gem2_review.component';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 class RECORD_ARC extends Component {
     constructor(props) {

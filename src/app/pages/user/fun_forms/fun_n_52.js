@@ -11,7 +11,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import { Divider } from 'rsuite';
 import profesionalsService from '../../../services/profesionals.service';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 const moment = require('moment');
 class FUNN51 extends Component {

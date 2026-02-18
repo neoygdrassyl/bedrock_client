@@ -176,7 +176,7 @@ export default function CERTIFICATE_WORKER(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/certificate_data/" + "Historial Progesional " + title + ".pdf");
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/certificate_data/" + "Historial Progesional " + title + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,
