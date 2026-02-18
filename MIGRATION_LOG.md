@@ -226,6 +226,90 @@ graph TD
 
 ---
 
+## Fase 1 — Eliminar patrones incompatibles React 18/19
+
+> **Fecha:** 2026-02-18  
+> **Commit:** `refactor(fase1): remove unnecessary import React in 250 files`  
+> **Tests:** 46/46 PASS (App, Login, Navigation, Modules)
+
+### 1. String refs (`ref="..."`)
+
+| Conteo esperado | Conteo real | Acción |
+|-----------------|-------------|--------|
+| 22 archivos | **0** | No se requirió migración |
+
+**Hallazgo:** Los 22 matches del diagnóstico eran falsos positivos de `href="..."` en etiquetas `<a>`. No existe ningún React string ref (`ref="myRef"`) en el código fuente. Confirmado con `grep -rPn '\bref="' src/ | grep -v 'href='`.
+
+### 2. Lifecycles deprecated (`componentWill*`)
+
+| Patrón | Conteo | Acción |
+|--------|--------|--------|
+| `componentWillMount` | 0 | ✅ Ninguno |
+| `componentWillReceiveProps` | 0 | ✅ Ninguno |
+| `componentWillUpdate` | 0 | ✅ Ninguno |
+| `UNSAFE_*` | 0 | ✅ Ninguno |
+| `componentWillUnmount` | 1 (`submit_list.component.js`) | ⚠️ No deprecated — lifecycle válido en class components |
+
+**Resultado:** No hay lifecycles deprecated. El único `componentWillUnmount` es válido (cleanup method, soportado en React 19).
+
+### 3. Import React innecesarios
+
+| Categoría | Conteo | Acción |
+|-----------|--------|--------|
+| `import React from 'react'` removido completamente | **18** | Línea eliminada (no usa React APIs) |
+| `import React, { ... }` simplificado a `import { ... }` | **232** | Removido default import, mantenidos named imports |
+| Archivos que usan React API (mantienen import) | **24** | Sin cambios (`React.forwardRef`, `React.createRef`, `React.memo`, `React.Fragment`, `extends Component`) |
+| **Total archivos modificados** | **250** | |
+
+**Prerequisito verificado:** React 16.14.0 instalado (soporta `react/jsx-runtime`). CRA 4 auto-detecta y usa el nuevo JSX transform.
+
+### 4. Archivos que mantienen `import React` (24)
+
+Estos archivos usan React APIs directamente y requieren el import:
+
+| Archivo | API usada |
+|---------|-----------|
+| `App.js` | `React.createContext`, `useContext` |
+| `index.js` | `ReactDOM.render` |
+| `navbar.js` | `React.forwardRef` |
+| `ClockRow.js` | `React.useEffect` |
+| `HolidayCalendar.js` | `React.memo`, `ReactDOM` |
+| `centralClocks.component.js` | `ReactDOM` |
+| `exp_clocks.component.js` | `React.Fragment` |
+| `record_arc_areas*.js` (3) | `React.createRef` |
+| `email.page.js`, `public.page.js` | `React.createRef` |
+| Tests (3) | `React.forwardRef`, `React.useImperativeHandle` |
+| Class components (6+) | `extends Component` |
+
+### 5. Tests de humo — Post Fase 1
+
+| Suite | Tests | Resultado |
+|-------|-------|-----------|
+| App.smoke | 6 | ✅ PASS |
+| Login.smoke | 4 | ✅ PASS |
+| Navigation.smoke | 23 | ✅ PASS |
+| Modules.smoke | 13 | ✅ PASS |
+| **TOTAL** | **46** | **✅ ALL PASS** |
+
+### 6. Conteo actualizado de patrones legacy
+
+| Patrón | Pre-Fase 1 | Post-Fase 1 | Cambio |
+|--------|-----------|-------------|--------|
+| `import React` (explícito) | 274 | **24** | -250 ✅ |
+| `string refs` (`ref="..."`) | 0* | **0** | sin cambio (diagnóstico corregido) |
+| `componentWill*` deprecated | 0 | **0** | sin cambio |
+| `extends Component` (class) | 178 | **178** | sin cambio (Fase 6) |
+| `ReactDOM.render` | 2 | **2** | sin cambio (Fase 2) |
+| `<Switch>` (router v5) | 1 | **1** | sin cambio (Fase 3) |
+
+*\*Diagnóstico Fase 0 reportó 22, eran falsos positivos de `href=`*
+
+### 7. Estado: Fase 1 completada ✅
+
+**Listo para Fase 2:** Actualizar React 16→18 (paso intermedio). Los bloqueantes (string refs, deprecated lifecycles) están confirmados como inexistentes. El código es compatible con el upgrade.
+
+---
+
 ## Comandos para Fase 1
 
 ```bash
