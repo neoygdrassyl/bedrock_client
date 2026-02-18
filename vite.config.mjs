@@ -19,6 +19,9 @@ function jsxInJs() {
 export default defineConfig({
   plugins: [jsxInJs(), react()],
 
+  // Treat .md files as static assets (CRA imported them as URLs for fetch())
+  assetsInclude: ['**/*.md'],
+
   // Dev server
   server: {
     port: 3000,

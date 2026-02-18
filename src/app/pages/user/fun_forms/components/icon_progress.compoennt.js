@@ -1,7 +1,5 @@
 import { MDBTooltip } from 'mdb-react-ui-kit';
-import { findLastMatch } from 'pdf-lib';
 import { Component } from 'react';
-import { find } from 'rsuite/esm/utils/ReactChildren';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
