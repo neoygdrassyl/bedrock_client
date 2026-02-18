@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
 import moment from 'moment';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 
 export default function FUN_D_ABDICATE(props) {
@@ -333,7 +333,7 @@ export default function FUN_D_ABDICATE(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/expdocresabd/" + "INFORMACIÓN LIENCIA RENUNCIADO DE TÉRMINOS " + currentItem.id_public + ".pdf");
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/expdocresabd/" + "INFORMACIÓN LIENCIA RENUNCIADO DE TÉRMINOS " + currentItem.id_public + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,

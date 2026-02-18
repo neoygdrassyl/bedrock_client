@@ -127,7 +127,7 @@ class PQRSLOCK extends Component {
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <a className="btn btn-sm btn-danger mx-1" target="_blank" href={process.env.REACT_APP_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
+                        <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
                         <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
                     </>,
                 },

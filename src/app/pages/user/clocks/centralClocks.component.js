@@ -24,7 +24,7 @@ import './centralClocks.css';
 import './gantt.css';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
   const { swaMsg, currentItem, currentVersion, outCodes } = props;

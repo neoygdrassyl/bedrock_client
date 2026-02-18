@@ -168,10 +168,10 @@ class FUN_PDF extends Component {
             icon: 'info',
             showConfirmButton: false,
         });
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
-        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
-        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
-        //if (model == '2023') formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
+        if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
+        if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
+        //if (model == '2023') formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
@@ -545,7 +545,7 @@ class FUN_PDF extends Component {
 
             for (var j = 0; j < GREATER_NUMBER; j++) {
 
-                var PdfUrl_2pg = process.env.REACT_APP_API_URL + "/pdf/funform2pgflat";
+                var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
                 var Buffer_2pg = await fetch(PdfUrl_2pg).then((res) => res.arrayBuffer())
                 var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
                 let page = PdfDoc_2pg.getPage(0);
@@ -1109,7 +1109,7 @@ class FUN_PDF extends Component {
 
             for (var j = 0; j < GREATER_NUMBER; j++) {
 
-                var PdfUrl_2pg = process.env.REACT_APP_API_URL + "/pdf/funform2pgflat";
+                var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
                 var Buffer_2pg = await fetch(PdfUrl_2pg).then((res) => res.arrayBuffer())
                 var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
                 let page = PdfDoc_2pg.getPage(0);

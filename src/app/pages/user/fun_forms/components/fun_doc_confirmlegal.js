@@ -514,7 +514,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
                     {this.state.tn == 4 ?
@@ -589,7 +589,7 @@ class FUN_DOC_CONFIRMLEGAL extends Component {
                     .then(response => {
                         if (response.data === 'OK') {
                             MySwal.close();
-                            window.open(process.env.REACT_APP_API_URL + "/pdf/confirm/" + "Confirmacion_" + currentItem.id_public + ".pdf");
+                            window.open(import.meta.env.VITE_API_URL + "/pdf/confirm/" + "Confirmacion_" + currentItem.id_public + ".pdf");
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,

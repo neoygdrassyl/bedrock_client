@@ -252,7 +252,7 @@ export default function FUN_D_CONTROL_2(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/controlcheck_2/" + "Hoja de control inventario - " + currentItem.id_public + ".pdf");
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/controlcheck_2/" + "Hoja de control inventario - " + currentItem.id_public + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,

@@ -8,7 +8,7 @@ import moment from 'moment';
 import { Uploader } from 'rsuite';
 import VIEWER from './viewer.component';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 const EMAIL_TPES = [
     { value: 'rad', label: 'REGISTRO de radicación' },

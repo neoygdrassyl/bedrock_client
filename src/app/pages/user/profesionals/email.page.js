@@ -85,7 +85,7 @@ export default function PROFESIONALS_EMAIL(props) {
                             <div className="row d-flex justify-content-center my-2">
                                 <ReCAPTCHA
                                     ref={recaptchaRef}
-                                    sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_HTML}
+                                    sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
                                 />
                             </div>
                             <div className="text-center my-2">

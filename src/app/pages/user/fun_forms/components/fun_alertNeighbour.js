@@ -352,7 +352,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -412,7 +412,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/nconfirm/" + "Confirmacion_Vecino_" + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,

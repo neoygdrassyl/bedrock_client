@@ -5,7 +5,6 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
 
 // ─── Page mocks ──────────────────────────────────────────────────────────────
 
@@ -13,77 +12,82 @@ function MockPage(name) {
   return (props) => require('react').createElement('div', { 'data-testid': `mock-${name}` }, name);
 }
 
-jest.mock('../app/pages/user/pqrs/pqrsadmin', () => ({ __esModule: true, default: MockPage('PQRSADMIN') }));
-jest.mock('../app/pages/liquidator/liquidator', () => ({ __esModule: true, default: MockPage('Liquidator') }));
-jest.mock('../app/pages/user/dashboard', () => ({ __esModule: true, default: MockPage('Dashboard') }));
-jest.mock('../app/pages/user/publish', () => ({ __esModule: true, default: MockPage('Publish') }));
-jest.mock('../app/pages/user/seal', () => ({ __esModule: true, default: MockPage('Seals') }));
-jest.mock('../app/pages/user/appointments', () => ({ __esModule: true, default: MockPage('Appointments') }));
-jest.mock('../app/pages/user/mail', () => ({ __esModule: true, default: MockPage('Mail') }));
-jest.mock('../app/pages/user/fun', () => ({ __esModule: true, default: MockPage('FUN') }));
-jest.mock('../app/pages/user/osha', () => ({ __esModule: true, default: MockPage('OSHA') }));
-jest.mock('../app/pages/user/nomenclature/nomenclature', () => ({ __esModule: true, default: MockPage('NOMENCLATURE') }));
-jest.mock('../app/pages/user/submit/submit', () => ({ __esModule: true, default: MockPage('SUBMIT') }));
-jest.mock('../app/pages/user/archive/archive.page', () => ({ __esModule: true, default: MockPage('ARCHIVE') }));
-jest.mock('../app/pages/user/dictionary.page', () => ({ __esModule: true, default: MockPage('DICTIONARY') }));
-jest.mock('../app/pages/user/funmanage.page', () => ({ __esModule: true, default: MockPage('FUN_MANAGE') }));
-jest.mock('../app/pages/user/profesionals/profesionals.page', () => ({ __esModule: true, default: MockPage('PROFESIONALS') }));
-jest.mock('../app/pages/user/guide_user/guide_user.page', () => ({ __esModule: true, default: MockPage('GUIDE_USER') }));
-jest.mock('../app/pages/user/dev_guide/dev_guide.page', () => ({ __esModule: true, default: MockPage('DEV_GUIDE') }));
-jest.mock('../app/pages/user/norms/norms.page', () => ({ __esModule: true, default: MockPage('NORMS') }));
-jest.mock('../app/pages/user/certifications/certification.page', () => ({ __esModule: true, default: MockPage('CERTIFICATE_WORKER') }));
-jest.mock('../app/pages/user/zone_use/zone_use.page', () => ({ __esModule: true, default: MockPage('ZONE_USE') }));
+vi.mock('../app/pages/user/pqrs/pqrsadmin', () => ({ __esModule: true, default: MockPage('PQRSADMIN') }));
+vi.mock('../app/pages/liquidator/liquidator', () => ({ __esModule: true, default: MockPage('Liquidator') }));
+vi.mock('../app/pages/user/dashboard', () => ({ __esModule: true, default: MockPage('Dashboard') }));
+vi.mock('../app/pages/user/publish', () => ({ __esModule: true, default: MockPage('Publish') }));
+vi.mock('../app/pages/user/seal', () => ({ __esModule: true, default: MockPage('Seals') }));
+vi.mock('../app/pages/user/appointments', () => ({ __esModule: true, default: MockPage('Appointments') }));
+vi.mock('../app/pages/user/mail', () => ({ __esModule: true, default: MockPage('Mail') }));
+vi.mock('../app/pages/user/fun', () => ({ __esModule: true, default: MockPage('FUN') }));
+vi.mock('../app/pages/user/osha', () => ({ __esModule: true, default: MockPage('OSHA') }));
+vi.mock('../app/pages/user/nomenclature/nomenclature', () => ({ __esModule: true, default: MockPage('NOMENCLATURE') }));
+vi.mock('../app/pages/user/submit/submit', () => ({ __esModule: true, default: MockPage('SUBMIT') }));
+vi.mock('../app/pages/user/archive/archive.page', () => ({ __esModule: true, default: MockPage('ARCHIVE') }));
+vi.mock('../app/pages/user/dictionary.page', () => ({ __esModule: true, default: MockPage('DICTIONARY') }));
+vi.mock('../app/pages/user/funmanage.page', () => ({ __esModule: true, default: MockPage('FUN_MANAGE') }));
+vi.mock('../app/pages/user/profesionals/profesionals.page', () => ({ __esModule: true, default: MockPage('PROFESIONALS') }));
+vi.mock('../app/pages/user/guide_user/guide_user.page', () => ({ __esModule: true, default: MockPage('GUIDE_USER') }));
+vi.mock('../app/pages/user/dev_guide/dev_guide.page', () => ({ __esModule: true, default: MockPage('DEV_GUIDE') }));
+vi.mock('../app/pages/user/norms/norms.page', () => ({ __esModule: true, default: MockPage('NORMS') }));
+vi.mock('../app/pages/user/certifications/certification.page', () => ({ __esModule: true, default: MockPage('CERTIFICATE_WORKER') }));
+vi.mock('../app/pages/user/zone_use/zone_use.page', () => ({ __esModule: true, default: MockPage('ZONE_USE') }));
 
-jest.mock('../app/components/footer', () => ({ __esModule: true, default: (props) => require('react').createElement('footer', { id: 'footer-app-main' }, 'Footer') }));
-jest.mock('../app/components/navbar', () => ({ __esModule: true, default: (props) => require('react').createElement('nav', { 'data-testid': 'navbar' }, 'Navbar') }));
-jest.mock('../app/components/btnStart', () => ({ __esModule: true, default: () => null }));
-jest.mock('../app/components/btnChat', () => ({ __esModule: true, default: () => null }));
-jest.mock('../app/components/btnAccesibility', () => ({ __esModule: true, default: () => null }));
+vi.mock('../app/components/footer', () => ({ __esModule: true, default: (props) => require('react').createElement('footer', { id: 'footer-app-main' }, 'Footer') }));
+vi.mock('../app/components/navbar', () => ({ __esModule: true, default: (props) => require('react').createElement('nav', { 'data-testid': 'navbar' }, 'Navbar') }));
+vi.mock('../app/components/btnStart', () => ({ __esModule: true, default: () => null }));
+vi.mock('../app/components/btnChat', () => ({ __esModule: true, default: () => null }));
+vi.mock('../app/components/btnAccesibility', () => ({ __esModule: true, default: () => null }));
 
 // ─── External mocks ─────────────────────────────────────────────────────────
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key, opts) => {
       if (opts && opts.returnObjects) return {};
       return key;
     },
-    i18n: { changeLanguage: jest.fn() },
+    i18n: { changeLanguage: vi.fn() },
   }),
   withTranslation: () => (Component) => (props) => <Component {...props} t={(k) => k} />,
-  initReactI18next: { type: '3rdParty', init: jest.fn() },
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-jest.mock('react-google-recaptcha', () => {
+vi.mock('react-google-recaptcha', () => {
   const React = require('react');
-  return React.forwardRef((props, ref) => {
+  const ReCAPTCHA = React.forwardRef((props, ref) => {
     React.useImperativeHandle(ref, () => ({
       execute: () => Promise.resolve('mock-token'),
-      reset: jest.fn(),
+      reset: vi.fn(),
     }));
     return <div data-testid="recaptcha-mock" />;
   });
+  return { default: ReCAPTCHA };
 });
 
-jest.mock('../http-common', () => ({
+vi.mock('../http-common', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(() => Promise.resolve({ data: [] })),
-    post: jest.fn(() => Promise.resolve({ data: [] })),
-    put: jest.fn(() => Promise.resolve({ data: [] })),
-    delete: jest.fn(() => Promise.resolve({ data: [] })),
+    get: vi.fn(() => Promise.resolve({ data: [] })),
+    post: vi.fn(() => Promise.resolve({ data: [] })),
+    put: vi.fn(() => Promise.resolve({ data: [] })),
+    delete: vi.fn(() => Promise.resolve({ data: [] })),
   },
 }));
 
-jest.mock('sweetalert2', () => ({
-  fire: jest.fn(() => Promise.resolve({ isConfirmed: true })),
-  close: jest.fn(),
+vi.mock('sweetalert2', () => ({
+  default: {
+    fire: vi.fn(() => Promise.resolve({ isConfirmed: true })),
+    close: vi.fn(),
+  },
 }));
-jest.mock('sweetalert2-react-content', () => () => ({
-  fire: jest.fn(() => Promise.resolve({ isConfirmed: true })),
+vi.mock('sweetalert2-react-content', () => ({
+  default: () => ({
+    fire: vi.fn(() => Promise.resolve({ isConfirmed: true })),
+  }),
 }));
 
-jest.mock('rsuite', () => {
+vi.mock('rsuite', () => {
   const React = require('react');
   const Nav = ({ children, ...props }) => <nav {...props}>{children}</nav>;
   Nav.Menu = ({ children, title }) => <div>{title}{children}</div>;
@@ -93,7 +97,7 @@ jest.mock('rsuite', () => {
   return { Nav, Navbar };
 });
 
-jest.mock('../app/components/jsons/vars', () => ({
+vi.mock('../app/components/jsons/vars', () => ({
   infoCud: {
     name: 'Curaduría Urbana Test',
     city: 'bucaramanga',
@@ -102,7 +106,7 @@ jest.mock('../app/components/jsons/vars', () => ({
   },
 }));
 
-jest.mock('../app/components/global', () => {
+vi.mock('../app/components/global', () => {
   const React = require('react');
   return { GlobalStyles: () => <style data-testid="global-styles" /> };
 });
@@ -114,9 +118,9 @@ import App from '../app/App';
 describe('Navegación — Pre-migration baseline', () => {
 
   beforeAll(() => {
-    process.env.REACT_APP_API_URL = 'http://localhost/dovela-backend/public';
-    process.env.REACT_APP_GLOBAL_ID = '1';
-    process.env.REACT_APP_GOOGLE_CAPTCHA_HTML = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+    import.meta.env.VITE_API_URL = 'http://localhost/dovela-backend/public';
+    import.meta.env.VITE_GLOBAL_ID = '1';
+    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
   });
 
   const publicRoutes = [

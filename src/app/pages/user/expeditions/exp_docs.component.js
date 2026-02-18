@@ -17,7 +17,7 @@ import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
 
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 var writtenNumber = require('written-number');
 const IVA = 0.19;
@@ -300,7 +300,7 @@ class EXP_DOCS extends Component {
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
                     {this.state.tn == 4 ?
@@ -1923,7 +1923,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc1/" + "Acto de tramite de licencia " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc1/" + "Acto de tramite de licencia " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1995,7 +1995,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc2/" + "Liquidacion de Expensas " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc2/" + "Liquidacion de Expensas " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2074,7 +2074,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc3/" + "Impuestos Minicipales " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc3/" + "Impuestos Minicipales " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2127,7 +2127,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc4/" + "Estampilla PRO-UIS " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc4/" + "Estampilla PRO-UIS " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2198,7 +2198,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc5/" + "Deber Urbanistico " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc5/" + "Deber Urbanistico " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2276,7 +2276,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc6/" + "Impuestos Delineación Urbana " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc6/" + "Impuestos Delineación Urbana " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2350,7 +2350,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc7/" + "Liquidación Expensas " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc7/" + "Liquidación Expensas " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2403,7 +2403,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdocfinalnot/" + "Citacio para Notificacion Resolucsion " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdocfinalnot/" + "Citacio para Notificacion Resolucsion " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2539,7 +2539,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,

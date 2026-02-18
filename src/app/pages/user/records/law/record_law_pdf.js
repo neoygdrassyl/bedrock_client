@@ -7,7 +7,7 @@ import moment from 'moment';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { handleLAWhCheck } from '../../../../components/customClasses/pdfCheckHandler';
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 class RECORD_LAW_PDF extends Component {
     constructor(props) {
@@ -108,9 +108,9 @@ class RECORD_LAW_PDF extends Component {
             confirmButtonText: 'CONTINUAR',
         });
 
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordlawextra";
-        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordlawextra";
-        if (Number(model) >= 2022) formUrl = process.env.REACT_APP_API_URL + "/pdf/recordlawextra2022";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra";
+        if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra";
+        if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordlawextra2022";
 
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
@@ -247,7 +247,7 @@ class RECORD_LAW_PDF extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordlaw/" + "INFORME JURIDICO " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordlaw/" + "INFORME JURIDICO " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,

@@ -560,7 +560,7 @@ function LoginPage() {
                   <ReCAPTCHA
                     ref={recaptchaRef}
                     size="invisible"
-                    sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_HTML}
+                    sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
                   />
                 </form>
               </div>

@@ -287,7 +287,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                         <div className='col'>
                             <ReCAPTCHA
                                 ref={recaptchaRef}
-                                sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_HTML}
+                                sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
                             />
                         </div>
                         <div className='col'></div>

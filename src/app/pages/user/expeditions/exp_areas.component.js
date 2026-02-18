@@ -10,7 +10,7 @@ import RECORD_ARC_AREAS_RESUME from '../records/arc/record_arc_areas_resumen.com
 import EXP_CALC from './exp_calc.component';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 class EXP_AREAS extends Component {
     constructor(props) {

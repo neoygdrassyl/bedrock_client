@@ -42,7 +42,7 @@ class PQRS_COMPONENT_ATTACH_PROFESIONAL extends Component {
                         </div>
                         <div className="col-2">
                             <label >
-                                <a className="btn btn-sm btn-danger" target="_blank" href={process.env.REACT_APP_API_URL + '/files/pqrs/' + currentItem.pqrs_attaches[i].name}>
+                                <a className="btn btn-sm btn-danger" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + currentItem.pqrs_attaches[i].name}>
                                     <i class="fas fa-cloud-download-alt"></i></a></label>
                         </div>
                     </div></div>)

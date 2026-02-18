@@ -5,7 +5,7 @@ import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function RECORD_ARC_GEN_REVIEW(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

@@ -146,7 +146,7 @@ export default function ZONE_USE_COMPONENT(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/zone_use/" + "CONCEPTO DE USO DEL SUELO " + (item.id_out ?? '') + ".pdf");
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/zone_use/" + "CONCEPTO DE USO DEL SUELO " + (item.id_out ?? '') + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,

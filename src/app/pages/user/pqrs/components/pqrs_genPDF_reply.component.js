@@ -216,7 +216,7 @@ class PQRS_PDFGEN_REPLY extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,

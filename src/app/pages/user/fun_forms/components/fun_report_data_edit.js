@@ -11,7 +11,7 @@ import SubmitService from '../../../../services/submit.service';
 import CubXVrDataService from '../../../../services/cubXvr.service';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 class FUN_REPORT_DATA_EDIT extends Component {
     constructor(props) {

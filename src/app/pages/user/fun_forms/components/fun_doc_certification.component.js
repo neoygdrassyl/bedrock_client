@@ -13,7 +13,7 @@ import moment from 'moment';
 import { cities, states } from '../../../../components/jsons/vars';
 
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 
 export default function FUN_CERTIFICATION(props) {
@@ -461,7 +461,7 @@ export default function FUN_CERTIFICATION(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/cert/fun/" + "CERTIFICACION ACTUACION URBANISTICA " + currentItem.id_public + ".pdf");
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/cert/fun/" + "CERTIFICACION ACTUACION URBANISTICA " + currentItem.id_public + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,

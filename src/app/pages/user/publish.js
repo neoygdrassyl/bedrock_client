@@ -353,7 +353,7 @@ class Publish extends Component {
           </div>
           <div className='px-0'></div>
           <a className="btn btn-sm btn-danger px-1" target="_blank"
-            href={process.env.REACT_APP_API_URL + '/files/publish/' + _PARSE_URL(row.type) + '/publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path} ><i class="fas fa-cloud-download-alt"></i> Descargar</a></>
+            href={import.meta.env.VITE_API_URL + '/files/publish/' + _PARSE_URL(row.type) + '/publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path} ><i class="fas fa-cloud-download-alt"></i> Descargar</a></>
         ,
       },
     ]

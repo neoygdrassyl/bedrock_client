@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { infoCud } from '../jsons/vars'
 import SERIES_CB1 from "../jsons/funcCodes.cb1.json"
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export const SERIES_DOCS = {
     // i count = 86
