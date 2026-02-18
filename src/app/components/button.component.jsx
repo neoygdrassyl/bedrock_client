@@ -1,4 +1,3 @@
-import React from 'react'
 import { IconButton } from 'rsuite'
 export const Button_navigation = (props) => {
     const { Idup, Iddown } = props

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import { MDBDataTable } from 'mdbreact';
 import Modal from 'react-modal';

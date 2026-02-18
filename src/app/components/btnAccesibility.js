@@ -1,4 +1,3 @@
-import React from 'react';
 import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
 import { func, string, int } from 'prop-types';
 import { Link } from 'react-router-dom';

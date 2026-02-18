@@ -6,8 +6,6 @@
  * sin renderizarlos completamente (requieren auth y datos de API).
  */
 
-import React from 'react';
-
 // ─── Tests de importación — Relojes (Clocks) ────────────────────────────────
 
 describe('Módulo Relojes (Clocks) — Pre-migration baseline', () => {

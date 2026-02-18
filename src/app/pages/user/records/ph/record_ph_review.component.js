@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'

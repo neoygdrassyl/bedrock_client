@@ -1,5 +1,5 @@
 import { MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'

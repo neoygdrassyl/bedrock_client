@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Sidebar from "react-sidebar";
 
 import Page from '../fun'

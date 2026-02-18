@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import SubmitService from '../../../services/submit.service';
 import { dateParser } from '../../../components/customClasses/typeParse';
 import Swal from 'sweetalert2'

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { dateParser, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 
 class PQRS_COMPONENT_REPLIES_TOSOLICITOR extends Component {

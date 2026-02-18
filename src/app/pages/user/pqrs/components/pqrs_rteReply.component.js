@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { Component, useRef, useState } from 'react';
+import { Component, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';

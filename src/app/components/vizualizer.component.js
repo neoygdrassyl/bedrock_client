@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { MDBTooltip } from 'mdb-react-ui-kit';
 import Modal from 'react-modal';
 import PDF_VIEWER from './pdfViewer.component';

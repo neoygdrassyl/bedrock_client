@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import MailboxService from '../../services/mailbox.service'
 import {
     MDBRow, MDBCol, MDBCard, MDBCardBody,

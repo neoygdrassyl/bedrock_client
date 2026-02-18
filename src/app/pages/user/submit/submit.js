@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBTooltip } from 'mdb-react-ui-kit';
 import { Link } from 'react-router-dom';
 import SubmitService from '../../../services/submit.service';

@@ -1,6 +1,6 @@
 import { MDBBtn } from 'mdb-react-ui-kit';
 import moment from 'moment';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import {
     Hint,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { PDFDocument } from 'pdf-lib';
 import { Document, Page, pdfjs } from "react-pdf";

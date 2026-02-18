@@ -1,5 +1,5 @@
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactHTMLDatalist from 'react-html-datalist';
 import ReactModal from 'react-modal';
 import Swal from 'sweetalert2'

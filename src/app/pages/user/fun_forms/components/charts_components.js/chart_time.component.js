@@ -1,6 +1,6 @@
 import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Crosshair, CustomSVGSeries, Hint, HorizontalGridLines, MarkSeries, VerticalGridLines, XAxis, XYPlot, YAxis } from 'react-vis';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import AppointmentService from '../../services/appointments.service'
 import UserslDataService from '../../services/users.service'
 import {

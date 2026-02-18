@@ -1,4 +1,3 @@
-import React from 'react'
 import PQRS_SERVICES from '../../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

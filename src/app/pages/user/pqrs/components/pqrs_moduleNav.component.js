@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { MDBCard, MDBCardBody, MDBTooltip } from 'mdb-react-ui-kit';
 
 class PQRS_MODULE_NAV extends Component {

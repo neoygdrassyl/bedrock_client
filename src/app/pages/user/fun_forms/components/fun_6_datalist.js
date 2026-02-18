@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import JSONDATLIST from '../../../../components/jsons/fun6DocsList.json'
 
 class FUN6DATALIST extends Component {

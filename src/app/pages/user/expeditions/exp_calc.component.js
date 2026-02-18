@@ -1,5 +1,5 @@
 import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Modal from 'react-modal';
 import { infoCud } from '../../../components/jsons/vars';
 import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../components/customClasses/typeParse';

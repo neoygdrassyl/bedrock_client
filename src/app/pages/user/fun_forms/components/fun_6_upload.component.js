@@ -1,6 +1,6 @@
 import { MDBBtn } from 'mdb-react-ui-kit';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import FunService from '../../../../services/fun.service';

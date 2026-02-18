@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';

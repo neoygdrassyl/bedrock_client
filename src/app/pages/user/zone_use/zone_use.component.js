@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState, } from 'react';
+import { Suspense, useEffect, useState, } from 'react';
 import Zone_Use_Service from "../../../services/zone_use.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

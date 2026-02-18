@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import ReactDOM from "react-dom";
 import ReactHTMLDatalist from "react-html-datalist";
 import FUNService from '../../../services/fun.service'

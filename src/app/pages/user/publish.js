@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import PublishService from '../../services/publish.service'
 import {
   MDBRow, MDBCol, MDBCard, MDBCardBody,

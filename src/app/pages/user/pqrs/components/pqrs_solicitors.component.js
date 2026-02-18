@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 class PQRS_COMPONENT_SOLICITORS extends Component {
     constructor(props) {
