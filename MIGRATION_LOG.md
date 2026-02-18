@@ -339,3 +339,108 @@ git add -A && git commit -m "fase-0: baseline audit, smoke tests, MIGRATION_LOG.
 - MIGRATION_LOG.md con plan de 7 fases
 "
 ```
+
+---
+
+## Fase 4 — CRA 4 → Vite 6 + Jest → Vitest
+
+### 1. Resumen de cambios
+
+| Métrica | Antes (CRA) | Después (Vite) |
+|---------|-------------|----------------|
+| Build tool | react-scripts 4.0.3 | Vite 6.4.1 |
+| Test runner | Jest (CRA built-in) | Vitest 4.0.18 |
+| Dev server start | ~8s | ~400ms |
+| Node.js requerido | v16+ | **v22+** (OpenSSL 3 para `crypto.getRandomValues`) |
+| Env var prefix | `REACT_APP_` | `VITE_` |
+| Env var acceso | `process.env.REACT_APP_*` | `import.meta.env.VITE_*` |
+| index.html | `public/index.html` | Raíz del proyecto |
+| Config files | Ninguno (CRA opaco) | `vite.config.mjs`, `vitest.config.mjs` |
+
+### 2. Archivos nuevos
+
+| Archivo | Propósito |
+|---------|-----------|
+| `vite.config.mjs` | Vite config: jsxInJs plugin, proxy /api→:3001, build→'build' |
+| `vitest.config.mjs` | Vitest config: cssNoop plugin, jsdom env, jsxInJs plugin |
+| `index.html` (raíz) | Entry HTML para Vite (movido de `public/index.html`) |
+| `src/__tests__/setup.js` | Vitest setup: jest-dom matchers, env vars defaults |
+| `.nvmrc` | Node 22 requerido |
+
+### 3. Dependencias eliminadas
+
+| Paquete | Razón |
+|---------|-------|
+| `react-scripts` | Reemplazado por Vite |
+| `env-cmd` | Vite carga `.env` nativamente |
+| `web-vitals` | CRA boilerplate, no necesario |
+
+### 4. Dependencias agregadas (devDependencies)
+
+| Paquete | Versión |
+|---------|---------|
+| `vite` | ^6.4.1 |
+| `@vitejs/plugin-react` | ^5.1.4 |
+| `vitest` | ^4.0.18 |
+| `jsdom` | ^24 |
+| `@testing-library/jest-dom` | ^6.9.1 |
+
+### 5. Migración de archivos fuente
+
+- **82 archivos** migrados: `process.env.REACT_APP_*` → `import.meta.env.VITE_*`
+- **Verificación:** `grep -rn "process.env" src/` = 0 resultados
+- **Variables en `.env`:** 7 variables renombradas `REACT_APP_*` → `VITE_*`
+  - `VITE_API_URL`, `VITE_GLOBAL_ID`, `VITE_GOOGLE_CAPTCHA_HTML`, `VITE_GOOGLE_CAPTCHA_KEY`, `VITE_GOOGLE_MAPS_KEY`, `VITE_API_PROF_URL`, `VITE_API_EMAIL_URL`
+
+### 6. Migración de tests (Jest → Vitest)
+
+| Cambio | Detalle |
+|--------|---------|
+| `jest.mock()` → `vi.mock()` | En 4 archivos |
+| `jest.fn()` → `vi.fn()` | En 4 archivos |
+| `jest.spyOn()` → `vi.spyOn()` | En 2 archivos |
+| `require()` → `import()` | En Modules.smoke.test.js (ESM) |
+| Mock factories | Vitest requiere `{ default: ... }` para default exports |
+| CSS mocking | Plugin `cssNoop()` intercepta en resolveId |
+| JSX in .js | Plugin `jsxInJs()` usa `transformWithEsbuild` |
+
+### 7. Plugins Vite personalizados
+
+#### `jsxInJs()` — JSX en archivos .js
+Todo el codebase usa `.js` para archivos con JSX (CRA lo soportaba automáticamente). Este plugin usa `transformWithEsbuild` con `loader: 'jsx'` para mantener compatibilidad sin renombrar 357 archivos.
+
+#### `cssNoop()` — Mock de CSS en tests
+Vitest no puede resolver imports CSS de `node_modules` (bootstrap, rsuite, mdb). Este plugin intercepta todas las importaciones `.css` en la fase `resolveId` y las redirige a un mock vacío.
+
+### 8. Decisión Node.js
+
+El Node 20.20.0 instalado vía `nvm` usaba OpenSSL 1.1.1v+quic, que no expone `crypto.getRandomValues` en el módulo `node:crypto`. Vite 6 lo requiere. Se actualizó a **Node 22.22.0** (OpenSSL 3.5.4).
+
+### 9. Tests — Post Fase 4
+
+| Suite | Tests | Resultado |
+|-------|-------|-----------|
+| App.smoke | 6 | ✅ PASS |
+| Login.smoke | 4 | ✅ PASS |
+| Navigation.smoke | 23 | ✅ PASS |
+| Modules.smoke | 13 | ✅ PASS |
+| **TOTAL** | **46** | **✅ ALL PASS** |
+
+### 10. Scripts package.json actualizados
+
+```json
+{
+  "dev": "vite",
+  "start": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "test": "vitest run",
+  "test:watch": "vitest"
+}
+```
+
+### 11. Estado: Fase 4 completada ✅
+
+**Commit:** `dcbb3761` — `build(fase4): migrate CRA 4 → Vite 6 + Jest → Vitest`
+
+**Listo para Fase 2:** Actualizar React 16→18 (`createRoot`, actualizar deps).

@@ -6,7 +6,7 @@ applyTo: '**'
 
 > **Estado actual:** Branch `feat/react-19-migration`  
 > **Fase activa:** FASE 2 — Actualizar React 16 → 18  
-> **Fases completadas:** Fase 0 (auditoría), Fase 1 (limpieza imports)  
+> **Fases completadas:** Fase 0 (auditoría), Fase 1 (limpieza imports), Fase 4 (CRA → Vite 6)  
 > **Última actualización:** 2026-02-18
 
 ---
@@ -19,7 +19,7 @@ applyTo: '**'
 | 1 | Limpieza legacy pre-migración | ✅ COMPLETADA | @migrator-agent | Removidos 250 `import React` innecesarios. String refs verificados (0 reales). Lifecycles deprecated: 0 |
 | **2** | **React 16 → 18** | **⏳ ACTIVA** | **@migrator-agent** | Actualizar core, `createRoot`, deps React-dependientes, styled-components v6 |
 | 3 | react-router-dom v5 → v6 | 🔲 PENDIENTE | @migrator-agent | Switch→Routes, useHistory→useNavigate, Redirect→Navigate |
-| 4 | CRA 4 → Vite 6 | 🔲 PENDIENTE | @vite-migrator-agent | Reemplazar react-scripts, migrar env vars, Jest→Vitest |
+| 4 | CRA 4 → Vite 6 | ✅ COMPLETADA | @vite-migrator-agent | Vite 6.4.1, Vitest 4, 82 archivos env migrados, Node 22 |
 | 5 | React 18 → 19 | 🔲 PENDIENTE | @migrator-agent | forwardRef cleanup, Context simplificado, deps finales |
 | 6 | Class → Functional (incremental) | 🔲 CONTINUA | @migrator-agent | 177 class components → funcionales con hooks. Por módulo |
 | 7 | Reemplazar libs abandonadas | 🔲 CONTINUA | @migrator-agent | react-quill, react-vis, mdbreact → alternativas modernas |
@@ -44,7 +44,7 @@ applyTo: '**'
 | `forwardRef` | **2** reales (`navbar.js`, `App.js`) + 3 tests | Fase 5 | NO — se simplifica |
 | `withRouter` | **0** | — | — |
 | `import React` (explícito) | **24** archivos (usan React APIs) | — | NO — correctos |
-| `process.env.REACT_APP_*` | **82** archivos | Fase 4 | SÍ para Vite |
+| `process.env.REACT_APP_*` | ~~82~~ **0** archivos | ~~Fase 4~~ ✅ | ~~SÍ para Vite~~ Resuelto |
 | `<Route>` definitions | **11** en `App.js` | Fase 3 | Cada una es módulo legal activo |
 
 ### Tests de humo (red de seguridad)
@@ -213,7 +213,7 @@ npm install react-router-dom@6
 
 ---
 
-## FASE 4 — CRA 4 → Vite 6 (PENDIENTE)
+## FASE 4 — CRA 4 → Vite 6 (✅ COMPLETADA)
 
 ### Objetivo
 
