@@ -78,6 +78,22 @@
       "react-app/jest"
     ]
   },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(rsuite|@babel/runtime)/)"
+    ],
+    "moduleNameMapper": {
+      "react-pdf/dist/(.+)\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
+      "react-quill/dist/(.+)\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
+      "rsuite/dist/(.+)\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
+      "mdb-react-ui-kit/dist/(.+)\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
+      "react-vis/dist/(.+)\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
+      "frappe-gantt/dist/(.+)\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
+      "@silevis/reactgrid/(.+)\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
+      "bootstrap/dist/(.+)\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
+      "react-multi-carousel/(.+)\\.css$": "<rootDir>/src/__mocks__/styleMock.js"
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",
