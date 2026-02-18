@@ -66,7 +66,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "postinstall": "echo '{\"version\":3,\"sources\":[],\"mappings\":\"\"}' > node_modules/@pathofdev/react-tag-input/build/index.css.map 2>/dev/null || true"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
