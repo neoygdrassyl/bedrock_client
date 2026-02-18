@@ -13,6 +13,7 @@ build_cub1.zip
 build.zip
 *.zip
 .vscode
+.venv
 
 # testing
 /coverage
