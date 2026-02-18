@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
+import DataTable from 'react-data-table-component';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
