@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Title from './title';
 import { useTranslation } from 'react-i18next';
 import '../translation/i18n';
@@ -19,7 +19,7 @@ export default function Navbar1(props) {
   } = props;
 
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   // Sidebar
@@ -93,7 +93,7 @@ export default function Navbar1(props) {
   const handleSidebarToggle = () => setSidebarExpanded(v => !v);
 
   const handleModuleClick = (href) => {
-    history.push(href);
+    navigate(href);
     if (window.innerWidth <= 768) setSidebarExpanded(false);
   };
 
