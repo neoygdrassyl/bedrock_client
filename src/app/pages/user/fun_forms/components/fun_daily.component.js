@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -7,33 +7,22 @@ import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, datePar
 import FUN_CHART_MACRO_GRANTT from './charts_components.js/chart_macroGant.component';
 import { nomens } from '../../../../components/jsons/vars';
 
+// Helper to create a fresh default data structure (avoids mutation issues)
+function createDefaultData() {
+    return {
+        inc: [], other: [], law: [], arc: [], eng: [],
+        rec: [], check: [], cor: [], res: [], lic: [],
+        lic2: [], pay: [], pay2: [], neg: [], neg2: [],
+        rsc: [], rsc2: [], rsc3: [], gen: [], sign: [],
+    };
+}
+
 export default function FUN_DAILY_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
     const TYPE_TIME = { 'iv': 45, 'iii': 35, 'ii': 25, 'i': 20, 'oa': 15 }
     const MySwal = withReactContent(Swal);
     const moment = require('moment');
-    const defaultData = {
-        inc: [],
-        other: [],
-        law: [],
-        arc: [],
-        eng: [],
-        rec: [],
-        check: [],
-        cor: [],
-        res: [],
-        lic: [],
-        lic2: [],
-        pay: [],
-        pay2: [],
-        neg: [],
-        neg2: [],
-        rsc: [],
-        rsc2: [],
-        rsc3: [],
-        gen: [],
-        sign: [],
-    }
+    const defaultData = createDefaultData();
     const VRDI = VR_DOCUMENTS_OF_INTEREST;
     var [id1, setId1] = useState(`${nomens}${moment().subtract(1, 'year').format('YY')}-0000`);
     var [id2, setId2] = useState(`${nomens}${moment().format('YY')}-9999`);
@@ -44,11 +33,33 @@ export default function FUN_DAILY_COMPONENT(props) {
     var [selectedBtn, setSbtn] = useState(null)
     var [filter, setFilter] = useState('')
 
+    // Track whether this effect instance is still active (React 18 StrictMode cleanup)
     useEffect(() => {
-        if (!load) retrieveMacro()
-        //if (data.length > 0 && !load2) curateData()
-        if (data.length == 0 && load) setLoad2(true)
-    }, [data, load, load2]);
+        if (!load) {
+            let cancelled = false;
+            FUN_SERVICE.loadMacroRange(id1, id2)
+                .then(response => {
+                    if (cancelled) return;
+                    setLoad(true);
+                    if (response.data.length > 0) {
+                        curateData(response.data);
+                    } else {
+                        setLoad2(true);
+                    }
+                })
+                .catch(e => {
+                    if (cancelled) return;
+                    console.log(e);
+                    MySwal.fire({
+                        title: "ERROR AL CARGAR",
+                        text: "No ha sido posible cargar este item, inténtelo nuevamente.",
+                        icon: 'error',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+            return () => { cancelled = true; };
+        }
+    }, [load]);
 
 
     // ***************************  DATA GETTERS *********************** //
@@ -515,7 +526,9 @@ export default function FUN_DAILY_COMPONENT(props) {
     }
 
     function curateData(load_data) {
-        let _datac = datac;
+        // CRITICAL: Create a fresh structure instead of mutating the state reference.
+        // In React 18 StrictMode, effects can run twice; mutating state caused data duplication.
+        let _datac = createDefaultData();
         load_data.map((row, i) => {
 
             if (row.state >= 100) return;
@@ -843,7 +856,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                     setLoad(false);
 
                     setLoad2(false);
-                    setDatac(defaultData);
+                    setDatac(createDefaultData());
                     //retrieveMacro();
                 }}>CARGAR</MDBBtn>
             </div>

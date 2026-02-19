@@ -5,14 +5,13 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { useParams } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-import React from 'react';
+import React, { useRef } from 'react';
 import { Divider } from 'rsuite';
-
-const recaptchaRef = React.createRef();
 const MySwal = withReactContent(Swal);
 
 export default function PROFESIONALS_PUBLIC(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
+    const recaptchaRef = useRef(null);
 
     const { urlParams } = useParams();
 
