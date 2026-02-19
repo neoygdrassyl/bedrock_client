@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import { MDBDataTable } from 'mdbreact';
+import DataTable from 'react-data-table-component';
 import Modal from 'react-modal';
 import ListJson from '../../../../components/jsons/fun6DocsList.json';
 import './fun_modal_shared.css';
@@ -49,35 +49,32 @@ class DOCS_LIST extends Component {
                 data.push({
                     cod: item,
                     desc: ListJson[item],
-                    btn: <MDBTooltip title='Copiar informacion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                        <button className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <i class="far fa-copy fa-2x"></i></button></MDBTooltip>,
-                    clickEvent: ((row) => _COPY_INFO(row))
                 })
             }
             return data;
         }
-        const data = {
-            columns: [
-                {
-                    label: 'CODIGO',
-                    field: 'cod',
-                    sort: 'asc',
-                    width: 50
-                },
-                {
-                    label: 'NOMBRE',
-                    field: 'desc',
-                    sort: 'asc',
-                    width: 270
-                },
-                {
-                    label: 'ACCION',
-                    field: 'btn',
-                }
-            ],
-            rows: _GET_DOCS_DATA()
-        }
+        const docsColumns = [
+            {
+                name: 'CODIGO',
+                selector: row => row.cod,
+                sortable: true,
+                width: '100px',
+            },
+            {
+                name: 'NOMBRE',
+                selector: row => row.desc,
+                sortable: true,
+                wrap: true,
+            },
+            {
+                name: 'ACCION',
+                button: true,
+                cell: row => <MDBTooltip title='Copiar informacion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
+                    <button className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => _COPY_INFO(row)}>
+                        <i class="far fa-copy fa-2x"></i></button></MDBTooltip>,
+            }
+        ]
+        const docsData = _GET_DOCS_DATA();
 
         let toggle = (id) => {
             this.setState({
@@ -102,16 +99,16 @@ class DOCS_LIST extends Component {
                         <label><i class="fas fa-th-list"></i> CODIGOS TIPOLOGIA DOCUMENTAL</label>
                         <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                     </div>
-                    <MDBDataTable
+                    <DataTable
                         striped
-                        bordered
-                        small
-                        data={data}
-                        searchLabel={"Buscar..."}
-                        paginationLabel={['Anterior', 'Siguiente']}
-                        infoLabel={['Mostrando', 'a', 'de', 'Entradas']}
-                        entriesLabel={'Mostrar entradas'}
-                        btn
+                        columns={docsColumns}
+                        data={docsData}
+                        pagination
+                        paginationPerPage={10}
+                        paginationComponentOptions={{ rowsPerPageText: 'Mostrar entradas', rangeSeparatorText: 'de' }}
+                        dense
+                        highlightOnHover
+                        noDataComponent="No hay datos"
                     />
                     <div className="text-end py-4 mt-3">
                         <MDBBtn className="btn btn-lg btn-info" onClick={() => this.setState({ modal_searchList: false })}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
