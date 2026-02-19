@@ -444,3 +444,249 @@ El Node 20.20.0 instalado vía `nvm` usaba OpenSSL 1.1.1v+quic, que no expone `c
 **Commit:** `dcbb3761` — `build(fase4): migrate CRA 4 → Vite 6 + Jest → Vitest`
 
 **Listo para Fase 2:** Actualizar React 16→18 (`createRoot`, actualizar deps).
+
+---
+
+## Fase 2 — React 16.14 → 18.3.1
+
+**Fecha:** 2025-07-15  
+**Objetivo:** Actualizar React core a v18, migrar `ReactDOM.render` → `createRoot`, actualizar todas las dependencias React-dependientes, eliminar `mdbreact`.
+
+---
+
+### 1. Pre-requisito: Eliminación de `mdbreact` (9 archivos)
+
+`mdbreact@5.2.0` es un paquete abandonado incompatible con React 18. Se reemplazó en 9 archivos:
+
+| Archivo | Componente legacy | Reemplazo |
+|---------|------------------|-----------|
+| `dictionary.page.js` | `MDBPageItem`, `MDBPageNav` | Bootstrap 5 `<li className="page-item">` |
+| `submit_list.component.js` | `MDBDataTable` | HTML `<table>` nativo (inputs en filas incompatibles con DataTable) |
+| `docs_list.component.js` | `MDBDataTable` | `react-data-table-component` DataTable |
+| `fun_6_history.component.js` | `MDBDataTable` (import muerto) | Import eliminado |
+| `fun_macro_filterList.component.js` | `MDBDataTable` (import muerto) | Import eliminado |
+| `pqrsadmin.js` | `MDBCollapse` | Renderización condicional `{bool && (...)}` |
+| `submit_x_fun.component.js` | `MDBCollapse` | Renderización condicional |
+| `fun_worker_asign.component.js` | `MDBCollapse` | Renderización condicional |
+| `record_arc_39.js` | Archivo completamente comentado | Sin cambios necesarios |
+
+```bash
+npm uninstall mdbreact --legacy-peer-deps
+```
+
+**Tests:** 46/46 PASS  
+**Commit:** `48343a4f` — `refactor(fase2): replace remaining mdbreact imports (9 files) + uninstall mdbreact`
+
+---
+
+### 2. React core: 16.14.0 → 18.3.1
+
+```bash
+npm install react@18 react-dom@18 --legacy-peer-deps
+```
+
+> **Nota:** `--legacy-peer-deps` requerido en toda la Fase 2 porque `mdb-react-ui-kit@1.6.0` declara `peerDependencies: { "react": "^17.0.0" }`.
+
+---
+
+### 3. Migración `ReactDOM.render` → `createRoot`
+
+**2 archivos afectados:**
+
+#### `src/index.js` (entry point)
+```js
+// ANTES
+import ReactDOM from 'react-dom';
+ReactDOM.render(<App />, document.getElementById('root'));
+
+// DESPUÉS
+import { createRoot } from 'react-dom/client';
+const root = createRoot(document.getElementById('root'));
+root.render(<StrictMode><App /></StrictMode>);
+```
+
+#### `src/app/pages/user/clocks/centralClocks.component.js` (~línea 615)
+SweetAlert2 modal usa `ReactDOM.render()` imperativamente en `didOpen`/`willClose`:
+```js
+// ANTES
+ReactDOM.render(<Component />, container);
+ReactDOM.unmountComponentAtNode(container);
+
+// DESPUÉS
+import { createRoot } from 'react-dom/client';
+const modalRoot = createRoot(container);
+modalContainer._reactRoot = modalRoot;  // Guardar referencia para cleanup
+modalRoot.render(<Component />);
+// En willClose:
+modalContainer._reactRoot.unmount();
+```
+
+**Tests:** 46/46 PASS  
+**Commit:** `4330088e` — `feat(fase2): upgrade React 16.14 → 18.3.1 + migrate createRoot`
+
+---
+
+### 4. Actualización de dependencias por grupos
+
+#### Grupo 1: Sin riesgo (no dependen de internals React)
+
+| Dependencia | Antes | Después |
+|-------------|-------|---------|
+| `axios` | ^0.21.1 | ^1.9.0 |
+| `sweetalert2` | ^10.16.7 | ^11.17.3 |
+| `sweetalert2-react-content` | ^3.2.1 | ^5.1.0 |
+
+**Tests:** 46/46 PASS
+
+#### Grupo 2: React companion libs
+
+| Dependencia | Antes | Después |
+|-------------|-------|---------|
+| `react-i18next` | ^11.8.15 | ^15.5.2 |
+| `i18next` | ^20.2.2 | ^24.2.3 |
+
+**Tests:** 46/46 PASS
+
+#### Grupo 3: UI libs que requieren React 18
+
+| Dependencia | Antes | Después |
+|-------------|-------|---------|
+| `react-bootstrap` | ^1.6.8 | ^2.10.9 |
+| `styled-components` | ^5.3.0 | ^6.1.18 |
+
+> **Issue resuelto:** `styled-components@6` CJS bundle referencia `React` global. Tests fallaban con `React is not defined`. Solución: agregar `globalThis.React = React` en `src/__tests__/setup.js`.
+
+**Tests:** 46/46 PASS
+
+#### Grupo 4: Testing
+
+| Dependencia | Antes | Después |
+|-------------|-------|---------|
+| `@testing-library/react` | ^11.2.6 | ^16.3.0 |
+| `@testing-library/user-event` | ^12.8.3 | ^14.6.1 |
+| `@testing-library/jest-dom` | ^5.12.0 | ^6.6.3 |
+| `@testing-library/dom` | (no existía) | ^10.4.0 (nuevo peer dep) |
+
+**Tests:** 46/46 PASS
+
+#### Grupo 5: Componentes UI individuales
+
+| Dependencia | Antes | Después |
+|-------------|-------|---------|
+| `react-calendar` | ^3.3.1 | ^5.1.0 |
+| `react-date-picker` | ^8.1.0 | ^11.0.0 |
+| `react-google-recaptcha` | ^2.1.0 | ^3.1.0 |
+| `react-modal` | ^3.12.1 | ^3.16.3 |
+| `react-data-table-component` | ^6.11.8 | ^7.7.0 |
+
+**Tests:** 46/46 PASS  
+**Commit:** `512bf2a7` — `feat(fase2): update React-dependent deps for React 18`
+
+---
+
+### 5. react-pdf v5 → v9
+
+Cambios significativos en `react-pdf@9`:
+
+| Aspecto | v5 | v9 |
+|---------|----|----|
+| CSS AnnotationLayer | `react-pdf/dist/umd/Page/AnnotationLayer.css` | `react-pdf/dist/Page/AnnotationLayer.css` |
+| CSS TextLayer | No existía | `react-pdf/dist/Page/TextLayer.css` (nuevo, requerido) |
+| Worker | `pdfjs.GlobalWorkerOptions.workerSrc = CDN` | `new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url)` |
+
+**Archivos actualizados:**
+- `src/app/components/pdfViewer.component.js`
+- `src/app/components/viewer.component.js`
+
+#### Limpieza adicional
+- `npm uninstall popper.js` — Obsoleto (react-bootstrap v2 usa @popperjs/core)
+- `npm install scheduler` — Mantenido explícitamente porque `mdb-react-ui-kit@1.6.0` lo requiere a nivel raíz (react-dom@18 lo anida internamente)
+
+**Tests:** 46/46 PASS  
+**Commit:** `c9ac9625` — `feat(fase2): upgrade react-pdf v5→v9 + cleanup scheduler/popper.js`
+
+---
+
+### 6. Auditoría StrictMode (React 18)
+
+React 18 StrictMode invoca effects dos veces en desarrollo. Se auditaron todos los `useEffect` con timers:
+
+| Archivo | Patrón | Estado |
+|---------|--------|--------|
+| `centralClocks.component.js` | `setTimeout` en useEffect con `clearTimeout` en cleanup | ✅ Seguro |
+| `centralClocks.component.js` | `setTimeout` en event handlers (no effects) | ✅ Seguro |
+| `centralClocks.component.js` | `deletionTimeoutRef` con cleanup en useEffect | ✅ Seguro |
+| `MermaidDiagram.component.js` | `setInterval` en Promise singleton (auto-limpia) | ✅ Seguro |
+| `exp_clocks.component.js` | `setTimeout` en event handler | ✅ Seguro |
+| `exp_clocks_diagram.component.js` | `setTimeout` en event handler | ✅ Seguro |
+| `App.js` | `setTimeout(cb, 100)` en callbacks | ✅ Seguro |
+
+**Resultado:** Todos los patrones de timers son seguros. No se requieren correcciones.
+
+---
+
+### 7. Verificación final
+
+#### Tests
+| Suite | Tests | Resultado |
+|-------|-------|-----------|
+| App.smoke | 6 | ✅ PASS |
+| Login.smoke | 4 | ✅ PASS |
+| Navigation.smoke | 23 | ✅ PASS |
+| Modules.smoke | 13 | ✅ PASS |
+| **TOTAL** | **46** | **✅ ALL PASS** |
+
+#### Build producción
+```bash
+NODE_OPTIONS="--max-old-space-size=4096" npx vite build
+# ✓ 3593 modules transformed
+# ✓ built in 1m 6s
+```
+
+> **Nota:** Build requiere `--max-old-space-size=4096` por el tamaño del bundle (10.7 MB). Chunk warnings son pre-existentes (no introducidos en Fase 2).
+
+#### Warnings conocidos (pre-existentes, NO introducidos en Fase 2)
+- `Module "fs" externalized` — `fun_docs.js` importa fs (debería ser server-side)
+- `pdf.worker.min.mjs doesn't exist at build time` — react-pdf worker resuelve en runtime
+- `Use of eval in js-sha256` — dependencia externa, no controlable
+- Chunk > 500KB — bundle principal 10.7MB, requiere code-splitting futuro
+
+---
+
+### 8. Resumen de dependencias: Antes → Después
+
+| Paquete | Antes | Después |
+|---------|-------|---------|
+| `react` | 16.14.0 | **18.3.1** |
+| `react-dom` | 16.14.0 | **18.3.1** |
+| `axios` | 0.21.4 | **1.9.0** |
+| `sweetalert2` | 10.16.7 | **11.17.3** |
+| `sweetalert2-react-content` | 3.3.3 | **5.1.0** |
+| `react-i18next` | 11.18.6 | **15.5.2** |
+| `i18next` | 20.6.1 | **24.2.3** |
+| `react-bootstrap` | 1.6.8 | **2.10.9** |
+| `styled-components` | 5.3.11 | **6.1.18** |
+| `react-pdf` | 5.7.2 | **9.2.1** |
+| `react-calendar` | 3.9.0 | **5.1.0** |
+| `react-date-picker` | 8.4.0 | **11.0.0** |
+| `react-google-recaptcha` | 2.1.0 | **3.1.0** |
+| `react-modal` | 3.16.1 | **3.16.3** |
+| `react-data-table-component` | 6.11.8 | **7.7.0** |
+| `@testing-library/react` | 11.2.7 | **16.3.0** |
+| `@testing-library/user-event` | 12.8.3 | **14.6.1** |
+| `@testing-library/jest-dom` | 5.17.0 | **6.6.3** |
+| `@testing-library/dom` | — | **10.4.0** (nuevo) |
+| `mdbreact` | 5.2.0 | **ELIMINADO** |
+| `popper.js` | 1.16.1 | **ELIMINADO** |
+
+---
+
+### 9. Estado: Fase 2 completada ✅
+
+**Commits:**
+1. `48343a4f` — `refactor(fase2): replace remaining mdbreact imports (9 files) + uninstall mdbreact`
+2. `4330088e` — `feat(fase2): upgrade React 16.14 → 18.3.1 + migrate createRoot`
+3. `512bf2a7` — `feat(fase2): update React-dependent deps for React 18`
+4. `c9ac9625` — `feat(fase2): upgrade react-pdf v5→v9 + cleanup scheduler/popper.js`
+
+**Listo para Fase 3:** Migrar react-router-dom v5 → v6 (`Switch`→`Routes`, `useHistory`→`useNavigate`, etc.).
