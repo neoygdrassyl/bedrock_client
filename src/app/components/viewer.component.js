@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { PDFDocument } from 'pdf-lib';
 import { Document, Page, pdfjs } from "react-pdf";
-import 'react-pdf/dist/umd/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 import { Button, FlexboxGrid, Message, toaster } from 'rsuite';
 import { MDBBtn } from 'mdb-react-ui-kit';
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString();
 
 
 const customStylesForModal = {
