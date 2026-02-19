@@ -261,7 +261,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         const columns = [
             {
                 name: <label><b>PROFESIONAL</b></label>,
-                selector: 'name',
+                selector: row => row.name,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
@@ -277,7 +277,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             },
             {
                 name: <label><b>FECHA ASIGNACIÓN</b></label>,
-                selector: 'asign',
+                selector: row => row.asign,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
@@ -285,7 +285,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             },
             {
                 name: <label><b>FECHA RESPUESTA</b></label>,
-                selector: 'date_reply',
+                selector: row => row.date_reply,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
@@ -293,7 +293,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             },
             {
                 name: <label><b>FECHA LIMITE </b></label>,
-                selector: 'date_reply',
+                selector: row => row.date_reply,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
@@ -301,7 +301,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             },
             {
                 name: <label><b>DIAS HABILES</b></label>,
-                selector: '',
                 minWidth: '150px',
                 center: true,
                 sortable: true,
@@ -356,7 +355,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         const columns = [
             {
                 name: <label><b>PROFESIONAL</b></label>,
-                selector: 'name',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
                 cell: row => <h6 className="text-center">{row.name}</h6>
@@ -857,14 +856,14 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         const columns = [
             {
                 name: <h3>NOMBRE</h3>,
-                selector: 'name',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
                 cell: row => <p className="pt-3 text-center">{row.public_name}</p>
             },
             {
                 name: <h3>TIPO</h3>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 cell: row => <p className="pt-3">{row.type}</p>

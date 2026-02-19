@@ -31,14 +31,14 @@ class PQRS_COMPONENT_CONTACTS extends Component {
             const columns = [
                 {
                     name: <label>DIRECCIÓN</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.address}</label>,
                 },
                 {
                     name: <label>BARRIO</label>,
-                    selector: 'competence',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.neighbour}</label>,
@@ -49,7 +49,7 @@ class PQRS_COMPONENT_CONTACTS extends Component {
                 },
                 {
                     name: <label>TELÉFONO</label>,
-                    selector: 'asign',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.phone}</label>,

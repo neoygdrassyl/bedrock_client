@@ -61,7 +61,7 @@ class SUBMIT_SINGLE_VIEW extends Component {
         const columns = [
             {
                 name: <label className="text-center">VR</label>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -69,7 +69,7 @@ class SUBMIT_SINGLE_VIEW extends Component {
             },
             {
                 name: <label className="text-center">FECHA</label>,
-                selector: 'date',
+                selector: row => row.date,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -77,7 +77,7 @@ class SUBMIT_SINGLE_VIEW extends Component {
             },
             {
                 name: <label className="text-center">HORA</label>,
-                selector: 'time',
+                selector: row => row.time,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -86,7 +86,7 @@ class SUBMIT_SINGLE_VIEW extends Component {
             },
             {
                 name: <label className="text-center">DOCUMENTO</label>,
-                selector: 'name',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
                 minWidth: '400px',
@@ -94,7 +94,7 @@ class SUBMIT_SINGLE_VIEW extends Component {
             },
             {
                 name: <label className="text-center">NOMEN.</label>,
-                selector: 'category',
+                selector: row => row.category,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -103,7 +103,7 @@ class SUBMIT_SINGLE_VIEW extends Component {
             },
             {
                 name: <label className="text-center">CODIGO</label>,
-                selector: 'code',
+                selector: row => row.code,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -112,7 +112,7 @@ class SUBMIT_SINGLE_VIEW extends Component {
             },
             {
                 name: <label className="text-center">FOLIOS</label>,
-                selector: 'page',
+                selector: row => row.page,
                 sortable: true,
                 filterable: true,
                 center: true,

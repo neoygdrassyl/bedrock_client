@@ -44,7 +44,7 @@ class PQRS_COMPONENT_CLOCKS extends Component {
             const columns = [
                 {
                     name: <label><b>CONTACTO</b></label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     minWidth: '100px',
                     sortable: true,
                     filterable: true,
@@ -60,7 +60,7 @@ class PQRS_COMPONENT_CLOCKS extends Component {
                 },
                 {
                     name: <label><b>NOTIFICACIÓN - EXTENSION</b></label>,
-                    selector: 'asign',
+                    selector: row => row.asign,
                     minWidth: '100px',
                     sortable: true,
                     filterable: true,
@@ -68,7 +68,7 @@ class PQRS_COMPONENT_CLOCKS extends Component {
                 },
                 {
                     name: <label><b>NOTIFICACIÓN - OFICIO RESPUESTA</b></label>,
-                    selector: 'asign',
+                    selector: row => row.asign,
                     minWidth: '100px',
                     sortable: true,
                     omit: currentItem.pqrs_law ? currentItem.pqrs_law.extension ? 0 : 1 : 1,

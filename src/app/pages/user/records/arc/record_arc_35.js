@@ -417,7 +417,7 @@ class RECORD_ARC_35 extends Component {
             const columns = [
                 {
                     name: <label>Uso</label>,
-                    selector: 'use',
+                    selector: row => row.use,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -425,7 +425,7 @@ class RECORD_ARC_35 extends Component {
                 },
                 {
                     name: <label>Tipo</label>,
-                    selector: 'type',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -434,7 +434,7 @@ class RECORD_ARC_35 extends Component {
                 },
                 {
                     name: <label>Unidad Uso</label>,
-                    selector: 'pos',
+                    selector: row => row.pos,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -443,7 +443,7 @@ class RECORD_ARC_35 extends Component {
                 },
                 {
                     name: <label>Relación</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -451,7 +451,7 @@ class RECORD_ARC_35 extends Component {
                 },
                 {
                     name: <label>Norma</label>,
-                    selector: 'norm',
+                    selector: row => row.norm,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -461,7 +461,7 @@ class RECORD_ARC_35 extends Component {
                 },
                 {
                     name: <label>Proyecto</label>,
-                    selector: 'project',
+                    selector: row => row.project,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -695,7 +695,7 @@ class RECORD_ARC_35 extends Component {
             const columns = [
                 {
                     name: <label>Piso / Sótano</label>,
-                    selector: 'floor',
+                    selector: row => row.floor,
                     sortable: true,
                     filterable: true,
                     center: true,

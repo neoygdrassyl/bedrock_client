@@ -122,7 +122,7 @@ class Seals extends Component {
         const columns = [
             {
                 name: <h3>No. Radicado</h3>,
-                selector: 'id_request',
+                selector: row => row.id_request,
                 sortable: true,
                 filterable: true,
                 minWidth: '100px',
@@ -130,13 +130,13 @@ class Seals extends Component {
             },
             {
                 name: <h3>Sello Consecutivo</h3>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 cell: row => <p className="pt-3">{row.id_public}</p>
             },
             {
                 name: <h3>Fecha de Expedición</h3>,
-                selector: 'date',
+                selector: row => row.date,
                 sortable: true,
                 cell: row => <p className="pt-3 text-center">{dateParser(row.fun_0.date)}</p>
             },

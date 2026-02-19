@@ -111,7 +111,7 @@ class SUBMIT extends Component {
         const columns = [
             {
                 name: <label className="text-center">Nr. RADICACIÓN</label>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -119,7 +119,7 @@ class SUBMIT extends Component {
             },
             {
                 name: <label className="text-center">Nr. Licencia / Solicitud</label>,
-                selector: 'id_related',
+                selector: row => row.id_related,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -127,7 +127,7 @@ class SUBMIT extends Component {
             },
             {
                 name: <label className="text-center">TIPO</label>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 minWidth: '300px',
@@ -144,7 +144,7 @@ class SUBMIT extends Component {
             },
             {
                 name: <label className="text-center">DOCUMENTO</label>,
-                selector: 'sub_doc',
+                selector: row => row.sub_doc,
                 sortable: true,
                 filterable: true,
                 center: true,

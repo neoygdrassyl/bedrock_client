@@ -34,14 +34,14 @@ class PQRS_EDIT_ATTACH extends Component {
             const columns = [
                 {
                     name: <label>NOMBRE</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.public_name}</label>,
                 },
                 {
                     name: <label>TIPO</label>,
-                    selector: 'competence',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.type}</label>,

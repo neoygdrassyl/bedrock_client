@@ -56,7 +56,7 @@ class RECORD_PH_BLUEPRINT extends Component {
             const columns = [
                 {
                     name: <label className="text-center">ID Plano</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -64,7 +64,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                 },
                 {
                     name: <label className="text-center">Sótano / Piso</label>,
-                    selector: 'floor',
+                    selector: row => row.floor,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -72,7 +72,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                 },
                 {
                     name: <label className="text-center">Área total construida m2</label>,
-                    selector: 'area',
+                    selector: row => row.area,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -150,7 +150,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                 },
                 {
                     name: <label className="text-center">Descripción otros bienes (espacios)</label>,
-                    selector: 'units_other',
+                    selector: row => row.units_other,
                     sortable: true,
                     filterable: true,
                     center: true,

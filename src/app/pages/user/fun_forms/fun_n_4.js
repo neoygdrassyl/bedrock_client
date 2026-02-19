@@ -32,21 +32,21 @@ class FUNN4 extends Component {
             const columns_4 = [
                 {
                     name: <label>LINDEROS</label>,
-                    selector: 'coord',
+                    selector: row => row.coord,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.coord}</label>
                 },
                 {
                     name: <label>LONGITUD</label>,
-                    selector: 'longitud',
+                    selector: row => row.longitud,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.longitud}</label>
                 },
                 {
                     name: <label>COLINDA CON</label>,
-                    selector: 'colinda',
+                    selector: row => row.colinda,
                     cell: row => <label>{row.colinda}</label>
                 },
                 {

@@ -121,7 +121,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
     const columns = [
         {
             name: <label>No. RADICACION</label>,
-            selector: 'id_public',
+            selector: row => row.id_public,
             sortable: true,
             filterable: true,
             minWidth: '150px',
@@ -145,7 +145,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
         },
         {
             name: <label className="text-center">ESTADO</label>,
-            selector: 'state',
+            selector: row => row.state,
             sortable: true,
             filterable: true,
             center: true,
@@ -154,7 +154,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
         },
         {
             name: <label className="text-center">CATEGORIA</label>,
-            selector: 'type',
+            selector: row => row.type,
             sortable: true,
             filterable: true,
             center: true,

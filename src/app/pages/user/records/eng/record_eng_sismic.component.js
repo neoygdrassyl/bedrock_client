@@ -644,7 +644,7 @@ class RECORD_ENG_SISMIC extends Component {
             const columns = [
                 {
                     name: <label className="text-center text-success">Nivel</label>,
-                    selector: 'pos',
+                    selector: row => row.pos,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -778,7 +778,7 @@ class RECORD_ENG_SISMIC extends Component {
             const columns = [
                 {
                     name: <label className="text-center text-success">Nivel</label>,
-                    selector: 'pos',
+                    selector: row => row.pos,
                     sortable: true,
                     filterable: true,
                     center: true,

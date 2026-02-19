@@ -110,14 +110,14 @@ class PQRSLOCK extends Component {
             const columns = [
                 {
                     name: <h3>NOMBRE</h3>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{row.public_name}</p>
                 },
                 {
                     name: <h3>TIPO</h3>,
-                    selector: 'type',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3">{row.type}</p>

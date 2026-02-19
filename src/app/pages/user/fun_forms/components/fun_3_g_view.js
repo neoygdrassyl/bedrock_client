@@ -113,14 +113,14 @@ class FUN_3_G_VIEW extends Component {
             const columns_3 = [
                 {
                     name: <label>DIRECCIÓN DEL PREDIO</label>,
-                    selector: 'direccion_1',
+                    selector: row => row.direccion_1,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_1}</label>
                 },
                 {
                     name: <label>DIRECCIÓN DE CORRESPONDENCIA</label>,
-                    selector: 'direccion_2',
+                    selector: row => row.direccion_2,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_2}</label>
@@ -135,21 +135,21 @@ class FUN_3_G_VIEW extends Component {
                 },
                 {
                     name: <label>ESTADO CITACIÓN</label>,
-                    selector: 'row.state',
+                    selector: row => row.state,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{_GET_NEIGHBOUR_STATE(row.state)}</label>
                 },
                 {
                     name: <label>CONSECUTIVO RELACIONADO</label>,
-                    selector: 'id_cub',
+                    selector: row => row.id_cub,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.id_cub}</label>
                 },
                 {
                     name: <label>GUIÁ DE CONFIRMACIÓN</label>,
-                    selector: 'id_alerted',
+                    selector: row => row.id_alerted,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.id_alerted == "-1"
@@ -158,7 +158,7 @@ class FUN_3_G_VIEW extends Component {
                 },
                 {
                     name: <label>FECHA RECIBIDO</label>,
-                    selector: 'alerted',
+                    selector: row => row.alerted,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.state == 1 ? dateParser(row.alerted) : ""}</label>

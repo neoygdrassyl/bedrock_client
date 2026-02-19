@@ -137,7 +137,7 @@ class PQRS_MACROTABLE extends Component {
             },
             { 
                 name: <label  className="text-center">CONSECUTIVO VENTANILLA ÚNICA</label>,
-                selector: 'id_global',
+                selector: row => row.id_global,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -147,7 +147,7 @@ class PQRS_MACROTABLE extends Component {
             }, 
             {
                 name: <label  className="text-center">FECHA RADICACIÓN</label>,
-                selector: 'pqrs_time.legal',
+                selector: row => row.pqrs_time?.legal,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -157,7 +157,7 @@ class PQRS_MACROTABLE extends Component {
             },
             {
                 name: <label  className="text-center">CANAL DE INGRESO </label>,
-                selector: 'pqrs_info.radication_channel',
+                selector: row => row.pqrs_info?.radication_channel,
                 sortable: true,
                 filterable: true,
                 minWidth: "200px",
@@ -260,7 +260,7 @@ class PQRS_MACROTABLE extends Component {
             },
             {
                 name: <label  className="text-center">CONSECUTIVO SALIDA</label>,
-                selector: 'id_reply',
+                selector: row => row.id_reply,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -270,7 +270,7 @@ class PQRS_MACROTABLE extends Component {
             },
             {
                 name: <label className="text-center">FECHA LIMITE RESPUESTA LEGAL</label>,
-                selector: 'pqrs_time.legal',
+                selector: row => row.pqrs_time?.legal,
                 sortable: true,
                 center: true,
                 cell: row => <label>{row.pqrs_time ? (dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time)) : ''}</label>,
@@ -287,7 +287,7 @@ class PQRS_MACROTABLE extends Component {
             },
             {
                 name: <label  className="text-center">FECHA DE RESPUESTA</label>,
-                selector: 'pqrs_time.reply_formal',
+                selector: row => row.pqrs_time?.reply_formal,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -300,7 +300,7 @@ class PQRS_MACROTABLE extends Component {
 
             {
                 name: <label  className="text-center">ESTADO</label>,
-                selector: 'status',
+                selector: row => row.status,
                 sortable: true,
                 filterable: true,
                 center: true,

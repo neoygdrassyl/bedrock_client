@@ -75,7 +75,7 @@ export default function RECORD_ARC_36_TABLE(props) {
     const columns = [
         {
             name: <label>Dirección</label>,
-            selector: 'parent',
+            selector: row => row.parent,
             sortable: true,
             filterable: true,
             center: true,
@@ -85,7 +85,7 @@ export default function RECORD_ARC_36_TABLE(props) {
         },
         {
             name: <label>Perfil</label>,
-            selector: 'parent',
+            selector: row => row.parent,
             sortable: true,
             filterable: true,
             center: true,
@@ -100,7 +100,7 @@ export default function RECORD_ARC_36_TABLE(props) {
         },
         {
             name: <label>Relación</label>,
-            selector: 'name',
+            selector: row => row.name,
             sortable: true,
             filterable: true,
             center: true,
@@ -117,7 +117,7 @@ export default function RECORD_ARC_36_TABLE(props) {
         /**
          * {
             name: <label>Lado</label>,
-            selector: 'side',
+            selector: row => row.side,
             sortable: true,
             filterable: true,
             center: true,
@@ -127,7 +127,7 @@ export default function RECORD_ARC_36_TABLE(props) {
         },
          {
             name: <label>Norma</label>,
-            selector: 'norm',
+            selector: row => row.norm,
             sortable: true,
             filterable: true,
             center: true,
@@ -137,7 +137,7 @@ export default function RECORD_ARC_36_TABLE(props) {
         },
         {
             name: <label>Proyecto</label>,
-            selector: 'project',
+            selector: row => row.project,
             sortable: true,
             filterable: true,
             center: true,
