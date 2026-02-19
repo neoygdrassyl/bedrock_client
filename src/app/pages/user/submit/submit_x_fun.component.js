@@ -1,5 +1,4 @@
 import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip, MDBTypography } from 'mdb-react-ui-kit';
-import { MDBCollapse } from "mdbreact";
 import moment from 'moment';
 import { Component } from 'react';
 import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
@@ -542,11 +541,11 @@ class SUBMIT_X_FUN extends Component {
                         </MDBTooltip>
                     </div>
                 </div>
-                <MDBCollapse id='lic_list' isOpen={this.state.lic_list}>
+                {this.state.lic_list && (
                     <ul class="list-group mx-2">
                         {this.props.type == "LIC" ? _COMPONENT_LIST_DOCS_CHECK(simple) : ''}
                     </ul>
-                </MDBCollapse>
+                )}
 
             </MDBTypography>
         }

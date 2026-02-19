@@ -7,7 +7,9 @@ applyTo: '**'
 > **Estado actual:** Branch `feat/react-19-migration`  
 > **Fase activa:** FASE 2 — Actualizar React 16 → 18  
 > **Fases completadas:** Fase 0 (auditoría), Fase 1 (limpieza imports), Fase 4 (CRA → Vite 6)  
-> **Última actualización:** 2026-02-18
+> **Última actualización:** 2026-02-18  
+> **Node requerido:** v22+ (.nvmrc = 22) — Vite 6 requiere OpenSSL 3  
+> **Build tool:** Vite 6.4.1 + Vitest 4.0.18 (CRA eliminado)
 
 ---
 
@@ -369,33 +371,75 @@ Estas dependencias no dependen de React o ya son compatibles:
 
 ---
 
-## Orden de Ejecución Recomendado
+## Orden de Ejecución Real
 
 ```
-Fase 0 ✅ → Fase 1 ✅ → Fase 2 ⏳ → Fase 3 → Fase 4 → Fase 5 → Fase 6 (paralela) → Fase 7 (paralela)
-                         ^^^^^^^^
-                      ESTÁS AQUÍ
+Fase 0 ✅ → Fase 1 ✅ → Fase 4 ✅ → Fase 2 ⏳ → Fase 3 → Fase 5 → Fase 6 (paralela) → Fase 7 (paralela)
+                                    ^^^^^^^^
+                                 ESTÁS AQUÍ
 ```
 
-### Dependencias entre fases
+> **Nota:** Fase 4 (CRA→Vite) se ejecutó antes de Fase 2 (React 18) porque era independiente y simplificaba las fases posteriores al tener ya Vite como bundler.
+
+### Dependencias entre fases restantes
 
 ```
-Fase 2 (React 18) ──┐
-                     ├── Fase 5 (React 19)
-Fase 3 (Router v6) ─┘
-                     
-Fase 4 (Vite) ← independiente pero recomendado después de Fase 3
+Fase 2 (React 18) ⏳ SIGUIENTE
+  └── Fase 3 (Router v6)
+       └── Fase 5 (React 19)
 
 Fase 6 (Class→Func) ← puede empezar tras Fase 2, continua en paralelo
 Fase 7 (Libs abandon.) ← puede empezar tras Fase 2, continua en paralelo
 ```
 
-### Timeline estimado
+### Timeline estimado (restante)
 
-| Fase | Días estimados | Acumulado |
-|------|---------------|-----------|
-| Fase 2 | 2-3 días | 2-3 |
+| Fase | Días estimados | Acumulado desde ahora |
+|------|---------------|----------------------|
+| ~~Fase 0~~ | ~~1 día~~ | ✅ completada |
+| ~~Fase 1~~ | ~~1 día~~ | ✅ completada |
+| ~~Fase 4~~ | ~~2 días~~ | ✅ completada |
+| **Fase 2** | **2-3 días** | **2-3** |
 | Fase 3 | 1-2 días | 3-5 |
-| Fase 4 | 2-3 días | 5-8 |
-| Fase 5 | 1 día | 6-9 |
+| Fase 5 | 1 día | 4-6 |
+| Fase 6+7 | Continuo (semanas) | — |
+
+---
+
+## Resumen de lo completado (contexto para agentes)
+
+### Fase 0 — Auditoría (commit `c48ef9da`)
+- Branch `feat/react-19-migration` creado
+- Auditoría completa de 357 archivos JS/JSX
+- 46 tests de humo escritos y pasando (App, Login, Navigation, Modules)
+- MIGRATION_LOG.md creado con baseline
+
+### Fase 1 — Limpieza pre-migración (commit `ec9a9979`)
+- 250 archivos: removidos `import React` innecesarios
+- 24 archivos mantienen import (usan React APIs directamente)
+- string refs: 0 reales (22 eran falsos positivos de `href`)
+- lifecycles deprecated: 0 encontrados
+
+### Fase 4 — CRA → Vite (commits `dcbb3761`, `754b0cce`, `99b640e5`)
+- `react-scripts` eliminado, `env-cmd` eliminado, `web-vitals` eliminado
+- Vite 6.4.1 instalado con 3 plugins custom:
+  - `jsxInJs()`: trata `.js` como JSX (evita renombrar 357 archivos)
+  - `cjsToEsm()`: convierte `require()` a `import` en src/
+  - `fix-moment-business-days`: patch para interop CJS/ESM de moment
+- 82 archivos migrados: `process.env.REACT_APP_*` → `import.meta.env.VITE_*`
+- 7 variables de entorno renombradas en `.env`
+- Jest → Vitest con config dedicada (`vitest.config.mjs`)
+- `index.html` movido a raíz del proyecto
+- Node actualizado a v22 (requerido por Vite 6 — OpenSSL 3)
+- 46 tests siguen pasando bajo Vitest
+
+### Estado actual verificado (2026-02-18)
+- React instalado: **16.14.0** (aún sin actualizar)
+- react-router-dom: **5.3.4** (aún sin actualizar)
+- styled-components: **^5.3.0** (aún sin actualizar)
+- Vite: **6.4.1** ✅
+- Vitest: **4.0.18** ✅
+- `process.env.REACT_APP_*` restantes: **0** (solo 1 en comment de setup.js)
+- `ReactDOM.render()`: **2** (index.js + centralClocks — se resuelven en Fase 2)
+- Tests: **46/46 PASS** ✅ (requiere Node 22)
 | Fase 6+7 | Continuo (semanas) | — |

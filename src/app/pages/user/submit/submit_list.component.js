@@ -11,7 +11,6 @@ import { Lists } from '../../../components/jsons/lists_submit'
 import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
 import DataTable from 'react-data-table-component';
 import DOCS_LIST from '../fun_forms/components/docs_list.component';
-import { MDBDataTable } from 'mdbreact';
 
 const MySwal = withReactContent(Swal);
 
@@ -335,17 +334,26 @@ class SUBMIT_LIST extends Component {
             for (var ITEM in _LIST) {
 
                 if (Object.keys(_LIST[ITEM])[0]) {
+                    const rows = _GET_DATA_FOR_LIST();
                     _COMPONENT.push(<>
-                        <MDBDataTable
-                            striped
-                            bordered
-                            small
-                            data={data}
-                            searchLabel={"Buscar..."}
-                            info={false}
-                            paging={false}
-                            onSearch={_update_doms}
-                        />
+                        <table className="table table-striped table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    {data.columns.map((col, idx) => (
+                                        <th key={idx} style={col.width ? { width: col.width } : {}}>{col.label}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows.map((row, idx) => (
+                                    <tr key={idx}>
+                                        {data.columns.map((col, cidx) => (
+                                            <td key={cidx}>{row[col.field]}</td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </>)
                 } else {
                     _COMPONENT.push(<>{_COMPONENT_EXTRA_LIST()}</>)

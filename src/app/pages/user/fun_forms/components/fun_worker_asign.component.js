@@ -1,5 +1,4 @@
 import { MDBBtn, MDBTooltip, MDBTypography, MDBPopover, MDBPopoverBody, MDBPopoverHeader, } from 'mdb-react-ui-kit';
-import { MDBCollapse } from "mdbreact";
 import moment from 'moment';
 import { Component } from 'react';
 import DataTable from 'react-data-table-component';
@@ -293,11 +292,11 @@ class FUN_WORKER_ASIGN extends Component {
 
 
 
-                <MDBCollapse id='lic_list' isOpen={this.state.lic_list}>
+                {this.state.lic_list && (
                     <ul class="list-group mx-2">
                         {listMap(currentItems)}
                     </ul>
-                </MDBCollapse>
+                )}
 
             </MDBTypography>
         }

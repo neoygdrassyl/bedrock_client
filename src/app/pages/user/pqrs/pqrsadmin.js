@@ -39,7 +39,6 @@ import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
 import SUBMIT_X_FUN from '../submit/submit_x_fun.component';
 import PQRS_MANAGE_COMPONENT from './pqrs_manage.view';
 import { ACESS_EDIT } from './access_edit';
-import { MDBCollapse } from 'mdbreact';
 
 // JSONS
 //const momentHolydays = require('../../components/jsons/holydaysmoment.json')
@@ -560,7 +559,7 @@ class PQRSADMIN extends Component {
                             </MDBTooltip>
                         </div>
                     </div>
-                    <MDBCollapse id='pending_list' isOpen={this.state.pending_open}>
+                    {this.state.pending_open && (
                         <div className="row">
                             <div className="col-10">
                                 <ul>
@@ -568,7 +567,7 @@ class PQRSADMIN extends Component {
                                 </ul>
                             </div>
                         </div>
-                    </MDBCollapse>
+                    )}
                 </MDBTypography >
             </div >
         )
