@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import moment from 'moment';
@@ -612,7 +612,9 @@ export default function EXP_CLOCKS(props) {
         popup: 'schedule-modal-popup', // Clase para control de altura y scroll
       },
       didOpen: () => {
-        ReactDOM.render(
+        const modalRoot = createRoot(modalContainer);
+        modalContainer._reactRoot = modalRoot;
+        modalRoot.render(
           <ScheduleModal
             clocksToShow={clocksToShow}
             currentItem={currentItem}
@@ -620,8 +622,7 @@ export default function EXP_CLOCKS(props) {
             scheduleConfig={scheduleConfig}
             onScheduleChange={handleScheduleChange}
             legalLimits={legalLimits}
-          />,
-          modalContainer
+          />
         );
       },
       preConfirm: () => {
@@ -632,7 +633,9 @@ export default function EXP_CLOCKS(props) {
         return localScheduleData;
       },
       willClose: () => {
-        ReactDOM.unmountComponentAtNode(modalContainer);
+        if (modalContainer._reactRoot) {
+          modalContainer._reactRoot.unmount();
+        }
       }
     }).then((result) => {
       if (result.isConfirmed && result.value) {
