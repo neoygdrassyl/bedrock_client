@@ -5,11 +5,12 @@ applyTo: '**'
 # Plan de Migración React 16 → 19 — Referencia Técnica para Agentes
 
 > **Estado actual:** Branch `feat/react-19-migration`  
-> **Fase activa:** FASE 2 — Actualizar React 16 → 18  
-> **Fases completadas:** Fase 0 (auditoría), Fase 1 (limpieza imports), Fase 4 (CRA → Vite 6)  
-> **Última actualización:** 2026-02-18  
+> **Fase activa:** FASE 5 — React 18 → 19  
+> **Fases completadas:** Fase 0, Fase 1, Fase 4 (CRA→Vite), Fase 2 (React 18), Fase 3 (Router v6)  
+> **Última actualización:** 2026-02-19  
 > **Node requerido:** v22+ (.nvmrc = 22) — Vite 6 requiere OpenSSL 3  
-> **Build tool:** Vite 6.4.1 + Vitest 4.0.18 (CRA eliminado)
+> **Build tool:** Vite 6.4.1 + Vitest 4.0.18 (CRA eliminado)  
+> **React:** 18.3.1 | **styled-components:** 6.3.10 | **react-bootstrap:** 2.10.10 | **react-router-dom:** 6.30.3
 
 ---
 
@@ -19,8 +20,8 @@ applyTo: '**'
 |---|------|--------|--------|--------------------|
 | 0 | Auditoría + baseline | ✅ COMPLETADA | @auditor-agent | Branch, audit deps, tests de humo, MIGRATION_LOG.md |
 | 1 | Limpieza legacy pre-migración | ✅ COMPLETADA | @migrator-agent | Removidos 250 `import React` innecesarios. String refs verificados (0 reales). Lifecycles deprecated: 0 |
-| **2** | **React 16 → 18** | **⏳ ACTIVA** | **@migrator-agent** | Actualizar core, `createRoot`, deps React-dependientes, styled-components v6 |
-| 3 | react-router-dom v5 → v6 | 🔲 PENDIENTE | @migrator-agent | Switch→Routes, useHistory→useNavigate, Redirect→Navigate |
+| 2 | React 16 → 18 | ✅ COMPLETADA | @react18-migrator-agent | React 18.3.1, createRoot, styled-components 6, react-bootstrap 2, mdbreact eliminado |
+| **3** | **react-router-dom v5 → v6** | **✅ COMPLETADA** | **@router-migrator-agent** | Switch→Routes, useHistory→useNavigate, Redirect→Navigate, react-router-dom 6.30.3 |
 | 4 | CRA 4 → Vite 6 | ✅ COMPLETADA | @vite-migrator-agent | Vite 6.4.1, Vitest 4, 82 archivos env migrados, Node 22 |
 | 5 | React 18 → 19 | 🔲 PENDIENTE | @migrator-agent | forwardRef cleanup, Context simplificado, deps finales |
 | 6 | Class → Functional (incremental) | 🔲 CONTINUA | @migrator-agent | 177 class components → funcionales con hooks. Por módulo |
@@ -34,20 +35,20 @@ applyTo: '**'
 
 | Patrón | Conteo actual | Fase donde se resuelve | Bloqueante |
 |--------|---------------|----------------------|------------|
-| `ReactDOM.render()` | **2** (`index.js`, `centralClocks.component.js`) | Fase 2 | SÍ para React 18 |
+| `ReactDOM.render()` | ~~2~~ **0** | ~~Fase 2~~ ✅ | Resuelto — migrado a `createRoot` |
 | `extends Component` (clases) | **177** archivos | Fase 6 | NO — React 19 soporta clases |
 | `componentDidMount` | **87** archivos | Fase 6 | NO |
 | `componentDidUpdate` | **41** archivos | Fase 6 | NO |
 | `componentWillUnmount` | **1** archivo | Fase 6 | NO |
 | `this.setState` | **107** archivos | Fase 6 | NO |
-| `<Switch>` (router v5) | **1** (`App.js`) | Fase 3 | SÍ para router v6 |
-| `useHistory` | **3** (`App.js` x2, `navbar.js`) | Fase 3 | SÍ para router v6 |
-| `<Redirect>` | **1** (`App.js`) | Fase 3 | SÍ para router v6 |
+| `<Switch>` (router v5) | ~~1~~ **0** | ~~Fase 3~~ ✅ | Resuelto — migrado a `<Routes>` |
+| `useHistory` | ~~3~~ **0** | ~~Fase 3~~ ✅ | Resuelto — migrado a `useNavigate` |
+| `<Redirect>` | ~~1~~ **0** | ~~Fase 3~~ ✅ | Resuelto — migrado a `<Navigate>` |
 | `forwardRef` | **2** reales (`navbar.js`, `App.js`) + 3 tests | Fase 5 | NO — se simplifica |
 | `withRouter` | **0** | — | — |
 | `import React` (explícito) | **24** archivos (usan React APIs) | — | NO — correctos |
 | `process.env.REACT_APP_*` | ~~82~~ **0** archivos | ~~Fase 4~~ ✅ | ~~SÍ para Vite~~ Resuelto |
-| `<Route>` definitions | **11** en `App.js` | Fase 3 | Cada una es módulo legal activo |
+| `<Route>` definitions | **24** en `App.js` (migradas a v6 `element` prop) | ~~Fase 3~~ ✅ | Cada una es módulo legal activo — todas verificadas |
 
 ### Tests de humo (red de seguridad)
 
@@ -57,7 +58,12 @@ applyTo: '**'
 | Login.smoke | 4 | ✅ PASS |
 | Navigation.smoke | 23 | ✅ PASS |
 | Modules.smoke | 13 | ✅ PASS |
-| **TOTAL** | **46** | **✅ ALL PASS** |
+| FunLicenses.smoke | 6 | ✅ PASS |
+| FunManage.integration | 10 | ✅ PASS |
+| Submit.integration | 10 | ✅ PASS |
+| Archive.integration | 12 | ✅ PASS |
+| Expedition.integration | 12 | ✅ PASS |
+| **TOTAL** | **136** | **✅ ALL PASS** |
 
 Los tests están en `src/__tests__/`. Deben pasar antes y después de cada fase.
 
@@ -374,9 +380,9 @@ Estas dependencias no dependen de React o ya son compatibles:
 ## Orden de Ejecución Real
 
 ```
-Fase 0 ✅ → Fase 1 ✅ → Fase 4 ✅ → Fase 2 ⏳ → Fase 3 → Fase 5 → Fase 6 (paralela) → Fase 7 (paralela)
-                                    ^^^^^^^^
-                                 ESTÁS AQUÍ
+Fase 0 ✅ → Fase 1 ✅ → Fase 4 ✅ → Fase 2 ✅ → Fase 3 ⏳ → Fase 5 → Fase 6 (paralela) → Fase 7 (paralela)
+                                              ^^^^^^^^
+                                           ESTÁS AQUÍ
 ```
 
 > **Nota:** Fase 4 (CRA→Vite) se ejecutó antes de Fase 2 (React 18) porque era independiente y simplificaba las fases posteriores al tener ya Vite como bundler.
@@ -384,12 +390,11 @@ Fase 0 ✅ → Fase 1 ✅ → Fase 4 ✅ → Fase 2 ⏳ → Fase 3 → Fase 5 �
 ### Dependencias entre fases restantes
 
 ```
-Fase 2 (React 18) ⏳ SIGUIENTE
-  └── Fase 3 (Router v6)
-       └── Fase 5 (React 19)
+Fase 3 (Router v6) ⏳ SIGUIENTE
+  └── Fase 5 (React 19)
 
-Fase 6 (Class→Func) ← puede empezar tras Fase 2, continua en paralelo
-Fase 7 (Libs abandon.) ← puede empezar tras Fase 2, continua en paralelo
+Fase 6 (Class→Func) ← ya puede empezar en paralelo
+Fase 7 (Libs abandon.) ← ya puede empezar en paralelo
 ```
 
 ### Timeline estimado (restante)
@@ -399,9 +404,9 @@ Fase 7 (Libs abandon.) ← puede empezar tras Fase 2, continua en paralelo
 | ~~Fase 0~~ | ~~1 día~~ | ✅ completada |
 | ~~Fase 1~~ | ~~1 día~~ | ✅ completada |
 | ~~Fase 4~~ | ~~2 días~~ | ✅ completada |
-| **Fase 2** | **2-3 días** | **2-3** |
-| Fase 3 | 1-2 días | 3-5 |
-| Fase 5 | 1 día | 4-6 |
+| ~~Fase 2~~ | ~~2-3 días~~ | ✅ completada |
+| **Fase 3** | **1-2 días** | **1-2** |
+| Fase 5 | 1 día | 2-3 |
 | Fase 6+7 | Continuo (semanas) | — |
 
 ---
@@ -433,13 +438,24 @@ Fase 7 (Libs abandon.) ← puede empezar tras Fase 2, continua en paralelo
 - Node actualizado a v22 (requerido por Vite 6 — OpenSSL 3)
 - 46 tests siguen pasando bajo Vitest
 
-### Estado actual verificado (2026-02-18)
-- React instalado: **16.14.0** (aún sin actualizar)
-- react-router-dom: **5.3.4** (aún sin actualizar)
-- styled-components: **^5.3.0** (aún sin actualizar)
+### Estado actual verificado (2026-02-19)
+- React instalado: **18.3.1** ✅
+- react-dom: **18.3.1** ✅
+- react-router-dom: **5.3.4** (pendiente Fase 3)
+- styled-components: **6.3.10** ✅
+- react-bootstrap: **2.10.10** ✅
+- mdbreact: **ELIMINADO** ✅
 - Vite: **6.4.1** ✅
 - Vitest: **4.0.18** ✅
-- `process.env.REACT_APP_*` restantes: **0** (solo 1 en comment de setup.js)
-- `ReactDOM.render()`: **2** (index.js + centralClocks — se resuelven en Fase 2)
-- Tests: **46/46 PASS** ✅ (requiere Node 22)
-| Fase 6+7 | Continuo (semanas) | — |
+- `ReactDOM.render()`: **0** — migrado a `createRoot` ✅
+- `process.env.REACT_APP_*` restantes: **0** ✅
+- Tests: **136/136 PASS** ✅ (9 suites, requiere Node 22)
+
+### Fase 2 — React 16 → 18 (commits `48343a4f`..`942024a3`)
+- React 16.14 → 18.3.1, ReactDOM.render → createRoot (index.js + centralClocks)
+- mdbreact eliminado: 9 archivos migr. a mdb-react-ui-kit/bootstrap/react-data-table
+- styled-components 5 → 6.3.10, react-bootstrap 1 → 2.10.10
+- react-pdf 5 → 9, sweetalert2 10 → 11, react-i18next 11 → 15
+- scheduler y popper.js eliminados (redundantes)
+- 55 tests de integración nuevos (FunManage, Submit, Archive, Expedition)
+- Total tests: 46 → 136 (9 suites)

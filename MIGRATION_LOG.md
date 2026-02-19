@@ -690,3 +690,125 @@ NODE_OPTIONS="--max-old-space-size=4096" npx vite build
 4. `c9ac9625` — `feat(fase2): upgrade react-pdf v5→v9 + cleanup scheduler/popper.js`
 
 **Listo para Fase 3:** Migrar react-router-dom v5 → v6 (`Switch`→`Routes`, `useHistory`→`useNavigate`, etc.).
+
+---
+
+## Fase 3 — react-router-dom v5 → v6
+
+> **Fecha:** 2026-02-19  
+> **Tests:** 136/136 PASS (antes y después)  
+> **Build:** ✅ Producción OK  
+
+### 1. Resumen de cambios
+
+| Métrica | Antes (v5) | Después (v6) |
+|---------|------------|-------------|
+| react-router-dom | 5.3.4 | 6.30.3 |
+| `<Switch>` | 1 (App.js) | 0 → `<Routes>` |
+| `useHistory` | 3 (App.js x2, navbar.js) | 0 → `useNavigate` |
+| `<Redirect>` | 1 (PrivateRoute) | 0 → `<Navigate>` |
+| `render` prop en Route | 7 | 0 → `element` prop |
+| `component` prop en Route | 1 | 0 → `element` prop |
+| `exact` prop en Route | 4 | 0 (v6 es exacto por defecto) |
+| `<PrivateRoute path="...">children` | 15 rutas | 15 → `<Route element={<PrivateRoute>...</PrivateRoute>}>` |
+
+### 2. Archivos de producción modificados
+
+| Archivo | Cambios |
+|---------|---------|
+| `src/app/App.js` | Imports v5→v6, `Switch`→`Routes`, 24 `Route` defs migradas a `element`, `PrivateRoute` refactored (usa `useLocation` + `Navigate`), `AuthButton`: `useHistory`→`useNavigate`, `LoginPage`: `useHistory`→`useNavigate`, `history.replace()`→`navigate(from, { replace: true })` |
+| `src/app/components/navbar.js` | `useHistory`→`useNavigate`, `history.push()`→`navigate()` |
+| `src/app/pages/user/certifications/certification.page.js` | Fixed deep import `react-router-dom/cjs/react-router-dom.min` → `react-router-dom` (CJS internal path doesn't exist in v6) |
+
+### 3. Tabla de migración API aplicada
+
+| v5 | v6 | Ubicación |
+|----|----|----|
+| `import { Switch }` | `import { Routes }` | App.js:5 |
+| `import { Redirect }` | `import { Navigate }` | App.js:7 |
+| `import { useHistory }` | `import { useNavigate }` | App.js:8 |
+| `<Switch>` | `<Routes>` | App.js:128 |
+| `<Route render={(props)=>...}` | `<Route element={...}` | 7 rutas |
+| `<Route component={X}` | `<Route element={<X/>}` | 1 ruta (catch-all) |
+| `<PrivateRoute path="...">children</PrivateRoute>` | `<Route path="..." element={<PrivateRoute>children</PrivateRoute>}` | 15 rutas |
+| `exact` prop | Eliminado (v6 default) | 4 rutas |
+| `useHistory()` → `history.push()` | `useNavigate()` → `navigate()` | AuthButton, navbar.js |
+| `useHistory()` → `history.replace()` | `useNavigate()` → `navigate(path, { replace: true })` | LoginPage |
+| `<Redirect to={{pathname, state}}>` | `<Navigate to="/login" state={{from}} replace>` | PrivateRoute |
+| Import CJS deep path | Normal import | certification.page.js |
+
+### 4. PrivateRoute — Refactored
+
+```js
+// ANTES (v5) — usaba render prop de <Route>
+function PrivateRoute({ children, ...rest }) {
+  return <Route {...rest} render={({ location }) => auth.user ? children : <Redirect ... /> } />;
+}
+
+// DESPUÉS (v6) — componente puro, usa useLocation + Navigate
+function PrivateRoute({ children }) {
+  let auth = useAuth();
+  const location = useLocation();
+  if (!auth.user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return children;
+}
+```
+
+### 5. Las 24 rutas verificadas
+
+| # | Path | Tipo | Componente | Estado |
+|---|------|------|-----------|--------|
+| 1 | `/home` | Pública | LoginPage | ✅ |
+| 2 | `/login` | Pública | LoginPage | ✅ |
+| 3 | `/dashboard` | Privada | Dashboard | ✅ |
+| 4 | `/publish` | Privada | Publish | ✅ |
+| 5 | `/seals` | Privada | Seals | ✅ |
+| 6 | `/appointments` | Privada | Appointments | ✅ |
+| 7 | `/mail` | Privada | Mail | ✅ |
+| 8 | `/fun` | Privada | FUN | ✅ |
+| 9 | `/funmanage` | Privada | FUN_MANAGE | ✅ |
+| 10 | `/pqrsadmin` | Privada | PQRSADMIN | ✅ |
+| 11 | `/osha` | Privada | OSHA | ✅ |
+| 12 | `/nomenclature` | Privada | NOMENCLATURE | ✅ |
+| 13 | `/submit` | Privada | SUBMIT | ✅ |
+| 14 | `/calculator` | Privada | Liquidator | ✅ |
+| 15 | `/archive` | Privada | ARCHIVE | ✅ |
+| 16 | `/dictionary` | Privada | DICTIONARY | ✅ |
+| 17 | `/profesionals` | Privada | PROFESIONALS | ✅ |
+| 18 | `/guide_user` | Privada | GUIDE_USER | ✅ |
+| 19 | `/dev-guide` | Pública | DEV_GUIDE | ✅ |
+| 20 | `/norms` | Pública | NORMS | ✅ |
+| 21 | `/certs` | Pública | CERTIFICATE_WORKER | ✅ |
+| 22 | `/zone_use` | Pública | ZONE_USE | ✅ |
+| 23 | `/` | Pública | LoginPage | ✅ |
+| 24 | `*` | Catch-all | LoginPage | ✅ |
+
+### 6. Tests — Post Fase 3
+
+| Suite | Tests | Resultado |
+|-------|-------|-----------|
+| App.smoke | 6 | ✅ PASS |
+| Login.smoke | 4 | ✅ PASS |
+| Navigation.smoke | 23 | ✅ PASS |
+| Modules.smoke | 13 | ✅ PASS |
+| FunLicenses.smoke | 35 | ✅ PASS |
+| FunManage.integration | 12 | ✅ PASS |
+| Submit.integration | 10 | ✅ PASS |
+| Archive.integration | 12 | ✅ PASS |
+| Expedition.integration | 12 | ✅ PASS |
+| **TOTAL** | **136** | **✅ ALL PASS** |
+
+**No se requirieron cambios en tests.** Los tests usan `MemoryRouter` (que existe en v5 y v6 con la misma API) y no mockeaban `useHistory`/`Switch`/`Redirect` directamente.
+
+### 7. Issues encontrados y resueltos
+
+| Issue | Causa | Solución |
+|-------|-------|----------|
+| `certification.page.js` importaba `react-router-dom/cjs/react-router-dom.min` | Deep CJS path no existe en v6 (v6 usa ESM) | Cambiar a `import { Link } from 'react-router-dom'` |
+| v7 future flag warnings en tests | React Router v6.4+ muestra warnings sobre v7 opt-in features | Informativo, no bloqueante. Se resolverán en migración a v7 si aplica |
+
+### 8. Estado: Fase 3 completada ✅
+
+**Listo para Fase 5:** Migrar React 18 → 19 (`forwardRef` cleanup, Context simplificado).
