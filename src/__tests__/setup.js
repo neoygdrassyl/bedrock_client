@@ -4,6 +4,10 @@
  */
 import '@testing-library/jest-dom/vitest';
 
+// styled-components v6 CJS bundle expects React in global scope
+import React from 'react';
+globalThis.React = React;
+
 // Set default env vars for tests (equivalent to old process.env.REACT_APP_*)
 // These can be overridden in individual test files via import.meta.env
 if (!import.meta.env.VITE_API_URL) {
