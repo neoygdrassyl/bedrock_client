@@ -55,13 +55,13 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('react-google-recaptcha', () => {
   const React = require('react');
-  const ReCAPTCHA = React.forwardRef((props, ref) => {
+  const ReCAPTCHA = ({ ref, ...props }) => {
     React.useImperativeHandle(ref, () => ({
       execute: () => Promise.resolve('mock-token'),
       reset: vi.fn(),
     }));
     return <div data-testid="recaptcha-mock" />;
-  });
+  };
   return { default: ReCAPTCHA };
 });
 

@@ -45,7 +45,7 @@ export default defineConfig({
     deps: {
       optimizer: {
         web: {
-          include: ['rsuite', '@babel/runtime'],
+          include: ['rsuite', '@babel/runtime', 'mdb-react-ui-kit', 'react-data-table-component'],
         },
       },
     },

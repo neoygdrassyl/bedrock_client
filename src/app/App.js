@@ -434,7 +434,7 @@ function useProvideAuth() {
     signout
   };
 }
-const MyLink = React.forwardRef(({ href, as, children, ...rest }, ref) => (
+const MyLink = ({ href, as, children, ref, ...rest }) => (
   <Link
     ref={ref}
     to={href}
@@ -443,7 +443,7 @@ const MyLink = React.forwardRef(({ href, as, children, ...rest }, ref) => (
   >
     {children}
   </Link>
-));
+);
 function AuthButton() {
   const navigate = useNavigate();
   let auth = useAuth();
@@ -494,7 +494,7 @@ function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   let auth = useAuth();
-  const recaptchaRef = React.createRef();
+  const recaptchaRef = React.useRef(null);
   var formData = new FormData();
 
   let { from } = { from: { pathname: "/dashboard" } };

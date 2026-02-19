@@ -84,11 +84,11 @@ export default function Navbar1(props) {
   }, [location.pathname]);
 
   // Link sin anidar <a>
-  const MyLink = React.forwardRef(({ href, as, children, ...rest }, ref) => (
+  const MyLink = ({ href, as, children, ref, ...rest }) => (
     <Link ref={ref} to={href} {...rest} style={{ color: '#575757', textDecoration: 'none' }}>
       {children}
     </Link>
-  ));
+  );
 
   const handleSidebarToggle = () => setSidebarExpanded(v => !v);
 

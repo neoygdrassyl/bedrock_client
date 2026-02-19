@@ -81,11 +81,41 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     var [currentProf, setCurrentProf] = useState('');
 
     useEffect(() => {
-        if (!load) { retrieveMacro(); retrieveWorker() }
+        if (!load) {
+            let cancelled = false;
+            // Fetch data
+            FUN_SERVICE.loadMacroAsigns(id1, id2)
+                .then(response => {
+                    if (cancelled) return;
+                    setData(response.data);
+                    setLoad(true);
+                })
+                .catch(e => {
+                    if (cancelled) return;
+                    console.log(e);
+                    MySwal.fire({
+                        title: "ERROR AL CARGAR",
+                        text: "No ha sido posible cargar este item, inténtelo nuevamente.",
+                        icon: 'error',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                });
+            // Fetch workers
+            retrieveWorker();
+            return () => { cancelled = true; };
+        }
+    }, [load]);
+
+    // Separate effect for data curation (runs when data arrives)
+    useEffect(() => {
         if (data.length > 0 && !load2) curateDataW();
-        if (!load3 || filterEng || !filterEng || !filterArc || filterArc || filterLaw || !filterLaw) updateCurateW();
-        if (data.length == 0 && load) setLoad2(true)
-    }, [data, load, load2, load3, filterEng, filterArc, filterLaw]);
+        if (data.length == 0 && load) setLoad2(true);
+    }, [data, load, load2]);
+
+    // Separate effect for filter changes (only when data is already curated)
+    useEffect(() => {
+        if (load2) updateCurateW();
+    }, [filterEng, filterArc, filterLaw]);
 
 
     // ***************************  DATA GETTERS *********************** //
@@ -370,7 +400,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     function updateCurateW() {
 
         let cb = document.getElementsByName('cb_worker') ? [...document.getElementsByName('cb_worker')] : [];
-        let newDataW = dataW;
+        let newDataW = dataW.map(item => ({ ...item })); // Shallow copy to avoid state mutation
         cb.map(value => {
 
             let idx = index[value.id];

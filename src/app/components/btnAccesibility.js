@@ -1,5 +1,4 @@
 import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
-import { func, string, int } from 'prop-types';
 import { Link } from 'react-router-dom';
 
 const BtnAccesibility = ({ theme, font, toggleTheme, changeFontsizePlus, changeFontsizeMinus }) =>  {

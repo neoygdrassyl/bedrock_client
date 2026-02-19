@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import ReCAPTCHA from "react-google-recaptcha";
-import React from 'react';
+import React, { useRef } from 'react';
 
 const MySwal = withReactContent(Swal);
-const recaptchaRef = React.createRef();
 
 export default function PROFESIONALS_EMAIL(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
+    const recaptchaRef = useRef(null);
 
     // ***************************  DATA GETTERS *********************** //
     // *************************  DATA CONVERTERS ********************** //
