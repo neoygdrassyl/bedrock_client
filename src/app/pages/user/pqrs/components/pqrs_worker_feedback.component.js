@@ -47,28 +47,28 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
             const columns = [
                 {
                     name: <label>PROFESIONAL</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.name}</label>,
                 },
                 {
                     name: <label>VISTO</label>,
-                    selector: 'competence',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{_GET_FEEBACK(row.feedback)}</label>,
                 },
                 {
                     name: <label>ARGUMENTO</label>,
-                    selector: 'asign',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.feedback_argument}</label>,
                 },
                 {
                     name: <label>FECHA</label>,
-                    selector: 'asign',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.feedback_date}</label>,

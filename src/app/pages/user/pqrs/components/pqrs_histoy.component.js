@@ -51,28 +51,28 @@ export const HISTORY_PQRS_INFO = (props) => {
         const columns = [
             {
                 name: <h5>Consecutivo de entrada</h5>,
-                selector: 'name',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
                 cell: row => <h6 className="pt-3 text-center">{row.id_global ? row.id_global : row.id_publico ? row.id_publico : ''}</h6>
             },
             {
                 name: <h5>Estado</h5>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 cell: row => <h6 className="pt-3">{row.status == 0 ? <h6 className='text-danger'>Activa</h6> : row.status == 1 ? <h6 className='text-success'>Cerrada</h6> : ''}</h6>
             },
             {
                 name: <h5>Tipo de peticion</h5>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 cell: row => <h6 className="pt-3">{row.type}</h6>
             },
             {
                 name: <h5>Consecutivo de salida</h5>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 cell: row => <h6 className="pt-3">{row.id_reply ?? ''}</h6>

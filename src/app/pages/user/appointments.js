@@ -126,7 +126,7 @@ class Appointments extends Component {
         const columns = [
             {
                 name: <h4>CONSECUTIVO</h4>,
-                selector: 'id',
+                selector: row => row.id,
                 sortable: true,
                 filterable: true,
                 minWidth: '40px',
@@ -135,7 +135,7 @@ class Appointments extends Component {
             },
             {
                 name: <h4>FECHA</h4>,
-                selector: 'date',
+                selector: row => row.date,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -143,21 +143,21 @@ class Appointments extends Component {
             },
             {
                 name: <h4>HORA</h4>,
-                selector: 'time',
+                selector: row => row.time,
                 sortable: true,
                 center: true,
                 cell: row => <label>{row.time}</label>
             },
             {
                 name: <h4>PROFESIONAL</h4>,
-                selector: 'profesional',
+                selector: row => row.profesional,
                 sortable: true,
                 center: true,
                 cell: row => <label>{row.profesional}</label>
             },
             {
                 name: <h4>DESCRIPCIÓN</h4>,
-                selector: 'profesional',
+                selector: row => row.profesional,
                 sortable: true,
                 center: true,
                 minWidth: '100px',
@@ -165,7 +165,7 @@ class Appointments extends Component {
             },
                         {
                 name: <h4>OBSERVACIONES</h4>,
-                selector: 'profesional',
+                selector: row => row.profesional,
                 sortable: true,
                 center: true,
                 minWidth: '100px',
@@ -173,7 +173,7 @@ class Appointments extends Component {
             },
             {
                 name: <h4>ASISTENCIA SEÑAS</h4>,
-                selector: 'profesional',
+                selector: row => row.profesional,
                 sortable: true,
                 center: true,
                 minWidth: '250px',

@@ -39,21 +39,21 @@ class PQRS_COMPONENT_ATTACHS extends Component {
             const columns = [
                 {
                     name: <label>NOMBRE</label>,
-                    selector: 'public_name',
+                    selector: row => row.public_name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.public_name}</label>,
                 },
                 {
                     name: <label>TIPO</label>,
-                    selector: 'class',
+                    selector: row => row.class,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{fileType[row.class ?? 0]}</label>,
                 },
                 {
                     name: <label>FORMATO</label>,
-                    selector: 'type',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.type}</label>,

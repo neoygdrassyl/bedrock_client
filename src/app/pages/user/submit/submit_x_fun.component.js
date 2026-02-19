@@ -340,7 +340,7 @@ class SUBMIT_X_FUN extends Component {
             const columns = [
                 {
                     name: <label className="text-center"># RADICACION</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -446,7 +446,7 @@ class SUBMIT_X_FUN extends Component {
             const columns = [
                 {
                     name: <label className="text-center"># RADICACION</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -455,7 +455,7 @@ class SUBMIT_X_FUN extends Component {
                 },
                 {
                     name: <label className="text-center">ESTADO</label>,
-                    selector: 'state',
+                    selector: row => row.state,
                     sortable: true,
                     filterable: true,
                     center: true,

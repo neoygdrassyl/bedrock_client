@@ -72,28 +72,28 @@ class Mail extends Component {
         const columns = [
             {
                 name: <h3># CONSECUTIVO</h3>,
-                selector: 'id',
+                selector: row => row.id,
                 sortable: true,
                 filterable: true,
                 cell: row => <p className="pt-3">{row.id}</p>
             },
             {
                 name: <h3>NOMBRE</h3>,
-                selector: 'name',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
                 cell: row => <p className="pt-3">{row.name}</p>
             },
             {
                 name: <h3>FECHA</h3>,
-                selector: 'createdAt',
+                selector: row => row.createdAt,
                 sortable: true,
                 filterable: true,
                 cell: row => <p className="pt-3">{moment(row.createdAt).format("DD-MM-YYYY")}</p>
             },
             {
                 name: <h3>ASUNTO</h3>,
-                selector: 'subject',
+                selector: row => row.subject,
                 cell: row => <p className="pt-3 text-center">{row.subject}</p>
             },
             {

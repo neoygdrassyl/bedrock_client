@@ -36,21 +36,21 @@ class PQRS_EDIT_SOLICITORS extends Component {
             const columns = [
                 {
                     name: <label>NOMBRE</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.name}</label>,
                 },
                 {
                     name: <label>TIPO PERSONA</label>,
-                    selector: 'competence',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.type}</label>,
                 },
                 {
                     name: <label>TIPO DOCUMENTO</label>,
-                    selector: 'asign',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.type_id}</label>,

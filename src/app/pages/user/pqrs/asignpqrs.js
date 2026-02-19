@@ -179,21 +179,21 @@ class PQRSASIGN extends Component {
             const columns = [
                 {
                     name: <label>PROFESIONAL</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{row.name}</p>
                 },
                 {
                     name: <label>COMPETENCIA</label>,
-                    selector: 'competence',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{row.competence}</p>
                 },
                 {
                     name: <label>FECHA ASIGNACIÓN</label>,
-                    selector: 'asign',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{dateParser(row.asign)}</p>

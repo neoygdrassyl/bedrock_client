@@ -401,7 +401,7 @@ class RECORD_ARC_34 extends Component {
             const columns = [
                 {
                     name: <label>Norma Urbana CUB</label>,
-                    selector: 'norm',
+                    selector: row => row.norm,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -409,7 +409,7 @@ class RECORD_ARC_34 extends Component {
                 },
                 {
                     name: <label>Descripción</label>,
-                    selector: 'desc',
+                    selector: row => row.desc,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -417,7 +417,7 @@ class RECORD_ARC_34 extends Component {
                 },
                 {
                     name: <label>Fecha</label>,
-                    selector: 'date',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -425,7 +425,7 @@ class RECORD_ARC_34 extends Component {
                 },
                 {
                     name: <label>Folios</label>,
-                    selector: 'pages',
+                    selector: row => row.pages,
                     sortable: true,
                     filterable: true,
                     center: true,

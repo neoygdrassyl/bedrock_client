@@ -569,7 +569,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             const columns = [
                 {
                     name: <label className="text-center">EVENTO</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     minWidth: '250px',
@@ -582,7 +582,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 },
                 {
                     name: <label className="text-center">FECHA EVENTO</label>,
-                    selector: 'date_start',
+                    selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -590,7 +590,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 },
                 {
                     name: <label className="text-center">FECHA LIMITE</label>,
-                    selector: 'date_start',
+                    selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
                     center: true,

@@ -71,14 +71,14 @@ class SUBMIT_ANEX extends Component {
             const columns = [
                 {
                     name: <label className="text-center">DESCRIPCIÓN</label>,
-                    selector: 'description',
+                    selector: row => row.description,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.description}</label>
                 },
                 {
                     name: <label>CÓDIGO</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     maxWidth: '50px',
@@ -86,7 +86,7 @@ class SUBMIT_ANEX extends Component {
                 },
                 {
                     name: <label>FOLIOS</label>,
-                    selector: 'pages',
+                    selector: row => row.pages,
                     sortable: true,
                     filterable: true,
                     maxWidth: '40px',
@@ -94,7 +94,7 @@ class SUBMIT_ANEX extends Component {
                 },
                 {
                     name: <label>FECHA RADICACIÓN</label>,
-                    selector: 'date',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',

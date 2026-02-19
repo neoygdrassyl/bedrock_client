@@ -236,7 +236,7 @@ class RECORD_LAW_GEN2_11 extends Component {
             const columns = [
                 {
                     name: <label>MATRICULAR</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -244,7 +244,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 },
                 {
                     name: <label>FECHA</label>,
-                    selector: 'date',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -253,7 +253,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 },
                 {
                     name: <label>CODIGO CATASTRAL</label>,
-                    selector: 'predial',
+                    selector: row => row.predial,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -261,7 +261,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 },
                 {
                     name: <label>DIRECCION</label>,
-                    selector: 'address',
+                    selector: row => row.address,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -289,7 +289,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 },
                 {
                     name: <label>TITULAR DERECHO REAL</label>,
-                    selector: 'subject',
+                    selector: row => row.subject,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -297,7 +297,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 },
                 {
                     name: <label>CEDULA TITULAR</label>,
-                    selector: 'subject_id',
+                    selector: row => row.subject_id,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -637,7 +637,7 @@ class RECORD_LAW_GEN2_11 extends Component {
             const columns = [
                 {
                     name: <label>TIPO DOCUMENTO</label>,
-                    selector: 'type',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -646,7 +646,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 },
                 {
                     name: <label>No. RECIBO</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -654,7 +654,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 },
                 {
                     name: <label>FECHA</label>,
-                    selector: 'date',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -663,7 +663,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 },
                 {
                     name: <label>CODIGO CATASTRAL</label>,
-                    selector: 'predial',
+                    selector: row => row.predial,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -671,7 +671,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 },
                 {
                     name: <label>DIRECCION</label>,
-                    selector: 'address',
+                    selector: row => row.address,
                     sortable: true,
                     filterable: true,
                     center: true,

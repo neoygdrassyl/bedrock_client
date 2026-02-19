@@ -678,14 +678,14 @@ class PQRSADMIN extends Component {
             },
             {
                 name: <h6>CONSECUTIVO SALIDA</h6>,
-                selector: 'id_reply',
+                selector: row => row.id_reply,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.id_reply}</label>
             },
             {
                 name: <h6>FECHA RADICACIÓN</h6>,
-                selector: 'pqrs_time.legal',
+                selector: row => row.pqrs_time?.legal,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -702,7 +702,7 @@ class PQRSADMIN extends Component {
             },
             {
                 name: <h6>FECHA ENVIO RESPUESTA </h6>,
-                selector: 'pqrs_time.reply_formal',
+                selector: row => row.pqrs_time?.reply_formal,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -746,28 +746,28 @@ class PQRSADMIN extends Component {
             },
             {
                 name: <label>CONSECUTIVO SALIDA</label>,
-                selector: 'id_reply',
+                selector: row => row.id_reply,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.id_reply}</label>
             },
             {
                 name: <label>ESTADO</label>,
-                selector: 'status',
+                selector: row => row.status,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{_STATUS_COMPONENT(row.status)}</label>
             },
             {
                 name: <label>FECHA RADICACIÓN</label>,
-                selector: 'pqrs_time.reply_legal',
+                selector: row => row.pqrs_time?.reply_legal,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.pqrs_time ? dateParser(row.pqrs_time.legal) : ''}</label>
             },
             {
                 name: <label className="text-center">FECHA LIMITE RESPUESTA</label>,
-                selector: 'pqrs_time.legal',
+                selector: row => row.pqrs_time?.legal,
                 sortable: true,
 
                 cell: row => <label>{row.pqrs_time ? dateParser(dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1))) : ''}</label>

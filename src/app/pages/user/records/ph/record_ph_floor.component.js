@@ -211,7 +211,7 @@ class RECORD_PH_FLOOR extends Component {
             const columns = [
                 {
                     name: <label className="text-center">Piso</label>,
-                    selector: 'floor',
+                    selector: row => row.floor,
                     sortable: true,
                     filterable: true,
                     center: true,

@@ -48,7 +48,7 @@ class RECORD_PH_BUILDING extends Component {
             const columns = [
                 {
                     name: <label className="text-center">PREDIO N°</label>,
-                    selector: 'number',
+                    selector: row => row.number,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -56,7 +56,7 @@ class RECORD_PH_BUILDING extends Component {
                 },
                 {
                     name: <label className="text-center">PREDIAL</label>,
-                    selector: 'predial',
+                    selector: row => row.predial,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -64,7 +64,7 @@ class RECORD_PH_BUILDING extends Component {
                 },
                 {
                     name: <label className="text-center">MATRICULA</label>,
-                    selector: 'matricula',
+                    selector: row => row.matricula,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -72,7 +72,7 @@ class RECORD_PH_BUILDING extends Component {
                 },
                 {
                     name: <label className="text-center">NOMENCLATURA</label>,
-                    selector: 'nomenclature',
+                    selector: row => row.nomenclature,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -80,7 +80,7 @@ class RECORD_PH_BUILDING extends Component {
                 },
                 {
                     name: <label className="text-center">AREA Y LINDEROS</label>,
-                    selector: 'area',
+                    selector: row => row.area,
                     sortable: true,
                     filterable: true,
                     center: true,

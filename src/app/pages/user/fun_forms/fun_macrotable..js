@@ -1096,7 +1096,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         const columns = [
             {
                 name: <label>No. RADICACION</label>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 minWidth: '140px',
@@ -1135,7 +1135,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center">CATEGORIA</label>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1558,7 +1558,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         },
         {
             name: <label>EST. FECHA REV.</label>,
-            selector: 'eng_date',
+            selector: row => row.eng_date,
             sortable: true,
             filterable: true,
             minWidth: '150px',
@@ -1592,7 +1592,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
             {
                 name: <label>EST. PROF. ASIG.</label>,
-                selector: 'asign_eng_worker_name',
+                selector: row => row.asign_eng_worker_name,
                 sortable: true,
                 filterable: true,
                 minWidth: '200px',
@@ -1615,7 +1615,6 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 */
             {
                 name: <label>EST. REVISION</label>,
-                selector: '',
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
@@ -1632,7 +1631,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
             {
                 name: <label className="text-center text-primary fw-bold">FECHA ACTA P.1</label>,
-                selector: 'clock_record_p1',
+                selector: row => row.clock_record_p1,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1641,7 +1640,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label>ACTA P.1 REV.</label>,
-                selector: 'rec_review',
+                selector: row => row.rec_review,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1650,7 +1649,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             /*{
                 name: <label className="text-center">¿REQ. CORRECIONES?</label>,
-                selector: 'rec_review',
+                selector: row => row.rec_review,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1683,7 +1682,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center">FECHA ENTREGA CORRECIONES</label>,
-                selector: 'clock_corrections',
+                selector: row => row.clock_corrections,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1691,7 +1690,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center text-primary fw-bold">FECHA ACTA P.2</label>,
-                selector: 'clock_record_p2',
+                selector: row => row.clock_record_p2,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1700,7 +1699,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label>ACTA P.2 REV.</label>,
-                selector: 'rec_review_2',
+                selector: row => row.rec_review_2,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1709,7 +1708,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center">CARTA VIABILIDAD</label>,
-                selector: 'clock_pay2',
+                selector: row => row.clock_pay2,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1727,7 +1726,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center">RESOLUCIÓN</label>,
-                selector: 'clock_resolution',
+                selector: row => row.clock_resolution,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1745,7 +1744,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center fw-bold text-primary">FECHA LICENCIA</label>,
-                selector: 'clock_license',
+                selector: row => row.clock_license,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1754,7 +1753,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center fw-bold">CONSECUTIVO LICENCIA</label>,
-                selector: 'exp_id',
+                selector: row => row.exp_id,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1762,7 +1761,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center fw-bold">ARCHIVO</label>,
-                selector: 'clock_archive',
+                selector: row => row.clock_archive,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1772,7 +1771,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         const columns_negative = [
             {
                 name: <label>No. RADICACION</label>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',

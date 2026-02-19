@@ -34,8 +34,10 @@ class FUN_REPORT_DATA_EDIT extends Component {
             const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'CONTROL DE DOCUMENTACION ESPECIAL');
 
-            if (data) document.getElementById("vr_selected").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            if (data) {
+                document.getElementById("vr_selected").value = data.vr
+                this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            }
         } catch (error) {
             console.log(error);
         }
@@ -57,7 +59,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
             let _LIST = _GET_CHILD_6();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
             }
             return <>{_COMPONENT}</>
         }

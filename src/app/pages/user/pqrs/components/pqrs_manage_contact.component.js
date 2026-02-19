@@ -59,7 +59,7 @@ class PQRS_EDIT_CONTACT extends Component {
             const columns = [
                 {
                     name: <label>DIRECCION</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     minWidth: '210px',
                     sortable: true,
                     filterable: true,
@@ -67,7 +67,7 @@ class PQRS_EDIT_CONTACT extends Component {
                 },
                 {
                     name: <label>BARRIO</label>,
-                    selector: 'competence',
+                    selector: row => row.competence,
                     minWidth: '180px',
                     sortable: true,
                     filterable: true,
@@ -80,7 +80,7 @@ class PQRS_EDIT_CONTACT extends Component {
                 },
                 {
                     name: <label>TÉLEFONO</label>,
-                    selector: 'asign',
+                    selector: row => row.asign,
                     minWidth: '180px',
                     sortable: true,
                     filterable: true,

@@ -61,8 +61,10 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'CARTA INCOMPLETO');
 
-            if(data) document.getElementById("vr_selected1").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            if(data) {
+                document.getElementById("vr_selected1").value = data.vr
+                this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            }
         } catch (error) {
             console.log(error);
         }

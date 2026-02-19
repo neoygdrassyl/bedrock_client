@@ -111,21 +111,21 @@ class NOMENCLATURE extends Component {
         const columns = [
             {
                 name: <label>No. RADICACIÓN</label>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.id_public}</label>
             },
             {
                 name: <label>TIPO</label>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.type}</label>
             },
             {
                 name: <label>FECHA RADICACIÓN</label>,
-                selector: 'date_start',
+                selector: row => row.date_start,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -133,7 +133,7 @@ class NOMENCLATURE extends Component {
             },
             {
                 name: <label>FECHA EXPEDICIÓN</label>,
-                selector: 'date_end',
+                selector: row => row.date_end,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -141,7 +141,7 @@ class NOMENCLATURE extends Component {
             },
             {
                 name: <label>DOCUMENTO</label>,
-                selector: 'nome_doc',
+                selector: row => row.nome_doc,
                 sortable: true,
                 filterable: true,
                 center: true,
