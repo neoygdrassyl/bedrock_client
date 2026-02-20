@@ -98,6 +98,8 @@ function fixMdbDefaultProps() {
   return {
     name: 'fix-mdb-defaultprops',
     enforce: 'pre',
+    // Only apply during production builds — dev uses the esbuild plugin
+    apply: 'build',
     transform(code, id) {
       // Only patch files that contain mdb-react-ui-kit
       if (!id.includes('mdb-react-ui-kit')) return null;
@@ -108,7 +110,8 @@ function fixMdbDefaultProps() {
       // wraps Component.render to merge defaults into props.
       // This survives Rollup tree-shaking because each patch references
       // a variable that is later exported.
-      const DP_RE = /(\w+)(\.defaultProps\s*=\s*\{[^}]+\})/g;
+      // NOTE: [\w$]+ to capture JS identifiers that start with $ (e.g. $e)
+      const DP_RE = /([\w$]+)(\.defaultProps\s*=\s*\{[^}]+\})/g;
       let patched = false;
       const newCode = code.replace(DP_RE, (match, varName, rest) => {
         patched = true;
@@ -179,7 +182,8 @@ export default defineConfig({
 
                 // Inline-patch: after each `.defaultProps = {...}`, insert a
                 // self-invoking function that wraps .render to merge defaults.
-                const DP_RE = /(\w+)(\.defaultProps\s*=\s*\{[^}]+\})/g;
+                // NOTE: [\w$]+ to capture JS identifiers that start with $ (e.g. $e)
+                const DP_RE = /([\w$]+)(\.defaultProps\s*=\s*\{[^}]+\})/g;
                 let patched = false;
                 code = code.replace(DP_RE, (match, varName) => {
                   patched = true;

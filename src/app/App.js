@@ -113,7 +113,7 @@ export default function App() {
                 </div>
 
                 <main className="app-main" id="main-content">              
-                    <div class="bg-image-gr">
+                    <div className="bg-image-gr">
                       <div id="overlayer" className="container-fluid overlay-container container-primary p-2">
                         
                         {/* <Route render={(props) => (
@@ -451,28 +451,28 @@ function AuthButton() {
   return auth.user ? (
     <div className='px-2'>
       <Nav pullRight className='px-2 mx-4'>
-        <Nav.Menu title={<label><i class="fas fa-user-circle "></i> <label >{auth.user.name + ' ' + auth.user.surname}</label></label>} >
-          <Nav.Item eventKey="5" as={MyLink} href="/dashboard"><i class="fas fa-tv"></i> Panel de Control</Nav.Item>
+        <Nav.Menu title={<label><i className="fas fa-user-circle "></i> <label >{auth.user.name + ' ' + auth.user.surname}</label></label>} >
+          <Nav.Item eventKey="5" as={MyLink} href="/dashboard"><i className="fas fa-tv"></i> Panel de Control</Nav.Item>
           <hr className='bg-info'></hr>
-          <Nav.Item eventKey="6" as={MyLink} href="/mail"><i class="fas fa-envelope-open-text" style={{ "color": "Crimson" }}></i> Buzón de mensajes</Nav.Item>
-          <Nav.Item eventKey="7" as={MyLink} href="/appointments"><i class="far fa-calendar-alt" style={{ "color": "MediumSeaGreen" }}></i> Calendario de citas</Nav.Item>
-          <Nav.Item eventKey="8" as={MyLink} href="/submit"> <i class="fas fa-file-import" style={{ "color": "Khaki" }}></i> Ventanilla única</Nav.Item>
+          <Nav.Item eventKey="6" as={MyLink} href="/mail"><i className="fas fa-envelope-open-text" style={{ "color": "Crimson" }}></i> Buzón de mensajes</Nav.Item>
+          <Nav.Item eventKey="7" as={MyLink} href="/appointments"><i className="far fa-calendar-alt" style={{ "color": "MediumSeaGreen" }}></i> Calendario de citas</Nav.Item>
+          <Nav.Item eventKey="8" as={MyLink} href="/submit"> <i className="fas fa-file-import" style={{ "color": "Khaki" }}></i> Ventanilla única</Nav.Item>
           <hr className='bg-info'></hr>
-          <Nav.Item eventKey="9" as={MyLink} href="/publish"><i class="fas fa-newspaper" style={{ "color": "LightSalmon" }}></i> Publicaciones</Nav.Item>
-          <Nav.Item eventKey="10" as={MyLink} href="/fun"><i class="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Solicitudes y Licencias</Nav.Item>
-          <Nav.Item eventKey="10" as={MyLink} href="/funmanage"><i class="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Gestion Soli. y Lic.</Nav.Item>
-          <Nav.Item eventKey="11" as={MyLink} href="/nomenclature"><i class="fas fa-file-signature" style={{ "color": "Plum" }}></i> Nomenclaturas</Nav.Item>
-          <Nav.Item eventKey="12" as={MyLink} href="/pqrsadmin"><i class="fas fa-file-invoice" style={{ "color": "MediumPurple" }}></i>  Peticiones PQRS</Nav.Item>
+          <Nav.Item eventKey="9" as={MyLink} href="/publish"><i className="fas fa-newspaper" style={{ "color": "LightSalmon" }}></i> Publicaciones</Nav.Item>
+          <Nav.Item eventKey="10" as={MyLink} href="/fun"><i className="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Solicitudes y Licencias</Nav.Item>
+          <Nav.Item eventKey="10" as={MyLink} href="/funmanage"><i className="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Gestion Soli. y Lic.</Nav.Item>
+          <Nav.Item eventKey="11" as={MyLink} href="/nomenclature"><i className="fas fa-file-signature" style={{ "color": "Plum" }}></i> Nomenclaturas</Nav.Item>
+          <Nav.Item eventKey="12" as={MyLink} href="/pqrsadmin"><i className="fas fa-file-invoice" style={{ "color": "MediumPurple" }}></i>  Peticiones PQRS</Nav.Item>
           <hr className='bg-info'></hr>
           <Nav.Item eventKey="13" onClick={() => {
             auth.signout(() => navigate("/home"));
-          }}> Log out <i class="fas fa-sign-out-alt"></i></Nav.Item>
+          }}> Log out <i className="fas fa-sign-out-alt"></i></Nav.Item>
         </Nav.Menu>
       </Nav>
     </div>
   ) : (
     <Nav pullRight>
-      <Nav.Item eventKey="" as={MyLink} href="/login"><i class="fas fa-sign-in-alt px-1"></i> Login</Nav.Item>
+      <Nav.Item eventKey="" as={MyLink} href="/login"><i className="fas fa-sign-in-alt px-1"></i> Login</Nav.Item>
       <Navbar.Brand> </Navbar.Brand>
     </Nav>
   );
@@ -553,20 +553,20 @@ function LoginPage() {
           <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
           <div className="d-flex justify-content-center mt-5">
             <div className="w-75 rounded">
-              <div class="card-body" style={{backgroundColor: '#d3d3d3'}}>
+              <div className="card-body" style={{backgroundColor: '#d3d3d3'}}>
                 <form onSubmit={handleSubmit}>
-                  <div class="mb-3">
-                    <label for="email" class="form-label text-black">{t('login.str_user')}</label>
-                    <input type="email" class="form-control" id="email"
+                  <div className="mb-3">
+                    <label htmlFor="email" className="form-label text-black">{t('login.str_user')}</label>
+                    <input type="email" className="form-control" id="email"
                       onChange={(e) => formData.set('email', e.target.value)} />
                   </div>
-                  <div class="mb-3">
-                    <label for="password" class="form-label text-black">{t('login.str_pass')}</label>
-                    <input type="password" class="form-control" id="password"
+                  <div className="mb-3">
+                    <label htmlFor="password" className="form-label text-black">{t('login.str_pass')}</label>
+                    <input type="password" className="form-control" id="password"
                       onChange={(e) => formData.set('password', sha256(e.target.value))} />
                   </div>
                   <div className="text-center pt-4 mt-3">
-                    <button type="submit" class="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
+                    <button type="submit" className="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
                   </div>
                   <ReCAPTCHA
                     ref={recaptchaRef}
