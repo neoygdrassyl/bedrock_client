@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';

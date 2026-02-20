@@ -5,7 +5,7 @@ import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
 import Modal from 'react-modal';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import FUNN53 from '../../fun_forms/fun_n_53'
 
 export default function RECORD_LAW_FUN_53(props) {

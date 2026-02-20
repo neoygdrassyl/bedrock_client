@@ -7,7 +7,7 @@ import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from "../../../../services/fun.service"
 import FUN_CLOCKS_EMAILS from './fun_clocks_email.component';
 import { dateParser_finalDate, dateParser_timePassed } from '../../../../components/customClasses/typeParse';
-import { MDBBtn, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from '../../../../components/ui';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);

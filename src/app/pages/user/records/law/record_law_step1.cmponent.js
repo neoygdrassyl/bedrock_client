@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Record_lawService from '../../../../services/record_law.service';

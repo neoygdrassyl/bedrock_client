@@ -1,4 +1,4 @@
-import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip, MDBTypography } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip, MDBTypography } from '../../../components/ui';
 import moment from 'moment';
 import { Component } from 'react';
 import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';

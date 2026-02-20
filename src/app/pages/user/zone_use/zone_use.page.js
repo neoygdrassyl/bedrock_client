@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBCol, MDBRow, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBCol, MDBRow, MDBTooltip } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import Zone_Use_Service from "../../../services/zone_use.service"

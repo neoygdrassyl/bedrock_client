@@ -6,7 +6,7 @@ import FUNService from '../../../../services/fun.service';
 import { _FUN_1_PARSER, _FUN_24_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_8_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { _CALCULATE_EXPENSES, formsParser1, getJSON, getJSONFull, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../components/jsons/vars';
-import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBIcon } from '../../../../components/ui';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);

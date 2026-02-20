@@ -4,7 +4,7 @@ import UsersService from '../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 
 export default function CERTIFICATE_WORKER(props) {

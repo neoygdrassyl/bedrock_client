@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBBadge, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBTooltip } from '../../../../components/ui';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import './fun_moduleNav_enhanced.css';

@@ -7,7 +7,7 @@ import FUN_SERVICE from '../../../../services/fun.service'
 
 import moment from 'moment';
 import RECORD_LAW_PDF from './record_law_pdf';
-import { MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTypography } from '../../../../components/ui';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';

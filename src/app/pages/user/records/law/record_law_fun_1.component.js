@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import Record_lawService from '../../../../services/record_law.service';
 import Modal from 'react-modal';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import FUNN1 from '../../fun_forms/fun_n_1'
 
 

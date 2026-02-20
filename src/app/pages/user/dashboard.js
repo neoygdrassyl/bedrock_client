@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem } from 'mdb-react-ui-kit';
+import { MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem } from '../../components/ui';
 import { Link, Route } from "react-router-dom";
 import { DashBoardCard } from '../../components/dashBoardCards/dashBoardCard.js';
 import Title from '../../components/title';

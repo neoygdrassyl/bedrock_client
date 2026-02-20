@@ -8,7 +8,7 @@ import SubmitService from '../../../services/submit.service';
 // LISTS
 import Fun6DocList from '../../../components/jsons/fun6DocsList.json'
 import { Lists } from '../../../components/jsons/lists_submit'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import DataTable from 'react-data-table-component';
 import DOCS_LIST from '../fun_forms/components/docs_list.component';
 

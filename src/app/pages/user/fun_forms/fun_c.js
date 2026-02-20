@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import FUNService from '../../../services/fun.service'
-import { MDBBtn, MDBCard, MDBCardBody, MDBTypography } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBCard, MDBCardBody, MDBTypography } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DCO_LIS from '../../../components/jsons/fun6DocsList.json'

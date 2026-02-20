@@ -7,7 +7,7 @@ import CubXVrDataService from '../../../../services/cubXvr.service'
 import moment from 'moment';
 import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import DCO_LIS from '../../../../components/jsons/fun6DocsList.json'
 import SubmitService from '../../../../services/submit.service'
 

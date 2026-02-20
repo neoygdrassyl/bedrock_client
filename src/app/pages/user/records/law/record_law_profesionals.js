@@ -2,7 +2,7 @@ import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge } from 'mdb-react-ui-kit';
+import { MDBBadge } from '../../../../components/ui';
 import { dateParser_yearsPassed } from '../../../../components/customClasses/typeParse';
 const MySwal = withReactContent(Swal);
 

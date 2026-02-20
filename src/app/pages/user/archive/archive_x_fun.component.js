@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import { useEffect, useState } from 'react';
 import ReactHTMLDatalist from 'react-html-datalist';
 import ReactModal from 'react-modal';

@@ -1,4 +1,4 @@
-import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip } from '../../../components/ui';
 import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { Tag, TagGroup } from 'rsuite';

@@ -3,7 +3,7 @@ import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn, MDBPopover, MDBPopoverBody, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBPopover, MDBPopoverBody, MDBTooltip } from '../../../../components/ui';
 import { dateParser_dateDiff, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import TABLE_COMPONENT_EXPANDED from './table_components/table.component_expanded';
 import HeatMap from '@uiw/react-heat-map';

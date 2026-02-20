@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import EmailsService from '../services/emails.service';
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from './ui';
 import DataTable from 'react-data-table-component';
 import moment from 'moment';
 import { Uploader } from 'rsuite';

@@ -11,7 +11,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 import '../../../../styles/docs-expediente.css';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';

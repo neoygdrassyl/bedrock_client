@@ -1075,4 +1075,76 @@ Ambos plugins (esbuild para dev + Vite transform para build) usan la misma lógi
 ### 12. Estado: Fase 5 estabilizada ✅
 
 **Listo para Fase 6:** Class → Functional (incremental, 177 componentes).  
-**Listo para Fase 7:** Reemplazar libs abandonadas (react-quill, react-vis, mdb-react-ui-kit).
+**Listo para Fase 7:** Reemplazar libs abandonadas (react-quill, react-vis). ~~mdb-react-ui-kit~~ ya eliminada.
+
+---
+
+## Fase 5b — Eliminación de mdb-react-ui-kit
+
+### 1. Problema
+`mdb-react-ui-kit@1.0.0-beta3` (beta abandonada de 2021) usaba `defaultProps` en 77 componentes.
+React 19 ignora `defaultProps` en componentes funcionales. Se parcheaba con un IIFE en `vite.config.mjs`
+que inyectaba los defaults en runtime — solución frágil y acoplada al bundler.
+
+### 2. Solución estructural: reemplazo completo
+
+**Estrategia:** Eliminar la dependencia y reemplazar con wrappers locales que usan HTML nativo + Bootstrap 5.
+
+| Paso | Descripción | Archivos |
+|------|-------------|----------|
+| 1 | Crear `src/app/components/ui/index.js` — 910 líneas, 77+ componentes reimplementados | 1 nuevo |
+| 2 | Ejecutar codemod automático para reescribir 149 imports en 148 archivos | 148 modificados |
+| 3 | Actualizar tests: eliminar mock global `vi.mock('mdb-react-ui-kit')`, redirigir `mdb-debug.test.js` | 2 modificados |
+| 4 | Eliminar import de CSS MDB en `src/index.js` | 1 modificado |
+| 5 | `npm uninstall mdb-react-ui-kit` | package.json, lock |
+| 6 | Eliminar `__mocks__/mdb-react-ui-kit.js` | 1 eliminado |
+| 7 | Limpiar `vite.config.mjs`: eliminar `DP_RE`, `buildDefaultPropsPatch()`, `fixMdbDefaultProps()`, esbuild plugin | ~105 líneas removidas |
+| 8 | Limpiar `vitest.config.mjs`: quitar MDB de `optimizeDeps.include` | 1 línea |
+
+### 3. Componentes reimplementados en `ui/index.js`
+
+**Simples (HTML + Bootstrap classes):** MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle,
+MDBCardText, MDBCardHeader, MDBCardFooter, MDBCardImage, MDBBreadcrumb, MDBBreadcrumbItem, MDBBadge,
+MDBTypography, MDBIcon, MDBSpinner, MDBTable, MDBTableHead, MDBTableBody, MDBPagination, MDBPaginationItem,
+MDBPaginationLink, MDBProgress, MDBProgressBar, MDBFooter, MDBListGroup, MDBListGroupItem, MDBRipple,
+MDBInput, MDBCheckbox, MDBRadio, MDBSwitch, MDBRange, MDBFile, MDBValidation, MDBNavbar, MDBNavbarBrand,
+MDBNavbarNav, MDBNavbarItem, MDBNavbarLink, MDBNavbarToggler, MDBScrollspy, MDBScrollspyLink, MDBScrollspySubList,
+MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane.
+
+**Comportamentales (con estado/refs/portals):** MDBBtn (forwardRef, className logic), MDBTooltip (positioning + portal),
+MDBPopover (toggle + portal + dismiss), MDBDropdown/Toggle/Menu/Item (context-based), MDBCollapse (show/hide),
+MDBModal/Dialog/Content/Header/Title/Body/Footer (ESC + backdrop), MDBAccordion/Item (self-contained state),
+MDBCarousel/Item/Indicators/CarouselInner (auto-advance + controls).
+
+### 4. Codemod
+
+Script Node.js en `/tmp/codemod-mdb-to-ui.js`:
+- Escanea `src/**/*.js` (excluye `.test.js`)
+- Regex: `import { ... } from 'mdb-react-ui-kit'`
+- Reescribe a path relativo apuntando a `src/app/components/ui`
+- Resultado: 358 archivos escaneados → 148 modificados, 149 líneas de import reescritas
+
+### 5. Verificación
+
+| Check | Resultado |
+|-------|-----------|
+| Tests (`npx vitest run`) | **149/149 PASS** |
+| Dev server (Vite) | Sin errores de compilación |
+| All 16 routes HTTP 200 | ✅ |
+| Login page renders | ✅ (form + captcha + footer) |
+| Production build | ✅ (74s, 10.8 MB bundle) |
+| `grep "mdb-react-ui-kit" src/` | 0 matches en código fuente (solo comentarios en ui/index.js) |
+
+### 6. Resultado
+
+- **Dependencia eliminada:** `mdb-react-ui-kit` ya no está en `package.json` ni `node_modules`
+- **Parches eliminados:** ~105 líneas de hacks de bundler removidas de `vite.config.mjs`
+- **Sin mock global:** `vi.mock('mdb-react-ui-kit')` eliminado de test setup
+- **Bundle:** 4 paquetes menos en `node_modules` (859 → pre-removal 863)
+- **vite.config.mjs:** 258 → 153 líneas
+
+### 7. Estado: mdb-react-ui-kit eliminada ✅
+
+**Pendiente:** Revisión visual detallada en producción para identificar diferencias menores de estilo entre MDB CSS y Bootstrap 5 puro.  
+**Listo para Fase 6:** Class → Functional (incremental, 177 componentes).  
+**Listo para Fase 7:** Reemplazar libs abandonadas restantes (react-quill, react-vis).

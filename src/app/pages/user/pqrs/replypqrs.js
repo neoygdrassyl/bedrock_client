@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBTypography } from 'mdb-react-ui-kit';
+import { MDBTypography } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';

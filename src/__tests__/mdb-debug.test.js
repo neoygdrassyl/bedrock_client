@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBCol, MDBRow, MDBContainer } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBCol, MDBRow, MDBContainer } from '../app/components/ui';
 
 // Check defaultProps on forwardRef
 describe('defaultProps diagnosis', () => {

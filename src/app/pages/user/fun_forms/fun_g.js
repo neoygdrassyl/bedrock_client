@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody } from '../../../components/ui';
 import DataTable from 'react-data-table-component';
 import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,

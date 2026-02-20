@@ -9,7 +9,7 @@ import RECORD_PH_SERVICE from '../../../../../services/record_ph.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh } from '../../../../../components/customClasses/typeParse';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../../components/ui';
 
 
 const MySwal = withReactContent(Swal);

@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBBreadcrumb, MDBBreadcrumbItem } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem } from '../../components/ui';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

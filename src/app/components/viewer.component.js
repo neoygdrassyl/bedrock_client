@@ -5,7 +5,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { Button, FlexboxGrid, Message, toaster } from 'rsuite';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from './ui';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url

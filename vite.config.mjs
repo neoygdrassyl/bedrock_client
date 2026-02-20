@@ -81,89 +81,9 @@ function cjsToEsm() {
   };
 }
 
-/**
- * Shared patch string generator for mdb-react-ui-kit defaultProps.
- *
- * mdb-react-ui-kit 1.6.0 sets `.defaultProps` on both forwardRef and plain
- * function components (e.g. MDBPopover, MDBCollapse, MDBDropdown, MDBModal…).
- * React 19 silently ignores `defaultProps` on ALL function-type components,
- * meaning props like `tag` resolve to `undefined` → crash.
- *
- * Strategy: after each `X.defaultProps = {...}`, reassign X to a patched
- * version via a self-invoking function:
- *
- *  • **forwardRef components** (have `.render`): wrap `.render` to merge
- *    defaultProps into incoming props. Return the same object.
- *
- *  • **Plain function components** (no `.render`): create a thin wrapper
- *    function that merges defaultProps before calling the original.
- *    Copy `.defaultProps` and `.displayName` to the wrapper so React
- *    DevTools and other code sees the same metadata.
- *
- * The reassignment (`X = (…)(X)`) ensures that later `export { X as MDBFoo }`
- * picks up the patched reference, surviving both esbuild pre-bundling and
- * Rollup tree-shaking in production builds.
- */
-const DP_RE = /([\w$]+)(\.defaultProps\s*=\s*\{[^}]+\})/g;
-
-function buildDefaultPropsPatch(varName) {
-  // The IIFE returns the (possibly wrapped) component; we reassign the variable.
-  return `;${varName}=(function(__c){` +
-    `if(!__c||!__c.defaultProps)return __c;` +
-    `var __dp=__c.defaultProps;` +
-    // Case 1: forwardRef — wrap .render
-    `if(typeof __c.render==='function'){` +
-      `var __orig=__c.render;` +
-      `__c.render=function(__p,__r){` +
-        `var __m={};for(var __k in __dp)__m[__k]=__dp[__k];` +
-        `if(__p)for(var __k2 in __p){if(__p[__k2]!==void 0)__m[__k2]=__p[__k2];}` +
-        `return __orig(__m,__r);` +
-      `};` +
-      `return __c;` +
-    `}` +
-    // Case 2: plain function component — create wrapper
-    `if(typeof __c==='function'){` +
-      `var __w=function(__p){` +
-        `var __m={};for(var __k in __dp)__m[__k]=__dp[__k];` +
-        `if(__p)for(var __k2 in __p){if(__p[__k2]!==void 0)__m[__k2]=__p[__k2];}` +
-        `return __c(__m);` +
-      `};` +
-      `__w.defaultProps=__dp;` +
-      `if(__c.displayName)__w.displayName=__c.displayName;` +
-      `return __w;` +
-    `}` +
-    `return __c;` +
-  `})(${varName})`;
-}
-
-/**
- * Vite plugin: patch mdb-react-ui-kit for React 19 during PRODUCTION builds.
- * (The dev server is handled by the esbuild plugin in `optimizeDeps`.)
- */
-function fixMdbDefaultProps() {
-  return {
-    name: 'fix-mdb-defaultprops',
-    enforce: 'pre',
-    // Only apply during production builds — dev uses the esbuild plugin
-    apply: 'build',
-    transform(code, id) {
-      if (!id.includes('mdb-react-ui-kit')) return null;
-      if (!code.includes('.defaultProps')) return null;
-
-      let patched = false;
-      const newCode = code.replace(DP_RE, (match, varName) => {
-        patched = true;
-        return match + buildDefaultPropsPatch(varName);
-      });
-
-      if (!patched) return null;
-      return { code: newCode, map: null };
-    },
-  };
-}
 
 export default defineConfig({
-  plugins: [cjsToEsm(), jsxInJs(), fixMdbDefaultProps(), react()],
+  plugins: [cjsToEsm(), jsxInJs(), react()],
 
   // Treat .md files as static assets (CRA imported them as URLs for fetch())
   assetsInclude: ['**/*.md'],
@@ -200,31 +120,6 @@ export default defineConfig({
     esbuildOptions: {
       loader: { '.js': 'jsx' },
       plugins: [
-        {
-          // mdb-react-ui-kit 1.6.0 uses `defaultProps` on both forwardRef and
-          // plain function components.  React 19 ignores `defaultProps` on all
-          // function-type components, causing `tag` to be `undefined` → crash.
-          //
-          // Fix: patch every component that has `defaultProps` to merge the
-          // defaults into incoming props — restores the React 18 behavior.
-          // See `buildDefaultPropsPatch()` above for the shared strategy.
-          name: 'fix-mdb-defaultprops',
-          setup(build) {
-            build.onLoad(
-              { filter: /mdb-react-ui-kit[\\/]dist[\\/]mdb-react-ui-kit\.esm\.js$/ },
-              async (args) => {
-                const { readFile } = await import('node:fs/promises');
-                let code = await readFile(args.path, 'utf8');
-
-                code = code.replace(DP_RE, (match, varName) => {
-                  return match + buildDefaultPropsPatch(varName);
-                });
-
-                return { contents: code, loader: 'js' };
-              },
-            );
-          },
-        },
         {
           // moment-business-days does `var moment = require('moment'); moment.fn.isHoliday = …`
           // esbuild's CJS interop wraps moment exports as { __esModule, default: fn },

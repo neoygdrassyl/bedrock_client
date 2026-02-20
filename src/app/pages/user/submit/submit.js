@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBTooltip } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 import SubmitService from '../../../services/submit.service';
 import DataTable from 'react-data-table-component';

@@ -6,7 +6,7 @@ import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_2
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
 import Modal from 'react-modal';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import FUNService from '../../../../services/fun.service';
 import moment from 'moment';
 import { Divider } from 'rsuite';

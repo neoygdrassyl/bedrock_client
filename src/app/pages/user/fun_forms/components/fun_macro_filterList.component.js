@@ -1,5 +1,5 @@
 import { Component, useState } from 'react';
-import { MDBBadge, MDBBtn, MDBCollapse, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBBtn, MDBCollapse, MDBTooltip } from '../../../../components/ui';
 import Modal from 'react-modal';
 import './fun_modal_shared.css';
 

@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import FUN_SERVICE from "../../../../services/fun.service"
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import FUNService from '../../../../services/fun.service';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';

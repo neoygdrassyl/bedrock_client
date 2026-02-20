@@ -8,7 +8,7 @@ import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
 import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 
 const MySwal = withReactContent(Swal);
 class FUN_DOC_CONFIRMLEGAL extends Component {

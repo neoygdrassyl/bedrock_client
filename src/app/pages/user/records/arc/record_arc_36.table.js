@@ -1,4 +1,4 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import { useState } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'

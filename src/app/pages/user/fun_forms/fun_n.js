@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
-import { MDBTypography } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody } from '../../../components/ui';
+import { MDBTypography } from '../../../components/ui';
 
 // FUN FAMILY
 import FUNN1 from './fun_n_1'

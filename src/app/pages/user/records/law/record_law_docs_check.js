@@ -2,7 +2,7 @@ import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge } from 'mdb-react-ui-kit';
+import { MDBBadge } from '../../../../components/ui';
 import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import VIZUALIZER from '../../../../components/vizualizer.component';

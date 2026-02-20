@@ -8,17 +8,7 @@ import '@testing-library/jest-dom/vitest';
 import React from 'react';
 globalThis.React = React;
 
-/**
- * Global mock: mdb-react-ui-kit
- *
- * mdb-react-ui-kit 1.0.0-beta3 uses `defaultProps` on forwardRef components.
- * React 19's JSX runtime no longer applies `defaultProps` for function/forwardRef
- * components, causing "Element type is invalid: undefined" when the `tag` prop is
- * not explicitly provided.  This global mock replaces all MDB components with
- * simple HTML-element stubs.
- * TODO: Remove when mdb-react-ui-kit is replaced (Fase 7).
- */
-vi.mock('mdb-react-ui-kit');
+// mdb-react-ui-kit eliminated — components replaced by src/app/components/ui/
 
 // Set default env vars for tests (equivalent to old process.env.REACT_APP_*)
 // These can be overridden in individual test files via import.meta.env

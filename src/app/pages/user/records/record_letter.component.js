@@ -6,7 +6,7 @@ import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
 import { infoCud } from '../../../components/jsons/vars';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import RecordReviewService from '../../../services/record_review.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
