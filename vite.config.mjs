@@ -82,16 +82,62 @@ function cjsToEsm() {
 }
 
 /**
+ * Shared patch string generator for mdb-react-ui-kit defaultProps.
+ *
+ * mdb-react-ui-kit 1.6.0 sets `.defaultProps` on both forwardRef and plain
+ * function components (e.g. MDBPopover, MDBCollapse, MDBDropdown, MDBModal…).
+ * React 19 silently ignores `defaultProps` on ALL function-type components,
+ * meaning props like `tag` resolve to `undefined` → crash.
+ *
+ * Strategy: after each `X.defaultProps = {...}`, reassign X to a patched
+ * version via a self-invoking function:
+ *
+ *  • **forwardRef components** (have `.render`): wrap `.render` to merge
+ *    defaultProps into incoming props. Return the same object.
+ *
+ *  • **Plain function components** (no `.render`): create a thin wrapper
+ *    function that merges defaultProps before calling the original.
+ *    Copy `.defaultProps` and `.displayName` to the wrapper so React
+ *    DevTools and other code sees the same metadata.
+ *
+ * The reassignment (`X = (…)(X)`) ensures that later `export { X as MDBFoo }`
+ * picks up the patched reference, surviving both esbuild pre-bundling and
+ * Rollup tree-shaking in production builds.
+ */
+const DP_RE = /([\w$]+)(\.defaultProps\s*=\s*\{[^}]+\})/g;
+
+function buildDefaultPropsPatch(varName) {
+  // The IIFE returns the (possibly wrapped) component; we reassign the variable.
+  return `;${varName}=(function(__c){` +
+    `if(!__c||!__c.defaultProps)return __c;` +
+    `var __dp=__c.defaultProps;` +
+    // Case 1: forwardRef — wrap .render
+    `if(typeof __c.render==='function'){` +
+      `var __orig=__c.render;` +
+      `__c.render=function(__p,__r){` +
+        `var __m={};for(var __k in __dp)__m[__k]=__dp[__k];` +
+        `if(__p)for(var __k2 in __p){if(__p[__k2]!==void 0)__m[__k2]=__p[__k2];}` +
+        `return __orig(__m,__r);` +
+      `};` +
+      `return __c;` +
+    `}` +
+    // Case 2: plain function component — create wrapper
+    `if(typeof __c==='function'){` +
+      `var __w=function(__p){` +
+        `var __m={};for(var __k in __dp)__m[__k]=__dp[__k];` +
+        `if(__p)for(var __k2 in __p){if(__p[__k2]!==void 0)__m[__k2]=__p[__k2];}` +
+        `return __c(__m);` +
+      `};` +
+      `__w.defaultProps=__dp;` +
+      `if(__c.displayName)__w.displayName=__c.displayName;` +
+      `return __w;` +
+    `}` +
+    `return __c;` +
+  `})(${varName})`;
+}
+
+/**
  * Vite plugin: patch mdb-react-ui-kit for React 19 during PRODUCTION builds.
- *
- * mdb-react-ui-kit 1.6.0 uses `defaultProps` on forwardRef components. React 19
- * silently ignores `defaultProps` on function/forwardRef components, meaning the
- * `tag` prop (and others) resolve to `undefined` → crash.
- *
- * This plugin intercepts the MDB source during Rollup (production) bundling and
- * appends a patch that wraps each component's `.render` to merge `defaultProps`
- * into incoming props.
- *
  * (The dev server is handled by the esbuild plugin in `optimizeDeps`.)
  */
 function fixMdbDefaultProps() {
@@ -101,21 +147,13 @@ function fixMdbDefaultProps() {
     // Only apply during production builds — dev uses the esbuild plugin
     apply: 'build',
     transform(code, id) {
-      // Only patch files that contain mdb-react-ui-kit
       if (!id.includes('mdb-react-ui-kit')) return null;
       if (!code.includes('.defaultProps')) return null;
 
-      // Inline-patch each `.defaultProps = {...}` assignment.
-      // Right after the assignment, call a self-invoking function that
-      // wraps Component.render to merge defaults into props.
-      // This survives Rollup tree-shaking because each patch references
-      // a variable that is later exported.
-      // NOTE: [\w$]+ to capture JS identifiers that start with $ (e.g. $e)
-      const DP_RE = /([\w$]+)(\.defaultProps\s*=\s*\{[^}]+\})/g;
       let patched = false;
-      const newCode = code.replace(DP_RE, (match, varName, rest) => {
+      const newCode = code.replace(DP_RE, (match, varName) => {
         patched = true;
-        return match + `;(function(__c){if(__c&&__c.defaultProps&&typeof __c.render==='function'){var __dp=__c.defaultProps,__orig=__c.render;__c.render=function(__p,__r){var __m={};for(var __k in __dp)__m[__k]=__dp[__k];if(__p)for(var __k2 in __p){if(__p[__k2]!==void 0)__m[__k2]=__p[__k2];}return __orig(__m,__r);}}})(${varName})`;
+        return match + buildDefaultPropsPatch(varName);
       });
 
       if (!patched) return null;
@@ -163,15 +201,13 @@ export default defineConfig({
       loader: { '.js': 'jsx' },
       plugins: [
         {
-          // mdb-react-ui-kit 1.6.0 uses `defaultProps` on forwardRef components
-          // (e.g. `MDBCard.defaultProps = {tag: "div"}`).  React 19 silently
-          // ignores `defaultProps` on function/forwardRef components, so `tag`
-          // becomes `undefined` at runtime → "Element type is invalid" crash.
+          // mdb-react-ui-kit 1.6.0 uses `defaultProps` on both forwardRef and
+          // plain function components.  React 19 ignores `defaultProps` on all
+          // function-type components, causing `tag` to be `undefined` → crash.
           //
-          // Fix: after the library code, patch every forwardRef component that
-          // has `defaultProps` so its `.render` function merges the defaults
-          // into incoming props — this restores the React 18 behavior at the
-          // library level without touching React internals.
+          // Fix: patch every component that has `defaultProps` to merge the
+          // defaults into incoming props — restores the React 18 behavior.
+          // See `buildDefaultPropsPatch()` above for the shared strategy.
           name: 'fix-mdb-defaultprops',
           setup(build) {
             build.onLoad(
@@ -180,14 +216,8 @@ export default defineConfig({
                 const { readFile } = await import('node:fs/promises');
                 let code = await readFile(args.path, 'utf8');
 
-                // Inline-patch: after each `.defaultProps = {...}`, insert a
-                // self-invoking function that wraps .render to merge defaults.
-                // NOTE: [\w$]+ to capture JS identifiers that start with $ (e.g. $e)
-                const DP_RE = /([\w$]+)(\.defaultProps\s*=\s*\{[^}]+\})/g;
-                let patched = false;
                 code = code.replace(DP_RE, (match, varName) => {
-                  patched = true;
-                  return match + `;(function(__c){if(__c&&__c.defaultProps&&typeof __c.render==='function'){var __dp=__c.defaultProps,__orig=__c.render;__c.render=function(__p,__r){var __m={};for(var __k in __dp)__m[__k]=__dp[__k];if(__p)for(var __k2 in __p){if(__p[__k2]!==void 0)__m[__k2]=__p[__k2];}return __orig(__m,__r);}}})(${varName})`;
+                  return match + buildDefaultPropsPatch(varName);
                 });
 
                 return { contents: code, loader: 'js' };
