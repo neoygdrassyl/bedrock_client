@@ -990,7 +990,89 @@ Se intentó primero un enfoque IIFE al final del archivo (`forEach(__patchDP)`) 
 por Rollup tree-shaking** en producción (0 ocurrencias de `__patchDP` en bundle). La solución inline
 resuelve esto porque cada IIFE referencia directamente la variable exportada.
 
-### 11. Estado: Fase 5 completada ✅
+### 11. Fix: Patch dual-path para forwardRef + plain function components
+
+**Fecha:** 2025-07-18  
+**Commit anterior:** `711a803e` — Fix regex `(\w+)` → `([\w$]+)` para capturar `$e`
+
+#### Problema detectado
+
+Tras el fix del regex, el dashboard funcionaba pero **6 de 16 rutas privadas seguían crasheando**:
+
+| Ruta | Estado |
+|------|--------|
+| `/fun` | ❌ CRASH |
+| `/funmanage` | ❌ CRASH |
+| `/pqrsadmin` | ❌ CRASH |
+| `/nomenclature` | ❌ CRASH |
+| `/submit` | ❌ CRASH |
+| `/archive` | ❌ CRASH |
+
+Error: `"Element type is invalid: expected a string... but got: undefined"` — Check the render method of `pe`.
+
+#### Root cause
+
+`pe` = `MDBPopover` en el código pre-bundleado. Es una **función plana** (NO forwardRef):
+
+```js
+var pe = function(l2) { ... };
+pe.defaultProps = { tag: b, popperTag: "div", placement: "bottom" };
+```
+
+El IIFE anterior solo parcheaba componentes con `.render` (forwardRef). Las **17 funciones planas** de MDB no recibían parche:
+
+| Tipo | Cantidad | Parcheado antes | Parcheado ahora |
+|------|----------|-----------------|-----------------|
+| forwardRef (tiene `.render`) | 60 | ✅ | ✅ |
+| Plain function (sin `.render`) | 17 | ❌ | ✅ |
+
+Componentes plain function afectados: `MDBTooltip`, `MDBInput`, `MDBCollapse`, `MDBDropdown`, `MDBDropdownItem`, `MDBDropdownMenu`, `MDBDropdownToggle`, `MDBDropdownLink`, `MDBDropdownDivider`, `MDBDropdownHeader`, `MDBPopover`, `MDBPopoverBody`, `MDBPopoverHeader`, `MDBModal`, `MDBScrollspySection`, `MDBCarousel`, `MDBCarouselItem`.
+
+#### Solución
+
+Nueva función compartida `buildDefaultPropsPatch(varName)` en `vite.config.mjs` que genera un IIFE con **dos ramas**:
+
+1. **forwardRef** (`typeof __c.render === 'function'`): wrappea `.render` para merge de defaultProps (enfoque existente).
+2. **Plain function** (`typeof __c === 'function'`): crea una función wrapper que hace merge de defaultProps antes de llamar al componente original. Reasigna la variable (`X=(function(__c){...})(X)`) para que `export { X as MDBFoo }` use la versión parcheada.
+
+```js
+// Ejemplo del patch generado para MDBPopover (pe):
+pe.defaultProps = { tag: b, popperTag: "div", placement: "bottom" };
+pe = (function(__c) {
+  if (!__c || !__c.defaultProps) return __c;
+  var __dp = __c.defaultProps;
+  // Case 1: forwardRef — wrap .render
+  if (typeof __c.render === 'function') { /* ... */ return __c; }
+  // Case 2: plain function — create wrapper
+  if (typeof __c === 'function') {
+    var __w = function(__p) {
+      var __m = {};
+      for (var __k in __dp) __m[__k] = __dp[__k];
+      if (__p) for (var __k2 in __p) { if (__p[__k2] !== void 0) __m[__k2] = __p[__k2]; }
+      return __c(__m);
+    };
+    __w.defaultProps = __dp;
+    if (__c.displayName) __w.displayName = __c.displayName;
+    return __w;
+  }
+  return __c;
+})(pe)
+```
+
+Ambos plugins (esbuild para dev + Vite transform para build) usan la misma lógica compartida.
+
+#### Verificación
+
+| Verificación | Resultado |
+|---|---|
+| Tests unitarios | 149/149 pass (10 suites) ✅ |
+| Rutas en browser (Playwright, 16 privadas) | 16/16 OK ✅ |
+| Build producción | OK en ~1m 8s ✅ |
+| Componentes forwardRef parcheados | 60 ✅ |
+| Componentes plain function parcheados | 17 ✅ |
+| Total defaultProps patches | 77 ✅ |
+
+### 12. Estado: Fase 5 estabilizada ✅
 
 **Listo para Fase 6:** Class → Functional (incremental, 177 componentes).  
 **Listo para Fase 7:** Reemplazar libs abandonadas (react-quill, react-vis, mdb-react-ui-kit).
