@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import FUNService from '../../../../services/fun.service'
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import JsonDocList from '../../../../components/jsons/fun6DocsList.json'

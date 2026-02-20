@@ -1,4 +1,4 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBTooltip } from '../../../components/ui';
 import { useEffect, useState } from 'react';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";

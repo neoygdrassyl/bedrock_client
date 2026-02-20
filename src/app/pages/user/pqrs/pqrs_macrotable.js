@@ -5,7 +5,7 @@ import DataTable from 'react-data-table-component';
 
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft } from '../../../components/customClasses/typeParse';
-import { MDBTooltip, MDBTypography } from 'mdb-react-ui-kit';
+import { MDBTooltip, MDBTypography } from '../../../components/ui';
 import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
 
 

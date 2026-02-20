@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn, MDBPopover, MDBPopoverBody } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBPopover, MDBPopoverBody } from '../../../../components/ui';
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isOA_3, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST, _SET_PRIORITY, formsParser1 } from '../../../../components/customClasses/typeParse';
 import FUN_CHART_MACRO_GRANTT from './charts_components.js/chart_macroGant.component';
 import { nomens } from '../../../../components/jsons/vars';

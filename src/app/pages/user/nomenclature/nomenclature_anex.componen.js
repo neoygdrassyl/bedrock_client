@@ -6,7 +6,7 @@ import withReactContent from 'sweetalert2-react-content'
 import Nomenclature_Service from '../../../services/nomeclature.service'
 import moment from 'moment';
 import VIZUALIZER from '../../../components/vizualizer.component';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import { cities } from '../../../components/jsons/vars';
 
 

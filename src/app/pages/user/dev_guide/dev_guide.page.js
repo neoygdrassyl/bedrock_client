@@ -1,4 +1,4 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, } from '../../../components/ui';
 import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import Markdown from 'markdown-to-jsx';

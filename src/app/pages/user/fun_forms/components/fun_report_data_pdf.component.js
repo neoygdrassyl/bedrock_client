@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from '../../../../services/fun.service'
 import { cities, infoCud } from '../../../../components/jsons/vars';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 
 const MySwal = withReactContent(Swal);

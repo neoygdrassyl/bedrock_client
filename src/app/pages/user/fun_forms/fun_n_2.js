@@ -2,7 +2,7 @@ import { Component } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 
 const MySwal = withReactContent(Swal);
 class FUNN2 extends Component {

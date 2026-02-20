@@ -7,7 +7,7 @@ import FUN_SERVICE from '../../../../services/fun.service'
 import moment from 'moment';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import { MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTypography } from '../../../../components/ui';
 import { handleArchCheck } from '../../../../components/customClasses/pdfCheckHandler';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';

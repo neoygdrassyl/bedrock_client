@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import {
   MDBTypography, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem
-} from 'mdb-react-ui-kit';
+} from '../../components/ui';
 import DataTable from 'react-data-table-component';
 import { Link } from "react-router-dom";
 import Collapsible from 'react-collapsible';

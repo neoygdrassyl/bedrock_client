@@ -1,4 +1,4 @@
-import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane, MDBPopover, MDBPopoverHeader, MDBPopoverBody, MDBCol, MDBPagination, MDBRow, MDBBtnGroup } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane, MDBPopover, MDBPopoverHeader, MDBPopoverBody, MDBCol, MDBPagination, MDBRow, MDBBtnGroup } from '../../components/ui';
 import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 

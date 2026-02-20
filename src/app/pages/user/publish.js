@@ -10,7 +10,7 @@ import {
   MDBModalTitle,
   MDBModalBody,
   MDBModalFooter, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent
-} from 'mdb-react-ui-kit';
+} from '../../components/ui';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

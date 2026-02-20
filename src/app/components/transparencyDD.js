@@ -5,7 +5,7 @@ import {
     MDBDropdownToggle,
     MDBTypography,
     MDBDropdownItem
-} from 'mdb-react-ui-kit';
+} from './ui';
 import Collapsible from 'react-collapsible';
 
 import {

@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBBtn, MDBInput, MDBRow, MDBCol, MDBTypography, MDBBadge, MDBInputGroup, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBDropdownLink, MDBInputGroupElement } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBInput, MDBRow, MDBCol, MDBTypography, MDBBadge, MDBInputGroup, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBDropdownLink, MDBInputGroupElement } from '../components/ui';
 import { Link } from "react-router-dom";
 // Carousel IMGS
 import NEW_ING from '../img/news1.jpg'

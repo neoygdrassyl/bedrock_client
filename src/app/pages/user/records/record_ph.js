@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 

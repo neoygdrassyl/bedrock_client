@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBCard, MDBCardBody, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody, MDBTooltip } from '../../../../components/ui';
 
 class PQRS_MODULE_NAV extends Component {
     constructor(props) {

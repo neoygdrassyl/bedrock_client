@@ -1,4 +1,4 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, } from '../../../components/ui';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'

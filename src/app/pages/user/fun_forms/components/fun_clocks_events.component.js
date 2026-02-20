@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../../components/ui';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import DATATABLE from 'react-data-table-component';

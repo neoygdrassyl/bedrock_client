@@ -1,4 +1,4 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import { useState } from 'react';
 import Modal from 'react-modal';
 import { infoCud } from '../../../components/jsons/vars';

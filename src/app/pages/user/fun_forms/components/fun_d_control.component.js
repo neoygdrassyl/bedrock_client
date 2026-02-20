@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';

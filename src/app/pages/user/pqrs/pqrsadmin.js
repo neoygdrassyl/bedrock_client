@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBBtn, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent, MDBBtnGroup, MDBTypography } from 'mdb-react-ui-kit';
+import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBBtn, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent, MDBBtnGroup, MDBTypography } from '../../../components/ui';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'

@@ -1,4 +1,4 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import { useEffect, useState } from 'react';
 
 

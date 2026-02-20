@@ -1,4 +1,4 @@
-import { MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBTooltip } from '../../../../components/ui';
 import { Component } from 'react';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 

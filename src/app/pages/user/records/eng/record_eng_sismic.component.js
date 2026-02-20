@@ -1,4 +1,4 @@
-import { MDBBtn, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip } from '../../../../components/ui';
 import { Component } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'

@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../../components/ui';
 import DataTable from 'react-data-table-component';
 import Modal from 'react-modal';
 import ListJson from '../../../../components/jsons/fun6DocsList.json';

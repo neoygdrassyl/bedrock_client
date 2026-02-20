@@ -1,4 +1,4 @@
-import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBIcon } from '../../../../../components/ui';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Crosshair, CustomSVGSeries, Hint, HorizontalGridLines, MarkSeries, VerticalGridLines, XAxis, XYPlot, YAxis } from 'react-vis';

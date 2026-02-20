@@ -6,7 +6,8 @@ import App from './app/App';
 
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import 'mdb-react-ui-kit/dist/css/mdb.min.css'
+// MDB CSS removed — mdb-react-ui-kit eliminated, using Bootstrap 5 classes directly
+// import 'mdb-react-ui-kit/dist/css/mdb.min.css'
 
 //import reportWebVitals from './reportWebVitals';
 

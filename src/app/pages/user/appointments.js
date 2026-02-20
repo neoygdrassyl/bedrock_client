@@ -11,7 +11,7 @@ import {
     MDBModalTitle,
     MDBModalBody,
     MDBModalFooter, MDBBreadcrumb, MDBBreadcrumbItem
-} from 'mdb-react-ui-kit';
+} from '../../components/ui';
 import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import Collapsible from 'react-collapsible';

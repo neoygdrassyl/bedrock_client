@@ -1,4 +1,4 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from './ui';
 import US_Flag from "../translation/flags/US.png"
 import ES_Flag from "../translation/flags/CO.png"
 

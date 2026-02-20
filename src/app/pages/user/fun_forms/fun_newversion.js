@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import Swal from 'sweetalert2'
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import withReactContent from 'sweetalert2-react-content'
 import FUNService from '../../../services/fun.service'
 import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'

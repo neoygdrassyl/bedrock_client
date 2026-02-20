@@ -7,7 +7,7 @@ import Submit_Service from '../../../services/submit.service'
 import funService from '../../../services/fun.service';
 import moment from 'moment';
 import VIZUALIZER from '../../../components/vizualizer.component';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import DataTable from 'react-data-table-component';
 
 

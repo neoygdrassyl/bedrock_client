@@ -1,4 +1,4 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from '../../../components/ui';
 import { useEffect, useState } from 'react';
 import { Divider } from 'rsuite';
 import Swal from 'sweetalert2'

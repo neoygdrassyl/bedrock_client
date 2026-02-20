@@ -2,7 +2,7 @@ import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBTooltip } from '../../../../components/ui';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 const MySwal = withReactContent(Swal);

@@ -4,7 +4,7 @@ import PQRS_Service from '../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import USERS_Service from '../../../services/users.service'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import { dateParser, dateParser_finalDate } from '../../../components/customClasses/typeParse'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import PQRS_EMAILS from './components/pqrs_emails.component';

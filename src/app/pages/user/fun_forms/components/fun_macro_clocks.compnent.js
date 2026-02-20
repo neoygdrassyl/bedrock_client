@@ -11,7 +11,7 @@ import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
 import RECORD_ARC_SERVICE from '../../../../services/record_arc.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
 import { dateParser_finalDate, formsParser1, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
-import { MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBTooltip } from '../../../../components/ui';
 import FUN_ICON_PROGRESS from './icon_progress.compoennt';
 
 export default function FUN_MACROTABLE_CLOCKS(props) {

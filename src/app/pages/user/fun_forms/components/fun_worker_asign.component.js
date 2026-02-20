@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip, MDBTypography, MDBPopover, MDBPopoverBody, MDBPopoverHeader, } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip, MDBTypography, MDBPopover, MDBPopoverBody, MDBPopoverHeader, } from '../../../../components/ui';
 import moment from 'moment';
 import { Component } from 'react';
 import DataTable from 'react-data-table-component';

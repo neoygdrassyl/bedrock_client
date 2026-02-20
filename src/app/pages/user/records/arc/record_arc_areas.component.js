@@ -3,7 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { Spreadsheet } from "react-spreadsheet";
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { MDBBtn, MDBCollapse } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBCollapse } from '../../../../components/ui';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import ReactTagInput from '@pathofdev/react-tag-input';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
