@@ -939,7 +939,58 @@ Build output: `build/assets/index-BWWVl8i6.js` (10.9 MB, gzip 2.6 MB)
 | `use()` | Leer recursos en render | Simplificar data fetching |
 | `ref` cleanup functions | ref callback puede devolver cleanup | Integración DOM third-party |
 
-### 10. Estado: Fase 5 completada ✅
+### 10. Fix crítico: mdb-react-ui-kit `defaultProps` + React 19
+
+#### Problema
+
+`mdb-react-ui-kit` v1.6.0 usa `.defaultProps` en ~76 componentes `forwardRef` (ej. `MDBCard.defaultProps = {tag: "div"}`).
+React 19 **ignora silenciosamente** `defaultProps` en function/forwardRef components → `tag` se vuelve `undefined`
+→ `createElement(undefined)` → pantalla en blanco o crash.
+
+#### Solución: Inline patching en Vite
+
+Se crearon **dos mecanismos de parcheo** en `vite.config.mjs`:
+
+1. **esbuild plugin** (`fix-mdb-defaultprops` en `optimizeDeps`): Parcha durante el pre-bundling de desarrollo.
+2. **Vite transform plugin** (`fixMdbDefaultProps()`): Parcha durante el build de producción (Rollup).
+
+Ambos usan la misma estrategia: inyectar un IIFE inline después de cada asignación `.defaultProps = {...}`:
+
+```js
+X.defaultProps = { tag: "div" };
+;(function(__c){
+  if(__c && __c.defaultProps && typeof __c.render === 'function') {
+    var __dp = __c.defaultProps, __orig = __c.render;
+    __c.render = function(__p, __r) {
+      var __m = {};
+      for(var __k in __dp) __m[__k] = __dp[__k];
+      if(__p) for(var __k2 in __p) { if(__p[__k2] !== void 0) __m[__k2] = __p[__k2]; }
+      return __orig(__m, __r);
+    }
+  }
+})(X)
+```
+
+Esto wrappea `.render` para fusionar `defaultProps` con los props entrantes — restaura el comportamiento de React 18
+a nivel de la librería sin tocar internals de React.
+
+#### Verificación
+
+| Verificación | Resultado |
+|---|---|
+| Patches en dev (pre-bundled) | 76 IIFEs inline ✅ |
+| Patches en producción (post-Rollup) | 76 IIFEs inline (sobreviven tree-shaking y minificación) ✅ |
+| Tests | 149/149 pass (10 suites) ✅ |
+| Login page renderiza | ✅ |
+| Build producción | `index-sabK4KtN.js` (10.9 MB) en 1m 2s ✅ |
+
+#### Nota sobre enfoque anterior fallido
+
+Se intentó primero un enfoque IIFE al final del archivo (`forEach(__patchDP)`) que **fue eliminado
+por Rollup tree-shaking** en producción (0 ocurrencias de `__patchDP` en bundle). La solución inline
+resuelve esto porque cada IIFE referencia directamente la variable exportada.
+
+### 11. Estado: Fase 5 completada ✅
 
 **Listo para Fase 6:** Class → Functional (incremental, 177 componentes).  
 **Listo para Fase 7:** Reemplazar libs abandonadas (react-quill, react-vis, mdb-react-ui-kit).
