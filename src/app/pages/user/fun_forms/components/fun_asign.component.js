@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service';
 import Swal from 'sweetalert2'
@@ -519,12 +519,12 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 }
                 let isSelected = worker.checked && (wCheck[wType] ?? true);
                 return <>
-                    <di className="row mb-1">
+                    <div className="row mb-1">
                         <div className='col'>
                             <MDBBtn outline={!isSelected} rounded block size='sm' style={{ backgroundColor: isSelected ? worker.color : 'whitesmoke', color: 'black', borderColor: "white" }}
                                 onClick={() => setWorkerChecked(worker.name)} >{worker.icon} {worker.name} ({worker.datas.length})</MDBBtn>
                         </div>
-                    </di>
+                    </div>
                 </>
             })}
             {/**
@@ -642,8 +642,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 </li>
             </ul>
             <ul class="list-group">
-                {colorsLegends.map(value => {
-                    return <>
+                {colorsLegends.map((value, i) => {
+                    return <React.Fragment key={i}>
                         <li class='list-group-item my-0 py-0'>
                             <div className='row'>
                                 <div className='col'>
@@ -653,7 +653,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                 </div>
                             </div>
                         </li>
-                    </>
+                    </React.Fragment>
                 })}
             </ul>
         </>
@@ -673,7 +673,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     let isSelected = worker.checked && (wCheck[wType] ?? true);
                     if (!isSelected) return;
                     let classList = 'list-group-item my-0 py-1';
-                    return <>
+                    return <React.Fragment key={i}>
                         <li class={classList} style={{ backgroundColor: worker.color, }}>
                             <div className='row'>
                                 <div className='col'>
@@ -685,8 +685,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                             <b>Revisando:</b>
                             <div class="d-flex flex-wrap">
                                 {worker.datas.filter(item => _filter(item)).filter(item => item.color == 'success' || item.color == 'secondary').map(btn => {
-                                    return <>
-                                        <div className='me-1 mb-1'>
+                                    return <div key={btn.id_public} className='me-1 mb-1'>
                                             <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
                                                 outline={selectedBtn != btn.id_public}
                                                 btnChildren={<label className={''}>{(btn.id_public).slice(-7)}</label>}
@@ -694,7 +693,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                                 {_MODULE_BTN_POP(btn)}
                                             </MDBPopover>
                                         </div>
-                                    </>
                                 })}
                             </div>
                             <b>No Viable (<label className="text-success">Nuevos Documentos</label>)</b>
@@ -702,8 +700,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                 {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map(btn => {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(!newDocs) return '';
-                                    return <>
-                                        <div className='me-1 mb-1'>
+                                    return <div key={btn.id_public + '-newdocs'} className='me-1 mb-1'>
                                             <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
                                                 outline={selectedBtn != btn.id_public}
                                                 btnChildren={<label className={''}>{(btn.id_public).slice(-7)}</label>}
@@ -711,7 +708,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                                 {_MODULE_BTN_POP(btn)}
                                             </MDBPopover>
                                         </div>
-                                    </>
                                 })}
                             </div>
                             <b>No Viable (Sin documentos nuevos)</b>
@@ -719,8 +715,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                 {worker.datas.filter(item => _filter(item)).filter(item => item.color != 'success' && item.color != 'secondary').map(btn => {
                                     let newDocs =  checkForNewDocs(wType, btn)
                                     if(newDocs) return '';
-                                    return <>
-                                        <div className='me-1 mb-1'>
+                                    return <div key={btn.id_public + '-nodocs'} className='me-1 mb-1'>
                                             <MDBPopover size='sm' color={btn.color ?? 'primary'} placement='bottom' dismiss rounded
                                                 outline={selectedBtn != btn.id_public}
                                                 btnChildren={<label className={''}>{(btn.id_public).slice(-7)}</label>}
@@ -728,11 +723,10 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                                                 {_MODULE_BTN_POP(btn)}
                                             </MDBPopover>
                                         </div>
-                                    </>
                                 })}
                             </div>
                         </li>
-                    </>
+                    </React.Fragment>
                 })}
             </ul>
         </>

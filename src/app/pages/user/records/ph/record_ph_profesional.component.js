@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -6,16 +5,8 @@ import { MDBBadge, MDBTooltip } from '../../../../components/ui';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 const MySwal = withReactContent(Swal);
 
-class RECORD_PH_PROFESIONALS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentRecord } = this.props;
-        const { } = this.state;
+function RECORD_PH_PROFESIONALS(props) {
+        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentRecord } = props;
 
         // DATA GETTERS
         /*  ROLES LIST
@@ -182,7 +173,6 @@ class RECORD_PH_PROFESIONALS extends Component {
                 {_PROFESIOAL_INFO_COMPONENT()}
             </div >
         );
-    }
 }
 
 export default RECORD_PH_PROFESIONALS;

@@ -1,12 +1,6 @@
-import { Component } from 'react';
 import { MDBCard, MDBCardBody } from '../../../../components/ui';
 
-class FUND_NAV extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+function FUND_NAV({ translation, swaMsg, globals, currentItem, currentVersion }) {
         return (
             <div className="btn-navpqrs">
                 <div className="fung_nav">
@@ -125,7 +119,6 @@ class FUND_NAV extends Component {
                 </div>
             </div>
         );
-    }
 }
 
 export default FUND_NAV;

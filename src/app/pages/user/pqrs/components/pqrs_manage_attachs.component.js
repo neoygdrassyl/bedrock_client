@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -7,21 +7,15 @@ import { MDBTooltip } from '../../../../components/ui';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
-class PQRS_EDIT_ATTACH extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
-            document.getElementById("file_name_edit").value = _ITEM.public_name;
+function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
+    const [edit, setEdit] = useState(false);
+    const [isNew, setIsNew] = useState(false);
+
+    useEffect(() => {
+        if (edit && edit !== false) {
+            document.getElementById("file_name_edit").value = edit.public_name;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+    }, [edit]);
 
         //DATA GETTERS
         let _GET_ATTACHS = () => {
@@ -53,7 +47,7 @@ class PQRS_EDIT_ATTACH extends Component {
                     cell: row => <>
                         <VIZUALIZER url={row.name} apipath={row.class == 0 ?  '/files/pqrsa/': '/files/pqrs/'}/>
                         <MDBTooltip title='Modificar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => this.setState({ edit: row })} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
+                            <button onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
                                 <i class="far fa-edit "></i></button></MDBTooltip>
                         <MDBTooltip title='Eliminar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                             <button onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
@@ -127,7 +121,7 @@ class PQRS_EDIT_ATTACH extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshCurrentItem(currentItem.id)
+                        refreshCurrentItem(currentItem.id)
                         document.getElementById("form_pqrs_edit_attach").reset();
                     } else {
                         MySwal.fire({
@@ -166,7 +160,7 @@ class PQRS_EDIT_ATTACH extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            PQRS_Service.update_attach(this.state.edit.id, formData)
+            PQRS_Service.update_attach(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -176,8 +170,8 @@ class PQRS_EDIT_ATTACH extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshCurrentItem(currentItem.id)
-                        this.setState({ edit: false });
+                        refreshCurrentItem(currentItem.id)
+                        setEdit(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -223,8 +217,8 @@ class PQRS_EDIT_ATTACH extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.refreshCurrentItem(currentItem.id)
-                                this.setState({ edit: false });
+                                refreshCurrentItem(currentItem.id)
+                                setEdit(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -249,12 +243,12 @@ class PQRS_EDIT_ATTACH extends Component {
         return (
             <div>
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Añadir Anexo
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <form id="form_pqrs_edit_attach" onSubmit={new_item} enctype="multipart/form-data">
                         {_COMPONENT_MANAGE("")}
                         <div className="text-center">
@@ -265,7 +259,7 @@ class PQRS_EDIT_ATTACH extends Component {
                     </form>
                     : ""}
                 {_ATTACHES_COMPONENT()}
-                {this.state.edit
+                {edit
                     ? <form id="form_pqrs_new_attach" onSubmit={edit_item} enctype="multipart/form-data">
                         <div className="text-center">
                             <label className="fw-bold py-2">Editar Item</label>
@@ -280,7 +274,6 @@ class PQRS_EDIT_ATTACH extends Component {
                     : ""}
             </div>
         );
-    }
 }
 
 export default PQRS_EDIT_ATTACH;

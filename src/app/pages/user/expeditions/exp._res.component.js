@@ -275,7 +275,7 @@ export default function EXP_RES(props) {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
 

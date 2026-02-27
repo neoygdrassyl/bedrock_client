@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -12,16 +11,8 @@ import RECORD_LAW_PDF from '../law/record_law_pdf';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_PH_LAW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, _FUN_R, _FUN_6, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_PH_LAW(props) {
+        const { translation, swaMsg, globals, currentItem, _FUN_R, _FUN_6, currentRecord, currentVersionR } = props;
 
         // DATA GETTER
         let _GET_CHILD_6 = () => {
@@ -222,7 +213,7 @@ class RECORD_PH_LAW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
+                            props.requestUpdate(currentItem.id);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -276,7 +267,7 @@ class RECORD_PH_LAW extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        props.requestUpdateRecord(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -324,7 +315,6 @@ class RECORD_PH_LAW extends Component {
                     </div>
             </div >
         );
-    }
 }
 
 export default RECORD_PH_LAW;

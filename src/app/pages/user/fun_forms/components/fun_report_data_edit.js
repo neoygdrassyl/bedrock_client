@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { dateParser, dateParser_finalDate, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -13,38 +13,35 @@ import CubXVrDataService from '../../../../services/cubXvr.service';
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class FUN_REPORT_DATA_EDIT extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: [],
-            vrSelected: null,
-            cubSelected: null,
-            idCUBxVr: null
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    async retrieveItem() {
+function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [vrSelected, setVrSelected] = useState(null);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const [pdf, setPdf] = useState(false);
+
+    const retrieveItem = useCallback(async () => {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
-            })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data);
+            });
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'CONTROL DE DOCUMENTACION ESPECIAL');
 
             if (data) {
-                document.getElementById("vr_selected").value = data.vr
-                this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+                document.getElementById("vr_selected").value = data.vr;
+                setVrSelected(data.vr);
+                setCubSelected(data.cub);
+                setIdCUBxVr(data.id);
             }
         } catch (error) {
             console.log(error);
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+    }, [currentItem.id_public]);
+
+    useEffect(() => {
+        retrieveItem();
+    }, [retrieveItem]);
 
         // DATA GETERS
         let _GET_CHILD_6 = () => {
@@ -99,7 +96,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -126,7 +123,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     <div className="col-4 p-2">
                         <div class="input-group my-1">
                             <input type="text" class="form-control" id="fun_report_data_2"
-                                defaultValue={_GET_CHILD_LAW().report_cub || this.state.cubSelected || ""} />
+                                defaultValue={_GET_CHILD_LAW().report_cub || cubSelected || ""} />
                                 <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                         </div>
                     </div>
@@ -137,9 +134,9 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     </div>
                     <div className="col-4 p-2 ">
                         <div class="input-group">
-                            <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected || ""}>
+                            <select class="form-select" id="vr_selected" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
+                                {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
@@ -219,7 +216,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACION",
@@ -258,7 +255,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACION",
@@ -309,7 +306,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
 
             manage_law();
             createVRxCUB_relation(new_id)
-            this.retrieveItem();
+            retrieveItem();
         }
         let createVRxCUB_relation = (cub_selected) => {
             let vr = document.getElementById("vr_selected").value;
@@ -325,12 +322,12 @@ class FUN_REPORT_DATA_EDIT extends Component {
             let date = document.getElementById('fun_report_data_3').value;
             formatData.set('date', date);
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } 
                     })
                     .catch((error) => {
@@ -342,7 +339,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -366,13 +363,13 @@ class FUN_REPORT_DATA_EDIT extends Component {
                 <div className="row">
                     <div className="col-12">
                         <div class="form-check ms-3 px-5">
-                            <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ pdf: e.target.checked })} />
+                            <input class="form-check-input" type="checkbox" onChange={(e) => setPdf(e.target.checked)} />
                             <label class="form-check-label text-start" > Generar PDF</label>
                         </div>
                     </div>
                 </div>
                 <div className="row py-3">
-                    {this.state.pdf
+                    {pdf
                         ?
                         _GLOBAL_ID == 'cb1' ? <FUN_REPORT_DATA_PDF
                             translation={translation}
@@ -380,7 +377,7 @@ class FUN_REPORT_DATA_EDIT extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={() => this.props.requestUpdate(currentItem.id)} />
+                            requestUpdate={() => requestUpdate(currentItem.id)} />
                             : <FUN_REPORT_DATA_JODIT
                                 translation={translation}
                                 swaMsg={swaMsg}
@@ -396,7 +393,6 @@ class FUN_REPORT_DATA_EDIT extends Component {
 
             </div >
         );
-    }
 }
 
 export default FUN_REPORT_DATA_EDIT;

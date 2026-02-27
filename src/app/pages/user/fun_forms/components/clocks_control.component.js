@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import EXP_CLOCKS from '../../clocks/centralClocks.component';
@@ -51,41 +51,34 @@ const styles = {
     }
 };
 
-class CLOCKS_CONTROL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            activeTab: 'tiempos'
-        };
-    }
+function CLOCKS_CONTROL(props) {
+    const [activeTab, setActiveTab] = useState('tiempos');
+    const { translation, swaMsg, globals, currentItem, currentVersion, secondary } = props;
 
-    requestUpdate = (id) => {
-        if (this.props.requestUpdate) {
-            this.props.requestUpdate(id);
+    const requestUpdate = (id) => {
+        if (props.requestUpdate) {
+            props.requestUpdate(id);
         }
     }
     
-    requestRefresh = () => {
-        if (this.props.requestRefresh) {
-            this.props.requestRefresh();
+    const requestRefresh = () => {
+        if (props.requestRefresh) {
+            props.requestRefresh();
         }
     }
 
-    handleTabChange = (tabName) => {
-        this.setState({ activeTab: tabName });
+    const handleTabChange = (tabName) => {
+        setActiveTab(tabName);
     }
     
-    getTabLinkStyle = (tabName) => {
+    const getTabLinkStyle = (tabName) => {
         const baseStyle = styles.tabLink;
-        if (this.state.activeTab === tabName) {
+        if (activeTab === tabName) {
             return { ...baseStyle, ...styles.tabLinkActive };
         }
         return baseStyle;
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, secondary } = this.props;
-        const { activeTab } = this.state;
         const stepsToCheck = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
         const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
         
@@ -440,8 +433,8 @@ class CLOCKS_CONTROL extends Component {
                     {tabs.map(tab => (
                         <li key={tab.id} style={styles.tabItem}>
                             <a
-                                style={this.getTabLinkStyle(tab.id)}
-                                onClick={() => this.handleTabChange(tab.id)}
+                                style={getTabLinkStyle(tab.id)}
+                                onClick={() => handleTabChange(tab.id)}
                                 className={tab.className || ''}
                             >
                                 {tab.label}
@@ -454,8 +447,8 @@ class CLOCKS_CONTROL extends Component {
                     <div style={styles.tabPane}>
                         {activeTab === 'tiempos' && (
                             <EXP_CLOCKS 
-                                {...this.props}
-                                requestUpdate={this.requestUpdate}
+                                {...props}
+                                requestUpdate={requestUpdate}
                             />
                         )}
                         {activeTab === 'principal' && (
@@ -471,13 +464,13 @@ class CLOCKS_CONTROL extends Component {
                         )}
                         {activeTab === 'eventos' && (
                             <FUN_CLOCK_EVENTS
-                                {...this.props}
-                                requestUpdate={this.requestUpdate}
+                                {...props}
+                                requestUpdate={requestUpdate}
                             />
                         )}
                         {activeTab === 'grafico' && (
                             <FUN_CLOCK_CHART
-                                {...this.props}
+                                {...props}
                             />
                         )}
                         {activeTab === 'desistimientos' && (
@@ -486,9 +479,9 @@ class CLOCKS_CONTROL extends Component {
                                     <label className="app-p lead text-center fw-normal text-uppercase text-light">CONTROL DE PROCESOS DE DESISTIMIENTOS</label>
                                 </legend>
                                 <FUN_CLOCKS_NEGATIVE
-                                    {...this.props}
-                                    requestUpdate={this.requestUpdate}
-                                    requestRefresh={this.requestRefresh}
+                                    {...props}
+                                    requestUpdate={requestUpdate}
+                                    requestRefresh={requestRefresh}
                                 />
                             </>
                         )}
@@ -496,7 +489,6 @@ class CLOCKS_CONTROL extends Component {
                 </div>
             </div>
         );
-    }
 }
 
 export default CLOCKS_CONTROL;

@@ -1,16 +1,7 @@
-import { Component } from 'react';
 import { addDecimalPoints, dateParser } from '../../../../components/customClasses/typeParse';
 
 
-class FUN_PLANING_DATA extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
 
 
         // DATA GETERS
@@ -135,7 +126,6 @@ class FUN_PLANING_DATA extends Component {
                 {_COMPONENT()}
             </div >
         );
-    }
 }
 
 export default FUN_PLANING_DATA;

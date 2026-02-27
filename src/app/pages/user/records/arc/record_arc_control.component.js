@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -15,32 +15,20 @@ import RECORD_ARC_AREAS_2 from './record_arc_areas_2.component';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ARC_CONTROL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new_area: false,
-            new_blueprint: false,
-            edit_area: false,
-            edit_blueprint: false,
-            sort: 'asc',
-            sort2: 'asc',
-            fillActive: 'tab2',
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit_blueprint !== prevState.edit_blueprint && this.state.edit_blueprint != false) {
-            var _ITEM = this.state.edit_blueprint;
+function RECORD_ARC_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
+    const [editBlueprint, setEditBlueprint] = useState(false);
+    const [saveState, setSaveState] = useState({});
+
+    useEffect(() => {
+        if (editBlueprint) {
+            var _ITEM = editBlueprint;
             document.getElementById("r_a_33_blueprint_1_edit").value = _ITEM.id_public;
             document.getElementById("r_a_33_blueprint_2_edit").value = _ITEM.use;
             document.getElementById("r_a_33_blueprint_3_edit").value = _ITEM.scale;
             //document.getElementById("r_a_33_blueprint_4_edit").value = _ITEM.category
             document.getElementById("r_a_33_blueprint_5_edit").value = _ITEM.id6_blueprint ? _ITEM.id6_blueprint : 0;
-            //document.getElementById("r_a_33_blueprint_6_edit").value = _ITEM.active == 1 ? 1 : 0;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R } = this.props;
+    }, [editBlueprint]);
         // DATA GETERS
 
         let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
@@ -96,8 +84,8 @@ class RECORD_ARC_CONTROL extends Component {
                     currentVersion={currentVersion}
                     currentRecord={currentRecord}
                     currentVersionR={currentVersionR}
-                    requestUpdateRecord={this.props.requestUpdateRecord}
-                    requestUpdate={this.props.requestUpdate}
+                    requestUpdateRecord={requestUpdateRecord}
+                    requestUpdate={requestUpdate}
                 />
             </>
         }
@@ -377,7 +365,7 @@ class RECORD_ARC_CONTROL extends Component {
 
         }
         let save_step = (_id_public, useSwal, formData, state) => {
-            this.setState({ [state]: 1 })
+            setSaveState(prev => ({...prev, [state]: 1}))
             var STEP = LOAD_STEP(_id_public);
 
             if (useSwal) MySwal.fire({
@@ -397,8 +385,8 @@ class RECORD_ARC_CONTROL extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ [state]: 2 })
+                            requestUpdateRecord(currentItem.id);
+                            setSaveState(prev => ({...prev, [state]: 2}))
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -406,7 +394,7 @@ class RECORD_ARC_CONTROL extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.setState({ [state]: 3 })
+                            setSaveState(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
@@ -417,7 +405,7 @@ class RECORD_ARC_CONTROL extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.setState({ [state]: 3 })
+                        setSaveState(prev => ({...prev, [state]: 3}))
                     });
             }
             else {
@@ -431,8 +419,8 @@ class RECORD_ARC_CONTROL extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ [state]: 2 })
+                            requestUpdateRecord(currentItem.id);
+                            setSaveState(prev => ({...prev, [state]: 2}))
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -440,7 +428,7 @@ class RECORD_ARC_CONTROL extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.setState({ [state]: 3 })
+                            setSaveState(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
@@ -451,7 +439,7 @@ class RECORD_ARC_CONTROL extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.setState({ [state]: 3 })
+                        setSaveState(prev => ({...prev, [state]: 3}))
                     });
             }
         }
@@ -470,19 +458,18 @@ class RECORD_ARC_CONTROL extends Component {
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                        requestUpdateRecord={this.props.requestUpdateRecord}
-                        requestUpdate={this.props.requestUpdate}
+                    requestUpdateRecord={requestUpdateRecord}
+                    requestUpdate={requestUpdate}
                     />
 
                     <h3 className="my-3">3.3.4 Información Geográfica de Coordenadas</h3>
                     {_COMPONENT_5_GEO()}
 
-                    <h3 className="my-3">3.3.5 Control para Entidades (Planeación y Ministerio de vivienda) {_SAVING_STATE(this.state.pym)}</h3>
+                    <h3 className="my-3">3.3.5 Control para Entidades (Planeación y Ministerio de vivienda) {_SAVING_STATE(saveState.pym)}</h3>
                     {_COMPONENT_CONTROL()}
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_CONTROL;

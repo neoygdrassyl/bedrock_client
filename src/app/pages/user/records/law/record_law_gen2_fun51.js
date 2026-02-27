@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -8,15 +7,8 @@ import VIZUALIZER from '../../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_LAW_GEN_2_FUN51 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_LAW_GEN_2_FUN51(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
 
         // DATA GETTERS
         let _GET_CHILD_51 = () => {
@@ -201,7 +193,7 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                                 confirmButtonText: swaMsg.text_btn,
                             });
                         }
-                        this.props.requestUpdate(currentItem.id)
+                        props.requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
                             MySwal.fire({
@@ -241,7 +233,6 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_LAW_GEN_2_FUN51;

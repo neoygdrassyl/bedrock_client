@@ -1,5 +1,5 @@
+import { useState, useEffect } from 'react';
 import { MDBBtn } from '../../../../components/ui';
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser, formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
@@ -7,44 +7,35 @@ import sealService from '../../../../services/seal.service';
 import CustomService from '../../../../services/custom.service';
 
 const MySwal = withReactContent(Swal);
-class FUN_SEAL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            currentSeal: null,
+function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion }) {
+        const [currentSeal, setCurrentSeal] = useState(null);
+
+        const retrieveSeal = (id) => {
+            sealService.getParent(id)
+            .then(response => {
+                setCurrentSeal(response.data[0].seal);
+            })
+            .catch(e => {
+                console.log(e);
+                setCurrentSeal(false);
+            });
         };
-    }
-    componentDidMount() {
-        this.retrieveSeal(this.props.currentItem.id_public)
-    }
-    retrieveSeal(id) {
-        sealService.getParent(id)
-        .then(response => {
-            this.setState({
-                currentSeal: response.data[0].seal,
-            })
-        })
-        .catch(e => {
-            console.log(e);
-            this.setState({
-                currentSeal: false,
-            })
-        });
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.currentSeal !== prevState.currentSeal && this.state.currentSeal != null) {
-            var _ITEM = this.state.currentSeal;
-            document.getElementById("seal_3").value = _ITEM.id_public;
-            document.getElementById("seal_4").value = _ITEM.area;
-            document.getElementById("seal_5").value = this.props.currentItem.date;
-            document.getElementById("seal_6").value = _ITEM.blueprints;
-            document.getElementById("seal_7").value = _ITEM.drives;
-            document.getElementById("seal_8").value = _ITEM.folders;
-        }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { currentSeal } = this.state;
+
+        useEffect(() => {
+            retrieveSeal(currentItem.id_public);
+        }, []);
+
+        useEffect(() => {
+            if (currentSeal != null) {
+                var _ITEM = currentSeal;
+                document.getElementById("seal_3").value = _ITEM.id_public;
+                document.getElementById("seal_4").value = _ITEM.area;
+                document.getElementById("seal_5").value = currentItem.date;
+                document.getElementById("seal_6").value = _ITEM.blueprints;
+                document.getElementById("seal_7").value = _ITEM.drives;
+                document.getElementById("seal_8").value = _ITEM.folders;
+            }
+        }, [currentSeal]);
 
         var sael_name = ''
         if(currentItem.expedition) sael_name += currentItem.expedition.id_public ? `RESOLUCIÓN ${currentItem.expedition.id_public} DEL ` : '';
@@ -146,7 +137,7 @@ class FUN_SEAL extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.retrieveSeal(currentItem.id_public);
+                            retrieveSeal(currentItem.id_public);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -183,7 +174,7 @@ class FUN_SEAL extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.retrieveSeal(currentItem.id_public);
+                            retrieveSeal(currentItem.id_public);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -253,7 +244,7 @@ class FUN_SEAL extends Component {
                         window.open(import.meta.env.VITE_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
                         document.getElementById("app-form").reset();
                         formData = new FormData();
-                        this.refreshList();
+                        retrieveSeal(currentItem.id_public);
                         MySwal.close();
                     } else {
                         
@@ -389,7 +380,6 @@ class FUN_SEAL extends Component {
                 </form>
             </div>
         );
-    }
 }
 
 

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -13,36 +13,28 @@ import { formsParser1 } from '../../../components/customClasses/typeParse';
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class SUBMIT_MANAGE extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshItem = this.refreshItem.bind(this);
-        this.state = {
-            list: [],
-            currentItem: false
-        };
-    }
-    componentDidMount() {
-        this.refreshItem()
-    }
-    refreshItem() {
-        if (this.props.currentId) {
-            SubmitService.get(this.props.currentId).then(response => {
-                let item = response.data
-                this.setState({
-                    currentItem: item,
-                })
-            })
+function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: propRefreshList, closeModal, edit }) {
+    const [currentItem, setCurrentItem] = useState(false);
+    const [verifyMSG, setVerifyMSG] = useState(null);
+    const [payment, setPayment] = useState(false);
+
+    useEffect(() => {
+        refreshItem();
+    }, []);
+
+    function refreshItem() {
+        if (currentId) {
+            SubmitService.get(currentId).then(response => {
+                let item = response.data;
+                setCurrentItem(item);
+            });
         }
     }
-    refreshList(id) {
-        this.props.refreshList(id);
+
+    function refreshList(id) {
+        propRefreshList(id);
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentId } = this.props;
-        const { currentItem } = this.state;
 
         // DATA GETTERS
         let GET_SUBMIT = () => {
@@ -108,31 +100,31 @@ class SUBMIT_MANAGE extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
         }
         let _VERIFY_RELATED_ID = () => {
-            this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-search-location text-info"></i> Buscando...</label> })
+            setVerifyMSG(<label className="fw-bold"><i class="fas fa-search-location text-info"></i> Buscando...</label>)
             var id = document.getElementById('submit_2').value;
             if (id.length) {
                 _GET_TYPE(id)
                 SubmitService.verifyid(id)
                     .then(response => {
                         if (response.data.length) {
-                            this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-check text-success"></i> Se encontro consecutivo</label> })
+                            setVerifyMSG(<label className="fw-bold"><i class="fas fa-check text-success"></i> Se encontro consecutivo</label>)
                         } else {
-                            this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> No se encontro consecutivo</label> })
+                            setVerifyMSG(<label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> No se encontro consecutivo</label>)
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> Se encontraron errores en el Codigo a buscar</label> })
+                        setVerifyMSG(<label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> Se encontraron errores en el Codigo a buscar</label>)
                     });
             } else {
                 document.getElementById('submit_4').value = ""
-                this.setState({ verifyMSG: <label className="fw-bold"><i class="fas fa-times text-danger"></i> Debe especificar un consecutivo de Licencia o JUR.</label> })
+                setVerifyMSG(<label className="fw-bold"><i class="fas fa-times text-danger"></i> Debe especificar un consecutivo de Licencia o JUR.</label>)
             }
         }
         let _GET_TYPE = (id_public) => {
@@ -193,7 +185,7 @@ class SUBMIT_MANAGE extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -222,7 +214,7 @@ class SUBMIT_MANAGE extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -254,10 +246,10 @@ class SUBMIT_MANAGE extends Component {
                             <button type="button" class="btn btn-warning shadow-none"
                                 onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</button>
                         </div>
-                        {this.state.verifyMSG}
+                        {verifyMSG}
                     </div>
                     <div className="col-3">
-                        {this.state.payment
+                        {payment
                             ? <>
                                 <label >2.1 Consecutivo Pago</label>
                                 <div class="input-group mb-1">
@@ -271,16 +263,16 @@ class SUBMIT_MANAGE extends Component {
                             : ""}
                     </div>
                 </div>
-                {!this.props.edit
+                {!edit
                     ? <div className="row text-end">
                         <div className="col-8">
                             <div class="form-check my-3 px-5">
-                                <input class="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => this.setState({ payment: e.target.checked })} />
+                                <input class="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
                                 <p class="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
                             </div>
                         </div>
                         <div className="col-4">
-                            {this.state.payment
+                            {payment
                                 ? <>
                                     <button type="button" class="btn btn-info shadow-none me-1"
                                         onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</button>
@@ -511,7 +503,7 @@ class SUBMIT_MANAGE extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.refreshList(currentItem.id);
+                            propRefreshList(currentItem.id);
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACIÓN",
@@ -550,8 +542,8 @@ class SUBMIT_MANAGE extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.refreshList();
-                            this.props.closeModal();
+                            propRefreshList();
+                            closeModal();
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACIÓN",
@@ -610,7 +602,7 @@ class SUBMIT_MANAGE extends Component {
                                 <SUBMIT_LIST
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
-                                    refreshList={this.refreshItem} />
+                                    refreshList={refreshItem} />
 
                             </fieldset>
                             <fieldset className="p-3">
@@ -620,8 +612,8 @@ class SUBMIT_MANAGE extends Component {
                                 <SUBMIT_ANEX
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
-                                    refreshList={this.refreshList}
-                                    refreshItem={this.refreshItem}
+                                    refreshList={refreshList}
+                                    refreshItem={refreshItem}
                                 />
                             </fieldset>
                         </>
@@ -629,7 +621,6 @@ class SUBMIT_MANAGE extends Component {
                 </>
             </div >
         );
-    }
 }
 
 export default SUBMIT_MANAGE;

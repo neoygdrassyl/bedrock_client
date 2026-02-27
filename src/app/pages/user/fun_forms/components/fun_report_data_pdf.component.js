@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -9,15 +8,7 @@ import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 
 const MySwal = withReactContent(Swal);
 const moment = require('moment');
-class FUN_REPORT_DATA_PDF extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
 
         // DATA GETERS
@@ -597,7 +588,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACION",
@@ -636,7 +627,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACION",
@@ -703,7 +694,6 @@ class FUN_REPORT_DATA_PDF extends Component {
                 </form>
             </div >
         );
-    }
 }
 
 export default FUN_REPORT_DATA_PDF;

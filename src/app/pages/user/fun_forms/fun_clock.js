@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -9,30 +9,19 @@ import EMAILS_COMPONENT from '../../../components/emails.component';
 
 const MySwal = withReactContent(Swal);
 
-class FUNCLOCK extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            currentItem: null,
-            load: false,
-            pqrsxfun: false,
-            email_users: false,
-        };
-    }
+function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, requesRefresh, NAVIGATION }) {
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [email_users, setEmailUsersState] = useState(false);
 
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-
-    retrieveItem = (id) => {
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                });
-                this.setEmailUsers(response.data);
-                this.retrievePQRSxFUN(response.data.id_public);
+                setCurrentItem(response.data);
+                setLoad(true);
+                setEmailUsersFromItem(response.data);
+                retrievePQRSxFUN(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -40,28 +29,28 @@ class FUNCLOCK extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, inténtelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
     }
 
-    retrievePQRSxFUN = (id_public) => {
+    const retrievePQRSxFUN = (id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({ pqrsxfun: response.data });
+                setPqrsxfun(response.data);
             })
             .catch(e => console.log(e));
     }
 
-    requestRefresh = () => {
-        this.props.requesRefresh();
+    const requestRefresh = () => {
+        requesRefresh();
     }
     
-    requestUpdateItem = () => {
-        this.retrieveItem(this.props.currentId);
+    const requestUpdateItem = () => {
+        retrieveItem(currentId);
     }
 
-    setEmailUsers = (_currentItem) => {
+    const setEmailUsersFromItem = (_currentItem) => {
         const users = {
             f52_names: null, f52_surnames: null, f52_emails: null,
             f53_name: null, f53_surname: null, f53_email: null,
@@ -89,57 +78,56 @@ class FUNCLOCK extends Component {
             users.f53_email = _currentItem.fun_53s[0].email;
         }
 
-        this.setState({ email_users: users });
+        setEmailUsersState(users);
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { currentItem, email_users, pqrsxfun } = this.state;
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
 
-        if (!currentItem) {
-            return (
-                <fieldset className="p-3 text-center">
-                    <h3 className="fw-bold">CARGANDO INFORMACIÓN...</h3>
-                </fieldset>
-            );
-        }
-
+    if (!currentItem) {
         return (
-            <div>
-                <div className="bg-info text-white p-2 mb-3 h5 text-center text-uppercase">
-                    Control de Tiempos y Fechas
-                </div>
-                
-                <CLOCKS_CONTROL 
-                    translation={translation} 
-                    swaMsg={swaMsg} 
-                    globals={globals}
-                    currentItem={currentItem}
-                    currentVersion={currentVersion}
-                    requestUpdate={this.requestUpdateItem}
-                    requestRefresh={this.requestRefresh}
-                    secondary // Prop para mostrar eventos secundarios
-                />
-
-                {/* <EMAILS_COMPONENT  
-                    translation={translation} 
-                    swaMsg={swaMsg}
-                    id_public={currentItem.id_public} 
-                    process="lic" 
-                    users={email_users}
-                /> */}
-
-                <FUN_MODULE_NAV
-                    translation={translation}
-                    currentItem={currentItem}
-                    currentVersion={currentVersion}
-                    FROM={"clock"}
-                    NAVIGATION={this.props.NAVIGATION}
-                    pqrsxfun={pqrsxfun}
-                />
-            </div>
+            <fieldset className="p-3 text-center">
+                <h3 className="fw-bold">CARGANDO INFORMACIÓN...</h3>
+            </fieldset>
         );
     }
+
+    return (
+        <div>
+            <div className="bg-info text-white p-2 mb-3 h5 text-center text-uppercase">
+                Control de Tiempos y Fechas
+            </div>
+            
+            <CLOCKS_CONTROL 
+                translation={translation} 
+                swaMsg={swaMsg} 
+                globals={globals}
+                currentItem={currentItem}
+                currentVersion={currentVersion}
+                requestUpdate={requestUpdateItem}
+                requestRefresh={requestRefresh}
+                secondary // Prop para mostrar eventos secundarios
+            />
+
+            {/* <EMAILS_COMPONENT  
+                translation={translation} 
+                swaMsg={swaMsg}
+                id_public={currentItem.id_public} 
+                process="lic" 
+                users={email_users}
+            /> */}
+
+            <FUN_MODULE_NAV
+                translation={translation}
+                currentItem={currentItem}
+                currentVersion={currentVersion}
+                FROM={"clock"}
+                NAVIGATION={NAVIGATION}
+                pqrsxfun={pqrsxfun}
+            />
+        </div>
+    );
 }
 
 export default FUNCLOCK;

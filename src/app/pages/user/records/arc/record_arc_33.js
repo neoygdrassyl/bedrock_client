@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -15,33 +15,19 @@ import RECORD_ARC_AREAS_2 from './record_arc_areas_2.component.js';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ARC_33 extends Component {
-    constructor(props) {
-        super(props);
-        this.requestUpdateRecord = this.requestUpdateRecord.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.state = {
-            new_area: false,
-            new_blueprint: false,
-            edit_area: false,
-            edit_blueprint: false,
-            sort: 'asc',
-            sort2: 'asc',
-            fillActive: 'tab2',
-        };
-    }
+function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
+    const [new_area, setNewArea] = useState(false);
+    const [new_blueprint, setNewBlueprint] = useState(false);
+    const [edit_area, setEditArea] = useState(false);
+    const [edit_blueprint, setEditBlueprint] = useState(false);
+    const [sort, setSort] = useState('asc');
+    const [sort2, setSort2] = useState('asc');
+    const [fillActive, setFillActive] = useState('tab2');
+    const [dynamicState, setDynamicState] = useState({});
 
-    requestUpdateRecord(id) {
-        this.props.requestUpdateRecord(id)
-    }
-
-    requestUpdate(id) {
-        this.props.requestUpdate(id)
-    }
-
-    componentDidUpdate(prevState) {
-        if (this.state.edit_blueprint !== prevState.edit_blueprint && this.state.edit_blueprint != false) {
-            var _ITEM = this.state.edit_blueprint;
+    useEffect(() => {
+        if (edit_blueprint !== false) {
+            var _ITEM = edit_blueprint;
             document.getElementById("r_a_33_blueprint_1_edit").value = _ITEM.id_public;
             document.getElementById("r_a_33_blueprint_2_edit").value = _ITEM.use;
             document.getElementById("r_a_33_blueprint_3_edit").value = _ITEM.scale;
@@ -49,9 +35,7 @@ class RECORD_ARC_33 extends Component {
             document.getElementById("r_a_33_blueprint_5_edit").value = _ITEM.id6_blueprint ? _ITEM.id6_blueprint : 0;
             //document.getElementById("r_a_33_blueprint_6_edit").value = _ITEM.active == 1 ? 1 : 0;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R } = this.props;
+    }, [edit_blueprint]);
         // DATA GETERS
         let _GET_CHILD_6 = () => {
             var _CHILD = currentItem.fun_6s;
@@ -202,7 +186,7 @@ class RECORD_ARC_33 extends Component {
                     center: true,
                     maxWidth: '40px',
                     maxWidth: '40px',
-                    cell: row => this.state['qedit_bp_' + row.id]
+                    cell: row => dynamicState['qedit_bp_' + row.id]
                         ? <div class="input-group input-group-sm">
                             <input type="text" class="form-control me-1" id={"r_a_33_blueprint_1_edit_" + row.id} defaultValue={row.id_public} />
                         </div> : <label>{row.id_public}</label>
@@ -212,7 +196,7 @@ class RECORD_ARC_33 extends Component {
                     center: true,
                     maxWidth: '40px',
                     maxWidth: '40px',
-                    cell: row => this.state['qedit_bp_' + row.id]
+                    cell: row => dynamicState['qedit_bp_' + row.id]
                         ? <div class="input-group input-group-sm">
                             <input type="text" class="form-control me-1" id={"r_a_33_blueprint_2_edit_" + row.id} defaultValue={row.scale} />
                         </div> : <label className='text-center'>{row.scale}</label>
@@ -220,7 +204,7 @@ class RECORD_ARC_33 extends Component {
                 {
                     name: <label>Descripción</label>,
                     center: true,
-                    cell: row => this.state['qedit_bp_' + row.id]
+                    cell: row => dynamicState['qedit_bp_' + row.id]
                         ? <div class="input-group input-group-sm">
                             <input type="text" class="form-control me-1" id={"r_a_33_blueprint_3_edit_" + row.id} defaultValue={row.use} />
                         </div> : <label className='text-center'>{row.use}</label>
@@ -228,7 +212,7 @@ class RECORD_ARC_33 extends Component {
                 {
                     name: <label>Documento</label>,
                     center: true,
-                    cell: row => this.state['qedit_bp_' + row.id]
+                    cell: row => dynamicState['qedit_bp_' + row.id]
                         ? <div class="input-group input-group-sm">
                             <select class="form-select" id={"r_a_33_blueprint_5_edit_" + row.id} defaultValue={row.id6_blueprint}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -247,7 +231,7 @@ class RECORD_ARC_33 extends Component {
                     minWidth: '120px',
                     cell: row => {
                         return <>
-                            <button type="button" onClick={() => this.setState({ edit_blueprint: row })} className="btn btn-sm btn-secondary px-2 me-1"><i class="fas fa-edit"></i></button>
+                            <button type="button" onClick={() => setEditBlueprint(row)} className="btn btn-sm btn-secondary px-2 me-1"><i class="fas fa-edit"></i></button>
                             <button type="button" onClick={() => delete_33_area(row.id, 'blueprint')} className="btn btn-sm btn-danger px-2"><i class="fas fa-trash-alt"></i></button>
                         </>
                     },
@@ -285,8 +269,8 @@ class RECORD_ARC_33 extends Component {
                     currentVersion={currentVersion}
                     currentRecord={currentRecord}
                     currentVersionR={currentVersionR}
-                    requestUpdateRecord={this.requestUpdateRecord}
-                    requestUpdate={this.requestUpdate}
+                    requestUpdateRecord={requestUpdateRecord}
+                    requestUpdate={requestUpdate}
                 />
             </>
         }
@@ -449,8 +433,8 @@ class RECORD_ARC_33 extends Component {
                     </div>
                 </div>
                 <textarea className="input-group" maxLength="2000" name="s_33_values" rows="4"
-                    defaultValue={values[2]} onBlur={() => { this.setState({ det: '1' }); manage_ra_33(false, 'det') }}></textarea>
-                <label> (maximo 2000 caracteres) {_SAVING_STATE(this.state.det)}</label>
+                    defaultValue={values[2]} onBlur={() => { setDynamicState(prev => ({...prev, det: '1'})); manage_ra_33(false, 'det') }}></textarea>
+                <label> (maximo 2000 caracteres) {_SAVING_STATE(dynamicState.det)}</label>
             </div>
         }
         let _COMPONENT_5_GEO = () => {
@@ -688,7 +672,7 @@ class RECORD_ARC_33 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById("form_ra_33_blueprint").reset();
                     } else {
                         MySwal.fire({
@@ -737,7 +721,7 @@ class RECORD_ARC_33 extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            RECORD_ARCSERVICE.update_arc_33_area(this.state.edit_blueprint.id, formData)
+            RECORD_ARCSERVICE.update_arc_33_area(edit_blueprint.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -747,8 +731,8 @@ class RECORD_ARC_33 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.setState({ edit_blueprint: false });
+                        requestUpdateRecord(currentItem.id);
+                        setEditBlueprint(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -784,7 +768,7 @@ class RECORD_ARC_33 extends Component {
                         icon: 'info',
                         showConfirmButton: false,
                     });
-                    RECORD_ARCSERVICE.delete_33_area(id, this.state.sort, currentRecord.id, type)
+                    RECORD_ARCSERVICE.delete_33_area(id, sort, currentRecord.id, type)
                         .then(response => {
                             if (response.data === 'OK') {
                                 MySwal.fire({
@@ -794,9 +778,9 @@ class RECORD_ARC_33 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.setState({ edit_blueprint: false });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit_area: false });
+                                setEditBlueprint(false);
+                                requestUpdateRecord(currentItem.id);
+                                setEditArea(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -937,7 +921,7 @@ class RECORD_ARC_33 extends Component {
 
 
         let save_step = (_id_public, useSwal, formData, state) => {
-            if (state) this.setState({ [state]: 1 })
+            if (state) setDynamicState(prev => ({...prev, [state]: 1}))
             var STEP = LOAD_STEP(_id_public);
 
             if (useSwal) MySwal.fire({
@@ -957,8 +941,8 @@ class RECORD_ARC_33 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setDynamicState(prev => ({...prev, [state]: 2}))
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -966,7 +950,7 @@ class RECORD_ARC_33 extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            if (state) this.setState({ [state]: 3 })
+                            if (state) setDynamicState(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
@@ -977,7 +961,7 @@ class RECORD_ARC_33 extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        if (state) this.setState({ [state]: 3 })
+                        if (state) setDynamicState(prev => ({...prev, [state]: 3}))
                     });
             }
             else {
@@ -991,8 +975,8 @@ class RECORD_ARC_33 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setDynamicState(prev => ({...prev, [state]: 2}))
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1000,7 +984,7 @@ class RECORD_ARC_33 extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            if (state) this.setState({ [state]: 3 })
+                            if (state) setDynamicState(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
@@ -1011,7 +995,7 @@ class RECORD_ARC_33 extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        if (state) this.setState({ [state]: 3 })
+                        if (state) setDynamicState(prev => ({...prev, [state]: 3}))
                     });
             }
         }
@@ -1061,7 +1045,7 @@ class RECORD_ARC_33 extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -1096,8 +1080,8 @@ class RECORD_ARC_33 extends Component {
                         currentVersion={currentVersion}
                         currentRecord={currentRecord}
                         currentVersionR={currentVersionR}
-                        requestUpdateRecord={this.props.requestUpdateRecord}
-                        requestUpdate={this.props.requestUpdate}
+                        requestUpdateRecord={requestUpdateRecord}
+                        requestUpdate={requestUpdate}
                     />
 
                     <h3 className="my-3">3.3.2 Planos aportados</h3>
@@ -1110,12 +1094,12 @@ class RECORD_ARC_33 extends Component {
 
 
                     <div class="form-check ms-5 mb-3">
-                        <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new_blueprint: e.target.checked })} />
+                        <input class="form-check-input" type="checkbox" onChange={(e) => setNewBlueprint(e.target.checked)} />
                         <label class="form-check-label" for="flexCheckDefault">
                             Añadir nuevo Plano
                         </label>
                     </div>
-                    {this.state.new_blueprint
+                    {new_blueprint
                         ? <form id="form_ra_33_blueprint" onSubmit={new_ra_33_blueprint}>
                             {_COMPONENT_3()}
                             <div className="text-center">
@@ -1126,7 +1110,7 @@ class RECORD_ARC_33 extends Component {
                         </form>
                         : ""}
                     {_COMPONENT_3_LIST()}
-                    {this.state.edit_blueprint
+                    {edit_blueprint
                         ? <form id="form_ra_33_blueprint_edit" onSubmit={edit_ra_33_blueprint}>
                             <h3 className="my-3 text-center">Actualizar Plano</h3>
                             {_COMPONENT_3('_edit')}
@@ -1153,11 +1137,11 @@ class RECORD_ARC_33 extends Component {
                     <hr className='my-2' />
                     {_COMPONENT_4_EXTRA_2()}
 
-                    <h3 className="my-3">3.3.6 Información Geográfica de Coordenadas  {_SAVING_STATE(this.state.coord)}</h3>
+                    <h3 className="my-3">3.3.6 Información Geográfica de Coordenadas  {_SAVING_STATE(dynamicState.coord)}</h3>
                     {_COMPONENT_5_GEO()}
 
                     {/**
-                     <h3 className="my-3">3.3.8 Control para Entidades (Planeación y Ministerio de vivienda) {_SAVING_STATE(this.state.pym)}</h3>
+                     <h3 className="my-3">3.3.8 Control para Entidades (Planeación y Ministerio de vivienda) {_SAVING_STATE(dynamicState.pym)}</h3>
                     {_COMPONENT_CONTROL()}
                     */}
 
@@ -1166,7 +1150,6 @@ class RECORD_ARC_33 extends Component {
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_33;

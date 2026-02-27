@@ -1,5 +1,5 @@
 import { MDBBtn, MDBTypography } from '../../../../components/ui';
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
@@ -15,21 +15,19 @@ import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class RECORD_ENG_REVIEW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            VRDocs: [],
-            load: false
-        };
-    }
-    componentDidMount() {
-        this.setVRList(this.props.currentItem ? this.props.currentItem.id_public : false);
-    }
-    setVRList(id_public) {
+function RECORD_ENG_REVIEW(props) {
+    const [VRDocs, setVRDocs] = useState([]);
+    const [load, setLoad] = useState(false);
+    const [rewStates, setRewStates] = useState({});
+
+    useEffect(() => {
+        setVRList(props.currentItem ? props.currentItem.id_public : false);
+    }, []);
+
+    function setVRList(id_public) {
         if (!id_public) return;
-        if (this.state.load) return;
-        submitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+        if (load) return;
+        submitService.getIdRelated(props.currentItem.id_public).then(response => {
             let newList = [];
             let List = response.data;
             List.map((value, i) => {
@@ -54,12 +52,12 @@ class RECORD_ENG_REVIEW extends Component {
                     })
                 })
             })
-            this.setState({ VRDocs: newList, load: true })
+            setVRDocs(newList); setLoad(true);
         })
 
-    };
-    _GET_CHILD_RECORD_REVIEW = () => {
-        var _CHILD = this.props.currentRecord.record_eng_reviews;
+    }
+    const _GET_CHILD_RECORD_REVIEW = () => {
+        var _CHILD = props.currentRecord.record_eng_reviews;
         var _CURRENT_VERSION = document.getElementById('record_version').value;
         var _CHILD_VARS = {
             id: false,
@@ -97,23 +95,23 @@ class RECORD_ENG_REVIEW extends Component {
         return _CHILD_VARS;
     }
 
-    LOAD_STEP(_id_public) {
-        var _CHILD = this.props.currentRecord.record_law_steps;
+    const LOAD_STEP_class = (_id_public) => {
+        var _CHILD = props.currentRecord.record_law_steps;
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == document.getElementById('record_version').value && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }
         return []
     }
-    _GET_STEP_TYPE(_id_public, _type) {
-        var STEP = this.LOAD_STEP(_id_public);
+    const _GET_STEP_TYPE_class = (_id_public, _type) => {
+        var STEP = LOAD_STEP_class(_id_public);
         if (!STEP.id) return [];
         var value = STEP[_type] ?? []
         if (!value.length) return [];
         value = value.split(';');
         return value
     }
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers, _date) {
-        let swaMsg = this.props.swaMsg;
+    const CREATE_CHECK = async (_detail, chekcs, _currentItem, _headers, _date) => {
+        let swaMsg = props.swaMsg;
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -192,9 +190,8 @@ class RECORD_ENG_REVIEW extends Component {
 
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP } = this.props;
-        const { VRDocs } = this.state;
+
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP } = props;
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -356,10 +353,9 @@ class RECORD_ENG_REVIEW extends Component {
         }
         let _GET_PROFESIONAL_NAME = () => {
             var _ROLEID = window.user.roleId;
-            return window.user.name + " " + window.user.surname
             //THIS ROLES ARE PROGRAMER MASTER, CURATOR AND ARCHITEC
             if (_ROLEID == 1 || _ROLEID == 2 || _ROLEID == 6) {
-
+                return window.user.name + " " + window.user.surname
             } else {
                 return "NO ESTA AUTORIZADO A REALIZAR ESTA ACCION"
             }
@@ -471,7 +467,7 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label className='fw-bold'>{value}</label>
                                 </div>
                                 <div className="col-3 text-center">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <input type="text" class="form-control me-1" id={"r_l_review_worker_" + i}
                                             defaultValue={iworker} disabled />
                                         : <label>{iworker}</label>
@@ -481,17 +477,17 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label>{iasing}</label>
                                 </div>
                                 <div className="col text-center">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <input type="date" class="form-control form-control-sm" id={"r_l_review_date_" + i} max="2100-01-01"
                                             defaultValue={idate} />
                                         : <label>{idate ?? ''}</label>
                                     }
                                 </div>
                                 <div className="col-1">
-                                    {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={this.state['REW' + i]}
-                                        onClick={() => this.setState({ ['REW' + i]: !this.state['REW' + i] })}><i class="far fa-edit"></i></MDBBtn>
+                                    {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={rewStates['REW' + i]}
+                                        onClick={() => setRewStates(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i class="far fa-edit"></i></MDBBtn>
                                         : ''}
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
                                             onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
                                         : ""
@@ -502,7 +498,7 @@ class RECORD_ENG_REVIEW extends Component {
                                             currentVersion={currentVersion}
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
-                                            requestUpdate={this.props.requestUpdate}
+                                            requestUpdate={props.requestUpdate}
                                             swaMsg={swaMsg}
                                             id6={"eng" + i} />
                                         : ''
@@ -514,14 +510,14 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label>Resultado 1:</label>
                                 </div>
                                 <div className="col-6">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <input type="text" class="form-control me-1" id={"r_l_review_40_" + i}
                                             defaultValue={idesc1} />
                                         : <label>{idesc1}</label>
                                     }
                                 </div>
                                 <div className="col-3 text-center">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <select className="form-select form-control form-control-sm" defaultValue={ireview} id={"r_l_review_20_" + i}>
                                             <option value="0" className="text-danger">NO ES VIABLE</option>
                                             {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -536,14 +532,14 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label>Resultado 2:</label>
                                 </div>
                                 <div className="col-6">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <input type="text" class="form-control me-1" id={"r_l_review_50_" + i}
                                             defaultValue={idesc2} />
                                         : <label>{idesc2}</label>
                                     }
                                 </div>
                                 <div className="col-3 text-center">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <select className="form-select form-control form-control-sm" defaultValue={ireview2} id={"r_l_review_30_" + i}>
                                             <option value="0" className="text-danger">NO ES VIABLE</option>
                                             {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -559,14 +555,14 @@ class RECORD_ENG_REVIEW extends Component {
                                     <label>Resultado 3:</label>
                                 </div>
                                 <div className="col-6">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <input type="text" class="form-control me-1" id={"r_l_review_60_" + i}
                                             defaultValue={idesc3} />
                                         : <label>{idesc3}</label>
                                     }
                                 </div>
                                 <div className="col-3 text-center">
-                                    {this.state['REW' + i]
+                                    {rewStates['REW' + i]
                                         ? <select className="form-select form-control form-control-sm" defaultValue={ireview3} id={"r_l_review_70_" + i}>
                                             <option value="0" className="text-danger">NO ES VIABLE</option>
                                             {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -839,7 +835,7 @@ class RECORD_ENG_REVIEW extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -869,7 +865,7 @@ class RECORD_ENG_REVIEW extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -960,8 +956,8 @@ class RECORD_ENG_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            props.requestUpdateRecord(currentItem.id);
+                            setRewStates(prev => ({ ...prev, REW0: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -998,8 +994,8 @@ class RECORD_ENG_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            props.requestUpdateRecord(currentItem.id);
+                            setRewStates(prev => ({ ...prev, REW0: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -1111,8 +1107,8 @@ class RECORD_ENG_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            props.requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setRewStates(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -1149,8 +1145,8 @@ class RECORD_ENG_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            props.requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setRewStates(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -1263,7 +1259,7 @@ class RECORD_ENG_REVIEW extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
+            CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
         }
         return (
             <div className="record_eng_review container">
@@ -1279,7 +1275,6 @@ class RECORD_ENG_REVIEW extends Component {
                 {_COMPONENT_REVIEW()}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_REVIEW;

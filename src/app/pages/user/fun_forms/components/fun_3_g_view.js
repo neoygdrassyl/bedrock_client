@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -8,15 +7,7 @@ import { dateParser } from '../../../../components/customClasses/typeParse'
 import VIZUALIZER from '../../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
-class FUN_3_G_VIEW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { _FUN_3, _FUN_6 } = this.props;
-        const { } = this.state;
+function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
 
         // DATA GETTERS
         let _SET_CHILD_3 = () => {
@@ -206,7 +197,6 @@ class FUN_3_G_VIEW extends Component {
                 {_CHILD_3_LIST()}
             </div>
         );
-    }
 }
 
 export default FUN_3_G_VIEW;

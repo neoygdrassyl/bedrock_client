@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -15,25 +15,23 @@ import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
-class PQRSASIGN extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-            users_list: []
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+
+function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+    const [users_list, setUsersList] = useState([]);
+    const [asign, setAsign] = useState(false);
+    const [worker, setWorker] = useState(false);
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         PQRS_Service.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
+                setCurrentItem(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
@@ -41,17 +39,13 @@ class PQRSASIGN extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
         USERS_Service.getAll()
             .then(response => {
-                this.setState({
-                    users_list: response.data,
-                })
+                setUsersList(response.data);
             })
             .catch(e => {
                 console.log(e);
@@ -59,30 +53,26 @@ class PQRSASIGN extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
-    clearForm() {
-        document.getElementById("app-formAsign").reset()
-    }
+    };
 
-    render() {
-        const { translation, swaMsg, globals } = this.props;
-        const { attachsForEmails, currentItem, load } = this.state;
+    const refreshList = () => {
+        refreshListProp();
+    };
+
+    const clearForm = () => {
+        document.getElementById("app-formAsign").reset()
+    };
         var formData = new FormData();
 
         // DATA GETTERS 
         let _GET_USERS = () => {
             var _USERS = [];
-            if (this.state.users_list.length) {
-                _USERS = this.state.users_list;
+            if (users_list.length) {
+                _USERS = users_list;
             }
             return _USERS;
         }
@@ -212,7 +202,7 @@ class PQRSASIGN extends Component {
                                 <i class="fas fa-user-minus fa-2x"></i></button>
                         </MDBTooltip>
                         <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => this.setState({ worker: row })}>
+                            <button className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setWorker(row)}>
                                 <i class="far fa-paper-plane fa-2x"></i></button>
                         </MDBTooltip>
                     </>,
@@ -319,8 +309,8 @@ class PQRSASIGN extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.clearForm();
-                            this.retrieveItem(currentItem.id)
+                            clearForm();
+                            retrieveItem(currentItem.id)
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -366,8 +356,8 @@ class PQRSASIGN extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.clearForm();
-                                this.retrieveItem(currentItem.id)
+                                clearForm();
+                                retrieveItem(currentItem.id)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -455,12 +445,12 @@ class PQRSASIGN extends Component {
                             <form onSubmit={asignPQRS} id="app-formAsign">
                                 <h2 class="text-uppercase text-center pb-2">ASIGNAR PROFESIONALES</h2>
                                 <div class="form-check ms-5">
-                                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ asign: e.target.checked })} />
+                                    <input class="form-check-input" type="checkbox" onChange={(e) => setAsign(e.target.checked)} />
                                     <label class="form-check-label" for="flexCheckDefault">
                                         Asignar Profesional
                                     </label>
                                 </div>
-                                {this.state.asign
+                                {asign
                                     ? <>
                                         {_WORKERS_COMPONENT()}
                                         <div className="text-center py-4 mt-3">
@@ -475,16 +465,16 @@ class PQRSASIGN extends Component {
                             <div className="mb-2">
                                 {_ASIGN_COMPOENTN()}
                             </div>
-                            {this.state.worker
+                            {worker
                                 ? <>
                                     <label class="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
                                     <PQRS_WORKERS_EMAILS
                                         translation={translation} swaMsg={swaMsg} globals={globals}
                                         currentItem={currentItem}
-                                        worker={this.state.worker}
+                                        worker={worker}
                                         email_types={[0, 1]}
-                                        retrieveItem={this.retrieveItem}
-                                        closeComponent={() => this.setState({ worker: false })}
+                                        retrieveItem={retrieveItem}
+                                        closeComponent={() => setWorker(false)}
                                     />
                                 </> : ""}
 
@@ -511,7 +501,7 @@ class PQRSASIGN extends Component {
                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                 currentItem={currentItem}
                                 email_types={[0, 2, 4]}
-                                refreshCurrentItem={this.retrieveItem}
+                                refreshCurrentItem={retrieveItem}
                                 attachs={true}
                             />
                         </div>
@@ -528,7 +518,7 @@ class PQRSASIGN extends Component {
                     translation={translation}
                     currentItem={currentItem}
                     FROM={"start"}
-                    NAVIGATION={this.props.NAVIGATION}
+                    NAVIGATION={NAVIGATION}
                 />
             </div>
         );

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -7,18 +7,14 @@ import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
-class FUNN51 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-            legal: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [legal, setLegal] = useState(false);
+
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
             document.getElementById("f_5111_edit").value = _ITEM.name;
             document.getElementById("f_5112_edit").value = _ITEM.surname;
             document.getElementById("f_512_edit").value = _ITEM.id_number;
@@ -44,10 +40,7 @@ class FUNN51 extends Component {
             if (document.getElementById("f_51_rep_idnumber_edit")) document.getElementById("f_51_rep_idnumber_edit").value = _ITEM.rep_id_number
 
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+    }, [edit]);
 
         var formData = new FormData();
 
@@ -509,8 +502,8 @@ class FUNN51 extends Component {
                                 role="button" 
                                 tabIndex={0} 
                                 className="btn btn-secondary btn-sm m-0 p-2 shadow-none" 
-                                onClick={() => this.setState({ edit: row })}
-                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') this.setState({ edit: row }); }}
+                                onClick={() => setEdit(row)}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setEdit(row); }}
                                 style={{cursor: 'pointer'}}>
                                 <i className="far fa-edit fa-2x"></i>
                             </span>
@@ -593,7 +586,7 @@ class FUNN51 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdate(currentItem.id);
                         document.getElementById('form_fun_51_new').reset();
                     } else {
                         MySwal.fire({
@@ -654,7 +647,7 @@ class FUNN51 extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            FUNService.update_51(this.state.edit.id, formData)
+            FUNService.update_51(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -664,9 +657,9 @@ class FUNN51 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdate(currentItem.id);
                         document.getElementById('form_fun_51_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -712,8 +705,8 @@ class FUNN51 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdate(currentItem.id);
-                                this.setState({ edit: false });
+                                requestUpdate(currentItem.id);
+                                setEdit(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -745,7 +738,7 @@ class FUNN51 extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        this.props.requestUpdate(currentItem.id)
+                        requestUpdate(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -772,12 +765,12 @@ class FUNN51 extends Component {
                     <label className="app-p lead text-center fw-normal text-uppercase">5.1 Titular(es) de la Licencia</label>
                 </legend>
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Añadir Titular
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_fun_51_new" onSubmit={new_51}>
                             {_COMPONENT_NEW()}
@@ -796,7 +789,7 @@ class FUNN51 extends Component {
                     <label className="me-2"><i class="far fa-id-card fa-2x" style={{ color: "DeepSkyBlue" }}></i> : Documento de Identidad,</label>
                     <label className="me-2"><i class="far fa-id-badge fa-2x" style={{ color: 'DarkOrchid' }}></i>: Certificado de Existencia y Representación Legal</label>
                 </div>
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_fun_51_edit" onSubmit={edit_51}>
                             <h3 className="my-3 text-center">Actualizar Titular</h3>
@@ -811,7 +804,6 @@ class FUNN51 extends Component {
                     : ""}
             </fieldset>
         </>);
-    }
 }
 
 export default FUNN51;

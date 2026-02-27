@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -10,29 +10,23 @@ import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
 
 
 const MySwal = withReactContent(Swal);
-class PQRS_MACROTABLE extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveMacro = this.retrieveMacro.bind(this);
-        this.state = {
-            load: false,
-            data_macro: null,
 
-            _OPEN: 0,
-            _CLOSE: 0,
-        };
-    }
-    componentDidMount() {
-        this.retrieveMacro();
-    }
-    retrieveMacro() {
-        PQRS_Main.getAllMacro(this.props.date_start, this.props.date_end)
+function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
+    const [load, setLoad] = useState(false);
+    const [data_macro, setDataMacro] = useState(null);
+    const [_OPEN, set_OPEN] = useState(0);
+    const [_CLOSE, set_CLOSE] = useState(0);
+
+    useEffect(() => {
+        retrieveMacro();
+    }, []);
+
+    const retrieveMacro = () => {
+        PQRS_Main.getAllMacro(date_start, date_end)
             .then(response => {
-                this.setState({
-                    data_macro: response.data,
-                    load: true,
-                })
-                this._SET_REPORT_VARIABLES(response.data);
+                setDataMacro(response.data);
+                setLoad(true);
+                _SET_REPORT_VARIABLES(response.data);
             })
             .catch(e => {
                 console.log(e);
@@ -40,23 +34,21 @@ class PQRS_MACROTABLE extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    _SET_REPORT_VARIABLES(_LIST) {
+    };
+
+    const _SET_REPORT_VARIABLES = (_LIST) => {
         let _open_pqrs = 0;
         let _closed_pqrs = 0;
         for (var i = 0; i < _LIST.length; i++) {
             if (_LIST[i].status == 0) _open_pqrs++;
             if (_LIST[i].status == 1) _closed_pqrs++;
         }
-
-        this.setState({ _OPEN: _open_pqrs, _CLOSE: _closed_pqrs })
-    }
-    render() {
-        const { translation, swaMsg, globals, selectedRow } = this.props;
-        const { load } = this.state;
+        set_OPEN(_open_pqrs);
+        set_CLOSE(_closed_pqrs);
+    };
 
         // DATA GETTER
 
@@ -102,10 +94,10 @@ class PQRS_MACROTABLE extends Component {
             if (!row.pqrs_time) return ""
             if (!row.pqrs_time.reply_formal) return ""
             let days_to_reply = _GET_REPLY_TIME_TIME(row);
-            return <label className="">{days_to_reply} Dia(s)</label>
             if (days_to_reply < 5) return <label className="">{days_to_reply} DIAS - <label className="text-success">CON RAPIDEZ</label></label>
             if (days_to_reply >= 5 && days_to_reply < 15) return <label className="">{days_to_reply} DIAS - <label className="text-warning">EN EL TIEMPO ESTABLECIDO</label> </label>
             if (days_to_reply >= 15) return <label className="">{days_to_reply} DIAS - <label className="text-danger">NECESITO UN TIEMPO CONSIDERABLE</label> </label>
+            return <label className="">{days_to_reply} Dia(s)</label>
         }
         // COMPONENT JSX
         const rowSelectedStyle = [
@@ -123,7 +115,7 @@ class PQRS_MACROTABLE extends Component {
                 button: true,
                 cell: row => <> <MDBTooltip title='Informacion solicitud' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                     <button className="btn btn-sm btn-info m-0 p-2 shadow-none"
-                        onClick={() => this.props.NAVIGATION_GEN(row)}>
+                        onClick={() => NAVIGATION_GEN(row)}>
                         <i class="far fa-eye" ></i></button></MDBTooltip>
                 </>,
                 excell: false,
@@ -342,7 +334,7 @@ class PQRS_MACROTABLE extends Component {
         // FUNCTIONS & APIS
 
         let generateCVS = () => {
-            let _data = this.state.data_macro;
+            let _data = data_macro;
             const rows = [];
 
             const headRows = columns.filter(row => (row.excell != false)).map(row => row.excellHeader);
@@ -363,7 +355,7 @@ class PQRS_MACROTABLE extends Component {
 
             var link = document.createElement("a");
             link.setAttribute("href", fixedEncodedURI);
-            link.setAttribute("download", `REPORTE_PQRS_${this.props.date_start}_${this.props.date_end}.csv`);
+            link.setAttribute("download", `REPORTE_PQRS_${date_start}_${date_end}.csv`);
             document.body.appendChild(link); // Required for FF
 
             link.click();
@@ -373,12 +365,12 @@ class PQRS_MACROTABLE extends Component {
                 <div className="row">
                     <div className="col-6">
                         <MDBTypography note noteColor='danger'>
-                            Hay un total de {this.state._OPEN} peticiones ACTIVAS en proceso.
+                            Hay un total de {_OPEN} peticiones ACTIVAS en proceso.
                         </MDBTypography>
                     </div>
                     <div className="col-6">
                         <MDBTypography note noteColor='success'>
-                            Hay un total de {this.state._CLOSE} peticiones CERRADAS, ya resueltas.
+                            Hay un total de {_CLOSE} peticiones CERRADAS, ya resueltas.
                         </MDBTypography>
                     </div>
                 </div>
@@ -396,7 +388,7 @@ class PQRS_MACROTABLE extends Component {
                         noDataComponent={<h4 className="fw-bold">NO HAY INFORMACIÓN</h4>}
                         striped="true"
                         columns={columns}
-                        data={this.state.data_macro}
+                        data={data_macro}
                         highlightOnHover
                         pagination
                         paginationPerPage={50}
@@ -404,7 +396,7 @@ class PQRS_MACROTABLE extends Component {
                         paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                         className="data-table-component"
                         noHeader
-                        onRowClicked={(e) => this.props.setSelectedRow(e.id)}
+                        onRowClicked={(e) => setSelectedRow(e.id)}
                         dense={true}
                     />
                 ) : (
@@ -413,7 +405,6 @@ class PQRS_MACROTABLE extends Component {
                     </div>)}
             </div>
         );
-    }
 }
 
 export default PQRS_MACROTABLE;

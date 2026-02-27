@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { MDBBtn, MDBCard, MDBCardBody } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -27,84 +27,75 @@ import CubXVrDataService from '../../../services/cubXvr.service'
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class RECORD_REVIEW extends Component {
-    constructor(props) {
-        super(props);
-        this.setItem_Record = this.setItem_Record.bind(this);
-        this.requestUpdateRecord = this.requestUpdateRecord.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.state = {
-            currentRecord: null,
-            currentVersionR: null,
-            loaded: false,
-            currentStepIndex: 0,
-            pqrsxfun: false,
-            vrsRelated: [],
-            vrSelected: null,
-            cubSelected: null,
-            idCUBxVr: null,
-        };
-    }
-    componentDidMount() {
-        this.setItem_Record();
-        this.retrieveItem(this.props.currentId);
-    }
-    setItem_Record() {
-        RECORD_REVIEW_SERVICE.getRecord(this.props.currentId)
+function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, translation, globals, currentVersion, closeModal, NAVIGATION, navigation_version }) {
+    const [currentRecord, setCurrentRecord] = useState(null);
+    const [currentVersionR, setCurrentVersionR] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [currentStepIndex, setCurrentStepIndex] = useState(0);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [vrSelected, setVrSelected] = useState(null);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+    const [tn, setTn] = useState(undefined);
+
+    useEffect(() => {
+        setItem_Record();
+        retrieveItem(currentId);
+    }, []);
+
+    function setItem_Record() {
+        RECORD_REVIEW_SERVICE.getRecord(currentId)
             .then(response => {
                 if (response.data.length < 1) {
-                    this.setState({
-                        currentRecord: null,
-                        currentVersionR: null,
-                        loaded: true,
-                    });
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
                 } else {
-                    this.setState({
-                        currentRecord: response.data[0],
-                        currentVersionR: response.data[0].version,
-                        loaded: true,
-                    });
+                    setCurrentRecord(response.data[0]);
+                    setCurrentVersionR(response.data[0].version);
+                    setLoaded(true);
                 }
             })
             .catch(e => {
                 console.log(e);
                 MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
                     icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
     }
-    requestUpdateRecord(id) {
+
+    function requestUpdateRecord(id) {
         RECORD_REVIEW_SERVICE.getRecord(id)
             .then(response => {
-                this.setState({
-                    currentRecord: response.data[0],
-                    currentVersionR: response.data[0].version,
-                    loaded: true,
-                });
+                setCurrentRecord(response.data[0]);
+                setCurrentVersionR(response.data[0].version);
+                setLoaded(true);
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    requestUpdate(id) {
-        this.props.requestUpdate(id);
+
+    function requestUpdate(id) {
+        requestUpdateProp(id);
     }
-    retrieveItem(id) {
+
+    function retrieveItem(id) {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
+                setCurrentItem(response.data);
+                setLoad(true);
+                retrievePQRSxFUN(response.data.id_public);
                 SubmitService.getIdRelated(response.data.id_public).then(resres => {
-                    this.setState({ vrsRelated: resres.data })
+                    setVrsRelated(resres.data);
                 })
-                this.retrieveCubXvrs(response.data.id_public)
+                retrieveCubXvrs(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -112,33 +103,35 @@ class RECORD_REVIEW extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
     }
-    retrievePQRSxFUN(id_public) {
+
+    function retrievePQRSxFUN(id_public) {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    async retrieveCubXvrs(id_public) {
+
+    async function retrieveCubXvrs(id_public) {
         console.log(id_public)
         const response = await CubXVrDataService.getByFUN(id_public)
         const data = response.data.find(item => item.process === 'OBSERVACIONES Y CORRECIONES')
 
         if (data) {
             document.getElementById("vr_selected11").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            setVrSelected(data.vr);
+            setCubSelected(data.cub);
+            setIdCUBxVr(data.id);
         }
     }
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
-        let swaMsg = this.props.swaMsg;
+
+    async function CREATE_CHECK_PDF(_detail, chekcs, _currentItem, _headers) {
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -167,8 +160,8 @@ class RECORD_REVIEW extends Component {
         const copiedPagesC = await mergedPdf.copyPages(pdfDocEng, pdfDocEng.getPageIndices());
         copiedPagesC.forEach((page) => mergedPdf.addPage(page));
 
-        const currentItem = _currentItem
-        const id_public = currentItem.id_public;
+        const _currentItemLocal = _currentItem
+        const id_public = _currentItemLocal.id_public;
 
         let page = mergedPdf.getPage(0)
         const helveticaFont = await mergedPdf.embedFont(StandardFonts.Helvetica)
@@ -207,13 +200,7 @@ class RECORD_REVIEW extends Component {
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'FORMATO DE REVISIÓN E INFORMACIÓN DEPROYECTOS ' + id_public + '.pdf');
         MySwal.close();
-
-
     }
-
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem, currentStepIndex, vrsRelated } = this.state;
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -395,7 +382,7 @@ class RECORD_REVIEW extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -533,7 +520,7 @@ class RECORD_REVIEW extends Component {
                     <strong>TIPO DE NOTIFICACIÓN</strong>
 
                     <div className="col-4">
-                        <select className='form-select' id="type_not" onChange={(e) => this.setState({ 'tn': e.target.value })}>
+                        <select className='form-select' id="type_not" onChange={(e) => setTn(e.target.value)}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
@@ -541,7 +528,7 @@ class RECORD_REVIEW extends Component {
                             {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
-                    {this.state.tn == 2 || this.state.tn == 3 ?
+                    {tn == 2 || tn == 3 ?
                         <>
                             <div className="col-4">
                                 <div class="input-group my-1">
@@ -555,7 +542,7 @@ class RECORD_REVIEW extends Component {
                             </div>
                         </>
                         : ''}
-                    {this.state.tn == 4 ?
+                    {tn == 4 ?
                         <>
                          <div className="col-4">
                                 <div class="input-group my-1">
@@ -1032,23 +1019,7 @@ class RECORD_REVIEW extends Component {
                 </div>
 
                 {_NOTY_TYPE_COMPONENENT()}
-                {/**
-                 *  <div className="row mb-1">
-                    <div className="col-2 d-flex justify-content-end">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="record_rew_notdig" onChange={() => { this.setState({ notdig: !this.state.notdig }) }} />
-                            <label class="form-check-label">Not. Digital</label>
-                        </div>
-                    </div>
-                    <div className="col-2">
-                        <input type="text" className='form-control form-control-sm' id={"record_rew_notdig_pro"} disabled={!this.state.notdig} defaultValue={'Señor(a)'} />
-                    </div>
-                    <div className="col">
-                        <input type="text" className='form-control form-control-sm' id={"record_rew_notdig_names"} disabled={!this.state.notdig} defaultValue={''} placeholder={'nombres separados por coma'} />
-                    </div>
-                </div>
-                 * 
-                 */}
+                {/* notdig section removed */}
 
                 <div className="row my-3">
                     <div className="col d-flex justify-content-center">
@@ -1099,14 +1070,14 @@ class RECORD_REVIEW extends Component {
                         <label className="mt-2">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="rev_cub"
-                                defaultValue={this.state.cubSelected || currentRecord.id_public || ""} />
+                                defaultValue={cubSelected || currentRecord.id_public || ""} />
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
                         </div>
                     </div>
                     <div className="col-4" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group">
-                            <select class="form-select" id="vr_selected11" defaultValue={this.state.vrSelected || ""}>
+                            <select class="form-select" id="vr_selected11" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated && vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -1139,7 +1110,7 @@ class RECORD_REVIEW extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdateRecord(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1212,8 +1183,8 @@ class RECORD_REVIEW extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.requestUpdateRecord(currentItem.id);
-                                this.retrieveItem(currentItem.id)
+                                requestUpdateRecord(currentItem.id);
+                                retrieveItem(currentItem.id)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -1264,7 +1235,7 @@ class RECORD_REVIEW extends Component {
                     save_review();
                     save_clock();
                     createVRxCUB_relation();
-                    this.retrieveItem(currentItem.id);
+                    retrieveItem(currentItem.id);
                 }
             });
         }
@@ -1316,9 +1287,9 @@ class RECORD_REVIEW extends Component {
                                 confirmButtonText: swaMsg.text_btn,
                             });
                         }
-                        this.requestUpdateRecord(currentItem.id)
-                        this.retrieveItem(currentItem.id)
-                        this.requestUpdate(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
+                        retrieveItem(currentItem.id)
+                        requestUpdate(currentItem.id)
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACION",
@@ -1443,8 +1414,8 @@ class RECORD_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.requestUpdateRecord(currentItem.id)
-                            this.retrieveItem(currentItem.id)
+                            requestUpdateRecord(currentItem.id)
+                            retrieveItem(currentItem.id)
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -1481,8 +1452,8 @@ class RECORD_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.requestUpdateRecord(currentItem.id)
-                            this.retrieveItem(currentItem.id)
+                            requestUpdateRecord(currentItem.id)
+                            retrieveItem(currentItem.id)
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -1567,10 +1538,10 @@ class RECORD_REVIEW extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdateRecord(currentItem.id)
-                        this.retrieveItem(currentItem.id)
-                        this.requestUpdate(currentItem.id)
-                        this.props.closeModal();
+                        requestUpdateRecord(currentItem.id)
+                        retrieveItem(currentItem.id)
+                        requestUpdate(currentItem.id)
+                        closeModal();
 
                     } else {
                         MySwal.fire({
@@ -1863,7 +1834,7 @@ class RECORD_REVIEW extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, _CHECKS, currentItem, headers)
+            CREATE_CHECK_PDF(_RESUME, _CHECKS, currentItem, headers)
         }
         let createVRxCUB_relation = () => {
             let vr = document.getElementById("vr_selected11").value;
@@ -1880,12 +1851,12 @@ class RECORD_REVIEW extends Component {
             let date = document.getElementById('record_review_2').value;
             formatData.set('date', date);
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdateProp(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -1897,7 +1868,7 @@ class RECORD_REVIEW extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdateProp(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -1938,7 +1909,7 @@ class RECORD_REVIEW extends Component {
                                                 globals={globals}
                                                 currentItem={currentItem}
                                                 currentVersion={currentVersion}
-                                                requestUpdate={this.requestUpdate}
+                                                requestUpdate={requestUpdate}
                                                 edit />
                                         </div>
                                     </Collapsible>
@@ -1950,7 +1921,7 @@ class RECORD_REVIEW extends Component {
                                                 globals={globals}
                                                 currentItem={currentItem}
                                                 currentVersion={currentVersion}
-                                                requestUpdate={this.requestUpdate}
+                                                requestUpdate={requestUpdate}
                                                 edit />
                                         </div>
                                     </Collapsible>
@@ -2062,7 +2033,7 @@ class RECORD_REVIEW extends Component {
                         translation={translation}
                         currentItem={currentRecord}
                         currentVersion={currentVersionR}
-                        NAVIGATION_VERSION={this.navigation_version}
+                        NAVIGATION_VERSION={navigation_version}
                         _RECORD
                     />
                     <FUN_MODULE_NAV
@@ -2070,15 +2041,14 @@ class RECORD_REVIEW extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"record_review"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
                 </fieldset>}
             </div >
         );
-    }
 }
 
 const NAV_FUNA = (_CHILD) => {

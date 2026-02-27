@@ -390,10 +390,12 @@ Fase 0 ✅ → Fase 1 ✅ → Fase 4 ✅ → Fase 2 ✅ → Fase 3 ⏳ → Fase 
 ### Dependencias entre fases restantes
 
 ```
-Fase 5 (React 19) ⏳ SIGUIENTE
+Fase 5 (React 19) ✅ COMPLETADA
 
-Fase 6 (Class→Func) ← ya puede empezar en paralelo
-Fase 7 (Libs abandon.) ← ya puede empezar en paralelo
+Fase 6 (Class→Func) ← puede empezar
+Fase 7 (Libs abandon.) ← puede empezar (react-quill, react-vis)
+
+NOTA: mdb-react-ui-kit ya fue eliminada en Fase 5b
 ```
 
 ### Timeline estimado (restante)
@@ -405,7 +407,7 @@ Fase 7 (Libs abandon.) ← ya puede empezar en paralelo
 | ~~Fase 4~~ | ~~2 días~~ | ✅ completada |
 | ~~Fase 2~~ | ~~2-3 días~~ | ✅ completada |
 | ~~Fase 3~~ | ~~1-2 días~~ | ✅ completada |
-| **Fase 5** | **1 día** | **1** |
+| ~~Fase 5~~ | ~~1 día~~ | ✅ completada |
 | Fase 6+7 | Continuo (semanas) | — |
 
 ---
@@ -437,19 +439,22 @@ Fase 7 (Libs abandon.) ← ya puede empezar en paralelo
 - Node actualizado a v22 (requerido por Vite 6 — OpenSSL 3)
 - 46 tests siguen pasando bajo Vitest
 
-### Estado actual verificado (2026-02-19)
-- React instalado: **18.3.1** ✅
-- react-dom: **18.3.1** ✅
+### Estado actual verificado (2026-02-20)
+- React: **19.2.4** ✅
+- react-dom: **19.2.4** ✅
 - react-router-dom: **6.30.3** ✅
 - styled-components: **6.3.10** ✅
 - react-bootstrap: **2.10.10** ✅
-- mdbreact: **ELIMINADO** ✅
-- Vite: **6.4.1** ✅
+- rsuite: **5.83.4** ✅
+- mdb-react-ui-kit: **ELIMINADA** → `src/app/components/ui/index.js` (wrappers Bootstrap 5) ✅
+- Vite: **6.4.1** ✅ (152 líneas, limpio de hacks MDB)
 - Vitest: **4.0.18** ✅
-- `ReactDOM.render()`: **0** — migrado a `createRoot` ✅
-- `process.env.REACT_APP_*` restantes: **0** ✅
-- `<Switch>`/`useHistory`/`<Redirect>`: **0** — migrado a v6 ✅
-- Tests: **136/136 PASS** ✅ (9 suites, requiere Node 22)
+- `ReactDOM.render()`: **0** ✅
+- `process.env.REACT_APP_*`: **0** ✅
+- `<Switch>`/`useHistory`/`<Redirect>`: **0** ✅
+- `forwardRef` (producción): **2** (solo en `ui/index.js` — componentes propios) ✅
+- `extends Component`: **178** (Fase 6)
+- Tests: **149/149 PASS** ✅ (10 suites, requiere Node 22)
 
 ### Fase 2 — React 16 → 18 (commits `48343a4f`..`942024a3`)
 - React 16.14 → 18.3.1, ReactDOM.render → createRoot (index.js + centralClocks)
@@ -468,3 +473,15 @@ Fase 7 (Libs abandon.) ← ya puede empezar en paralelo
 - certification.page.js: deep CJS import corregido
 - Tests sin cambios necesarios (MemoryRouter funciona en v5 y v6)
 - v7 future flag warnings informativos (no bloqueantes)
+
+### Fase 5 — React 18 → 19 (commits `91561ff6`..`68bf8986`)
+- React 18.3.1 → 19.2.4
+- forwardRef simplificado en App.js y navbar.js (ref como prop normal)
+- createRef → useRef en componentes funcionales (email.page, public.page, LoginPage)
+- mdb-react-ui-kit eliminada completamente (Fase 5b):
+  - 909 líneas de wrappers Bootstrap 5 en `src/app/components/ui/index.js`
+  - 148 archivos con imports reescritos por codemod automático
+  - ~105 líneas de hacks de bundler eliminadas de vite.config.mjs (258→152 lín)
+  - Mock global `vi.mock('mdb-react-ui-kit')` eliminado
+- 13 tests nuevos (mdb-debug diagnostics)
+- Total tests: 136 → 149 (10 suites)

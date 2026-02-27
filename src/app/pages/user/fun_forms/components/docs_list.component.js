@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { MDBBtn, MDBTooltip } from '../../../../components/ui';
 import DataTable from 'react-data-table-component';
 import Modal from 'react-modal';
@@ -7,16 +7,8 @@ import './fun_modal_shared.css';
 
 
 
-class DOCS_LIST extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            modal_searchList: false,
-        };
-    }
-
-    render() {
-        const { idRef, text } = this.props;
+function DOCS_LIST({ idRef, text, setValues }) {
+        const [modalSearchList, setModalSearchList] = useState(false);
         const customStylesForModal = {
             overlay: {
                 position: 'fixed',
@@ -77,20 +69,17 @@ class DOCS_LIST extends Component {
         const docsData = _GET_DOCS_DATA();
 
         let toggle = (id) => {
-            this.setState({
-                modal_searchList: !this.state.modal_searchList,
-                modal_id: id
-            });
+            setModalSearchList(!modalSearchList);
         }
         let _COPY_INFO = (_data) => {
-            this.props.setValues(idRef, [_data.cod, _data.desc])
-            this.setState({ modal_searchList: false })
+            setValues(idRef, [_data.cod, _data.desc])
+            setModalSearchList(false)
         }
         return (
             <div>
                 <MDBBtn className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i class="fas fa-th-list"></i> {text}</MDBBtn>
                 <Modal contentLabel="GENERAL VIEW FUN"
-                    isOpen={this.state.modal_searchList}
+                    isOpen={modalSearchList}
                     style={customStylesForModal}
                     ariaHideApp={false}
                 >
@@ -111,13 +100,12 @@ class DOCS_LIST extends Component {
                         noDataComponent="No hay datos"
                     />
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn className="btn btn-lg btn-info" onClick={() => this.setState({ modal_searchList: false })}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                        <MDBBtn className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
                     </div>
                 </Modal>
 
             </div>
         );
-    }
 }
 
 export default DOCS_LIST;

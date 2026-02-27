@@ -1,20 +1,11 @@
 import { MDBBtn } from '../../../../components/ui';
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 import FUN_SERVICE from '../../../../services/fun.service'
 
 const MySwal = withReactContent(Swal);
-class FUN_ARCHIVE extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, isEdit } = this.props;
-        const { } = this.state;
+function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion, isEdit }) {
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -412,7 +403,6 @@ class FUN_ARCHIVE extends Component {
                 </form>
             </div>
         );
-    }
 }
 
 export default FUN_ARCHIVE;

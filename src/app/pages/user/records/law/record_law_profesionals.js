@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -6,16 +5,8 @@ import { MDBBadge } from '../../../../components/ui';
 import { dateParser_yearsPassed } from '../../../../components/customClasses/typeParse';
 const MySwal = withReactContent(Swal);
 
-class RECORD_LAW_PROFESIONALS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, _FUN_1, _FUN_52 } = this.props;
-        const { } = this.state;
+function RECORD_LAW_PROFESIONALS(props) {
+        const { translation, swaMsg, globals, _FUN_1, _FUN_52 } = props;
 
         // DATA GETTERS
         /*  ROLES LIST
@@ -176,7 +167,6 @@ class RECORD_LAW_PROFESIONALS extends Component {
                     </ul> </> : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_LAW_PROFESIONALS;

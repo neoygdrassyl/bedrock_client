@@ -283,7 +283,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 .then((response) => {
                     if (response.data === 'OK') {
                         // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
+                        props.requestUpdate(currentItem.id, true);
                     }
                 })
                 .catch((error) => {
@@ -294,7 +294,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                 .then((response) => {
                     if (response.data === 'OK') {
                         // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
+                        props.requestUpdate(currentItem.id, true);
                     }
                 })
                 .catch((error) => {

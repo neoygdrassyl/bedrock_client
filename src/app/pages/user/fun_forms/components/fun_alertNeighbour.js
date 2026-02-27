@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import FUNService from '../../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -11,27 +11,22 @@ import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArr
 
 
 const MySwal = withReactContent(Swal);
-class FUN_ALERT_NEIGHBOUR extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: []
+function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, currentVersion, vr, cubSelected, setVr }) {
+        const [vrsRelated, setVrsRelated] = useState([]);
+
+        const retrieveItem = () => {
+            SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data);
+            });
         };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    componentDidUpdate() {
-        if (this.props.vr) document.getElementById("vr_selected").value = this.props.vr
-    }
-    retrieveItem() {
-        SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-            this.setState({ vrsRelated: response.data })
-        })
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+
+        useEffect(() => {
+            retrieveItem();
+        }, []);
+
+        useEffect(() => {
+            if (vr) document.getElementById("vr_selected").value = vr;
+        });
 
         // DATA GETTERS
         let _SET_CHILD_1 = () => {
@@ -189,7 +184,7 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                         <label>2.1.3 Consecutivo de Salida</label>
                         <div class="input-group my-1">
                             <input type="text" class="form-control" id="gen_alert_id_cub"
-                                defaultValue={_GET_CHILD_3_IDCUB_DEFAULT() || this.props.cubSelected || ""} />
+                                defaultValue={_GET_CHILD_3_IDCUB_DEFAULT() || cubSelected || ""} />
                         </div>
                     </div>
                     <div></div>
@@ -203,9 +198,9 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                     <div className="col ms-auto" >
                         <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
                         <div class="input-group ">
-                            <select class="form-select" id="vr_selected" defaultValue={this.props.vr || ""} onChange={(e) => { this.props.setVr(e.target.value) }}>
+                            <select class="form-select" id="vr_selected" defaultValue={vr || ""} onChange={(e) => { setVr(e.target.value) }}>
                                 <option value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
+                                {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
@@ -437,7 +432,6 @@ class FUN_ALERT_NEIGHBOUR extends Component {
                 {_GENDOC_COMPONENT()}
             </div>
         );
-    }
 }
 
 export default FUN_ALERT_NEIGHBOUR;

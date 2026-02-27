@@ -1,16 +1,6 @@
-import { Component } from 'react';
 import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD, _IDENTIFY_SERIES, _GET_SERIE_STR, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 
-class RECORD_ARC_32 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_ARC_32({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR }) {
 
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -110,7 +100,6 @@ class RECORD_ARC_32 extends Component {
         
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_32;

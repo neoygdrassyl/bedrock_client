@@ -1148,3 +1148,88 @@ Script Node.js en `/tmp/codemod-mdb-to-ui.js`:
 **Pendiente:** Revisión visual detallada en producción para identificar diferencias menores de estilo entre MDB CSS y Bootstrap 5 puro.  
 **Listo para Fase 6:** Class → Functional (incremental, 177 componentes).  
 **Listo para Fase 7:** Reemplazar libs abandonadas restantes (react-quill, react-vis).
+
+---
+
+## Fase 6 — Class → Functional (incremental)
+
+**Fecha:** 2026-02-25 → 2026-02-27  
+**Objetivo:** Convertir class components (`extends Component`) a componentes funcionales con hooks (`useState`, `useEffect`, `useCallback`, `useRef`, `useReducer`).
+
+### 1. Inventario inicial
+
+| Módulo | Clases iniciales | Migrables | Excluidas | Razón exclusión |
+|--------|:---:|:---:|:---:|---|
+| `fun_forms/` | 67 | 51 | 16 | 14 charts (react-vis → Fase 7), 2 pendientes |
+| `records/` | 49 | 45 | 4 | 1 comentada (`record_arc_39.js`), 3 `@silevis/reactgrid` |
+| `pqrs/` | 32 | 31 | 1 | `pqrs_rteReply` usa `react-quill` → Fase 7 |
+| `components/` | 7 | 6 | 1 | `ChartErrorBoundary` requiere class (Error Boundary) |
+| `submit/` | 6 | 6 | 0 | — |
+| `expeditions/` | 5 | 5 | 0 | — |
+| `nomenclature/` | 3 | 3 | 0 | — |
+| Standalone pages | 10 | 10 | 0 | `home.js`, `fun.js`, `seal.js`, `funmanage.page.js`, `osha.js`, `publish.js`, `appointments.js`, `dashboard.js`, `mail.js`, `liquidator.js` |
+| **Total** | **179** | **157** | **22** | — |
+
+### 2. Orden de ejecución
+
+1. `nomenclature/` (3 archivos) ✅
+2. `expeditions/` (5 archivos) ✅
+3. `submit/` (6 archivos) ✅ — incluye único `componentWillUnmount` → cleanup `useEffect`
+4. `components/` (6 archivos) ✅ — `ChartErrorBoundary` preservado como clase
+5. `pqrs/` (31 archivos) ✅ — `pqrs_rteReply` excluido (react-quill)
+6. `records/eng/` (13 archivos) ✅
+7. `records/law/` (9 archivos) ✅
+8. `records/ph/` (4 archivos) ✅
+9. `records/arc/` (8 archivos) ✅ — 3 excluidos (`reactgrid`) + 1 comentada
+10. `records/` root (7 archivos) ✅
+11. `fun_forms/components/` (35 archivos) ✅ — 14 charts excluidos
+12. `fun_forms/` pages (18 archivos) ✅
+13. Standalone pages (10 archivos) ✅
+
+### 3. Patrones de migración aplicados
+
+| Patrón class | Equivalente functional | Ocurrencias |
+|---|---|:---:|
+| `constructor(props) { this.state = {...} }` | `useState(initialValue)` por campo | ~157 |
+| `componentDidMount()` | `useEffect(() => {...}, [])` | ~120 |
+| `componentDidUpdate(prevProps/prevState)` | `useEffect(() => {...}, [deps])` | ~30 |
+| `componentWillUnmount()` | cleanup return en `useEffect` | 1 |
+| `this.setState({...})` | setter individual (`setX(val)`) | ~800+ |
+| `this.setState({[key]: val})` (dynamic) | `setSaveStates(prev => ({...prev, [key]: val}))` o `useReducer` | ~15 |
+| `this.props.X` → destructured param | `function Comp({ X })` | ~500+ |
+| `this.methodName.bind(this)` | Eliminado (closures capturan scope) | ~80 |
+| `createRef()` | `useRef(null)` | ~5 |
+| `withTranslation()` HOC | `useTranslation()` hook | ~8 |
+| `>5 campos estado interrelacionados` | `useReducer` con merge-style reducer | 2 (`fun.js`, `fun_macrotable..js`) |
+
+### 4. Archivos excluidos (no migrados)
+
+| Archivo | Razón |
+|---------|-------|
+| `ChartErrorBoundary.js` | Error Boundary requiere `getDerivedStateFromError` — sin equivalente hooks |
+| `record_arc_39.js` | Clase completamente comentada — código inactivo |
+| `record_arc_areas.component.js` | Usa `@silevis/reactgrid` con API de clase |
+| `record_arc_areas_2.component.js` | Usa `@silevis/reactgrid` |
+| `record_arc_areas_resumen.component.js` | Usa `@silevis/reactgrid` |
+| `pqrs_rteReply.component.js` | Usa `react-quill` — Fase 7 |
+| 14 archivos en `charts_components.js/` | Usan `react-vis` (abandonado) — Fase 7 |
+
+### 5. Verificación
+
+| Check | Resultado |
+|-------|-----------|
+| Errores de compilación (IDE) | **0 errores** |
+| `extends Component` restantes | **16** (1 Error Boundary + 1 comentada + 14 charts Phase 7) |
+| `this.state/props/setState` en código activo (excl. charts) | **0** |
+| Archivos modificados | **~157** |
+
+### 6. Resultado
+
+- **157 class components** convertidos a functional con hooks
+- **22 componentes** preservados como clase por razones técnicas (Error Boundary, libs Phase 7, reactgrid)
+- **0 errores** de compilación/lint
+- **Sin cambios** en API pública de componentes (mismas props, mismo export)
+- **Sin cambios** en rutas, servicios HTTP, o templates
+
+**Pendiente:** Ejecutar `npx vitest run` para verificar 149 tests + validación Playwright.  
+**Listo para Fase 7:** Reemplazar react-vis (14 charts) y react-quill (1 componente).

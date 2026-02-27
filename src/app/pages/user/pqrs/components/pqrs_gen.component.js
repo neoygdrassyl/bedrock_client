@@ -1,15 +1,4 @@
-import { Component } from 'react';
-
-class PQRS_COMPONENT_INFO extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, translation_form, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_INFO({ translation, swaMsg, globals, translation_form, currentItem }) {
 
         // COMPONENTS JSX
         let _INFO_COMPONENT = () => {
@@ -98,12 +87,11 @@ class PQRS_COMPONENT_INFO extends Component {
             }
         }
 
-        return (
-            <div>
-                {_INFO_COMPONENT()}
-            </div>
-        );
-    }
+    return (
+        <div>
+            {_INFO_COMPONENT()}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_INFO;

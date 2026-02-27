@@ -1,13 +1,7 @@
-import { Component } from 'react';
 import { MDBCard, MDBCardBody, MDBTooltip } from '../../../../components/ui';
 
-class PQRS_MODULE_NAV extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, currentItem, FROM } = this.props;
-        const isAdmin = window.user.name_short === "Luis Parra"
+function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
+    const isAdmin = window.user.name_short === "Luis Parra"
 
         let _GET_WORKER_VAR = (worker_id) => {
             let _WORKERS = currentItem.pqrs_workers;
@@ -43,7 +37,7 @@ class PQRS_MODULE_NAV extends Component {
                                     <i class="far fa-comment-dots fa-2x" ></i> <label className="fs-6 align-top">RTA. {_WORKERS[i].name}</label></button>
                             </div>
                             : <div className="row mx-2 mb-1">
-                                <button className="btn btn-sm btn-secondary m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(_GET_WORKER_VAR(window.user.id), "informal", FROM)}>
+                                <button className="btn btn-sm btn-secondary m-0 p-2 shadow-none" onClick={() => NAVIGATION(_GET_WORKER_VAR(window.user.id), "informal", FROM)}>
                                     <i class="far fa-comment-dots fa-2x" ></i> <label className="fs-6 align-top">RTA. {_WORKERS[i].name}</label></button>
                             </div>}
                     </>)
@@ -63,7 +57,7 @@ class PQRS_MODULE_NAV extends Component {
                                 <div className="m-1 text-center">
 
                                     <div className="row mx-2 mb-1">
-                                        <a onClick={() => this.props.NAVIGATION(currentItem, "close", FROM)} className="btn btn-info m-0 p-2 shadow-none">
+                                        <a onClick={() => NAVIGATION(currentItem, "close", FROM)} className="btn btn-info m-0 p-2 shadow-none">
                                             <i class="fas fa-times-circle fa-2x" ></i> <label className="fs-6 align-top">CERRAR</label>
                                         </a>
                                     </div>
@@ -75,7 +69,7 @@ class PQRS_MODULE_NAV extends Component {
                                                 <i class="far fa-eye fa-2x fa-2x" ></i> <label className="fs-6 align-top">DETALLES</label></button>
                                         </div>
                                         : <div className="row mx-2 mb-1">
-                                            <button className="btn btn-info m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(currentItem, "general", FROM)}>
+                                            <button className="btn btn-info m-0 p-2 shadow-none" onClick={() => NAVIGATION(currentItem, "general", FROM)}>
                                                 <i class="far fa-eye fa-2x fa-2x" ></i> <label className="fs-6 align-top">DETALLES</label></button>
                                         </div>}
 
@@ -90,7 +84,7 @@ class PQRS_MODULE_NAV extends Component {
                                                         <i class="fas fa-edit fa-2x fa-2x"></i> <label className="fs-6 align-top">EDITAR</label></button>
                                                 </div>
                                                 : <div className="row mx-2 mb-1">
-                                                    <button className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(currentItem, "editable", FROM)}>
+                                                    <button className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => NAVIGATION(currentItem, "editable", FROM)}>
                                                         <i class="fas fa-edit fa-2x fa-2x"></i> <label className="fs-6 align-top">EDITAR</label></button>
                                                 </div>} </> : ""
                                     }
@@ -104,7 +98,7 @@ class PQRS_MODULE_NAV extends Component {
                                                                 <i class="fas fa-cog fa-2x" ></i> <label className="fs-6 align-top">GESTIONAR</label></button>
                                                         </div>
                                                         : <div className="row mx-2 mb-1">
-                                                            <button className="btn btn-sm btn-success m-0 p-2 shadow-none" onClick={() => this.props.NAVIGATION(currentItem, "manage", FROM)}>
+                                                            <button className="btn btn-sm btn-success m-0 p-2 shadow-none" onClick={() => NAVIGATION(currentItem, "manage", FROM)}>
                                                                 <i class="fas fa-cog fa-2x" ></i> <label className="fs-6 align-top">GESTIONAR</label></button>
                                                         </div>}
                                                 </> : ""}
@@ -118,8 +112,7 @@ class PQRS_MODULE_NAV extends Component {
                     </div>
                 </div>
                 : ""} </>
-        );
-    }
+    );
 }
 
 export default PQRS_MODULE_NAV;

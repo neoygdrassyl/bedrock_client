@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
@@ -8,19 +8,12 @@ import RECORD_ARC_36_TABLE from './record_arc_36.table';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ARC_36 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            link_recipe: false,
-            new_duty: false,
-            new_element: false,
-            edit_element: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit_element !== prevState.edit_element && this.state.edit_element != false) {
-            var _ITEM = this.state.edit_element;
+function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [editElement, setEditElement] = useState(false);
+
+    useEffect(() => {
+        if (editElement) {
+            var _ITEM = editElement;
 
             document.getElementById("r_a_36_info_1_edit").value = _ITEM.parent;
             document.getElementById("r_a_36_info_2_edit").value = _ITEM.name;
@@ -34,10 +27,7 @@ class RECORD_ARC_36 extends Component {
             let _BASE_URL = "//www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/"
             _COMPONENT.href = _BASE_URL + _LIST[_ITEM.parent].src;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    }, [editElement]);
 
 
         // DATA GETERS
@@ -453,7 +443,7 @@ class RECORD_ARC_36 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -484,7 +474,7 @@ class RECORD_ARC_36 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -524,7 +514,7 @@ class RECORD_ARC_36 extends Component {
                         currentVersion={currentVersion}
                         currentRecord={currentRecord}
                         currentVersionR={currentVersionR}
-                        requestUpdateRecord={() => this.props.requestUpdateRecord(currentItem.id)}
+                        requestUpdateRecord={() => requestUpdateRecord(currentItem.id)}
                     />
 
                     <h3 className="py-3" >3.6.2 Evaluación de Perfiles (Vías peatonales y andenes. Art 164 a 169)</h3>
@@ -538,7 +528,6 @@ class RECORD_ARC_36 extends Component {
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_36;

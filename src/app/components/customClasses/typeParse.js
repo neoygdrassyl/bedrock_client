@@ -939,7 +939,6 @@ export function _GET_SUBSERIE_STR(_CHILD) {
 export function addDecimalPoints(num) {
     if (!num) return '';
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
 }
 
 export function _ADDRESS_SET_FULL(_DOMID, _FUN2) {

@@ -1,0 +1,80 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/home/dg21/dovela/frontend[39m
+
+ [31m❯[39m src/__tests__/FunManage.integration.test.js [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/__tests__/Expedition.integration.test.js [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m src/__tests__/Submit.integration.test.js [2m([22m[2m14 tests[22m[2m)[22m[33m 3613[2mms[22m[39m
+     [33m[2m✓[22m[39m 1. Renderiza sin crash y muestra título "VENTANILLA ÚNICA" [33m 442[2mms[22m[39m
+     [33m[2m✓[22m[39m 12. Renderiza DataTable con datos mock [33m 874[2mms[22m[39m
+     [33m[2m✓[22m[39m 13. DataTable muestra encabezados de columnas correctos [33m 510[2mms[22m[39m
+ [32m✓[39m src/__tests__/Archive.integration.test.js [2m([22m[2m17 tests[22m[2m)[22m[33m 2347[2mms[22m[39m
+     [33m[2m✓[22m[39m 1. Renderiza sin crash y muestra título "ARCHIVO" [33m 538[2mms[22m[39m
+     [33m[2m✓[22m[39m 13. DataTable con datos mock muestra cajas correctamente [33m 461[2mms[22m[39m
+ [31m❯[39m src/__tests__/FunLicenses.smoke.test.js [2m([22m[2m35 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[33m 23259[2mms[22m[39m
+[31m     [31m×[31m fun.js (contenedor principal) se importa sin error[39m[33m 2012[2mms[22m[39m
+[31m     [31m×[31m fun_c.js (creación de licencia) se importa sin error[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m fun_g.js (gestión general) se importa sin error[39m[33m 3803[2mms[22m[39m
+     [33m[2m✓[22m[39m fun_clock.js (relojes de licencia) se importa sin error [33m 12716[2mms[22m[39m
+[31m     [31m×[31m fun_alertn.js (alertas colindantes) se importa sin error[39m[32m 29[2mms[22m[39m
+     [33m[2m✓[22m[39m fun_macrotable..js (tabla macro) se importa sin error [33m 2424[2mms[22m[39m
+[31m     [31m×[31m fun_n.js (contenedor normas) se importa sin error[39m[33m 1090[2mms[22m[39m
+     [32m✓[39m fun_n_1.js se importa sin error[32m 9[2mms[22m[39m
+     [32m✓[39m fun_n_2.js se importa sin error[32m 15[2mms[22m[39m
+     [32m✓[39m fun_n_3.js se importa sin error[32m 1[2mms[22m[39m
+     [32m✓[39m fun_n_4.js se importa sin error[32m 1[2mms[22m[39m
+     [32m✓[39m fun_n_51.js se importa sin error[32m 1[2mms[22m[39m
+     [32m✓[39m fun_n_52.js se importa sin error[32m 1[2mms[22m[39m
+     [32m✓[39m fun_n_53.js se importa sin error[32m 1[2mms[22m[39m
+[31m     [31m×[31m fun_docs.js (documentos) se importa sin error[39m[32m 126[2mms[22m[39m
+[31m     [31m×[31m fun_report_data_edit.js se importa sin error[39m[32m 45[2mms[22m[39m
+     [32m✓[39m fun_doc_confirminc.js se importa sin error[32m 152[2mms[22m[39m
+[31m     [31m×[31m fun_doc_confirmlegal.js se importa sin error[39m[32m 27[2mms[22m[39m
+     [32m✓[39m fun_doc_certification.component.js se importa sin error[32m 74[2mms[22m[39m
+     [32m✓[39m fun_doc_abdicate.component.js se importa sin error[32m 79[2mms[22m[39m
+[31m     [31m×[31m fun_worker_asign.component.js se importa sin error[39m[32m 28[2mms[22m[39m
+     [32m✓[39m fun_asign.component.js se importa sin error[32m 218[2mms[22m[39m
+     [32m✓[39m fun_archive.component.js se importa sin error[32m 0[2mms[22m[39m
+     [32m✓[39m fun_3_g_view.js (DataTable con selectors) se importa sin error[32m 0[2mms[22m[39m
+     [32m✓[39m fun_clocks_negative.component.js se importa sin error[32m 0[2mms[22m[39m
+     [32m✓[39m fun_macro_clocks.compnent.js se importa sin error[32m 66[2mms[22m[39m
+     [32m✓[39m fun_g_checklist.js se importa sin error[32m 0[2mms[22m[39m
+     [32m✓[39m fun_6.view.js (vista de documentos 6) se importa sin error[32m 20[2mms[22m[39m
+     [32m✓[39m submit_view.component.js (DataTable) se importa sin error[32m 4[2mms[22m[39m
+     [32m✓[39m submit_x_fun.component.js se importa sin error[32m 122[2mms[22m[39m
+     [32m✓[39m submit.js (listado ventanilla) se importa sin error[32m 186[2mms[22m[39m
+     [32m✓[39m submit_anex.component.js se importa sin error[32m 0[2mms[22m[39m
+     [32m✓[39m fun_report_data.js se importa sin error[32m 0[2mms[22m[39m
+     [32m✓[39m fun_g_reports.component.js se importa sin error[32m 1[2mms[22m[39m
+     [32m✓[39m fun_g_reportMaster.compoentn.js se importa sin error[32m 0[2mms[22m[39m
+ [31m❯[39m src/__tests__/Modules.smoke.test.js [2m([22m[2m13 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 21441[2mms[22m[39m
+     [33m[2m✓[22m[39m 1. centralClocks.component.js se importa sin error [33m 1759[2mms[22m[39m
+     [32m✓[39m 2. Directorio hooks existe (tiene useClocksManager)[32m 1[2mms[22m[39m
+     [32m✓[39m 3. Directorio utils de clocks existe[32m 0[2mms[22m[39m
+     [33m[2m✓[22m[39m 1. record_eng.js se importa sin error [33m 13569[2mms[22m[39m
+     [33m[2m✓[22m[39m 2. record_law.js se importa sin error [33m 1348[2mms[22m[39m
+[31m     [31m×[31m 3. record_arc.js se importa sin error[39m[33m 3550[2mms[22m[39m
+     [33m[2m✓[22m[39m 4. record_ph.js se importa sin error [33m 739[2mms[22m[39m
+     [33m[2m✓[22m[39m 5. record_review.js se importa sin error [33m 427[2mms[22m[39m
+     [32m✓[39m 1. fun.service.js exporta clase válida[32m 10[2mms[22m[39m
+     [32m✓[39m 2. custom.service.js exporta clase válida[32m 8[2mms[22m[39m
+     [32m✓[39m 3. data.service.js exporta clase válida[32m 3[2mms[22m[39m
+     [32m✓[39m 4. zone_use.service.js exporta clase válida[32m 22[2mms[22m[39m
+     [32m✓[39m 5. pqrs_main.service.js exporta clase válida[32m 0[2mms[22m[39m
+ [32m✓[39m src/__tests__/Login.smoke.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 588[2mms[22m[39m
+ [32m✓[39m src/__tests__/Navigation.smoke.test.js [2m([22m[2m23 tests[22m[2m)[22m[33m 1083[2mms[22m[39m
+[90mstdout[2m | src/__tests__/mdb-debug.test.js[2m > [22m[2mdefaultProps diagnosis[2m > [22m[2mprints defaultProps
+[22m[39mReact version: 19.2.4
+MDBBtn.defaultProps: [90mundefined[39m
+MDBCard.defaultProps: [90mundefined[39m
+MDBBreadcrumb.defaultProps: [90mundefined[39m
+MDBCard createElement props: {}
+MDBBtn createElement props: { children: [32m'test'[39m }
+
+ [32m✓[39m src/__tests__/mdb-debug.test.js [2m([22m[2m13 tests[22m[2m)[22m[33m 301[2mms[22m[39m
+ [32m✓[39m src/__tests__/App.smoke.test.js [2m([22m[2m6 tests[22m[2m)[22m[33m 522[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m6 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m [1m[31m10 failed[39m[22m[2m | [22m[1m[32m115 passed[39m[22m[90m (125)[39m
+[2m   Start at [22m 15:04:07
+[2m   Duration [22m 33.99s[2m (transform 25.31s, setup 3.52s, import 10.94s, tests 53.16s, environment 21.06s)[22m
+

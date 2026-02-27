@@ -1,17 +1,7 @@
-import { Component } from 'react';
 import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 import DataTable, { Alignment } from 'react-data-table-component';
 
-class PQRS_COMPONENT_CLOCKS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, translation_form, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form, currentItem }) {
 
         // DATA GETTERS 
         let get_PQRS_TIME = () => {
@@ -202,17 +192,16 @@ class PQRS_COMPONENT_CLOCKS extends Component {
         // DATA CONVERTERS
 
 
-        return (
-            <div>
-                {_TIME_CONTROL_COMPONENT()}
-                {currentItem.action_review
-                    ? <>
-                        {_ACTION_REVIEW_COMPONENT()}
-                    </>
-                    : ""}
-            </div>
-        );
-    }
+    return (
+        <div>
+            {_TIME_CONTROL_COMPONENT()}
+            {currentItem.action_review
+                ? <>
+                    {_ACTION_REVIEW_COMPONENT()}
+                </>
+                : ""}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_CLOCKS;

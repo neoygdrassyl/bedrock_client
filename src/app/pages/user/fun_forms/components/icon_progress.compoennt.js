@@ -1,17 +1,8 @@
 import { MDBTooltip } from '../../../../components/ui';
-import { Component } from 'react';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-class FUN_ICON_PROGRESS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, globals, currentItem, small } = this.props;
-        const { } = this.state;
+function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
 
         // DATA CONVERTERS
         let _GET_LAW_REPORT_DATA_ICON = (_ITEM) => {
@@ -194,7 +185,6 @@ class FUN_ICON_PROGRESS extends Component {
                 {_PROGRESS_COMPONENT(currentItem)}
             </div>
         );
-    }
 }
 
 

@@ -1,18 +1,8 @@
-import { Component } from 'react';
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse'
 
 const moment = require('moment');
 const momentB = require('moment-business-days');
-class PQRS_COMPONENT_REPLIES_PROFESIONAL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_REPLIES_PROFESIONAL({ translation, swaMsg, globals, currentItem }) {
 
         // COMPONENTS JSX
         let _REPLIES_COMPONENT = () => {
@@ -89,12 +79,11 @@ class PQRS_COMPONENT_REPLIES_PROFESIONAL extends Component {
         }
     
 
-        return (
-            <div>
-                {_REPLIES_COMPONENT()}
-            </div>
-        );
-    }
+    return (
+        <div>
+            {_REPLIES_COMPONENT()}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_REPLIES_PROFESIONAL;
