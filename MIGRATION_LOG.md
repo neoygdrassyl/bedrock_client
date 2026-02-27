@@ -1231,5 +1231,35 @@ Script Node.js en `/tmp/codemod-mdb-to-ui.js`:
 - **Sin cambios** en API pública de componentes (mismas props, mismo export)
 - **Sin cambios** en rutas, servicios HTTP, o templates
 
-**Pendiente:** Ejecutar `npx vitest run` para verificar 149 tests + validación Playwright.  
+### 7. Verificación post-migración — Tests y correcciones
+
+Ejecutar `npx vitest run` reveló errores que esbuild detecta pero el IDE no (transform errors en JSX-in-JS).
+
+#### Errores encontrados y corregidos
+
+| Archivo | Error | Corrección |
+|---------|-------|------------|
+| `fun_checklist_n.js` | Declaraciones duplicadas `_SET_CHILD_REVIEW` y `_CHECK_INDEXVALUE`; `}` aislada en L107 cerraba función prematuramente | Eliminadas primeras declaraciones (menos robustas), removida `}` aislada, agregada `}` de cierre correcto |
+| `fun_alertn.js` | Faltaba `}` de cierre de función (245 `{` vs 244 `}`) | Agregada `}` antes del bloque de comentario final |
+| `fun_pdf.js` | `}` aislada en L13 cerraba función prematuramente | Removida `}` aislada, agregada `}` de cierre correcto antes del export |
+| `fun_pdf_check.js` | `}` aislada en L14 cerraba función prematuramente | Removida `}` aislada |
+| `fun_doc_confirmlegal.js` | `setCuratedList` función sombreaba setter de `useState` | Renombrada a `buildCuratedList` |
+| `fun_report_data_edit.js` | JSX roto: `defaultValue={vrSelected \|\| "">` | Corregido a `defaultValue={vrSelected \|\| ""}>` |
+| `fun_worker_asign.component.js` | `}` extra de remanente de `render()` | Removida `}` extra |
+| `exp_docs.component.js` | `}` extra de remanente de `render()` en L2832 | Removida `}` extra |
+| `funmanage.page.js` | `evePublish` no definido (era `this.evePublish` en clase) | Cambiado a `retrievePublish` (usado en las otras 7 instancias) |
+| `FunLicenses.smoke.test.js` | Timeout de 15s insuficiente para `fun.js` en sandbox | Aumentado a 30s |
+| `Modules.smoke.test.js` | Timeout default 5s insuficiente para `record_arc.js` | Aumentado a 15s |
+
+**Patrón recurrente identificado:** `}` aisladas eran remanentes de la migración clase→funcional, donde el cierre del `constructor() { }` o `render() { }` quedaba como línea huérfana dentro del cuerpo de la función.
+
+#### Resultado final
+
+| Métrica | Valor |
+|---------|-------|
+| Tests | **149/149 PASS** |
+| Suites | **10/10 PASS** |
+| Duración | ~30s |
+| `extends Component` restantes | **16** (1 Error Boundary + 1 comentada + 14 charts Phase 7) |
+
 **Listo para Fase 7:** Reemplazar react-vis (14 charts) y react-quill (1 componente).

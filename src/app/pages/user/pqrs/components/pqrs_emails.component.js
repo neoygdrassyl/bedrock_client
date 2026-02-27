@@ -453,7 +453,6 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                     : ""}
             </div>
         );
-    }
 }
 
 export default PQRS_EMAILS;
