@@ -1263,3 +1263,44 @@ Ejecutar `npx vitest run` reveló errores que esbuild detecta pero el IDE no (tr
 | `extends Component` restantes | **16** (1 Error Boundary + 1 comentada + 14 charts Phase 7) |
 
 **Listo para Fase 7:** Reemplazar react-vis (14 charts) y react-quill (1 componente).
+
+---
+
+### 8. Validación Playwright — Verificación runtime de módulos
+
+**Fecha:** 2026-02-27
+**Commit:** `d611cd67` (fix appointments.js)
+
+Validación end-to-end con Playwright MCP navegando cada módulo de la aplicación tras la migración.
+
+#### Error encontrado y corregido
+
+| Archivo | Error | Causa | Solución |
+|---------|-------|-------|----------|
+| `appointments.js` | `ReferenceError: getToggle is not defined` — página en blanco | Funciones `toggle`, `toggle_edit`, `setItemFn`, `setItem_edit` eran métodos de clase perdidos en la migración | Agregadas como `useCallback` + reemplazado `getToggle()` por referencia directa a `modal` |
+
+#### Módulos validados via Playwright
+
+| Módulo | Ruta | Estado | Observaciones |
+|--------|------|--------|---------------|
+| Login | `/login` | OK | Credenciales pre-llenadas, acceso exitoso |
+| Dashboard | `/dashboard` | OK | Todos los cards de módulos renderizados |
+| PQRS | `/pqrsadmin` | OK | 28 peticiones activas, tabla con datos, botones de acción |
+| Ventanilla Única | `/submit` | OK | Lista de radicados, búsqueda, generación CSV |
+| Solicitudes | `/fun` | OK | Tabs con conteo, tabla de datos, badges de progresión |
+| Gestión Solic. | `/funmanage` | OK | Macro tabla compleja + gráfico de tiempos |
+| Archivo | `/archive` | OK | Lista de cajas con filas expandibles, badges, paginación |
+| Normas Urbanas | `/norms` | OK | 9 registros, crear/buscar, paginación |
+| Buzón Mensajes | `/mail` | OK | 7 mensajes con tabla de datos |
+| Calendario | `/appointments` | OK | Citas por hoy/próximas/pasadas (tras fix de toggle) |
+| Publicaciones | `/publish` | OK | Formulario de publicación, 7 categorías con conteos |
+| Nomenclaturas | `/nomenclature` | OK | Gestión completa, crear/consultar/exportar Excel |
+
+**Resultado: 12/12 módulos funcionando correctamente.**
+
+#### Warnings de consola (pre-existentes, no de la migración)
+
+- React Router Future Flag warnings (v7_startTransition, v7_relativeSplatPath) — cosmético
+- `class` vs `className` en algunos elementos HTML — pre-existente
+- Google Maps API cargada múltiples veces — pre-existente
+- reCAPTCHA site key no habilitada — configuración de servidor
