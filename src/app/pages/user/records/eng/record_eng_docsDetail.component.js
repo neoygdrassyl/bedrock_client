@@ -1,20 +1,11 @@
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ENG_DOCS_DESC extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_ENG_DOCS_DESC(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;
 
         // DATA GETTERS
         let _GET_REVIEW = () => {
@@ -81,7 +72,7 @@ class RECORD_ENG_DOCS_DESC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -111,7 +102,7 @@ class RECORD_ENG_DOCS_DESC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -147,7 +138,6 @@ class RECORD_ENG_DOCS_DESC extends Component {
                 </form>
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_DOCS_DESC;

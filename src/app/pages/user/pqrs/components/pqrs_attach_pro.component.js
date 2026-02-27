@@ -1,15 +1,4 @@
-import { Component } from 'react';
-
-class PQRS_COMPONENT_ATTACH_PROFESIONAL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, currentItem }) {
 
         // COMPONENTS JSX
         let _ATTACHS_COMPONENT_OUTPUT = () => {
@@ -51,14 +40,13 @@ class PQRS_COMPONENT_ATTACH_PROFESIONAL extends Component {
             return <>{_COMPONENT}</>;
         }
 
-        return (
-            <div>
+    return (
+        <div>
 
-                {_ATTACHS_COMPONENT_OUTPUT()}
+            {_ATTACHS_COMPONENT_OUTPUT()}
 
-            </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_ATTACH_PROFESIONAL;

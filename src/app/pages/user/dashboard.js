@@ -1,10 +1,9 @@
-import { Component } from 'react';
 import { MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem } from '../../components/ui';
 import { Link, Route } from "react-router-dom";
 import { DashBoardCard } from '../../components/dashBoardCards/dashBoardCard.js';
 import Title from '../../components/title';
 
-import { withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 import LOGO_LIGHT_THEME from '../../img/beckrock/Grises_logo.png'
 import LOGO_DARK_THEME from '../../img/beckrock/Claros_logo.png'
@@ -12,11 +11,8 @@ var pjson = require('../../../../package.json')
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const classnameCards = "px-3 d-flex justify-content-center";
 
-class Dashboard extends Component {
-
-    render() {
-        const { translation, breadCrums } = this.props;
-        const { t } = this.props;
+function Dashboard({ translation, breadCrums }) {
+    const { t } = useTranslation();
         return (
             <div className="Dashboard container container-fluid p-0">
 
@@ -118,7 +114,6 @@ class Dashboard extends Component {
                 </div >
             </div >
         );
-    }
 }
 
-export default withTranslation()(Dashboard);
+export default Dashboard;

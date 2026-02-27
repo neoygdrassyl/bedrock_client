@@ -176,7 +176,7 @@ export default function FUN_CLOCK_EVENTS(props) {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
     }

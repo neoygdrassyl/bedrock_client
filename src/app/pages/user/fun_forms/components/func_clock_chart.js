@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import moment from 'moment';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, formsParser1 } from '../../../../components/customClasses/typeParse';
 import {
@@ -17,33 +17,32 @@ import 'react-vis/dist/style.css';
 
 //var momentB = require('moment-business-days');
 
-class FUN_CLOCK_CHART extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            calendar_Data: [],
-            hovered: false,
-            crosshairValues: [],
-            expand: true,
-        };
-    }
-    componentDidMount() {
-        this.setCalendarData();
-    }
-    setCalendarData() {
+function FUN_CLOCK_CHART({ currentItem }) {
+        const [calendar_Data, setCalendar_Data] = useState([]);
+        const [hovered, setHovered] = useState(false);
+        const [crosshairValues, setCrosshairValues] = useState([]);
+        const [expand, setExpand] = useState(true);
+        const [endDate, setEndDate] = useState(null);
+        const [startDate, setStartDate] = useState(null);
+        const [hoveredCell, setHoveredCell] = useState(null);
+    useEffect(() => {
+        setCalendarData();
+    }, []);
+
+    const setCalendarData = () => {
         var calendar_clocks = [];
         var dates_bundle = {
             today: moment().format('YYYY/MM/DD'),
 
-            creation: moment(this.props.currentItem.date),
-            payment: this._GET_CLOCKS_STATE(3).date_start,
-            legal: this._GET_CLOCK_STATE_VERSION(5, this.props.currentItem.version).date_start,
-            archive: this._GET_CLOCKS_STATE(100).date_start,
+            creation: moment(currentItem.date),
+            payment: _GET_CLOCKS_STATE(3).date_start,
+            legal: _GET_CLOCK_STATE_VERSION(5, currentItem.version).date_start,
+            archive: _GET_CLOCKS_STATE(100).date_start,
 
-            incomplete_1: this._GET_CLOCK_STATE_VERSION(-5, -1).date_start,
-            incomplete_2: this._GET_CLOCK_STATE_VERSION(-5, -2).date_start,
-            incomplete_3: this._GET_CLOCK_STATE_VERSION(-5, -3).date_start,
-            incomplete_4: this._GET_CLOCK_STATE_VERSION(-5, -4).date_start,
+            incomplete_1: _GET_CLOCK_STATE_VERSION(-5, -1).date_start,
+            incomplete_2: _GET_CLOCK_STATE_VERSION(-5, -2).date_start,
+            incomplete_3: _GET_CLOCK_STATE_VERSION(-5, -3).date_start,
+            incomplete_4: _GET_CLOCK_STATE_VERSION(-5, -4).date_start,
 
         }
 
@@ -70,10 +69,9 @@ class FUN_CLOCK_CHART extends Component {
 
         // RECORD REVIEWS
 
-        let fun_1 = this.props.currentItem.fun_1s[this.props.currentItem.version - 1];
+        let fun_1 = currentItem.fun_1s[currentItem.version - 1];
         let type = formsParser1(fun_1);
-        let isPH = this._REGEX_MATCH_PH(type);
-
+        let isPH = _REGEX_MATCH_PH(type);
 
         var _clock_stepper = ['payment', 'incomplete_1', 'legal', , 'incomplete_2', 'incomplete_3', 'incomplete_4', 'archive'];
         var _index = -1;
@@ -106,7 +104,6 @@ class FUN_CLOCK_CHART extends Component {
             _clock_stepper.splice(_index, 1);
         }
 
-
         // THE CLOCK WILL ONLY SHOW THE PROCESS ONCE A PAYMENT HAS BEEN PROPERLY SET (DATE)
         let finishedNegative = true
         let isArchived = false
@@ -128,7 +125,7 @@ class FUN_CLOCK_CHART extends Component {
                     calendar_clocks.push({ date: next_day, state: 4 })
                 }
 
-                calendar_clocks = this.addClock(calendar_clocks, moment(dates_bundle.incomplete_1), -1, ', DECLARADO INCOMPLETO')
+                calendar_clocks = addClock(calendar_clocks, moment(dates_bundle.incomplete_1), -1, ', DECLARADO INCOMPLETO')
             }
             if (next_Step == 'legal') {
                 let diff = moment(dates_bundle.legal).diff(start, 'days');
@@ -142,12 +139,11 @@ class FUN_CLOCK_CHART extends Component {
             }
         }
 
-
         if (_clock_stepper.includes('incomplete_1')) {
-            calendar_clocks = this.setCalendarNegative(calendar_clocks, -1);
-            let _clock = this._GET_CLOCK_STATE_VERSION(-30, -1);
-            isArchived = this._GET_CLOCK_STATE_VERSION(-11, -1);
-            if (!isArchived) isArchived = this._GET_CLOCK_STATE_VERSION(-19, -1);
+            calendar_clocks = setCalendarNegative(calendar_clocks, -1);
+            let _clock = _GET_CLOCK_STATE_VERSION(-30, -1);
+            isArchived = _GET_CLOCK_STATE_VERSION(-11, -1);
+            if (!isArchived) isArchived = _GET_CLOCK_STATE_VERSION(-19, -1);
             if (!_clock) finishedNegative = false;
         }
 
@@ -170,19 +166,19 @@ class FUN_CLOCK_CHART extends Component {
                 let next_day = moment(start).add(i, 'days')
                 calendar_clocks.push({ date: next_day, state: 6 })
             }
-            calendar_clocks = this.addClock(calendar_clocks, moment(dates_bundle.legal), 5, ', LYDF')
+            calendar_clocks = addClock(calendar_clocks, moment(dates_bundle.legal), 5, ', LYDF')
         }
 
         if (_clock_stepper.includes('incomplete_2') && finishedNegative && !isArchived) {
-            calendar_clocks = this.setCalendarNegative(calendar_clocks, -2);
-            let _clock = this._GET_CLOCK_STATE_VERSION(-30, -2);
-            isArchived = this._GET_CLOCK_STATE_VERSION(-11, -2);
-            if (!isArchived) isArchived = this._GET_CLOCK_STATE_VERSION(-19, -2);
+            calendar_clocks = setCalendarNegative(calendar_clocks, -2);
+            let _clock = _GET_CLOCK_STATE_VERSION(-30, -2);
+            isArchived = _GET_CLOCK_STATE_VERSION(-11, -2);
+            if (!isArchived) isArchived = _GET_CLOCK_STATE_VERSION(-19, -2);
             if (!_clock) finishedNegative = false;
         }
 
         if (finishedNegative && _clock_stepper.includes('incomplete_2') && !isArchived) {
-            let start = this._GET_CLOCK_STATE_VERSION(-30, -2).date_start;
+            let start = _GET_CLOCK_STATE_VERSION(-30, -2).date_start;
             let end = dateParser_finalDate(start, 46 - daysPassed);
             if (_clock_stepper.includes('incomplete_3')) end = dates_bundle.incomplete_3;
             let diff;
@@ -200,15 +196,15 @@ class FUN_CLOCK_CHART extends Component {
         }
 
         if (_clock_stepper.includes('incomplete_3') && finishedNegative && !isArchived) {
-            calendar_clocks = this.setCalendarNegative(calendar_clocks, -3);
-            let _clock = this._GET_CLOCK_STATE_VERSION(-30, -3);
-            isArchived = this._GET_CLOCK_STATE_VERSION(-11, -3);
-            if (!isArchived) isArchived = this._GET_CLOCK_STATE_VERSION(-19, -3);
+            calendar_clocks = setCalendarNegative(calendar_clocks, -3);
+            let _clock = _GET_CLOCK_STATE_VERSION(-30, -3);
+            isArchived = _GET_CLOCK_STATE_VERSION(-11, -3);
+            if (!isArchived) isArchived = _GET_CLOCK_STATE_VERSION(-19, -3);
             if (!_clock) finishedNegative = false;
         }
 
         if (finishedNegative && _clock_stepper.includes('incomplete_3') && !isArchived) {
-            let start = this._GET_CLOCK_STATE_VERSION(-30, -3).date_start;
+            let start = _GET_CLOCK_STATE_VERSION(-30, -3).date_start;
             let end = dateParser_finalDate(start, 46 - daysPassed);
             let diff;
             if (end) {
@@ -226,60 +222,58 @@ class FUN_CLOCK_CHART extends Component {
         // SETTING MINOR EVENTS
 
         // SIGN
-        if (this.props.currentItem.fun_law) {
-            if (this.props.currentItem.fun_law.sign) {
-                let _sign = this.props.currentItem.fun_law.sign.split(',')
-                if (_sign[1]) calendar_clocks = this.addClock(calendar_clocks, moment(_sign[1]).format('YYYY/MM/DD'), 7, ', nRADICACION VALLA')
+        if (currentItem.fun_law) {
+            if (currentItem.fun_law.sign) {
+                let _sign = currentItem.fun_law.sign.split(',')
+                if (_sign[1]) calendar_clocks = addClock(calendar_clocks, moment(_sign[1]).format('YYYY/MM/DD'), 7, ', nRADICACION VALLA')
             }
         }
 
         // NEIGHBOURS
-        let _neighbours = this.props.currentItem.fun_3s;
+        let _neighbours = currentItem.fun_3s;
         for (var i = 0; i < _neighbours.length; i++) {
-            if (_neighbours[i].alerted) calendar_clocks = this.addClock(calendar_clocks, moment(_neighbours[i].alerted), 8, ', VECINO ALERTADO')
+            if (_neighbours[i].alerted) calendar_clocks = addClock(calendar_clocks, moment(_neighbours[i].alerted), 8, ', VECINO ALERTADO')
         }
-
-
 
         if (isPH) {
-            let ph = this.props.currentItem.record_ph;
+            let ph = currentItem.record_ph;
             if (ph) {
                 //calendar_clocks.push({ date: moment(ph.createdAt), state: 14, event: '\nINICIO REVISION P.H.' })
-                if (ph.date_law_review) calendar_clocks = this.addClock(calendar_clocks, moment(ph.date_law_review), 14, ', REVISION JUR. P.H.')
-                if (ph.date_arc_review) calendar_clocks = this.addClock(calendar_clocks, moment(ph.date_arc_review), 14, ', REVISION ARQ. P.H.')
+                if (ph.date_law_review) calendar_clocks = addClock(calendar_clocks, moment(ph.date_law_review), 14, ', REVISION JUR. P.H.')
+                if (ph.date_arc_review) calendar_clocks = addClock(calendar_clocks, moment(ph.date_arc_review), 14, ', REVISION ARQ. P.H.')
             }
         } else {
-            let law = this.props.currentItem.record_law;
+            let law = currentItem.record_law;
             if (law) {
                 let law_review = law.record_law_reviews[law.version - 1];
-                if (law_review) calendar_clocks = this.addClock(calendar_clocks, moment(law_review.date), 14, ', REVISION JURIDICA')
+                if (law_review) calendar_clocks = addClock(calendar_clocks, moment(law_review.date), 14, ', REVISION JURIDICA')
             }
-            let arc = this.props.currentItem.record_arc;
+            let arc = currentItem.record_arc;
             if (arc) {
                 let arc_review = arc.record_arc_38s[arc.version - 1];
-                if (arc_review) calendar_clocks = this.addClock(calendar_clocks, moment(arc_review.date), 14, ', REVISION ARQUITECTONICA')
+                if (arc_review) calendar_clocks = addClock(calendar_clocks, moment(arc_review.date), 14, ', REVISION ARQUITECTONICA')
             }
         }
 
-
-        if (dates_bundle.creation) calendar_clocks = this.addClock(calendar_clocks, dates_bundle.creation, 1, ', CREACION VIRTUAL')
-        if (dates_bundle.payment) calendar_clocks = this.addClock(calendar_clocks, moment(dates_bundle.payment), 3, ', PAGO EXPENSAS FIJAS')
-        if (dates_bundle.archive) calendar_clocks = this.addClock(calendar_clocks, moment(dates_bundle.archive), 100, ', ARCHIVADO')
-        calendar_clocks = this.addClock(calendar_clocks, dates_bundle.today, 99, ', HOY')
-
+        if (dates_bundle.creation) calendar_clocks = addClock(calendar_clocks, dates_bundle.creation, 1, ', CREACION VIRTUAL')
+        if (dates_bundle.payment) calendar_clocks = addClock(calendar_clocks, moment(dates_bundle.payment), 3, ', PAGO EXPENSAS FIJAS')
+        if (dates_bundle.archive) calendar_clocks = addClock(calendar_clocks, moment(dates_bundle.archive), 100, ', ARCHIVADO')
+        calendar_clocks = addClock(calendar_clocks, dates_bundle.today, 99, ', HOY')
 
         let _startDate = dates_bundle.payment ? dates_bundle.payment : dates_bundle.creation;
-        let _endDate = dates_bundle.payment ? moment(dates_bundle.payment, 'YYYY-MM-DD').add(1, 'years') : moment(this.props.currentItem.date, 'YYYY-MM-DD').add(1, 'years')
-        this.setState({ endDate: _endDate, startDate: _startDate, calendar_Data: calendar_clocks })
+        let _endDate = dates_bundle.payment ? moment(dates_bundle.payment, 'YYYY-MM-DD').add(1, 'years') : moment(currentItem.date, 'YYYY-MM-DD').add(1, 'years')
+        setEndDate(_endDate);
+        setStartDate(_startDate);
+        setCalendar_Data(calendar_clocks)
     }
 
     // RETURNS AN ARRAY OF CLOCKS THAT INCLUDES ALL THE PROPER CONFIGURATION FOR THE NEGATIVE PROCESS
-    setCalendarNegative(clocks, version) {
+    const setCalendarNegative = (clocks, version) => {
         // -5  -> -6  -> -7 ->  -10  ->                  -17 ->  -18  ->         -20 ->  -21  -> -30
         //               -8 ->          -11 -> ARVHICE           -19 -> ARCHIVE       -> -22  ->
 
         var _clocks = clocks;
-        var _check_clocks = this._GET_CLOCKS_VERSION(version);
+        var _check_clocks = _GET_CLOCKS_VERSION(version);
         var steps = [];
         var index = -1;
         var index_2 = -1
@@ -425,14 +419,14 @@ class FUN_CLOCK_CHART extends Component {
             if (_check_clocks[i].state == -22) text = ', EL SOLICITANTE SE PRESENTA (2° Vez)';
             if (_check_clocks[i].state == -30) text = ', FINALIZACION';
 
-            if (text) _clocks = this.addClock(_clocks, moment(_check_clocks[i].date_start), -1, text);
+            if (text) _clocks = addClock(_clocks, moment(_check_clocks[i].date_start), -1, text);
         }
 
         return _clocks;
 
     }
 
-    addClock(clocks, _date, _state, _text) {
+    const addClock = (clocks, _date, _state, _text) => {
         var _clocks = clocks;
         for (var i = 0; i < _clocks.length; i++) {
             if (moment(_clocks[i].date).isSame(_date)) {
@@ -444,39 +438,39 @@ class FUN_CLOCK_CHART extends Component {
         _clocks.push({ date: _date, state: _state, event: _text });
         return _clocks;
     }
-    _GET_CHILD_CLOCK() {
-        var _CHILD = this.props.currentItem.fun_clocks;
+    const _GET_CHILD_CLOCK = () => {
+        var _CHILD = currentItem.fun_clocks;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
         }
         return _LIST;
     }
-    _GET_CLOCKS_STATE(_state) {
-        var _CLOCK = this._GET_CHILD_CLOCK();
+    const _GET_CLOCKS_STATE = (_state) => {
+        var _CLOCK = _GET_CHILD_CLOCK();
         if (_state == null) return false;
         for (var i = 0; i < _CLOCK.length; i++) {
             if (_CLOCK[i].state == _state) return _CLOCK[i];
         }
         return false;
     }
-    _GET_CLOCKS_VERSION(_version) {
-        var _CLOCK = this._GET_CHILD_CLOCK();
+    const _GET_CLOCKS_VERSION = (_version) => {
+        var _CLOCK = _GET_CHILD_CLOCK();
         var _CLOCKS = [];
         for (var i = 0; i < _CLOCK.length; i++) {
             if (_CLOCK[i].version == _version) _CLOCKS.push(_CLOCK[i]);
         }
         return _CLOCKS;
     }
-    _GET_CLOCK_STATE_VERSION(_state, _version) {
-        var _CLOCK = this._GET_CHILD_CLOCK();
+    const _GET_CLOCK_STATE_VERSION = (_state, _version) => {
+        var _CLOCK = _GET_CHILD_CLOCK();
         if (_state == null) return false;
         for (var i = 0; i < _CLOCK.length; i++) {
             if (_CLOCK[i].state == _state && _CLOCK[i].version == _version) return _CLOCK[i];
         }
         return false;
     }
-    _REGEX_MATCH_PH(_string) {
+    const _REGEX_MATCH_PH = (_string) => {
         let regex0 = /p\.\s+h/i;
         let regex1 = /p\.h/i;
         let regex2 = /PROPIEDAD\s+HORIZONTAL/i;
@@ -484,20 +478,20 @@ class FUN_CLOCK_CHART extends Component {
         if (regex0.test(_string) || regex2.test(_string) || regex1.test(_string) || regex3.test(_string)) return true;
         return false
     }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { expand } = this.state
-        const date_start = this._GET_CLOCKS_STATE(3) ? this._GET_CLOCKS_STATE(3).date_start : moment(this.props.currentItem.date);
+
+        // Props already destructured in function signature
+        // State already available via useState hooks
+        const date_start = _GET_CLOCKS_STATE(3) ? _GET_CLOCKS_STATE(3).date_start : moment(currentItem.date);
         const stepsToCheck = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
         const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
         const _fun_0_type_text = { 'i': 'I', 'ii': 'II', 'iii': 'III', 'iv': 'IV', 'oa': 'OA' };
         const evaDefaultTime = _fun_0_type_time[currentItem.type] ?? 45;
-        const evaCorTime = this._GET_CLOCKS_STATE(34).date_start ? 50 : 35;
+        const evaCorTime = _GET_CLOCKS_STATE(34).date_start ? 50 : 35;
         const viaTime = () => {
-            let ldfTime = this._GET_CLOCKS_STATE(5).date_start;
-            let actaTime = this._GET_CLOCKS_STATE(30).date_start;
-            let acta2Time = this._GET_CLOCKS_STATE(49).date_start;
-            let corrTime = this._GET_CLOCKS_STATE(35).date_start;
+            let ldfTime = _GET_CLOCKS_STATE(5).date_start;
+            let actaTime = _GET_CLOCKS_STATE(30).date_start;
+            let acta2Time = _GET_CLOCKS_STATE(49).date_start;
+            let corrTime = _GET_CLOCKS_STATE(35).date_start;
 
             let time = 1;
 
@@ -512,15 +506,15 @@ class FUN_CLOCK_CHART extends Component {
             return time;
         }
         const corrTime = () => {
-            let s1 = this._GET_CLOCKS_STATE(5).date_start;
-            let f1 = this._GET_CLOCKS_STATE(30).date_start;
+            let s1 = _GET_CLOCKS_STATE(5).date_start;
+            let f1 = _GET_CLOCKS_STATE(30).date_start;
 
             let eva_1_time = dateParser_dateDiff(f1, s1);
             return evaDefaultTime - eva_1_time;
 
         }
         const requereCorr = () => {
-            let actaClock = this._GET_CLOCKS_STATE(30);
+            let actaClock = _GET_CLOCKS_STATE(30);
             let con = false;
             if (actaClock.desc) {
                 if (actaClock.desc.includes('NO CUMPLE')) con = true;
@@ -555,7 +549,6 @@ class FUN_CLOCK_CHART extends Component {
             { id: 'lic', title: 'LICENCIA', color: colorCom, s: [70, false], f1: [99, false], f2: false, dLenght: 10, required: true, },
         ]
 
-
         // DATA CONVERTER
 
         let _ADD_MARK = (_marks, _new_mark) => {
@@ -570,21 +563,21 @@ class FUN_CLOCK_CHART extends Component {
             return marks
         }
         let GET_TIME_CLOCK = (_state, _version) => {
-            var _clock = this._GET_CLOCK_STATE_VERSION(_state, _version);
+            var _clock = _GET_CLOCK_STATE_VERSION(_state, _version);
             if (!_clock) return null;
-            if (!this._GET_CLOCKS_STATE(3)) return null
-            let time = Math.abs(dateParser_dateDiff(_clock.date_start, this._GET_CLOCKS_STATE(3).date_start));
+            if (!_GET_CLOCKS_STATE(3)) return null
+            let time = Math.abs(dateParser_dateDiff(_clock.date_start, _GET_CLOCKS_STATE(3).date_start));
             return time;
         }
         let _GET_DAYS_CLOCK = (_state, _version) => {
-            var startClock = this._GET_CLOCKS_STATE(3).date_start;
+            var startClock = _GET_CLOCKS_STATE(3).date_start;
             if (!startClock) return false;
             if (_version) {
-                var clock = this._GET_CLOCK_STATE_VERSION(_state, _version).date_start;
+                var clock = _GET_CLOCK_STATE_VERSION(_state, _version).date_start;
                 if (clock) return dateParser_dateDiff(startClock, clock)
                 else return false
             } else {
-                var clock = this._GET_CLOCKS_STATE(_state).date_start;
+                var clock = _GET_CLOCKS_STATE(_state).date_start;
                 if (clock) return dateParser_dateDiff(startClock, clock)
                 else return false
             }
@@ -613,23 +606,22 @@ class FUN_CLOCK_CHART extends Component {
                 let clock_start = clock.s;
                 let clock_end = clock.f1;
 
-
-                if (clock_start[1]) checkClock = this._GET_CLOCK_STATE_VERSION(clock_start[0], clock_start[1]).date_start;
-                else checkClock = this._GET_CLOCKS_STATE(clock_start[0]).date_start;
+                if (clock_start[1]) checkClock = _GET_CLOCK_STATE_VERSION(clock_start[0], clock_start[1]).date_start;
+                else checkClock = _GET_CLOCKS_STATE(clock_start[0]).date_start;
 
                 clock_start = clock.s2;
                 if (!checkClock && clock_start) {
-                    if (clock_start[1]) checkClock = this._GET_CLOCK_STATE_VERSION(clock_start[0], clock_start[1]).date_start;
-                    else checkClock = this._GET_CLOCKS_STATE(clock_start[0]).date_start;
+                    if (clock_start[1]) checkClock = _GET_CLOCK_STATE_VERSION(clock_start[0], clock_start[1]).date_start;
+                    else checkClock = _GET_CLOCKS_STATE(clock_start[0]).date_start;
                 }
 
-                if (clock_end[1]) { clockEnd = this._GET_CLOCK_STATE_VERSION(clock_end[0], clock_end[1]).date_start; }
-                else clockEnd = this._GET_CLOCKS_STATE(clock_end[0]).date_start;
+                if (clock_end[1]) { clockEnd = _GET_CLOCK_STATE_VERSION(clock_end[0], clock_end[1]).date_start; }
+                else clockEnd = _GET_CLOCKS_STATE(clock_end[0]).date_start;
 
                 clock_end = clock.f2;
                 if (!clockEnd && clock_end) {
-                    if (clock_end[1]) { clockEnd = this._GET_CLOCK_STATE_VERSION(clock_end[0], clock_end[1]).date_start; }
-                    else clockEnd = this._GET_CLOCKS_STATE(clock_end[0]).date_start;
+                    if (clock_end[1]) { clockEnd = _GET_CLOCK_STATE_VERSION(clock_end[0], clock_end[1]).date_start; }
+                    else clockEnd = _GET_CLOCKS_STATE(clock_end[0]).date_start;
                 }
 
                 if (checkClock && clockEnd) lastClock = { i: i, ...clock };
@@ -661,11 +653,11 @@ class FUN_CLOCK_CHART extends Component {
                 let checkClock = false;
                 let clockEnd = false;
 
-                if (state && version) { checkClock = this._GET_CLOCK_STATE_VERSION(state, version).date_start; }
-                else checkClock = this._GET_CLOCKS_STATE(state).date_start;
+                if (state && version) { checkClock = _GET_CLOCK_STATE_VERSION(state, version).date_start; }
+                else checkClock = _GET_CLOCKS_STATE(state).date_start;
 
-                if (state_end && version_end) { clockEnd = this._GET_CLOCK_STATE_VERSION(state_end, version_end).date_start; }
-                else clockEnd = this._GET_CLOCKS_STATE(state_end).date_start;
+                if (state_end && version_end) { clockEnd = _GET_CLOCK_STATE_VERSION(state_end, version_end).date_start; }
+                else clockEnd = _GET_CLOCKS_STATE(state_end).date_start;
 
                 if ((checkClock && clockEnd) || clock.required) data.push(clock.title)
             })
@@ -681,12 +673,12 @@ class FUN_CLOCK_CHART extends Component {
         }
 
         let _GET_TIME_BETWEEN_TWO_STATES = (state_1, state_2) => {
-            let today = this._GET_CLOCKS_STATE(3).date_start
+            let today = _GET_CLOCKS_STATE(3).date_start
             if (!today) return 'NaN'
-            let time_1 = this._GET_CLOCKS_STATE(state_1).date_start
+            let time_1 = _GET_CLOCKS_STATE(state_1).date_start
             if (time_1) time_1 = dateParser_dateDiff(time_1, today);
             if (!time_1) return 'NaN'
-            let time_2 = this._GET_CLOCKS_STATE(state_2).date_start
+            let time_2 = _GET_CLOCKS_STATE(state_2).date_start
             if (time_2) time_2 = dateParser_dateDiff(time_2, today);
             if (!time_2) return 'NaN'
             return Number(time_2 - time_1)
@@ -694,7 +686,7 @@ class FUN_CLOCK_CHART extends Component {
         // HINST AND CROSSHAIR COMPONENTS
         let _GET_HINT_BODY = (item) => {
             let title = item.title;
-            let start_date = this._GET_CLOCKS_STATE(3).date_start;
+            let start_date = _GET_CLOCKS_STATE(3).date_start;
             return <>
                 <div className="row">
                     <label><label className="fw-bold"> {title}</label></label>
@@ -719,8 +711,8 @@ class FUN_CLOCK_CHART extends Component {
                 sizeRange={[1, 5]}
                 data={_blueMarks(1.5)}
                 color={'blue'}
-                onValueMouseOver={v => this.setState({ hoveredCell: v })}
-                onValueMouseOut={() => this.setState({ hoveredCell: false })} />
+                onValueMouseOver={v => setHoveredCell(v)}
+                onValueMouseOut={() => setHoveredCell(false)} />
         }
         let _CHART_MARKS_GREEN = () => {
 
@@ -729,8 +721,8 @@ class FUN_CLOCK_CHART extends Component {
                 sizeRange={[1, 5]}
                 data={_GreenMarks(2)}
                 color={'green'}
-                onValueMouseOver={v => this.setState({ hoveredCell: v })}
-                onValueMouseOut={() => this.setState({ hoveredCell: false })} />
+                onValueMouseOver={v => setHoveredCell(v)}
+                onValueMouseOut={() => setHoveredCell(false)} />
         }
         let _CHART_MARKS_RED = () => {
 
@@ -739,8 +731,8 @@ class FUN_CLOCK_CHART extends Component {
                 sizeRange={[1, 5]}
                 data={_RedMarks(2.5)}
                 color={'red'}
-                onValueMouseOver={v => this.setState({ hoveredCell: v })}
-                onValueMouseOut={() => this.setState({ hoveredCell: false })} />
+                onValueMouseOver={v => setHoveredCell(v)}
+                onValueMouseOut={() => setHoveredCell(false)} />
         }
         let _blueMarks = (_y) => {
             let _marks = [];
@@ -751,10 +743,10 @@ class FUN_CLOCK_CHART extends Component {
                     let _sign = currentItem.fun_law.sign.split(',')
                     if (_sign[1]) {
                         var y = _y;
-                        if (this.state.expand) y = _GET_Y_EXPAND('eva');
+                        if (expand) y = _GET_Y_EXPAND('eva');
                         _marks = _ADD_MARK(_marks,
                             {
-                                x: dateParser_dateDiff(_sign[1], this._GET_CLOCKS_STATE(3).date_start),
+                                x: dateParser_dateDiff(_sign[1], _GET_CLOCKS_STATE(3).date_start),
                                 y: y,
                                 size: 1,
                                 name: 'RADICACION DE LA VALLA',
@@ -769,10 +761,10 @@ class FUN_CLOCK_CHART extends Component {
             for (var i = 0; i < _neighbours.length; i++) {
                 if (_neighbours[i].alerted) {
                     var y = _y;
-                    if (this.state.expand) y = _GET_Y_EXPAND('eva');
+                    if (expand) y = _GET_Y_EXPAND('eva');
                     _marks = _ADD_MARK(_marks,
                         {
-                            x: dateParser_dateDiff(_neighbours[i].alerted, this._GET_CLOCKS_STATE(3).date_start),
+                            x: dateParser_dateDiff(_neighbours[i].alerted, _GET_CLOCKS_STATE(3).date_start),
                             y: y,
                             size: 1,
                             name: 'VECINO NOTIFICADO: ' + _neighbours[i].direccion_1,
@@ -782,14 +774,14 @@ class FUN_CLOCK_CHART extends Component {
             }
 
             //  REPORTS & RECORDS
-            var _CLOCK = this._GET_CHILD_CLOCK();
+            var _CLOCK = _GET_CHILD_CLOCK();
             for (var i = 0; i < _CLOCK.length; i++) {
                 if ((_CLOCK[i].state > 10 && _CLOCK[i].state < 15)) {
                     var y = _y;
-                    if (this.state.expand) y = _GET_Y_EXPAND('eva');
+                    if (expand) y = _GET_Y_EXPAND('eva');
                     _ADD_MARK(_marks,
                         {
-                            x: dateParser_dateDiff(_CLOCK[i].date_start, this._GET_CLOCKS_STATE(3).date_start),
+                            x: dateParser_dateDiff(_CLOCK[i].date_start, _GET_CLOCKS_STATE(3).date_start),
                             y: y,
                             size: 1,
                             name: _CLOCK[i].name,
@@ -801,14 +793,14 @@ class FUN_CLOCK_CHART extends Component {
 
             let rr_states = [30, 31, 49]; // RECORD REVIEW STATES
             for (var i = 0; i < rr_states.length; i++) {
-                if (this._GET_CLOCKS_STATE(rr_states[i])) {
+                if (_GET_CLOCKS_STATE(rr_states[i])) {
                     {
                         var y = _y;
-                        if (this.state.expand) y = _GET_Y_EXPAND('eva');
-                        let _clock = this._GET_CLOCKS_STATE(rr_states[i])
+                        if (expand) y = _GET_Y_EXPAND('eva');
+                        let _clock = _GET_CLOCKS_STATE(rr_states[i])
                         _ADD_MARK(_marks,
                             {
-                                x: dateParser_dateDiff(_clock.date_start, this._GET_CLOCKS_STATE(3).date_start),
+                                x: dateParser_dateDiff(_clock.date_start, _GET_CLOCKS_STATE(3).date_start),
                                 y: y,
                                 size: 1,
                                 name: _clock.name,
@@ -821,14 +813,14 @@ class FUN_CLOCK_CHART extends Component {
 
             rr_states = [70, 71, 72, 73, 74, 75, 80, 99]; // RECORD REVIEW STATES
             for (var i = 0; i < rr_states.length; i++) {
-                if (this._GET_CLOCKS_STATE(rr_states[i])) {
+                if (_GET_CLOCKS_STATE(rr_states[i])) {
                     {
                         var y = _y;
-                        if (this.state.expand) y = _GET_Y_EXPAND('exp');
-                        let _clock = this._GET_CLOCKS_STATE(rr_states[i])
+                        if (expand) y = _GET_Y_EXPAND('exp');
+                        let _clock = _GET_CLOCKS_STATE(rr_states[i])
                         _ADD_MARK(_marks,
                             {
-                                x: dateParser_dateDiff(_clock.date_start, this._GET_CLOCKS_STATE(3).date_start),
+                                x: dateParser_dateDiff(_clock.date_start, _GET_CLOCKS_STATE(3).date_start),
                                 y: y,
                                 size: 1,
                                 name: _clock.name,
@@ -846,13 +838,13 @@ class FUN_CLOCK_CHART extends Component {
             //  RECORD REVIEW PROCESS NOTIFICATION
             let rr_states = [32, 33, 34, 35, 41, 42, 43]; // RECORD REVIEW STATES
             for (var i = 0; i < rr_states.length; i++) {
-                if (this._GET_CLOCKS_STATE(rr_states[i])) {
+                if (_GET_CLOCKS_STATE(rr_states[i])) {
                     var y = _y;
-                    if (this.state.expand) y = _GET_Y_EXPAND('cor');
-                    let _clock = this._GET_CLOCKS_STATE(rr_states[i])
+                    if (expand) y = _GET_Y_EXPAND('cor');
+                    let _clock = _GET_CLOCKS_STATE(rr_states[i])
                     _ADD_MARK(_marks,
                         {
-                            x: dateParser_dateDiff(_clock.date_start, this._GET_CLOCKS_STATE(3).date_start),
+                            x: dateParser_dateDiff(_clock.date_start, _GET_CLOCKS_STATE(3).date_start),
                             y: y,
                             size: 1,
                             name: _clock.name,
@@ -863,13 +855,13 @@ class FUN_CLOCK_CHART extends Component {
 
             rr_states = [61, 62, 63, 64, 65]; // RECORD REVIEW STATES
             for (var i = 0; i < rr_states.length; i++) {
-                if (this._GET_CLOCKS_STATE(rr_states[i])) {
+                if (_GET_CLOCKS_STATE(rr_states[i])) {
                     var y = _y;
-                    if (this.state.expand) y = _GET_Y_EXPAND('pay');
-                    let _clock = this._GET_CLOCKS_STATE(rr_states[i])
+                    if (expand) y = _GET_Y_EXPAND('pay');
+                    let _clock = _GET_CLOCKS_STATE(rr_states[i])
                     _ADD_MARK(_marks,
                         {
-                            x: dateParser_dateDiff(_clock.date_start, this._GET_CLOCKS_STATE(3).date_start),
+                            x: dateParser_dateDiff(_clock.date_start, _GET_CLOCKS_STATE(3).date_start),
                             y: y,
                             size: 1,
                             name: _clock.name,
@@ -892,8 +884,8 @@ class FUN_CLOCK_CHART extends Component {
                 for (var i = 0; i < history.length; i++) {
                     var y = _y;
                     var type = { '-1': 'de1', '-3': 'de3', '-4': 'de4' }
-                    if (this.state.expand) y = _GET_Y_EXPAND(type[_version]);
-                    if (GET_TIME_CLOCK(history[i], _version)) _marks = _ADD_MARK(_marks, { x: GET_TIME_CLOCK(history[i], _version), y: y, size: 1, name: this._GET_CLOCK_STATE_VERSION(history[i], _version).name, date: this._GET_CLOCK_STATE_VERSION(history[i], _version).date_start })
+                    if (expand) y = _GET_Y_EXPAND(type[_version]);
+                    if (GET_TIME_CLOCK(history[i], _version)) _marks = _ADD_MARK(_marks, { x: GET_TIME_CLOCK(history[i], _version), y: y, size: 1, name: _GET_CLOCK_STATE_VERSION(history[i], _version).name, date: _GET_CLOCK_STATE_VERSION(history[i], _version).date_start })
                 }
             })
 
@@ -958,8 +950,8 @@ class FUN_CLOCK_CHART extends Component {
                 if (data.length) return <HorizontalRectSeries
                     data={data}
                     color={start !== false && end !== false ? value.color : 'rgba(176, 176, 176, 0.75)'}
-                    onValueMouseOver={d => { this.setState({ hovered: d }) }}
-                    onValueMouseOut={d => this.setState({ hovered: false })}
+                    onValueMouseOver={d => { setHovered(d) }}
+                    onValueMouseOut={d => setHovered(false)}
                 />
             })
         }
@@ -977,7 +969,7 @@ class FUN_CLOCK_CHART extends Component {
                             <div class="input-group-prepend">
                                 <div class="input-group-text">
                                     <input type="checkbox" class="form-check-input my-1"
-                                        onChange={() => this.setState({ expand: !this.state.expand })} />
+                                        onChange={() => setExpand(!expand)} />
                                 </div>
                             </div>
                             <div class="input-group-append">
@@ -1032,7 +1024,7 @@ class FUN_CLOCK_CHART extends Component {
                         <div className="chart-clock">
                             <XYPlot width={2000} height={290} margin={{ bottom: 90, left: 100 }}
                                 yPadding={20} xDomain={[0, 200]} yDomain={[0, 7]}
-                                onMouseLeave={() => this.setState({ crosshairValues: [] })}
+                                onMouseLeave={() => setCrosshairValues([])}
 
                             >
                                 <VerticalGridLines
@@ -1088,7 +1080,6 @@ class FUN_CLOCK_CHART extends Component {
                                  * 
                                  */}
 
-
                                 <Crosshair values={[{ x: _today, y: 1 }]} style={{ line: { color: 'purple', width: '1px' } }}>
                                     <div className="text-white p-1" style={{ background: 'rgba(0,0,0,0.75)', width: '200px' }}>
                                         <div className="row">
@@ -1102,7 +1093,7 @@ class FUN_CLOCK_CHART extends Component {
                                     <Crosshair values={[{ x: GET_TIME_CLOCK(5, 1), y: 1 }]} style={{ line: { color: 'purple', width: '1px' } }}>
                                         <div className="text-white p-1" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', marginTop: '51px' }}>
                                             <div className="row">
-                                                <label className="fw-bold">LyDF: {this._GET_CLOCKS_STATE(5).date_start}</label>
+                                                <label className="fw-bold">LyDF: {_GET_CLOCKS_STATE(5).date_start}</label>
                                             </div>
                                         </div>
                                     </Crosshair>
@@ -1112,7 +1103,7 @@ class FUN_CLOCK_CHART extends Component {
                                     <Crosshair values={[{ x: GET_TIME_CLOCK(31, 1), y: 1 }]} style={{ line: { color: 'purple', width: '1px' } }}>
                                         <div className="text-white p-1" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', marginTop: '78px' }}>
                                             <div className="row">
-                                                <label className="fw-bold">Not. Acta:  {this._GET_CLOCKS_STATE(31).date_start}</label>
+                                                <label className="fw-bold">Not. Acta:  {_GET_CLOCKS_STATE(31).date_start}</label>
                                             </div>
                                         </div>
                                     </Crosshair>
@@ -1122,38 +1113,36 @@ class FUN_CLOCK_CHART extends Component {
                                     <Crosshair values={[{ x: GET_TIME_CLOCK(49, 1), y: 1 }]} style={{ line: { color: 'purple', width: '1px' } }}>
                                         <div className="text-white p-1" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', marginTop: '105px' }}>
                                             <div className="row">
-                                                <label className="fw-bold">Viavilidad:  {this._GET_CLOCKS_STATE(49).date_start}</label>
+                                                <label className="fw-bold">Viavilidad:  {_GET_CLOCKS_STATE(49).date_start}</label>
                                             </div>
                                         </div>
                                     </Crosshair>
                                     : null}
 
-
-                                {this.state.hovered ?
-                                    <Hint value={this.state.hovered}>
-                                        {this.state.hovered.type != 'dest'
+                                {hovered ?
+                                    <Hint value={hovered}>
+                                        {hovered.type != 'dest'
                                             ? <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', marginTop: '0%', width: '200px', fontSize: 'small' }}>
-                                                {_GET_HINT_BODY(this.state.hovered ?? "")}
+                                                {_GET_HINT_BODY(hovered ?? "")}
                                             </div>
                                             : <div />}
                                     </Hint>
                                     : null}
 
-                                {this.state.hoveredCell ? (
-                                    <Hint value={this.state.hoveredCell}>
+                                {hoveredCell ? (
+                                    <Hint value={hoveredCell}>
                                         <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', fontSize: 'small' }}>
                                             <div className="row">
-                                                {(this.state.hoveredCell.name).split('\n').map(function (name, index) {
+                                                {(hoveredCell.name).split('\n').map(function (name, index) {
                                                     return <div className="row"><label>{'>'} {name}</label></div>
                                                 })}
                                             </div>
                                             <div className="row">
-                                                <label>{dateParser(this.state.hoveredCell.date)}</label>
+                                                <label>{dateParser(hoveredCell.date)}</label>
                                             </div>
                                         </div>
                                     </Hint>
                                 ) : null}
-
 
                             </XYPlot>
                         </div>
@@ -1176,7 +1165,6 @@ class FUN_CLOCK_CHART extends Component {
 
             </div >
         );
-    }
 }
 
 export default FUN_CLOCK_CHART;

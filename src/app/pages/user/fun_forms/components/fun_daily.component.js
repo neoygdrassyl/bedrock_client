@@ -6,6 +6,7 @@ import { MDBBtn, MDBPopover, MDBPopoverBody } from '../../../../components/ui';
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isOA_3, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST, _SET_PRIORITY, formsParser1 } from '../../../../components/customClasses/typeParse';
 import FUN_CHART_MACRO_GRANTT from './charts_components.js/chart_macroGant.component';
 import { nomens } from '../../../../components/jsons/vars';
+import ChartErrorBoundary from '../../../../components/ChartErrorBoundary';
 
 // Helper to create a fresh default data structure (avoids mutation issues)
 function createDefaultData() {
@@ -164,7 +165,7 @@ export default function FUN_DAILY_COMPONENT(props) {
     }
 
     function _con_check(row, scope, lastVR, docsInerest) {
-        if (row.vrdocs.length == 0) return -1;
+        if (!row.vrdocs || row.vrdocs.length == 0) return -1;
         let review_primal;
         let asgin_primal;
         let review_d_primal;
@@ -597,7 +598,7 @@ export default function FUN_DAILY_COMPONENT(props) {
 
                 let lastVR = { date: row.clock_payment || row.clock_date, codes: [], type: 0 };
 
-                row.vrdocs.map(doc => {
+                (row.vrdocs || []).map(doc => {
                     if (moment(doc.date).isSameOrAfter(lastVR.date)) lastVR = doc;
                 })
 
@@ -1431,19 +1432,21 @@ export default function FUN_DAILY_COMPONENT(props) {
 
         return <>
             <div className='row'>
-                <FUN_CHART_MACRO_GRANTT
-                    translation={translation} swaMsg={swaMsg} globals={globals}
-                    items={datac.gen.filter(item => _filter(item))}
-                    _UPDATE_FILTERS={(v) => {
-                        setFilter(v.join(','));
-                        document.getElementById('ti-search').value = v.join(',')
-                    }}
-                    _UPDATE_FILTERS_IDPUBIC={(v) => {
-                        setFilter(v.join(','));
-                        document.getElementById('ti-search').value = v.join(',')
-                    }}
-                    margin={{ bottom: 45, left: 400 }}
-                />
+                <ChartErrorBoundary fallbackMessage="No se pudo renderizar la gráfica de tiempo de solicitudes.">
+                    <FUN_CHART_MACRO_GRANTT
+                        translation={translation} swaMsg={swaMsg} globals={globals}
+                        items={datac.gen.filter(item => _filter(item))}
+                        _UPDATE_FILTERS={(v) => {
+                            setFilter(v.join(','));
+                            document.getElementById('ti-search').value = v.join(',')
+                        }}
+                        _UPDATE_FILTERS_IDPUBIC={(v) => {
+                            setFilter(v.join(','));
+                            document.getElementById('ti-search').value = v.join(',')
+                        }}
+                        margin={{ bottom: 45, left: 400 }}
+                    />
+                </ChartErrorBoundary>
             </div>
         </>
     }

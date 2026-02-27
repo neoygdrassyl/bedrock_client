@@ -1,5 +1,5 @@
 import { MDBBtn } from '../../../../components/ui';
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
@@ -8,27 +8,17 @@ import USERS_Service from '../../../../services/users.service';
 
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
-class FUN_CLOCKS_EMAILS extends Component {
-    constructor(props) {
-        super(props);
+function FUN_CLOCKS_EMAILS(props) {
+    const [users_list, setUsers_list] = useState([]);
+    const [attachsForEmails, setAttachsForEmails] = useState(0);
+    const [load, setLoad] = useState(false);
 
-        this.state = {
-            users_list: [],
-            attachsForEmails: 0,
-            load: false,
-        };
-    }
-    componentDidMount() {
-        this.retrieveuUsers();
-    }
-    retrieveuUsers() {
+    const retrieveuUsers = () => {
         USERS_Service.getAll()
             .then(response => {
-                this.setState({
-                    users_list: response.data,
-                    load: true
-                })
-                this._GET_EMAIL_BODY(this.props.email_types[0]);
+                setUsers_list(response.data);
+                setLoad(true);
+                _GET_EMAIL_BODY(props.email_types[0]);
             })
             .catch(e => {
                 console.log(e);
@@ -36,31 +26,33 @@ class FUN_CLOCKS_EMAILS extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: props.swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
     }
 
-    minusAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails - 1 })
+    useEffect(() => {
+        retrieveuUsers();
+    }, []);
+
+    const minusAttachEmail = () => {
+        setAttachsForEmails(attachsForEmails - 1);
     }
-    addAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails + 1 })
+    const addAttachEmail = () => {
+        setAttachsForEmails(attachsForEmails + 1);
     }
 
-    _GET_USER = (_id) => {
-        let _users = this.state.users_list;
+    const _GET_USER = (_id) => {
+        let _users = users_list;
         for (var i = 0; i < _users.length; i++) {
             if (_users[i].id == _id) return _users[i]
         }
         return false;
     }
-    _GET_SOLICITOR = () => {
-        var _CHILD = this.props.currentItem.fun_53s;
-        var _CURRENT_VERSION = this.props.currentItem.version - 1;
+    const _GET_SOLICITOR = () => {
+        var _CHILD = props.currentItem.fun_53s;
+        var _CURRENT_VERSION = props.currentItem.version - 1;
         var _CHILD_VARS = {
             item_530: "",
             item_5311: "",
@@ -89,9 +81,9 @@ class FUN_CLOCKS_EMAILS extends Component {
     }
 
 
-    _GET_EMAIL_BODY = (_body) => {
+    const _GET_EMAIL_BODY = (_body) => {
         let _email_body = "";
-        let CURRENT_ITEM = this.props.currentItem;
+        let CURRENT_ITEM = props.currentItem;
 
 
 
@@ -190,9 +182,7 @@ class FUN_CLOCKS_EMAILS extends Component {
 
         document.getElementById('fun_email_2').value = _email_body;
     }
-    render() {
-        const { translation, swaMsg, globals, currentItem, attachs } = this.props;
-        const { load, attachsForEmails } = this.state;
+        const { translation, swaMsg, globals, currentItem, attachs } = props;
 
         // DATA GETTERS 4
         let _GET_CHILD_53 = () => {
@@ -239,7 +229,7 @@ class FUN_CLOCKS_EMAILS extends Component {
         // DATA CONVERTERS
         let _GET_EMAIL_TYPES = () => {
             let _COMPONENT = [];
-            let email_types = this.props.email_types;
+            let email_types = props.email_types;
             for (var i = 0; i < email_types.length; i++) {
                 if (email_types[i] == 3) _COMPONENT.push(<option value="3">RECORDATORIO INICIAL</option>)
                 if (email_types[i] == 4) _COMPONENT.push(<option value="4">RECORDATORIO RATIFICACIÓN</option>)
@@ -299,7 +289,7 @@ class FUN_CLOCKS_EMAILS extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-envelope"></i>
                             </span>
-                            <select class="form-control" id="fun_email_3" onChange={(e) => this._GET_EMAIL_BODY(e.target.value)}>
+                            <select class="form-control" id="fun_email_3" onChange={(e) => _GET_EMAIL_BODY(e.target.value)}>
                                 {_GET_EMAIL_TYPES()}
                             </select>
                         </div>
@@ -397,9 +387,9 @@ class FUN_CLOCKS_EMAILS extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        if (!_clock) this.props.processCheck(_state);
-                        this.props.refreshCurrentItem(currentItem.id);
-                        this.setState({ attachsForEmails: 0 })
+                        if (!_clock) props.processCheck(_state);
+                        props.refreshCurrentItem(currentItem.id);
+                        setAttachsForEmails(0);
                     }
                     else {
                         MySwal.fire({
@@ -446,7 +436,6 @@ class FUN_CLOCKS_EMAILS extends Component {
 
             </div>
         );
-    }
 }
 
 export default FUN_CLOCKS_EMAILS;

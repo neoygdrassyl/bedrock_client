@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -7,45 +7,30 @@ import { infoCud } from '../../../../components/jsons/vars';
 
 
 const MySwal = withReactContent(Swal);
-class PQRS_SET_REPLY extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
-        PQRS_Service.get(id)
-            .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-            })
-            .catch(e => {
-                console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-                this.setState({
-                    load: false
-                })
-            });
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
+function PQRS_SET_REPLY({ translation, swaMsg, globals, hardReset, currentItem, currentId, refreshList, retrieveItem: parentRetrieveItem, closeModal }) {
+    const [currentItemData, setCurrentItemData] = useState(null);
+    const [load, setLoad] = useState(false);
 
-    render() {
-        const { translation, swaMsg, globals, hardReset, currentItem } = this.props;
-        const { } = this.state;
+    useEffect(() => {
+        const fetchItem = (id) => {
+            PQRS_Service.get(id)
+                .then(response => {
+                    setCurrentItemData(response.data);
+                    setLoad(true);
+                })
+                .catch(e => {
+                    console.log(e);
+                    MySwal.fire({
+                        title: "ERROR AL CARGAR",
+                        text: "No ha sido posible cargar este item, intentelo nuevamente.",
+                        icon: 'error',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
+                    setLoad(false);
+                });
+        };
+        fetchItem(currentId);
+    }, []);
         var formData = new FormData();
 
         // SUBMIT  NEW 1. ENTRY
@@ -89,10 +74,10 @@ class PQRS_SET_REPLY extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.retrieveItem(currentItem.id);
-                            this.props.refreshList();
-                            if (hardReset) {
-                                this.props.closeModal();
+parentRetrieveItem(currentItem.id);
+                        refreshList();
+                        if (hardReset) {
+                            closeModal();
                             }
 
                         } else if (response.data === 'ERROR_DUPLICATE') {
@@ -154,7 +139,7 @@ class PQRS_SET_REPLY extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -198,7 +183,6 @@ class PQRS_SET_REPLY extends Component {
                 </form>
             </div>
         );
-    }
 }
 
 export default PQRS_SET_REPLY;

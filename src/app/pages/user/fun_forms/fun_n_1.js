@@ -1,32 +1,23 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn } from '../../../components/ui';
 
 const MySwal = withReactContent(Swal);
-class FUNN1 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            dis_m_urb: true,
-            dis_m_sub: true,
-            dis_m_lic: true,
-        };
-    }
+const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
+    const [dis_m_urb, setDisMUrb] = useState(true);
+    const [dis_m_sub, setDisMSub] = useState(true);
+    const [dis_m_lic, setDisMLic] = useState(true);
 
-    componentDidMount() {
-        let _CHILD = this.props.currentItem.fun_1s ? this.props.currentItem.fun_1s[0] : {};
+    useEffect(() => {
+        let _CHILD = currentItem.fun_1s ? currentItem.fun_1s[0] : {};
         if (_CHILD && _CHILD.tipo) {
-            if (_CHILD.tipo.includes('A')) this.setState({ dis_m_urb: false });
-            if (_CHILD.tipo.includes('C')) this.setState({ dis_m_sub: false });
-            if (_CHILD.tipo.includes('D')) this.setState({ dis_m_lic: false });
+            if (_CHILD.tipo.includes('A')) setDisMUrb(false);
+            if (_CHILD.tipo.includes('C')) setDisMSub(false);
+            if (_CHILD.tipo.includes('D')) setDisMLic(false);
         }
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+    }, []);
 
         var formData = new FormData();
 
@@ -78,7 +69,7 @@ class FUNN1 extends Component {
                 <label>1.1 Tipo de Solicitud</label>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="A" name="f_11"
-                        defaultChecked={_CHILD_VARS.item_1.includes('A') ? true : false} onChange={e => this.setState({ dis_m_urb: !e.target.checked })} />
+                        defaultChecked={_CHILD_VARS.item_1.includes('A') ? true : false} onChange={e => setDisMUrb(!e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         A. Licencia de Urbanización
                     </label>
@@ -92,14 +83,14 @@ class FUNN1 extends Component {
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="C" name="f_11"
-                        defaultChecked={_CHILD_VARS.item_1.includes('C') ? true : false} onChange={e => this.setState({ dis_m_sub: !e.target.checked })} />
+                        defaultChecked={_CHILD_VARS.item_1.includes('C') ? true : false} onChange={e => setDisMSub(!e.target.checked)} />
                     <label class="form-check-label" for="flexCheckChecked">
                         C. Licencia de Subdivisión
                     </label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="D" name="f_11"
-                        defaultChecked={_CHILD_VARS.item_1.includes('D') ? true : false} onChange={e => this.setState({ dis_m_lic: !e.target.checked })} />
+                        defaultChecked={_CHILD_VARS.item_1.includes('D') ? true : false} onChange={e => setDisMLic(!e.target.checked)} />
                     <label class="form-check-label" for="flexCheckChecked">
                         D. Licencia de Construcción
                     </label>
@@ -177,7 +168,7 @@ class FUNN1 extends Component {
         }
         let _CHILD_13 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let disabled = this.state.dis_m_urb;
+            let disabled = dis_m_urb;
 
             return <td>
                 <label>1.3 Modalidad Licencia de Urbanización</label>
@@ -206,7 +197,7 @@ class FUNN1 extends Component {
         }
         let _CHILD_14 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let disabled =  this.state.dis_m_sub;
+            let disabled =  dis_m_sub;
 
             return <td>
                 <label>1.4 Modalidad Licencia de Subdivisión</label>
@@ -235,7 +226,7 @@ class FUNN1 extends Component {
         }
         let _CHILD_15 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let disabled =  this.state.dis_m_lic;
+            let disabled =  dis_m_lic;
 
             return <td>
                 <label>1.5 Modalidad Licencia de Construcción</label>
@@ -753,7 +744,7 @@ class FUNN1 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -783,7 +774,7 @@ class FUNN1 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else {
                             if (response.status == 500) {
                                 MySwal.close();
@@ -857,7 +848,6 @@ class FUNN1 extends Component {
                 </div>
             </fieldset>
         </>);
-    }
-}
+};
 
 export default FUNN1;

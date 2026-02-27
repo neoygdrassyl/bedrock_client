@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBBtn, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent, MDBBtnGroup, MDBTypography } from '../../../components/ui';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
@@ -47,97 +47,77 @@ const moment = require('moment');
 const momentB = require('moment-business-days');
 const MySwal = withReactContent(Swal);
 
-class PQRSADMIN extends Component {
-    constructor(props) {
-        super(props);
-        this.retrievePublish = this.retrievePublish.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshRequested = this.refreshRequested.bind(this);
-        this.refreshCurrentItem = this.refreshCurrentItem.bind(this);
-        this.setSubtmitRows = this.setSubtmitRows.bind(this);
-        this.retrievePending = this.retrievePending.bind(this);
-        this.state = {
-            error: null,
-            isLoaded: false,
-            isLoadedAsign: false,
-            isLoadedReply: false,
-            isloadedFormal: false,
-            isloadedSearch: false,
+function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums }) {
+    // State
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoadedAsign, setIsLoadedAsign] = useState(false);
+    const [isLoadedReply, setIsLoadedReply] = useState(false);
+    const [isloadedFormal, setIsloadedFormal] = useState(false);
+    const [isloadedSearch, setIsloadedSearch] = useState(false);
 
-            currentItem: null,
-            currentItemAsign: null,
-            currentIndex: -1,
+    const [currentItem, setCurrentItem] = useState(null);
+    const [currentItemAsign, setCurrentItemAsign] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(-1);
 
-            items: [],
-            itemsAsigned: [],
-            itemsReply: [],
-            itemsFormal: [],
-            itemsClose: [],
-            itemsGeneral: [],
-            itemsGeneral2: [],
-            itemsSearch: [],
+    const [items, setItems] = useState([]);
+    const [itemsAsigned, setItemsAsigned] = useState([]);
+    const [itemsReply, setItemsReply] = useState([]);
+    const [itemsFormal, setItemsFormal] = useState([]);
+    const [itemsClose, setItemsClose] = useState([]);
+    const [itemsGeneral, setItemsGeneral] = useState([]);
+    const [itemsGeneral2, setItemsGeneral2] = useState([]);
+    const [itemsSearch, setItemsSearch] = useState([]);
 
-            modalNew: false,
-            modalInfo: false,
-            modalAsign: false,
-            modalInformal: false,
-            modalReply: false,
-            modalLock: false,
-            modalEdit: false,
-            modal_macro: false,
-            modalManage: false,
-            modalEditable: false,
-            editMaster: false,
+    const [modalNew, setModalNew] = useState(false);
+    const [modalInfo, setModalInfo] = useState(false);
+    const [modalAsign, setModalAsign] = useState(false);
+    const [modalInformal, setModalInformal] = useState(false);
+    const [modalReply, setModalReply] = useState(false);
+    const [modalLock, setModalLock] = useState(false);
+    const [modalEdit, setModalEdit] = useState(false);
+    const [modal_macro, setModal_macro] = useState(false);
+    const [modalManage, setModalManage] = useState(false);
+    const [modalEditable, setModalEditable] = useState(false);
+    const [editMaster, setEditMaster] = useState(false);
 
-            submitItems: [],
-            fillActive: '1',
-            filterreply: false,
-            filterreply2: false,
+    const [submitItems, setSubmitItemsState] = useState([]);
+    const [fillActive, setFillActive] = useState('1');
+    const [filterreply, setFilterreply] = useState(false);
+    const [filterreply2, setFilterreply2] = useState(false);
 
-            pending: [],
-            pending_open: false,
-        };
-    }
-    componentDidMount() {
-        this.retrievePublish();
-        this.retrievePending();
-    }
-    retrievePublish() {
-        PQRS_Main.getAllPqrs()
-            .then(response => {
-                this.setState({
-                    itemsGeneral: response.data,
-                });
-                this.asignLists(response.data);
-                this.asignListsWorkers(response.data);
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
+    const [pending, setPending] = useState([]);
+    const [pending_open, setPending_open] = useState(false);
 
-    retrievePending() {
-        PQRS_Main.getAllPqrsPending()
-            .then(response => {
-                this.setState({
-                    pending: response.data,
-                });
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
+    // Additional state from setItem / setItemAsign / refreshCurrentItem / navigation
+    const [currentId, setCurrentId] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [currentIdPublic, setCurrentIdPublic] = useState(null);
+    const [currentIdGlobal, setCurrentIdGlobal] = useState(null);
+    const [currentStatus, setCurrentStatus] = useState(null);
+    const [currentVersion, setCurrentVersion] = useState(null);
+    const [date_start, setDate_start] = useState(null);
+    const [date_end, setDate_end] = useState(null);
+    // --- Methods ---
 
-    refreshList() {
-        this.retrievePending();
-        this.retrievePublish();
-        this.setState({
-            currentItem: null,
-            currentIndex: -1,
-        });
-    }
+    const asignListsLock = (_LIST) => {
+        let listNotReplyTo = [];
+        for (var i = 0; i < _LIST.length; i++) {
+            if (_LIST[i].pqrs_workers) {
+                for (var j = 0; j < _LIST[i].pqrs_workers.length; j++) {
+                    let worker = _LIST[i].pqrs_workers[j]
+                    if (worker.worker_id == window.user.id || (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2)) {
+                        listNotReplyTo.push(_LIST[i])
+                        break;
+                    }
+                }
+            }
+        }
+        setItemsFormal(listNotReplyTo);
+        setIsLoadedAsign(true);
+    };
 
-    asignLists(_LIST) {
+    const asignLists = (_LIST) => {
         let littNoAsigned = [];
         let listReply = [];
         let listFormal = [];
@@ -153,17 +133,14 @@ class PQRSADMIN extends Component {
             } else if (_LIST[i].status == 1) {
                 listClose.push(_LIST[i])
             }
-
         }
-        this.asignListsLock(listFormal)
-        this.setState({
-            items: littNoAsigned,
-            //itemsReply: listReply,
-            itemsClose: listClose,
-            isLoaded: true,
-        });
-    }
-    asignListsWorkers(_LIST) {
+        asignListsLock(listFormal);
+        setItems(littNoAsigned);
+        setItemsClose(listClose);
+        setIsLoaded(true);
+    };
+
+    const asignListsWorkers = (_LIST) => {
         let listNotReplyTo = [];
         for (var i = 0; i < _LIST.length; i++) {
             if (_LIST[i].pqrs_workers) {
@@ -179,254 +156,234 @@ class PQRSADMIN extends Component {
                 }
             }
         }
-        this.setState({
-            itemsAsigned: listNotReplyTo,
-            isLoadedAsign: true,
-        });
-    }
-    asignListsLock(_LIST) {
+        setItemsAsigned(listNotReplyTo);
+        setIsLoadedAsign(true);
+    };
 
-        //READ IN EACH ITEM, IF ANY OF THE WORKERS IS THE CURRENT USER ID
-        let listNotReplyTo = [];
-        for (var i = 0; i < _LIST.length; i++) {
-            if (_LIST[i].pqrs_workers) {
-                for (var j = 0; j < _LIST[i].pqrs_workers.length; j++) {
-                    let worker = _LIST[i].pqrs_workers[j]
-                    if (worker.worker_id == window.user.id || (window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2)) {
-                        listNotReplyTo.push(_LIST[i])
-                        break;
-                    }
-                }
-            }
-        }
-        this.setState({
-            itemsFormal: listNotReplyTo,
-            isLoadedAsign: true,
-        });
-    }
-    //  MODAL CONTROLS
-    toggle = () => {
-        this.setState({
-            modalNew: !this.state.modalNew,
-        });
-    }
-    getToggle = () => {
-        return this.state.modalNew;
-    }
-    toggleInfo = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalInfo: !this.state.modalInfo,
-            modal_macro: false,
-        });
-    }
-    getToggleInfo = () => {
-        return this.state.modalInfo;
-    }
-    toggleInfo2 = (item) => {
-        if (item) this.setItemAsign(item);
-        this.setState({
-            modalInfo: !this.state.modalInfo,
-            modal_macro: false,
-        });
-    }
-    toggleAsign = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalAsign: !this.state.modalAsign
-        });
-    }
-    getToggleAsign = () => {
-        return this.state.modalAsign;
-    }
-    toggleInformal = (item) => {
+    const retrievePublish = () => {
+        PQRS_Main.getAllPqrs()
+            .then(response => {
+                setItemsGeneral(response.data);
+                asignLists(response.data);
+                asignListsWorkers(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    };
+
+    const retrievePending = () => {
+        PQRS_Main.getAllPqrsPending()
+            .then(response => {
+                setPending(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    };
+
+    const refreshList = () => {
+        retrievePending();
+        retrievePublish();
+        setCurrentItem(null);
+        setCurrentIndex(-1);
+    };
+    // MODAL CONTROLS
+    const toggle = () => {
+        setModalNew(prev => !prev);
+    };
+    const getToggle = () => {
+        return modalNew;
+    };
+
+    const setItemState = (item) => {
+        setCurrentId(item.id);
+        setSelectedRow(item.id);
+        setCurrentIdPublic(item.id_publico);
+        setCurrentIdGlobal(item.id_global);
+        setCurrentStatus(item.status);
+    };
+
+    const setItemAsignState = (item) => {
+        setCurrentItemAsign(item.id);
+        setCurrentId(item.id_master);
+        setSelectedRow(item.id_master);
+        setCurrentIdPublic(item.id_public);
+        setCurrentIdGlobal(item.id_global);
+    };
+
+    const toggleInfo = (item) => {
+        if (item) setItemState(item);
+        setModalInfo(prev => !prev);
+        setModal_macro(false);
+    };
+    const getToggleInfo = () => {
+        return modalInfo;
+    };
+    const toggleInfo2 = (item) => {
+        if (item) setItemAsignState(item);
+        setModalInfo(prev => !prev);
+        setModal_macro(false);
+    };
+    const toggleAsign = (item) => {
+        if (item) setItemState(item);
+        setModalAsign(prev => !prev);
+    };
+    const getToggleAsign = () => {
+        return modalAsign;
+    };
+    const toggleInformal = (item) => {
         if (item) {
-            this.setItemAsign(item);
+            setItemAsignState(item);
         }
-        this.setState({
-            modalInformal: !this.state.modalInformal
-        });
-    }
-    getToggleInformal = () => {
-        return this.state.modalInformal;
-    }
-    toggleReply = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalReply: !this.state.modalReply
-        });
-    }
-    getToggleReply = () => {
-        return this.state.modalReply;
-    }
-    toggleLock = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalLock: !this.state.modalLock
-        });
-    }
-    getToggleLock = () => {
-        return this.state.modalLock;
-    }
-    toggleEdit = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalEdit: !this.state.modalEdit
-        });
-    }
-    getToggleEdit = () => {
-        return this.state.modalEdit;
-    }
-    getToggle_macro = () => {
-        return this.state.modal_macro;
-    }
-    toggle_macro = (item) => {
-        this.setState({
-            modal_macro: !this.state.modal_macro,
-        });
-        if (item) this.setItem(item);
-    }
-    toggleManage = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalManage: !this.state.modalManage
-        });
-    }
-    toggleEditable = (item) => {
-        if (item) this.setItem(item);
-        this.setState({
-            modalEditable: !this.state.modalEditable
-        });
-    }
-    funcion = () => {
-        var x = this.state.editMaster == true
-        return x
-    }
+        setModalInformal(prev => !prev);
+    };
+    const getToggleInformal = () => {
+        return modalInformal;
+    };
+    const toggleReply = (item) => {
+        if (item) setItemState(item);
+        setModalReply(prev => !prev);
+    };
+    const getToggleReply = () => {
+        return modalReply;
+    };
+    const toggleLock = (item) => {
+        if (item) setItemState(item);
+        setModalLock(prev => !prev);
+    };
+    const getToggleLock = () => {
+        return modalLock;
+    };
+    const toggleEdit = (item) => {
+        if (item) setItemState(item);
+        setModalEdit(prev => !prev);
+    };
+    const getToggleEdit = () => {
+        return modalEdit;
+    };
+    const getToggle_macro = () => {
+        return modal_macro;
+    };
+    const toggle_macro = (item) => {
+        setModal_macro(prev => !prev);
+        if (item) setItemState(item);
+    };
+    const toggleManage = (item) => {
+        if (item) setItemState(item);
+        setModalManage(prev => !prev);
+    };
+    const toggleEditable = (item) => {
+        if (item) setItemState(item);
+        setModalEditable(prev => !prev);
+    };
+    const funcion = () => {
+        var x = editMaster == true;
+        return x;
+    };
     // END MODAL CONTROLS
-    setItem(item) {
-        this.setState({
-            currentId: item.id,
-            selectedRow: item.id,
-            currentIdPublic: item.id_publico,
-            currentIdGlobal: item.id_global,
-            currentStatus: item.status,
-        });
-    }
-    setItemAsign(item) {
-        this.setState({
-            currentItemAsign: item.id,
-            currentId: item.id_master,
-            selectedRow: item.id_master,
-            currentIdPublic: item.id_public,
-            currentIdGlobal: item.id_global,
-        });
-    }
-    getFinalDate(item) {
+    const getFinalDate = (item) => {
         if (!item) return ""
         let startDate = item.legal
         let time = item.time;
         let endate = momentB(startDate, 'YYYY-MM-DD').businessAdd(time)._d;
         let parseDate = dateParser(endate)
         return parseDate;
-    }
-    navigation = (item, TO, FROM) => {
+    };
+
+    const navigation = (item, TO, FROM) => {
 
         switch (FROM) {
             case "general":
-                this.toggleInfo(false)
-                this.setState({ editMaster: false })
+                toggleInfo(false);
+                setEditMaster(false);
                 break;
             case "edit":
-                this.toggleEdit(false)
+                toggleEdit(false);
                 break;
             case "start":
-                this.toggleAsign(false)
+                toggleAsign(false);
                 break;
             case "formal":
-                this.toggleReply(false)
+                toggleReply(false);
                 break;
             case "informal":
-                this.toggleInformal(false)
+                toggleInformal(false);
                 break;
             case "lock":
-                this.toggleLock(false)
+                toggleLock(false);
                 break;
             case "macro":
-                this.toggle_macro(false)
+                toggle_macro(false);
                 break;
             case "manage":
-                this.toggleManage(false)
-                this.setState({ editMaster: false })
+                toggleManage(false);
+                setEditMaster(false);
                 break;
             case "editable":
-                this.toggleEditable(false)
-                this.setState({ editMaster: false })
+                toggleEditable(false);
+                setEditMaster(false);
                 break;
 
         }
         switch (TO) {
             case "general":
-                this.toggleInfo(item)
+                toggleInfo(item);
                 break;
             case "edit":
-                this.toggleEdit(item)
+                toggleEdit(item);
                 break;
             case "start":
-                this.toggleAsign(item)
+                toggleAsign(item);
                 break;
             case "informal":
-                this.toggleInformal(item)
+                toggleInformal(item);
                 break;
             case "formal":
-                this.toggleReply(item)
+                toggleReply(item);
                 break;
             case "lock":
-                this.toggleLock(item)
+                toggleLock(item);
                 break;
             case "macro":
                 let base_date = moment(item.createdAt).format('YYYY-MM-DD');
-                this.setState({
-                    date_start: moment(base_date).subtract(6, 'months').format('YYYY-MM-DD'),
-                    date_end: moment(base_date).add(6, 'months').format('YYYY-MM-DD')
-                })
-                this.toggle_macro(item)
+                setDate_start(moment(base_date).subtract(6, 'months').format('YYYY-MM-DD'));
+                setDate_end(moment(base_date).add(6, 'months').format('YYYY-MM-DD'));
+                toggle_macro(item);
                 break;
             case "manage":
-                this.toggleManage(item)
+                toggleManage(item);
                 break;
             case "editable":
-                this.toggleEditable(item)
+                toggleEditable(item);
                 break;
         }
-    }
-    // THIS FUNCTIONS IS CALLED BY THE CHILDREN COMPONENT TO TELL THE APP TO CLOSE THE MODAL AND REFRESH THE LIST
-    // THIS FUNCTIONS RECIEVES THE NAME OF THE MODAL TO BE CLOSED
-    refreshRequested() {
-        this.setState({
-            modalNew: false,
-            modalAsign: false,
-            modalInformal: false,
-            modalReply: false,
-            modalLock: false
-        })
-        this.refreshList();
-    }
-    refreshCurrentItem(id) {
+    };
+    const refreshRequested = () => {
+        setModalNew(false);
+        setModalAsign(false);
+        setModalInformal(false);
+        setModalReply(false);
+        setModalLock(false);
+        refreshList();
+    };
+    const refreshCurrentItem = (id) => {
         PQRS_Main.get(id).then(response => {
-            let item = response.data
-            this.setState({
-                currentItem: item,
-                currentVersion: item.version
-            })
-            this.retrievePublish();
-        })
-    }
-    setSubtmitRows(items) {
-        this.setState({ submitItems: items })
-    }
-    render() {
-        const { translation, translation_form, swaMsg, globals, breadCrums } = this.props;
-        const { currentItem, isLoaded, items } = this.state;
+            let item = response.data;
+            setCurrentItem(item);
+            setCurrentVersion(item.version);
+            retrievePublish();
+        });
+    };
+    const setSubtmitRows = (rowItems) => {
+        setSubmitItemsState(rowItems);
+    };
+
+    // componentDidMount
+    useEffect(() => {
+        retrievePublish();
+        retrievePending();
+    }, []);
 
         // COMPONENTS
         let _REPLIES_COMPONENT = (item) => {
@@ -539,7 +496,7 @@ class PQRSADMIN extends Component {
 
         }
 
-        const PENDING_COMPONENT = () => (
+    const PENDING_COMPONENT = () => (
             <div className="col-lg-11 col-md-12">
                 <MDBTypography note noteColor="warning">
 
@@ -552,18 +509,18 @@ class PQRSADMIN extends Component {
                                 <MDBBtn
                                     color="info"
                                     size="sm"
-                                    onClick={() => this.setState({ pending_open: !this.state.pending_open })}
+                                    onClick={() => setPending_open(prev => !prev)}
                                     className="px-2"
                                 > <i class="fas fa-info-circle fa-2x"></i>
                                 </MDBBtn>
                             </MDBTooltip>
                         </div>
                     </div>
-                    {this.state.pending_open && (
+                    {pending_open && (
                         <div className="row">
                             <div className="col-10">
                                 <ul>
-                                    {this.state.pending.map((i) => <li>{i.id_pending}</li>)}
+                                    {pending.map((i) => <li>{i.id_pending}</li>)}
                                 </ul>
                             </div>
                         </div>
@@ -574,7 +531,7 @@ class PQRSADMIN extends Component {
         // -----------------
         const rowSelectedStyle = [
             {
-                when: row => row.id == this.state.selectedRow,
+                when: row => row.id == selectedRow,
                 style: {
                     backgroundColor: 'BlanchedAlmond',
                 },
@@ -657,12 +614,12 @@ class PQRSADMIN extends Component {
                 minWidth: '150px',
                 cell: row => <>
                     <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye"></i></button>
+                        <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i class="far fa-eye"></i></button>
                     </MDBTooltip>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ? <>
                             <MDBTooltip title='Gestionar peticion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                                <button className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => this.toggleManage(row)}><i class="fas fa-cog"></i></button>
+                                <button className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => toggleManage(row)}><i class="fas fa-cog"></i></button>
                             </MDBTooltip>
                         </> : ""}
                 </>,
@@ -723,13 +680,13 @@ class PQRSADMIN extends Component {
                 center: true,
                 cell: row => <>
                     <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye"></i></button>
+                        <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i class="far fa-eye"></i></button>
                     </MDBTooltip>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ?
                         <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItemId={row.id}
-                            refreshList={this.refreshList}
+                            refreshList={refreshList}
                         />
                         : ""}
 
@@ -778,7 +735,7 @@ class PQRSADMIN extends Component {
                 button: true,
                 minWidth: '150px',
                 cell: row => <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                    <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => this.toggleInfo(row)}><i class="far fa-eye "></i></button>
+                    <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i class="far fa-eye "></i></button>
 
                 </MDBTooltip>,
 
@@ -837,16 +794,16 @@ class PQRSADMIN extends Component {
         };
         //NAVIGATION
         const handleFillClick = (state) => {
-            if (state === this.state.fillActive) {
+            if (state === fillActive) {
                 return;
             }
-            this.setState({ fillActive: state });
+            setFillActive(state);
         };
         const handleFillClick2 = (state) => {
-            if (state === this.state.fillActive) {
+            if (state === fillActive) {
                 return;
             }
-            this.setState({ fillActive: state });
+            setFillActive(state);
         };
 
 
@@ -868,38 +825,34 @@ class PQRSADMIN extends Component {
                 });
                 PQRS_Main.search(formData)
                     .then(response => {
-                        //this.asignLists(response.data);
-                        // this.asignListsWorkers(response.data);
-                        this.setState({
-                            itemsSearch: response.data,
-                            isloadedSearch: true,
-                        });
+                        //asignLists(response.data);
+                        // asignListsWorkers(response.data);
+                        setItemsSearch(response.data);
+                        setIsloadedSearch(true);
                         MySwal.close();
                     })
                     .catch(e => {
                         console.log(e);
                     });
             } else {
-                this.refreshList();
-                this.setState({
-                    itemsSearch: [],
-                    isloadedSearch: false,
-                })
+                refreshList();
+                setItemsSearch([]);
+                setIsloadedSearch(false);
             }
         }
         let loadMacro = (event) => {
             event.preventDefault();
-            this.toggle_macro();
+            toggle_macro();
             let date_a = document.getElementById("load_macro_date_1").value;
             let date_b = document.getElementById("load_macro_date_2").value;
-            var date_start = date_a;
-            var date_end = date_b;
+            var date_start_val = date_a;
+            var date_end_val = date_b;
             if (moment(date_a).diff(date_b) >= 0) {
-                date_start = date_b;
-                date_end = date_a;
+                date_start_val = date_b;
+                date_end_val = date_a;
             }
-            this.setState({ date_start: date_start });
-            this.setState({ date_end: date_end })
+            setDate_start(date_start_val);
+            setDate_end(date_end_val)
         }
         return (
             <div className="Publish container">
@@ -917,7 +870,7 @@ class PQRSADMIN extends Component {
                 
                 <div className="row mb-4 d-flex justify-content-center">
 
-                    {this.state.pending.length > 0 ? PENDING_COMPONENT() : ''}
+                    {pending.length > 0 ? PENDING_COMPONENT() : ''}
 
                     <div className="col-lg-11 col-md-12">
                         <h1 className="text-center my-4">GESTIÓN DE PQRS Y SOLICITUDES</h1>
@@ -930,7 +883,7 @@ class PQRSADMIN extends Component {
                                         <MDBCardTitle className="text-center"> <h4>GENERAR PQRS</h4></MDBCardTitle>
                                         <p className="app-text-primary text-justify"> Permite la digitalización de una solicitud PQRS</p>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-success" onClick={() => this.toggle()}><i class="fas fa-folder-plus"></i> NUEVA SOLICITUD </button>
+                                            <button className="btn btn-lg btn-success" onClick={() => toggle()}><i class="fas fa-folder-plus"></i> NUEVA SOLICITUD </button>
                                         </div>
                                     </MDBCardBody>
                                 </MDBCard>
@@ -1000,7 +953,7 @@ class PQRSADMIN extends Component {
 
                     <div className="row d-flex justify-content-center">
                         <div className="col-11">
-                            {this.state.isloadedSearch ? (<>
+                            {isloadedSearch ? (<>
                                 <h2 class="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} class="" height="75px" alt="..." /></h2>
 
                                 <DataTable
@@ -1009,14 +962,14 @@ class PQRSADMIN extends Component {
                                     noDataComponent="No hay mensajes"
                                     striped="true"
                                     columns={columnsSearch}
-                                    data={this.state.itemsSearch}
+                                    data={itemsSearch}
                                     highlightOnHover
                                     pagination
                                     paginationPerPage={20}
                                     paginationRowsPerPageOptions={[20, 50, 100]}
                                     className="data-table-component"
                                     Header
-                                    onRowClicked={(e) => this.setState({ selectedRow: e.id })}
+                                    onRowClicked={(e) => setSelectedRow(e.id)}
                                     conditionalRowStyles={rowSelectedStyle}
                                 /></>
                             ) : ""}
@@ -1025,26 +978,26 @@ class PQRSADMIN extends Component {
 
                     <MDBTabs fill pills className='mb-3'>
                         <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('1')} active={this.state.fillActive === '1'}>
+                            <MDBTabsLink onClick={() => handleFillClick('1')} active={fillActive === '1'}>
                                 <label className="upper-case">PETICIONES ACTIVAS ({items.length})</label>
                             </MDBTabsLink>
                         </MDBTabsItem>
                         <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('10')} active={this.state.fillActive === '10'}>
-                                <label className="upper-case">ARCHIVO ({this.state.itemsClose.length})</label>
+                            <MDBTabsLink onClick={() => handleFillClick('10')} active={fillActive === '10'}>
+                                <label className="upper-case">ARCHIVO ({itemsClose.length})</label>
                             </MDBTabsLink>
                         </MDBTabsItem>
                     </MDBTabs>
 
 
                     <MDBTabsContent>
-                        <MDBTabsPane show={this.state.fillActive === '1'}>
+                        <MDBTabsPane show={fillActive === '1'}>
                             {isLoaded ? <>
                                 <div class="row">
                                     <div className='col ms-5 mb-3'>
                                         <MDBBtnGroup >
-                                            <MDBBtn outline={!this.state.filterreply} onClick={() => this.setState({ filterreply: !this.state.filterreply })} size='sm'>VER POR RESPONDER: {dataFilter(items, true, false).length}</MDBBtn>
-                                            <MDBBtn outline={!this.state.filterreply2} onClick={() => this.setState({ filterreply2: !this.state.filterreply2 })} size='sm'>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</MDBBtn>
+                                            <MDBBtn outline={!filterreply} onClick={() => setFilterreply(prev => !prev)} size='sm'>VER POR RESPONDER: {dataFilter(items, true, false).length}</MDBBtn>
+                                            <MDBBtn outline={!filterreply2} onClick={() => setFilterreply2(prev => !prev)} size='sm'>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</MDBBtn>
                                         </MDBBtnGroup>
                                     </div>
                                 </div>
@@ -1054,14 +1007,14 @@ class PQRSADMIN extends Component {
                                     noDataComponent="No hay mensajes"
                                     striped="true"
                                     columns={columns}
-                                    data={dataFilter(items, this.state.filterreply, this.state.filterreply2)}
+                                    data={dataFilter(items, filterreply, filterreply2)}
                                     highlightOnHover
                                     pagination
                                     paginationPerPage={20}
                                     paginationRowsPerPageOptions={[20, 50, 100]}
                                     className="data-table-component"
                                     Header
-                                    onRowClicked={(e) => this.setState({ selectedRow: e.id })}
+                                    onRowClicked={(e) => setSelectedRow(e.id)}
                                     conditionalRowStyles={rowSelectedStyle}
                                     dense
                                     defaultSortFieldId={1}
@@ -1072,7 +1025,7 @@ class PQRSADMIN extends Component {
                                     <h4>No hay información</h4>
                                 </div>}
                         </MDBTabsPane>
-                        <MDBTabsPane show={this.state.fillActive === '10'}>
+                        <MDBTabsPane show={fillActive === '10'}>
                             {isLoaded ? <>
                                 <DataTable
                                     title="Lista de peticiones archivadas"
@@ -1080,14 +1033,14 @@ class PQRSADMIN extends Component {
                                     noDataComponent="No hay mensajes"
                                     striped="true"
                                     columns={columnsArchive}
-                                    data={this.state.itemsClose}
+                                    data={itemsClose}
                                     highlightOnHover
                                     pagination
                                     paginationPerPage={20}
                                     paginationRowsPerPageOptions={[20, 50, 100]}
                                     className="data-table-component"
                                     Header
-                                    onRowClicked={(e) => this.setState({ selectedRow: e.id })}
+                                    onRowClicked={(e) => setSelectedRow(e.id)}
                                     conditionalRowStyles={rowSelectedStyle}
                                     dense
                                     defaultSortFieldId={1}
@@ -1104,14 +1057,14 @@ class PQRSADMIN extends Component {
 
 
                     <Modal contentLabel="GENERAR SOLCITUD PQRS"
-                        isOpen={this.state.modalNew}
+                        isOpen={modalNew}
                         style={customStyles}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
                             <h2>CREAR NUEVA PETICIÓN</h2>
 
-                            <div className='btn-close' color='none' onClick={() => this.toggle()}></div>
+                            <div className='btn-close' color='none' onClick={() => toggle()}></div>
                         </div>
                         <hr />
                         <PQRSNEW
@@ -1119,21 +1072,21 @@ class PQRSADMIN extends Component {
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            refreshRequested={this.refreshRequested} />
+                            refreshRequested={refreshRequested} />
                         <hr />
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            <button className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="INFORMACION PQRS"
-                        isOpen={this.state.modalInfo}
+                        isOpen={modalInfo}
                         style={customStyles}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>INFORMACION PQRS - {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleInfo()}></div>
+                            <h3>INFORMACION PQRS - {currentIdPublic}</h3>
+                            <div className='btn-close' color='none' onClick={() => toggleInfo()}></div>
                         </div>
                         <hr />
                         <PQRSINFO
@@ -1141,22 +1094,22 @@ class PQRSADMIN extends Component {
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            NAVIGATION={this.navigation} />
+                            currentId={currentId}
+                            NAVIGATION={navigation} />
                         <hr />
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleInfo()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            <button className="btn btn-lg btn-info" onClick={() => toggleInfo()}><i class="fas fa-times-circle"></i> CERRAR </button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="ASIGNAR PROFESIONALES PQRS"
-                        isOpen={this.state.modalAsign}
+                        isOpen={modalAsign}
                         style={customStyles}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>ASIGNAR PROFESIONALES -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleAsign()}></div>
+                            <h3>ASIGNAR PROFESIONALES -  {currentIdPublic}</h3>
+                            <div className='btn-close' color='none' onClick={() => toggleAsign()}></div>
                         </div>
                         <hr />
                         <PQRSASIGN
@@ -1164,23 +1117,23 @@ class PQRSADMIN extends Component {
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation} />
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation} />
                         <hr />
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleAsign()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            <button className="btn btn-lg btn-info" onClick={() => toggleAsign()}><i class="fas fa-times-circle"></i> CERRAR </button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="RESPUESTA PROFESIONAL PQRS"
-                        isOpen={this.state.modalInformal}
+                        isOpen={modalInformal}
                         style={customStyles}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>RESPUESTA PROFESIONAL -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleInformal()}></div>
+                            <h3>RESPUESTA PROFESIONAL -  {currentIdPublic}</h3>
+                            <div className='btn-close' color='none' onClick={() => toggleInformal()}></div>
                         </div>
                         <hr />
                         <PQRSINFORMAL
@@ -1188,25 +1141,25 @@ class PQRSADMIN extends Component {
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            currentItemAsign={this.state.currentItemAsign}
-                            NAVIGATION={this.navigation}
-                            closeModal={() => this.toggleInformal()} />
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            currentItemAsign={currentItemAsign}
+                            NAVIGATION={navigation}
+                            closeModal={() => toggleInformal()} />
                         <hr />
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleInformal()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            <button className="btn btn-lg btn-info" onClick={() => toggleInformal()}><i class="fas fa-times-circle"></i> CERRAR </button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="RESPONDER PETICION PQRS"
-                        isOpen={this.state.modalReply}
+                        isOpen={modalReply}
                         style={customStyles}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>RESPONDER A PETICIÓN -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleReply()}></div>
+                            <h3>RESPONDER A PETICIÓN -  {currentIdPublic}</h3>
+                            <div className='btn-close' color='none' onClick={() => toggleReply()}></div>
                         </div>
                         <hr />
                         <PQRSREPLY
@@ -1214,24 +1167,24 @@ class PQRSADMIN extends Component {
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation}
-                            closeModal={() => this.toggleReply()} />
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation}
+                            closeModal={() => toggleReply()} />
                         <hr />
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleReply()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            <button className="btn btn-lg btn-info" onClick={() => toggleReply()}><i class="fas fa-times-circle"></i> CERRAR </button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="CERRAR PQRS"
-                        isOpen={this.state.modalLock}
+                        isOpen={modalLock}
                         style={customStyles}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>CERRAR PETICIÓN -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleLock()}></div>
+                            <h3>CERRAR PETICIÓN -  {currentIdPublic}</h3>
+                            <div className='btn-close' color='none' onClick={() => toggleLock()}></div>
                         </div>
                         <hr />
                         <PQRSLOCK
@@ -1239,23 +1192,23 @@ class PQRSADMIN extends Component {
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation} />
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation} />
                         <hr />
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleLock()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            <button className="btn btn-lg btn-info" onClick={() => toggleLock()}><i class="fas fa-times-circle"></i> CERRAR </button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="EDIT PQRS"
-                        isOpen={this.state.modalEdit}
+                        isOpen={modalEdit}
                         style={customStyles}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>MODIFICAR PETICIÓN -  {this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleEdit()}></div>
+                            <h3>MODIFICAR PETICIÓN -  {currentIdPublic}</h3>
+                            <div className='btn-close' color='none' onClick={() => toggleEdit()}></div>
                         </div>
                         <hr />
                         <PQRS_EDIT
@@ -1263,93 +1216,93 @@ class PQRSADMIN extends Component {
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation} />
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation} />
                         <hr />
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleEdit()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            <button className="btn btn-lg btn-info" onClick={() => toggleEdit()}><i class="fas fa-times-circle"></i> CERRAR </button>
                         </div>
                     </Modal>
                     <Modal contentLabel="MANAGE PQRS"
-                        isOpen={this.state.modalManage}
+                        isOpen={modalManage}
                         style={customStyles}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>GESTIONAR PETICIÓN -  {this.state.currentIdGlobal || this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleManage()}></div>
+                            <h3>GESTIONAR PETICIÓN -  {currentIdGlobal || currentIdPublic}</h3>
+                            <div className='btn-close' color='none' onClick={() => toggleManage()}></div>
                         </div>
                         <hr />
                         <PQRS_MANAGE_COMPONENT
                             translation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
-                            currentId={this.state.currentId}
-                            refreshList={this.refreshList}
-                            NAVIGATION={this.navigation}
-                            closeModal={this.toggleManage}
+                            currentId={currentId}
+                            refreshList={refreshList}
+                            NAVIGATION={navigation}
+                            closeModal={toggleManage}
                             translation_form={translation_form}
-                            retrievePublish={this.retrievePublish}
+                            retrievePublish={retrievePublish}
                         />
 
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleManage()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i class="fas fa-times-circle"></i> CERRAR </button>
                         </div>
                     </Modal>
                     <Modal contentLabel="EDIT PQRS"
-                        isOpen={this.state.modalEditable}
+                        isOpen={modalEditable}
                         style={customStyles}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <h3>EDITAR PETICIÓN -  {this.state.currentIdGlobal || this.state.currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => this.toggleEditable()}></div>
+                            <h3>EDITAR PETICIÓN -  {currentIdGlobal || currentIdPublic}</h3>
+                            <div className='btn-close' color='none' onClick={() => toggleEditable()}></div>
                         </div>
                         <hr />
-                        {this.state.editMaster == true ?
+                        {editMaster == true ?
                             <PQRS_MANAGE_COMPONENT
                                 translation={translation}
                                 swaMsg={swaMsg}
                                 globals={globals}
-                                currentId={this.state.currentId}
-                                refreshList={this.refreshList}
-                                NAVIGATION={this.navigation}
-                                closeModal={this.toggleEditable}
+                                currentId={currentId}
+                                refreshList={refreshList}
+                                NAVIGATION={navigation}
+                                closeModal={toggleEditable}
                                 translation_form={translation_form}
-                                retrievePublish={this.retrievePublish}
+                                retrievePublish={retrievePublish}
                             /> :
                             <ACESS_EDIT
                                 swaMsg={swaMsg}
-                                editMaster1={() => this.setState({ editMaster: !this.state.editMaster })}
-                                NAVIGATION={this.navigation}
+                                editMaster1={() => setEditMaster(prev => !prev)}
+                                NAVIGATION={navigation}
                                 translation={translation}
-                                currentId={this.state.currentId}
+                                currentId={currentId}
                             />
                         }
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => this.toggleEditable()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                            <button className="btn btn-lg btn-info" onClick={() => toggleEditable()}><i class="fas fa-times-circle"></i> CERRAR </button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="MACRO TABLE"
-                        isOpen={this.state.modal_macro}
+                        isOpen={modal_macro}
                         style={customStylesForModalMacro}
                         ariaHideApp={false}
                     >
                         <div className="my-4 d-flex justify-content-between">
-                            <label><i class="fas fa-th"></i> Macro tabla de seguimiento: Desde {dateParser(this.state.date_start)} hasta {dateParser(this.state.date_end)}</label>
-                            <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_macro()}></MDBBtn>
+                            <label><i class="fas fa-th"></i> Macro tabla de seguimiento: Desde {dateParser(date_start)} hasta {dateParser(date_end)}</label>
+                            <MDBBtn className='btn-close' color='none' onClick={() => toggle_macro()}></MDBBtn>
                         </div>
 
                         <PQRS_MACROTABLE translation={translation} swaMsg={swaMsg} globals={globals}
-                            closeModal={this.toggle_macro}
-                            NAVIGATION={this.navigation}
-                            NAVIGATION_GEN={this.toggleInfo}
-                            date_start={this.state.date_start}
-                            date_end={this.state.date_end}
-                            selectedRow={this.state.selectedRow}
-                            setSelectedRow={(id) => this.setState({ selectedRow: id })}
+                            closeModal={toggle_macro}
+                            NAVIGATION={navigation}
+                            NAVIGATION_GEN={toggleInfo}
+                            date_start={date_start}
+                            date_end={date_end}
+                            selectedRow={selectedRow}
+                            setSelectedRow={(id) => setSelectedRow(id)}
                         />
 
                     </Modal>
@@ -1357,7 +1310,6 @@ class PQRSADMIN extends Component {
                 </div >
             </div >
         );
-    }
 }
 
 export default PQRSADMIN;

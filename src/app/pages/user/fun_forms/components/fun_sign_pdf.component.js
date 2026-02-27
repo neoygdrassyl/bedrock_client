@@ -1,5 +1,4 @@
 import moment from 'moment';
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import writtenNumber from 'written-number';
@@ -9,29 +8,7 @@ import { infoCud } from '../../../../components/jsons/vars';
 import FunService from '../../../../services/fun.service';
 
 const MySwal = withReactContent(Swal);
-class FUN_SIGN_PDF extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    componentDidMount() {
-
-    }
-    entDidUpdate(prevState) {
-        if (this.state.currentSeal !== prevState.currentSeal && this.state.currentSeal != null) {
-            var _ITEM = this.state.currentSeal;
-            document.getElementById("seal_3").value = _ITEM.id_public;
-            document.getElementById("seal_4").value = _ITEM.area;
-            document.getElementById("seal_5").value = this.props.currentItem.date;
-            document.getElementById("seal_6").value = _ITEM.blueprints;
-            document.getElementById("seal_7").value = _ITEM.drives;
-            document.getElementById("seal_8").value = _ITEM.folders;
-        }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersion }) {
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -456,7 +433,6 @@ class FUN_SIGN_PDF extends Component {
                 {_SIGN_FORM()}
             </div>
         );
-    }
 }
 
 

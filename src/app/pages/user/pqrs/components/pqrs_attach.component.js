@@ -1,5 +1,5 @@
+import { useState } from 'react';
 import { MDBBtn } from '../../../../components/ui';
-import { Component } from 'react';
 import DataTable from 'react-data-table-component';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -7,22 +7,15 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 const MySwal = withReactContent(Swal);
-class PQRS_COMPONENT_ATTACHS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            attachs: 0,
-        };
-    }
-    addAttach() {
-        this.setState({ attachs: this.state.attachs + 1 })
-    }
-    minusAttach() {
-        this.setState({ attachs: this.state.attachs - 1 })
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, add } = this.props;
-        const { attachs } = this.state;
+function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add, retrieveItem }) {
+    const [attachs, setAttachs] = useState(0);
+
+    const addAttach = () => {
+        setAttachs(attachs + 1);
+    };
+    const minusAttach = () => {
+        setAttachs(attachs - 1);
+    };
         const fileType = {
             '0': 'ANEXO',
             '1': 'ANEXO',
@@ -108,9 +101,9 @@ class PQRS_COMPONENT_ATTACHS extends Component {
                 <div className="text-end m-3">
                     {attachs > 0 ? <MDBBtn className="btn btn-sm btn-success" onClick={() => addAttachsClose()}><i class="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </MDBBtn> : ""}
                     {attachs > 0
-                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                         : ""}
-                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                 </div>
                 {_COMPONENT}
 
@@ -158,8 +151,8 @@ class PQRS_COMPONENT_ATTACHS extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.retrieveItem(currentItem.id)
-                        this.setState({ attachs: 0 });
+                        retrieveItem(currentItem.id)
+                        setAttachs(0);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -199,7 +192,7 @@ class PQRS_COMPONENT_ATTACHS extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.retrieveItem(currentItem.id)
+                                retrieveItem(currentItem.id)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -215,14 +208,13 @@ class PQRS_COMPONENT_ATTACHS extends Component {
                 }
             });
         }
-        return (
-            <div>
-                {add ? _ATTACHS_COMPONENT() : ""}
+    return (
+        <div>
+            {add ? _ATTACHS_COMPONENT() : ""}
 
-                {_ATTACHES_COMPONENT()}
-            </div>
-        );
-    }
+            {_ATTACHES_COMPONENT()}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_ATTACHS;

@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -17,16 +16,8 @@ const profs = [
     ['INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'],
 ]
 
-class RECORD_ENG_PROFESIONALS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentItem, currentRecord, profs, useCB } = this.props;
-        const { } = this.state;
+function RECORD_ENG_PROFESIONALS(props) {
+        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentItem, currentRecord, profs, useCB, requestUpdate } = props;
 
         // DATA GETTERS
         /*  ROLES LIST
@@ -255,7 +246,7 @@ class RECORD_ENG_PROFESIONALS extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -286,7 +277,7 @@ class RECORD_ENG_PROFESIONALS extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -314,7 +305,6 @@ class RECORD_ENG_PROFESIONALS extends Component {
                 {_PROFESIOAL_INFO_COMPONENT()}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_PROFESIONALS;

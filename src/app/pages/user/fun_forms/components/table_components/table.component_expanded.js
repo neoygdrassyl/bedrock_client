@@ -47,7 +47,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     const ci = row => !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : '';
 
     useEffect(() => {
-        if (load === 0) {
+        if (load === 0 && currentItem?.id) {
             setLoad(1)
             loadAsignClocks(currentItem.id);
             getCurrentItem(currentItem.id);

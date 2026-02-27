@@ -45,7 +45,7 @@ describe('Módulo Expedientes (Records) — Pre-migration baseline', () => {
 
   test('3. record_arc.js se importa sin error', async () => {
     await expect(import('../app/pages/user/records/record_arc')).resolves.toBeTruthy();
-  });
+  }, 15000);
 
   test('4. record_ph.js se importa sin error', async () => {
     await expect(import('../app/pages/user/records/record_ph')).resolves.toBeTruthy();

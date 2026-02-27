@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import MailboxService from '../../services/mailbox.service'
 import {
     MDBRow, MDBCol, MDBCard, MDBCardBody,
@@ -16,59 +16,47 @@ import DataTable from 'react-data-table-component';
 import Collapsible from 'react-collapsible';
 const moment = require('moment');
 
-class Mail extends Component {
-    constructor(props) {
-        super(props);
-        this.retrievePublish = this.retrievePublish.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-            error: null,
-            isLoaded: false,
-            currentItem: null,
-            currentIndex: -1,
-            modal: false,
-            items: [],
-        };
-    }
-    componentDidMount() {
-        this.retrievePublish();
-    }
-    retrievePublish() {
+function Mail({ translation, globals, breadCrums }) {
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(-1);
+    const [modal, setModal] = useState(false);
+    const [items, setItems] = useState([]);
+
+    const retrievePublish = useCallback(() => {
         MailboxService.getAll()
             .then(response => {
-                this.setState({
-                    items: response.data,
-                    isLoaded: true,
-                });
+                setItems(response.data);
+                setIsLoaded(true);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    refreshList() {
-        this.retrievePublish();
-        this.setState({
-            currentItem: null,
-            currentIndex: -1,
-        });
-    }
-    toggle = () => {
-        this.setState({
-            modal: !this.state.modal
-        });
-    }
-    getToggle = () => {
-        return this.state.modal;
-    }
-    setItem(item) {
-        this.setState({
-            currentItem: item,
-            modal: !this.state.modal,
-        });
-    }
-    render() {
-        const { translation, globals, breadCrums } = this.props;
-        const { currentItem, isLoaded, items } = this.state;
+    }, []);
+
+    useEffect(() => {
+        retrievePublish();
+    }, [retrievePublish]);
+
+    const refreshList = () => {
+        retrievePublish();
+        setCurrentItem(null);
+        setCurrentIndex(-1);
+    };
+
+    const toggle = () => {
+        setModal(prev => !prev);
+    };
+
+    const getToggle = () => {
+        return modal;
+    };
+
+    const setItem = (item) => {
+        setCurrentItem(item);
+        setModal(prev => !prev);
+    };
         const columns = [
             {
                 name: <h3># CONSECUTIVO</h3>,
@@ -100,7 +88,7 @@ class Mail extends Component {
                 name: <h3>ACCIÓN</h3>,
                 button: true,
                 cell: row =>
-                    <button className="btn btn-danger btn-sm" onClick={() => this.setItem(row)}><i class="fas fa-file-alt"></i> Ver</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><i class="fas fa-file-alt"></i> Ver</button>
                 ,
             },
         ]
@@ -148,12 +136,12 @@ class Mail extends Component {
                         
                     </div>
                 </div>
-                <MDBModal show={this.getToggle()} tabIndex='-2' staticBackdrop >
+                <MDBModal show={getToggle()} tabIndex='-2' staticBackdrop >
                     <MDBModalDialog size="lg">
                         <MDBModalContent className="container-primary">
                             <MDBModalHeader>
                                 <MDBModalTitle><h2 className="text-center"><i class="far fa-file-alt"></i> DETALLES DEL MENSAJE {currentItem ? currentItem.id : ''} </h2></MDBModalTitle>
-                                <MDBBtn className='btn-close' color='none' onClick={this.toggle}></MDBBtn>
+                                <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                             </MDBModalHeader>
                             <MDBModalBody>
                                 <MDBCard className="bg-card">
@@ -205,7 +193,7 @@ class Mail extends Component {
                                 </MDBCard>
                             </MDBModalBody>
                             <MDBModalFooter>
-                                <MDBBtn color='info' onClick={this.toggle}>
+                                <MDBBtn color='info' onClick={toggle}>
                                     <h4 className="pt-2"><i class="fas fa-times-circle"></i> Cerrar</h4>
                                 </MDBBtn>
                             </MDBModalFooter>
@@ -214,7 +202,6 @@ class Mail extends Component {
                 </MDBModal>
             </div >
         );
-    }
 }
 
 export default Mail;

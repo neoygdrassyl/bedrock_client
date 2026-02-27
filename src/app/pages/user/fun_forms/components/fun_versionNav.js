@@ -1,12 +1,6 @@
-import { Component } from 'react';
 import { MDBCard, MDBCardBody } from '../../../../components/ui';
 
-class FUN_VERSION_NAV extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, currentItem, currentVersion, ON , _RECORD} = this.props;
+function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD, NAVIGATION_VERSION }) {
         return (<>
             {currentItem
                 ? <> {currentItem.version > 1
@@ -18,7 +12,7 @@ class FUN_VERSION_NAV extends Component {
                                         {ON
                                             ? <>
                                                 {currentVersion > 1
-                                                    ? <a className="btn btn-sm btn-info p-1" onClick={() => this.props.NAVIGATION_VERSION("minus")}><i class="fas fa-chevron-circle-left fa-2x"></i></a>
+                                                    ? <a className="btn btn-sm btn-info p-1" onClick={() => NAVIGATION_VERSION("minus")}><i class="fas fa-chevron-circle-left fa-2x"></i></a>
                                                     : <a className="btn btn-sm btn-light p-1"><i class="fas fa-chevron-circle-left fa-2x"></i></a>}
                                             </> : ""}
 
@@ -27,7 +21,7 @@ class FUN_VERSION_NAV extends Component {
                                             ? <>
                                                 {currentVersion >= currentItem.version
                                                     ? <a className="btn btn-sm light-info p-1"><i class="fas fa-chevron-circle-right fa-2x"></i></a>
-                                                    : <a className="btn btn-sm btn-info p-1" onClick={() => this.props.NAVIGATION_VERSION("plus")}><i class="fas fa-chevron-circle-right fa-2x"></i></a>}
+                                                    : <a className="btn btn-sm btn-info p-1" onClick={() => NAVIGATION_VERSION("plus")}><i class="fas fa-chevron-circle-right fa-2x"></i></a>}
                                             </> : ""}
                                     </div>
                                 </MDBCardBody>
@@ -37,7 +31,6 @@ class FUN_VERSION_NAV extends Component {
                     : ""}
                 </> : ""} </>
         );
-    }
 }
 
 export default FUN_VERSION_NAV;

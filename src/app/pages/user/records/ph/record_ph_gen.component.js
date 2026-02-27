@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import VIZUALIZER from '../../../../components/vizualizer.component';
@@ -6,16 +5,8 @@ import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_PH_GEN extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_PH_GEN(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
 
         // DATA GETTERS
         let _GET_CHILD_51 = () => {
@@ -385,7 +376,7 @@ class RECORD_PH_GEN extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        props.requestUpdateRecord(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -427,7 +418,6 @@ class RECORD_PH_GEN extends Component {
                 </form>
             </div >
         );
-    }
 }
 
 export default RECORD_PH_GEN;

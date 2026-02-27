@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { MDBCard, MDBCardBody } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -36,77 +36,28 @@ import funService from '../../../services/fun.service';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_LAW extends Component {
-    constructor(props) {
-        super(props);
-        this.setItem_RecordArc = this.setItem_RecordArc.bind(this);
-        this.requestUpdateRecord = this.requestUpdateRecord.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.retrievePQRSxFUN = this.retrievePQRSxFUN.bind(this);
-        this.state = {
-            currentRecord: null,
-            currentVersionR: null,
-            loaded: false,
-            pqrsxfun: false,
-            currentItem: null,
-        };
-    }
-    componentDidMount() {
-        this.setItem_RecordArc();
-        this.retrieveItem(this.props.currentId);
-    }
-    setItem_RecordArc() {
-        RECORD_LAW_SERVICE.getRecord(this.props.currentId)
+function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION }) {
+    const [currentRecord, setCurrentRecord] = useState(null);
+    const [currentVersionR, setCurrentVersionR] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+
+    const retrievePQRSxFUN = (id_public) => {
+        FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                if (response.data.length < 1) {
-                    this.setState({
-                        currentRecord: null,
-                        currentVersionR: null,
-                        loaded: true,
-                    });
-                } else {
-                    this.setState({
-                        currentRecord: response.data[0],
-                        currentVersionR: response.data[0].version,
-                        loaded: true,
-                    });
-                }
-            })
-            .catch(e => {
-                console.log(e);
-                MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-            });
-    }
-    requestUpdateRecord(id) {
-        RECORD_LAW_SERVICE.getRecord(id)
-            .then(response => {
-                this.setState({
-                    currentRecord: response.data[0],
-                    currentVersionR: response.data[0].version,
-                    loaded: true,
-                });
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-    }
-    retrieveItem(id) {
+    };
+
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
+                setCurrentItem(response.data);
+                retrievePQRSxFUN(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -114,35 +65,66 @@ class RECORD_LAW extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
+    };
 
-    retrievePQRSxFUN(id_public) {
-        FUN_SERVICE.loadPQRSxFUN(id_public)
+    const setItem_RecordArc = () => {
+        RECORD_LAW_SERVICE.getRecord(currentId)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                if (response.data.length < 1) {
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
+                } else {
+                    setCurrentRecord(response.data[0]);
+                    setCurrentVersionR(response.data[0].version);
+                    setLoaded(true);
+                }
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+    };
+
+    const requestUpdateRecord = (id) => {
+        RECORD_LAW_SERVICE.getRecord(id)
+            .then(response => {
+                setCurrentRecord(response.data[0]);
+                setCurrentVersionR(response.data[0].version);
+                setLoaded(true);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    navigation_version = (STEP) => {
+    };
+
+    const requestUpdate = (id) => {
+        retrieveItem(id);
+    };
+
+    const navigation_version = (STEP) => {
         switch (STEP) {
             case "minus":
-                this.setState({ currentVersionR: this.state.currentVersionR - 1 });
+                setCurrentVersionR(prev => prev - 1);
                 break;
             case "plus":
-                this.setState({ currentVersionR: this.state.currentVersionR + 1 });
+                setCurrentVersionR(prev => prev + 1);
                 break;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem } = this.state;
+    };
+
+    useEffect(() => {
+        setItem_RecordArc();
+        retrieveItem(currentId);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
         const rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
         var formData = new FormData();
         const quickModalStyle = {
@@ -240,7 +222,7 @@ class RECORD_LAW extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdateRecord(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -270,7 +252,7 @@ class RECORD_LAW extends Component {
             formData0.set('rules', currentRules.join(';'));
 
             funService.update(currentItem.id, formData0).then(response => {
-                if (response.data === 'OK') this.retrieveItem(currentItem.id)
+                if (response.data === 'OK') retrieveItem(currentItem.id)
             });
         }
         return (
@@ -317,7 +299,7 @@ class RECORD_LAW extends Component {
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
                                     SERVICE={RECORD_LAW_SERVICE}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     AIM={"Jurídico"}
                                 />
                                 <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
@@ -326,7 +308,7 @@ class RECORD_LAW extends Component {
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
                                     SERVICE={RECORD_ARCSERVICE}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     AIM={"Arquitectura"}
                                     PATH={"record_arc"}
                                     readOnly
@@ -337,7 +319,7 @@ class RECORD_LAW extends Component {
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
                                     SERVICE={RECORD_ENG_SERVICE}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     AIM={"Estructural"}
                                     readOnly />
 
@@ -351,7 +333,7 @@ class RECORD_LAW extends Component {
                                     _FUN_R={_GET_CHILD_REVIEW()}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                     docsScope={'law'} />
 
 
@@ -365,9 +347,9 @@ class RECORD_LAW extends Component {
                                     swaMsg={swaMsg}
                                     globals={globals}
                                     currentItem={currentItem}
-                                    currentId={this.props.currentId}
+                                    currentId={currentId}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                     readOnly
                                 />
 
@@ -390,8 +372,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                 />
 
                                 <RECORD_LAW_FUN_1
@@ -400,8 +382,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
@@ -411,8 +393,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
@@ -423,8 +405,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
@@ -434,8 +416,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
@@ -445,8 +427,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
@@ -457,8 +439,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                     quickModalStyle={quickModalStyle}
                                 />
 
@@ -485,8 +467,8 @@ class RECORD_LAW extends Component {
                                         currentVersion={currentVersion}
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
-                                        requestUpdate={this.requestUpdate}
-                                        requestUpdateRecord={this.requestUpdateRecord}
+                                        requestUpdate={requestUpdate}
+                                        requestUpdateRecord={requestUpdateRecord}
                                         quickModalStyle={quickModalStyle}
                                     />
                                 </> : ''}
@@ -502,8 +484,8 @@ class RECORD_LAW extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                 />
 
                                 {/* {NAV_FUNA(_GET_CHILD_1())} */}
@@ -523,7 +505,7 @@ class RECORD_LAW extends Component {
                         translation={translation}
                         currentItem={currentRecord}
                         currentVersion={currentVersionR}
-                        NAVIGATION_VERSION={this.navigation_version}
+                        NAVIGATION_VERSION={navigation_version}
                         _RECORD
                     />
                     <FUN_MODULE_NAV
@@ -531,15 +513,14 @@ class RECORD_LAW extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"record_law"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
                 </fieldset>}
             </div >
         );
-    }
 }
 
 const NAV_FUNA = (_CHILD) => {

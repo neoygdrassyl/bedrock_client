@@ -1,5 +1,5 @@
 import { MDBBtn } from '../../../../components/ui';
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
@@ -9,27 +9,20 @@ import { PQRS_SEND_DATE } from './pqrs_send_date.component';
 
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
-class PQRS_EMAILS extends Component {
-    constructor(props) {
-        super(props);
+function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email_types, refreshCurrentItem, closeComponent }) {
+    const [usersList, setUsersList] = useState([]);
+    const [attachsForEmails, setAttachsForEmails] = useState(0);
+    const [load, setLoad] = useState(false);
 
-        this.state = {
-            users_list: [],
-            attachsForEmails: 0,
-            load: false,
-        };
-    }
-    componentDidMount() {
-        this.retrieveuUsers();
-    }
-    retrieveuUsers() {
+    useEffect(() => {
+        retrieveUsers();
+    }, []);
+    const retrieveUsers = () => {
         USERS_Service.getAll()
             .then(response => {
-                this.setState({
-                    users_list: response.data,
-                    load: true
-                })
-                this._GET_EMAIL_BODY(this.props.email_types[0]);
+                setUsersList(response.data);
+                setLoad(true);
+                _GET_EMAIL_BODY(email_types[0]);
             })
             .catch(e => {
                 console.log(e);
@@ -37,30 +30,27 @@ class PQRS_EMAILS extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
-    }
+    };
 
-    minusAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails - 1 })
-    }
-    addAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails + 1 })
-    }
+    const minusAttachEmail = () => {
+        setAttachsForEmails(prev => prev - 1);
+    };
+    const addAttachEmail = () => {
+        setAttachsForEmails(prev => prev + 1);
+    };
 
-    _GET_USER = (_id) => {
-        let _users = this.state.users_list;
-        for (var i = 0; i < _users.length; i++) {
-            if (_users[i].id == _id) return _users[i]
+    const _GET_USER = (_id) => {
+        for (var i = 0; i < usersList.length; i++) {
+            if (usersList[i].id == _id) return usersList[i]
         }
         return false;
     }
-    _GET_SOLICITORS_NAMES = () => {
-        let _SOLICITORS = this.props.currentItem.pqrs_solocitors;
+    const _GET_SOLICITORS_NAMES = () => {
+        let _SOLICITORS = currentItem.pqrs_solocitors;
         let _LIST = [];
         for (var i = 0; i < _SOLICITORS.length; i++) {
             _LIST.push(_SOLICITORS[i].name);
@@ -71,10 +61,10 @@ class PQRS_EMAILS extends Component {
    
 
 
-    _GET_EMAIL_BODY = (_body) => {
+    const _GET_EMAIL_BODY = (_body) => {
         let _email_body = "";
-        let CURRENT_ITEM = this.props.currentItem;
-        let _SOLICITORS = this._GET_SOLICITORS_NAMES();
+        let CURRENT_ITEM = currentItem;
+        let _SOLICITORS = _GET_SOLICITORS_NAMES();
         // CONFIRMACION 1
         if (_body == 0 || _body == null) {
             _email_body = `
@@ -169,9 +159,6 @@ class PQRS_EMAILS extends Component {
         }
         document.getElementById('pqrs_email_2').value = _email_body;
     }
-    render() {
-        const { translation, swaMsg, globals, currentItem, attachs } = this.props;
-        const { load, attachsForEmails } = this.state;
 
 
         // DATA GETTERS 
@@ -182,7 +169,6 @@ class PQRS_EMAILS extends Component {
         // DATA CONVERTERS
         let _GET_EMAIL_TYPES = () => {
             let _COMPONENT = [];
-            let email_types = this.props.email_types;
             for (var i = 0; i < email_types.length; i++) {
                 if (email_types[i] == 0) _COMPONENT.push(<option value="0">CONFIRMACIÓN DE RECIBIDO</option>)
                 if (email_types[i] == 1) _COMPONENT.push(<option value="1">PRORROGA</option>)
@@ -225,7 +211,7 @@ class PQRS_EMAILS extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-envelope"></i>
                             </span>
-                            <select class="form-control" id="pqrs_email_3" onChange={(e) => this._GET_EMAIL_BODY(e.target.value)}>
+                            <select class="form-control" id="pqrs_email_3" onChange={(e) => _GET_EMAIL_BODY(e.target.value)}>
                                 {_GET_EMAIL_TYPES()}
                             </select>
                         </div>
@@ -313,8 +299,8 @@ class PQRS_EMAILS extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshCurrentItem(currentItem.id);
-                        this.setState({ attachsForEmails: 0 })
+                        refreshCurrentItem(currentItem.id);
+                        setAttachsForEmails(0)
                     }
                     else {
                         MySwal.fire({
@@ -346,8 +332,8 @@ class PQRS_EMAILS extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshCurrentItem(currentItem.id);
-                        this.setState({ attachsForEmails: 0 })
+                        refreshCurrentItem(currentItem.id);
+                        setAttachsForEmails(0)
                     }
                     else {
                         MySwal.fire({
@@ -389,8 +375,8 @@ class PQRS_EMAILS extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshCurrentItem(currentItem.id);
-                        this.setState({ attachsForEmails: 0 })
+                        refreshCurrentItem(currentItem.id);
+                        setAttachsForEmails(0)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -455,9 +441,9 @@ class PQRS_EMAILS extends Component {
                                         <div className="text-end m-3">
                                             <p className="lead text-end fw-bold text-uppercase">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <MDBBtn className="btn btn-secondary btn-sm mx-3" onClick={() => this.minusAttachEmail()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <MDBBtn className="btn btn-secondary btn-sm mx-3" onClick={() => minusAttachEmail()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                                 : ""}
-                                            <MDBBtn className="btn btn-secondary btn-sm" onClick={() => this.addAttachEmail()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <MDBBtn className="btn btn-secondary btn-sm" onClick={() => addAttachEmail()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>

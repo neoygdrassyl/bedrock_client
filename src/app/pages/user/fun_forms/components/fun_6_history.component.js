@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { MDBBtn, MDBTooltip } from '../../../../components/ui';
 import Modal from 'react-modal';
 import { dateParser } from '../../../../components/customClasses/typeParse';
@@ -9,48 +9,38 @@ import DataTable from 'react-data-table-component';
 import './fun_modal_shared.css';
 
 const MySwal = withReactContent(Swal);
-class FUN_6_HISTORY extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            modal: false,
-            list: [],
-            load: false,
-        };
-    }
-    componentDidMount() {
+function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
+        const [modal, setModal] = useState(false);
+        const [list, setList] = useState([]);
+        const [load, setLoad] = useState(false);
+        const [edit, setEdit] = useState(false);
+        const [isNew, setIsNew] = useState(false);
 
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            let ITEM = this.state.edit;
-            document.getElementById('fun_6_h_1_edit').value = ITEM.detail ?? '';
-            document.getElementById('fun_6_h_2_edit').value = ITEM.date ?? '';
-            document.getElementById('fun_6_h_3_edit').value = ITEM.state ?? '';
-
-        }
-    }
-    retrieveItem() {
-        FUN_SERVICE.getAll_fun_6_h(this.props.fun6.id)
-            .then(response => {
-                this.setState({
-                    list: response.data,
-                    load: true
+        const retrieveItem = () => {
+            FUN_SERVICE.getAll_fun_6_h(fun6.id)
+                .then(response => {
+                    setList(response.data);
+                    setLoad(true);
                 })
-            })
-            .catch(e => {
-                console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                .catch(e => {
+                    console.log(e);
+                    MySwal.fire({
+                        title: "ERROR AL CARGAR",
+                        text: "No ha sido posible cargar este item, intentelo nuevamente.",
+                        icon: 'error',
+                        confirmButtonText: swaMsg.text_btn,
+                    });
                 });
-            });
-    }
-    render() {
-        const { translation, swaMsg, globals, fun6 } = this.props;
-        const { list, load } = this.state;
+        };
+
+        useEffect(() => {
+            if (edit) {
+                let ITEM = edit;
+                document.getElementById('fun_6_h_1_edit').value = ITEM.detail ?? '';
+                document.getElementById('fun_6_h_2_edit').value = ITEM.date ?? '';
+                document.getElementById('fun_6_h_3_edit').value = ITEM.state ?? '';
+            }
+        }, [edit]);
         const customStylesForModal = {
             overlay: {
                 position: 'fixed',
@@ -79,11 +69,9 @@ class FUN_6_HISTORY extends Component {
         };
 
         let toggle = (state) => {
-            if (state) this.retrieveItem();
-            else this.setState({ load: false })
-            this.setState({
-                modal: !this.state.modal,
-            });
+            if (state) retrieveItem();
+            else setLoad(false);
+            setModal(!modal);
         }
 
         // COMPONENT JSX
@@ -113,7 +101,7 @@ class FUN_6_HISTORY extends Component {
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => this.setState({ edit: row })}>
+                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
                                 <i class="far fa-edit fa-2x "></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
@@ -212,7 +200,7 @@ class FUN_6_HISTORY extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.retrieveItem();
+                        retrieveItem();
                         document.getElementById('fun_6_h_new').reset();
                     } else {
                         MySwal.fire({
@@ -253,7 +241,7 @@ class FUN_6_HISTORY extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            FUN_SERVICE.update_6_h(this.state.edit.id, formData)
+            FUN_SERVICE.update_6_h(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -262,8 +250,8 @@ class FUN_6_HISTORY extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.setState({ edit: false });
-                        this.retrieveItem();
+                        setEdit(false);
+                        retrieveItem();
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -311,8 +299,8 @@ class FUN_6_HISTORY extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.retrieveItem();
-                                this.setState({ edit: false })
+                                retrieveItem();
+                                setEdit(false)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -350,7 +338,7 @@ class FUN_6_HISTORY extends Component {
                 </MDBTooltip>
 
                 <Modal contentLabel="GENERAL VIEW FUN"
-                    isOpen={this.state.modal}
+                    isOpen={modal}
                     style={customStylesForModal}
                     ariaHideApp={false}
                 >
@@ -362,12 +350,12 @@ class FUN_6_HISTORY extends Component {
                     </div>
 
                     <div class="form-check ms-5">
-                        <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                        <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                         <label class="form-check-label" for="flexCheckDefault">
                             Nueva entrada
                         </label>
                     </div>
-                    {this.state.new
+                    {isNew
                         ? <>
                             <form id="fun_6_h_new" onSubmit={new_item}>
                                 {_COMPONENT_MANAGE()}
@@ -385,7 +373,7 @@ class FUN_6_HISTORY extends Component {
                         ? <>
                             {COMPONENT_HISTORY()}
 
-                            {this.state.edit
+                            {edit
                                 ? <>
                                     <form id="fun_6_d_edit" onSubmit={edit_6_h} className="py-3">
                                         {_COMPONENT_MANAGE('_edit')}
@@ -406,7 +394,6 @@ class FUN_6_HISTORY extends Component {
 
             </div>
         );
-    }
 }
 
 export default FUN_6_HISTORY;

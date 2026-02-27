@@ -472,14 +472,14 @@ class FUN_CHART_MACRO_GRANTT extends Component {
                                     xDomain={[0, 180]}
                                     yDomain={[0, 6]}
                                 >
-                                <VerticalGridLines tickValues={_tickValues} tickTotal={_tickValues.length} />
-                                <HorizontalGridLines tickValues={YtickValues} tickTotal={YtickValues.length} />
                                 <YAxis
+                                    attr="y"
                                     tickValues={[0.5, 1.5, 2.5, 3.5]}
                                     tickFormat={t => (t===0.5?' IV ':t===1.5?' III ':t===2.5?' II ':t===3.5?' I ':'')}
                                     style={{ text: { fontSize: 12 } }}
                                 />
                                 <XAxis
+                                    attr="x"
                                     tickValues={_tickValues}
                                     tickFormat={v => v}
                                     style={{ text: { fontSize: 12 } }}

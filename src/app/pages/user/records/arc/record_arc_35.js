@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { MDBBtn, MDBTooltip } from '../../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -9,19 +9,15 @@ import parkingData from '../../../../components/jsons/parkingData.json'
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ARC_35 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new_parking: false,
-            new_location: false,
-            edit_parking: false,
-            edit_location: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit_parking !== prevState.edit_parking && this.state.edit_parking != false) {
-            var _ITEM = this.state.edit_parking;
+function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [newParking, setNewParking] = useState(false);
+    const [newLocation, setNewLocation] = useState(false);
+    const [editParking, setEditParking] = useState(false);
+    const [editLocation, setEditLocation] = useState(false);
+
+    useEffect(() => {
+        if (editParking) {
+            var _ITEM = editParking;
             document.getElementById("r_a_35_parking_1_edit").value = _ITEM.use;
             document.getElementById("r_a_35_parking_2_edit").value = _ITEM.name;
 
@@ -51,20 +47,19 @@ class RECORD_ARC_35 extends Component {
 
             document.getElementById("r_a_35_parking_6_edit").value = _ITEM.pos;
         }
-        if (this.state.edit_location !== prevState.edit_location && this.state.edit_location != false) {
-            var _ITEM = this.state.edit_location;
+    }, [editParking]);
+
+    useEffect(() => {
+        if (editLocation) {
+            var _ITEM = editLocation;
             document.getElementById("r_a_35_location_1_edit").value = _ITEM.floor;
             let _VAR_ARRAY = _ITEM.diensions.split(",")
             let _COMPONENTS = document.getElementsByName("r_a_35_parking_dientions_edit");
             for (var i = 0; i < _VAR_ARRAY.length; i++) {
                 _COMPONENTS[i].value = _VAR_ARRAY[i];
             }
-
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    }, [editLocation]);
 
 
         // DATA GETERS
@@ -515,7 +510,7 @@ class RECORD_ARC_35 extends Component {
                     minWidth: '110px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => this.setState({ edit_parking: row })}><i class="far fa-edit "></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditParking(row)}><i class="far fa-edit "></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                             <MDBBtn className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_parking(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
@@ -784,7 +779,7 @@ class RECORD_ARC_35 extends Component {
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => this.setState({ edit_location: row })}><i class="far fa-edit"></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditLocation(row)}><i class="far fa-edit"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                             <MDBBtn className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_location(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
@@ -1094,7 +1089,7 @@ class RECORD_ARC_35 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1125,7 +1120,7 @@ class RECORD_ARC_35 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1176,7 +1171,7 @@ class RECORD_ARC_35 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById("form_ra_35_parking").reset();
                     } else {
                         MySwal.fire({
@@ -1215,7 +1210,7 @@ class RECORD_ARC_35 extends Component {
             let pos = document.getElementById("r_a_35_parking_6_edit").value;
             formData.set('pos', pos);
 
-            RECORD_ARCSERVICE.update_arc_35_parking(this.state.edit_parking.id, formData)
+            RECORD_ARCSERVICE.update_arc_35_parking(editParking.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -1225,8 +1220,8 @@ class RECORD_ARC_35 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.setState({ edit_parking: false });
+                        requestUpdateRecord(currentItem.id);
+                        setEditParking(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1272,8 +1267,8 @@ class RECORD_ARC_35 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit_parking: false });;
+                                requestUpdateRecord(currentItem.id);
+                                setEditParking(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -1304,7 +1299,7 @@ class RECORD_ARC_35 extends Component {
             RECORD_ARCSERVICE.update_arc_35_parking(id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1330,7 +1325,7 @@ class RECORD_ARC_35 extends Component {
             RECORD_ARCSERVICE.update_arc_35_parking(id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1377,7 +1372,7 @@ class RECORD_ARC_35 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById("form_ra_35_location").reset();
                     } else {
                         MySwal.fire({
@@ -1412,7 +1407,7 @@ class RECORD_ARC_35 extends Component {
             }
             formData.set('diensions', diensions.join());
 
-            RECORD_ARCSERVICE.update_arc_35_location(this.state.edit_location.id, formData)
+            RECORD_ARCSERVICE.update_arc_35_location(editLocation.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -1422,8 +1417,8 @@ class RECORD_ARC_35 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.setState({ edit_location: false });
+                        requestUpdateRecord(currentItem.id);
+                        setEditLocation(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1469,8 +1464,8 @@ class RECORD_ARC_35 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit_location: false });
+                                requestUpdateRecord(currentItem.id);
+                                setEditLocation(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -1501,7 +1496,7 @@ class RECORD_ARC_35 extends Component {
             RECORD_ARCSERVICE.update_arc_35_location(id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1528,7 +1523,7 @@ class RECORD_ARC_35 extends Component {
             RECORD_ARCSERVICE.update_arc_35_location(id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1556,13 +1551,13 @@ class RECORD_ARC_35 extends Component {
                 {_COMPONENT_0()}
 
                 <div class="form-check ms-5 my-3">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new_parking: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setNewParking(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Añadir Nuevo Parqueadero
                     </label>
                 </div>
 
-                {this.state.new_parking
+                {newParking
                     ? <form id="form_ra_35_parking" onSubmit={new_ra_35_parking}>
                         {_COMPONENT_1('')}
                         <div className="text-center">
@@ -1573,7 +1568,7 @@ class RECORD_ARC_35 extends Component {
                     </form>
                     : ""}
                 {_COMPONENT_1_LIST()}
-                {this.state.edit_parking
+                {editParking
                     ? <form id="form_ra_35_parking_edit" onSubmit={edit_ra_35_parking}>
                         <h3 className="my-3 text-center">Actualizar Parqueadero</h3>
                         {_COMPONENT_1('_edit')}
@@ -1587,13 +1582,13 @@ class RECORD_ARC_35 extends Component {
 
                 <h3 className="py-3" >3.5.2 Cuadro de Localizacion de Parqueadero de dimensiones libres de estructuras</h3>
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new_location: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setNewLocation(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Añadir Nueva localizacion de parqueadero
                     </label>
                 </div>
 
-                {this.state.new_location
+                {newLocation
                     ? <form id="form_ra_35_location" onSubmit={new_ra_35_location}>
                         {_COMPONENT_2()}
                         <div className="text-center">
@@ -1604,7 +1599,7 @@ class RECORD_ARC_35 extends Component {
                     </form>
                     : ""}
                 {_COMPONENT_2_LIST()}
-                {this.state.edit_location
+                {editLocation
                     ? <form id="form_ra_35_location_edit" onSubmit={edit_ra_35_location}>
                         <h3 className="my-3 text-center">Actualizar Localizacion</h3>
                         {_COMPONENT_2_EDIT()}
@@ -1626,7 +1621,6 @@ class RECORD_ARC_35 extends Component {
                 {_COMPONENT_CORRECTIONS()}
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_35;

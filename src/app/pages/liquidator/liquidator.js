@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import {
   MDBTypography, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem
 } from '../../components/ui';
@@ -9,32 +9,23 @@ import moment from 'moment';
 import { infoCud } from '../../components/jsons/vars';
 import { Button_navigation } from '../../components/button.component';
 
-class Liquidator extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      subtotal_cf: 0,
-      subtotal_cv: 0,
-      ledged_rows: 0,
-      table: [],
-      version: 2026,
-      iva: 0.19,
-    };
-  }
-
-
-  render() {
-    const { translation, breadCrums, hideInfo, useSelector } = this.props;
-    const { version } = this.state;
+function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
+    const [subtotal_cf, setSubtotalCf] = useState(0);
+    const [subtotal_cv, setSubtotalCv] = useState(0);
+    const [ledged_rows, setLedgedRows] = useState(0);
+    const [table, setTable] = useState([]);
+    const [version, setVersion] = useState(2026);
+    const [iva, setIva] = useState(0.19);
+    const [type, setType] = useState('');
 
     const query = new URLSearchParams(window.location.search);
     const id = query.get('newsId');
 
-    this.componentDidMount = () => {
+    useEffect(() => {
       if (id != null) {
-        document.getElementById(id).scrollIntoView()
+        document.getElementById(id)?.scrollIntoView()
       }
-    }
+    }, [id]);
 
 
     /* WORKING VARIABLES FOR THE LIQUIDATOR
@@ -64,7 +55,6 @@ class Liquidator extends Component {
 
     var smmv = values[version].value; // Mininum wage
     const m = infoCud.m; // Factor m
-    const iva = this.state.iva;
     var i;
     var j;
     var strata = [0.5, 1, 1.5, 2, 2.5]; // base on strata
@@ -222,12 +212,12 @@ class Liquidator extends Component {
         info: "",
         id: 0
       }
-      var list = this.state.table;
+      var list = [...table];
 
       if (list.length == 0) {
         _CHARGE.sub = Math.trunc(_subtotal_cf);
-        _CHARGE.iva = Math.trunc(_subtotal_cf * this.state.iva);
-        _CHARGE.total = Math.trunc(_subtotal_cf * this.state.iva + _subtotal_cf);
+        _CHARGE.iva = Math.trunc(_subtotal_cf * iva);
+        _CHARGE.total = Math.trunc(_subtotal_cf * iva + _subtotal_cf);
         _CHARGE.info = "Cargo Fijo";
         list.push(_CHARGE);
       }
@@ -239,8 +229,8 @@ class Liquidator extends Component {
         id: 0
       }
       _CHARGE.sub = Math.trunc(_subtotal_cv);
-      _CHARGE.iva = Math.trunc(_subtotal_cv * this.state.iva);
-      _CHARGE.total = Math.trunc(_subtotal_cv * this.state.iva + _subtotal_cv);
+      _CHARGE.iva = Math.trunc(_subtotal_cv * iva);
+      _CHARGE.total = Math.trunc(_subtotal_cv * iva + _subtotal_cv);
       _CHARGE.info = "Cargo Variable - " + document.getElementById("select_type").value + " (" + document.getElementById("area-liquidator").value + "m)";
 
       list.push(_CHARGE);
@@ -272,7 +262,7 @@ class Liquidator extends Component {
         list[i].id = i;
       }
 
-      this.setState({ table: list })
+      setTable([...list])
     }
 
     let handleSubmit = (event) => {
@@ -292,8 +282,8 @@ class Liquidator extends Component {
       let _subtotal_cf = (cf * rule_1 * rule_2) * i * m;
       let _subtotal_cv = ((cv * rule_1 * rule_21) / h * i * j * m);
 
-      this.setState({ subtotal_cf: _subtotal_cf });
-      this.setState({ subtotal_cv: _subtotal_cv });
+      setSubtotalCf(_subtotal_cf);
+      setSubtotalCv(_subtotal_cv);
       _ADD_VALUE_TABLE(_subtotal_cf, _subtotal_cv)
     }
     let getExpenses_m = (number) => {
@@ -312,7 +302,7 @@ class Liquidator extends Component {
 
     let _TABLE_INFO = () => {
       var _COMPONENT = [];
-      var _LIST = this.state.table;
+      var _LIST = table;
       const columns = [
         {
           name: <h3>Modalidad</h3>,
@@ -356,13 +346,13 @@ class Liquidator extends Component {
 
     }
     let _DELETE_ROW = (_ID) => {
-      var list = this.state.table;
+      var list = [...table];
       list.splice(_ID, 1);
       for (var i = 0; i < list.length; i++) {
         list[i].id = i;
       }
 
-      this.setState({ table: list })
+      setTable([...list])
     }
 
     let _note_1 = <>
@@ -582,7 +572,7 @@ class Liquidator extends Component {
             {useSelector
               ? <div class="form-group my-2 col-4">
                 <h4 for="exampleFormControlSelect1">VERSION DE LA CALCULADORA</h4>
-                <select class="form-select" onChange={(e) => this.setState({ version: e.target.value })}
+                <select class="form-select" onChange={(e) => setVersion(e.target.value)}
                   defaultValue={version}>
                   <option>2021</option>
                   <option>2022</option>
@@ -615,7 +605,7 @@ class Liquidator extends Component {
                         <span class="input-group-text bg-info text-white">
                           <i class="fas fa-home"></i>
                         </span>
-                        <select class="form-select" id="project-liquidator" required onChange={e => this.setState({ type: e.target.value })}>
+                        <select class="form-select" id="project-liquidator" required onChange={e => setType(e.target.value)}>
                           <option selected value="" disabled>{translation.form_project_0}</option>
                           <option value="0">{translation.form_project_1}</option>
                           <option value="1">{translation.form_project_2}</option>
@@ -632,17 +622,17 @@ class Liquidator extends Component {
                         </span>
                         <select class="form-select" id="select_type" required >
                           <option selected value="" disabled>{translation.form_module_0}</option>
-                          <option value="Obra Nueva" disabled={this.state.type == 2 ? true : false}>{translation.form_module_1}</option>
-                          <option value="Ampliacion" disabled={this.state.type == 2 ? true : false}>{translation.form_module_2}</option>
-                          <option value="Modificacion" disabled={this.state.type == 2 ? true : false}>{translation.form_module_3}</option>
-                          <option value="Reforzamiento" disabled={this.state.type == 2 ? true : false}>{translation.form_module_4}</option>
-                          <option value="Adecuacion (Con Obras)" disabled={this.state.type == 2 ? true : false}>{translation.form_module_5}</option>
-                          <option value="Adecuacion (Sin Obras)" disabled={this.state.type == 2 ? true : false}>{translation.form_module_51}</option>
-                          <option value="Demolicion total" disabled={this.state.type == 2 ? true : false}>{translation.form_module_6}</option>
-                          <option value="Demolicion Parcial" disabled={this.state.type == 2 ? true : false}>{translation.form_module_7}</option>
-                          <option value="Cerramiento" disabled={this.state.type == 2 ? true : false}>{translation.form_module_8}</option>
-                          <option value="Restauracion" disabled={this.state.type == 2 ? true : false}>{translation.form_module_9}</option>
-                          <option value="Reconstruccion" disabled={this.state.type == 2 ? true : false}>{translation.form_module_10}</option>
+                          <option value="Obra Nueva" disabled={type == 2 ? true : false}>{translation.form_module_1}</option>
+                          <option value="Ampliacion" disabled={type == 2 ? true : false}>{translation.form_module_2}</option>
+                          <option value="Modificacion" disabled={type == 2 ? true : false}>{translation.form_module_3}</option>
+                          <option value="Reforzamiento" disabled={type == 2 ? true : false}>{translation.form_module_4}</option>
+                          <option value="Adecuacion (Con Obras)" disabled={type == 2 ? true : false}>{translation.form_module_5}</option>
+                          <option value="Adecuacion (Sin Obras)" disabled={type == 2 ? true : false}>{translation.form_module_51}</option>
+                          <option value="Demolicion total" disabled={type == 2 ? true : false}>{translation.form_module_6}</option>
+                          <option value="Demolicion Parcial" disabled={type == 2 ? true : false}>{translation.form_module_7}</option>
+                          <option value="Cerramiento" disabled={type == 2 ? true : false}>{translation.form_module_8}</option>
+                          <option value="Restauracion" disabled={type == 2 ? true : false}>{translation.form_module_9}</option>
+                          <option value="Reconstruccion" disabled={type == 2 ? true : false}>{translation.form_module_10}</option>
                           <option value="Reconocimiento">{translation.form_module_11}</option>
                         </select>
                       </div>
@@ -714,22 +704,22 @@ class Liquidator extends Component {
                       <tbody>
                         <tr>
                           <th>{translation.text_23}</th>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cf))}</h4></td>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cv))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cf))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cv))}</h4></td>
                         </tr>
                         <tr>
                           <th>{translation.text_24}</th>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cf * iva))}</h4></td>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cv * iva))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cf * iva))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cv * iva))}</h4></td>
                         </tr>
                         <tr>
                           <th>{translation.text_25}</th>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cf * iva + this.state.subtotal_cf))}</h4></td>
-                          <td><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cv * iva + this.state.subtotal_cv))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cf * iva + subtotal_cf))}</h4></td>
+                          <td><h4 className="lead">${formatNumber(Math.trunc(subtotal_cv * iva + subtotal_cv))}</h4></td>
                         </tr>
                         <tr>
                           <th>{translation.text_26}</th>
-                          <td colSpan="2" className="text-center"><h4 className="lead">${formatNumber(Math.trunc(this.state.subtotal_cv * iva + this.state.subtotal_cv + Math.trunc(this.state.subtotal_cf * iva + this.state.subtotal_cf)))}</h4></td>
+                          <td colSpan="2" className="text-center"><h4 className="lead">${formatNumber(Math.trunc(subtotal_cv * iva + subtotal_cv + Math.trunc(subtotal_cf * iva + subtotal_cf)))}</h4></td>
                         </tr>
                       </tbody>
                     </table>
@@ -738,11 +728,11 @@ class Liquidator extends Component {
               </MDBCardBody>
             </MDBCard>
             <h2 class="text-uppercase text-center my-3" id='title4'>Tabla de Liquidacion  {<Button_navigation Iddown={'title5'} Idup={'title3'} />}</h2>
-            {this.state.table.length > 0
+            {table.length > 0
               ? <>
                 {_TABLE_INFO()}
                 <div className="text-center py-4 mt-3">
-                  <button className="btn btn-lg btn-secondary" onClick={() => this.setState({ table: [] })}>REINICIAR TABLA</button>
+                  <button className="btn btn-lg btn-secondary" onClick={() => setTable([])}>REINICIAR TABLA</button>
                 </div>
               </>
               : <div className="text-center">No hay datos en la tabla</div>}
@@ -915,7 +905,6 @@ class Liquidator extends Component {
         </div >
       </div >
     );
-  }
 }
 
 export default Liquidator;

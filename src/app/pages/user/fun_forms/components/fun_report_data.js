@@ -1,16 +1,7 @@
-import { Component } from 'react';
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 
-class FUN_REPORT_DATA extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function FUN_REPORT_DATA({ translation, swaMsg, globals, currentItem }) {
 
 
         // DATA GETERS
@@ -129,7 +120,6 @@ class FUN_REPORT_DATA extends Component {
                 {_COMPONENT()}
             </div >
         );
-    }
 }
 
 export default FUN_REPORT_DATA;

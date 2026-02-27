@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useRef } from 'react';
 import { MDBBtn, MDBInput, MDBRow, MDBCol, MDBTypography, MDBBadge, MDBInputGroup, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBDropdownLink, MDBInputGroupElement } from '../components/ui';
 import { Link } from "react-router-dom";
 // Carousel IMGS
@@ -32,20 +32,9 @@ import { Button_navigation } from '../components/button.component';
 //import { useLocation } from 'react-router-dom';
 //const location = useLocation();
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modal: true
-    };
-  }
-
-
-  render() {
-
-    const { translation, } = this.props;
-    const { modal } = this.state
-    //const { location: { pathname }}= this.props
+function Home({ translation, history }) {
+    const [modal, setModal] = useState(true);
+    const inputSearchRef = useRef(null);
     {/*const modalMessage = {
       title: <h2>¡AVISO IMPORTANTE!</h2>,
       body: <dic>
@@ -93,8 +82,8 @@ class Home extends Component {
       }
     };
     let _CHECK_STATUS = () => {
-      let searchValue = this.inputSearch.value;
-      this.props.history.push('/status/' + searchValue);
+      let searchValue = inputSearchRef.current.value;
+      history.push('/status/' + searchValue);
     }
 
 
@@ -334,26 +323,26 @@ class Home extends Component {
                         <MDBDropdownToggle style={{ backgroundColor: '#107ABC' }}>TIPO DE PROCESO</MDBDropdownToggle>
                         <MDBDropdownMenu>
                           <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = '68001-1-aa-0000'}>LICENCIA</MDBDropdownLink>
+                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = '68001-1-aa-0000'}>LICENCIA</MDBDropdownLink>
                           </MDBDropdownItem>
                           <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = 'OAaa-0000'}>OTRA ACTUACIÓN</MDBDropdownLink>
+                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = 'OAaa-0000'}>OTRA ACTUACIÓN</MDBDropdownLink>
                           </MDBDropdownItem>
                           <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = 'VRaa-0000'}>PETICIÓN PQRS</MDBDropdownLink>
+                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = 'VRaa-0000'}>PETICIÓN PQRS</MDBDropdownLink>
                           </MDBDropdownItem>
                           <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = 'VRaa-0000'}>NUMERO DE VENTANILLA ÚNICA (VR)</MDBDropdownLink>
+                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = 'VRaa-0000'}>NUMERO DE VENTANILLA ÚNICA (VR)</MDBDropdownLink>
                           </MDBDropdownItem>
                           <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = 'Naa-0000'}>NOMENCLATURA</MDBDropdownLink>
+                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = 'Naa-0000'}>NOMENCLATURA</MDBDropdownLink>
                           </MDBDropdownItem>
                           <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => this.inputSearch.value = ''}>BUSCAR POR CEDULA</MDBDropdownLink>
+                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = ''}>BUSCAR POR CEDULA</MDBDropdownLink>
                           </MDBDropdownItem>
                         </MDBDropdownMenu>
                       </MDBDropdown>
-                      <MDBInputGroupElement type='text' label='ID del proceso' inputRef={ref => this.inputSearch = ref} />
+                      <MDBInputGroupElement type='text' label='ID del proceso' inputRef={inputSearchRef} />
                       <MDBBtn style={{ backgroundColor: '#107ABC' }} onClick={() => _CHECK_STATUS()}>BUSCAR</MDBBtn>
                     </MDBInputGroup>
                   </div>
@@ -489,7 +478,7 @@ class Home extends Component {
         >
           <div className="my-4 d-flex justify-content-between">
             {modalMessage.title}
-            <MDBBtn className='btn-close' color='none' onClick={() => this.setState({ modal: false })}></MDBBtn>
+            <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
           </div>
 
           <div className='border p-2'>
@@ -497,7 +486,7 @@ class Home extends Component {
           </div>
 
           <div className="text-end py-4 mt-3">
-            <MDBBtn color='info' size='sm' onClick={() => this.setState({ modal: false })}>
+            <MDBBtn color='info' size='sm' onClick={() => setModal(false)}>
               <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
             </MDBBtn>
           </div>
@@ -506,7 +495,6 @@ class Home extends Component {
 
       </div >
     );
-  }
 }
 
 export default Home;

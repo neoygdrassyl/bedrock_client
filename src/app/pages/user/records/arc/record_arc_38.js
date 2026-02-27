@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -17,53 +17,45 @@ import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class RECORD_ARC_38 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new_element: false,
-            new_location: false,
-            VRDocs: [],
-            load: false
-        };
-    }
-    componentDidMount() {
-        this.setVRList(this.props.currentItem ? this.props.currentItem.id_public : false);
-    }
-    setVRList(id_public) {
-        if (!id_public) return;
-        if (this.state.load) return;
-        submitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-            let newList = [];
-            let List = response.data;
-            List.map((value, i) => {
-                let subList = value.sub_lists;
-                subList.map(valuej => {
-                    let name = valuej.list_name ? valuej.list_name.split(";") : []
-                    let category = valuej.list_category ? valuej.list_category.split(",") : []
-                    let code = valuej.list_code ? valuej.list_code.split(",") : []
-                    let page = valuej.list_pages ? valuej.list_pages.split(",") : []
-                    let review = valuej.list_review ? valuej.list_review.split(",") : []
+function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate }) {
+    const [VRDocs, setVRDocs] = useState([]);
+    const [load, setLoad] = useState(false);
+    const [rewState, setRewState] = useState({});
 
-                    review.map((valuek, k) => {
-                        if (valuek === 'SI') newList.push({
-                            id_public: value.id_public,
-                            date: value.date,
-                            time: value.time,
-                            name: name[k],
-                            category: category[k],
-                            page: page[k],
-                            code: code[k],
+    useEffect(() => {
+        if (currentItem && currentItem.id_public) {
+            submitService.getIdRelated(currentItem.id_public).then(response => {
+                let newList = [];
+                let List = response.data;
+                List.map((value, i) => {
+                    let subList = value.sub_lists;
+                    subList.map(valuej => {
+                        let name = valuej.list_name ? valuej.list_name.split(";") : []
+                        let category = valuej.list_category ? valuej.list_category.split(",") : []
+                        let code = valuej.list_code ? valuej.list_code.split(",") : []
+                        let page = valuej.list_pages ? valuej.list_pages.split(",") : []
+                        let review = valuej.list_review ? valuej.list_review.split(",") : []
+
+                        review.map((valuek, k) => {
+                            if (valuek === 'SI') newList.push({
+                                id_public: value.id_public,
+                                date: value.date,
+                                time: value.time,
+                                name: name[k],
+                                category: category[k],
+                                page: page[k],
+                                code: code[k],
+                            })
                         })
                     })
                 })
+                setVRDocs(newList);
+                setLoad(true);
             })
-            this.setState({ VRDocs: newList, load: true })
-        })
+        }
+    }, []);
 
-    };
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers, _date) {
-        let swaMsg = this.props.swaMsg;
+    const CREATE_CHECK = async (_detail, chekcs, _currentItem, _headers, _date) => {
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -138,12 +130,7 @@ class RECORD_ARC_38 extends Component {
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'CHECKEO INFORME ARQUITECTÓNICO ' + id_public + '.pdf');
         MySwal.close();
-
-
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { VRDocs } = this.state;
+    };
 
 
         // DATA GETERS
@@ -222,7 +209,6 @@ class RECORD_ARC_38 extends Component {
         }
         let _GET_PROFESIONAL_NAME = () => {
             var _ROLEID = window.user.roleId;
-            return window.user.name + " " + window.user.surname
             //THIS ROLES ARE PROGRAMER MASTER, CURATOR AND ARCHITEC
             if (_ROLEID === 1 || _ROLEID === 2 || _ROLEID === 6) {
                 return window.user.name + " " + window.user.surname
@@ -452,7 +438,7 @@ class RECORD_ARC_38 extends Component {
                                 <label className='fw-bold'>{value}</label>
                             </div>
                             <div className="col-3 text-center">
-                                {this.state['REW' + i]
+                                {rewState['REW' + i]
                                     ? <input type="text" class="form-control me-1" id={"r_a_38_2_" + i}
                                         defaultValue={iworker} disabled />
                                     : <label>{iworker}</label>
@@ -462,7 +448,7 @@ class RECORD_ARC_38 extends Component {
                                 <label>{iasing}</label>
                             </div>
                             <div className="col text-center">
-                                {this.state['REW' + i]
+                                {rewState['REW' + i]
                                     ? <select className="form-select form-control form-control-sm" defaultValue={ireview} id={"r_a_38_3_" + i}>
                                         <option value="0" className="text-danger">NO ES VIABLE</option>
                                         {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -471,17 +457,17 @@ class RECORD_ARC_38 extends Component {
                                 }
                             </div>
                             <div className="col text-center">
-                                {this.state['REW' + i]
+                                {rewState['REW' + i]
                                     ? <input type="date" class="form-control form-control-sm" id={"r_a_38_4_" + i} max="2100-01-01"
                                         defaultValue={idate} />
                                     : <label>{idate ?? ''}</label>
                                 }
                             </div>
                             <div className="col-1">
-                                {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={this.state['REW' + i]}
-                                    onClick={() => this.setState({ ['REW' + i]: !this.state['REW' + i] })}><i class="far fa-edit"></i></MDBBtn>
+                                {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={rewState['REW' + i]}
+                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i class="far fa-edit"></i></MDBBtn>
                                     : ''}
-                                {this.state['REW' + i]
+                                {rewState['REW' + i]
                                     ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
                                         onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
                                     : ""
@@ -492,7 +478,7 @@ class RECORD_ARC_38 extends Component {
                                         currentVersion={currentVersion}
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
-                                        requestUpdate={this.props.requestUpdate}
+                                        requestUpdate={requestUpdate}
                                         swaMsg={swaMsg}
                                         id6={"arc" + i} />
                                     : ''
@@ -683,7 +669,7 @@ class RECORD_ARC_38 extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdateRecord(currentItem.id)
+                            requestUpdateRecord(currentItem.id)
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -720,7 +706,7 @@ class RECORD_ARC_38 extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdateRecord(currentItem.id)
+                            requestUpdateRecord(currentItem.id)
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -792,8 +778,8 @@ class RECORD_ARC_38 extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            requestUpdateRecord(currentItem.id);
+                            setRewState(prev => ({ ...prev, REW0: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -830,8 +816,8 @@ class RECORD_ARC_38 extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            requestUpdateRecord(currentItem.id);
+                            setRewState(prev => ({ ...prev, REW0: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -882,8 +868,8 @@ class RECORD_ARC_38 extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setRewState(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -920,8 +906,8 @@ class RECORD_ARC_38 extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setRewState(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -1122,7 +1108,7 @@ class RECORD_ARC_38 extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
+            CREATE_CHECK(_RESUME, checks, currentItem, headers, CLOCK_3.date_start)
         }
         let _VERSIONS_SELECT = () => {
             var _COMPONENT = [];
@@ -1146,7 +1132,6 @@ class RECORD_ARC_38 extends Component {
                 {_COMPONENT_2()}
             </div>
         );
-    }
 }
 
 export default RECORD_ARC_38;

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -13,41 +13,34 @@ import DataTable from 'react-data-table-component';
 
 const MySwal = withReactContent(Swal);
 
-class SUBMIT_ANEX extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshItem = this.refreshItem.bind(this);
-        this.loadFun6 = this.loadFun6.bind(this);
-        this.state = {
-            fun6: []
-        };
+function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: propRefreshList, refreshItem: propRefreshItem }) {
+    const [fun6, setFun6] = useState([]);
+
+    useEffect(() => {
+        loadFun6();
+    }, []);
+
+    function refreshList() {
+        propRefreshList();
+        loadFun6();
     }
-    componentDidMount() {
-        this.loadFun6()
+
+    function refreshItem(id) {
+        propRefreshItem(id);
+        loadFun6();
     }
-    refreshList() {
-        this.props.refreshList();
-        this.loadFun6()
-    }
-    refreshItem(id) {
-        this.props.refreshItem(id);
-        this.loadFun6()
-    }
-    loadFun6() {
-        funService.getAll_VrFun(this.props.currentItem.id_related, this.props.currentItem.id_public)
+
+    function loadFun6() {
+        funService.getAll_VrFun(currentItem.id_related, currentItem.id_public)
         .then(response => {
-            this.setState({fun6: response.data})
+            setFun6(response.data)
         })
     }
 
 
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
-        var formData = new FormData();
+    var formData = new FormData();
 
-        // DATA GETTER
+    // DATA GETTER
         let _GET_DOC = () => {
             var _CHILD = currentItem.sub_doc;
             var _VARS = {
@@ -67,7 +60,7 @@ class SUBMIT_ANEX extends Component {
 
 
         let _CHILD_6_LIST = () => {
-            let _LIST = this.state.fun6;
+            let _LIST = fun6;
             const columns = [
                 {
                     name: <label className="text-center">DESCRIPCIÓN</label>,
@@ -173,7 +166,7 @@ class SUBMIT_ANEX extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.refreshList(currentItem.id);
+                            refreshList(currentItem.id);
                         } 
                         else {
                             MySwal.fire({
@@ -203,7 +196,7 @@ class SUBMIT_ANEX extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.refreshItem(currentItem.id);
+                            refreshItem(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -336,7 +329,6 @@ class SUBMIT_ANEX extends Component {
 
             </div >
         );
-    }
 }
 
 export default SUBMIT_ANEX;

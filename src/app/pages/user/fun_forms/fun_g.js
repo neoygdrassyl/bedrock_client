@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { MDBCard, MDBCardBody } from '../../../components/ui';
@@ -23,26 +23,22 @@ import FUN_CHECKLIST_N from './components/fun_checklist_n';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 
 const MySwal = withReactContent(Swal);
-class FUNG extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            load: false,
-            currentItem: null,
-            pqrsxfun: false,
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+
+function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, NAVIGATION_VERSION }) {
+    const [load, setLoad] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
+                setCurrentItem(response.data);
+                setLoad(true);
+                retrievePQRSxFUN(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -50,24 +46,20 @@ class FUNG extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    retrievePQRSxFUN(id_public) {
+    };
+
+    const retrievePQRSxFUN = (id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { currentItem } = this.state;
+    };
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -1010,7 +1002,7 @@ class FUNG extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.retrieveItem}
+                            requestUpdate={retrieveItem}
                             readOnly
                         />
                     </fieldset>
@@ -1048,14 +1040,14 @@ class FUNG extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"general"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                        NAVIGATION_VERSION={this.props.NAVIGATION_VERSION}
+                        NAVIGATION_VERSION={NAVIGATION_VERSION}
                         ON
                     />
                 </> : <fieldset className="p-3" id="fung_0">
@@ -1063,7 +1055,6 @@ class FUNG extends Component {
                 </fieldset>}
             </div>
         );
-    }
 }
 
 export default FUNG;

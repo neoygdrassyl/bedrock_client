@@ -1,14 +1,8 @@
-import { Component } from 'react';
 import { dateParser_dateDiff, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 
 var momentB = require('moment-business-days');
 
-class FUN_CLOCK_CONTROL extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion }) {
 
         // DATA GETTERS
         let _GET_CHILD_CLOCK = () => {
@@ -344,7 +338,6 @@ class FUN_CLOCK_CONTROL extends Component {
 
             </div>
         );
-    }
 }
 
 export default FUN_CLOCK_CONTROL;

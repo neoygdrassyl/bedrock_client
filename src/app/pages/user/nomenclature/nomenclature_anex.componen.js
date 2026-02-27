@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useCallback } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -12,25 +12,7 @@ import { cities } from '../../../components/jsons/vars';
 
 const MySwal = withReactContent(Swal);
 
-class NOMENCLATURE_ANEX extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshItem = this.refreshItem.bind(this);
-        this.state = {
-        };
-    }
-    refreshList() {
-        this.props.refreshList();
-    }
-    refreshItem(id) {
-        this.props.refreshItem(id);
-    }
-
-
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshList, refreshItem }) {
         var formData = new FormData();
 
         // DATA GETTER
@@ -93,7 +75,7 @@ class NOMENCLATURE_ANEX extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.refreshItem(currentItem.id);
+                            refreshItem(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -122,7 +104,7 @@ class NOMENCLATURE_ANEX extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.refreshItem(currentItem.id);
+                            refreshItem(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -301,7 +283,6 @@ class NOMENCLATURE_ANEX extends Component {
                 </form>
             </div >
         );
-    }
 }
 
 export default NOMENCLATURE_ANEX;

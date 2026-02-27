@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useCallback } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -9,15 +9,11 @@ import { cities, domains, domains_number } from '../../../../components/jsons/va
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-class FUN_PDF_CHECK extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
+function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
+
     _GET_CHILD_1 = () => {
-        var _CHILD = this.props.currentItem.fun_1s;
-        var _CURRENT_VERSION = this.props.currentVersion - 1;
+        var _CHILD = currentItem.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
             item_0: "",
             item_1: "",
@@ -40,7 +36,7 @@ class FUN_PDF_CHECK extends Component {
         return _CHILD_VARS;
     }
     _GET_CHILD_2 = () => {
-        var _CHILD = this.props.currentItem.fun_2;
+        var _CHILD = currentItem.fun_2;
         var _CHILD_VARS = {
             item_20: "",
             item_211: "",
@@ -77,7 +73,7 @@ class FUN_PDF_CHECK extends Component {
         return _CHILD_VARS;
     }
     _GET_CHILD_3 = () => {
-        var _CHILD = this.props.currentItem.fun_3s;
+        var _CHILD = currentItem.fun_3s;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
@@ -85,7 +81,7 @@ class FUN_PDF_CHECK extends Component {
         return _LIST;
     }
     _GET_CHILD_4 = () => {
-        var _CHILD = this.props.currentItem.fun_4s;
+        var _CHILD = currentItem.fun_4s;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
@@ -93,7 +89,7 @@ class FUN_PDF_CHECK extends Component {
         return _LIST;
     }
     _GET_CHILD_51 = () => {
-        var _CHILD = this.props.currentItem.fun_51s;
+        var _CHILD = currentItem.fun_51s;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
@@ -101,7 +97,7 @@ class FUN_PDF_CHECK extends Component {
         return _LIST;
     }
     GET_CHILD_52 = () => {
-        var _CHILD = this.props.currentItem.fun_52s;
+        var _CHILD = currentItem.fun_52s;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
@@ -109,8 +105,8 @@ class FUN_PDF_CHECK extends Component {
         return _LIST;
     }
     _GET_CHILD_53 = () => {
-        var _CHILD = this.props.currentItem.fun_53s;
-        var _CURRENT_VERSION = this.props.currentItem.version - 1;
+        var _CHILD = currentItem.fun_53s;
+        var _CURRENT_VERSION = currentItem.version - 1;
         var _CHILD_VARS = {
             item_530: "",
             item_5311: "",
@@ -138,8 +134,8 @@ class FUN_PDF_CHECK extends Component {
         return _CHILD_VARS;
     }
     _GET_CHILD_C = () => {
-        var _CHILD = this.props.currentItem.fun_cs;
-        var _CURRENT_VERSION = this.props.currentItem.version - 1;
+        var _CHILD = currentItem.fun_cs;
+        var _CURRENT_VERSION = currentItem.version - 1;
         var _CHILD_VARS = {
             item_c0: "",
             item_c1: "",
@@ -169,9 +165,9 @@ class FUN_PDF_CHECK extends Component {
 
         return _CHILD_VARS;
     }
-    _GET_CHILD_REVIEW() {
-        var _CHILD = this.props.currentItem.fun_rs;
-        var _CURRENT_VERSION = this.props.currentVersion - 1;
+    const _GET_CHILD_REVIEW = () => {
+        var _CHILD = currentItem.fun_rs;
+        var _CURRENT_VERSION = currentVersion - 1;
         if (_CHILD) {
             if (_CHILD[_CURRENT_VERSION] != null) {
                 _CHILD = _CHILD[_CURRENT_VERSION]
@@ -183,7 +179,7 @@ class FUN_PDF_CHECK extends Component {
     }
 
     _GET_CLOCK = () => {
-        var _CHILD = this.props.currentItem.fun_clocks;
+        var _CHILD = currentItem.fun_clocks;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
@@ -192,7 +188,7 @@ class FUN_PDF_CHECK extends Component {
     }
 
     _GET_CLOCK_STATE = (_state) => {
-        var _CLOCK = this._GET_CLOCK();
+        var _CLOCK = _GET_CLOCK();
         if (_state == null) return false;
         for (var i = 0; i < _CLOCK.length; i++) {
             if (_CLOCK[i].state == _state) return _CLOCK[i];
@@ -200,7 +196,7 @@ class FUN_PDF_CHECK extends Component {
         return false;
     }
 
-    WordWrap(text, maxLength) {
+    const WordWrap = (text, maxLength) => {
         if (!text) return false;
 
         const strWords = text.split(' ');
@@ -221,8 +217,8 @@ class FUN_PDF_CHECK extends Component {
             }
         }, '');
     };
-    async getPdfForm() {
-        let swaMsg = this.props.swaMsg;
+    const getPdfForm = async () => {
+        let swaMsg = swaMsg;
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -230,7 +226,7 @@ class FUN_PDF_CHECK extends Component {
             showConfirmButton: false,
         });
 
-        let model = this.props.currentItem.model
+        let model = currentItem.model
         if (!model) return MySwal.fire({
             title: 'SOLICITUD SIN MODELO',
             text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
@@ -238,7 +234,6 @@ class FUN_PDF_CHECK extends Component {
             showConfirmButton: true,
             confirmButtonText: 'CONTINUAR',
         });
-
 
         let m_2022 = Number(model) >= 2022
         // m_2022 = false
@@ -252,7 +247,7 @@ class FUN_PDF_CHECK extends Component {
 
         var _child = null;
         var _array = null;
-        const currentItem = this.props.currentItem;
+        const currentItem = currentItem;
 
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
@@ -260,7 +255,7 @@ class FUN_PDF_CHECK extends Component {
         // WIDTH = 612, HEIGHT = 936
 
         let _city = document.getElementById('func_pdf_0_2').value;
-        let _date = this._GET_CLOCK_STATE(3)
+        let _date = _GET_CLOCK_STATE(3)
         if (_date.date_start && _GLOBAL_ID === 'cb1') _city = document.getElementById('func_pdf_0_2').value + ", radicado el " + _date.date_start;
         let _number = document.getElementById('func_pdf_0_1').value;
 
@@ -270,7 +265,6 @@ class FUN_PDF_CHECK extends Component {
         let o_si = 0
         let o_no = 0
         let o_na = 0
-
 
         let print_new_page = (n) => {
             if (m_2022) {
@@ -295,7 +289,7 @@ class FUN_PDF_CHECK extends Component {
         print_new_page(0)
 
         // FUN 1
-        _child = this._GET_CHILD_1();
+        _child = _GET_CHILD_1();
         // FUN 1.1
         if (_child) {
             // FUN 1.1
@@ -417,8 +411,7 @@ class FUN_PDF_CHECK extends Component {
 
         // FUN 53
 
-
-        _child = this._GET_CHILD_53();
+        _child = _GET_CHILD_53();
         if (m_2022) {
             page.moveTo(80, 352); page.drawText(_child.item_5311 + ' ' + _child.item_5312, { size: 9 });
             page.moveTo(370, 352); page.drawText(_child.item_536, { size: 9 });
@@ -431,9 +424,8 @@ class FUN_PDF_CHECK extends Component {
             page.moveTo(400, 400); page.drawText(_child.item_535, { size: 9 });
         }
 
-
         // FUN C
-        _child = this._GET_CHILD_C();
+        _child = _GET_CHILD_C();
         if (m_2022) {
             page.moveTo(90, 294); page.drawText(_child.item_c1, { size: 9 }); // WORKER NAME
             page.moveTo(90, 278); page.drawText(dateParser(_child.item_c6), { size: 9 }); // DATE OF REVIEW
@@ -443,8 +435,6 @@ class FUN_PDF_CHECK extends Component {
             page.moveTo(105, 296); page.drawText(dateParser(_child.item_c6), { size: 9 }); // DATE OF REVIEW
             page.moveTo(385, 296); page.drawText(currentItem.id_public, { size: 9 }); // ID PUBLIC
         }
-
-
 
         let _condition = _child.item_c3;
         let _actor = _child.item_c8;
@@ -479,7 +469,7 @@ class FUN_PDF_CHECK extends Component {
         print_new_page(1)
 
         // FUN R
-        _child = this._GET_CHILD_REVIEW();
+        _child = _GET_CHILD_REVIEW();
         let _code = _child.code;
         let _check = _child.checked;
 
@@ -674,7 +664,6 @@ class FUN_PDF_CHECK extends Component {
             else { o_si = 489; o_no = 520; o_na = 556; oy = 618; }
             print_review()
 
-
             index = _code.indexOf('652');
             if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 498; }
             else { o_si = 489; o_no = 520; o_na = 556; oy = 602; }
@@ -684,7 +673,6 @@ class FUN_PDF_CHECK extends Component {
             if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 487; }
             else { o_si = 489; o_no = 520; o_na = 556; oy = 586; }
             print_review()
-
 
             // 6.6
             index = _code.indexOf('6601'); // OK
@@ -743,7 +731,6 @@ class FUN_PDF_CHECK extends Component {
                 print_review()
             }
 
-
             index = _code.indexOf('6607'); // OK
             if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 274; }  // Memoria de los cálculos y planos estructurales
             else { o_si = 485; o_no = 520; o_na = 553; oy = 323; } // Memoria de los cálculos y planos estructurales, firmados por el revisor independiente de los diseños estructurales
@@ -783,7 +770,6 @@ class FUN_PDF_CHECK extends Component {
             if (m_2022) { o_si = 474; o_no = 516; o_na = 557; oy = 82; } // Licencias anteriores o el instrumento que haga sus veces 
             else { o_si = 485; o_no = 520; o_na = 553; oy = 51; } // Licencias anteriores o el instrumento que haga sus veces con los respectivos planos
             print_review()
-
 
             // NEXT PAGE
             page = pdfDoc.getPage(3);
@@ -882,7 +868,7 @@ class FUN_PDF_CHECK extends Component {
             }
         }
 
-        _child = this._GET_CHILD_C();
+        _child = _GET_CHILD_C();
         if (m_2022) {
             page.moveTo(50, 83); page.drawText(_child.item_c1, { size: 14 }); // WORKER NAME
             page.moveTo(430, 83); page.drawText(dateParser(_child.item_c6), { size: 12 }); // DATE OF REVIEW
@@ -910,8 +896,6 @@ class FUN_PDF_CHECK extends Component {
             else _detailsArray.map((value, i) => { page.moveTo(46, 301 - i * 15.25); page.drawText(`${value}`, { size: 7 }); })
         }
 
-
-
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
         pdfDoc.setCreationDate(moment().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
@@ -934,9 +918,7 @@ class FUN_PDF_CHECK extends Component {
         })
         */
     }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+
         return (
             <div className="py-3">
                 <div className="row mb-3">
@@ -959,13 +941,11 @@ class FUN_PDF_CHECK extends Component {
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button className="btn btn-danger my-3" onClick={() => this.getPdfForm()}><i class="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
+                        <button className="btn btn-danger my-3" onClick={() => getPdfForm()}><i class="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
                     </div>
                 </div>
             </div>
         );
-    }
 }
-
 
 export default FUN_PDF_CHECK;

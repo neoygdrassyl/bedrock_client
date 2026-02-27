@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -7,14 +6,7 @@ import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
-class FUNG_CHECKLIST extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion }) => {
 
         let _SET_CHILD = () => {
             var _CHILD = currentItem.fun_1s;
@@ -1687,7 +1679,6 @@ class FUNG_CHECKLIST extends Component {
                 {_CHILD_6_LIST()}
             </div>
         );
-    }
-}
+};
 
 export default FUNG_CHECKLIST;

@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -8,16 +7,8 @@ import CodesJson from '../../../../components/jsons/fun6DocsList.json';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
 const MySwal = withReactContent(Swal);
 
-class RECORD_ENG_DOCS_CHECK extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, _FUN_6, currentItem, currentVersion, currentRecord, currentVersionR, _DOCS } = this.props;
-        const { } = this.state;
+function RECORD_ENG_DOCS_CHECK(props) {
+        const { translation, swaMsg, globals, _FUN_6, currentItem, currentVersion, currentRecord, currentVersionR, _DOCS, requestUpdateRecord } = props;
 
         let _GET_CHILD_6 = () => {
             var _CHILD = _FUN_6;
@@ -181,7 +172,7 @@ class RECORD_ENG_DOCS_CHECK extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -212,7 +203,7 @@ class RECORD_ENG_DOCS_CHECK extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -246,7 +237,6 @@ class RECORD_ENG_DOCS_CHECK extends Component {
                 </form>
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_DOCS_CHECK;

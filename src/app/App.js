@@ -53,7 +53,8 @@ import { useTranslation } from "react-i18next";
 import "./translation/i18n";
 
 // Dark Theme Services
-import { ThemeProvider } from 'styled-components'
+import { StyleSheetManager, ThemeProvider } from 'styled-components'
+import isPropValid from '@emotion/is-prop-valid'
 import { lightTheme, darkTheme } from './components/theme';
 import { fontZise1, fontZise2, fontZise3, fontZise4, fontZise5 } from './components/font';
 import { GlobalStyles } from './components/global';
@@ -95,6 +96,7 @@ export default function App() {
   return (
     <ProvideAuth>
       <Router>
+        <StyleSheetManager shouldForwardProp={(prop) => isPropValid(prop)}>
         <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme} font={font === 5 ? fontZise1 : fontZise2}>
           <ThemeProvider theme={font === 5 ? fontZise5 : font === 4 ? fontZise4 : font === 3 ? fontZise3 : font === 2 ? fontZise2 : fontZise1} >
             <>
@@ -361,6 +363,7 @@ export default function App() {
             </>
           </ThemeProvider>
         </ThemeProvider>
+        </StyleSheetManager>
       </Router>
     </ProvideAuth>
   );

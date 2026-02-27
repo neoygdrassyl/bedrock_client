@@ -1,42 +1,33 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { MDBBadge, MDBTooltip } from '../../../../components/ui';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import './fun_moduleNav_enhanced.css';
 
-class FUN_MODULE_NAV extends Component {
-    constructor(props) {
-        super(props);
-        // Check if CSS variable is already set to determine initial state
-        const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
-        this.state = {
-            isCollapsed: currentWidth === '60px'
-        };
-    }
+function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGATION, pqrsxfun }) {
+    // Check if CSS variable is already set to determine initial state
+    const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
+    const [isCollapsed, setIsCollapsed] = useState(currentWidth === '60px');
 
-    componentDidMount() {
+    useEffect(() => {
         // Ensure CSS variable is set on mount if not already set
         const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
         if (!currentWidth || currentWidth === '') {
             document.documentElement.style.setProperty('--fun-sidebar-width', '240px');
         }
-    }
+    }, []);
 
-    toggleSidebar = () => {
-        this.setState(prevState => {
-            const newCollapsedState = !prevState.isCollapsed;
+    const toggleSidebar = () => {
+        setIsCollapsed(prevCollapsed => {
+            const newCollapsedState = !prevCollapsed;
             // Update CSS variable for dynamic modal positioning
             document.documentElement.style.setProperty(
                 '--fun-sidebar-width',
                 newCollapsedState ? '60px' : '240px'
             );
-            return { isCollapsed: newCollapsedState };
+            return newCollapsedState;
         });
     };
-
-    render() {
-        const { translation, currentItem, currentVersion, FROM } = this.props;
-        const { isCollapsed } = this.state;
 
         let _REGEX_MATCH_PH = (_string) => {
             let regex0 = /p\.\s+h/i;
@@ -83,7 +74,7 @@ class FUN_MODULE_NAV extends Component {
                     icon: 'fas fa-sign', 
                     label: 'PUBLICIDAD', 
                     from: 'alert',
-                    badge: this.props.pqrsxfun?.length ? 'PQRS' : null
+                    badge: pqrsxfun?.length ? 'PQRS' : null
                 });
             }
         }
@@ -147,7 +138,7 @@ class FUN_MODULE_NAV extends Component {
                         {/* Toggle Button */}
                         <button 
                             className="fun-nav-toggle"
-                            onClick={this.toggleSidebar}
+                            onClick={toggleSidebar}
                             aria-label={isCollapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'}
                         >
                             <i className={`fas ${isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'}`}></i>
@@ -193,7 +184,7 @@ class FUN_MODULE_NAV extends Component {
                         {/* Botón de cerrar */}
                         <div className="fun-nav-section">
                             <button
-                                onClick={() => this.props.NAVIGATION(currentItem, "close", FROM)}
+                                onClick={() => NAVIGATION(currentItem, "close", FROM)}
                                 className={`fun-nav-item btn-close-module`}
                                 data-tooltip="CERRAR"
                             >
@@ -212,7 +203,7 @@ class FUN_MODULE_NAV extends Component {
                                     return (
                                         <button
                                             key={item.id}
-                                            onClick={() => FROM !== item.from && this.props.NAVIGATION(currentItem, item.id, FROM)}
+                                            onClick={() => FROM !== item.from && NAVIGATION(currentItem, item.id, FROM)}
                                             className={`fun-nav-item ${isActive ? 'active' : ''} btn-${itemColor}`}
                                             disabled={isActive}
                                             data-tooltip={item.label}
@@ -237,7 +228,6 @@ class FUN_MODULE_NAV extends Component {
                 )}
             </>
         );
-    }
 }
 
 export default FUN_MODULE_NAV;

@@ -1,16 +1,7 @@
-import { Component } from 'react';
 import { regexChecker_isPh, regexChecker_movTierra } from '../../../../components/customClasses/typeParse';
 //import VIZUALIZER from '../../../../components/vizualizer.component';
 
-class FUN_G_REPORTS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id } = this.props;
-        const { } = this.state;
+function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id, textAlign }) {
         const empty_model = { version: '', worker_name: '', worker_id: '', date_asign: '', worker_prev: '' }
         const reviewStr = ['NO CUMPLE', 'CUMPLE', 'NO APLICA']
         // DATA GETTERS
@@ -417,7 +408,7 @@ class FUN_G_REPORTS extends Component {
         return (
             <div className="fun_g_mix">
 
-                <legend className={`my-2 px-3 text-uppercase Collapsible text-white ${this.props.textAlign ?? ''}`} id={id}>
+                <legend className={`my-2 px-3 text-uppercase Collapsible text-white ${textAlign ?? ''}`} id={id}>
                     <label className="app-p lead text-center fw-normal text-uppercase">{nomenclature} INFORMES</label>
                 </legend>
 
@@ -425,7 +416,6 @@ class FUN_G_REPORTS extends Component {
 
             </div >
         );
-    }
 }
 
 export default FUN_G_REPORTS;

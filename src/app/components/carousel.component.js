@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 
@@ -26,8 +25,7 @@ import LGOG20 from '../img/contacts/supernotariado.png'
 import LGOG21 from '../img/contacts/vanti.png'
 import { Button_navigation } from './button.component';
 
-class CarouselITems extends Component {
-  render() {
+function CarouselITems() {
     const responsive = {
         superLargeDesktop: {
           // the naming can be any, depends on you.
@@ -72,7 +70,6 @@ class CarouselITems extends Component {
             </Carousel>
       </div >
     );
-  }
 }
 
 export default CarouselITems;

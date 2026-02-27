@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PublishService from '../../services/publish.service'
 import {
   MDBRow, MDBCol, MDBCard, MDBCardBody,
@@ -24,64 +24,33 @@ import publishService from '../../services/publish.service';
 const moment = require('moment');
 
 
-class Publish extends Component {
-  constructor(props) {
-    super(props);
-    this.retrievePublish = this.retrievePublish.bind(this);
-    this.refreshList = this.refreshList.bind(this);
-    this.state = {
-      selectedValue: "",
-      error: null,
-      isLoaded: false,
-      items: [],
-      currentItem: null,
-      currentIndex: -1,
-      fillActive: '1',
-      modal: false,
-      items_00: [], // Administrative Acts
-      items_01: [], // Replies to neighbours
-      items_02: [],
-      items_03: [],
-      items_04: [],
-      items_05: [],
-      items_06: [],
-      items_07: [],
-      items_08: [],
-      items_09: [],
-      items_10: [],
-      items_11: [],
-      items_12: [],
-      Subtype: [
-        'Negada',
-        'Otorgada',
-        'Desistida',
-        'Aclaratoria',
-        'Revocatoria',
-        'Recurso',
-        'Renuncia',
-      ],
-      Subtype2: [
-        'Negada',
-        'Otorgada',
-        'Desistida',
-        'Aclaratoria',
-        'Revocatoria',
-        'Recurso',
-        'Renuncia',
-      ],
-      modalEdit: false,
-      edit: false,
+function Publish({ translation, swaMsg, breadCrums }) {
+  const [selectedValue, setSelectedValue] = useState("");
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [items, setItems] = useState([]);
+  const [currentItem, setCurrentItem] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [fillActive, setFillActive] = useState('1');
+  const [modal, setModal] = useState(false);
+  const [items_00, setItems_00] = useState([]);
+  const [items_01, setItems_01] = useState([]);
+  const [items_02, setItems_02] = useState([]);
+  const [items_03, setItems_03] = useState([]);
+  const [items_04, setItems_04] = useState([]);
+  const [items_05, setItems_05] = useState([]);
+  const [items_06, setItems_06] = useState([]);
+  const [items_07, setItems_07] = useState([]);
+  const [items_08, setItems_08] = useState([]);
+  const [items_09, setItems_09] = useState([]);
+  const [items_10, setItems_10] = useState([]);
+  const [items_11, setItems_11] = useState([]);
+  const [items_12, setItems_12] = useState([]);
+  const [modalEdit, setModalEdit] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [filterStates, setFilterStates] = useState({});
 
-    };
-  }
-
-
-
-  componentDidMount() {
-    this.retrievePublish();
-  }
-
-  retrievePublish() {
+  const retrievePublish = useCallback(() => {
     PublishService.getAll()
       .then(response => {
         let list_00 = [];
@@ -138,74 +107,61 @@ class Publish extends Component {
             list_12.push(item);
           }
         });
-        this.setState({
-          items: response.data,
-          items_00: list_00,
-          items_01: list_01,
-          items_02: list_02,
-          items_03: list_03,
-          items_04: list_04,
-          items_05: list_05,
-          items_06: list_06,
-          items_07: list_07,
-          items_08: list_08,
-          items_08: list_08,
-          items_09: list_09,
-          items_10: list_10,
-          items_11: list_11,
-          items_12: list_12,
-          isLoaded: true,
-        });
+        setItems(response.data);
+        setItems_00(list_00);
+        setItems_01(list_01);
+        setItems_02(list_02);
+        setItems_03(list_03);
+        setItems_04(list_04);
+        setItems_05(list_05);
+        setItems_06(list_06);
+        setItems_07(list_07);
+        setItems_08(list_08);
+        setItems_09(list_09);
+        setItems_10(list_10);
+        setItems_11(list_11);
+        setItems_12(list_12);
+        setIsLoaded(true);
       })
       .catch(e => {
         console.log(e);
       });
-  }
-  refreshList() {
-    this.retrievePublish();
-    this.setState({
-      currentItem: null,
-      currentIndex: -1,
+  }, []);
 
-    });
-  }
-  toggle = () => {
-    this.setState({
-      modal: !this.state.modal
-    });
-  }
-  getToggle = () => {
-    return this.state.modal;
-  }
-  setItem(item) {
-    this.setState({
-      currentItem: item,
-      modal: !this.state.modal,
-    });
-  }
+  const refreshList = useCallback(() => {
+    retrievePublish();
+    setCurrentItem(null);
+    setCurrentIndex(-1);
+  }, [retrievePublish]);
 
-  toggleManage = (item) => {
-    if (item) this.setItem(item);
-    this.setState({
-      edit: !this.state.edit
-    });
-  }
+  const toggle = useCallback(() => {
+    setModal(prev => !prev);
+  }, []);
 
+  const setItemFn = useCallback((item) => {
+    setCurrentItem(item);
+    setModal(prev => !prev);
+  }, []);
 
-  render() {
-    const { translation, swaMsg, breadCrums } = this.props;
-    const { currentItem, isLoaded, items, items_00, items_01, items_02, items_03, items_04, items_05,
-      items_06, items_07, items_08, items_09, items_10, items_11, items_12, } = this.state;
+  const toggleManage = useCallback((item) => {
+    if (item) setItemFn(item);
+    setEdit(prev => !prev);
+  }, [setItemFn]);
+
+  useEffect(() => {
+    retrievePublish();
+  }, [retrievePublish]);
+
     const selectTypePublish = PUBLISH_TYPE_ARRAY.map(function (item, i) {
       return <option>{item}</option>
     })
 
     const handleChange = (e) => {
-      this.setState({ selectedValue: e.target.value })
+      setSelectedValue(e.target.value);
     }
 
     const Selector = () => {
-      if (this.state.selectedValue == 'oa' || this.state.selectedValue == 'lu' || this.state.selectedValue == 'mpr') {
+      if (selectedValue == 'oa' || selectedValue == 'lu' || selectedValue == 'mpr') {
         return <>
           <option value={'neg'}>Negada</option>
           <option value={'oto'}>Otorgada</option>
@@ -215,7 +171,7 @@ class Publish extends Component {
           <option value={'rec'}>Recurso</option>
           <option value={'ren'}>Renuncia</option>
         </>
-      } else if (this.state.selectedValue != 'oa' || this.state.selectedValue != 'lu' || this.state.selectedValue != 'mpr') {
+      } else if (selectedValue != 'oa' || selectedValue != 'lu' || selectedValue != 'mpr') {
         return <option value={'publicado'}>Publicado</option>
       }
     }
@@ -347,7 +303,7 @@ class Publish extends Component {
         button: true,
         minWidth: '170px',
         cell: row => <>
-          <button className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => { this.toggleManage(); this.setState({ edit: row }) }}><i class="fas fa-edit"></i></button>
+          <button className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => { toggleManage(); setEdit(row); }}><i class="fas fa-edit"></i></button>
           <div className='px-1'>
             <button className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => handleDelete(row)}><i class="fas fa-trash"></i></button>
           </div>
@@ -430,7 +386,7 @@ class Publish extends Component {
             formData = new FormData();
             formData.set('type', 0);
             formData.set('file', null);
-            this.refreshList();
+            refreshList();
           } else {
             // TODO
           }
@@ -464,7 +420,7 @@ class Publish extends Component {
         showConfirmButton: false,
       });
 
-      PublishService.update(this.state.edit.id, formData)
+      PublishService.update(edit.id, formData)
         .then(response => {
           if (response.data === 'OK') {
             MySwal.fire({
@@ -478,8 +434,8 @@ class Publish extends Component {
             formData = new FormData();
             formData.set('type', 0);
             formData.set('file', null);
-            this.refreshList();
-            this.toggleManage()
+            refreshList();
+            toggleManage();
           } else {
             // TODO
           }
@@ -518,8 +474,8 @@ class Publish extends Component {
                   icon: 'success',
                   confirmButtonText: swaMsg.text_btn,
                 });
-                this.refreshList();
-                this.setState({ edit: false });
+                refreshList();
+                setEdit(false);
               } else {
                 MySwal.fire({
                   title: swaMsg.generic_eror_title,
@@ -551,7 +507,7 @@ class Publish extends Component {
             <span class="input-group-text bg-info text-white">
               <i class="fas fa-search"></i>
             </span>
-            <input type='text' className='form-control' placeholder='Busqueda...' onChange={(e) => this.setState({ [ID]: e.target.value })} />
+            <input type='text' className='form-control' placeholder='Busqueda...' onChange={(e) => setFilterStates(prev => ({ ...prev, [ID]: e.target.value }))} />
           </div>
         );
       }
@@ -561,7 +517,7 @@ class Publish extends Component {
         noDataComponent="No hay publicaciones en estos momentos"
         striped="true"
         columns={columns}
-        data={datas.filter(item => item.id_publico && item.id_publico.toLowerCase().includes((this.state[ID] ?? '').toLowerCase()))}
+        data={datas.filter(item => item.id_publico && item.id_publico.toLowerCase().includes((filterStates[ID] ?? '').toLowerCase()))}
         highlightOnHover
 
         pagination
@@ -695,7 +651,7 @@ class Publish extends Component {
     }
 
     let Edit_components = () => {
-      var _ITEM = this.state.edit;
+      var _ITEM = edit;
 
       return <>
         <MDBCard className="bg- my-4 py-4">
@@ -838,24 +794,23 @@ class Publish extends Component {
           </div>
         </div>
         <Modal contentLabel="MANAGE EDIT"
-          isOpen={this.state.edit}
+          isOpen={edit}
           style={customStyles}
           ariaHideApp={false}
         >
           <div className="my-4 d-flex justify-content-between">
             <h3>MODIFICAR PETICION</h3>
-            <div className='btn-close' color='none' onClick={() => { this.toggleManage() }}></div>
+            <div className='btn-close' color='none' onClick={() => { toggleManage() }}></div>
           </div>
           <hr />
           {Edit_components()}
 
           <div className="text-end py-4 mt-3">
-            <button className="btn btn-lg btn-info" onClick={() => this.toggleManage()}><i class="fas fa-times-circle"></i> CERRAR </button>
+            <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i class="fas fa-times-circle"></i> CERRAR </button>
           </div>
         </Modal>
       </div >
     );
-  }
 }
 
 export default Publish;

@@ -1,5 +1,5 @@
 import { MDBBtn, MDBTooltip } from '../../../../components/ui';
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -9,19 +9,16 @@ import { dateParser } from '../../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 const MySwal = withReactContent(Swal);
 
-class RECORD_LAW_GEN2_11 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-            new_tax: false,
-            edit_tax: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+function RECORD_LAW_GEN2_11(props) {
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [newTax, setNewTax] = useState(false);
+    const [editTax, setEditTax] = useState(false);
+
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
 
             document.getElementById("r_lg_liberty_1_edit").value = _ITEM.id_public;
             document.getElementById("r_lg_liberty_2_edit").value = _ITEM.date;
@@ -46,8 +43,11 @@ class RECORD_LAW_GEN2_11 extends Component {
             document.getElementById("r_lg_liberty_54_edit").value = array[3];
             document.getElementById("r_lg_liberty_55_edit").value = array[4];
         }
-        if (this.state.edit_tax !== prevState.edit_tax && this.state.edit_tax != false) {
-            var _ITEM = this.state.edit_tax;
+    }, [edit]);
+
+    useEffect(() => {
+        if (editTax !== false) {
+            var _ITEM = editTax;
 
             document.getElementById("r_lg_tax_1_edit").value = _ITEM.id_public;
             document.getElementById("r_lg_tax_2_edit").value = _ITEM.date;
@@ -59,10 +59,7 @@ class RECORD_LAW_GEN2_11 extends Component {
             document.getElementById("r_lg_tax_7_edit").value = _ITEM.id_6;
             document.getElementById("r_lg_tax_8_edit").value = _ITEM.type;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    }, [editTax]);
 
         // DATA GETTERS
         let _GET_CHILD_2 = () => {
@@ -323,7 +320,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => this.setState({ edit: row })}>
+                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
                                 <i class="far fa-edit fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
@@ -702,7 +699,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => this.setState({ edit_tax: row })}><i class="far fa-edit fa-2x"></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEditTax(row)}><i class="far fa-edit fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                             <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_tax(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
@@ -1103,7 +1100,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        props.requestUpdateRecord(currentItem.id);
                         document.getElementById('form_rl_gen_11_new').reset();
                     } else {
                         MySwal.fire({
@@ -1150,8 +1147,8 @@ class RECORD_LAW_GEN2_11 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit: false });
+                                props.requestUpdateRecord(currentItem.id);
+                                setEdit(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -1217,7 +1214,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            RECORD_LAW_SERVICE.update_law_11liberty(this.state.edit.id, formData)
+            RECORD_LAW_SERVICE.update_law_11liberty(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -1227,9 +1224,9 @@ class RECORD_LAW_GEN2_11 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        props.requestUpdateRecord(currentItem.id);
                         document.getElementById('form_rl_gen_11_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1290,7 +1287,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        props.requestUpdateRecord(currentItem.id);
                         document.getElementById('form_rl_gen_11_new_tax').reset();
                     } else {
                         MySwal.fire({
@@ -1337,8 +1334,8 @@ class RECORD_LAW_GEN2_11 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit_tax: false });
+                                props.requestUpdateRecord(currentItem.id);
+                                setEditTax(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -1389,7 +1386,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            RECORD_LAW_SERVICE.update_law_11tax(this.state.edit_tax.id, formData)
+            RECORD_LAW_SERVICE.update_law_11tax(editTax.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -1399,9 +1396,9 @@ class RECORD_LAW_GEN2_11 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        props.requestUpdateRecord(currentItem.id);
                         document.getElementById('form_rl_gen_11_edit_tax').reset();
-                        this.setState({ edit_tax: false });
+                        setEditTax(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1477,7 +1474,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1508,7 +1505,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1538,12 +1535,12 @@ class RECORD_LAW_GEN2_11 extends Component {
                 </div>
                 <h3 className="py-3" >Certificado de tradición matrícula inmobiliaria</h3>
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Nuevo certificado de tradición
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_rl_gen_11_new" onSubmit={new_liberty}>
                             {_COMPONENT_NEW_LIBERTY()}
@@ -1556,7 +1553,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                     </>
                     : ""}
                 {_CHILD_LIBERTY_LIST()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_rl_gen_11_edit" onSubmit={edit_liberty}>
                             <h3 className="my-3 text-center">Actualizar certificado de tradición</h3>
@@ -1574,12 +1571,12 @@ class RECORD_LAW_GEN2_11 extends Component {
 
                 <h3 className="py-3" >Documento Oficial de Nomenclatura</h3>
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new_tax: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setNewTax(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Nuevo documento
                     </label>
                 </div>
-                {this.state.new_tax
+                {newTax
                     ? <>
                         <form id="form_rl_gen_11_new_tax" onSubmit={new_tax}>
                             {_COMPONENT_NEW_TAX()}
@@ -1592,7 +1589,7 @@ class RECORD_LAW_GEN2_11 extends Component {
                     </>
                     : ""}
                 {_CHILD_TAX_LIST()}
-                {this.state.edit_tax
+                {editTax
                     ? <>
                         <form id="form_rl_gen_11_edit_tax" onSubmit={edit_tax}>
                             <h3 className="my-3 text-center">Actualizar documento</h3>
@@ -1608,7 +1605,6 @@ class RECORD_LAW_GEN2_11 extends Component {
                 {_COMPONENT_CHECK_2()}
             </div >
         );
-    }
 }
 
 export default RECORD_LAW_GEN2_11;

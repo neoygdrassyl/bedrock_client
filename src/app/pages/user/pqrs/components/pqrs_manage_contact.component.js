@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -8,35 +8,29 @@ import { dateParser } from '../../../../components/customClasses/typeParse';
 import { ListGroup } from 'react-bootstrap';
 
 const MySwal = withReactContent(Swal);
-class PQRS_EDIT_CONTACT extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
-            document.getElementById("pqrs_con_edit_1_edit").value = _ITEM.address;
-            document.getElementById("pqrs_con_edit_2_edit").value = _ITEM.neighbour;
-            document.getElementById("pqrs_con_edit_3_edit").value = _ITEM.phone;
-            document.getElementById("pqrs_con_edit_4_edit").value = _ITEM.state;
-            document.getElementById("pqrs_con_edit_5_edit").value = _ITEM.county;
-            document.getElementById("pqrs_con_edit_6_edit").value = _ITEM.email;
-            document.getElementById("pqrs_con_edit_7_edit").checked = _ITEM.notify;
-            if (this.props.currentItem.pqrs_law.extension) {
-                document.getElementById("pqrs_con_edit_8").value = _ITEM.notify_extension ? _ITEM.notify_extension : 0;
-                document.getElementById("pqrs_con_edit_9").value = _ITEM.notify_extension_date;
+function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
+    const [edit, setEdit] = useState(false);
+    const [isNew, setIsNew] = useState(false);
+
+    useEffect(() => {
+        if (edit && edit !== false) {
+            document.getElementById("pqrs_con_edit_1_edit").value = edit.address;
+            document.getElementById("pqrs_con_edit_2_edit").value = edit.neighbour;
+            document.getElementById("pqrs_con_edit_3_edit").value = edit.phone;
+            document.getElementById("pqrs_con_edit_4_edit").value = edit.state;
+            document.getElementById("pqrs_con_edit_5_edit").value = edit.county;
+            document.getElementById("pqrs_con_edit_6_edit").value = edit.email;
+            document.getElementById("pqrs_con_edit_7_edit").checked = edit.notify;
+            if (currentItem.pqrs_law.extension) {
+                document.getElementById("pqrs_con_edit_8").value = edit.notify_extension ? edit.notify_extension : 0;
+                document.getElementById("pqrs_con_edit_9").value = edit.notify_extension_date;
             }
-            document.getElementById("pqrs_con_edit_101").value = _ITEM.notify_confirm ? _ITEM.notify_confirm : 0;
-            document.getElementById("pqrs_con_edit_102").value = _ITEM.notify_confirm_date;
-            document.getElementById("pqrs_con_edit_111").value = _ITEM.notify_reply ? _ITEM.notify_reply : 0;
-            document.getElementById("pqrs_con_edit_112").value = _ITEM.notify_date;
+            document.getElementById("pqrs_con_edit_101").value = edit.notify_confirm ? edit.notify_confirm : 0;
+            document.getElementById("pqrs_con_edit_102").value = edit.notify_confirm_date;
+            document.getElementById("pqrs_con_edit_111").value = edit.notify_reply ? edit.notify_reply : 0;
+            document.getElementById("pqrs_con_edit_112").value = edit.notify_date;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+    }, [edit]);
 
         //DATA GETTERS
         let _GET_CONTACTS = () => {
@@ -104,7 +98,7 @@ class PQRS_EDIT_CONTACT extends Component {
                     minWidth: '150px',
                     cell: row => <>
                         <MDBTooltip title='Modificar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => this.setState({ edit: row })} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
+                            <button onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
                                 <i class="far fa-edit"></i></button></MDBTooltip>
                         <MDBTooltip title='Eliminar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                             <button onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
@@ -308,7 +302,7 @@ class PQRS_EDIT_CONTACT extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshCurrentItem(currentItem.id)
+                        refreshCurrentItem(currentItem.id)
                         document.getElementById("form_pqrs_edit_contact_new").reset();
                     } else {
                         MySwal.fire({
@@ -372,7 +366,7 @@ class PQRS_EDIT_CONTACT extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            PQRS_Service.update_contact(this.state.edit.id, formData)
+            PQRS_Service.update_contact(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -382,8 +376,8 @@ class PQRS_EDIT_CONTACT extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshCurrentItem(currentItem.id)
-                        this.setState({ edit: false });
+                        refreshCurrentItem(currentItem.id)
+                        setEdit(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -429,8 +423,8 @@ class PQRS_EDIT_CONTACT extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.refreshCurrentItem(currentItem.id)
-                                this.setState({ edit: false });
+                                refreshCurrentItem(currentItem.id)
+                                setEdit(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -455,12 +449,12 @@ class PQRS_EDIT_CONTACT extends Component {
         return (
             <div>
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Añadir Contacto
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <form id="form_pqrs_edit_contact_new" onSubmit={new_item}>
                         {_COMPONENT_MANAGE("")}
                         <div className="text-center">
@@ -471,7 +465,7 @@ class PQRS_EDIT_CONTACT extends Component {
                     </form>
                     : ""}
                 {_CONTACTS_COMPONENT()}
-                {this.state.edit
+                {edit
                     ? <form id="form_pqrs_edit_contact_edit" onSubmit={edit_item}>
                         <div className="text-center">
                             <label className="fw-bold py-2">Editar Item</label>
@@ -486,7 +480,6 @@ class PQRS_EDIT_CONTACT extends Component {
                     : ""}
             </div>
         );
-    }
 }
 
 export default PQRS_EDIT_CONTACT;

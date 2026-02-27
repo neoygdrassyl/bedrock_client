@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { MDBBtn } from '../../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -6,15 +5,8 @@ import Record_lawService from '../../../../services/record_law.service';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_LAW_STEP_1 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_LAW_STEP_1(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
         // DATA GETERS
 
         let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
@@ -144,7 +136,7 @@ class RECORD_LAW_STEP_1 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -175,7 +167,7 @@ class RECORD_LAW_STEP_1 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            props.requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -206,7 +198,6 @@ class RECORD_LAW_STEP_1 extends Component {
                 {_COMPONENT_CORRECTIONS()}
             </div >
         );
-    }
 }
 
 export default RECORD_LAW_STEP_1;

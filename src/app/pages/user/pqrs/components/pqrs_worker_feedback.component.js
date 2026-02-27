@@ -1,6 +1,6 @@
 import { MDBTooltip } from '../../../../components/ui';
 import moment from 'moment';
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'
@@ -8,26 +8,16 @@ import withReactContent from 'sweetalert2-react-content'
 import PQRS_WORKERS_EMAILS from './pqrs_workersEmails.component'
 
 const MySwal = withReactContent(Swal);
-class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.state = {
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.feedback !== prevState.feedback && this.state.feedback != false) {
-            var _ITEM = this.state.feedback;
-            if (_ITEM.feedback) document.getElementById("pqrs_worker_feeback_1").value = _ITEM.feedback;
-            document.getElementById("pqrs_worker_feeback_3").value = _ITEM.feedback_argument
+function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentItem, retrieveItem, refreshList }) {
+    const [feedback, setFeedback] = useState(false);
+    const [worker, setWorker] = useState(false);
+
+    useEffect(() => {
+        if (feedback && feedback !== false) {
+            if (feedback.feedback) document.getElementById("pqrs_worker_feeback_1").value = feedback.feedback;
+            document.getElementById("pqrs_worker_feeback_3").value = feedback.feedback_argument;
         }
-    }
-    retrieveItem(id) {
-        this.props.retrieveItem(id)
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+    }, [feedback]);
 
         // DATA GETTER
         let _GET_WORKERS = () => {
@@ -80,12 +70,12 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
                     cell: row => <>
                         {row.worker_id == window.user.id || window.user.roleId == 1
                             ? <MDBTooltip title='Dar visto' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                                <button onClick={() => this.setState({ feedback: row })} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
+                                <button onClick={() => setFeedback(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
                                     <i class="far fa-check-square fa-2x"></i></button></MDBTooltip>
                             : ""}
                         {window.user.roleId == 5 || window.user.roleId == 1 || window.user.roleId == 2
                             ? <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                                <button onClick={() => this.setState({ worker: row })} className="btn btn-sm btn-warning m-0 p-2 shadow-none">
+                                <button onClick={() => setWorker(row)} className="btn btn-sm btn-warning m-0 p-2 shadow-none">
                                     <i class="far fa-paper-plane fa-2x"></i></button></MDBTooltip>
                             : ""}
                     </>,
@@ -159,7 +149,7 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            PQRS_Service.updateWorker(this.state.feedback.id, formData)
+            PQRS_Service.updateWorker(feedback.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -169,9 +159,9 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.retrieveItem(currentItem.id);
-                        this.props.refreshList();
-                        this.setState({ feedback: false });
+                        retrieveItem(currentItem.id);
+                        refreshList();
+                        setFeedback(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -196,7 +186,7 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
             <div>
 
                 {FEEDBACK_COMPONENT()}
-                {this.state.feedback
+                {feedback
                     ? <>
                         <form id="form_worker_feeback" onSubmit={update_worker}>
                             {WOERKER_FEEBACK_COMPONENT()}
@@ -209,21 +199,20 @@ class PQRS_COMPONENT_WORKER_FEEDBACK extends Component {
 
                     </>
                     : ""}
-                {this.state.worker
+                {worker
                     ? <>
                         <label class="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
                         <PQRS_WORKERS_EMAILS
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
-                            worker={this.state.worker}
+                            worker={worker}
                             email_types={[2]}
-                            retrieveItem={this.retrieveItem}
-                            closeComponent={() => this.setState({ worker: false })}
+                            retrieveItem={retrieveItem}
+                            closeComponent={() => setWorker(false)}
                         />
                     </> : ""}
             </div>
         );
-    }
 }
 
 export default PQRS_COMPONENT_WORKER_FEEDBACK;

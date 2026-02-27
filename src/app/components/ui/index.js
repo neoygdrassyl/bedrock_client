@@ -689,10 +689,17 @@ export const MDBPopover = ({
     });
   }, [show, placement]);
 
+  const { onClick: externalOnClick, ...triggerRest } = rest;
+
+  const handleTriggerClick = (event) => {
+    setShow((prev) => !prev);
+    if (typeof externalOnClick === 'function') externalOnClick(event);
+  };
+
   // Build trigger button
   const btnProps = {
     ref: triggerRef,
-    onClick: () => setShow(!show),
+    onClick: handleTriggerClick,
     className: clsx(
       'btn',
       outline ? `btn-outline-${color || 'primary'}` : color ? `btn-${color}` : 'btn-primary',
@@ -704,7 +711,7 @@ export const MDBPopover = ({
 
   return (
     <>
-      <button {...btnProps} {...rest}>{btnChildren}</button>
+      <button {...btnProps} {...triggerRest}>{btnChildren}</button>
       {show && createPortal(
         <div
           ref={popoverRef}

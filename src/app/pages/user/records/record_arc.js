@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -36,29 +36,15 @@ import RECORD_ARC_GEN_2_REVIEW from './arc/record_arc_gem2_review.component';
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class RECORD_ARC extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            currentRecord: null,
-            currentVersionR: null,
-            loaded: false,
-            pqrsxfun: false,
-            currentItem: null,
-        };
-        this.requestUpdateRecord = this.requestUpdateRecord.bind(this);
-        this.retrievePQRSxFUN = this.retrievePQRSxFUN.bind(this);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.setItem_RecordArc = this.setItem_RecordArc.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-    }
-    componentDidMount() {
-        this.setItem_RecordArc();
-        this.retrieveItem(this.props.currentId);
-    }
+function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION }) {
+    const [currentRecord, setCurrentRecord] = useState(null);
+    const [currentVersionR, setCurrentVersionR] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
 
-    setItem_RecordArc(id) {
-        RECORD_ARCSERVICE.getRecord(id || this.props.currentId)
+    const setItem_RecordArc = useCallback((id) => {
+        RECORD_ARCSERVICE.getRecord(id || currentId)
             .then(response => {
                 let record_arc = response.data.record_arc
                 record_arc.record_arc_steps = response.data.record_arc_steps;
@@ -71,49 +57,37 @@ class RECORD_ARC extends Component {
                 record_arc.record_arc_35_locations = response.data.record_arc_35_locations;
                 record_arc.record_arc_38s = response.data.record_arc_38s;
                 
-                this.setState({
-                    currentRecord: record_arc,
-                    currentVersionR: record_arc.version,
-                    loaded: true,
-                });
-               
+                setCurrentRecord(record_arc);
+                setCurrentVersionR(record_arc.version);
+                setLoaded(true);
             })
             .catch(e => {
                 console.log(e);
                 MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
                     icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
+    }, [currentId, swaMsg]);
 
-    requestUpdateRecord(id) {
-        this.setItem_RecordArc(id);
-    }
-    
-
-    retrievePQRSxFUN(id_public) {
+    const retrievePQRSxFUN = useCallback((id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
+    }, []);
 
-    retrieveItem(id) {
+    const retrieveItem = useCallback((id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    loaded: true
-                });
-                this.retrievePQRSxFUN(response.data.id_public);
+                setCurrentItem(response.data);
+                setLoaded(true);
+                retrievePQRSxFUN(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -121,26 +95,35 @@ class RECORD_ARC extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-    }
-    navigation_version = (STEP) => {
+    }, [swaMsg, retrievePQRSxFUN]);
+
+    const requestUpdateRecord = useCallback((id) => {
+        setItem_RecordArc(id);
+    }, [setItem_RecordArc]);
+
+    const requestUpdate = useCallback((id) => {
+        retrieveItem(id);
+    }, [retrieveItem]);
+
+    const navigation_version = useCallback((STEP) => {
         switch (STEP) {
             case "minus":
-                this.setState({ currentVersionR: this.state.currentVersionR - 1 });
+                setCurrentVersionR(prev => prev - 1);
                 break;
             case "plus":
-                this.setState({ currentVersionR: this.state.currentVersionR + 1 });
+                setCurrentVersionR(prev => prev + 1);
                 break;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem } = this.state;
+    }, []);
+
+    useEffect(() => {
+        setItem_RecordArc();
+        retrieveItem(currentId);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
         var formData = new FormData();
         let subc = currentRecord ? currentRecord.subcategory ? currentRecord.subcategory.split(',') : [0, 0, 0, 0] : [0, 0, 0, 0]
         let _GET_CHILD_1 = () => {
@@ -313,7 +296,7 @@ class RECORD_ARC extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdateRecord(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -352,7 +335,7 @@ class RECORD_ARC extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdateRecord(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
                     } else {
                         if (useSwal) MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -388,8 +371,8 @@ class RECORD_ARC extends Component {
                                         _FUN_R={_GET_CHILD_REVIEW()}
                                         currentItem={currentItem}
                                         currentVersion={currentVersion}
-                                        requestUpdate={this.requestUpdate}
-                                        requestUpdateRecord={this.requestUpdateRecord}
+                                        requestUpdate={requestUpdate}
+                                        requestUpdateRecord={requestUpdateRecord}
                                         readOnly={false}
                                         docsScope={'arc'} />
 
@@ -414,9 +397,9 @@ class RECORD_ARC extends Component {
                                         swaMsg={swaMsg}
                                         globals={globals}
                                         currentItem={currentItem}
-                                        currentId={this.props.currentId}
+                                        currentId={currentId}
                                         currentVersion={currentVersion}
-                                        requestUpdate={this.requestUpdate}
+                                        requestUpdate={requestUpdate}
                                         readOnly
                                     />
 
@@ -456,7 +439,7 @@ class RECORD_ARC extends Component {
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
                                         SERVICE={RECORD_LAW_SERVICE}
-                                        requestUpdateRecord={this.requestUpdateRecord}
+                                        requestUpdateRecord={requestUpdateRecord}
                                         AIM={"Jurídico"}
                                         readOnly />
                                     <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
@@ -465,7 +448,7 @@ class RECORD_ARC extends Component {
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
                                         SERVICE={RECORD_ARCSERVICE}
-                                        requestUpdateRecord={this.requestUpdateRecord}
+                                        requestUpdateRecord={requestUpdateRecord}
                                         AIM={"Arquitectura"}
                                         PATH={"record_arc"}
                                     />
@@ -475,7 +458,7 @@ class RECORD_ARC extends Component {
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
                                         SERVICE={RECORD_ENG_SERVICE}
-                                        requestUpdateRecord={this.requestUpdateRecord}
+                                        requestUpdateRecord={requestUpdateRecord}
                                         AIM={"Estructural"}
                                         readOnly />
 
@@ -494,8 +477,8 @@ class RECORD_ARC extends Component {
                                                 currentVersion={currentVersion}
                                                 currentRecord={currentRecord}
                                                 currentVersionR={currentVersionR}
-                                                requestUpdateRecord={this.requestUpdateRecord}
-                                                requestUpdate={this.requestUpdate}
+                                                requestUpdateRecord={requestUpdateRecord}
+                                                requestUpdate={requestUpdate}
                                                 _FUN_R={_GET_CHILD_REVIEW()}
                                             />
                                         </fieldset>
@@ -511,7 +494,7 @@ class RECORD_ARC extends Component {
                                                         currentVersion={currentVersion}
                                                         currentRecord={currentRecord}
                                                         currentVersionR={currentVersionR}
-                                                        requestUpdateRecord={this.requestUpdateRecord}
+                                                        requestUpdateRecord={requestUpdateRecord}
                                                     />
                                                 </fieldset>
                                                 <fieldset className="p-3">
@@ -524,7 +507,7 @@ class RECORD_ARC extends Component {
                                                         currentVersion={currentVersion}
                                                         currentRecord={currentRecord}
                                                         currentVersionR={currentVersionR}
-                                                        requestUpdateRecord={this.requestUpdateRecord}
+                                                        requestUpdateRecord={requestUpdateRecord}
                                                     />
                                                 </fieldset>
 
@@ -541,7 +524,7 @@ class RECORD_ARC extends Component {
                                                         currentVersion={currentVersion}
                                                         currentRecord={currentRecord}
                                                         currentVersionR={currentVersionR}
-                                                        requestUpdateRecord={this.requestUpdateRecord}
+                                                        requestUpdateRecord={requestUpdateRecord}
                                                     />
                                                 </fieldset>
                                             </>
@@ -558,7 +541,7 @@ class RECORD_ARC extends Component {
                                                         currentVersion={currentVersion}
                                                         currentRecord={currentRecord}
                                                         currentVersionR={currentVersionR}
-                                                        requestUpdateRecord={this.requestUpdateRecord}
+                                                        requestUpdateRecord={requestUpdateRecord}
                                                     />
                                                 </fieldset>
                                             </>
@@ -575,7 +558,7 @@ class RECORD_ARC extends Component {
                                                         currentVersion={currentVersion}
                                                         currentRecord={currentRecord}
                                                         currentVersionR={currentVersionR}
-                                                        requestUpdateRecord={this.requestUpdateRecord}
+                                                        requestUpdateRecord={requestUpdateRecord}
                                                     />
                                                 </fieldset>
                                             </>
@@ -592,8 +575,8 @@ class RECORD_ARC extends Component {
                                                         currentVersion={currentVersion}
                                                         currentRecord={currentRecord}
                                                         currentVersionR={currentVersionR}
-                                                        requestUpdateRecord={this.requestUpdateRecord}
-                                                        requestUpdate={this.requestUpdate}
+                                                        requestUpdateRecord={requestUpdateRecord}
+                                                        requestUpdate={requestUpdate}
                                                     />
                                                 </fieldset>
                                             </>
@@ -612,8 +595,8 @@ class RECORD_ARC extends Component {
                                             currentVersion={currentVersion}
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
-                                            requestUpdateRecord={this.requestUpdateRecord}
-                                            requestUpdate={this.requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
                                         />
                                         <legend className="my-2 px-3 text-uppercase Collapsible mt-5" id="record_arc_34">
                                             <label className="app-p lead fw-normal text-uppercase">3.3 DATOS DE CONTROL</label>
@@ -624,8 +607,8 @@ class RECORD_ARC extends Component {
                                             currentVersion={currentVersion}
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
-                                            requestUpdateRecord={this.requestUpdateRecord}
-                                            requestUpdate={this.requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
                                             _FUN_R={_GET_CHILD_REVIEW()}
                                         />
 
@@ -639,8 +622,8 @@ class RECORD_ARC extends Component {
                                             currentVersion={currentVersion}
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
-                                            requestUpdateRecord={this.requestUpdateRecord}
-                                            requestUpdate={this.requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
                                         />
 
                                         <RECORD_ARC_GEN_2_REVIEW
@@ -649,8 +632,8 @@ class RECORD_ARC extends Component {
                                             currentVersion={currentVersion}
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
-                                            requestUpdateRecord={this.requestUpdateRecord}
-                                            requestUpdate={this.requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
                                         />
                                     </fieldset>
                                 }
@@ -667,8 +650,8 @@ class RECORD_ARC extends Component {
                                         currentVersion={currentVersion}
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
-                                        requestUpdateRecord={this.requestUpdateRecord}
-                                        requestUpdate={this.requestUpdate}
+                                        requestUpdateRecord={requestUpdateRecord}
+                                        requestUpdate={requestUpdate}
                                     />
                                 </fieldset>
 
@@ -689,7 +672,7 @@ class RECORD_ARC extends Component {
                         translation={translation}
                         currentItem={currentRecord}
                         currentVersion={currentVersionR}
-                        NAVIGATION_VERSION={this.navigation_version}
+                        NAVIGATION_VERSION={navigation_version}
                         _RECORD
                     />
                     <FUN_MODULE_NAV
@@ -697,15 +680,14 @@ class RECORD_ARC extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"record_arc"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
                 </fieldset>}
             </div >
         );
-    }
 }
 
 const NAV_FUNA = (_CHILD) => {

@@ -1,20 +1,10 @@
-import { Component } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import VIZUALIZER from '../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
-class FUNN53 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
         var formData = new FormData();
 
@@ -341,7 +331,7 @@ class FUNN53 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -371,7 +361,7 @@ class FUNN53 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -441,7 +431,6 @@ class FUNN53 extends Component {
                 </form>
             </fieldset>
         </>);
-    }
-}
+};
 
 export default FUNN53;
