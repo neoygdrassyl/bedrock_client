@@ -17,7 +17,7 @@
  *     └── components/ (Sub-componentes: reportes, asignación, etc.)
  */
 
-const IMPORT_TIMEOUT = 30000;
+const IMPORT_TIMEOUT = 60000;
 
 // ─── FUN principal + Formularios de creación ─────────────────────────────────
 

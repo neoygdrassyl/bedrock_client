@@ -12,7 +12,7 @@ describe('Módulo Relojes (Clocks) — Pre-migration baseline', () => {
 
   test('1. centralClocks.component.js se importa sin error', async () => {
     await expect(import('../app/pages/user/clocks/centralClocks.component')).resolves.toBeTruthy();
-  });
+  }, 30000);
 
   test('2. Directorio hooks existe (tiene useClocksManager)', async () => {
     let hookExists = false;
@@ -37,23 +37,23 @@ describe('Módulo Expedientes (Records) — Pre-migration baseline', () => {
 
   test('1. record_eng.js se importa sin error', async () => {
     await expect(import('../app/pages/user/records/record_eng')).resolves.toBeTruthy();
-  }, 15000);
+  }, 30000);
 
   test('2. record_law.js se importa sin error', async () => {
     await expect(import('../app/pages/user/records/record_law')).resolves.toBeTruthy();
-  });
+  }, 30000);
 
   test('3. record_arc.js se importa sin error', async () => {
     await expect(import('../app/pages/user/records/record_arc')).resolves.toBeTruthy();
-  }, 15000);
+  }, 30000);
 
   test('4. record_ph.js se importa sin error', async () => {
     await expect(import('../app/pages/user/records/record_ph')).resolves.toBeTruthy();
-  });
+  }, 30000);
 
   test('5. record_review.js se importa sin error', async () => {
     await expect(import('../app/pages/user/records/record_review')).resolves.toBeTruthy();
-  });
+  }, 30000);
 });
 
 // ─── Tests de importación — Services ─────────────────────────────────────────

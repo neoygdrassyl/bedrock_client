@@ -522,7 +522,6 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                 />
             </div>
         );
-    }
 }
 
 export default PQRSASIGN;
