@@ -34,6 +34,19 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
     const [items_3, setItems3] = useState([]);
     const [users, setUsers] = useState([]);
 
+    const toggle = useCallback(() => setModal(prev => !prev), []);
+    const toggle_edit = useCallback(() => setModalEdit(prev => !prev), []);
+
+    const setItemFn = useCallback((item) => {
+        setCurrentItem(item);
+        setModal(true);
+    }, []);
+
+    const setItem_edit = useCallback((item) => {
+        setCurrentItem(item);
+        setModalEdit(true);
+    }, []);
+
     const retrievePublish = useCallback(() => {
         AppointmentService.getAll()
             .then(response => {
@@ -358,7 +371,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                         </div>
                     </div>
                 </div>
-                <MDBModal show={getToggle()} tabIndex='-2' staticBackdrop >
+                <MDBModal show={modal} tabIndex='-2' staticBackdrop >
                     <MDBModalDialog size="lg">
                         <MDBModalContent className="container-primary">
                             <MDBModalHeader>
