@@ -66,7 +66,7 @@ State is local only (`useState`/`useReducer`) — no global store.
 
 ## Migration context
 
-Migrated from React 16 + CRA 4 → React 19 + Vite 6 (branch `feat/react-19-migration`, feb 2026). Phases 0–5 complete. Phase 6 (class→functional, 178 files) and Phase 7 (replace abandoned libs) are ongoing and incremental. Details in `.github/instructions/MIGRATION_PLAN.md` and `MIGRATION_LOG.md`.
+Migrated from React 16 + CRA 4 → React 19 + Vite 6 (branch `feat/react-19-migration`, feb 2026). Phases 0–6 complete. 157 class components migrated to functional with hooks. 16 classes remain (1 Error Boundary + 14 charts react-vis + 1 commented-out). Phase 7 (replace abandoned libs: react-vis, react-quill, react-google-maps) is next and incremental. Details in `.github/instructions/MIGRATION_PLAN.md` and `MIGRATION_LOG.md`.
 
 Legacy libs still working at runtime: `react-quill@1.3.5`, `react-vis@1.11.7`, `@silevis/reactgrid@4.1.17`.
 

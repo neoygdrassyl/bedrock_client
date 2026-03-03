@@ -239,10 +239,12 @@ Estas librerías funcionan en runtime pero tienen peerDeps que no incluyen React
 
 | Librería | Archivos | Reemplazo sugerido |
 |----------|----------|-------------------|
-| `react-quill@1.3.5` | 1 (`pqrs_rteReply.component.js`) | `react-quill-new` |
-| `react-vis@1.11.7` | 16 archivos de gráficas | `recharts` |
-| `@silevis/reactgrid@4.1.17` | 2 archivos (`record_arc_areas*`) | — |
-| `react-google-maps@9.4.5` | 1 archivo | `@react-google-maps/api` |
+| `react-vis@1.11.7` | 14 charts (class components en `charts_components.js/`) | `recharts` | Fase 7 — incluye migrar class→functional |
+| `react-quill@1.3.5` | 1 (`pqrs_rteReply.component.js`, class component) | `react-quill-new` | Fase 7 |
+| `@silevis/reactgrid@4.1.17` | 3 archivos (`record_arc_areas*`, class components) | Evaluar | Fase 7 |
+| `react-google-maps@9.4.5` | 1 (`map.js`) | `@react-google-maps/api` | Fase 7 |
+| `@pathofdev/react-tag-input@1.0.7` | ~3 archivos | RSuite `<TagPicker>` | Fase 7 |
+| `react-html-datalist@2.0.4` | ~2 archivos | HTML nativo `<datalist>` | Fase 7 |
 
 Si alguna empieza a fallar, consultar `.github/instructions/MIGRATION_PLAN.md` (Fase 7).
 
@@ -270,7 +272,7 @@ El proyecto fue migrado de **React 16 + CRA 4** a **React 19 + Vite 6** en el br
 - `.github/instructions/MIGRATION_PLAN.md` — Plan completo, estado de cada fase
 - `MIGRATION_LOG.md` — Log de ejecución con métricas y diffs
 
-**Estado actual:** Fases 0–5 completadas. Fase 6 (class → functional, 178 archivos) y Fase 7 (reemplazar libs abandonadas) son incrementales y no bloqueantes.
+**Estado actual:** Fases 0–6 completadas. 157 class components migrados a funcionales con hooks. Quedan 16 clases (1 Error Boundary + 14 charts react-vis + 1 comentada). **Fase 7** (reemplazar libs abandonadas: react-vis, react-quill, react-google-maps) es la siguiente y es incremental.
 
 ---
 
