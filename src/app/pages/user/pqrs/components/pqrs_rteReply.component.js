@@ -1,6 +1,5 @@
 import moment from 'moment';
-import { Component, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { useRef, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { dateParser } from '../../../../components/customClasses/typeParse';
