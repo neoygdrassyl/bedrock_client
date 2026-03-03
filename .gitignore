@@ -17,6 +17,11 @@ build.zip
 .vscode
 .venv
 
+# migration/agent temp files
+*.py
+*.ipynb
+.tmp/
+
 # testing
 /coverage
 

@@ -25,7 +25,8 @@ applyTo: '**'
 | 4 | CRA 4 → Vite 6 | ✅ COMPLETADA | @vite-migrator-agent | Vite 6.4.1, Vitest 4, 82 archivos env migrados, Node 22 |
 | **5** | **React 18 → 19** | **✅ COMPLETADA** | **@react19-migrator-agent** | React 19.2.4, forwardRef cleanup, createRef→useRef, MDB mock, 136/136 tests |
 | 6 | Class → Functional (incremental) | 🔲 CONTINUA | @migrator-agent | 177 class components → funcionales con hooks. Por módulo |
-| 7 | Reemplazar libs abandonadas | 🔲 CONTINUA | @migrator-agent | react-quill, react-vis, mdbreact → alternativas modernas |
+| 6 | Class → Functional | ✅ COMPLETADA | @class-to-functional-agent | 157 class→functional, 22 excluidos (Error Boundary + libs Phase 7) |
+| 7 | Reemplazar libs abandonadas | 🔲 CONTINUA | @migrator-agent | react-quill, react-vis → alternativas modernas |
 
 ---
 
@@ -343,16 +344,30 @@ function MyComp() {
 
 ## FASE 7 — Reemplazar Librerías Abandonadas (CONTINUA)
 
-### Librerías a reemplazar
+### Estado actual
 
-| Librería abandonada | Reemplazo recomendado | Complejidad |
-|---------------------|----------------------|-------------|
-| `mdbreact` v5.2.0 | Bootstrap 5 puro + RSuite (ya en el proyecto) | MEDIA — buscar qué componentes MDB se usan |
-| `react-quill` v1.3.5 | `react-quill-new` o `jodit-pro-react` (ya en el proyecto) | MEDIA |
-| `react-vis` v1.11.7 | `recharts` o `visx` (Airbnb) | ALTA — gráficas deben verse igual |
-| `react-google-maps` v9.4.5 | `@react-google-maps/api` v2+ | MEDIA |
-| `@pathofdev/react-tag-input` v1.0.7 | RSuite `<TagPicker>` o implementar custom | BAJA |
-| `react-html-datalist` v2.0.4 | HTML nativo `<datalist>` o RSuite `<AutoComplete>` | BAJA |
+- `mdbreact` v5.2.0 — **YA ELIMINADA** en Fase 5b (reemplazada por wrappers en `ui/index.js`)
+- `mdb-react-ui-kit` — **YA ELIMINADA** en Fase 5b
+
+### Librerías pendientes de reemplazar
+
+| Librería abandonada | Archivos afectados | Reemplazo recomendado | Complejidad | Notas |
+|---------------------|:---:|----------------------|-------------|-------|
+| `react-vis` v1.11.7 | 14 charts (class components) | `recharts` | ALTA | Son class components — migrar clase + lib simultáneamente |
+| `react-quill` v1.3.5 | 1 (`pqrs_rteReply.component.js`) | `react-quill-new` o `jodit-pro-react` (ya instalado) | BAJA | Solo 1 archivo |
+| `react-google-maps` v9.4.5 | 1 (`map.js`) | `@react-google-maps/api` v2+ | MEDIA | |
+| `@pathofdev/react-tag-input` v1.0.7 | ~3 archivos | RSuite `<TagPicker>` o custom | BAJA | |
+| `react-html-datalist` v2.0.4 | ~2 archivos | HTML nativo `<datalist>` o RSuite `<AutoComplete>` | BAJA | |
+| `@silevis/reactgrid` v4.1.17 | 3 (`record_arc_areas*`) | Evaluar: mantener o reemplazar | MEDIA | Son class components excluidos de Fase 6 |
+
+### Orden sugerido de ejecución Fase 7
+
+1. **react-quill → react-quill-new** (1 archivo, riesgo bajo, warm-up)
+2. **react-html-datalist → `<datalist>` nativo** (2 archivos, trivial)
+3. **@pathofdev/react-tag-input → RSuite TagPicker** (3 archivos, bajo)
+4. **react-google-maps → @react-google-maps/api** (1 archivo, medio)
+5. **react-vis → recharts** (14 archivos, alto — incluye migración class→functional)
+6. **@silevis/reactgrid** — evaluar si mantener o reemplazar (3 archivos)
 
 ---
 
@@ -380,22 +395,20 @@ Estas dependencias no dependen de React o ya son compatibles:
 ## Orden de Ejecución Real
 
 ```
-Fase 0 ✅ → Fase 1 ✅ → Fase 4 ✅ → Fase 2 ✅ → Fase 3 ⏳ → Fase 5 → Fase 6 (paralela) → Fase 7 (paralela)
-                                              ^^^^^^^^
-                                           ESTÁS AQUÍ
+Fase 0 ✅ → Fase 1 ✅ → Fase 4 ✅ → Fase 2 ✅ → Fase 3 ✅ → Fase 5 ✅ → Fase 6 ✅ → Fase 7 ⏳
+                                                                                    ^^^^^^^^
+                                                                                 ESTÁS AQUÍ
 ```
 
 > **Nota:** Fase 4 (CRA→Vite) se ejecutó antes de Fase 2 (React 18) porque era independiente y simplificaba las fases posteriores al tener ya Vite como bundler.
 
-### Dependencias entre fases restantes
+### Estado actual
 
 ```
-Fase 5 (React 19) ✅ COMPLETADA
+Fases 0-6: ✅ COMPLETADAS
+Fase 7 (Libs abandonadas): ⏳ PENDIENTE — react-vis (14), react-quill (1), react-google-maps (1), tag-input (3), datalist (2), reactgrid (3)
 
-Fase 6 (Class→Func) ← puede empezar
-Fase 7 (Libs abandon.) ← puede empezar (react-quill, react-vis)
-
-NOTA: mdb-react-ui-kit ya fue eliminada en Fase 5b
+NOTA: mdb-react-ui-kit y mdbreact ya fueron eliminadas en Fase 5b
 ```
 
 ### Timeline estimado (restante)
@@ -408,7 +421,8 @@ NOTA: mdb-react-ui-kit ya fue eliminada en Fase 5b
 | ~~Fase 2~~ | ~~2-3 días~~ | ✅ completada |
 | ~~Fase 3~~ | ~~1-2 días~~ | ✅ completada |
 | ~~Fase 5~~ | ~~1 día~~ | ✅ completada |
-| Fase 6+7 | Continuo (semanas) | — |
+| ~~Fase 6~~ | ~~3 días~~ | ✅ completada |
+| Fase 7 | Continuo (semanas) | ⏳ siguiente |
 
 ---
 
@@ -453,8 +467,17 @@ NOTA: mdb-react-ui-kit ya fue eliminada en Fase 5b
 - `process.env.REACT_APP_*`: **0** ✅
 - `<Switch>`/`useHistory`/`<Redirect>`: **0** ✅
 - `forwardRef` (producción): **2** (solo en `ui/index.js` — componentes propios) ✅
-- `extends Component`: **178** (Fase 6)
+- `extends Component`: **16** (1 Error Boundary + 1 comentada + 14 charts react-vis → Fase 7)
 - Tests: **149/149 PASS** ✅ (10 suites, requiere Node 22)
+
+### Fase 6 — Class → Functional (commits `13a4145c`..`51caa8c8`)
+- 157 class components convertidos a funcionales con hooks
+- 22 excluidos: 1 Error Boundary, 1 comentada, 14 react-vis charts, 3 reactgrid, 1 react-quill
+- Patrones: constructor→useState, componentDidMount→useEffect, this.setState→setX, withTranslation→useTranslation
+- 12 errores de transform corregidos post-migración (esbuild detectó `}` huérfanas)
+- 1 error runtime corregido (appointments.js: funciones toggle perdidas)
+- 12 módulos validados via Playwright
+- Total tests: 149/149 PASS (10 suites)
 
 ### Fase 2 — React 16 → 18 (commits `48343a4f`..`942024a3`)
 - React 16.14 → 18.3.1, ReactDOM.render → createRoot (index.js + centralClocks)
