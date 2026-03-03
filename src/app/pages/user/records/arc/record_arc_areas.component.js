@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { Spreadsheet } from "react-spreadsheet";
@@ -9,11 +9,10 @@ import ReactTagInput from '@pathofdev/react-tag-input';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import FUNService from '../../../../services/fun.service';
 
-var tagHRef = React.createRef();
-var tagERef = React.createRef();
-
 export default function RECORD_ARC_AREAS(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const tagHRef = useRef(null);
+    const tagERef = useRef(null);
     const _Header = [
         "Refe",
         "ID Plano",

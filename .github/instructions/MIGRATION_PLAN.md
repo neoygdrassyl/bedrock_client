@@ -25,7 +25,7 @@ applyTo: '**'
 | 4 | CRA 4 → Vite 6 | ✅ COMPLETADA | @vite-migrator-agent | Vite 6.4.1, Vitest 4, 82 archivos env migrados, Node 22 |
 | **5** | **React 18 → 19** | **✅ COMPLETADA** | **@react19-migrator-agent** | React 19.2.4, forwardRef cleanup, createRef→useRef, MDB mock, 136/136 tests |
 | 6 | Class → Functional (incremental) | 🔲 CONTINUA | @migrator-agent | 177 class components → funcionales con hooks. Por módulo |
-| 6 | Class → Functional | ✅ COMPLETADA | @class-to-functional-agent | 157 class→functional, 22 excluidos (Error Boundary + libs Phase 7) |
+| 6 | Class → Functional | ✅ COMPLETADA | @class-to-functional-agent | 157 class→functional, 16 `extends Component` restantes (1 ErrorBoundary + 1 comentado + 14 react-vis charts) |
 | 7 | Reemplazar libs abandonadas | 🔲 CONTINUA | @migrator-agent | react-quill, react-vis → alternativas modernas |
 
 ---
@@ -358,7 +358,7 @@ function MyComp() {
 | `react-google-maps` v9.4.5 | 1 (`map.js`) | `@react-google-maps/api` v2+ | MEDIA | |
 | `@pathofdev/react-tag-input` v1.0.7 | ~3 archivos | RSuite `<TagPicker>` o custom | BAJA | |
 | `react-html-datalist` v2.0.4 | ~2 archivos | HTML nativo `<datalist>` o RSuite `<AutoComplete>` | BAJA | |
-| `@silevis/reactgrid` v4.1.17 | 3 (`record_arc_areas*`) | Evaluar: mantener o reemplazar | MEDIA | Son class components excluidos de Fase 6 |
+| `@silevis/reactgrid` v4.1.17 | 3 (`record_arc_areas*`) | Evaluar: mantener o reemplazar | MEDIA | Ya son funcionales — solo reemplazar lib |
 
 ### Orden sugerido de ejecución Fase 7
 
@@ -472,7 +472,8 @@ NOTA: mdb-react-ui-kit y mdbreact ya fueron eliminadas en Fase 5b
 
 ### Fase 6 — Class → Functional (commits `13a4145c`..`51caa8c8`)
 - 157 class components convertidos a funcionales con hooks
-- 22 excluidos: 1 Error Boundary, 1 comentada, 14 react-vis charts, 3 reactgrid, 1 react-quill
+- 22 excluidos originalmente, de los cuales 6 fueron migrados a funcional (3 reactgrid, 1 react-quill, 2 charts funcionales)
+- 16 `extends Component` reales: 1 Error Boundary, 1 comentada, 14 react-vis charts
 - Patrones: constructor→useState, componentDidMount→useEffect, this.setState→setX, withTranslation→useTranslation
 - 12 errores de transform corregidos post-migración (esbuild detectó `}` huérfanas)
 - 1 error runtime corregido (appointments.js: funciones toggle perdidas)

@@ -1170,6 +1170,8 @@ Script Node.js en `/tmp/codemod-mdb-to-ui.js`:
 | Standalone pages | 10 | 10 | 0 | `home.js`, `fun.js`, `seal.js`, `funmanage.page.js`, `osha.js`, `publish.js`, `appointments.js`, `dashboard.js`, `mail.js`, `liquidator.js` |
 | **Total** | **179** | **157** | **22** | — |
 
+> **Nota (actualización post-auditoría):** De los 22 originalmente "excluidos", 6 fueron en realidad migrados a funcional (3 reactgrid, 1 react-quill, 2 charts funcionales). El conteo real de `extends Component` post-Fase 6 es **16**. Los 6 archivos migrados conservan imports de libs abandonadas que se reemplazan en Fase 7.
+
 ### 2. Orden de ejecución
 
 1. `nomenclature/` (3 archivos) ✅
@@ -1208,10 +1210,10 @@ Script Node.js en `/tmp/codemod-mdb-to-ui.js`:
 |---------|-------|
 | `ChartErrorBoundary.js` | Error Boundary requiere `getDerivedStateFromError` — sin equivalente hooks |
 | `record_arc_39.js` | Clase completamente comentada — código inactivo |
-| `record_arc_areas.component.js` | Usa `@silevis/reactgrid` con API de clase |
-| `record_arc_areas_2.component.js` | Usa `@silevis/reactgrid` |
-| `record_arc_areas_resumen.component.js` | Usa `@silevis/reactgrid` |
-| `pqrs_rteReply.component.js` | Usa `react-quill` — Fase 7 |
+| `record_arc_areas.component.js` | ✅ Migrado a funcional — conserva import `@silevis/reactgrid` (Phase 7) |
+| `record_arc_areas_2.component.js` | ✅ Migrado a funcional — conserva import `@silevis/reactgrid` (Phase 7) |
+| `record_arc_areas_resumen.component.js` | ✅ Migrado a funcional — conserva import `@silevis/reactgrid` (Phase 7) |
+| `pqrs_rteReply.component.js` | ✅ Migrado a funcional — conserva import `react-quill` (Phase 7) |
 | 14 archivos en `charts_components.js/` | Usan `react-vis` (abandonado) — Fase 7 |
 
 ### 5. Verificación
@@ -1226,7 +1228,9 @@ Script Node.js en `/tmp/codemod-mdb-to-ui.js`:
 ### 6. Resultado
 
 - **157 class components** convertidos a functional con hooks
-- **22 componentes** preservados como clase por razones técnicas (Error Boundary, libs Phase 7, reactgrid)
+- **16 componentes** preservados como clase (`extends Component`): 1 Error Boundary, 1 comentado, 14 charts react-vis
+- **6 archivos adicionales** fueron migrados a funcional pero conservan imports de libs Phase 7: 3 `record_arc_areas*` (reactgrid), 1 `pqrs_rteReply` (react-quill), 2 charts ya funcionales (react-vis)
+- **Total excluidos originalmente:** 22 (de los cuales 6 sí se migraron a funcional)
 - **0 errores** de compilación/lint
 - **Sin cambios** en API pública de componentes (mismas props, mismo export)
 - **Sin cambios** en rutas, servicios HTTP, o templates

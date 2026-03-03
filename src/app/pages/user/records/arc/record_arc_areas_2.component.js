@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -13,11 +13,10 @@ import "@silevis/reactgrid/styles.css";
 import RECORD_ARC_AREAS_RESUME from './record_arc_areas_resumen.component';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 
-var tagHRef = React.createRef();
-var tagERef = React.createRef();
-
 export default function RECORD_ARC_AREAS_2(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const tagHRef = useRef(null);
+    const tagERef = useRef(null);
     const _Header = [
         "#",
         "Sótano/Piso",
