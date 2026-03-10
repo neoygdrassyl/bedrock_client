@@ -21,13 +21,15 @@ import FUN_ARCHIVE from './components/fun_archive.component';
 import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.compoentn';
 import FUN_CHECKLIST_N from './components/fun_checklist_n';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
+import FUN_DUPLICATE from './components/fun_duplicate.component';
 
 const MySwal = withReactContent(Swal);
 
-function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, NAVIGATION_VERSION }) {
+function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, NAVIGATION_VERSION, onDuplicateSuccess }) {
     const [load, setLoad] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
     const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [showDuplicate, setShowDuplicate] = useState(false);
 
     useEffect(() => {
         retrieveItem(currentId);
@@ -1029,6 +1031,26 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         nomenclature={'9.'}
                     />
 
+                    {/* Duplicate project section */}
+                    <fieldset className="p-3">
+                        <div className="text-center mb-3">
+                            <button
+                                className={`btn ${showDuplicate ? 'btn-outline-secondary' : 'btn-outline-primary'}`}
+                                onClick={() => setShowDuplicate(prev => !prev)}
+                                type="button"
+                            >
+                                <i className={`fas ${showDuplicate ? 'fa-times' : 'fa-copy'} me-2`}></i>
+                                {showDuplicate ? 'Cerrar duplicación' : 'Duplicar proyecto'}
+                            </button>
+                        </div>
+                        {showDuplicate && (
+                            <FUN_DUPLICATE
+                                swaMsg={swaMsg}
+                                currentItem={currentItem}
+                                onDuplicateSuccess={onDuplicateSuccess}
+                            />
+                        )}
+                    </fieldset>
 
                     {/* <FUNG_NAV
                         translation={translation} swaMsg={swaMsg} globals={globals}

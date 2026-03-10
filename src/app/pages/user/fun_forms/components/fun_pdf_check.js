@@ -11,7 +11,7 @@ const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
 
-    _GET_CHILD_1 = () => {
+    let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
         var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
@@ -35,7 +35,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }
         return _CHILD_VARS;
     }
-    _GET_CHILD_2 = () => {
+    let _GET_CHILD_2 = () => {
         var _CHILD = currentItem.fun_2;
         var _CHILD_VARS = {
             item_20: "",
@@ -72,7 +72,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }
         return _CHILD_VARS;
     }
-    _GET_CHILD_3 = () => {
+    let _GET_CHILD_3 = () => {
         var _CHILD = currentItem.fun_3s;
         var _LIST = [];
         if (_CHILD) {
@@ -80,7 +80,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }
         return _LIST;
     }
-    _GET_CHILD_4 = () => {
+    let _GET_CHILD_4 = () => {
         var _CHILD = currentItem.fun_4s;
         var _LIST = [];
         if (_CHILD) {
@@ -88,7 +88,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }
         return _LIST;
     }
-    _GET_CHILD_51 = () => {
+    let _GET_CHILD_51 = () => {
         var _CHILD = currentItem.fun_51s;
         var _LIST = [];
         if (_CHILD) {
@@ -96,7 +96,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }
         return _LIST;
     }
-    GET_CHILD_52 = () => {
+    let GET_CHILD_52 = () => {
         var _CHILD = currentItem.fun_52s;
         var _LIST = [];
         if (_CHILD) {
@@ -104,7 +104,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }
         return _LIST;
     }
-    _GET_CHILD_53 = () => {
+    let _GET_CHILD_53 = () => {
         var _CHILD = currentItem.fun_53s;
         var _CURRENT_VERSION = currentItem.version - 1;
         var _CHILD_VARS = {
@@ -133,7 +133,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }
         return _CHILD_VARS;
     }
-    _GET_CHILD_C = () => {
+    let _GET_CHILD_C = () => {
         var _CHILD = currentItem.fun_cs;
         var _CURRENT_VERSION = currentItem.version - 1;
         var _CHILD_VARS = {
@@ -178,7 +178,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         return _CHILD;
     }
 
-    _GET_CLOCK = () => {
+    let _GET_CLOCK = () => {
         var _CHILD = currentItem.fun_clocks;
         var _LIST = [];
         if (_CHILD) {
@@ -187,7 +187,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         return _LIST;
     }
 
-    _GET_CLOCK_STATE = (_state) => {
+    let _GET_CLOCK_STATE = (_state) => {
         var _CLOCK = _GET_CLOCK();
         if (_state == null) return false;
         for (var i = 0; i < _CLOCK.length; i++) {

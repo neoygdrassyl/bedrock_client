@@ -105,8 +105,7 @@ const dvCheckList = {
 function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate, swaMsg }) {
 
     useEffect(() => {
-        // Uso tipico (no olvides de comparar las props):
-        if (currentVersion !== prev_currentVersion && currentVersion != null) {
+        if (currentVersion != null) {
             for (var i = 0; i < fatherValues.length; i++) {
                 let radios = document.getElementsByName(fatherValues[i]);
                 if (radios.length) {

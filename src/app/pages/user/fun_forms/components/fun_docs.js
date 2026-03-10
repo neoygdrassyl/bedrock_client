@@ -78,8 +78,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
             });
     }
     useEffect(() => {
-        // Uso tipico (no olvides de comparar las props):
-        if (item !== prev_item && item != null) {
+        if (item != null) {
             document.getElementById('fun6_descriptions_edit').value = item.description;
             document.getElementById('fun6_codes_edit').value = item.id_public;
             document.getElementById('fun6_pages_edit').value = item.pages;

@@ -51,9 +51,9 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
                     if (sign[1] != undefined) _COMPONENT.push(<MDBTooltip title='VALLA RADICADA' tag='a' >
                         <i class={`fas fa-sign ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
                     else _COMPONENT.push(<MDBTooltip title='VALLA SIN RADICAR' tag='a' >
-                        <i class={`fas fa-sign ${size}`} style={{ color: 'Black', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i class={`fas fa-sign ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
                 } else _COMPONENT.push(<MDBTooltip title='VALLA SIN RADICAR' tag='a' >
-                    <i class={`fas fa-sign ${size}`} style={{ color: 'Black', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i class={`fas fa-sign ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
             }
 
             let report_data = _GET_LAW_REPORT_DATA_ICON(row);
@@ -75,7 +75,7 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
                 if (row.seal) _COMPONENT.push(<MDBTooltip title='SELLO CREADO' tag='a' >
                     <i class={`fab fa-wpforms ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
                 else _COMPONENT.push(<MDBTooltip title='SELLO NO CREADO' tag='a' >
-                    <i class={`fab fa-wpforms ${size}`} style={{ color: 'Black', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i class={`fab fa-wpforms ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
             }
 
 

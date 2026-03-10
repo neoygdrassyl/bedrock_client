@@ -10,7 +10,7 @@ import { cities, domains, states } from '../../../../components/jsons/vars';
 const MySwal = withReactContent(Swal);
 function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
 
-    _GET_CHILD_1 = () => {
+    let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
         var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
@@ -48,7 +48,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         }
         return _CHILD_VARS;
     }
-    _GET_CHILD_2 = () => {
+    let _GET_CHILD_2 = () => {
         var _CHILD = currentItem.fun_2;
         var _CHILD_VARS = {
             item_20: "",
@@ -85,7 +85,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         }
         return _CHILD_VARS;
     }
-    _GET_CHILD_3 = () => {
+    let _GET_CHILD_3 = () => {
         var _CHILD = currentItem.fun_3s;
         var _LIST = [];
         if (_CHILD) {
@@ -93,7 +93,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         }
         return _LIST;
     }
-    _GET_CHILD_4 = () => {
+    let _GET_CHILD_4 = () => {
         var _CHILD = currentItem.fun_4s;
         var _LIST = [];
         if (_CHILD) {
@@ -101,7 +101,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         }
         return _LIST;
     }
-    _GET_CHILD_51 = () => {
+    let _GET_CHILD_51 = () => {
         var _CHILD = currentItem.fun_51s;
         var _LIST = [];
         if (_CHILD) {
@@ -109,7 +109,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         }
         return _LIST;
     }
-    GET_CHILD_52 = () => {
+    let GET_CHILD_52 = () => {
         var _CHILD = currentItem.fun_52s;
         var _LIST = [];
         if (_CHILD) {
@@ -117,7 +117,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         }
         return _LIST;
     }
-    _GET_CHILD_53 = () => {
+    let _GET_CHILD_53 = () => {
         var _CHILD = currentItem.fun_53s;
         var _CURRENT_VERSION = currentItem.version - 1;
         var _CHILD_VARS = {

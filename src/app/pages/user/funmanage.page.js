@@ -450,6 +450,17 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
             retrievePublish();
         })
     }
+    const handleDuplicateSuccess = (newId) => {
+        toggle(); // close current general modal
+        FUNService.get(newId)
+            .then(response => {
+                toggle(response.data); // re-open with new project
+                retrievePublish();
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
     // HELPER FUNCTIONS
     const setSubtmitRows = (items) => {
         setSubmitItems(items);
@@ -735,6 +746,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         currentVersion={currentVersion}
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version}
+                        onDuplicateSuccess={handleDuplicateSuccess}
                     />
 
                     <div className="text-end py-4 mt-3">

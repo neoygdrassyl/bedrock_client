@@ -43,10 +43,10 @@ export const MDBCol = ({ tag: Tag = 'div', className, children, size, sm, md, lg
 
 // ─── Button ───────────────────────────────────────────────────────────────────
 
-export const MDBBtn = React.forwardRef(({
+export const MDBBtn = ({
   tag, color = 'primary', outline, size, rounded, floating, block, active,
-  disabled, noRipple, toggle, className, children, href, role = 'button', ...rest
-}, ref) => {
+  disabled, noRipple, toggle, className, children, href, role = 'button', ref, ...rest
+}) => {
   let Tag = tag || (href ? 'a' : 'button');
   if (href && Tag === 'button') Tag = 'a';
 
@@ -73,8 +73,7 @@ export const MDBBtn = React.forwardRef(({
   if (Tag === 'button') props.type = rest.type || 'button';
   if (role) props.role = role;
   return <Tag {...props}>{children}</Tag>;
-});
-MDBBtn.displayName = 'MDBBtn';
+};
 
 export const MDBBtnGroup = ({ tag: Tag = 'div', className, children, role = 'group', size, ...rest }) => (
   <Tag className={clsx('btn-group', size && `btn-group-${size}`, className)} role={role} {...rest}>{children}</Tag>
@@ -82,10 +81,9 @@ export const MDBBtnGroup = ({ tag: Tag = 'div', className, children, role = 'gro
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
-export const MDBCard = React.forwardRef(({ tag: Tag = 'div', className, children, ...rest }, ref) => (
+export const MDBCard = ({ tag: Tag = 'div', className, children, ref, ...rest }) => (
   <Tag ref={ref} className={clsx('card', className)} {...rest}>{children}</Tag>
-));
-MDBCard.displayName = 'MDBCard';
+);
 
 export const MDBCardBody = ({ tag: Tag = 'div', className, children, ...rest }) => (
   <Tag className={clsx('card-body', className)} {...rest}>{children}</Tag>
