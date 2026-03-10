@@ -207,6 +207,8 @@ describe('MiComponente', () => {
 });
 ```
 
+Usuario para tests con inicios de sesión: `test@gmail.com` (contraseña: `test123`).
+
 ---
 
 ## 6. Motor de plantillas de documentos
@@ -303,3 +305,36 @@ Estas librerías tienen cambios de API fuertes entre versiones. Los LLMs frecuen
 | **react-pdf 9** | `/wojtekmaj/react-pdf` | Al tocar el visor de PDFs (API cambió completamente desde v5) |
 | **sweetalert2** | `/sweetalert2/sweetalert2` | Al crear alertas complejas (confirmaciones, inputs, timers) |
 | **axios** | `/axios/axios-docs` | Al configurar interceptors o instancias custom |
+
+---
+
+## 12. Política de uso autónomo de Skills y MCPs (OBLIGATORIA)
+
+Para maximizar calidad y evitar respuestas desactualizadas, el agente debe operar con esta política por defecto, **sin esperar que el usuario lo pida explícitamente en cada prompt**.
+
+### 12.1 Regla base
+
+- Antes de implementar cambios no triviales, el agente **debe evaluar** qué Skills y MCPs disponibles aplican al problema.
+- Si existe una herramienta aplicable (Skill o MCP), el agente **debe priorizar su uso** frente a responder “de memoria”.
+- Si no usa una herramienta aplicable, debe tener una razón concreta (p. ej. tarea puramente local sin dependencia externa) y continuar con la mejor alternativa.
+
+### 12.2 Prioridad operativa
+
+1. **Entender el contexto del repo** (`AGENTS.md`, instrucciones del módulo, restricciones legales y de arquitectura).
+2. **Seleccionar Skills aplicables** según dominio (testing, diseño UI, Vite, documentación, etc.).
+3. **Consultar documentación oficial vía MCP** cuando se use librería externa.
+4. **Implementar cambios mínimos y precisos** alineados al código existente.
+5. **Validar con pruebas/build** cuando aplique.
+
+### 12.3 Context7 como fuente preferente para librerías
+
+- Cuando la tarea toque APIs de librerías, usar Context7 como referencia principal para evitar API legacy u obsoleta.
+- Flujo esperado: `resolve-library-id` → `get-library-docs` antes de codificar.
+- Aplicar especialmente a: React 19, React Router v6, Vite 6, Vitest, styled-components 6, y librerías del módulo intervenido.
+
+### 12.4 Criterio de calidad de salida
+
+- No asumir versiones antiguas ni patrones deprecados.
+- No inventar APIs.
+- Mantener compatibilidad con arquitectura actual del proyecto.
+- Si hay ambigüedad, elegir la interpretación más simple y segura, o pedir aclaración puntual.
