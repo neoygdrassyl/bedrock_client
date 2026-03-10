@@ -51,7 +51,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
             if (_clock.state > 10 && _clock.state < 15) return <i class="far fa-dot-circle" style={{ color: 'Teal' }}></i>
             if (_clock.state == 30 || _clock.state == 50 || _clock.state == 49) return <i class="far fa-check-circle" style={{ color: 'MidnightBlue' }}></i>
             if (_clock.state >= 31 || _clock.state < 49) return <i class="far fa-dot-circle" style={{ color: 'MidnightBlue' }}></i>
-            if (_clock.state == 100) return <i class="far fa-pause-circle" style={{ color: 'Black' }}></i>
+            if (_clock.state == 100) return <i class="far fa-pause-circle" style={{ color: 'var(--bs-body-color)' }}></i>
             return ""
         }
         let _GET_TIME_FOR_CLOCK_STATE = (_state) => {

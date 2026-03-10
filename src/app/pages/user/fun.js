@@ -565,6 +565,17 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             retrievePublish();
         })
     }
+    function handleDuplicateSuccess(newId) {
+        toggle(); // close current general modal
+        FUNService.get(newId)
+            .then(response => {
+                toggle(response.data); // re-open with new project
+                retrievePublish();
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
     // HELPER FUNCTIONS
     function setSubtmitRows() {
         var end_date = moment().format('YYYY-MM-DD');
@@ -655,17 +666,15 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             {
                 when: row => (state.submitItems).includes(row.id),
                 style: {
-                    backgroundColor: 'Skyblue',
+                    backgroundColor: 'var(--bs-info-bg-subtle)',
                 },
             },
             {
                 when: row => row.id == state.selectedRow,
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'var(--bs-warning-bg-subtle)',
                 },
-
             },
-
         ];
 
         // ---------------------
@@ -732,11 +741,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 button: true,
                 center: true,
                 minWidth: '80px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_missing = [
@@ -785,14 +790,10 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: <label>ACCIÓN</label>,
                 button: true,
                 minWidth: '80px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_legal = [
@@ -832,14 +833,10 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: <label>ACCIÓN</label>,
                 button: true,
-                minWidth: '100px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                minWidth: '80px',
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_exp = [
@@ -879,14 +876,10 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: <label>ACCIÓN</label>,
                 button: true,
-                minWidth: '100px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                minWidth: '80px',
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_profesional = [
@@ -934,14 +927,10 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: <label>ACCIÓN</label>,
                 button: true,
-                minWidth: '100px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                minWidth: '80px',
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_archive = [
@@ -992,15 +981,11 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCION</label>,
+                name: <label>ACCIÓN</label>,
                 button: true,
-                minWidth: '100px',
+                minWidth: '80px',
                 ignoreCSV: true,
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
         const columns_search = [
@@ -1046,11 +1031,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 button: true,
                 center: true,
                 minWidth: '80px',
-                cell: row => <>
-                    <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
-                        {_MODULE_BTN_POP(row)}
-                    </MDBPopover>
-                </>,
+                cell: row => _MODULE_ACTION_MENU(row),
             },
         ]
 
@@ -1140,45 +1121,49 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 });
 
         }
-        let _MODULE_BTN_POP = (row) => {
+        let _MODULE_ACTION_MENU = (row) => {
             const isOA = regexChecker_isOA_2(row)
             let rules = row.rules ? row.rules.split(';') : [];
+            const canEdit = row.state != 101 && row.state <= 200;
+            const isPH = regexChecker_isPh(row, true);
+            const canAssign = window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2;
 
-            return <MDBPopoverBody>
-                <div class="list-group list-group-flush">
-                    <button type="button" onClick={() => toggle(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
-                    <button type="button" onClick={() => toggle_clock(row)} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                    <button type="button" onClick={() => toggle_d(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
-                    {row.state != 101 && row.state <= 200 ?
-                        <>
-                            <button type="button" onClick={() => toggle_n(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                            <button type="button" onClick={() => toggle_c(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
-                            {regexChecker_isPh(row, true) ?
-                                <>
-                                    <button type="button" onClick={() => toggle_recordPH(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICIÓN</button>
-                                </>
-                                :
-                                <>
-                                    {!isOA && rules[0] != 1 ? <>
-                                        <button type="button" onClick={() => toggle_alert(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
-                                    </> : ''}
-
-                                    <button type="button" onClick={() => toggle_recordLaw(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
-                                    {!isOA ? <>
-                                        <button type="button" onClick={() => toggle_recordArc(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTÓNICO</button>
-                                        {rules[1] != 1 ? <button type="button" onClick={() => toggle_recordEng(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-
-                                        <button type="button" onClick={() => toggle_recordReview(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
-                                    </> : ''}
-                                    <button type="button" onClick={() => toggle_exp(row)} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICIÓN</button>
+            return (
+                <MDBPopover size='sm' color='info' btnChildren={<i className="fas fa-ellipsis-v"></i>} placement='left' dismiss btnClassName='fun-action-toggle'>
+                    <MDBPopoverBody className='fun-action-menu p-0'>
+                        <ul className="list-unstyled mb-0">
+                            <li><h6 className="dropdown-header"><i className="far fa-eye me-2"></i>Consulta</h6></li>
+                            <li><button type="button" className="dropdown-item" onClick={() => toggle(row)}><i className="far fa-folder-open text-info me-2"></i>Detalles</button></li>
+                            <li><button type="button" className="dropdown-item" onClick={() => toggle_clock(row)}><i className="far fa-clock text-secondary me-2"></i>Tiempos</button></li>
+                            <li><button type="button" className="dropdown-item" onClick={() => toggle_d(row)}><i className="fas fa-archive text-secondary me-2"></i>Documentos</button></li>
+                            {canEdit && <>
+                                <li><hr className="dropdown-divider" /></li>
+                                <li><h6 className="dropdown-header"><i className="fas fa-pencil-alt me-2"></i>Gestión</h6></li>
+                                <li><button type="button" className="dropdown-item" onClick={() => toggle_n(row)}><i className="fas fa-sync-alt text-primary me-2"></i>Actualizar</button></li>
+                                <li><button type="button" className="dropdown-item" onClick={() => toggle_c(row)}><i className="far fa-check-square text-success me-2"></i>Checkeo</button></li>
+                                {isPH ? <>
+                                    <li><button type="button" className="dropdown-item" onClick={() => toggle_recordPH(row)}><i className="fas fa-pencil-ruler text-warning me-2"></i>Inf. P.H.</button></li>
+                                </> : <>
+                                    {!isOA && rules[0] != 1 && <li><button type="button" className="dropdown-item" onClick={() => toggle_alert(row)}><i className="fas fa-sign text-warning me-2"></i>Publicidad</button></li>}
+                                    <li><button type="button" className="dropdown-item" onClick={() => toggle_recordLaw(row)}><i className="fas fa-balance-scale text-warning me-2"></i>Inf. Jurídico</button></li>
+                                    {!isOA && <>
+                                        <li><button type="button" className="dropdown-item" onClick={() => toggle_recordArc(row)}><i className="far fa-building text-warning me-2"></i>Inf. Arquitectónico</button></li>
+                                        {rules[1] != 1 && <li><button type="button" className="dropdown-item" onClick={() => toggle_recordEng(row)}><i className="fas fa-cogs text-warning me-2"></i>Inf. Estructural</button></li>}
+                                        <li><button type="button" className="dropdown-item" onClick={() => toggle_recordReview(row)}><i className="fas fa-file-contract text-warning me-2"></i>Acta</button></li>
+                                    </>}
                                 </>}
-                        </> : <></>}
-                    {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2 ? <>
-                        <button type="button" onClick={() => retrieveMacroSingle(row.id)} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-user-clock"></i> ASIGNAR</button>
-                    </> : null}
-                </div>
-            </MDBPopoverBody>
+                                <li><hr className="dropdown-divider" /></li>
+                                <li><h6 className="dropdown-header"><i className="far fa-file-alt me-2"></i>Resolución</h6></li>
+                                <li><button type="button" className="dropdown-item" onClick={() => toggle_exp(row)}><i className="far fa-file-alt text-success me-2"></i>Expedición</button></li>
+                            </>}
+                            {canAssign && <>
+                                <li><hr className="dropdown-divider" /></li>
+                                <li><button type="button" className="dropdown-item" onClick={() => retrieveMacroSingle(row.id)}><i className="fas fa-user-cog text-primary me-2"></i>Asignar</button></li>
+                            </>}
+                        </ul>
+                    </MDBPopoverBody>
+                </MDBPopover>
+            );
         }
 
         var formData = new FormData();
@@ -1638,6 +1623,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         currentVersion={currentVersion}
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version}
+                        onDuplicateSuccess={handleDuplicateSuccess}
                     />
 
                     <div className="text-end py-4 mt-3">

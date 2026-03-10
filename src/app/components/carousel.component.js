@@ -46,7 +46,7 @@ function CarouselITems() {
         }
       };
 
-    let commonStyle = {backgroundColor: 'white'};
+    let commonStyle = {backgroundColor: 'var(--bs-body-bg)'};
     return (
       <div className="Carousel Items">
         <h3 class="text-uppercase text-center m-3 mt-5">Entidades, agremaciones, asociaciones y otros grupos de interes {<Button_navigation Iddown={null} Idup={null} />}</h3>

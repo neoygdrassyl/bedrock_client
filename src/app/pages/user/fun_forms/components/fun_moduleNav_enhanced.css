@@ -10,8 +10,8 @@
     top: 0;
     height: 100vh;
     width: var(--fun-sidebar-width);
-    background-color: #ffffff;
-    border-right: 1px solid #e1e4e8;
+    background-color: var(--bs-body-bg);
+    border-right: 1px solid var(--bs-border-color);
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     transition: width 0.15s ease;
     z-index: 1050;
@@ -49,8 +49,8 @@
     width: 20px;
     height: 50px;
     border-radius: 0 8px 8px 0;
-    background-color: #ffffff;
-    border: 1px solid #d1d5db;
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
     border-left: none;
     display: flex;
     align-items: center;
@@ -62,22 +62,22 @@
 }
 
 .fun-nav-toggle:hover {
-    background-color: #f3f4f6;
+    background-color: var(--bs-tertiary-bg);
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
     width: 24px;
 }
 
 .fun-nav-toggle i {
     font-size: 14px;
-    color: #374151;
+    color: var(--bs-body-color);
     font-weight: bold;
 }
 
 /* Header Section - simplified without displacement */
 .fun-nav-header {
     padding: 20px 16px;
-    border-bottom: 1px solid #e1e4e8;
-    background-color: #f6f8fa;
+    border-bottom: 1px solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
 }
 
 .fun-nav-sidebar.collapsed .fun-nav-header {
@@ -87,7 +87,7 @@
 .fun-nav-header-title {
     font-size: 14px;
     font-weight: 600;
-    color: #24292e;
+    color: var(--bs-body-color);
     margin-bottom: 12px;
     display: flex;
     align-items: center;
@@ -111,7 +111,7 @@
 
 .fun-nav-info-item strong {
     font-size: 13px;
-    color: #24292e;
+    color: var(--bs-body-color);
 }
 
 .fun-nav-info-item .badge {
@@ -122,7 +122,7 @@
 /* Navigation Sections - improved grouping */
 .fun-nav-section {
     padding: 4px 8px;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--bs-border-color-translucent);
 }
 
 .fun-nav-section:last-child {
@@ -133,7 +133,7 @@
 .fun-nav-section-title {
     font-size: 10px;
     font-weight: 700;
-    color: #6b7280;
+    color: var(--bs-secondary-color);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 8px 12px 4px;
@@ -154,7 +154,7 @@
     border: none;
     border-radius: 8px;
     background-color: transparent;
-    color: #1f2937;
+    color: var(--bs-body-color);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
@@ -195,13 +195,13 @@
 
 /* Hover effects for navigation items - subtle */
 .fun-nav-item:hover:not(:disabled) {
-    background-color: #f3f4f6;
+    background-color: var(--bs-tertiary-bg);
     transform: translateX(2px);
 }
 
 .fun-nav-sidebar.collapsed .fun-nav-item:hover:not(:disabled) {
     transform: scale(1.05);
-    background-color: #f3f4f6;
+    background-color: var(--bs-tertiary-bg);
 }
 
 /* Active state with better contrast */

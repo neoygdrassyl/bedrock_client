@@ -55,7 +55,7 @@ import "./translation/i18n";
 // Dark Theme Services
 import { StyleSheetManager, ThemeProvider } from 'styled-components'
 import isPropValid from '@emotion/is-prop-valid'
-import { lightTheme, darkTheme } from './components/theme';
+// Color themes removed — dark mode handled by BS5 data-bs-theme attribute
 import { fontZise1, fontZise2, fontZise3, fontZise4, fontZise5 } from './components/font';
 import { GlobalStyles } from './components/global';
 
@@ -79,7 +79,9 @@ export default function App() {
   const [theme, setTheme] = useState('light');
   const [font, setFont] = useState(3);
   const toggleTheme = () => {
-    theme === 'light' ? setTheme('dark') : setTheme('light')
+    const next = theme === 'light' ? 'dark' : 'light';
+    setTheme(next);
+    document.documentElement.setAttribute('data-bs-theme', next);
   }
   const changeFontsizePlus = () => {
     if (font >= 1 && font < 5) {
@@ -97,7 +99,6 @@ export default function App() {
     <ProvideAuth>
       <Router>
         <StyleSheetManager shouldForwardProp={(prop) => isPropValid(prop)}>
-        <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme} font={font === 5 ? fontZise1 : fontZise2}>
           <ThemeProvider theme={font === 5 ? fontZise5 : font === 4 ? fontZise4 : font === 3 ? fontZise3 : font === 2 ? fontZise2 : fontZise1} >
             <>
               <GlobalStyles />
@@ -362,7 +363,6 @@ export default function App() {
               </div>
             </>
           </ThemeProvider>
-        </ThemeProvider>
         </StyleSheetManager>
       </Router>
     </ProvideAuth>
@@ -414,7 +414,14 @@ function useAuth() {
 }
 
 function useProvideAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Restore session from localStorage on initial load
+    if (DataSerive.restoreSession()) {
+      fakeAuth.isAuthenticated = true;
+      return DataSerive.getUserData();
+    }
+    return null;
+  });
 
   const signin = cb => {
     return fakeAuth.signin(() => {
@@ -442,7 +449,7 @@ const MyLink = ({ href, as, children, ref, ...rest }) => (
     ref={ref}
     to={href}
     {...rest}
-    style={{ color: '#575757', textDecoration: 'none' }}
+    style={{ color: 'var(--bs-body-color)', textDecoration: 'none' }}
   >
     {children}
   </Link>
@@ -508,18 +515,22 @@ function LoginPage() {
     recaptchaRef.current.execute().then(response => {
       CustomsDataService.appLogin(formData)
         .then(response => {
-          if (response.data.length === 1) {
-            let userInfo = {};
-            userInfo.name = response.data[0].name;
-            userInfo.surname = response.data[0].surname;
-            userInfo.role = response.data[0].role.name;
-            userInfo.role_short = response.data[0].role.short;
-            userInfo.roleDesc = response.data[0].role.desc;
-            userInfo.active = response.data[0].active;
-            userInfo.roleId = response.data[0].roleId;
-            userInfo.id = response.data[0].id;
-            userInfo.name_short = response.data[0].name + ' ' + response.data[0].surname;
-            userInfo.name_full = response.data[0].name + ' ' + response.data[0].name_2 + ' ' + response.data[0].surname + ' ' + response.data[0].surname_2;
+          let userInfo = {};
+
+          if (response.data.token && response.data.user) {
+            // JWT format: { token, user: { ..., Role: { name, desc, short } } }
+            const u = response.data.user;
+            userInfo.name = u.name;
+            userInfo.surname = u.surname;
+            userInfo.role = u.Role.name;
+            userInfo.role_short = u.Role.short;
+            userInfo.roleDesc = u.Role.desc;
+            userInfo.active = u.active;
+            userInfo.roleId = u.roleId;
+            userInfo.id = u.id;
+            userInfo.name_short = u.name + ' ' + u.surname;
+            userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
+            DataSerive.saveToken(response.data.token);
             DataSerive.setUser(userInfo);
             login();
           } else {
@@ -534,6 +545,13 @@ function LoginPage() {
         })
         .catch(e => {
           console.log(e);
+          MySwal.fire({
+            title: <h2>CERTIFICACION FALLIDA</h2>,
+            text: 'Credenciales inválidas o error de conexión',
+            footer: 'Revise sus credenciales e intentelo nuevamente',
+            icon: 'error',
+            confirmButtonText: 'CONTINUAR',
+          })
         });
     }).catch(e => {
       console.log(e);

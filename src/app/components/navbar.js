@@ -85,7 +85,7 @@ export default function Navbar1(props) {
 
   // Link sin anidar <a>
   const MyLink = ({ href, as, children, ref, ...rest }) => (
-    <Link ref={ref} to={href} {...rest} style={{ color: '#575757', textDecoration: 'none' }}>
+    <Link ref={ref} to={href} {...rest} style={{ color: 'var(--bs-body-color)', textDecoration: 'none' }}>
       {children}
     </Link>
   );
@@ -116,24 +116,24 @@ export default function Navbar1(props) {
                       className={`module-item ${isActive ? 'active' : ''}`}
                       onClick={() => handleModuleClick(module.href)}
                       onMouseEnter={(e) => {
-                        if (!isActive) e.currentTarget.style.backgroundColor = '#e9ecef';
+                        if (!isActive) e.currentTarget.style.backgroundColor = '';
                       }}
                       onMouseLeave={(e) => {
-                        if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
+                        if (!isActive) e.currentTarget.style.backgroundColor = '';
                       }}
                     >
                       <span className="module-icon">
                         <i
                           className={module.icon}
                           style={{
-                            color: isActive ? '#2651A8' : module.color
+                            color: isActive ? 'var(--bs-primary)' : module.color
                           }}
                         />
                       </span>
                       <span
                         className="module-name"
                         style={{
-                          color: isActive ? '#2651A8' : '#495057',
+                          color: isActive ? 'var(--bs-primary)' : 'var(--bs-body-color)',
                           fontWeight: isActive ? 600 : 500
                         }}
                       >
@@ -191,7 +191,7 @@ export default function Navbar1(props) {
         )}
 
         {/* NAVBAR superior (siempre visible) */}
-        <Navbar {...props} className="app-navbar" style={{ backgroundColor: '##F7F7FA' }}>
+        <Navbar {...props} className="app-navbar">
           {/* MUY IMPORTANTE: evitar <a> para no anidar con Title */}
           <Navbar.Brand as="div"
             style={{
@@ -230,7 +230,7 @@ export default function Navbar1(props) {
             </div>
 
             {/* Separador vertical */}
-            <span aria-hidden="true" style={{ width: 1, height: '1.25rem', background: '#000', opacity: 0.75 }} />
+            <span aria-hidden="true" style={{ width: 1, height: '1.25rem', background: 'var(--bs-body-color)', opacity: 0.75 }} />
 
             {/* Título compacto */}
             <div style={{ minWidth: 0, display: 'flex', alignItems: 'center' }}>

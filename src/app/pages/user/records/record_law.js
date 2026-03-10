@@ -449,7 +449,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                 </legend>
 
 
-                                <div className="row border my-2 py-4 border border-warning" style={{ backgroundColor: 'Gainsboro', borderWidth: '3px' }}>
+                                <div className="row border my-2 py-4 border border-warning bg-body-secondary" style={{ borderWidth: '3px' }}>
                                     <div className="col-4"></div>
                                     <div className="col-4">
                                         <div class="form-check">

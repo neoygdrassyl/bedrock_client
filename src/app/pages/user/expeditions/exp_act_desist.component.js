@@ -852,7 +852,7 @@ const restoreDocs = useCallback(() => {
                                 </tbody>
                                 </table>
                             </div>
-                            <div className="card-footer bg-white py-2 small text-muted">
+                            <div className="card-footer bg-body-secondary py-2 small text-muted">
                                 Usa el check (columna derecha) para mostrar/ocultar. Los demás
                                 cambios se guardarán al confirmar.
                             </div>
@@ -1107,7 +1107,7 @@ const restoreDocs = useCallback(() => {
                                 </table>
                                 </div>
 
-                                <div className="card-footer bg-white py-2 small text-muted">
+                                <div className="card-footer bg-body-secondary py-2 small text-muted">
                                 Usa el check (columna derecha) para mostrar/ocultar. Los cambios se
                                 guardan al confirmar en la pantalla principal.
                                 </div>

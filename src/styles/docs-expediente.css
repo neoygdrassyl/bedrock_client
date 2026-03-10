@@ -11,8 +11,8 @@
 /* Header colapsible */
 .docs-expediente .section-toggle {
   width: 100%;
-  background: #ffffff;
-  border: 1px solid #e6e9ef;
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
   border-radius: .5rem;
   padding: .6rem .9rem;
   display: flex;
@@ -21,7 +21,7 @@
   text-align: left;
   cursor: pointer;
 }
-.docs-expediente .section-toggle:hover { background: #f9fafb; }
+.docs-expediente .section-toggle:hover { background: var(--bs-tertiary-bg); }
 .docs-expediente .section-toggle .title { font-weight: 600; }
 .docs-expediente .section-toggle .actions {
   display: inline-flex;
@@ -37,7 +37,7 @@
 /* Contenedor con header pegajoso */
 .docs-expediente .tableFixHead { max-height: 420px; overflow-y: auto; border-radius: .5rem; }
 .docs-expediente .tableFixHead thead th {
-  position: sticky; top: 0; z-index: 2; background: #f8f9fa;
+  position: sticky; top: 0; z-index: 2; background: var(--bs-tertiary-bg);
 }
 
 /* Ícono-only (centrado, sin bordes visibles) */
@@ -48,8 +48,8 @@
   border-radius: 50%;
   line-height: 0;
 }
-.docs-expediente .icon-eye.on  i { color: #198754; }   /* success */
-.docs-expediente .icon-eye.off i { color: #6c757d; }   /* muted  */
+.docs-expediente .icon-eye.on  i { color: var(--bs-success); }   /* success */
+.docs-expediente .icon-eye.off i { color: var(--bs-secondary); }   /* muted  */
 .docs-expediente .icon-eye:hover {
   background: rgba(0,0,0,.05); /* sin borde, solo halo */
 }
@@ -68,7 +68,7 @@
 .docs-expediente .table-hover tbody tr:hover { background-color: rgba(0,0,0,.03); }
 
 /* Helper Bootstrap 5.3 */
-.docs-expediente .bg-secondary-subtle { background-color: #eaecf0 !important; }
+.docs-expediente .bg-secondary-subtle { background-color: var(--bs-secondary-bg) !important; }
 
 /* ===== Paginación (scoped) ===== */
 .docs-expediente .pager-bar{
@@ -77,24 +77,24 @@
   align-items:center;
   gap:.5rem;
   padding:.5rem .5rem;
-  border-top:1px solid #eff2f6;
-  background:#fff;
+  border-top:1px solid var(--bs-border-color);
+  background:var(--bs-body-bg);
 }
 .docs-expediente .pager-left{ justify-self:start; }
 .docs-expediente .pager-right{ justify-self:end; }
 .docs-expediente .pager-info{
   text-align:center;
   font-size:.875rem;
-  color:#6c757d;
+  color:var(--bs-secondary-color);
   min-width:180px;
 }
 .docs-expediente .pager-btn{
   width:36px;height:36px;
   display:inline-grid;place-items:center;
-  border:1px solid #e6e9ef;
-  background:#fff;border-radius:50%;
+  border:1px solid var(--bs-border-color);
+  background:var(--bs-body-bg);border-radius:50%;
 }
-.docs-expediente .pager-btn:hover{ background:#f8f9fb; }
+.docs-expediente .pager-btn:hover{ background:var(--bs-tertiary-bg); }
 .docs-expediente .pager-btn:disabled{ opacity:.45; cursor:not-allowed; }
 @media (max-width:576px){
   .docs-expediente .pager-info{ font-size:.8rem; min-width:auto; }
@@ -132,10 +132,10 @@
   display:flex;
   flex-direction:column;
   gap:.75rem;
-  border:1px solid #d9d9d9;
+  border:1px solid var(--bs-border-color);
   border-radius:8px;
   padding:.9rem;
-  background:#fff;
+  background:var(--bs-body-bg);
 }
 
 /* Título de tarjeta */
@@ -167,7 +167,7 @@
   flex:0 0 var(--label-w);
   margin:0;
   font-size:.9rem;
-  color:#2d2d2d;
+  color:var(--bs-body-color);
   text-align:left;
   white-space:normal;
   line-height:1.2;

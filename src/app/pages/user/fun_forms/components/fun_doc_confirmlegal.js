@@ -24,16 +24,13 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
     }, []);
 
     useEffect(() => {
-
-        // Uso tipico (no olvides de comparar las props):
-        if (currentVersion !== prev_currentVersion && currentVersion != null) {
+        if (currentVersion != null) {
             var _CHILD_1 = _SET_CHILD_1_FOREIGNER();
             document.getElementById('geng_type').value = formsParser1(_CHILD_1)
         }
-
     }, [currentVersion]);
 
-    _SET_CHILD_1_FOREIGNER = () => {
+    let _SET_CHILD_1_FOREIGNER = () => {
         var _CHILD = currentItem.fun_1s;
         var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {

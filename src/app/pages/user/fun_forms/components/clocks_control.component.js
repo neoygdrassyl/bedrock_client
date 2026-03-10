@@ -13,7 +13,7 @@ const styles = {
         paddingLeft: '0',
         display: 'flex',
         listStyle: 'none',
-        borderBottom: '1px solid #dee2e6',
+        borderBottom: '1px solid var(--bs-border-color)',
     },
     tabItem: {
         marginRight: '0.25rem',
@@ -21,32 +21,32 @@ const styles = {
     tabLink: {
         cursor: 'pointer',
         padding: '0.75rem 1.25rem',
-        color: '#495057',
+        color: 'var(--bs-secondary-color)',
         textDecoration: 'none',
         display: 'block',
-        backgroundColor: '#f8f9fa',
-        border: '1px solid #dee2e6',
+        backgroundColor: 'var(--bs-tertiary-bg)',
+        border: '1px solid var(--bs-border-color)',
         borderBottom: 'none',
         borderTopLeftRadius: '.35rem',
         borderTopRightRadius: '.35rem',
         transition: 'background-color 0.2s ease-in-out',
     },
     tabLinkActive: {
-        color: '#0056b3',
-        backgroundColor: '#fff',
-        borderTop: '3px solid #007bff',
-        borderLeft: '1px solid #dee2e6',
-        borderRight: '1px solid #dee2e6',
-        borderBottom: '1px solid #fff', // Esto hace que se funda con el panel
+        color: 'var(--bs-primary)',
+        backgroundColor: 'var(--bs-body-bg)',
+        borderTop: '3px solid var(--bs-primary)',
+        borderLeft: '1px solid var(--bs-border-color)',
+        borderRight: '1px solid var(--bs-border-color)',
+        borderBottom: '1px solid var(--bs-body-bg)', // Esto hace que se funda con el panel
         fontWeight: 'bold',
         marginBottom: '-1px', // Compensa el borde inferior del contenedor
     },
     tabPane: {
         padding: '1.5rem',
-        border: '1px solid #dee2e6',
+        border: '1px solid var(--bs-border-color)',
         borderTop: 'none',
         borderRadius: '0 0 .35rem .35rem',
-        backgroundColor: '#fff',
+        backgroundColor: 'var(--bs-body-bg)',
         marginTop: '-1px', // solapa con el borde del nav
     }
 };

@@ -1093,7 +1093,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 </> : ""}
                         </form>
 
-                        <div className="my-2 px-3 text-uppercase bg-white" id="pqrs_info_1">
+                        <div className="my-2 px-3 text-uppercase bg-body-secondary" id="pqrs_info_1">
                             <label className="app-p lead text-start fw-normal text-uppercase">PROFESIONALES ASIGNADOS</label>
                         </div>
                         <div className="mb-2">

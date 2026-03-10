@@ -1,77 +1,125 @@
 import { createGlobalStyle } from "styled-components"
 export const GlobalStyles = createGlobalStyle`
+  /* ── Legacy class aliases → BS5 CSS variables ── */
   .container-primary {
-    background: ${({ theme }) => theme.bodyPrimary};
-    color: ${({ theme }) => theme.textPrimary};
-    font-family:  Roboto, Helvetica, Arial, sans-serif; 
-    transition: all 0.50s linear;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
-  
+
   .container-secondary {
-    background: ${({ theme }) => theme.bodySecondary};
-    color: ${({ theme }) => theme.textSecondary};
-    font-family:  Roboto, Helvetica, Arial, sans-serif; 
-    transition: all 0.50s linear;
+    background: var(--bs-primary);
+    color: #fff;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
-  .app-text-primary{
-      color: ${({ theme }) => theme.textPrimary};
+
+  .app-text-primary {
+    color: var(--bs-body-color);
   }
-  .app-text-secondary{
-    color: ${({ theme }) => theme.textSecondary};
-}
+
+  .app-text-secondary {
+    color: var(--bs-secondary-color);
+  }
+
   .bg-card {
-    background: ${({ theme }) => theme.cardBackground};
-    color: ${({ theme }) => theme.textPrimary};
-    border: 2px solid ${({ theme }) => theme.cardborder};
-    font-family:  Roboto, Helvetica, Arial, sans-serif; 
-    transition: all 0.50s linear;
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
+
   .bg-card-2 {
-    background: ${({ theme }) => theme.cardBackground2};
-    color: ${({ theme }) => theme.textSecondary};
-    border: 2px solid ${({ theme }) => theme.cardborder};
-    font-family:  Roboto, Helvetica, Arial, sans-serif; 
-    transition: all 0.50s linear;
+    background: var(--bs-secondary-bg);
+    color: var(--bs-body-color);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  .form-control {
-    background-color: ${({ theme }) => theme.inputdBackground};
-    color: ${({ theme }) => theme.inputText};
+  .bg-dd {
+    background: var(--bs-tertiary-bg);
   }
 
-  .form-select {
-    background-color: ${({ theme }) => theme.inputdBackground};
-    color: ${({ theme }) => theme.inputText};
-  }
-  ::placeholder { 
-    color: red;
-    opacity: 1;
-  }
-  
-  // .bg-image-gr {
-  //   background-image: 
-  //   linear-gradient(
-  //       ${({ theme }) => theme.bgImgGradient1}, 
-  //       ${({ theme }) => theme.bgImgGradient2},
-  //       ${({ theme }) => theme.bgImgGradient3}
-  //   ), url('../img/map.png');
-  // }
-
+  /* ── Collapsible components ── */
   .Collapsible {
-    background: ${({ theme }) => theme.bodySecondary};
-    color: ${({ theme }) => theme.textSecondary};
+    background: var(--bs-primary);
+    color: #fff;
   }
-  .Collapsible__contentInner{
-    background-color:  ${({ theme }) => theme.bodyPrimary};
-    color: ${({ theme }) => theme.textPrimary};
-    border-color:  ${({ theme }) => theme.bodySecondary};
+
+  .Collapsible__contentInner {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    border-color: var(--bs-border-color);
   }
-  .Collapsible__trigger{
-    color: ${({ theme }) => theme.textSecondary};
+
+  .Collapsible__trigger {
+    color: #fff;
   }
-  .bg-dd{
-    background: ${({ theme }) => theme.cardBackground};
+
+  /* ── Navigation button ── */
+  .btn-nav {
+    color: #fff;
+    border-color: var(--bs-border-color);
+    background-color: var(--bs-primary);
   }
+
+  .btn-nav:hover {
+    color: var(--bs-body-color);
+    border-color: var(--bs-primary);
+  }
+
+  .btn-nav:focus {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+  }
+
+  /* ── DataTable — BS5 dark-mode-aware (Phase 4) ── */
+  .rdt_Table {
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+  }
+  .rdt_TableHeadRow {
+    background-color: var(--bs-tertiary-bg) !important;
+    color: var(--bs-body-color) !important;
+    border-bottom-color: var(--bs-border-color) !important;
+  }
+  .rdt_TableRow {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+    border-bottom-color: var(--bs-border-color) !important;
+  }
+  .rdt_TableRow:hover {
+    background-color: var(--bs-tertiary-bg) !important;
+  }
+  .rdt_TableCol, .rdt_TableCell {
+    color: var(--bs-body-color) !important;
+  }
+  .rdt_Pagination {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+    border-top-color: var(--bs-border-color) !important;
+  }
+  .rdt_Pagination button {
+    color: var(--bs-body-color) !important;
+    fill: var(--bs-body-color) !important;
+  }
+  .rdt_ExpanderRow {
+    background-color: var(--bs-secondary-bg) !important;
+    color: var(--bs-body-color) !important;
+  }
+  .rdt_TableCol_Sortable span {
+    color: var(--bs-body-color) !important;
+  }
+  [data-tag="___react-data-table-allow-propagation___"] {
+    color: var(--bs-body-color);
+  }
+
+  /* ── Font scales (from ThemeProvider font objects) ── */
   p {
     font-size: ${({ theme }) => theme.fontSizeP};
   }
@@ -95,30 +143,5 @@ export const GlobalStyles = createGlobalStyle`
   }
   h6 {
     font-size: ${({ theme }) => theme.fontSizeH6};
-  }
-  .btn-nav {
-    color: ${({ theme }) => theme.textSecondary};
-    border-color: ${({ theme }) => theme.cardborder};
-    background-color: ${({ theme }) => theme.bodySecondary};
-  }
-  .btn-nav:hover {
-    color: ${({ theme }) => theme.textPrimary};
-    border-color: ${({ theme }) => theme.bodySecondary};
-  }
-  .btn-nav:focus{
-    background-color: ${({ theme }) => theme.cardBackground};
-    color: ${({ theme }) => theme.textPrimary};
-  }
-  td {
-    color: ${({ theme }) => theme.textPrimary};
-  }
-  th {
-    color: ${({ theme }) => theme.textPrimary};
-  }
-  .rdt_Table  {
-    background: ${({ theme }) => theme.bodyPrimary};
-    color: ${({ theme }) => theme.textPrimary};
-    font-family:  Roboto, Helvetica, Arial, sans-serif; 
-    transition: all 0.50s linear;
   }
   `;

@@ -14,20 +14,18 @@ const MySwal = withReactContent(Swal);
 
 function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMsg }) {
         const [fillActive, setFillActive] = useState(null);
+        const [edit, setEdit] = useState(false);
 
     useEffect(() => {
 
-        if (edit !== prevState_edit && edit != false) {
+        if (edit != false) {
             var _ITEM = edit;
-            document.getElementById("f_clock_edit_1").value = _ITEM.resolver_sattus ? _ITEM.resolver_sattus : 0;
-            document.getElementById("f_clock_edit_2").value = _ITEM.resolver_id6 ? _ITEM.resolver_id6 : 0;
-            document.getElementById("f_clock_edit_3").value = _ITEM.resolver_context;
-            document.getElementById("f_clock_edit_4").value = _ITEM.date_start ? _ITEM.date_start : moment().format('YYYY-MM-DD');
+            document.getElementById("f_clock_edit_1") && (document.getElementById("f_clock_edit_1").value = _ITEM.resolver_sattus ? _ITEM.resolver_sattus : 0);
+            document.getElementById("f_clock_edit_2") && (document.getElementById("f_clock_edit_2").value = _ITEM.resolver_id6 ? _ITEM.resolver_id6 : 0);
+            document.getElementById("f_clock_edit_3") && (document.getElementById("f_clock_edit_3").value = _ITEM.resolver_context);
+            document.getElementById("f_clock_edit_4") && (document.getElementById("f_clock_edit_4").value = _ITEM.date_start ? _ITEM.date_start : moment().format('YYYY-MM-DD'));
         }
-        // Verificar si hay nuevos datos para ejecutar la autoguardado
-        if (currentItem !== prev_currentItem) {
-            autoSaveMissingStartClock();
-        }
+        autoSaveMissingStartClock();
 
     }, [currentItem, edit]);
 
