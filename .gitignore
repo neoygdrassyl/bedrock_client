@@ -24,6 +24,9 @@ build.zip
 
 # testing
 /coverage
+/e2e/test-results/
+/playwright-report/
+/blob-report/
 
 # production
 /build

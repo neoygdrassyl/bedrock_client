@@ -41,6 +41,9 @@ export default defineConfig({
 
     css: false,
 
+    // Exclude Playwright E2E tests — they run via `npx playwright test`
+    exclude: ['e2e/**', 'node_modules/**'],
+
     // Transform ESM packages (same as CRA's transformIgnorePatterns)
     deps: {
       optimizer: {
