@@ -52,7 +52,7 @@ export class TemplateEngine {
       .replace("<considerate-section></considerate-section>", partConsiderate)
       .replace("<resolutive-section></resolutive-section>", partResolutive);
 
-    tpl = Object.entries(data).reduce((tmp, [k, v]) => {
+    tpl = Object.entries(data || {}).reduce((tmp, [k, v]) => {
       const re = new RegExp(`{{\\s*${k}\\s*}}`, "g");
       return tmp.replace(re, v ?? "");
     }, tpl);
