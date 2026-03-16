@@ -64,7 +64,8 @@ vitest.config.mjs            ← Config Vitest (plugins: cssNoop, jsxInJs)
 src/
   index.js                  ← createRoot() de React 19
   http-common.js            ← Instancia Axios global (baseURL desde VITE_API_URL)
-  __tests__/                ← 149 tests en 10 suites + setup.js
+  __tests__/                ← 268 tests en 27 suites + setup.js
+  e2e/                      ← 35 tests E2E Playwright (28 pass, 7 skip)
   app/
     App.js                  ← Router principal + ProvideAuth + ThemeProvider
     components/
@@ -186,26 +187,29 @@ Usar `useTranslation()` para todo texto visible. Agregar claves en `src/app/tran
 
 ## 5. Testing
 
-149 tests en 10 suites (smoke + integración). **Todos deben pasar antes de hacer merge.**
+**268 tests unitarios/integración en 27 suites + 35 tests E2E con Playwright.** Todos deben pasar antes de hacer merge.
 
 ```bash
-nvm use 22    # obligatorio
-npm test      # vitest run
+nvm use 22                  # obligatorio
+npm test                    # vitest run (unit + integration, ~268 tests)
+npx playwright test         # E2E en Chromium (35 tests, 28 pass / 7 skip por datos)
+npx playwright test --ui    # UI interactiva de Playwright
 ```
 
-Tests en `src/__tests__/NombreModulo.tipo.test.js`. Usar `vi.fn()`, `vi.mock()`, `vi.spyOn()` (API de Vitest, no Jest). CSS se mockea automáticamente vía `cssNoop` en `vitest.config.mjs`.
+### Estructura de tests
 
-```js
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+| Capa | Ubicación | Tecnología | Qué valida |
+|---|---|---|---|
+| Unit | `src/__tests__/*.unit.test.js` | Vitest + jsdom | Lógica de negocio pura (días hábiles, alarmas, fases, TemplateEngine) |
+| Integración | `src/__tests__/*.integration.test.js` | Vitest + Testing Library | Render + service calls + DataTable + role-gating |
+| Workflow | `src/__tests__/workflows/*.workflow.test.js` | Vitest + userEvent | Flujos CRUD multi-step con mocks MSW-like |
+| E2E | `e2e/flows/*.e2e.spec.js` | Playwright | Flujos reales contra backend + browser |
 
-describe('MiComponente', () => {
-  it('muestra el título', () => {
-    render(<MiComponente title="Test" />);
-    expect(screen.getByRole('heading', { name: /test/i })).toBeInTheDocument();
-  });
-});
-```
+Tests unitarios/integración: `src/__tests__/NombreModulo.tipo.test.js`. Usar `vi.fn()`, `vi.mock()`, `vi.spyOn()` (API de Vitest, no Jest). CSS se mockea automáticamente vía `cssNoop` en `vitest.config.mjs`.
+
+Los 7 tests E2E que hacen `skip` dependen de datos en la BD (cajas en archivo, licencias con relojes). Son correctos — se ejecutan si hay datos reales.
+
+Reglas técnicas de testing: `.github/instructions/testing.instructions.md`.
 
 Usuario para tests con inicios de sesión: `test@gmail.com` (contraseña: `test123`).
 
@@ -261,7 +265,7 @@ Si alguna empieza a fallar, consultar `.github/instructions/MIGRATION_PLAN.md` (
 5. **No usar `react-scripts`** — el proyecto usa Vite.
 6. **No introducir estado global** (Redux, Zustand) sin discutirlo.
 7. **No introducir nueva librería UI** sin consenso.
-8. Los 149 tests deben pasar (`npm test`) antes de cualquier merge.
+8. Los 268 tests unitarios (`npm test`) y los E2E (`npx playwright test`) deben pasar antes de cualquier merge.
 9. `public/templates/` no se modifica sin entender el motor de plantillas.
 10. Datos sensibles en `src/app/components/jsons/vars.js` — no exponer en logs.
 
@@ -272,9 +276,10 @@ Si alguna empieza a fallar, consultar `.github/instructions/MIGRATION_PLAN.md` (
 El proyecto fue migrado de **React 16 + CRA 4** a **React 19 + Vite 6** en el branch `feat/react-19-migration` (feb 2026). Para el detalle completo de las 7 fases, conteos y decisiones:
 
 - `.github/instructions/MIGRATION_PLAN.md` — Plan completo, estado de cada fase
-- `MIGRATION_LOG.md` — Log de ejecución con métricas y diffs
 
-**Estado actual:** Fases 0–6 completadas. 157 class components migrados a funcionales con hooks. Quedan 16 clases (1 Error Boundary + 14 charts react-vis + 1 comentada). **Fase 7** (reemplazar libs abandonadas: react-vis, react-quill, react-google-maps) es la siguiente y es incremental.
+**Estado actual:** Fases 0–6 de migración completadas. 157 class components migrados a funcionales con hooks. Quedan 16 clases (1 Error Boundary + 14 charts react-vis + 1 comentada). **Fase 7** (reemplazar libs abandonadas: react-vis, react-quill, react-google-maps) es la siguiente y es incremental.
+
+**Testing:** Suite completa implementada — 268 tests unitarios/integración/workflow (Vitest) + 35 E2E (Playwright). Cobertura incluye: Clocks, Records, PQRS, Dashboard, Nomenclature, ZoneUse, Submit, Archive, Expedition, FunManage.
 
 ---
 
