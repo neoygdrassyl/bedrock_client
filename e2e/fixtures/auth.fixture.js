@@ -300,6 +300,15 @@ async function installE2EMocks(page) {
  * 3. Sets window.user (many components read it directly).
  * 4. Navigates to /dashboard to confirm auth took effect.
  */
+/**
+ * @type {import('@playwright/test').TestType<
+ *   { authenticatedPage: import('@playwright/test').Page } &
+ *   import('@playwright/test').PlaywrightTestArgs &
+ *   import('@playwright/test').PlaywrightTestOptions,
+ *   import('@playwright/test').PlaywrightWorkerArgs &
+ *   import('@playwright/test').PlaywrightWorkerOptions
+ * >}
+ */
 export const test = base.extend({
   authenticatedPage: async ({ page }, use) => {
     await installE2EMocks(page);
