@@ -466,10 +466,10 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                                     RADICACIÓN INCOMPLETA
                                 </label>
                             </div>
-                            {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
+                            {!ALLOW_REVIEW ? <div className='note note-danger'>
                                 <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                                 NO ES POSIBLE DECLARAR EN "LYDF" POR QUE FALTAN DOCUMENTOS POR APORTAR EN EL PUNTO 6
-                            </MDBTypography> : ''}
+                            </div> : ''}
                         </div>
                         <div className="col-6">
                             <label>Solicitante</label>

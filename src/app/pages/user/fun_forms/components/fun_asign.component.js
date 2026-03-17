@@ -929,7 +929,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={() => setModal(false)}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i class="fas fa-times-circle"></i> CERRAR</div>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -953,7 +953,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={() => setModalF(false)}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i class="fas fa-times-circle"></i> CERRAR</div>
                         </MDBBtn>
                     </div>
                 </Modal>

@@ -65,7 +65,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         let _CHILD_11 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.1 Tipo de Solicitud</label>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="A" name="f_11"
@@ -116,12 +116,12 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         G. Otras Actuaciones
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_12 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.2 Objeto del Tramite</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_12"
@@ -164,13 +164,13 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         defaultValue={_CHILD_VARS.item_2 != 'A' && _CHILD_VARS.item_2 != 'B' && _CHILD_VARS.item_2 != 'C'
                             && _CHILD_VARS.item_2 != 'D' ? _CHILD_VARS.item_2 : ""} id="f_12_o" />
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_13 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
             let disabled = dis_m_urb;
 
-            return <td>
+            return <div>
                 <label>1.3 Modalidad Licencia de Urbanización</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_13"
@@ -193,13 +193,13 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         C. Reurbanización
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_14 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
             let disabled =  dis_m_sub;
 
-            return <td>
+            return <div>
                 <label>1.4 Modalidad Licencia de Subdivisión</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_14"
@@ -222,13 +222,13 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         C. Reloteo
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_15 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
             let disabled =  dis_m_lic;
 
-            return <td>
+            return <div>
                 <label>1.5 Modalidad Licencia de Construcción</label>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="A" name="f_15"
@@ -300,7 +300,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         I. Cerramiento
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_16 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
@@ -322,7 +322,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     _otherValue = _CHILD_VARS.item_6;
                 }
             }
-            return <td>
+            return <div>
                 <label>1.6 Usos</label>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="A" name="f_16"
@@ -359,12 +359,12 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
                         id="f_16_o" defaultValue={_otherValue} />
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_17 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.7 Área Construida</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_17"
@@ -398,12 +398,12 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             </label>
                         </div>
                         : ''}
-            </td>
+            </div>
         }
         let _CHILD_18 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.8 Tipo de Vivienda</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_18"
@@ -426,12 +426,12 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         C. NO VIS
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_19 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.9  Bien de Interés Cultural</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_19"
@@ -447,11 +447,11 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         B. NO
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_101 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let JSXC = <td colSpan="2">
+            let JSXC = <div>
                 <label >1.10.1  Declaración sobre medidas de construcción sostenible</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_101"
@@ -474,7 +474,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         C. Medidas Activas y Pasivas
                     </label>
                 </div>
-            </td>
+            </div>
             return currentItem.model == 2021 ?
                 JSXC
                 : currentItem.model == 2022 ?
@@ -483,7 +483,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         }
         let _CHILD_102 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let JSXC = <td>
+            let JSXC = <div>
                 <label >1.10.2  Zónificacion Climática</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_102"
@@ -521,7 +521,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         defaultValue={_CHILD_VARS.item_102 != 'A' && _CHILD_VARS.item_102 != 'B' && _CHILD_VARS.item_102 != 'C'
                             && _CHILD_VARS.item_102 != 'D' ? _CHILD_VARS.item_102 : ""} />
                 </div>
-            </td>
+            </div>
             return currentItem.model == 2021 ?
                 JSXC
                 : currentItem.model == 2022 ?

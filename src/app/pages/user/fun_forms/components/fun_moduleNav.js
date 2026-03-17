@@ -38,8 +38,8 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
             return false;
         };
 
-        let version = currentItem.version;
-        let fun1 = currentItem.fun_1s[version - 1];
+        let version = currentItem.version || 1;
+        let fun1 = currentItem.fun_1s ? currentItem.fun_1s[version - 1] : null;
         let type = "";
         if (fun1) type = formsParser1(fun1);
 
@@ -130,6 +130,8 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                 });
             }
         }
+
+        console.log("=== NAV GROUPS GENERATED ===", "FROM:", FROM, "state:", currentItem.state, "items:", navGroups.map(g => g.items.map(i => i.label).join(',')).join(' | '));
 
         return (
             <>
