@@ -506,6 +506,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
         }
         let _COMPONENT_FUNXPQRS = () => {
             var objectsPQRS = pqrsxfun;
+            if (!Array.isArray(objectsPQRS)) return null;
             var map = objectsPQRS.map((value, index) => { // FIX: Added index parameter for key
                 var solicitors = {
                     names: value.solicitors_names ? value.solicitors_names.split(';') : [],
@@ -883,6 +884,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                     });
                 });
             retrieveItem(currentId);
+        };
 
         return (
             <div>
@@ -1038,7 +1040,6 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                 </fieldset>}
             </div>
         );
-}
 }
 /*
 const NAV_FUNA = () => {

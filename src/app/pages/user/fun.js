@@ -1,3 +1,4 @@
+import ChartErrorBoundary from '../../components/ChartErrorBoundary';
 import { useReducer, useEffect, useRef } from 'react';
 import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBDropdownLink, MDBPopover, MDBPopoverBody } from '../../components/ui';
 import { Link } from "react-router-dom";
@@ -1721,13 +1722,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     </div>
                     {modalHeader}
 
-                    <FUN_ALERT translation={translation} swaMsg={swaMsg} globals={globals}
+                    <ChartErrorBoundary><FUN_ALERT translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
                         requestUpdate={requestUpdate}
                         closeModal={toggle_alert}
                         NAVIGATION={navigation}
-                        NAVIGATION_VERSION={navigation_version} />
+                        NAVIGATION_VERSION={navigation_version} /></ChartErrorBoundary>
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_alert}>

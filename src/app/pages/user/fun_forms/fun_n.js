@@ -64,7 +64,7 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
         return (
             <div className="py-3">
                 {currentItem != null ? <>
-                    <MDBTypography note noteColor='info'>
+                    <div className='note note-info'>
                         <h3 className="text-justify text-dark">RECOMENDACIONES GENERALES PARA LA FORMULACIÓN DE SOLICITUDES</h3>
                         <ul>
                             <li>Cedulas de Ciudadanía y documentos de identificación, usar punto cada 3 números. (x.xxx.xxx.xxx)</li>
@@ -73,7 +73,7 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                             <li>Numero de Matricula Inmobiliaria, comenzar el valor con 300- (300-xxxxx)</li>
                             <li>Numero de Identificación Catastral, usar - para su separación (xx-xx-xxxx-xxx-xxx)</li>
                         </ul>
-                    </MDBTypography>
+                    </div>
                     {currentItem != null ? <>
                         <h2 className="text-center">ACTUALIZAR RADICACIÓN</h2>
 
