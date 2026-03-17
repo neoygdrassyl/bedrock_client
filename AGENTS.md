@@ -213,6 +213,18 @@ Reglas técnicas de testing: `.github/instructions/testing.instructions.md`.
 
 Usuario para tests con inicios de sesión: `test@gmail.com` (contraseña: `test123`).
 
+### Ciclo Iterativo E2E (Playwright) para Agentes
+
+Al desarrollar y depurar tests E2E, los agentes deben seguir este ciclo de instrumentación reactiva:
+
+1. **Detección de Crash vs. Alertas:** En la Curaduría es normal que falten datos y aparezcan alertas ("no hay información"). Esto NO es un test failure. El test debe descartar estas alertas no fatales de SweetAlert2 y seguir. Un error real ("crash") es una **pantalla en blanco** sin UI funcional.
+2. **Instrumentación de Diagnóstico:** Inyectar detectores en el spec `(page.on('pageerror'), page.on('console'), page.on('requestfailed'))` y rutinas como `detectWhiteScreenCrash()`.
+3. **Captura en CI/Falla:** Si ocurre un crash, el script debe empaquetar y adjuntar vía `testInfo.attach()` todo el estado al momento exacto de la falla:
+   - Screenshot fallback.
+   - HTML actual de la página.
+   - Resumen JSON con console errors, request failures y alertas omitidas.
+4. **Lectura de Resultados:** El agente lee directamente los archivos adjuntados en el reporte de la ejecución o analiza el `trace.zip` usando Playwright CLI (`npx playwright show-trace`) para entender el verdadero origen (ej. un modal-swap mal sincronizado).
+
 ---
 
 ## 6. Motor de plantillas de documentos
