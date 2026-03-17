@@ -43,3 +43,10 @@ build.zip
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Agent & Debugging Logs
+raw_braces.txt
+result.txt
+temp_log.txt
+test-output-debug.log
+test-output-full.log

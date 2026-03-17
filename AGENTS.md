@@ -213,17 +213,18 @@ Reglas técnicas de testing: `.github/instructions/testing.instructions.md`.
 
 Usuario para tests con inicios de sesión: `test@gmail.com` (contraseña: `test123`).
 
-### Ciclo Iterativo E2E (Playwright) para Agentes
+### Protocolo de Resolución de Errores E2E (Playwright) para Agentes
 
-Al desarrollar y depurar tests E2E, los agentes deben seguir este ciclo de instrumentación reactiva:
+Al desarrollar, ejecutar o depurar tests E2E, los agentes **DEBEN** seguir este procedimiento estricto para garantizar trazabilidad y no generar "cajas negras":
 
-1. **Detección de Crash vs. Alertas:** En la Curaduría es normal que falten datos y aparezcan alertas ("no hay información"). Esto NO es un test failure. El test debe descartar estas alertas no fatales de SweetAlert2 y seguir. Un error real ("crash") es una **pantalla en blanco** sin UI funcional.
+1. **Detección de Crash vs. Alertas:** En la Curaduría es normal que falten datos y aparezcan alertas ("no hay información"). Esto NO es un test failure. El test debe descartar estas alertas no fatales de SweetAlert2 y seguir. Un error real ("crash") es una **pantalla en blanco** sin UI funcional o un error fatal en consola `TypeError`.
 2. **Instrumentación de Diagnóstico:** Inyectar detectores en el spec `(page.on('pageerror'), page.on('console'), page.on('requestfailed'))` y rutinas como `detectWhiteScreenCrash()`.
-3. **Captura en CI/Falla:** Si ocurre un crash, el script debe empaquetar y adjuntar vía `testInfo.attach()` todo el estado al momento exacto de la falla:
-   - Screenshot fallback.
-   - HTML actual de la página.
-   - Resumen JSON con console errors, request failures y alertas omitidas.
-4. **Lectura de Resultados:** El agente lee directamente los archivos adjuntados en el reporte de la ejecución o analiza el `trace.zip` usando Playwright CLI (`npx playwright show-trace`) para entender el verdadero origen (ej. un modal-swap mal sincronizado).
+3. **Lectura de Resultados y Trazabilidad:** El agente lee directamente los logs arrojados en consola, o descarga/analiza los archivos adjuntados en el reporte de la ejecución (o el `trace.zip` usando Playwright CLI) para entender el verdadero origen (ej. un modal-swap mal sincronizado o un defecto de React).
+4. **PAUSA Y REPORTE AL USUARIO (¡OBLIGATORIO!):**
+   - Antes de modificar el código fuente de la aplicación para resolver el fallo, el agente **DEBE DETENERSE y explicar en el chat qué está fallando**.
+   - No debes intentar arreglar cosas en silencio. Primero describe la causa raíz descubierta (ej: *"El archivo X tiene un problema de llaves asimétricas..."*), detalla la solución propuesta, y luego procede.
+5. **Limpieza de Residuos (Clean-up Obligatorio):**
+   - Al finalizar el diagnóstico o la reparación, **tienes que limpiar toda la basura**. Elimina archivos de log temporales (ej: `temp_log.txt`, `raw_braces.txt`), carpetas de Playwright residuales (`test-results/`, `playwright-report/`) y confirma siempre que dejas el entorno en un estado limpio mediante `git status`.
 
 ---
 
