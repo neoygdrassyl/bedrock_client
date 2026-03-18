@@ -62,6 +62,10 @@
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "audit:ast": "node scripts/audit-ast-structure.mjs",
+    "audit:arrays": "node scripts/audit-array-method-safety.mjs",
+    "audit:arrays:strict": "node scripts/audit-array-method-safety.mjs --strict",
+    "audit:preflight": "npm run audit:ast && npm run audit:arrays",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
@@ -71,6 +75,7 @@
     "postinstall": "echo '{\"version\":3,\"sources\":[],\"mappings\":\"\"}' > node_modules/@pathofdev/react-tag-input/build/index.css.map 2>/dev/null || true"
   },
   "devDependencies": {
+    "@babel/parser": "^7.28.4",
     "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",

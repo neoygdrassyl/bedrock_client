@@ -74,6 +74,42 @@ import ZONE_USE from './pages/user/zone_use/zone_use.page';
 
 const MySwal = withReactContent(Swal);
 
+class RouteErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, info) {
+    console.error('Route subtree error captured:', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className='container py-4'>
+          <div className='alert alert-danger'>
+            <h4 className='mb-2'>Error en este modulo</h4>
+            <p className='mb-2'>La vista actual presento un error y se detuvo para evitar una pantalla en blanco.</p>
+            <p className='mb-0'><a href='/dashboard'>Volver al panel</a></p>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function RoutesWithBoundary({ children }) {
+  const location = useLocation();
+  return <RouteErrorBoundary key={location.pathname}>{children}</RouteErrorBoundary>;
+}
+
 export default function App() {
   const { t } = useTranslation();
   const [theme, setTheme] = useState('light');
@@ -127,6 +163,7 @@ export default function App() {
                         {/* <div className="sticky-top" style={{ zIndex: 2000 }}>
                           <Navbar1 authBtn={<AuthButton />} />
                         </div> */}
+                        <RoutesWithBoundary>
                         <Routes>
 
                           <Route path='/home' element={
@@ -356,6 +393,7 @@ export default function App() {
 
                           <Route path='*' element={<LoginPage />} />
                         </Routes>
+                        </RoutesWithBoundary>
                       </div>
                     </div>
                 </main>
