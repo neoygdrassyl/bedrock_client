@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import ReactHTMLDatalist from "react-html-datalist";
+import HTMLDatalist from '../../../../components/HTMLDatalist';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
@@ -186,7 +186,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <span class="input-group-text bg-success text-white">
                             <i class="fas fa-search"></i>
                         </span>
-                        <ReactHTMLDatalist
+                        <HTMLDatalist
                             name={"search_52"}
                             onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
                             classNames={"form-control"}

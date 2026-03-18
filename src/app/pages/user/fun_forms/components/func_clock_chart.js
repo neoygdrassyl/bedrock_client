@@ -2,18 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import moment from 'moment';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, formsParser1 } from '../../../../components/customClasses/typeParse';
 import {
-    XYPlot,
-    XAxis,
-    YAxis,
-    VerticalGridLines,
-    HorizontalGridLines,
-    Hint,
-    Crosshair,
-    MarkSeries,
-    HorizontalRectSeries,
-    DiscreteColorLegend
-} from 'react-vis';
-import 'react-vis/dist/style.css';
+    ScatterChart, Scatter, XAxis, YAxis, CartesianGrid,
+    Tooltip, ResponsiveContainer, ReferenceArea, ReferenceLine, ZAxis
+} from 'recharts';
 
 //var momentB = require('moment-business-days');
 
@@ -405,18 +396,18 @@ function FUN_CLOCK_CHART({ currentItem }) {
 
         for (var i = 0; i < _check_clocks.length; i++) {
             let text = '';
-            if (_check_clocks[i].state == -5) text = ', CITACION PARA NOTIFICACION PERSONAL (1° Vez)';
-            if (_check_clocks[i].state == -6) text = ', ENVIO DE EMAIL (1° Vez)';
-            if (_check_clocks[i].state == -7) text = ', EL SOLICITANTE SE PRESENTA (1° Vez)';
-            if (_check_clocks[i].state == -8) text = ', NOTIFICACION POR AVISO (1° Vez)';
+            if (_check_clocks[i].state == -5) text = ', CITACION PARA NOTIFICACION PERSONAL (1 Vez)';
+            if (_check_clocks[i].state == -6) text = ', ENVIO DE EMAIL (1 Vez)';
+            if (_check_clocks[i].state == -7) text = ', EL SOLICITANTE SE PRESENTA (1 Vez)';
+            if (_check_clocks[i].state == -8) text = ', NOTIFICACION POR AVISO (1 Vez)';
             if (_check_clocks[i].state == -10) text = ', SE INTERPONE RECURSO';
             if (_check_clocks[i].state == -11) text = ', RECURSO NO INTERPONIDO';
             if (_check_clocks[i].state == -17) text = ', LA CURADURIA DA RESPUESTA';
             if (_check_clocks[i].state == -18) text = ', DECLARA : CONTINUA';
             if (_check_clocks[i].state == -19) text = ', DECLARA : NO CONTINUA';
-            if (_check_clocks[i].state == -20) text = ', CITACION PARA NOTIFICACION PERSONAL (2° Vez)';
-            if (_check_clocks[i].state == -21) text = ', ENVIO DE EMAIL (2° Vez)';
-            if (_check_clocks[i].state == -22) text = ', EL SOLICITANTE SE PRESENTA (2° Vez)';
+            if (_check_clocks[i].state == -20) text = ', CITACION PARA NOTIFICACION PERSONAL (2 Vez)';
+            if (_check_clocks[i].state == -21) text = ', ENVIO DE EMAIL (2 Vez)';
+            if (_check_clocks[i].state == -22) text = ', EL SOLICITANTE SE PRESENTA (2 Vez)';
             if (_check_clocks[i].state == -30) text = ', FINALIZACION';
 
             if (text) _clocks = addClock(_clocks, moment(_check_clocks[i].date_start), -1, text);
@@ -525,26 +516,26 @@ function FUN_CLOCK_CHART({ currentItem }) {
         const colorCom = "rgba(135, 206, 235, 0.75)";
         const colorNeg = "rgba(139 ,0, 0, 0.75)";
         const clocksBars = [
-            { id: 'rad', title: 'RADICACIÓN', color: colorUser, s: [3, false], f1: [-5, -1], f2: [5, false], dLenght: 30, required: true, },
+            { id: 'rad', title: 'RADICACION', color: colorUser, s: [3, false], f1: [-5, -1], f2: [5, false], dLenght: 30, required: true, },
             { id: 'de1', title: 'DES. INCOMPLETO', color: colorNeg, s: [-5, -1], f1: [5, false], f2: false, dLenght: 45, required: false, },
-            { id: 'eva', title: 'EVALUACIÓN', color: colorCom, s: [5, false], f1: [30, false], f2: false, dLenght: evaDefaultTime, required: true, },
+            { id: 'eva', title: 'EVALUACION', color: colorCom, s: [5, false], f1: [30, false], f2: false, dLenght: evaDefaultTime, required: true, },
 
             { id: 'neve', title: 'NOT. ACTA', color: colorCom, s: [31, false], f1: [32, false], f2: [33, false], dLenght: 15, required: true, },
 
             { id: 'cor', title: 'CORRECCIONES', color: colorUser, s: [32, false], s2: [33, false], f1: [-5, -3], f2: [35, false], dLenght: evaCorTime, required: requereCorr(), },
-           
+
             { id: 'de3', title: 'DES. NO CUMPLE CORRECCIONES', color: colorNeg, s: [-5, -3], f1: [49, false], f2: false, dLenght: 45, required: false, },
-            //{ id: 'eva2', title: 'EVALUACIÓN (p.2)', color: colorCom, s: [35, false], f1: [49, false], f2: false, dLenght: corrTime(), required: requereCorr(), },
-            
-            { id: 'via', title: 'VIABILIDAD', color: colorCom, s: [49, false], s2: [35, false], f1: [61, false], f2: false, dLenght: viaTime(), required: true, }, 
+            //{ id: 'eva2', title: 'EVALUACION (p.2)', color: colorCom, s: [35, false], f1: [49, false], f2: false, dLenght: corrTime(), required: requereCorr(), },
+
+            { id: 'via', title: 'VIABILIDAD', color: colorCom, s: [49, false], s2: [35, false], f1: [61, false], f2: false, dLenght: viaTime(), required: true, },
 
             { id: 'nvia', title: 'NOT. VIABILIDAD', color: colorCom, s: [55, false], f1: [55, false], f2: [57, false], dLenght: 15, required: true, },
 
             { id: 'pay', title: 'PAGOS', color: colorUser, s: [56, false], s2: [57, false], f1: [-5, -4], f2: [69, false], dLenght: 30, required: true, },
             { id: 'de4', title: 'DES. FALTA PAGOS', color: colorNeg, s: [-5, -4], f1: [-30, -4], f2: false, dLenght: 45, required: false, },
-            { id: 'res', title: 'RESOLUCIÓN', color: colorCom, s: [69, false], f1: [70, false], f2: false, dLenght: 5, required: true, },
+            { id: 'res', title: 'RESOLUCION', color: colorCom, s: [69, false], f1: [70, false], f2: false, dLenght: 5, required: true, },
 
-            { id: 'nres', title: 'NOT. RESOLUCIÓN', color: colorCom, s: [751, false], f1: [752, false], f2: [753, false], dLenght: 15, required: true, },
+            { id: 'nres', title: 'NOT. RESOLUCION', color: colorCom, s: [751, false], f1: [752, false], f2: [753, false], dLenght: 15, required: true, },
 
             { id: 'lic', title: 'LICENCIA', color: colorCom, s: [70, false], f1: [99, false], f2: false, dLenght: 10, required: true, },
         ]
@@ -683,7 +674,7 @@ function FUN_CLOCK_CHART({ currentItem }) {
             if (!time_2) return 'NaN'
             return Number(time_2 - time_1)
         }
-        // HINST AND CROSSHAIR COMPONENTS
+        // HINTS AND TOOLTIP COMPONENTS
         let _GET_HINT_BODY = (item) => {
             let title = item.title;
             let start_date = _GET_CLOCKS_STATE(3).date_start;
@@ -704,36 +695,6 @@ function FUN_CLOCK_CHART({ currentItem }) {
         }
 
         // MARKS
-        let _CHART_MARKS_BLUE = () => {
-
-            return <MarkSeries
-                className="mark-series"
-                sizeRange={[1, 5]}
-                data={_blueMarks(1.5)}
-                color={'blue'}
-                onValueMouseOver={v => setHoveredCell(v)}
-                onValueMouseOut={() => setHoveredCell(false)} />
-        }
-        let _CHART_MARKS_GREEN = () => {
-
-            return <MarkSeries
-                className="mark-series"
-                sizeRange={[1, 5]}
-                data={_GreenMarks(2)}
-                color={'green'}
-                onValueMouseOver={v => setHoveredCell(v)}
-                onValueMouseOut={() => setHoveredCell(false)} />
-        }
-        let _CHART_MARKS_RED = () => {
-
-            return <MarkSeries
-                className="mark-series"
-                sizeRange={[1, 5]}
-                data={_RedMarks(2.5)}
-                color={'red'}
-                onValueMouseOver={v => setHoveredCell(v)}
-                onValueMouseOut={() => setHoveredCell(false)} />
-        }
         let _blueMarks = (_y) => {
             let _marks = [];
             // SIGN
@@ -895,7 +856,8 @@ function FUN_CLOCK_CHART({ currentItem }) {
         let _CHART_PROGRESS_BAR = () => {
             var expandY = 0;
             var lastRealClock = 0;
-            return clocksBars.map((value) => {
+            const refAreas = [];
+            clocksBars.forEach((value) => {
                 let startValues = value.s;
                 var start = _GET_DAYS_CLOCK(startValues[0], startValues[1]);
 
@@ -904,8 +866,6 @@ function FUN_CLOCK_CHART({ currentItem }) {
                     start = _GET_DAYS_CLOCK(startValues[0], startValues[1]);
                 }
 
-                //if (start && lastRealClock == 0) lastRealClock = start;
-
                 let finalValues = value.f1;
                 var end = _GET_DAYS_CLOCK(finalValues[0], finalValues[1]);
                 if (!end && value.f2) {
@@ -913,106 +873,159 @@ function FUN_CLOCK_CHART({ currentItem }) {
                     end = _GET_DAYS_CLOCK(finalValues[0], finalValues[1]);
                 }
 
-                let data = [];
+                let dataItem = null;
 
                 if (start !== false && end !== false) {
                     let endLimit = end;
                     if (end - start > value.dLenght) endLimit = start + value.dLenght
-                    data.push({
+                    dataItem = {
                         x: start,
                         x0: endLimit,
                         y: expand ? expandY : 0,
                         y0: expand ? expandY + 0.5 : 1,
                         title: value.title
-                    })
+                    };
                     lastRealClock = endLimit;
                 } else if (start == false && lastRealClock && value.required) {
-                    data.push({
+                    dataItem = {
                         x: lastRealClock,
                         x0: lastRealClock + value.dLenght,
                         y: expand ? expandY : 0,
                         y0: expand ? expandY + 0.5 : 1,
                         title: value.title
-                    })
+                    };
                     lastRealClock = lastRealClock + value.dLenght;
                 } else if (start !== false && end == false && lastRealClock && value.required) {
-                    data.push({
+                    dataItem = {
                         x: start,
                         x0: start + value.dLenght,
                         y: expand ? expandY : 0,
                         y0: expand ? expandY + 0.5 : 1,
                         title: value.title
-                    })
+                    };
                     lastRealClock = start + value.dLenght;
                 }
 
-                if (expand && data.length) expandY += 0.5;
-                if (data.length) return <HorizontalRectSeries
-                    data={data}
-                    color={start !== false && end !== false ? value.color : 'rgba(176, 176, 176, 0.75)'}
-                    onValueMouseOver={d => { setHovered(d) }}
-                    onValueMouseOut={d => setHovered(false)}
-                />
-            })
+                if (expand && dataItem) expandY += 0.5;
+                if (dataItem) {
+                    refAreas.push(
+                        <ReferenceArea
+                            key={`bar-${value.id}`}
+                            x1={dataItem.x}
+                            x2={dataItem.x0}
+                            y1={dataItem.y}
+                            y2={dataItem.y0}
+                            fill={start !== false && end !== false ? value.color : 'rgba(176, 176, 176, 0.75)'}
+                            fillOpacity={1}
+                            label={dataItem.title}
+                        />
+                    );
+                }
+            });
+            return refAreas;
         }
 
-        const _tickValues = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200];
-        const _tickValues_2 = [0, 50, 100, 150, 200];
-        const YtickValues = [0, 1, 2, 3, 4];
+        const _tickValuesLocal = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200];
+        const _tickValuesLocal_2 = [0, 50, 100, 150, 200];
+        const YtickValuesLocal = [0, 1, 2, 3, 4];
         const _today = dateParser_dateDiff(date_start, moment().format('YYYY-MM-DD'));
+
+        const blueMarksData = _blueMarks(1.5);
+        const greenMarksData = _GreenMarks(2);
+        const redMarksData = _RedMarks(2.5);
+
+        const CustomBarTooltip = ({ active, payload }) => {
+            if (active && payload && payload.length > 0) {
+                const item = payload[0]?.payload;
+                if (item) {
+                    if (item.title) {
+                        return (
+                            <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', fontSize: 'small' }}>
+                                {_GET_HINT_BODY(item)}
+                            </div>
+                        );
+                    }
+                    if (item.name) {
+                        return (
+                            <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', fontSize: 'small' }}>
+                                <div className="row">
+                                    {(item.name).split('\n').map(function (name, index) {
+                                        return <div className="row" key={index}><label>{'>'} {name}</label></div>
+                                    })}
+                                </div>
+                                <div className="row">
+                                    <label>{dateParser(item.date)}</label>
+                                </div>
+                            </div>
+                        );
+                    }
+                }
+            }
+            return null;
+        }
+
+        const yAxisTickFormatter = (tick) => {
+            let textArray = _GET_YAXIS_DATA();
+            const tickMap = [0.25, 0.75, 1.25, 1.75, 2.25, 2.75, 3.25, 3.75, 4.25, 4.75, 5.25, 5.75, 6.25, 6.75];
+            const idx = tickMap.indexOf(tick);
+            if (expand && idx >= 0 && textArray[idx]) {
+                return textArray[idx];
+            }
+            return '';
+        };
 
         return (
             <div>
                 {true ?
                     <>
-                        <div class="input-group my-1 ">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">
-                                    <input type="checkbox" class="form-check-input my-1"
+                        <div className="input-group my-1 ">
+                            <div className="input-group-prepend">
+                                <div className="input-group-text">
+                                    <input type="checkbox" className="form-check-input my-1"
                                         onChange={() => setExpand(!expand)} />
                                 </div>
                             </div>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
+                            <div className="input-group-append">
+                                <div className="input-group-text">
                                     <label> UNIR BARRAS DE TIEMPOS</label>
                                 </div>
                             </div>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
+                            <div className="input-group-append">
+                                <div className="input-group-text">
                                     <label> CATEGORIA: {_fun_0_type_text[currentItem.type] ?? 'SIN CATEGORIA'} - {_fun_0_type_time[currentItem.type] ?? 45} dias</label>
                                 </div>
                             </div>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
+                            <div className="input-group-append">
+                                <div className="input-group-text">
                                     <label> DIAS ACUMULADOS: {_GET_CUMDAYS() ?? 'NaN'}</label>
                                 </div>
                             </div>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
+                            <div className="input-group-append">
+                                <div className="input-group-text">
                                     <label> INDICE EFICIENCIA: {(_GET_CUMDAYS() / _fun_0_type_time[currentItem.type] ?? 45).toFixed(2) ?? 'NaN'}</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="input-group my-1 ">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
+                        <div className="input-group my-1 ">
+                            <div className="input-group-append">
+                                <div className="input-group-text">
                                     <label>TIMEPO DE OBSERVACIONES {_GET_TIME_BETWEEN_TWO_STATES(5, 31)}</label>
                                 </div>
                             </div>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
+                            <div className="input-group-append">
+                                <div className="input-group-text">
                                     <label> INDICE OBSERVACIONES: {Number(_GET_TIME_BETWEEN_TWO_STATES(5, 31) / _fun_0_type_time[currentItem.type] ?? 45).toFixed(2) ?? 'NaN'}</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="input-group my-1 ">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
+                        <div className="input-group my-1 ">
+                            <div className="input-group-append">
+                                <div className="input-group-text">
                                     <label>TIMEPO DE CORRECCIONES {_GET_TIME_BETWEEN_TWO_STATES(32, 32)}</label>
                                 </div>
                             </div>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
+                            <div className="input-group-append">
+                                <div className="input-group-text">
                                     <label> INDICE CORRECCIONES: {Number(_GET_TIME_BETWEEN_TWO_STATES(32, 32) / Math.abs((_fun_0_type_time[currentItem.type] ?? 45) - _GET_TIME_BETWEEN_TWO_STATES(5, 31))).toFixed(2) ?? 'NaN'}</label>
                                 </div>
                             </div>
@@ -1022,143 +1035,70 @@ function FUN_CLOCK_CHART({ currentItem }) {
                             <label className="fw-bold"> DIAGRAMA DE GANTT.</label>
                         </div>
                         <div className="chart-clock">
-                            <XYPlot width={2000} height={290} margin={{ bottom: 90, left: 100 }}
-                                yPadding={20} xDomain={[0, 200]} yDomain={[0, 7]}
-                                onMouseLeave={() => setCrosshairValues([])}
+                            <ResponsiveContainer width={2000} height={290}>
+                                <ScatterChart margin={{ bottom: 90, left: 100 }}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis type="number" dataKey="x" domain={[0, 200]}
+                                        ticks={_tickValuesLocal}
+                                        tickFormatter={(value) => {
+                                            const date = dateParser_finalDate(date_start, value);
+                                            if (value == 0) return moment(date_start, 'YYYY-MM-DD').format('MM-DD');
+                                            return moment(date, 'YYYY-MM-DD').format('MM-DD');
+                                        }}
+                                        angle={-15}
+                                        style={{ fontSize: 12 }}
+                                    />
+                                    <YAxis type="number" dataKey="y" domain={[0, 7]}
+                                        ticks={[0.25, 0.75, 1.25, 1.75, 2.25, 2.75, 3.25, 3.75, 4.25, 4.75, 5.25, 5.75, 6.25, 6.75]}
+                                        tickFormatter={yAxisTickFormatter}
+                                    />
+                                    <ZAxis range={[10, 50]} />
+                                    <Tooltip content={<CustomBarTooltip />} />
 
-                            >
-                                <VerticalGridLines
-                                    tickValues={_tickValues}
-                                    tickTotal={_tickValues.length}
-                                />
-                                <HorizontalGridLines
-                                    tickValues={YtickValues}
-                                    tickTotal={YtickValues.length}
-                                />
+                                    {_CHART_PROGRESS_BAR()}
 
-                                <XAxis tickFormat={function tickFormat(value) {
-                                    const date = dateParser_finalDate(date_start, value);
-                                    if (value == 0) return moment(date_start, 'YYYY-MM-DD').format('MM-DD');
-                                    return moment(date, 'YYYY-MM-DD').format('MM-DD');
-                                }}
-                                    tickValues={_tickValues}
-                                    tickLabelAngle={-15}
-                                    marginTop={40}
-                                    style={{ fontSize: 12 }}
-                                />
-                                <XAxis tickFormat={function tickFormat(value) {
-                                    const date = dateParser_finalDate(date_start, value);
-                                    if (value == 0) return moment(date_start, 'YYYY-MM-DD').format('YYYY');
-                                    return moment(date, 'YYYY-MM-DD').format('YYYY');
-                                }}
-                                    tickValues={_tickValues_2}
-                                    tickLabelAngle={-15}
-                                    marginTop={70}
-                                    style={{ fontSize: 12 }}
-                                />
+                                    {/* Today reference line */}
+                                    <ReferenceLine x={_today} stroke="purple" strokeWidth={1}
+                                        label={{ value: 'HOY', position: 'top' }} />
 
-                                <XAxis tickFormat={function tickFormat(value) {
-                                    return value + ' d';
-                                }}
-                                    tickValues={_tickValues}
-                                    style={{ fontSize: 12 }}
-                                />
+                                    {GET_TIME_CLOCK(5, 1) ?
+                                        <ReferenceLine x={GET_TIME_CLOCK(5, 1)} stroke="purple" strokeWidth={1}
+                                            label={{ value: `LyDF: ${_GET_CLOCKS_STATE(5).date_start}`, position: 'insideTopRight' }} />
+                                        : null}
 
-                                <YAxis tickValues={[0.25, 0.75, 1.25, 1.75, 2.25, 2.75, 3.25, 3.75, 4.25, 4.75, 5.25, 5.75, 6.25, 6.75]} tickFormat={(tick, i) => {
-                                    let textArray = _GET_YAXIS_DATA();
-                                    let text = textArray[i] ? textArray[i] : "";
-                                    if (expand) {
-                                        return text;
-                                    }
-                                }} />
+                                    {GET_TIME_CLOCK(31, 1) ?
+                                        <ReferenceLine x={GET_TIME_CLOCK(31, 1)} stroke="purple" strokeWidth={1}
+                                            label={{ value: `Not. Acta: ${_GET_CLOCKS_STATE(31).date_start}`, position: 'insideTopRight' }} />
+                                        : null}
 
-                                {_CHART_PROGRESS_BAR()}
-                                {/**
-                                 *   {_CHART_MARKS_BLUE()}
-                                {_CHART_MARKS_GREEN()}
-                                {_CHART_MARKS_RED()}
-                                 * 
-                                 */}
+                                    {GET_TIME_CLOCK(49, 1) ?
+                                        <ReferenceLine x={GET_TIME_CLOCK(49, 1)} stroke="purple" strokeWidth={1}
+                                            label={{ value: `Viabilidad: ${_GET_CLOCKS_STATE(49).date_start}`, position: 'insideTopRight' }} />
+                                        : null}
 
-                                <Crosshair values={[{ x: _today, y: 1 }]} style={{ line: { color: 'purple', width: '1px' } }}>
-                                    <div className="text-white p-1" style={{ background: 'rgba(0,0,0,0.75)', width: '200px' }}>
-                                        <div className="row">
-                                            <label className="fw-bold">HOY</label>
-                                            <label className="">En espera de: {_GET_NEXT_STEP().title}</label>
-                                        </div>
-                                    </div>
-                                </Crosshair>
+                                    {/**
+                                     * Mark series are commented out in the original
+                                     * Keeping scatter data available if needed
+                                     */}
 
-                                {GET_TIME_CLOCK(5, 1) ?
-                                    <Crosshair values={[{ x: GET_TIME_CLOCK(5, 1), y: 1 }]} style={{ line: { color: 'purple', width: '1px' } }}>
-                                        <div className="text-white p-1" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', marginTop: '51px' }}>
-                                            <div className="row">
-                                                <label className="fw-bold">LyDF: {_GET_CLOCKS_STATE(5).date_start}</label>
-                                            </div>
-                                        </div>
-                                    </Crosshair>
-                                    : null}
-
-                                {GET_TIME_CLOCK(31, 1) ?
-                                    <Crosshair values={[{ x: GET_TIME_CLOCK(31, 1), y: 1 }]} style={{ line: { color: 'purple', width: '1px' } }}>
-                                        <div className="text-white p-1" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', marginTop: '78px' }}>
-                                            <div className="row">
-                                                <label className="fw-bold">Not. Acta:  {_GET_CLOCKS_STATE(31).date_start}</label>
-                                            </div>
-                                        </div>
-                                    </Crosshair>
-                                    : null}
-
-                                {GET_TIME_CLOCK(49, 1) ?
-                                    <Crosshair values={[{ x: GET_TIME_CLOCK(49, 1), y: 1 }]} style={{ line: { color: 'purple', width: '1px' } }}>
-                                        <div className="text-white p-1" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', marginTop: '105px' }}>
-                                            <div className="row">
-                                                <label className="fw-bold">Viavilidad:  {_GET_CLOCKS_STATE(49).date_start}</label>
-                                            </div>
-                                        </div>
-                                    </Crosshair>
-                                    : null}
-
-                                {hovered ?
-                                    <Hint value={hovered}>
-                                        {hovered.type != 'dest'
-                                            ? <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', marginTop: '0%', width: '200px', fontSize: 'small' }}>
-                                                {_GET_HINT_BODY(hovered ?? "")}
-                                            </div>
-                                            : <div />}
-                                    </Hint>
-                                    : null}
-
-                                {hoveredCell ? (
-                                    <Hint value={hoveredCell}>
-                                        <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', fontSize: 'small' }}>
-                                            <div className="row">
-                                                {(hoveredCell.name).split('\n').map(function (name, index) {
-                                                    return <div className="row"><label>{'>'} {name}</label></div>
-                                                })}
-                                            </div>
-                                            <div className="row">
-                                                <label>{dateParser(hoveredCell.date)}</label>
-                                            </div>
-                                        </div>
-                                    </Hint>
-                                ) : null}
-
-                            </XYPlot>
+                                </ScatterChart>
+                            </ResponsiveContainer>
                         </div>
                         <div className="row">
                             <div className="col d-flex justify-content-center">
-                                <DiscreteColorLegend
-                                    orientation="horizontal"
-                                    items={[
-                                        { color: 'ForestGreen', title: 'TIEMPO USUARIO', strokeWidth: 10 },
-                                        { color: 'DodgerBlue', title: 'TIEMPO CURADURIA', strokeWidth: 10 },
-                                        //{ color: 'Gold', title: 'EXPEDICION: ', strokeWidth: 10 },
-                                        { color: 'Crimson', title: 'TIEMPO DESISTIMIENTO:', strokeWidth: 10 },
-                                        { color: 'Darkgrey', title: `TIEMPO PROYECTADO:`, strokeWidth: 10 },
-                                    ]}
-                                />
-
+                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                    {[
+                                        { color: 'ForestGreen', title: 'TIEMPO USUARIO' },
+                                        { color: 'DodgerBlue', title: 'TIEMPO CURADURIA' },
+                                        { color: 'Crimson', title: 'TIEMPO DESISTIMIENTO:' },
+                                        { color: 'Darkgrey', title: 'TIEMPO PROYECTADO:' },
+                                    ].map((item, i) => (
+                                        <div key={i} style={{ display: 'flex', alignItems: 'center', marginRight: 16, marginBottom: 4 }}>
+                                            <div style={{ width: 10, height: 10, backgroundColor: item.color, marginRight: 6 }} />
+                                            <span style={{ fontSize: 'small' }}>{item.title}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </> : ""}

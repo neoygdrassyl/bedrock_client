@@ -9,7 +9,7 @@ import FUNService from '../../../../services/fun.service';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { handleArchCheck } from '../../../../components/customClasses/pdfCheckHandler';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../../components/Collapsible';
 import { cities, domains_number, infoCud } from '../../../../components/jsons/vars';
 import { getJSONFull, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';

@@ -1,6 +1,6 @@
 import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import { useEffect, useState } from 'react';
-import ReactHTMLDatalist from 'react-html-datalist';
+import HTMLDatalist from '../../../components/HTMLDatalist';
 import ReactModal from 'react-modal';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -82,7 +82,7 @@ export default function ARCHIVE_X_FUN(props) {
                         <span class="input-group-text bg-primary text-white">
                             <i class="fas fa-search"></i>
                         </span>
-                        <ReactHTMLDatalist
+                        <HTMLDatalist
                             name={"lic"}
                             onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
                             classNames={"form-control"}

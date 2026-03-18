@@ -3,7 +3,7 @@ import FUNService from '../../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import VIZUALIZER from '../../../../components/vizualizer.component';
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../components/TagInput';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -177,7 +177,7 @@ function FUN_0_RECIPE(props) {
                     </div>
                 </div>
                 <div>
-                    <ReactTagInput
+                    <TagInput
                         tags={tags ?? (currentItem.tags ? currentItem.tags.split(',') : [])}
                         placeholder="Etiquetas de la solicitud"
                         onChange={(newTags) => setTags(newTags)}

@@ -13,7 +13,7 @@ import {
 } from '../../components/ui';
 import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../components/Collapsible';
 const moment = require('moment');
 
 function Mail({ translation, globals, breadCrums }) {

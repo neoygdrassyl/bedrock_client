@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
-import "@silevis/reactgrid/styles.css";
+
 import DataTable from 'react-data-table-component';
 
 export default function RECORD_ARC_AREAS_RESUME(props) {

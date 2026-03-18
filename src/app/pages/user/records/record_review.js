@@ -17,7 +17,7 @@ import moment from 'moment';
 import { handleArchCheck, handleEnghCheck, handleLAWhCheck } from '../../../components/customClasses/pdfCheckHandler';
 import RECORD_DOC_LETTER from './record_letter.component';
 import RECORD_DOC_LETTER_2 from './record_letter_2.component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'

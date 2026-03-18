@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import FUNService from '../../../../services/fun.service'
 import { MDBBtn, MDBTooltip } from '../../../../components/ui';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../../components/Collapsible';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';

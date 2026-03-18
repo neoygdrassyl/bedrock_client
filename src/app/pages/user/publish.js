@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../components/Collapsible';
 import { PUBLISH_TYPE_ARRAY } from '../../components/vars.global'
 import Modal from 'react-modal';
 import publishService from '../../services/publish.service';

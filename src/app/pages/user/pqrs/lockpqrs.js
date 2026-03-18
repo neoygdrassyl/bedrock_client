@@ -17,7 +17,7 @@ import PQRS_COMPONENT_WORKER_FEEDBACK from './components/pqrs_worker_feedback.co
 import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_PDFGEN_REPLY from './components/pqrs_genPDF_reply.component';
 import RTE_PQRS from './components/pqrs_rteReply.component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
