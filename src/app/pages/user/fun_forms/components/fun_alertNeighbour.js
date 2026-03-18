@@ -16,7 +16,7 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
 
         const retrieveItem = () => {
             SubmitService.getIdRelated(currentItem.id_public).then(response => {
-                setVrsRelated(response.data);
+                setVrsRelated(Array.isArray(response.data) ? response.data : []);
             });
         };
 
