@@ -505,8 +505,8 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             </>
         }
         let _COMPONENT_FUNXPQRS = () => {
-            var objectsPQRS = pqrsxfun;
-            if (!Array.isArray(objectsPQRS)) return null;
+            var objectsPQRS = Array.isArray(pqrsxfun) ? pqrsxfun : [];
+            if (objectsPQRS.length === 0) return <label className="fw-bold">No hay solicitudes PQRS asociadas a este trámite.</label>;
             var map = objectsPQRS.map((value, index) => { // FIX: Added index parameter for key
                 var solicitors = {
                     names: value.solicitors_names ? value.solicitors_names.split(';') : [],
