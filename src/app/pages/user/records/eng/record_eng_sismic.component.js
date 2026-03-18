@@ -101,14 +101,10 @@ function RECORD_ENG_SISMIC(props) {
     // DATA GETTERS
     const _GET_CHILD_SISMIC = () => {
         var _CHILD = props.currentRecord.record_eng_sismics;
-        var _LIST = [];
-        if (_CHILD) {
-            _LIST = _CHILD;
-        }
-        return _LIST;
+        return Array.isArray(_CHILD) ? _CHILD : [];
     }
     function LOAD_STEP(_id_public) {
-        var _CHILD = props.currentRecord.record_eng_steps;
+        var _CHILD = Array.isArray(props.currentRecord.record_eng_steps) ? props.currentRecord.record_eng_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == props.currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }

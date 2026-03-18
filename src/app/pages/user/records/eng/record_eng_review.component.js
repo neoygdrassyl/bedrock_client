@@ -29,9 +29,9 @@ function RECORD_ENG_REVIEW(props) {
         if (load) return;
         submitService.getIdRelated(props.currentItem.id_public).then(response => {
             let newList = [];
-            let List = response.data;
+            let List = Array.isArray(response.data) ? response.data : [];
             List.map((value, i) => {
-                let subList = value.sub_lists;
+                let subList = Array.isArray(value.sub_lists) ? value.sub_lists : [];
                 subList.map(valuej => {
                     let name = valuej.list_name ? valuej.list_name.split(";") : []
                     let category = valuej.list_category ? valuej.list_category.split(",") : []
@@ -96,7 +96,7 @@ function RECORD_ENG_REVIEW(props) {
     }
 
     const LOAD_STEP_class = (_id_public) => {
-        var _CHILD = props.currentRecord.record_law_steps;
+        var _CHILD = Array.isArray(props.currentRecord.record_law_steps) ? props.currentRecord.record_law_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == document.getElementById('record_version').value && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }
@@ -282,7 +282,7 @@ function RECORD_ENG_REVIEW(props) {
             return _LIST;
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_eng_steps;
+            var _CHILD = Array.isArray(currentRecord.record_eng_steps) ? currentRecord.record_eng_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
