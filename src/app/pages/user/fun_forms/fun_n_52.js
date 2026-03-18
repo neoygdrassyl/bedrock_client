@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import ReactDOM from "react-dom";
-import ReactHTMLDatalist from "react-html-datalist";
+import HTMLDatalist from '../../../components/HTMLDatalist';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -769,7 +768,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span class="input-group-text bg-success text-white">
                                 <i class="fas fa-search"></i>
                             </span>
-                            <ReactHTMLDatalist
+                            <HTMLDatalist
                                 name={"search_52"}
                                 onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
                                 classNames={"form-control"}

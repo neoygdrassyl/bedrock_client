@@ -12,7 +12,7 @@ import FUN_VERSION_NAV from './components/fun_versionNav';
 import FUN_CHECKLIST_N from './components/fun_checklist_n';
 import FUN_PDF_CHECK from './components/fun_pdf_check';
 import FUN_SERVICE from '../../../services/fun.service';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 import FUN_DOC_CONFIRM_INCOMPLETE from './components/fun_doc_confirminc';
 import FUN_C_CLOCKS from './components/fun_c_clocks.component';
 import moment from 'moment';

@@ -3,7 +3,7 @@ import SubmitService from '../../../services/submit.service';
 import { dateParser } from '../../../components/customClasses/typeParse';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 import DataTable from 'react-data-table-component';
 
 

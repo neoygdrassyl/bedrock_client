@@ -6,7 +6,7 @@ import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoCud, nomens } from '../../../components/jsons/vars';
 import { MDBBtn, MDBCollapse } from '../../../components/ui';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import moment from 'moment';
 import EXP_RES from './exp._res.component';

@@ -1,7 +1,7 @@
 import { Component } from 'react';
 
 /**
- * ErrorBoundary para capturar errores de react-vis y otras librerías de charts.
+ * ErrorBoundary para capturar errores de recharts y otras librerías de charts.
  * Muestra un mensaje de fallback en vez de romper toda la página.
  */
 class ChartErrorBoundary extends Component {

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { dateParser, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../../components/Collapsible';
 
 export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {
 

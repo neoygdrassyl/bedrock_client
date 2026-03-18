@@ -10,7 +10,7 @@ import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 import PQRS_COMPONENT_ATTACH_PROFESIONAL from './components/pqrs_attach_pro.component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 import { PQRS_SET_REPLY1 } from './components/pqrs_setReply2.component';
 import JoditEditor from "jodit-pro-react";
 import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';

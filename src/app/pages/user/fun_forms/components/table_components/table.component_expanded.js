@@ -1,4 +1,4 @@
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../../components/TagInput';
 import React, { useEffect, useState } from 'react';
 import FUN_SERVICE from '../../../../../services/fun.service';
 import USER_SERVICE from '../../../../../services/users.service';
@@ -496,7 +496,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
             <div className='row text-center'>
                 <div className='col border '><h6 className='py-1 fw-normal'>ETIQUETAS</h6></div>
                 <div className='col border'><h6 className='py-1 fw-bold'>{
-                    <ReactTagInput
+                    <TagInput
                         tags={tags}
                         onChange={(newTags) => saveTags(newTags)}
                         placeholder="Etiquetas de la solicitud"

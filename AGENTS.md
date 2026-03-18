@@ -197,8 +197,8 @@ Usar `useTranslation()` para todo texto visible. Agregar claves en `src/app/tran
 nvm use 22                  # obligatorio
 npm run audit:ast           # gate rápido de estructura antes de tests
 npm run audit:arrays        # detecta riesgos de "map is not a function" (solo reporte)
-npm test                    # vitest run (unit + integration, ~268 tests)
-npx playwright test         # E2E en Chromium (35 tests, 28 pass / 7 skip por datos)
+npm test                    # vitest run (unit + integration, 268 tests — 100% verde)
+npx playwright test         # E2E en Chromium (35 tests; requiere backend :3001 y datos reales)
 npx playwright test --ui    # UI interactiva de Playwright
 ```
 
@@ -310,18 +310,24 @@ Si un archivo nuevo usa `require()`, el plugin lo convierte automáticamente. Pe
 
 ## 8. Librerías legacy
 
-Estas librerías funcionan en runtime pero tienen peerDeps que no incluyen React 19:
+**Fase 7 completada (2026-03-18).** Todas las dependencias incompatibles con React 19 eliminadas. `npm install` funciona sin `--legacy-peer-deps`.
 
-| Librería | Archivos | Reemplazo sugerido |
-|----------|----------|-------------------|
-| `react-vis@1.11.7` | 14 charts (class components en `charts_components.js/`) | `recharts` | Fase 7 — incluye migrar class→functional |
-| `react-quill@1.3.5` | 1 (`pqrs_rteReply.component.js`, class component) | `react-quill-new` | Fase 7 |
-| `@silevis/reactgrid@4.1.17` | 3 archivos (`record_arc_areas*`, class components) | Evaluar | Fase 7 |
-| `react-google-maps@9.4.5` | 1 (`map.js`) | `@react-google-maps/api` | Fase 7 |
-| `@pathofdev/react-tag-input@1.0.7` | ~3 archivos | RSuite `<TagPicker>` | Fase 7 |
-| `react-html-datalist@2.0.4` | ~2 archivos | HTML nativo `<datalist>` | Fase 7 |
+### Componentes custom drop-in (creados en Fase 7)
 
-Si alguna empieza a fallar, consultar `.github/instructions/MIGRATION_PLAN.md` (Fase 7).
+| Componente | Reemplaza | API pública |
+|---|---|---|
+| `src/app/components/TagInput.js` | `@pathofdev/react-tag-input` | `tags`, `onChange`, `placeholder`, `removeOnBackspace`, `ref` |
+| `src/app/components/HTMLDatalist.js` | `react-html-datalist` | `name`, `onChange`, `classNames`, `options[{text,value}]` |
+| `src/app/components/Collapsible.js` | `react-collapsible` | `trigger`, `className`, `openedClassName`, `lazyRender`, `open`, `children` |
+
+### Librerías con class components pendientes (deuda técnica, no bloquean runtime)
+
+| Librería | Archivos | Estado | Próxima acción |
+|---|---|---|---|
+| `react-vis@1.11.7` | 14 charts en `fun_forms/charts_components.js/` | Funciona en runtime | Migrar a `recharts` (ya instalado) en Fase 8 — implica convertir class→functional |
+| `react-quill-new@3.8.3` | 1 (`pqrs/components/pqrs_rteReply.component.js`) | Actualizado en F7, funciona | Convertir class→functional en Fase 8 |
+
+Ver historial completo en `REFACTOR_TRACKING_REACT19.md` → sección 3.
 
 ---
 
@@ -344,11 +350,16 @@ Si alguna empieza a fallar, consultar `.github/instructions/MIGRATION_PLAN.md` (
 
 El proyecto fue migrado de **React 16 + CRA 4** a **React 19 + Vite 6** en el branch `feat/react-19-migration` (feb 2026). Para el detalle completo de las 7 fases, conteos y decisiones:
 
-- `.github/instructions/MIGRATION_PLAN.md` — Plan completo, estado de cada fase
+- `REFACTOR_TRACKING_REACT19.md` — Libro maestro del proceso de migración
 
-**Estado actual:** Fases 0–6 de migración completadas. 157 class components migrados a funcionales con hooks. Quedan 16 clases (1 Error Boundary + 14 charts react-vis + 1 comentada). **Fase 7** (reemplazar libs abandonadas: react-vis, react-quill, react-google-maps) es la siguiente y es incremental.
+**Estado actual (2026-03-18):** Fases 0–7 completadas.
+- 157 class components migrados a funcionales con hooks en Fases 0–6.
+- Quedan 15 clases (1 Error Boundary + 14 charts `react-vis`) — pendientes para Fase 8.
+- **Fase 7 cerrada:** 7 librerías legacy eliminadas/reemplazadas. `npm install` funciona limpio.
 
-**Testing:** Suite completa implementada — 268 tests unitarios/integración/workflow (Vitest) + 35 E2E (Playwright). Cobertura incluye: Clocks, Records, PQRS, Dashboard, Nomenclature, ZoneUse, Submit, Archive, Expedition, FunManage.
+**Testing:** Suite completa — 268 tests unitarios/integración/workflow (Vitest, **100% verde**) + 35 E2E (Playwright). Cobertura incluye: Clocks, Records, PQRS, Dashboard, Nomenclature, ZoneUse, Submit, Archive, Expedition, FunManage.
+
+**Siguiente fase (Fase 8 — cuando se requiera):** Migrar los 14 charts `react-vis` (class components) a `recharts` (ya instalado) como componentes funcionales. Convertir `pqrs_rteReply.component.js` a funcional.
 
 ---
 

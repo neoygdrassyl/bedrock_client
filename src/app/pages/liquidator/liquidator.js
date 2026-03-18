@@ -4,7 +4,7 @@ import {
 } from '../../components/ui';
 import DataTable from 'react-data-table-component';
 import { Link } from "react-router-dom";
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../components/Collapsible';
 import moment from 'moment';
 import { infoCud } from '../../components/jsons/vars';
 import { Button_navigation } from '../../components/button.component';

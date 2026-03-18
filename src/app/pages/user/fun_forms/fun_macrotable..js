@@ -4,9 +4,9 @@ import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
 import { MDBBadge, MDBBtn, MDBCollapse, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from '../../../components/ui';
-import ReactTagInput from "@pathofdev/react-tag-input";
-import Collapsible from 'react-collapsible';
-import "@pathofdev/react-tag-input/build/index.css";
+import TagInput from "../../../components/TagInput";
+import Collapsible from '../../../components/Collapsible';
+
 
 import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
@@ -2380,7 +2380,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             return <>
 
                 <div className="row">
-                    <ReactTagInput
+                    <TagInput
                         tags={state.tags}
                         onChange={(newTags) => _FILTER_LIST(newTags)}
                         placeholder="Filtros de lista..."

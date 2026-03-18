@@ -6,7 +6,7 @@ import {
     MDBTypography,
     MDBDropdownItem
 } from './ui';
-import Collapsible from 'react-collapsible';
+import Collapsible from './Collapsible';
 
 import {
     Link,

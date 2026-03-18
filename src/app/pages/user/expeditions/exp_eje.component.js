@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } fr
 import SubmitService from '../../../services/submit.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 
 
 import EXPEDITION_SERVICE from '../../../services/expedition.service';

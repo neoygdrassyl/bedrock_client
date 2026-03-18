@@ -5,7 +5,7 @@ import { Spreadsheet } from "react-spreadsheet";
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { MDBBtn, MDBCollapse } from '../../../../components/ui';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../components/TagInput';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import FUNService from '../../../../services/fun.service';
 
@@ -909,7 +909,7 @@ export default function RECORD_ARC_AREAS(props) {
                     <div className='row mb-1'>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Otros (Históricos, Etapas, etc...):</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsH}
                                 placeholder="Histórico..."
                                 onChange={(newTags) => { setTagH(newTags); manage_step(newTags, 'h') }}
@@ -919,7 +919,7 @@ export default function RECORD_ARC_AREAS(props) {
                         </div>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Empate:</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsE}
                                 placeholder="Empate..."
                                 onChange={(newTags) => { setTagE(newTags); manage_step(newTags, 'e') }}
