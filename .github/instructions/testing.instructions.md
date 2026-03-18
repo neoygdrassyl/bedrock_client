@@ -21,6 +21,29 @@ Este documento configura un agente especializado en testing para la aplicación 
 | **jsdom** | 24.x | Entorno DOM simulado |
 | **Playwright MCP** | — | Tests E2E visuales con navegador real (screenshots, clicks, navegación) |
 
+## 1.1 Preflight preventivo (antes de E2E o debugging de crash)
+
+Ejecutar siempre estos comandos antes de atribuir un fallo a Playwright o a datos de backend:
+
+```bash
+npm run audit:ast
+npm run audit:arrays
+```
+
+Modo estricto opcional (CI o gates de merge):
+
+```bash
+npm run audit:arrays:strict
+```
+
+Interpretación:
+- `audit:ast`: debe devolver `OK`; detecta errores de sintaxis/estructura (llaves asimétricas, bloques mal cerrados) que pueden causar pantalla en blanco.
+- `audit:arrays`: reporta llamadas potencialmente inseguras a `.map/.filter/.reduce/...` sobre valores no validados; en modo normal no bloquea.
+- `audit:arrays:strict`: mismo análisis, pero retorna exit code `1` cuando hay hallazgos para usar como gate en CI.
+
+Regla operativa:
+- Si hay crash silencioso o `TypeError` tipo "map is not a function", revisar primero los hallazgos de `audit:arrays` del módulo afectado.
+
 ### NO usar API de Jest — usar API de Vitest:
 ```js
 // ✅ Correcto

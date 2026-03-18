@@ -42,6 +42,10 @@ npm run build           # Build de producción → build/
 npm test                # vitest run (una sola pasada)
 npm run test:watch      # vitest en modo watch
 npm run preview         # Preview del build
+npm run audit:ast       # Auditoría estructural AST (llaves/sintaxis en src)
+npm run audit:arrays    # Auditoría preventiva NO bloqueante (reporte)
+npm run audit:arrays:strict # Modo bloqueante para CI
+npm run audit:preflight # Ejecuta audit:ast + audit:arrays
 ```
 
 ### Variables de entorno (`.env` o `.env.local`)
@@ -191,10 +195,62 @@ Usar `useTranslation()` para todo texto visible. Agregar claves en `src/app/tran
 
 ```bash
 nvm use 22                  # obligatorio
+npm run audit:ast           # gate rápido de estructura antes de tests
+npm run audit:arrays        # detecta riesgos de "map is not a function" (solo reporte)
 npm test                    # vitest run (unit + integration, ~268 tests)
 npx playwright test         # E2E en Chromium (35 tests, 28 pass / 7 skip por datos)
 npx playwright test --ui    # UI interactiva de Playwright
 ```
+
+### Preflight de estabilidad (obligatorio para agentes)
+
+Antes de ejecutar E2E o de depurar un crash de pantalla blanca, correr en este orden:
+
+1. `npm run audit:ast` → valida integridad de sintaxis/estructura del árbol React.
+2. `npm run audit:arrays` → detecta llamadas de métodos de array potencialmente inseguras (no bloquea por defecto).
+3. Para gate estricto en CI usar `npm run audit:arrays:strict`.
+
+Notas:
+- `audit:ast` debe terminar en `OK` para considerar estable el código fuente.
+- `audit:arrays` devuelve `0` salvo errores de parseo; es modo suave para revisión continua.
+- `audit:arrays:strict` devuelve `1` cuando encuentra riesgos; usar solo cuando quieras bloquear merges.
+
+### Marco de 4 opciones anticrash (herramienta oficial de detección temprana)
+
+Este proyecto usa un marco de 4 opciones para prevenir "pantalla blanca" y errores de render antes de que lleguen a producción.
+
+1. **Opción 1 — Auditoría AST estructural (`audit:ast`)**
+  - Qué cubre: llaves asimétricas, bloques mal cerrados, sintaxis rota y parse errors en `src/`.
+  - Por qué existe: muchos crashes silenciosos vienen de estructura JS/JSX dañada tras cambios grandes.
+  - Cuándo usar: siempre antes de tests E2E o al depurar un crash que deja la app en blanco.
+
+2. **Opción 2 — Auditoría de métodos de array (`audit:arrays`)**
+  - Qué cubre: llamadas potencialmente inseguras a `.map/.filter/.reduce/.find/.some/.every/...` sobre datos no validados.
+  - Por qué existe: evita `TypeError: ... is not a function` cuando APIs devuelven `null`, `false`, `object` o payloads incompletos.
+  - Filosofía: modo suave por defecto para diagnóstico continuo sin frenar al equipo.
+
+3. **Opción 3 — Error Boundary granular por subárbol de rutas**
+  - Qué cubre: si un módulo falla en render, se aísla el error y se muestra fallback local.
+  - Por qué existe: evita que colapse toda la interfaz (navbar/layout), facilitando recuperación y diagnóstico.
+  - Implementación actual: `RouteErrorBoundary` en `src/app/App.js` alrededor del árbol de `<Routes>`.
+
+4. **Opción 4 — Endurecimiento gradual de quality gates**
+  - Qué cubre: transición controlada de reporte informativo a bloqueo estricto cuando el proyecto esté más limpio.
+  - Por qué existe: reducir errores sin crear fricción excesiva en etapas tempranas.
+  - Cómo aplicar: usar `audit:arrays` (suave) en desarrollo y `audit:arrays:strict` en CI solo para ramas/etapas acordadas.
+
+#### Escalamiento recomendado (sin rigidez excesiva)
+
+1. **Fase A (actual):** `audit:preflight` obligatorio local + reportes.
+2. **Fase B:** `audit:arrays:strict` solo en CI nocturno o rama de release.
+3. **Fase C:** activar `strict` en PRs cuando el volumen de hallazgos baje a un umbral acordado.
+
+#### Orden de actuación ante crash silencioso
+
+1. Ejecutar `npm run audit:ast`.
+2. Ejecutar `npm run audit:arrays` y revisar el módulo afectado.
+3. Validar que el crash quede contenido por el Error Boundary (opción 3).
+4. Solo después correr E2E para confirmar regresión cero.
 
 ### Estructura de tests
 
