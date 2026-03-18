@@ -25,9 +25,9 @@ function RECORD_LAW_EVALUATION(props) {
         if (load) return;
         submitService.getIdRelated(currentItem.id_public).then(response => {
             let newList = [];
-            let List = response.data;
+            let List = Array.isArray(response.data) ? response.data : [];
             List.map((value, i) => {
-                let subList = value.sub_lists;
+                let subList = Array.isArray(value.sub_lists) ? value.sub_lists : [];
                 subList.map(valuej => {
                     let name = valuej.list_name ? valuej.list_name.split(";") : []
                     let category = valuej.list_category ? valuej.list_category.split(",") : []

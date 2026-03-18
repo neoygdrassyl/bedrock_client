@@ -52,7 +52,7 @@ export default function RECORD_LAW_FUN_52(props) {
         setLod(true);
     }
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_law_steps;
+        var _CHILD = Array.isArray(currentRecord.record_law_steps) ? currentRecord.record_law_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }

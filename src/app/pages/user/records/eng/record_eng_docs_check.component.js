@@ -12,11 +12,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
 
         let _GET_CHILD_6 = () => {
             var _CHILD = _FUN_6;
-            var _LIST = [];
-            if (_CHILD) {
-                _LIST = _CHILD;
-            }
-            return _LIST;
+            return Array.isArray(_CHILD) ? _CHILD : [];
         }
         let _GET_CHILD_REVIEW_GEN = () => {
             var _CHILD = currentRecord.review_check;
@@ -27,7 +23,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
             return _LIST;
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_eng_steps;
+            var _CHILD = Array.isArray(currentRecord.record_eng_steps) ? currentRecord.record_eng_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
