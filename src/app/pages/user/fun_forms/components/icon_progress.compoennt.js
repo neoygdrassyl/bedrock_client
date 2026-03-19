@@ -1,3 +1,4 @@
+import React from 'react';
 import { MDBTooltip } from '../../../../components/ui';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
@@ -178,7 +179,7 @@ function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
 
 
 
-            return <>{_COMPONENT}</>
+            return <>{_COMPONENT.map((item, i) => React.cloneElement(item, { key: i }))}</>
         }
         return (
             <div>

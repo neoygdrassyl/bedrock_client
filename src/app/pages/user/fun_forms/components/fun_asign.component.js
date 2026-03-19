@@ -8,7 +8,33 @@ import { dateParser_dateDiff, dateParser_timePassed, regexChecker_isOA_2, regexC
 import TABLE_COMPONENT_EXPANDED from './table_components/table.component_expanded';
 import HeatMap from '@uiw/react-heat-map';
 import { infoCud, nomens } from '../../../../components/jsons/vars';
-import { Badge, Calendar, Popover, Tag, TagGroup, Whisper } from 'rsuite';
+import ReactCalendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+// rsuite Badge/Tag/TagGroup/Whisper/Popover replaced with inline components (Phase 9.1)
+const Tag = ({ color, children }) => (
+  <span className="badge me-1" style={{ backgroundColor: color === 'blue' ? 'var(--dvl-info)' : color === 'green' ? 'var(--dvl-success)' : 'var(--dvl-gray-400)', fontSize: 'var(--dvl-text-xs)' }}>{children}</span>
+);
+const TagGroup = ({ children }) => <span>{children}</span>;
+const Badge = ({ color, className, style }) => (
+  <span className={`rounded-circle me-1 ${className || ''}`} style={{ display: 'inline-block', width: 8, height: 8, backgroundColor: color === 'green' ? 'var(--dvl-success)' : style?.backgroundColor || 'var(--dvl-gray-400)', ...style }} />
+);
+const Whisper = ({ children, speaker }) => {
+  const [show, setShow] = React.useState(false);
+  return (
+    <span style={{ position: 'relative', display: 'inline-block' }}>
+      {React.cloneElement(children, { onClick: (e) => { e.stopPropagation(); setShow(s => !s); } })}
+      {show && (
+        <span
+          style={{ position: 'absolute', bottom: '100%', left: 0, zIndex: 1080, background: 'var(--bs-body-bg)', border: '1px solid var(--bs-border-color)', borderRadius: 4, padding: '4px 8px', minWidth: 120, whiteSpace: 'nowrap', boxShadow: 'var(--dvl-shadow-md)', fontSize: 'var(--dvl-text-xs)' }}
+          onClick={(e) => { e.stopPropagation(); setShow(false); }}
+        >
+          {speaker.props.children}
+        </span>
+      )}
+    </span>
+  );
+};
+const Popover = ({ children }) => <>{children}</>;
 import Modal from 'react-modal';
 import FUN_ASIGNS_HISTORY_COMPONENT from './fun_asign_history.component';
 import './fun_modal_shared.css';
@@ -864,7 +890,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             formattedDayPattern: 'dd',
         };
 
-        return <Calendar bordered renderCell={renderCell} locale={locale} />
+        return <ReactCalendar tileContent={({ date }) => renderCell(date)} locale="es-ES" className="w-100" />
     }
 
     let COMPONEN_WORKERS = () => {

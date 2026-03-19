@@ -9,7 +9,7 @@ import Modal from 'react-modal';
 import { MDBBtn } from '../../../../components/ui';
 import FUNService from '../../../../services/fun.service';
 import moment from 'moment';
-import { Divider } from 'rsuite';
+const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;;
 
 export default function RECORD_LAW_FUN_52(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, quickModalStyle } = props;
@@ -608,7 +608,7 @@ export default function RECORD_LAW_FUN_52(props) {
                                 <i class="far fa-eye"></i>
                             </span>
                             <select class="form-select" id="f_528" defaultValue={item.supervision}>
-                                <option selected>N/A</option>
+                                <option>N/A</option>
                                 <option>SI</option>
                                 <option>NO</option>
                             </select>

@@ -180,8 +180,6 @@ function Seals({ translation, swaMsg, breadCrums }) {
                             document.getElementById("app-form").reset();
                             formData = new FormData();
                             refreshList();
-                        } else {
-                            // TODO
                         }
                     })
                     .catch(e => {
@@ -202,8 +200,6 @@ function Seals({ translation, swaMsg, breadCrums }) {
                             document.getElementById("app-form").reset();
                             formData = new FormData();
                             refreshList();
-                        } else {
-                            // TODO
                         }
                     })
                     .catch(e => {
@@ -261,8 +257,6 @@ function Seals({ translation, swaMsg, breadCrums }) {
                         formData = new FormData();
                         refreshList();
                         MySwal.close();
-                    } else {
-                        // TODO
                     }
                 })
                 .catch(e => {

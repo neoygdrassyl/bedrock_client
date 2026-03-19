@@ -1,7 +1,12 @@
 import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip } from '../../../components/ui';
 import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
-import { Tag, TagGroup } from 'rsuite';
+const TagGroup = ({ children }) => <span className="d-flex flex-wrap gap-1">{children}</span>;
+const Tag = ({ color, children }) => (
+  <span className="badge" style={{ backgroundColor: color === 'blue' ? 'var(--dvl-info)' : 'var(--dvl-primary-500)', fontSize: 'var(--dvl-text-xs)' }}>
+    {children}
+  </span>
+);
 
 import Modal from 'react-modal';
 
