@@ -114,7 +114,7 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
             if (REVIEWS) {
                 let asigns = REVIEWS.split(';');
                 let reviews = _REVIEW_CLOCK ? _REVIEW_CLOCK.split(';') : [_REVIEW];
-                return asigns.map((value, index) => res[reviews[index]] ?? res['-1'])
+                return asigns.map((value, index) => <span key={index}>{res[reviews[index]] ?? res['-1']}</span>)
             } else return res[_REVIEW] ?? res['-1']
         }
         let _GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS) => {
@@ -129,12 +129,12 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                 let asigns = REVIEWS.split(';');
                 let reviews_c = _REVIEW_CLOCK ? _REVIEW_CLOCK.split(';') : [_REVIEW].join(',');
                 return ['R1:', 'R2:'].map((value, index) =>
-                    <>
+                    <span key={index}>
                         <label>{value}
-                            {asigns.map((value2, index2) => res[reviews_c[index2] ? reviews_c[index2].split(',')[index] : '-1'] ?? res['-1'])}
+                            {asigns.map((value2, index2) => <span key={index2}>{res[reviews_c[index2] ? reviews_c[index2].split(',')[index] : '-1'] ?? res['-1']}</span>)}
                         </label><br />
-                    </>)
-            } else return revies.map((value, index) => <><label>R{index + 1}: {res[value] ?? res['-1']}</label><br /></>)
+                    </span>)
+            } else return revies.map((value, index) => <span key={index}><label>R{index + 1}: {res[value] ?? res['-1']}</label><br /></span>)
 
         }
         let _TABLE_INFO = () => {
@@ -370,8 +370,8 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                 </div>
             </div>
 
-            const BODY = data.map(value => {
-                return <div className="row ">
+            const BODY = data.map((value, i) => {
+                return <div className="row" key={i}>
                     <div className="col-2 border text-center">
                         <h5 className="text-uppercase">{value.icon} {value.type}</h5>
                     </div>

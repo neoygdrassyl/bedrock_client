@@ -480,7 +480,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     <div className="col-4">
                                         <select className="form-select" defaultValue={currentRecord.category ?? 0} id="r_e_select_category"
                                             onChange={() => selectCategory()}>
-                                            <option selected={currentRecord.category == null ? true : false} disabled value="0">SELECCIONE UNA CATEGORIA...</option>
+                                            <option disabled value="0">SELECCIONE UNA CATEGORIA...</option>
                                             <option value="rule">NO REQUIERE ESTUDIO</option>
                                             <option value="2">CERTIFICACIÓN</option>
                                             <option value="1">ESTUDIO</option>

@@ -561,8 +561,7 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
         let _PRINT_GROUP = (_array) => {
             return _array.map((value) => {
                 //if(!_CHECK_INDEXVALUE(value, 0)) return '';
-                return (<>
-                    <div className="row">
+                return (<div key={value} className="row">
                         <div className="col-9">
                             <ul>
                                 <label>({value}) {JsonDocList[value]}</label>
@@ -581,7 +580,7 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
                                 defaultChecked={_CHECK_INDEXVALUE(value, 2)} />
                         </div>
                     </div>
-                </>)
+                )
             })
         }
 

@@ -106,7 +106,7 @@ vi.mock('../app/pages/user/expeditions/exp_docs.component', () => ({
   default: (props) => <div data-testid="exp-docs">EXP_DOCS Documentos</div>,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp_clocks.component_OLD', () => ({
+vi.mock('../app/pages/user/expeditions/exp_clocks.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="exp-clocks">EXP_CLOCKS Tiempos</div>,
 }));

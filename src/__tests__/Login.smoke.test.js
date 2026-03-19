@@ -35,6 +35,7 @@ vi.mock('../app/pages/user/zone_use/zone_use.page', () => ({ __esModule: true, d
 
 vi.mock('../app/components/footer', () => ({ __esModule: true, default: (props) => require('react').createElement('footer', { id: 'footer-app-main' }, 'Footer') }));
 vi.mock('../app/components/navbar', () => ({ __esModule: true, default: (props) => require('react').createElement('nav', { 'data-testid': 'navbar' }, 'Navbar') }));
+vi.mock('../app/components/dovela/shell/AppShell', () => ({ __esModule: true, default: (props) => require('react').createElement('nav', { 'data-testid': 'navbar' }, 'AppShell') }));
 vi.mock('../app/components/btnStart', () => ({ __esModule: true, default: () => null }));
 vi.mock('../app/components/btnChat', () => ({ __esModule: true, default: () => null }));
 vi.mock('../app/components/btnAccesibility', () => ({ __esModule: true, default: () => null }));

@@ -5,7 +5,6 @@ import EmailsService from '../services/emails.service';
 import { MDBBtn, MDBTooltip } from './ui';
 import DataTable from 'react-data-table-component';
 import moment from 'moment';
-import { Uploader } from 'rsuite';
 import VIEWER from './viewer.component';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -158,13 +157,23 @@ export default function EMAILS_COMPONENT(props) {
                 <div className='row'>
                     <div className='col'>
                         <label>Documentos</label>
-                        <Uploader fileList={files} onChange={setFiles}
-                            action="//jsonplaceholder.typicode.com/posts/" autoUpload={false}
-                            draggable>
-                            <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "2px dotted" }}>
-                                <span>Arrastre los documento a esta área</span>
-                            </div>
-                        </Uploader>
+                        <label
+                            className="d-flex align-items-center justify-content-center w-100"
+                            style={{ height: 200, border: '2px dashed var(--bs-border-color)', borderRadius: 'var(--dvl-radius-md)', cursor: 'pointer' }}
+                        >
+                            <span className="text-muted">
+                                <i className="fas fa-cloud-upload-alt me-2" />
+                                {files && files.length > 0
+                                    ? `${files.length} archivo(s) seleccionado(s)`
+                                    : 'Arrastre los documentos a esta área o haga clic'}
+                            </span>
+                            <input
+                                type="file"
+                                multiple
+                                className="d-none"
+                                onChange={(e) => setFiles(Array.from(e.target.files))}
+                            />
+                        </label>
                     </div>
                 </div>
 

@@ -7,7 +7,7 @@ import DataTable from 'react-data-table-component';
 import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import { dateParser, dateParser_timePassed, dateParser_yearsPassed } from '../../../components/customClasses/typeParse'
 import VIZUALIZER from '../../../components/vizualizer.component';
-import { Divider } from 'rsuite';
+const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 import profesionalsService from '../../../services/profesionals.service';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -303,7 +303,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                                 <i class="far fa-eye"></i>
                             </span>
                             <select class="form-select" id="f_528">
-                                <option selected>N/A</option>
+                                <option>N/A</option>
                                 <option>SI</option>
                                 <option>NO</option>
                             </select>
@@ -529,7 +529,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                                 <i class="far fa-eye"></i>
                             </span>
                             <select class="form-select" id="f_528_edit">
-                                <option selected>N/A</option>
+                                <option>N/A</option>
                                 <option>SI</option>
                                 <option>NO</option>
                             </select>

@@ -219,21 +219,21 @@ export default function FUN_D_ABDICATE(props) {
                     <label>Titular</label>
                     <input list="fda_f51_list" class="form-control form-control-sm" id="fda_f51" onChange={(e) => _SET_F51(e.target.value, false, false)} />
                     <datalist id="fda_f51_list" >
-                        {f51x3().map(f => <option value={f.name} />)}
+                        {f51x3().map((f, i) => <option key={i} value={f.name} />)}
                     </datalist>
                 </div>
                 <div className="col">
                     <label>Documento</label>
                     <input list="fda_f51_id_list" class="form-control form-control-sm" id="fda_f51_id" onChange={(e) => _SET_F51(false, e.target.value, false)} />
                     <datalist id="fda_f51_id_list">
-                        {f51x3().map(f => <option value={f.id_number}>{f.name}: {f.id_number}</option>)}
+                        {f51x3().map((f, i) => <option key={i} value={f.id_number}>{f.name}: {f.id_number}</option>)}
                     </datalist>
                 </div>
                 <div className="col">
                     <label>Calidad</label>
                     <input list="fda_f51_role_list" class="form-control form-control-sm" id="fda_f51_role" onChange={(e) => _SET_F51(false, false, e.target.value)} />
                     <datalist id="fda_f51_role_list">
-                        {f51x3().map(f => <option value={f.role} >{f.name}: {f.role}</option>)}
+                        {f51x3().map((f, i) => <option key={i} value={f.role} >{f.name}: {f.role}</option>)}
                     </datalist>
                 </div>
             </div>

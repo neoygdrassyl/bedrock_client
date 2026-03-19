@@ -606,7 +606,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                           <i class="fas fa-home"></i>
                         </span>
                         <select class="form-select" id="project-liquidator" required onChange={e => setType(e.target.value)}>
-                          <option selected value="" disabled>{translation.form_project_0}</option>
+                          <option value="" disabled>{translation.form_project_0}</option>
                           <option value="0">{translation.form_project_1}</option>
                           <option value="1">{translation.form_project_2}</option>
                           <option value="2">{translation.form_project_3}</option>
@@ -621,7 +621,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                           <i class="fas fa-tasks"></i>
                         </span>
                         <select class="form-select" id="select_type" required >
-                          <option selected value="" disabled>{translation.form_module_0}</option>
+                          <option value="" disabled>{translation.form_module_0}</option>
                           <option value="Obra Nueva" disabled={type == 2 ? true : false}>{translation.form_module_1}</option>
                           <option value="Ampliacion" disabled={type == 2 ? true : false}>{translation.form_module_2}</option>
                           <option value="Modificacion" disabled={type == 2 ? true : false}>{translation.form_module_3}</option>
@@ -643,7 +643,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                         </span>
                         <select class="form-select" id="use-liquidator" required
                           onChange={handleUse}>
-                          <option selected value="" disabled>{translation.form_use_0}</option>
+                          <option value="" disabled>{translation.form_use_0}</option>
                           <option value="0">{translation.form_use_1}</option>
                           <option value="1">{translation.form_use_2}</option>
                         </select>
@@ -654,7 +654,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                           <i class="fas fa-home"></i>
                         </span>
                         <select class="form-select" id="social-liquidator" required>
-                          <option selected value="" disabled>{translation.form_social_0}</option>
+                          <option value="" disabled>{translation.form_social_0}</option>
                           <option value="0">{translation.form_social_1}</option>
                           <option value="1">{translation.form_social_2}</option>
                           <option value="2">{translation.form_social_3}</option>
@@ -666,7 +666,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                           <i class="fas fa-dollar-sign"></i>
                         </span>
                         <select class="form-select" id="strata-liquidator" required>
-                          <option selected value="" disabled>{translation.form_strata_0}</option>
+                          <option value="" disabled>{translation.form_strata_0}</option>
                           <option value="0">{translation.form_strata_1}</option>
                           <option value="1">{translation.form_strata_2}</option>
                           <option value="2">{translation.form_strata_3}</option>

@@ -5,7 +5,6 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import DataTable from 'react-data-table-component';
 import { MDBTooltip } from '../../../../components/ui';
 import { dateParser } from '../../../../components/customClasses/typeParse';
-import { ListGroup } from 'react-bootstrap';
 
 const MySwal = withReactContent(Swal);
 function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {

@@ -26,8 +26,6 @@ import { infoCud } from '../components/jsons/vars';
 import Map from '../components/map';
 import { _news } from '../components/jsons/_news';
 
-import { IconButton, ButtonToolbar, ButtonGroup } from 'rsuite';
-import ArrowDownIcon from '@rsuite/icons/ArrowDown';
 import { Button_navigation } from '../components/button.component';
 //import { useLocation } from 'react-router-dom';
 //const location = useLocation();

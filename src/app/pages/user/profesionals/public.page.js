@@ -6,7 +6,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { useParams } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import React, { useRef } from 'react';
-import { Divider } from 'rsuite';
+const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 const MySwal = withReactContent(Swal);
 
 export default function PROFESIONALS_PUBLIC(props) {

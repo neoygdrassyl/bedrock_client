@@ -294,8 +294,8 @@ function Publish({ translation, swaMsg, breadCrums }) {
       {
         name: <h4>Publicado</h4>,
         minWidth: '100px',
-        cell: row => <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" defaultChecked={row.publish} role="switch" id="checkbox1" onChange={(e) => handleCheck(e, row)} />
+        cell: row => <div className="form-check form-switch">
+          <input className="form-check-input" type="checkbox" defaultChecked={row.publish} role="switch" id="checkbox1" onChange={(e) => handleCheck(e, row)} />
         </div>
       },
       {
@@ -303,13 +303,13 @@ function Publish({ translation, swaMsg, breadCrums }) {
         button: true,
         minWidth: '170px',
         cell: row => <>
-          <button className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => { toggleManage(); setEdit(row); }}><i class="fas fa-edit"></i></button>
+          <button className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => { toggleManage(); setEdit(row); }}><i className="fas fa-edit"></i></button>
           <div className='px-1'>
-            <button className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => handleDelete(row)}><i class="fas fa-trash"></i></button>
+            <button className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => handleDelete(row)}><i className="fas fa-trash"></i></button>
           </div>
           <div className='px-0'></div>
           <a className="btn btn-sm btn-danger px-1" target="_blank"
-            href={import.meta.env.VITE_API_URL + '/files/publish/' + _PARSE_URL(row.type) + '/publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path} ><i class="fas fa-cloud-download-alt"></i> Descargar</a></>
+            href={import.meta.env.VITE_API_URL + '/files/publish/' + _PARSE_URL(row.type) + '/publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path} ><i className="fas fa-cloud-download-alt"></i> Descargar</a></>
         ,
       },
     ]
@@ -387,8 +387,6 @@ function Publish({ translation, swaMsg, breadCrums }) {
             formData.set('type', 0);
             formData.set('file', null);
             refreshList();
-          } else {
-            // TODO
           }
         })
         .catch(e => {
@@ -436,8 +434,6 @@ function Publish({ translation, swaMsg, breadCrums }) {
             formData.set('file', null);
             refreshList();
             toggleManage();
-          } else {
-            // TODO
           }
         })
         .catch(e => {
@@ -503,9 +499,9 @@ function Publish({ translation, swaMsg, breadCrums }) {
 
       const subHeaderComponentMemo = () => {
         return (
-          <div class="input-group mb-2">
-            <span class="input-group-text bg-info text-white">
-              <i class="fas fa-search"></i>
+          <div className="input-group mb-2">
+            <span className="input-group-text bg-info text-white">
+              <i className="fas fa-search"></i>
             </span>
             <input type='text' className='form-control' placeholder='Busqueda...' onChange={(e) => setFilterStates(prev => ({ ...prev, [ID]: e.target.value }))} />
           </div>
@@ -542,7 +538,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
     let COLLAPSIBLE_JSX = (title, data, ID) => {
       return <>
         <Collapsible trigger={<><label className="mx-2"> {title} ({data.length})</label>
-          <button className="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Ver Lista</button></>}>
+          <button className="btn btn-primary btn-sm"><i className="fas fa-plus"></i> Ver Lista</button></>}>
           {LIISTS(data, ID)}
         </Collapsible>
       </>
@@ -556,18 +552,18 @@ function Publish({ translation, swaMsg, breadCrums }) {
               <MDBRow>
                 <MDBCol md="6">
                   <label>Identificador público</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="ID Documento" required id="publish_1" />
+                    <input type="text" className="form-control" placeholder="ID Documento" required id="publish_1" />
                   </div>
                   <label>Tipo de documento</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" id="publish_2" required onChange={(e) => handleChange(e)}>
+                    <select className="form-select" id="publish_2" required onChange={(e) => handleChange(e)}>
                       <option value="lu">Licencias urbanísticas</option>
                       <option value="oa">Otras actuaciones</option>
                       <option value="mpr">MPR</option>
@@ -579,36 +575,36 @@ function Publish({ translation, swaMsg, breadCrums }) {
                     </select>
                   </div>
                   <label>Estado documento</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" id="publish_4" >
+                    <select className="form-select" id="publish_4" >
                       {Selector()}
                     </select>
                   </div>
                   <label>Fecha</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="date" class="form-control" required id="publish_date" />
+                    <input type="date" className="form-control" required id="publish_date" />
                   </div>
                 </MDBCol>
                 <MDBCol md="6">
                   <label>Documento a subir</label><br />
-                  <div class="input-group my-2">
-                    <label class="input-group-text bg-info  text-white" for="file"><i class="fas fa-paperclip"></i></label>
-                    <input type="file" class="form-control" id="file" accept="application/pdf" required />
+                  <div className="input-group my-2">
+                    <label className="input-group-text bg-info  text-white" htmlFor="file"><i className="fas fa-paperclip"></i></label>
+                    <input type="file" className="form-control" id="file" accept="application/pdf" required />
                   </div>
                   <label>Tipo de actuación</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" required id="publish_3">
+                    <select className="form-select" required id="publish_3">
                       <option>Otros</option>
-                      <option selected disabled className='fw-bold'> LICENCIAS URBANÍSTICAS O RECONOCIMIENTOS</option>
+                      <option disabled className='fw-bold'> LICENCIAS URBANÍSTICAS O RECONOCIMIENTOS</option>
                         <option>Licencias de construcción</option>
                         <option>Reconocimientos de edificación</option>
                         <option>Licencias de urbanización</option>
@@ -630,11 +626,11 @@ function Publish({ translation, swaMsg, breadCrums }) {
                     </select>
                   </div>
                   <label>Modalidad y/o detalle</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="Detalles de la publicacion..." id="publish_5" />
+                    <input type="text" className="form-control" placeholder="Detalles de la publicacion..." id="publish_5" />
                   </div>
                 </MDBCol>
                 <div className="text-center py-1 mt-1">
@@ -660,19 +656,19 @@ function Publish({ translation, swaMsg, breadCrums }) {
               <MDBRow>
                 <MDBCol md="6">
                   <label>Id publico</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="ID Documento" defaultValue={_ITEM.id_publico} required id="edit_id" disabled />
+                    <input type="text" className="form-control" placeholder="ID Documento" defaultValue={_ITEM.id_publico} required id="edit_id" disabled />
                   </div>
                   <label>Tipo de documento</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" id="type_edit" defaultValue={_ITEM.type} required onChange={(e) => handleChange(e)}>
-                      <option selected disabled >Tipo de Documento</option>
+                    <select className="form-select" id="type_edit" defaultValue={_ITEM.type} required onChange={(e) => handleChange(e)}>
+                      <option disabled >Tipo de Documento</option>
                       <option value={'lu'}>Licencias urbanisticas</option>
                       <option value={'oa'}>Otras actuaciones</option>
                       <option value={'mpr'}>MPR</option>
@@ -684,11 +680,11 @@ function Publish({ translation, swaMsg, breadCrums }) {
                     </select>
                   </div>
                   <label>Estado documento</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" id="estate_edit" defaultValue={_ITEM.subtype} >
+                    <select className="form-select" id="estate_edit" defaultValue={_ITEM.subtype} >
                       <option value={'neg'}>Negada</option>
                       <option value={'oto'}>Otorgada</option>
                       <option value={'des'}>Desistida</option>
@@ -701,18 +697,18 @@ function Publish({ translation, swaMsg, breadCrums }) {
                 </MDBCol>
                 <MDBCol md="6">
                   <label>Fecha</label><br />
-                  <div class="input-group my-2">
-                    <label class="input-group-text bg-info  text-white" for="date"><i class="fas fa-paperclip"></i></label>
-                    <input type="date" class="form-control" id="date_edit" defaultValue={_ITEM.date} required />
+                  <div className="input-group my-2">
+                    <label className="input-group-text bg-info  text-white" htmlFor="date"><i className="fas fa-paperclip"></i></label>
+                    <input type="date" className="form-control" id="date_edit" defaultValue={_ITEM.date} required />
                   </div>
                   <label>Tipo de actuacion</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" defaultValue={_ITEM.detail} required id="detail_edit">
+                    <select className="form-select" defaultValue={_ITEM.detail} required id="detail_edit">
                       <option>Otros</option>
-                      <option selected disabled className='fw-bold'> LICENCIAS URBANÍSTICAS O RECONOCIMIENTOS</option>
+                      <option disabled className='fw-bold'> LICENCIAS URBANÍSTICAS O RECONOCIMIENTOS</option>
                       <option >Licencias de construcción</option>
                       <option >Reconocimientos de edificación</option>
                       <option >Licencias de urbanización </option>
@@ -734,11 +730,11 @@ function Publish({ translation, swaMsg, breadCrums }) {
                     </select>
                   </div>
                   <label>Modalidad y/o detalle</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="text" class="form-control" defaultValue={_ITEM.subdetail}  id="sub_edit" />
+                    <input type="text" className="form-control" defaultValue={_ITEM.subdetail}  id="sub_edit" />
                   </div>
                 </MDBCol>
                 <div className="text-center py-1 mt-1">
@@ -758,12 +754,12 @@ function Publish({ translation, swaMsg, breadCrums }) {
           <div className="col-12 d-flex justify-content-start p-0">
             <MDBBreadcrumb className="mb-0 p-0 ms-0">
               <MDBBreadcrumbItem>
-                <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
               </MDBBreadcrumbItem>
               <MDBBreadcrumbItem>
-                <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
               </MDBBreadcrumbItem>
-              <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u3}</label></MDBBreadcrumbItem>
+              <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u3}</label></MDBBreadcrumbItem>
             </MDBBreadcrumb>
           </div>
           <div className="col-lg-11 col-md-12">
@@ -806,7 +802,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
           {Edit_components()}
 
           <div className="text-end py-4 mt-3">
-            <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i class="fas fa-times-circle"></i> CERRAR </button>
+            <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i className="fas fa-times-circle"></i> CERRAR </button>
           </div>
         </Modal>
       </div >

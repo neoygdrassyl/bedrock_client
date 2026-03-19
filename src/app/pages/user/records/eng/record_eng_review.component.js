@@ -630,8 +630,8 @@ function RECORD_ENG_REVIEW(props) {
 
             return <>
                 <label>Asignación</label>
-                <select className="form-select" id="asign_re">
-                    {asigns.map((value, index) => <option selected={index == reviews_date.length - 1} value={index}># {index + 1} {value}</option>)}
+                <select className="form-select" id="asign_re" defaultValue={reviews_date.length - 1}>
+                    {asigns.map((value, index) => <option key={index} value={index}># {index + 1} {value}</option>)}
                 </select>
             </>
         }

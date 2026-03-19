@@ -299,7 +299,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                             <div class="input-group mb-3 ms-0">
                             <select className='form-select' id="seal_4_m"> 
                                 <option>m</option>
-                                <option selected>m2</option>
+                                <option>m2</option>
                                 <option>m3</option>
                             </select>
                             </div>
