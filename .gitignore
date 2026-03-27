@@ -46,6 +46,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# MCP config (contains secrets — keep only locally)
+.mcp.json
+
 # Agent & Debugging Logs
 raw_braces.txt
 result.txt
