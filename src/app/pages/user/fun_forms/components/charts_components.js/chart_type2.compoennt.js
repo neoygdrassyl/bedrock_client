@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { Sankey, Tooltip, ResponsiveContainer } from 'recharts';
 
 function FUN_CHART_TYPE2(props) {
@@ -11,7 +11,7 @@ function FUN_CHART_TYPE2(props) {
     const safeItemsOA = Array.isArray(itemsOA) ? itemsOA : [];
     const safeItemsNegativeFull = Array.isArray(itemsNegativeFull) ? itemsNegativeFull : [];
 
-    let nodesData = () => {
+    const nodesData = useMemo(() => {
         let nodeValues = new Array(31).fill(0);
         let nodeValues_p = new Array(31).fill(0);
 
@@ -162,12 +162,11 @@ function FUN_CHART_TYPE2(props) {
         nodeValues[16] = exp_res.length;
 
         return { nodeValues: nodeValues, nodeValues_p: nodeValues_p }
-    }
+    }, [safeItems, safeItemsNegative, safeItemsOA, safeItemsNegativeFull]);
 
-    let myData = () => {
-        let data = nodesData();
-        let nodeValues = data.nodeValues
-        let nodeValues_p = data.nodeValues_p
+    const myData = useMemo(() => {
+        let nodeValues = nodesData.nodeValues
+        let nodeValues_p = nodesData.nodeValues_p
 
         return [
             { name: `CURADURIA ${nodeValues[0]}` },
@@ -183,12 +182,11 @@ function FUN_CHART_TYPE2(props) {
             { name: `SIN ACTO VIA. ${nodeValues[11]}` },
             { name: `RESOLUCION. ${nodeValues[16]}` },
         ]
-    }
+    }, [nodesData]);
 
-    let myLinks = () => {
+    const myLinks = useMemo(() => {
         var links = [];
-        let data = nodesData();
-        let nodeValues = data.nodeValues
+        let nodeValues = nodesData.nodeValues
 
         links.push({ source: 0, target: 1, value: nodeValues[1] || 0.001 })
         links.push({ source: 1, target: 4, value: nodeValues[5] || 0.001 })
@@ -203,11 +201,10 @@ function FUN_CHART_TYPE2(props) {
         links.push({ source: 9, target: 11, value: nodeValues[16] || 0.001 })
 
         return links;
-    }
+    }, [nodesData]);
 
-    let DataNegative = () => {
-        let data = nodesData();
-        let nodeValues = data.nodeValues
+    const DataNegative = useMemo(() => {
+        let nodeValues = nodesData.nodeValues
 
         return [
             { name: `TOTAL. ${nodeValues[17]}` },
@@ -228,12 +225,11 @@ function FUN_CHART_TYPE2(props) {
             { name: nodeValues[29] > 0 ? `NO PAGO EXPENSAS. ${nodeValues[29]}` : '' },
             { name: nodeValues[30] > 0 ? `VOLUNTARIO. ${nodeValues[30]}` : '' },
         ]
-    }
+    }, [nodesData]);
 
-    let myLinksNegative = () => {
+    const myLinksNegative = useMemo(() => {
         var links = [];
-        let data = nodesData();
-        let nodeValues = data.nodeValues
+        let nodeValues = nodesData.nodeValues
 
         if (nodeValues[12] > 0) links.push({ source: 5, target: 1, value: nodeValues[12] })
         if (nodeValues[13] > 0) links.push({ source: 5, target: 2, value: nodeValues[13] })
@@ -255,17 +251,17 @@ function FUN_CHART_TYPE2(props) {
         if (nodeValues[30] > 0) links.push({ source: 8, target: 16, value: nodeValues[30] })
 
         return links;
-    }
+    }, [nodesData]);
 
-    const sankeyData1 = {
-        nodes: myData(),
-        links: myLinks(),
-    };
+    const sankeyData1 = useMemo(() => ({
+        nodes: myData,
+        links: myLinks,
+    }), [myData, myLinks]);
 
-    const sankeyData2 = {
-        nodes: DataNegative(),
-        links: myLinksNegative(),
-    };
+    const sankeyData2 = useMemo(() => ({
+        nodes: DataNegative,
+        links: myLinksNegative,
+    }), [DataNegative, myLinksNegative]);
 
     return (
         <div className="border p-2">
@@ -319,4 +315,4 @@ function FUN_CHART_TYPE2(props) {
     );
 }
 
-export default FUN_CHART_TYPE2;
+export default memo(FUN_CHART_TYPE2);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const FUN_CHART_ARC_R = ({ items, _UPDATE_FILTERS }) => {
@@ -89,4 +89,4 @@ const FUN_CHART_ARC_R = ({ items, _UPDATE_FILTERS }) => {
     );
 };
 
-export default FUN_CHART_ARC_R;
+export default memo(FUN_CHART_ARC_R);

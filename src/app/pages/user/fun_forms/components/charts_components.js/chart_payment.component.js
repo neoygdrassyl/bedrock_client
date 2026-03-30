@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const LegendItem = ({ item, onClick }) => (
@@ -261,4 +261,4 @@ function FUN_CHART_PAYMENT_1({ translation, swaMsg, globals, items, _UPDATE_FILT
     );
 }
 
-export default FUN_CHART_PAYMENT_1;
+export default memo(FUN_CHART_PAYMENT_1);

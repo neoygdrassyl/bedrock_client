@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
 } from 'recharts';
@@ -237,4 +237,4 @@ function FUN_CHART_WORKER(props) {
     );
 }
 
-export default FUN_CHART_WORKER;
+export default memo(FUN_CHART_WORKER);
