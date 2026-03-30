@@ -39,6 +39,7 @@ import SUBMIT from './pages/user/submit/submit';
 import ARCHIVE from './pages/user/archive/archive.page';
 import DICTIONARY from './pages/user/dictionary.page';
 import FUN_MANAGE from './pages/user/funmanage.page';
+import FUN_MANAGE_NEW from './pages/user/funmanage_new.page';
 
 // Components
 import Footer from './components/footer'
@@ -241,6 +242,16 @@ export default function App() {
                           <Route path='/funmanage' element={
                             <PrivateRoute>
                               <FUN_MANAGE
+                                translation={t("title", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/funmanage-new' element={
+                            <PrivateRoute>
+                              <FUN_MANAGE_NEW
                                 translation={t("title", { returnObjects: true })}
                                 globals={t("globals", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
@@ -509,6 +520,7 @@ function AuthButton() {
           <Nav.Item eventKey="9" as={MyLink} href="/publish"><i className="fas fa-newspaper" style={{ "color": "LightSalmon" }}></i> Publicaciones</Nav.Item>
           <Nav.Item eventKey="10" as={MyLink} href="/fun"><i className="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Solicitudes y Licencias</Nav.Item>
           <Nav.Item eventKey="10" as={MyLink} href="/funmanage"><i className="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Gestion Soli. y Lic.</Nav.Item>
+          <Nav.Item eventKey="10a" as={MyLink} href="/funmanage-new"><i className="fas fa-layer-group" style={{ "color": "DodgerBlue" }}></i> Gestion Lic. Nuevo</Nav.Item>
           <Nav.Item eventKey="11" as={MyLink} href="/nomenclature"><i className="fas fa-file-signature" style={{ "color": "Plum" }}></i> Nomenclaturas</Nav.Item>
           <Nav.Item eventKey="12" as={MyLink} href="/pqrsadmin"><i className="fas fa-file-invoice" style={{ "color": "MediumPurple" }}></i>  Peticiones PQRS</Nav.Item>
           <hr className='bg-info'></hr>
