@@ -60,6 +60,7 @@
     "audit:arrays": "node scripts/audit-array-method-safety.mjs",
     "audit:arrays:strict": "node scripts/audit-array-method-safety.mjs --strict",
     "audit:preflight": "npm run audit:ast && npm run audit:arrays",
+    "sync:vscode": "node scripts/sync-vscode-customizations.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",

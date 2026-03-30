@@ -1,8 +1,11 @@
 ---
-applyTo: '**'
+applyTo: 'src/app/pages/user/clocks/**'
 ---
-Provide project context and coding guidelines that AI should follow when generating code, answering questions, or reviewing changes.
 
-- Todo el código representa el modelado de un proceso de la curaduria, que tiene relaciones legales entre ellos y se estandariza mediante la creacion de esta herramienta, por eso es importante mantener siempre las funcionalidades y relaciones conectadas y sin modificar a menos que se pida explicitamente
+# Clocks — Guardrails del dominio legal
 
-- Es necesario siempre detectar posibles errores y solucionarlos, pero no juzgando desde el proceso sino desde la forma de hacer la implementacion
+- Este modulo modela tiempos legales, fases procesales, suspensiones, extensiones y desistimientos. No es una capa visual aislada.
+- Antes de cambiar calculos, estados o notificaciones, revisa `ai/system-map.md` y los hooks `useClocksManager.js`, `useProcessPhases.js` y `useAlarms.js`.
+- Conserva los IDs y ramas de estados del proceso. Si cambias una transicion o una fecha, valida quien consume ese estado en FUN, Records, PQRS o Expeditions.
+- No ocultes ausencia de datos legalmente relevantes con `return null`; usa fallback visible cuando falte informacion.
+- Cuando el cambio afecte logica de negocio, la verificacion minima debe incluir `npm run audit:preflight` y pruebas relevantes del modulo.
