@@ -728,7 +728,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                 </div >
 
-                <Modal contentLabel="GENERAL VIEW FUN"
+                {modal && <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={modal}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -752,9 +752,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     <div className="text-end py-4 mt-3">
                         <button className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN CHECKEO"
+                {modal_c && <Modal contentLabel="FUN CHECKEO"
                     isOpen={modal_c}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -780,9 +780,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN NEW/UPDATE"
+                {modal_n && <Modal contentLabel="FUN NEW/UPDATE"
                     isOpen={modal_n}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -806,9 +806,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN DOC CONTROL"
+                {modal_d && <Modal contentLabel="FUN DOC CONTROL"
                     isOpen={modal_d}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -831,9 +831,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN ALERTA A VECINOS"
+                {modal_alert && <Modal contentLabel="FUN ALERTA A VECINOS"
                     isOpen={modal_alert}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -857,9 +857,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN CLOCK"
+                {modal_clocK && <Modal contentLabel="FUN CLOCK"
                     isOpen={modal_clocK}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -882,9 +882,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS ARCHITECTURE"
+                {modal_record_arc && <Modal contentLabel="RECORDS ARCHITECTURE"
                     isOpen={modal_record_arc}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -909,9 +909,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS LAW"
+                {modal_record_law && <Modal contentLabel="RECORDS LAW"
                     isOpen={modal_record_law}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -935,9 +935,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS PH"
+                {modal_record_ph && <Modal contentLabel="RECORDS PH"
                     isOpen={modal_record_ph}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -962,9 +962,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS ENG"
+                {modal_record_eng && <Modal contentLabel="RECORDS ENG"
                     isOpen={modal_record_eng}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -988,9 +988,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS REVIEW"
+                {modal_record_review && <Modal contentLabel="RECORDS REVIEW"
                     isOpen={modal_record_review}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -1013,9 +1013,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="EXPEDITION"
+                {modal_exp && <Modal contentLabel="EXPEDITION"
                     isOpen={modal_exp}
                     style={customStylesForModal()}
                     ariaHideApp={false}
@@ -1038,9 +1038,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="MACRO TABLE"
+                {modal_macro && <Modal contentLabel="MACRO TABLE"
                     isOpen={modal_macro}
                     style={customStylesForModalMacro()}
                     ariaHideApp={false}
@@ -1064,9 +1064,9 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         defaultFilter={defaultFilter ?? false}
                     />
 
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="REPORT"
+                {modal_report && <Modal contentLabel="REPORT"
                     isOpen={modal_report}
                     style={customStylesForModalMacro()}
                     ariaHideApp={false}
@@ -1105,7 +1105,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         date_f={date_end}
                     />
 
-                </Modal>
+                </Modal>}
             </div >
         );
 }

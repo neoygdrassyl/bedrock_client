@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -828,6 +828,17 @@ export default function FUN_DAILY_COMPONENT(props) {
         })
         return con1 && con2
     }
+
+    // Pre-filter all datac categories once per filter/datac change
+    const filteredDatac = useMemo(() => {
+        const keys = Object.keys(datac);
+        const result = {};
+        for (const key of keys) {
+            result[key] = datac[key].filter(item => _filter(item));
+        }
+        return result;
+    }, [datac, filter]);
+
     // ******************************* JSX ***************************** // 
     const subHeaderComponentMemo = () => {
         return (
@@ -1096,20 +1107,20 @@ export default function FUN_DAILY_COMPONENT(props) {
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Inncompleta {'>='} 10 días ({datas.inc.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.inc.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}  {/** inc */}
+                        <h5 className='fw-bold'>Inncompleta {'>='} 10 días ({datas.inc.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.inc.filter(item => item.color == 'primary' || item.color == null))}  {/** inc */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta {'<'} 10 días ({datas.inc.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.inc.filter(item => _filter(item)).filter(item => item.color == 'warning'))}  {/** inc */}
+                        <h5 className='fw-bold'>Incompleta {'<'} 10 días ({datas.inc.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.inc.filter(item => item.color == 'warning'))}  {/** inc */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin Pago expensas fijas ({datas.inc.filter(item => _filter(item)).filter(item => item.color == 'danger').length})</h5>
-                        {TABLE_BTNS(datas.inc.filter(item => _filter(item)).filter(item => item.color == 'danger'))}  {/** inc */}
+                        <h5 className='fw-bold'>Sin Pago expensas fijas ({datas.inc.filter(item => item.color == 'danger').length})</h5>
+                        {TABLE_BTNS(datas.inc.filter(item => item.color == 'danger'))}  {/** inc */}
                     </div>
                 </div>
             </div>
@@ -1117,32 +1128,32 @@ export default function FUN_DAILY_COMPONENT(props) {
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revalidaciones - Inncompleta ({datas.other.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.other.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}  {/** rev - inc */}
+                        <h5 className='fw-bold'>Revalidaciones - Inncompleta ({datas.other.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.other.filter(item => item.color == 'primary' || item.color == null))}  {/** rev - inc */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revalidaciones - LyDF ({datas.other.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.other.filter(item => _filter(item)).filter(item => item.color == 'warning'))}  {/** rev - lydf */}
+                        <h5 className='fw-bold'>Revalidaciones - LyDF ({datas.other.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.other.filter(item => item.color == 'warning'))}  {/** rev - lydf */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin radicar Valla Inc.({datas.sign.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.sign.filter(item => _filter(item)).filter(item => item.color == 'dark'))}  {/** sign */}
+                        <h5 className='fw-bold'>Sin radicar Valla Inc.({datas.sign.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.sign.filter(item => item.color == 'dark'))}  {/** sign */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin radicar Valla LyDF({datas.sign.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.sign.filter(item => _filter(item)).filter(item => item.color == 'warning'))}  {/** sign */}
+                        <h5 className='fw-bold'>Sin radicar Valla LyDF({datas.sign.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.sign.filter(item => item.color == 'warning'))}  {/** sign */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Radicación de Valla extemporanea ({datas.sign.filter(item => _filter(item)).filter(item => item.color == 'danger').length})</h5>
-                        {TABLE_BTNS(datas.sign.filter(item => _filter(item)).filter(item => item.color == 'danger'))}  {/** sign */}
+                        <h5 className='fw-bold'>Radicación de Valla extemporanea ({datas.sign.filter(item => item.color == 'danger').length})</h5>
+                        {TABLE_BTNS(datas.sign.filter(item => item.color == 'danger'))}  {/** sign */}
                     </div>
                 </div>
 
@@ -1151,53 +1162,26 @@ export default function FUN_DAILY_COMPONENT(props) {
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Primera revisión ({datas.law.filter(item => _filter(item)).filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.law.filter(item => _filter(item)).filter(item => item.color == 'success'))}  {/** JUR */}
+                        <h5 className='fw-bold'>Primera revisión ({datas.law.filter(item => item.color == 'success').length})</h5>
+                        {TABLE_BTNS(datas.law.filter(item => item.color == 'success'))}  {/** JUR */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revisión técnica ({datas.law.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.law.filter(item => _filter(item)).filter(item => item.color == 'warning'))}  {/** JUR */}
+                        <h5 className='fw-bold'>Revisión técnica ({datas.law.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.law.filter(item => item.color == 'warning'))}  {/** JUR */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correcciones ({datas.law.filter(item => _filter(item)).filter(item => item.color == 'primary').length})</h5>
-                        {TABLE_BTNS(datas.law.filter(item => _filter(item)).filter(item => item.color == 'primary'))}  {/** JUR */}
+                        <h5 className='fw-bold'>Correcciones ({datas.law.filter(item => item.color == 'primary').length})</h5>
+                        {TABLE_BTNS(datas.law.filter(item => item.color == 'primary'))}  {/** JUR */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta ({datas.law.filter(item => _filter(item)).filter(item => item.color == 'dark').length})</h5>
-                        {TABLE_BTNS(datas.law.filter(item => _filter(item)).filter(item => item.color == 'dark'))}  {/** JUR */}
-                    </div>
-                </div>
-
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Primera revisión ({datas.arc.filter(item => _filter(item)).filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.arc.filter(item => _filter(item)).filter(item => item.color == 'success'))}  {/** ARC */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revisión técnica ({datas.arc.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.arc.filter(item => _filter(item)).filter(item => item.color == 'warning'))}  {/** ARC */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correcciones ({datas.arc.filter(item => _filter(item)).filter(item => item.color == 'primary').length})</h5>
-                        {TABLE_BTNS(datas.arc.filter(item => _filter(item)).filter(item => item.color == 'primary'))}  {/** ARC */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta ({datas.arc.filter(item => _filter(item)).filter(item => item.color == 'dark').length})</h5>
-                        {TABLE_BTNS(datas.arc.filter(item => _filter(item)).filter(item => item.color == 'dark'))}  {/** ARC */}
+                        <h5 className='fw-bold'>Incompleta ({datas.law.filter(item => item.color == 'dark').length})</h5>
+                        {TABLE_BTNS(datas.law.filter(item => item.color == 'dark'))}  {/** JUR */}
                     </div>
                 </div>
 
@@ -1205,42 +1189,26 @@ export default function FUN_DAILY_COMPONENT(props) {
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Primera revisión ({datas.eng.filter(item => _filter(item)).filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.eng.filter(item => _filter(item)).filter(item => item.color == 'success'))} {/** EST */}
+                        <h5 className='fw-bold'>Primera revisión ({datas.arc.filter(item => item.color == 'success').length})</h5>
+                        {TABLE_BTNS(datas.arc.filter(item => item.color == 'success'))}  {/** ARC */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revisión técnica ({datas.eng.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.eng.filter(item => _filter(item)).filter(item => item.color == 'warning'))} {/** EST */}
+                        <h5 className='fw-bold'>Revisión técnica ({datas.arc.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.arc.filter(item => item.color == 'warning'))}  {/** ARC */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correcciones ({datas.eng.filter(item => _filter(item)).filter(item => item.color == 'primary').length})</h5>
-                        {TABLE_BTNS(datas.eng.filter(item => _filter(item)).filter(item => item.color == 'primary'))} {/** EST */}
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta ({datas.eng.filter(item => _filter(item)).filter(item => item.color == 'dark').length})</h5>
-                        {TABLE_BTNS(datas.eng.filter(item => _filter(item)).filter(item => item.color == 'dark'))} {/** EST */}
-                    </div>
-                </div>
-
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>LyDF ({datas.check.filter(item => _filter(item)).filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.check.filter(item => _filter(item)).filter(item => item.color == 'success'))}  {/** check  */}
+                        <h5 className='fw-bold'>Correcciones ({datas.arc.filter(item => item.color == 'primary').length})</h5>
+                        {TABLE_BTNS(datas.arc.filter(item => item.color == 'primary'))}  {/** ARC */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta ({datas.check.filter(item => _filter(item)).filter(item => item.color == 'dark').length})</h5>
-                        {TABLE_BTNS(datas.check.filter(item => _filter(item)).filter(item => item.color == 'dark'))}  {/** check  */}
+                        <h5 className='fw-bold'>Incompleta ({datas.arc.filter(item => item.color == 'dark').length})</h5>
+                        {TABLE_BTNS(datas.arc.filter(item => item.color == 'dark'))}  {/** ARC */}
                     </div>
                 </div>
 
@@ -1248,14 +1216,27 @@ export default function FUN_DAILY_COMPONENT(props) {
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin Acta ({datas.rec.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.rec.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}   {/** rec */}
+                        <h5 className='fw-bold'>Primera revisión ({datas.eng.filter(item => item.color == 'success').length})</h5>
+                        {TABLE_BTNS(datas.eng.filter(item => item.color == 'success'))} {/** EST */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Notificando ({datas.rec.filter(item => _filter(item)).filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.rec.filter(item => _filter(item)).filter(item => item.color == 'success'))}   {/** rec */}
+                        <h5 className='fw-bold'>Revisión técnica ({datas.eng.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.eng.filter(item => item.color == 'warning'))} {/** EST */}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Correcciones ({datas.eng.filter(item => item.color == 'primary').length})</h5>
+                        {TABLE_BTNS(datas.eng.filter(item => item.color == 'primary'))} {/** EST */}
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Incompleta ({datas.eng.filter(item => item.color == 'dark').length})</h5>
+                        {TABLE_BTNS(datas.eng.filter(item => item.color == 'dark'))} {/** EST */}
                     </div>
                 </div>
 
@@ -1263,34 +1244,14 @@ export default function FUN_DAILY_COMPONENT(props) {
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correciones {'>='} 10 días ({datas.cor.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.cor.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}   {/** corr */}
+                        <h5 className='fw-bold'>LyDF ({datas.check.filter(item => item.color == 'success').length})</h5>
+                        {TABLE_BTNS(datas.check.filter(item => item.color == 'success'))}  {/** check  */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correciones {'<'} 10 días ({datas.cor.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.cor.filter(item => _filter(item)).filter(item => item.color == 'warning'))}   {/** corr */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correciones {'<'} 5 días, debe pedir prórroga ({datas.cor.filter(item => _filter(item)).filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.cor.filter(item => _filter(item)).filter(item => item.color == 'secondary'))}   {/** corr */}
-                    </div>
-                </div>
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin Viabilidad ({datas.pay.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.pay.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}   {/** pay */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Notificando  ({datas.pay.filter(item => _filter(item)).filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.pay.filter(item => _filter(item)).filter(item => item.color == 'success'))}   {/** pay */}
+                        <h5 className='fw-bold'>Incompleta ({datas.check.filter(item => item.color == 'dark').length})</h5>
+                        {TABLE_BTNS(datas.check.filter(item => item.color == 'dark'))}  {/** check  */}
                     </div>
                 </div>
 
@@ -1298,14 +1259,14 @@ export default function FUN_DAILY_COMPONENT(props) {
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Pagos {'>='} 10 días ({datas.pay2.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.pay2.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}   {/** pay2 */}
+                        <h5 className='fw-bold'>Sin Acta ({datas.rec.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.rec.filter(item => item.color == 'primary' || item.color == null))}   {/** rec */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Pagos {'<'} 10 días ({datas.pay2.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.pay2.filter(item => _filter(item)).filter(item => item.color == 'warning'))}   {/** pay2 */}
+                        <h5 className='fw-bold'>Notificando ({datas.rec.filter(item => item.color == 'success').length})</h5>
+                        {TABLE_BTNS(datas.rec.filter(item => item.color == 'success'))}   {/** rec */}
                     </div>
                 </div>
 
@@ -1313,80 +1274,130 @@ export default function FUN_DAILY_COMPONENT(props) {
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin resolución ({datas.res.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.res.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}   {/** res */}
+                        <h5 className='fw-bold'>Correciones {'>='} 10 días ({datas.cor.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.cor.filter(item => item.color == 'primary' || item.color == null))}   {/** corr */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Notificando ({datas.res.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.res.filter(item => _filter(item)).filter(item => item.color == 'warning'))}   {/** res */}
+                        <h5 className='fw-bold'>Correciones {'<'} 10 días ({datas.cor.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.cor.filter(item => item.color == 'warning'))}   {/** corr */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Generada y Notificada ({datas.res.filter(item => _filter(item)).filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.res.filter(item => _filter(item)).filter(item => item.color == 'secondary'))}   {/** res */}
-                    </div>
-                </div>
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin resolución ({datas.rsc2.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.rsc2.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}   {/** rsc2 */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Notificando ({datas.rsc2.filter(item => _filter(item)).filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.rsc2.filter(item => _filter(item)).filter(item => item.color == 'secondary'))}   {/** rsc2 */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Generada y Notificada ({datas.rsc2.filter(item => _filter(item)).filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.rsc2.filter(item => _filter(item)).filter(item => item.color == 'secondary'))}   {/** rsc2 */}
+                        <h5 className='fw-bold'>Correciones {'<'} 5 días, debe pedir prórroga ({datas.cor.filter(item => item.color == 'secondary').length})</h5>
+                        {TABLE_BTNS(datas.cor.filter(item => item.color == 'secondary'))}   {/** corr */}
                     </div>
                 </div>
             </div>
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin resolución ({datas.neg.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.neg.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}   {/** rsc3 / neg */}
+                        <h5 className='fw-bold'>Sin Viabilidad ({datas.pay.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.pay.filter(item => item.color == 'primary' || item.color == null))}   {/** pay */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Generada y Notificada ({datas.neg.filter(item => _filter(item)).filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.neg.filter(item => _filter(item)).filter(item => item.color == 'secondary'))}   {/** rsc3 / neg */}
+                        <h5 className='fw-bold'>Notificando  ({datas.pay.filter(item => item.color == 'success').length})</h5>
+                        {TABLE_BTNS(datas.pay.filter(item => item.color == 'success'))}   {/** pay */}
+                    </div>
+                </div>
+
+            </div>
+            <div className="col">
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Pagos {'>='} 10 días ({datas.pay2.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.pay2.filter(item => item.color == 'primary' || item.color == null))}   {/** pay2 */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Debe desistir ({datas.neg.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.neg.filter(item => _filter(item)).filter(item => item.color == 'warning'))}   {/** rsc3 / neg */}
+                        <h5 className='fw-bold'>Pagos {'<'} 10 días ({datas.pay2.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.pay2.filter(item => item.color == 'warning'))}   {/** pay2 */}
+                    </div>
+                </div>
+
+            </div>
+            <div className="col">
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Sin resolución ({datas.res.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.res.filter(item => item.color == 'primary' || item.color == null))}   {/** res */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Desistida ({datas.neg.filter(item => _filter(item)).filter(item => item.color == 'danger').length})</h5>
-                        {TABLE_BTNS(datas.neg.filter(item => _filter(item)).filter(item => item.color == 'danger'))}   {/** rsc3 / neg */}
+                        <h5 className='fw-bold'>Notificando ({datas.res.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.res.filter(item => item.color == 'warning'))}   {/** res */}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Generada y Notificada ({datas.res.filter(item => item.color == 'secondary').length})</h5>
+                        {TABLE_BTNS(datas.res.filter(item => item.color == 'secondary'))}   {/** res */}
                     </div>
                 </div>
             </div>
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Recurso {'<='} 60 días ({datas.rsc.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.rsc.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))}   {/** rsc */}
+                        <h5 className='fw-bold'>Sin resolución ({datas.rsc2.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.rsc2.filter(item => item.color == 'primary' || item.color == null))}   {/** rsc2 */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Recurso {'>'} 60 días ({datas.rsc.filter(item => _filter(item)).filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.rsc.filter(item => _filter(item)).filter(item => item.color == 'warning'))}   {/** rsc */}
+                        <h5 className='fw-bold'>Notificando ({datas.rsc2.filter(item => item.color == 'secondary').length})</h5>
+                        {TABLE_BTNS(datas.rsc2.filter(item => item.color == 'secondary'))}   {/** rsc2 */}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Generada y Notificada ({datas.rsc2.filter(item => item.color == 'secondary').length})</h5>
+                        {TABLE_BTNS(datas.rsc2.filter(item => item.color == 'secondary'))}   {/** rsc2 */}
+                    </div>
+                </div>
+            </div>
+            <div className="col">
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Sin resolución ({datas.neg.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.neg.filter(item => item.color == 'primary' || item.color == null))}   {/** rsc3 / neg */}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Generada y Notificada ({datas.neg.filter(item => item.color == 'secondary').length})</h5>
+                        {TABLE_BTNS(datas.neg.filter(item => item.color == 'secondary'))}   {/** rsc3 / neg */}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Debe desistir ({datas.neg.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.neg.filter(item => item.color == 'warning'))}   {/** rsc3 / neg */}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Desistida ({datas.neg.filter(item => item.color == 'danger').length})</h5>
+                        {TABLE_BTNS(datas.neg.filter(item => item.color == 'danger'))}   {/** rsc3 / neg */}
+                    </div>
+                </div>
+            </div>
+            <div className="col">
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Recurso {'<='} 60 días ({datas.rsc.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.rsc.filter(item => item.color == 'primary' || item.color == null))}   {/** rsc */}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col border border-info py-1">
+                        <h5 className='fw-bold'>Recurso {'>'} 60 días ({datas.rsc.filter(item => item.color == 'warning').length})</h5>
+                        {TABLE_BTNS(datas.rsc.filter(item => item.color == 'warning'))}   {/** rsc */}
                     </div>
                 </div>
             </div>
@@ -1394,21 +1405,21 @@ export default function FUN_DAILY_COMPONENT(props) {
                 <div className="row">
                     <div className="col border border-info py-1">
                         <h5 className='fw-bold'></h5>
-                        {TABLE_BTNS(datas.lic.filter(item => _filter(item)))} {/** lic */}
+                        {TABLE_BTNS(datas.lic)} {/** lic */}
                     </div>
                 </div>
             </div>
             <div className="col">
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Por entregar ({datas.lic2.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.lic2.filter(item => _filter(item)).filter(item => item.color == 'primary' || item.color == null))} {/** lic2 */}
+                        <h5 className='fw-bold'>Por entregar ({datas.lic2.filter(item => item.color == 'primary' || item.color == null).length})</h5>
+                        {TABLE_BTNS(datas.lic2.filter(item => item.color == 'primary' || item.color == null))} {/** lic2 */}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Por cerrar/archivar ({datas.lic2.filter(item => _filter(item)).filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.lic2.filter(item => _filter(item)).filter(item => item.color == 'success'))} {/** lic2 */}
+                        <h5 className='fw-bold'>Por cerrar/archivar ({datas.lic2.filter(item => item.color == 'success').length})</h5>
+                        {TABLE_BTNS(datas.lic2.filter(item => item.color == 'success'))} {/** lic2 */}
                     </div>
                 </div>
             </div>
@@ -1435,7 +1446,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 <ChartErrorBoundary fallbackMessage="No se pudo renderizar la gráfica de tiempo de solicitudes.">
                     <FUN_CHART_MACRO_GRANTT
                         translation={translation} swaMsg={swaMsg} globals={globals}
-                        items={datac.gen.filter(item => _filter(item))}
+                        items={filteredDatac.gen}
                         _UPDATE_FILTERS={(v) => {
                             setFilter(v.join(','));
                             document.getElementById('ti-search').value = v.join(',')
@@ -1471,7 +1482,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                     <>
                         <div className='chart-clock'>
                             <div className='row   px-1' style={{ width: '3500px', maxHeight: '500px', minHeight: '100px' }} >
-                                {TABLE(datac)}
+                                {TABLE(filteredDatac)}
                             </div>
                         </div>
                     </>

@@ -1,6 +1,6 @@
 import { MDBBtn } from '../../../../../components/ui';
 import moment from 'moment';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 
 import {
     ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -600,4 +600,4 @@ function FUN_CHART_MACRO_GRANTT(props) {
     );
 }
 
-export default FUN_CHART_MACRO_GRANTT;
+export default memo(FUN_CHART_MACRO_GRANTT);

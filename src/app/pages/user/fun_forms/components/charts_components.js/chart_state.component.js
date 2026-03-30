@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 const FUN_CHART_STATE = ({ translation, swaMsg, globals, items, _UPDATE_FILTERS }) => {
@@ -213,4 +213,4 @@ const FUN_CHART_STATE = ({ translation, swaMsg, globals, items, _UPDATE_FILTERS 
     );
 }
 
-export default FUN_CHART_STATE;
+export default memo(FUN_CHART_STATE);
