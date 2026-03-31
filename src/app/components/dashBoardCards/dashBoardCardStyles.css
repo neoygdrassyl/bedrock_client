@@ -1,6 +1,6 @@
 .dashboard-card {
-  width: 135px;
-  height: 135px;
+  width: 124px;
+  height: 124px;
   border-radius: 0.4em;
   background: var(--bs-tertiary-bg);
   border: 1px solid var(--bs-border-color);
@@ -16,7 +16,7 @@
 }
 .dashboard-card h3 {
   margin: 4px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--bs-body-color);
 }
 

@@ -23,6 +23,21 @@ import moment from 'moment';
 // SERVICES
 import FUNService from '../../services/fun.service';
 import SubmitService from '../../services/submit.service';
+import FunManageDashboardService from '../../services/funmanage_dashboard.service';
+
+// Dashboard components (Fase 3)
+import { FunDashboardKPIs } from './fun_forms/components/FunDashboardKPIs';
+import { FunmanageScatterChart } from './fun_forms/components/FunmanageScatterChart';
+import { FunmanageDataTable } from './fun_forms/components/FunmanageDataTable';
+import { FunmanagePhaseChart } from './fun_forms/components/FunmanagePhaseChart';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 // Existing child components (reused from old module)
 import FUN_DAILY_COMPONENT from './fun_forms/components/fun_daily.component';
@@ -131,6 +146,28 @@ function FunManageNewPage({ translation, swaMsg, globals, breadCrums }) {
   const [reportDateStart, setReportDateStart] = useState(moment().startOf('month').format('YYYY-MM-DD'));
   const [reportDateEnd, setReportDateEnd] = useState(moment().endOf('month').format('YYYY-MM-DD'));
   const [defaultFilter, setDefaultFilter] = useState(false);
+
+  // ---- Dashboard filter state (Fase 3) ----
+  // Propagado a Scatter Chart (Fase 4) y DataTable (Fase 5)
+  const [dashboardFilter, setDashboardFilter] = useState({ status: null, phase: null });
+  const [kpiActiveFilterKey, setKpiActiveFilterKey] = useState(null);
+
+  const handleKPIFilterChange = useCallback(({ status, phase, key }) => {
+    setKpiActiveFilterKey(prev => {
+      // Segundo clic en la misma tarjeta → quita el filtro
+      if (prev === key) {
+        setDashboardFilter({ status: null, phase: null });
+        return null;
+      }
+      setDashboardFilter({ status, phase });
+      return key;
+    });
+  }, []);
+
+  const clearDashboardFilter = useCallback(() => {
+    setDashboardFilter({ status: null, phase: null });
+    setKpiActiveFilterKey(null);
+  }, []);
 
   // ---- Submit (radicación) ----
   const [submitList, setSubmitList] = useState([]);
@@ -361,6 +398,139 @@ function FunManageNewPage({ translation, swaMsg, globals, breadCrums }) {
         <FUN_WORKER_ASIGN translation={translation} globals={globals} type="arc" openModal={openModal} />
         <FUN_WORKER_ASIGN translation={translation} globals={globals} type="eng" openModal={openModal} />
 
+        {/* ============================================================= */}
+        {/* DASHBOARD: Panel de Control completo                         */}
+        {/* ============================================================= */}
+        <div className="col-12 px-1" data-testid="dashboard-section">
+
+          {/* ─── 1. FILTROS GLOBALES (Barra superior) ─────────────────── */}
+          <div
+            className="rounded border px-3 py-2 mb-4 d-flex flex-wrap align-items-center gap-3"
+            style={{ backgroundColor: '#f8fafc', borderColor: '#e2e8f0' }}
+            data-testid="filter-bar"
+          >
+            <span className="text-sm font-semibold text-muted-foreground text-nowrap">
+              <i className="fas fa-filter me-1"></i> Filtros:
+            </span>
+
+            <Select
+              value={dashboardFilter.phase || '__all__'}
+              onValueChange={val => {
+                setDashboardFilter(f => ({ ...f, phase: val === '__all__' ? null : val }));
+                setKpiActiveFilterKey(null);
+              }}
+            >
+              <SelectTrigger className="w-48" data-testid="filter-phase">
+                <SelectValue placeholder="Fase" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">Todas las fases</SelectItem>
+                <SelectItem value="Radicación">Radicación</SelectItem>
+                <SelectItem value="Revisión Legal">Revisión Legal</SelectItem>
+                <SelectItem value="Informes">Informes</SelectItem>
+                <SelectItem value="Correcciones">Correcciones</SelectItem>
+                <SelectItem value="Expedición">Expedición</SelectItem>
+                <SelectItem value="Resolución">Resolución</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={dashboardFilter.status || '__all__'}
+              onValueChange={val => {
+                setDashboardFilter(f => ({ ...f, status: val === '__all__' ? null : val }));
+                setKpiActiveFilterKey(null);
+              }}
+            >
+              <SelectTrigger className="w-44" data-testid="filter-status">
+                <SelectValue placeholder="Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">Todos los estados</SelectItem>
+                <SelectItem value="OPTIMAL">Óptimo</SelectItem>
+                <SelectItem value="AVERAGE">Promedio</SelectItem>
+                <SelectItem value="LIMIT">En Riesgo</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {(dashboardFilter.status || dashboardFilter.phase) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearDashboardFilter}
+                data-testid="filter-clear"
+              >
+                <i className="fas fa-times me-1"></i> Limpiar filtros
+              </Button>
+            )}
+            {(dashboardFilter.status || dashboardFilter.phase) && (
+              <span className="text-xs text-muted-foreground ms-auto">
+                Activo: {[dashboardFilter.phase, dashboardFilter.status].filter(Boolean).join(' · ')}
+              </span>
+            )}
+          </div>
+
+          {/* ─── 2. TARJETAS DE KPIs ──────────────────────────────────── */}
+          <FunDashboardKPIs
+            onFilterChange={handleKPIFilterChange}
+            activeFilterKey={kpiActiveFilterKey}
+          />
+
+          {/* ─── 3. GRÁFICOS: Scatter (izq) + Distribución por fase (der) */}
+          <div className="row g-3 mb-4" data-testid="charts-row">
+            <div className="col-lg-7">
+              <div className="rounded border p-3" style={{ borderColor: '#e2e8f0', background: '#fff' }}>
+                <h6
+                  className="text-uppercase text-muted mb-2"
+                  style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
+                >
+                  <i className="fas fa-circle-nodes me-2"></i>Tiempo por Categoría
+                </h6>
+                <FunmanageScatterChart dashboardFilter={dashboardFilter} />
+              </div>
+            </div>
+            <div className="col-lg-5">
+              <div className="rounded border p-3" style={{ borderColor: '#e2e8f0', background: '#fff' }}>
+                <h6
+                  className="text-uppercase text-muted mb-2"
+                  style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
+                >
+                  <i className="fas fa-chart-bar me-2"></i>Distribución de Fases
+                </h6>
+                <FunmanagePhaseChart
+                  dashboardFilter={dashboardFilter}
+                  onPhaseClick={phase => {
+                    setDashboardFilter(f => ({ ...f, phase: f.phase === phase ? null : phase }));
+                    setKpiActiveFilterKey(null);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ─── 4. VISTA DE GESTIÓN (Tabla) ──────────────────────────── */}
+          <div
+            className="rounded border p-3 mb-4"
+            style={{ borderColor: '#e2e8f0', background: '#fff' }}
+            data-testid="table-section"
+          >
+            <div className="d-flex flex-wrap align-items-center justify-content-between mb-3">
+              <h6
+                className="text-uppercase text-muted mb-0"
+                style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
+              >
+                <i className="fas fa-table me-2"></i>Vista de Gestión
+              </h6>
+            </div>
+            <FunmanageDataTable dashboardFilter={dashboardFilter} />
+          </div>
+        </div>
+
+        {/* ---- Legacy tools (collapsible) ---- */}
+        <details className="mt-4 mb-3">
+          <summary className="btn btn-sm btn-outline-secondary mb-3" style={{ cursor: 'pointer' }}>
+            <i className="fas fa-tools me-2"></i>Herramientas Avanzadas
+          </summary>
+
         {/* ---- Actions row (macro + reports) ---- */}
         <MDBRow>
           <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
@@ -491,6 +661,7 @@ function FunManageNewPage({ translation, swaMsg, globals, breadCrums }) {
             />
           </MDBTabsPane>
         </MDBTabsContent>
+        </details>
       </div>
 
       {/* ============================================================= */}

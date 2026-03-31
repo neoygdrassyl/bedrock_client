@@ -1,5 +1,6 @@
 import { defineConfig, transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // Custom plugin: treat .js files in src/ as JSX (CRA migration compat)
 function jsxInJs() {
@@ -110,6 +111,10 @@ export default defineConfig({
   // Resolve
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
+    alias: {
+      // Alias '@' → 'src/' for shadcn/ui component imports
+      '@': path.resolve(import.meta.dirname, './src'),
+    },
   },
 
   // Ensure public/ static files are served (templates, etc.)
