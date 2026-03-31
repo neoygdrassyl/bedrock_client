@@ -453,6 +453,8 @@ class NOMENCLATURE extends Component {
                                     paginationRowsPerPageOptions={[20, 50, 100]}
                                     className="data-table-component"
                                     noHeader
+                                    defaultSortFieldId={1}
+                                    defaultSortAsc={false}
                             
                                 />
                             ) : (

@@ -172,6 +172,8 @@ class NOMENCLATURE_ANEX extends Component {
             formData.set('use', currentItem.use);
             formData.set('date_start', currentItem.date_start);
             formData.set('date_end', currentItem.date_end);
+            formData.set('vr', currentItem.vr);
+            formData.set('oa', currentItem.oa);
 
             MySwal.fire({
                 title: swaMsg.title_wait,

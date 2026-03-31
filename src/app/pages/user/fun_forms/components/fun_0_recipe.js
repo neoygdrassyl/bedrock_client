@@ -171,7 +171,8 @@ class FUN_0_RECIPE extends Component {
                             <option value="0">Sin modelo</option>
                             <option value={2021}>Res. 463 / 17</option>
                             <option value={2022}>Res. 1026 / 21 (2022)</option>
-                            <option value={2023} selected>Res. 1026 / 21 (2023+)</option>
+                            <option value={2023} selected>Res. 1026 / 21 (2023-2025)</option>
+                            <option value={2026} selected>Res. 1051 / 25 (2026)</option>
                         </select>
                     </div>
                 </div>
