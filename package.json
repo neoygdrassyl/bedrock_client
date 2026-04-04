@@ -47,8 +47,8 @@
     "react-quill-new": "^3.8.3",
     "react-router-dom": "^6.30.3",
     "react-sidebar": "^3.0.2",
-    "react-spreadsheet": "^0.6.1",
-    "recharts": "^3.8.0",
+    "react-spreadsheet": "^0.10.1",
+    "recharts": "^3.8.1",
     "rsuite": "^5.83.4",
     "rsuite-table": "^5.19.2",
     "scheduler": "^0.27.0",
@@ -90,5 +90,9 @@
     "tailwindcss": "^3.4.19",
     "vite": "^6.4.1",
     "vitest": "^4.0.18"
+  },
+  "overrides": {
+    "@reduxjs/toolkit": "^2.11.2",
+    "react-redux": "^9.2.0"
   }
 }

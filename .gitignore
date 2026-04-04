@@ -49,6 +49,12 @@ yarn-error.log*
 # MCP config (contains secrets — keep only locally)
 .mcp.json
 
+# Playwright MCP temporary artifacts (screenshots, snapshots, etc.)
+.playwright-mcp/
+
+# Playwright E2E test artifacts (handled by cleanup in config)
+/playwright-tmp/
+
 # Agent & Debugging Logs
 raw_braces.txt
 result.txt
