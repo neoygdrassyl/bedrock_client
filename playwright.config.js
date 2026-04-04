@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
+import { PLAYWRIGHT_TMP, initPlaywrightTmp, cleanupPlaywrightTmp } from './src/__playwright/config.js';
 
 /**
  * Playwright E2E configuration for Dovela Frontend.
@@ -11,6 +12,7 @@ import { defineConfig, devices } from '@playwright/test';
  * - Auth is handled by token injection (bypasses ReCAPTCHA)
  * - Backend must be running at the URL defined in .env (VITE_API_URL)
  * - Screenshots captured on failure, traces on first retry
+ * - All artifacts stored in centralized temp directory (see src/__playwright/config.js)
  */
 export default defineConfig({
   testDir: './e2e/flows',
@@ -74,5 +76,20 @@ export default defineConfig({
   },
 
   /* Output directory for test artifacts (screenshots, traces, videos) */
-  outputDir: './e2e/test-results',
+  outputDir: PLAYWRIGHT_TMP,
+
+  /**
+   * Global setup: Initialize Playwright temp directory before tests run.
+   */
+  globalSetup: async () => {
+    await initPlaywrightTmp();
+  },
+
+  /**
+   * Global teardown: Clean up Playwright temp directory after tests complete.
+   * Removes all screenshots, traces, videos, etc. to avoid leaving "mugre" behind.
+   */
+  globalTeardown: async () => {
+    await cleanupPlaywrightTmp();
+  },
 });

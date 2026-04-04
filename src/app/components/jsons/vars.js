@@ -8,6 +8,7 @@ import IMG2 from '../../img/slider/img2.jpg'
 import IMG3 from '../../img/slider/img3.jpg'
 import AVISO from '../../img/aviso.jpg'
 import COLOMBIA from '../../img/colombian.jpg'
+import { GLOBAL_ID } from './global-id'
 const info = {
     'cb1': {
         name: 'CURADURIA URBANA 1',
@@ -184,38 +185,37 @@ const info = {
 
 
 export const cities = <>
-    <option>{info[import.meta.env.VITE_GLOBAL_ID].city}</option>
+    <option>{info[GLOBAL_ID].city}</option>
 </>
 
 export const rules_opt = <>
-    {info[import.meta.env.VITE_GLOBAL_ID].exp_rules.map((value, index) => <option value={index}>{value}</option>)}
+    {info[GLOBAL_ID].exp_rules.map((value, index) => <option value={index}>{value}</option>)}
 </>
 
 export const states = <>
-    <option>{info[import.meta.env.VITE_GLOBAL_ID].state}</option>
+    <option>{info[GLOBAL_ID].state}</option>
 </>
 
 export const domains = <>
-    <option>{info[import.meta.env.VITE_GLOBAL_ID].name}</option>
+    <option>{info[GLOBAL_ID].name}</option>
 </>
 
 export const domains_number = <>
-    <option value={info[import.meta.env.VITE_GLOBAL_ID].nomens}>{info[import.meta.env.VITE_GLOBAL_ID].name}</option>
+    <option value={info[GLOBAL_ID].nomens}>{info[GLOBAL_ID].name}</option>
 </>
-export const axisTable = info[import.meta.env.VITE_GLOBAL_ID].axisTable
-export const axisVar =info[import.meta.env.VITE_GLOBAL_ID].axisVar
+export const axisTable = info[GLOBAL_ID].axisTable
+export const axisVar =info[GLOBAL_ID].axisVar
 
 export const axis = <>
     {axisVar.map((value, index) => <option value={index}>{value}</option>)}
 </>
 
-export const zonesTable = info[import.meta.env.VITE_GLOBAL_ID].zonesTable
-export const zonesVar = info[import.meta.env.VITE_GLOBAL_ID].zonesVar
+export const zonesTable = info[GLOBAL_ID].zonesTable
+export const zonesVar = info[GLOBAL_ID].zonesVar
 export const zones = <>
     {zonesVar.map((value, index) => <option value={index}>{value}</option>)}
 </>
 
-export const nomens = info[import.meta.env.VITE_GLOBAL_ID].nomen
-export const infoCud = info[import.meta.env.VITE_GLOBAL_ID]
-
+export const nomens = info[GLOBAL_ID].nomen
+export const infoCud = info[GLOBAL_ID]
 

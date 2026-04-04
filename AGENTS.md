@@ -85,6 +85,7 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 8. No expongas datos sensibles de `src/app/components/jsons/vars.js` en logs.
 9. No des por buena documentacion vieja si contradice el codigo o el runtime.
 10. No cierres cambios de codigo ejecutable sin la validacion apropiada para su alcance.
+11. **Playwright**: Siempre usa `src/__playwright/config.js` para temp paths. No dejes archivos basura. Lee `.github/instructions/playwright-standards.md`.
 
 ## 7. Backend y limites de este repo
 
