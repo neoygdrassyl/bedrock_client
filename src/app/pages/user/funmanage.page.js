@@ -85,6 +85,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
     const [date_start, setDate_start] = useState(null);
     const [date_end, setDate_end] = useState(null);
     const [defaultFilter, setDefaultFilter] = useState(false);
+    const [mountedTabs, setMountedTabs] = useState({ '4': true });
 
     const prevUrlParamsRef = useRef(urlParams);
 
@@ -554,10 +555,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
             setDate_end(date_end_val);
         }
         const handleFillClick = (state) => {
-            if (state === fillActive) {
-                return;
-            }
-            setFillActive(state);
+            setFillActive(prev => (prev === state ? prev : state));
+            setMountedTabs(prev => (prev[state] ? prev : { ...prev, [state]: true }));
         };
         let openReport = (event) => {
             event.preventDefault();
@@ -597,8 +596,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         setSubtmitRows={setSubtmitRows}
                         type={"LIC"} simple hide
                         retrievSingle={retrievSingle}
-                        openModal={openModal}
-                        listIncomplete={list_started} />
+                        openModal={openModal} />
 
                     <FUN_WORKER_ASIGN translation={translation} globals={globals}
                         type={"law"}
@@ -702,27 +700,27 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <MDBTabsContent>
                         <MDBTabsPane show={fillActive === '4'}>
-                            <FUN_DAILY_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
+                            {mountedTabs['4'] && <FUN_DAILY_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
                                 NAVIGATION_GEN={navigation}
                                 requestUpdate={requestUpdate}
                                 requesRefresh={retrievePublish}
-                            />
+                            />}
                         </MDBTabsPane>
 
                         <MDBTabsPane show={fillActive === '2'}>
-                            <SUBMIT_X_FUN translation={translation} globals={globals}
+                            {mountedTabs['2'] && <SUBMIT_X_FUN translation={translation} globals={globals}
                                 setSubtmitRows={setSubtmitRows}
                                 type={"LIC"}
                                 retrievSingle={retrievSingle}
                                 openModal={openModal}
-                                listIncomplete={list_started} />
+                                listIncomplete={list_started} />}
                         </MDBTabsPane>
                         <MDBTabsPane show={fillActive === '3'}>
-                            <FUN_ASIGNS_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
+                            {mountedTabs['3'] && <FUN_ASIGNS_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
                                 NAVIGATION_GEN={navigation}
                                 requestUpdate={requestUpdate}
                                 requesRefresh={retrievePublish}
-                            />
+                            />}
                         </MDBTabsPane>
                     </MDBTabsContent>
 

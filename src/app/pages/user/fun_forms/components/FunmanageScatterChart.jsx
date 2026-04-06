@@ -181,13 +181,41 @@ export function FunmanageScatterChart({ dashboardFilter }) {
   if (loading) {
     return (
       <div
-        className="d-flex justify-content-center align-items-center py-5"
+        className="d-flex flex-column justify-content-center gap-3 py-4"
+        style={{ minHeight: 300 }}
         data-testid="scatter-chart-loading"
       >
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando gráfico…</span>
+        <div className="d-flex align-items-center">
+          <div className="spinner-border spinner-border-sm text-primary" role="status">
+            <span className="visually-hidden">Cargando gráfico…</span>
+          </div>
+          <div className="ms-3">
+            <div className="fw-semibold text-slate-700">Cargando gráfico…</div>
+            <div className="text-muted" style={{ fontSize: 13 }}>
+              Preparando la dispersión por categoría y sus divisiones.
+            </div>
+          </div>
         </div>
-        <span className="ms-3 text-muted">Cargando gráfico…</span>
+
+        <div
+          className="progress overflow-hidden"
+          style={{ height: 10, backgroundColor: '#e2e8f0' }}
+          aria-label="Progreso de carga del gráfico"
+        >
+          <div
+            className="progress-bar progress-bar-striped progress-bar-animated bg-info"
+            role="progressbar"
+            style={{ width: '100%' }}
+            aria-valuenow={100}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          />
+        </div>
+
+        <div className="d-flex justify-content-between text-muted" style={{ fontSize: 12 }}>
+          <span>Consultando datos del dashboard</span>
+          <span>Renderizando puntos</span>
+        </div>
       </div>
     );
   }

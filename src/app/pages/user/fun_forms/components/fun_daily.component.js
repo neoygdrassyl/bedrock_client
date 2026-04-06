@@ -18,6 +18,89 @@ function createDefaultData() {
     };
 }
 
+const DEFER_TABLE_SECTION_THRESHOLD = 8;
+
+function buildSectionBuckets(items = []) {
+    return {
+        raw: items,
+        primaryOrNull: items.filter(item => item.color == 'primary' || item.color == null),
+        success: items.filter(item => item.color == 'success'),
+        warning: items.filter(item => item.color == 'warning'),
+        dark: items.filter(item => item.color == 'dark'),
+        danger: items.filter(item => item.color == 'danger'),
+        secondary: items.filter(item => item.color == 'secondary'),
+    };
+}
+
+function createDailyTableBuckets(data) {
+    return {
+        inc: buildSectionBuckets(data.inc),
+        other: buildSectionBuckets(data.other),
+        law: buildSectionBuckets(data.law),
+        arc: buildSectionBuckets(data.arc),
+        eng: buildSectionBuckets(data.eng),
+        rec: buildSectionBuckets(data.rec),
+        check: buildSectionBuckets(data.check),
+        cor: buildSectionBuckets(data.cor),
+        res: buildSectionBuckets(data.res),
+        lic: buildSectionBuckets(data.lic),
+        lic2: buildSectionBuckets(data.lic2),
+        pay: buildSectionBuckets(data.pay),
+        pay2: buildSectionBuckets(data.pay2),
+        neg: buildSectionBuckets(data.neg),
+        rsc: buildSectionBuckets(data.rsc),
+        rsc2: buildSectionBuckets(data.rsc2),
+        sign: buildSectionBuckets(data.sign),
+    };
+}
+
+function LegacyChartLoading({
+    title = 'Cargando gráfico legacy…',
+    description = 'Preparando la tabla macro y la gráfica de tiempos.',
+    leftLabel = 'Consultando solicitudes',
+    rightLabel = 'Renderizando gráfica',
+}) {
+    return (
+        <div className="row justify-content-center my-3" data-testid="legacy-chart-loading">
+            <div className="col-12">
+                <div className="border rounded bg-white shadow-sm p-3 d-flex flex-column gap-3" style={{ minHeight: 220 }}>
+                    <div className="d-flex align-items-center">
+                        <div className="spinner-border spinner-border-sm text-primary" role="status">
+                            <span className="visually-hidden">{title}</span>
+                        </div>
+                        <div className="ms-3">
+                            <div className="fw-semibold text-dark">{title}</div>
+                            <div className="text-muted" style={{ fontSize: 13 }}>
+                                {description}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        className="progress overflow-hidden"
+                        style={{ height: 10, backgroundColor: '#e2e8f0' }}
+                        aria-label="Progreso de carga del gráfico legacy"
+                    >
+                        <div
+                            className="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                            role="progressbar"
+                            style={{ width: '100%' }}
+                            aria-valuenow={100}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                        />
+                    </div>
+
+                    <div className="d-flex justify-content-between text-muted" style={{ fontSize: 12 }}>
+                        <span>{leftLabel}</span>
+                        <span>{rightLabel}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function FUN_DAILY_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
     const TYPE_TIME = { 'iv': 45, 'iii': 35, 'ii': 25, 'i': 20, 'oa': 15 }
@@ -33,6 +116,7 @@ export default function FUN_DAILY_COMPONENT(props) {
     var [load2, setLoad2] = useState(false)
     var [selectedBtn, setSbtn] = useState(null)
     var [filter, setFilter] = useState('')
+    const [expandedTableSections, setExpandedTableSections] = useState(() => new Set());
 
     // Track whether this effect instance is still active (React 18 StrictMode cleanup)
     useEffect(() => {
@@ -838,6 +922,15 @@ export default function FUN_DAILY_COMPONENT(props) {
         }
         return result;
     }, [datac, filter]);
+    const tableBuckets = useMemo(() => createDailyTableBuckets(filteredDatac), [filteredDatac]);
+    const expandTableSection = useCallback((sectionKey) => {
+        setExpandedTableSections(prev => {
+            if (prev.has(sectionKey)) return prev;
+            const next = new Set(prev);
+            next.add(sectionKey);
+            return next;
+        });
+    }, []);
 
     // ******************************* JSX ***************************** // 
     const subHeaderComponentMemo = () => {
@@ -869,6 +962,7 @@ export default function FUN_DAILY_COMPONENT(props) {
 
                     setLoad2(false);
                     setDatac(createDefaultData());
+                    setExpandedTableSections(new Set());
                     //retrieveMacro();
                 }}>CARGAR</MDBBtn>
             </div>
@@ -940,7 +1034,25 @@ export default function FUN_DAILY_COMPONENT(props) {
         let component = <h6 className={selectedBtn != row.id_public ? 'text-dark fw-normal my-0 py-0' : 'text-light my-0 py-0'}>{contextTest}</h6>
         return component;
     }
-    let TABLE_BTNS = (datas) => {
+    let TABLE_BTNS = (datas, sectionKey) => {
+        if (!datas.length) return ''
+
+        if (datas.length > DEFER_TABLE_SECTION_THRESHOLD && !expandedTableSections.has(sectionKey)) {
+            return (
+                <div className="d-flex flex-column align-items-start gap-2">
+                    <span className="small text-muted">Contenido diferido para reducir la carga inicial.</span>
+                    <MDBBtn
+                        color='secondary'
+                        size='sm'
+                        outline
+                        onClick={() => expandTableSection(sectionKey)}
+                    >
+                        Ver {datas.length} solicitudes
+                    </MDBBtn>
+                </div>
+            );
+        }
+
         return (
             <div className="btn-grid">
                 {datas.map(btn => (
@@ -1103,326 +1215,102 @@ export default function FUN_DAILY_COMPONENT(props) {
     }
 
     const TABLE_BODY = (datas) => {
+        const renderBucketSection = (title, items, sectionKey) => (
+            <div className="row" key={sectionKey}>
+                <div className="col border border-info py-1">
+                    <h5 className='fw-bold'>{title}{title ? ` (${items.length})` : ''}</h5>
+                    {TABLE_BTNS(items, sectionKey)}
+                </div>
+            </div>
+        );
+
+        const tableColumns = [
+            [
+                { key: 'inc-primaryOrNull', title: 'Inncompleta >= 10 días', items: tableBuckets.inc.primaryOrNull },
+                { key: 'inc-warning', title: 'Incompleta < 10 días', items: tableBuckets.inc.warning },
+                { key: 'inc-danger', title: 'Sin Pago expensas fijas', items: tableBuckets.inc.danger },
+            ],
+            [
+                { key: 'other-primaryOrNull', title: 'Revalidaciones - Inncompleta', items: tableBuckets.other.primaryOrNull },
+                { key: 'other-warning', title: 'Revalidaciones - LyDF', items: tableBuckets.other.warning },
+                { key: 'sign-dark', title: 'Sin radicar Valla Inc.', items: tableBuckets.sign.dark },
+                { key: 'sign-warning', title: 'Sin radicar Valla LyDF', items: tableBuckets.sign.warning },
+                { key: 'sign-danger', title: 'Radicación de Valla extemporanea', items: tableBuckets.sign.danger },
+            ],
+            [
+                { key: 'law-success', title: 'Primera revisión', items: tableBuckets.law.success },
+                { key: 'law-warning', title: 'Revisión técnica', items: tableBuckets.law.warning },
+                { key: 'law-primaryOrNull', title: 'Correcciones', items: tableBuckets.law.primaryOrNull },
+                { key: 'law-dark', title: 'Incompleta', items: tableBuckets.law.dark },
+            ],
+            [
+                { key: 'arc-success', title: 'Primera revisión', items: tableBuckets.arc.success },
+                { key: 'arc-warning', title: 'Revisión técnica', items: tableBuckets.arc.warning },
+                { key: 'arc-primaryOrNull', title: 'Correcciones', items: tableBuckets.arc.primaryOrNull },
+                { key: 'arc-dark', title: 'Incompleta', items: tableBuckets.arc.dark },
+            ],
+            [
+                { key: 'eng-success', title: 'Primera revisión', items: tableBuckets.eng.success },
+                { key: 'eng-warning', title: 'Revisión técnica', items: tableBuckets.eng.warning },
+                { key: 'eng-primaryOrNull', title: 'Correcciones', items: tableBuckets.eng.primaryOrNull },
+                { key: 'eng-dark', title: 'Incompleta', items: tableBuckets.eng.dark },
+            ],
+            [
+                { key: 'check-success', title: 'LyDF', items: tableBuckets.check.success },
+                { key: 'check-dark', title: 'Incompleta', items: tableBuckets.check.dark },
+            ],
+            [
+                { key: 'rec-primaryOrNull', title: 'Sin Acta', items: tableBuckets.rec.primaryOrNull },
+                { key: 'rec-success', title: 'Notificando', items: tableBuckets.rec.success },
+            ],
+            [
+                { key: 'cor-primaryOrNull', title: 'Correciones >= 10 días', items: tableBuckets.cor.primaryOrNull },
+                { key: 'cor-warning', title: 'Correciones < 10 días', items: tableBuckets.cor.warning },
+                { key: 'cor-secondary', title: 'Correciones < 5 días, debe pedir prórroga', items: tableBuckets.cor.secondary },
+            ],
+            [
+                { key: 'pay-primaryOrNull', title: 'Sin Viabilidad', items: tableBuckets.pay.primaryOrNull },
+                { key: 'pay-success', title: 'Notificando', items: tableBuckets.pay.success },
+            ],
+            [
+                { key: 'pay2-primaryOrNull', title: 'Pagos >= 10 días', items: tableBuckets.pay2.primaryOrNull },
+                { key: 'pay2-warning', title: 'Pagos < 10 días', items: tableBuckets.pay2.warning },
+            ],
+            [
+                { key: 'res-primaryOrNull', title: 'Sin resolución', items: tableBuckets.res.primaryOrNull },
+                { key: 'res-warning', title: 'Notificando', items: tableBuckets.res.warning },
+                { key: 'res-secondary', title: 'Generada y Notificada', items: tableBuckets.res.secondary },
+            ],
+            [
+                { key: 'rsc2-primaryOrNull', title: 'Sin resolución', items: tableBuckets.rsc2.primaryOrNull },
+                { key: 'rsc2-secondary-notificando', title: 'Notificando', items: tableBuckets.rsc2.secondary },
+                { key: 'rsc2-secondary-generada', title: 'Generada y Notificada', items: tableBuckets.rsc2.secondary },
+            ],
+            [
+                { key: 'neg-primaryOrNull', title: 'Sin resolución', items: tableBuckets.neg.primaryOrNull },
+                { key: 'neg-secondary', title: 'Generada y Notificada', items: tableBuckets.neg.secondary },
+                { key: 'neg-warning', title: 'Debe desistir', items: tableBuckets.neg.warning },
+                { key: 'neg-danger', title: 'Desistida', items: tableBuckets.neg.danger },
+            ],
+            [
+                { key: 'rsc-primaryOrNull', title: 'Recurso <= 60 días', items: tableBuckets.rsc.primaryOrNull },
+                { key: 'rsc-warning', title: 'Recurso > 60 días', items: tableBuckets.rsc.warning },
+            ],
+            [
+                { key: 'lic-raw', title: '', items: tableBuckets.lic.raw },
+            ],
+            [
+                { key: 'lic2-primaryOrNull', title: 'Por entregar', items: tableBuckets.lic2.primaryOrNull },
+                { key: 'lic2-success', title: 'Por cerrar/archivar', items: tableBuckets.lic2.success },
+            ],
+        ];
+
         return <div className="row mx-1 px-1 ">
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Inncompleta {'>='} 10 días ({datas.inc.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.inc.filter(item => item.color == 'primary' || item.color == null))}  {/** inc */}
-                    </div>
+            {tableColumns.map((column, index) => (
+                <div className="col" key={`daily-column-${index}`}>
+                    {column.map(section => renderBucketSection(section.title, section.items, section.key))}
                 </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta {'<'} 10 días ({datas.inc.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.inc.filter(item => item.color == 'warning'))}  {/** inc */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin Pago expensas fijas ({datas.inc.filter(item => item.color == 'danger').length})</h5>
-                        {TABLE_BTNS(datas.inc.filter(item => item.color == 'danger'))}  {/** inc */}
-                    </div>
-                </div>
-            </div>
-
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revalidaciones - Inncompleta ({datas.other.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.other.filter(item => item.color == 'primary' || item.color == null))}  {/** rev - inc */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revalidaciones - LyDF ({datas.other.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.other.filter(item => item.color == 'warning'))}  {/** rev - lydf */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin radicar Valla Inc.({datas.sign.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.sign.filter(item => item.color == 'dark'))}  {/** sign */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin radicar Valla LyDF({datas.sign.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.sign.filter(item => item.color == 'warning'))}  {/** sign */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Radicación de Valla extemporanea ({datas.sign.filter(item => item.color == 'danger').length})</h5>
-                        {TABLE_BTNS(datas.sign.filter(item => item.color == 'danger'))}  {/** sign */}
-                    </div>
-                </div>
-
-            </div>
-
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Primera revisión ({datas.law.filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.law.filter(item => item.color == 'success'))}  {/** JUR */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revisión técnica ({datas.law.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.law.filter(item => item.color == 'warning'))}  {/** JUR */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correcciones ({datas.law.filter(item => item.color == 'primary').length})</h5>
-                        {TABLE_BTNS(datas.law.filter(item => item.color == 'primary'))}  {/** JUR */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta ({datas.law.filter(item => item.color == 'dark').length})</h5>
-                        {TABLE_BTNS(datas.law.filter(item => item.color == 'dark'))}  {/** JUR */}
-                    </div>
-                </div>
-
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Primera revisión ({datas.arc.filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.arc.filter(item => item.color == 'success'))}  {/** ARC */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revisión técnica ({datas.arc.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.arc.filter(item => item.color == 'warning'))}  {/** ARC */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correcciones ({datas.arc.filter(item => item.color == 'primary').length})</h5>
-                        {TABLE_BTNS(datas.arc.filter(item => item.color == 'primary'))}  {/** ARC */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta ({datas.arc.filter(item => item.color == 'dark').length})</h5>
-                        {TABLE_BTNS(datas.arc.filter(item => item.color == 'dark'))}  {/** ARC */}
-                    </div>
-                </div>
-
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Primera revisión ({datas.eng.filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.eng.filter(item => item.color == 'success'))} {/** EST */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Revisión técnica ({datas.eng.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.eng.filter(item => item.color == 'warning'))} {/** EST */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correcciones ({datas.eng.filter(item => item.color == 'primary').length})</h5>
-                        {TABLE_BTNS(datas.eng.filter(item => item.color == 'primary'))} {/** EST */}
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta ({datas.eng.filter(item => item.color == 'dark').length})</h5>
-                        {TABLE_BTNS(datas.eng.filter(item => item.color == 'dark'))} {/** EST */}
-                    </div>
-                </div>
-
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>LyDF ({datas.check.filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.check.filter(item => item.color == 'success'))}  {/** check  */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Incompleta ({datas.check.filter(item => item.color == 'dark').length})</h5>
-                        {TABLE_BTNS(datas.check.filter(item => item.color == 'dark'))}  {/** check  */}
-                    </div>
-                </div>
-
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin Acta ({datas.rec.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.rec.filter(item => item.color == 'primary' || item.color == null))}   {/** rec */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Notificando ({datas.rec.filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.rec.filter(item => item.color == 'success'))}   {/** rec */}
-                    </div>
-                </div>
-
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correciones {'>='} 10 días ({datas.cor.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.cor.filter(item => item.color == 'primary' || item.color == null))}   {/** corr */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correciones {'<'} 10 días ({datas.cor.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.cor.filter(item => item.color == 'warning'))}   {/** corr */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Correciones {'<'} 5 días, debe pedir prórroga ({datas.cor.filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.cor.filter(item => item.color == 'secondary'))}   {/** corr */}
-                    </div>
-                </div>
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin Viabilidad ({datas.pay.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.pay.filter(item => item.color == 'primary' || item.color == null))}   {/** pay */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Notificando  ({datas.pay.filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.pay.filter(item => item.color == 'success'))}   {/** pay */}
-                    </div>
-                </div>
-
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Pagos {'>='} 10 días ({datas.pay2.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.pay2.filter(item => item.color == 'primary' || item.color == null))}   {/** pay2 */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Pagos {'<'} 10 días ({datas.pay2.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.pay2.filter(item => item.color == 'warning'))}   {/** pay2 */}
-                    </div>
-                </div>
-
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin resolución ({datas.res.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.res.filter(item => item.color == 'primary' || item.color == null))}   {/** res */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Notificando ({datas.res.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.res.filter(item => item.color == 'warning'))}   {/** res */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Generada y Notificada ({datas.res.filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.res.filter(item => item.color == 'secondary'))}   {/** res */}
-                    </div>
-                </div>
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin resolución ({datas.rsc2.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.rsc2.filter(item => item.color == 'primary' || item.color == null))}   {/** rsc2 */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Notificando ({datas.rsc2.filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.rsc2.filter(item => item.color == 'secondary'))}   {/** rsc2 */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Generada y Notificada ({datas.rsc2.filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.rsc2.filter(item => item.color == 'secondary'))}   {/** rsc2 */}
-                    </div>
-                </div>
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Sin resolución ({datas.neg.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.neg.filter(item => item.color == 'primary' || item.color == null))}   {/** rsc3 / neg */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Generada y Notificada ({datas.neg.filter(item => item.color == 'secondary').length})</h5>
-                        {TABLE_BTNS(datas.neg.filter(item => item.color == 'secondary'))}   {/** rsc3 / neg */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Debe desistir ({datas.neg.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.neg.filter(item => item.color == 'warning'))}   {/** rsc3 / neg */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Desistida ({datas.neg.filter(item => item.color == 'danger').length})</h5>
-                        {TABLE_BTNS(datas.neg.filter(item => item.color == 'danger'))}   {/** rsc3 / neg */}
-                    </div>
-                </div>
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Recurso {'<='} 60 días ({datas.rsc.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.rsc.filter(item => item.color == 'primary' || item.color == null))}   {/** rsc */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Recurso {'>'} 60 días ({datas.rsc.filter(item => item.color == 'warning').length})</h5>
-                        {TABLE_BTNS(datas.rsc.filter(item => item.color == 'warning'))}   {/** rsc */}
-                    </div>
-                </div>
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'></h5>
-                        {TABLE_BTNS(datas.lic)} {/** lic */}
-                    </div>
-                </div>
-            </div>
-            <div className="col">
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Por entregar ({datas.lic2.filter(item => item.color == 'primary' || item.color == null).length})</h5>
-                        {TABLE_BTNS(datas.lic2.filter(item => item.color == 'primary' || item.color == null))} {/** lic2 */}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col border border-info py-1">
-                        <h5 className='fw-bold'>Por cerrar/archivar ({datas.lic2.filter(item => item.color == 'success').length})</h5>
-                        {TABLE_BTNS(datas.lic2.filter(item => item.color == 'success'))} {/** lic2 */}
-                    </div>
-                </div>
-            </div>
+            ))}
         </div>
     }
 
@@ -1462,11 +1350,11 @@ export default function FUN_DAILY_COMPONENT(props) {
         </>
     }
 
-    let TABLE = (datas) => {
+    let TABLE = () => {
         return <>
             {TABLE_MAIN_HEADER()}
             {TABLE_HEADER()}
-            {TABLE_BODY(datas)}
+            {TABLE_BODY()}
         </>
     }
 
@@ -1482,14 +1370,23 @@ export default function FUN_DAILY_COMPONENT(props) {
                     <>
                         <div className='chart-clock'>
                             <div className='row   px-1' style={{ width: '3500px', maxHeight: '500px', minHeight: '100px' }} >
-                                {TABLE(filteredDatac)}
+                                {TABLE()}
                             </div>
                         </div>
+                        {CHART_GANTT()}
                     </>
-                    : <div className='row text-center' > <label className='fw-normal lead text-muted'>FILTRANDO...</label></div>}
-                {CHART_GANTT()}
+                    : <LegacyChartLoading
+                        title="Actualizando gráfico legacy…"
+                        description="Aplicando filtros y recalculando la visualización de tiempos."
+                        leftLabel="Filtrando subelementos"
+                        rightLabel="Actualizando dispersión temporal"
+                    />}
             </>
-            : <div className='row text-center' > <label className='fw-normal lead text-muted'>CARGANDO...</label></div>}
+            : <LegacyChartLoading
+                description="Preparando la tabla macro y la gráfica de tiempos de solicitudes."
+                leftLabel="Consultando solicitudes"
+                rightLabel="Organizando divisiones"
+            />}
 
     </>;
 }
