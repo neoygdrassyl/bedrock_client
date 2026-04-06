@@ -21,7 +21,7 @@ export class LoginPage {
     this.emailInput = page.locator('#email');
     this.passwordInput = page.locator('#password');
     this.submitButton = page.locator('button[type="submit"]');
-    this.heading = page.locator('h2', { hasText: /INICIO DE SESIÓN/i });
+    this.heading = page.locator('h2', { hasText: /INICIO DE SESIÓN.*CURADURIA/i });
     this.errorAlert = page.locator('.swal2-popup');
   }
 

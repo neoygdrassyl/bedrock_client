@@ -22,7 +22,7 @@ export class FunPage {
     this.page = page;
 
     // Page heading
-    this.heading = page.locator('h1', { hasText: /RADICACI/i });
+    this.heading = page.locator('h1', { hasText: /RADICACIÓN DE SOLICITUDES/i });
 
     // --- Creation form ---
     this.dateInput = page.locator('#f_01');

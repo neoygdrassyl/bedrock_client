@@ -61,14 +61,14 @@ export class SubmitPage {
 
   /** Navigate to /submit */
   async goto() {
-    await this.page.goto('/submit');
+    await this.page.goto('/submit', { timeout: 60_000 });
     // networkidle can hang in this module due to background polling; use DOM-ready + explicit UI assertions.
     await this.page.waitForLoadState('domcontentloaded');
   }
 
   /** Wait for heading to confirm page loaded */
   async waitForPageLoad() {
-    await this.heading.waitFor({ state: 'visible', timeout: 15_000 });
+    await this.heading.waitFor({ state: 'visible', timeout: 30_000 });
   }
 
   /** Wait for the DataTable to render */
@@ -79,7 +79,7 @@ export class SubmitPage {
       const table = await this.dataTable.isVisible().catch(() => false);
       const noData = await this.noDataMessage.isVisible().catch(() => false);
       return !processing && !loading && (table || noData);
-    }, { timeout: 20_000 }).toBe(true);
+    }, { timeout: 30_000 }).toBe(true);
   }
 
   /** Get visible row count */

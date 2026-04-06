@@ -15,7 +15,7 @@ import { SubmitPage } from '../pages/submit.page';
  * Prerequisite: Backend running at VITE_API_URL.
  */
 
-test.describe.skip('E2E: Ventanilla Unica', () => {
+test.describe('E2E: Ventanilla Unica', () => {
   /** @type {SubmitPage} */
   let submitPage;
 
