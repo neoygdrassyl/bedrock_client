@@ -15,7 +15,7 @@ import { ArchivePage } from '../pages/archive.page';
  * Prerequisite: Backend running at VITE_API_URL.
  */
 
-test.describe.skip('E2E: Archivo Documental', () => {
+test.describe('E2E: Archivo Documental', () => {
   /** @type {ArchivePage} */
   let archivePage;
 
@@ -82,10 +82,16 @@ test.describe.skip('E2E: Archivo Documental', () => {
   test('search by box number filters the table', async ({ authenticatedPage }) => {
     await archivePage.goto();
     await archivePage.waitForPageLoad();
-    await archivePage.waitForTable();
+    const tableState = await archivePage.waitForTable();
 
     // Get initial row count
     const initialCount = await archivePage.getRowCount();
+
+    // Skip if no data available (empty mock data)
+    if (initialCount === 0) {
+      test.skip(true, 'No boxes available to test search functionality');
+      return;
+    }
 
     // Search for a specific box number (use "1" as a common value)
     await archivePage.search('1', 'box');
