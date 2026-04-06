@@ -357,6 +357,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 item_212: "",
                 item_22: "",
                 item_23: "",
+                item_232: "",
                 item_24: "",
                 item_25: "",
                 item_261: "",
@@ -371,6 +372,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 _CHILD_VARS.item_212 = _CHILD.direccion_ant;
                 _CHILD_VARS.item_22 = _CHILD.matricula;
                 _CHILD_VARS.item_23 = _CHILD.catastral;
+                _CHILD_VARS.item_232 = _CHILD.catastral_2;
                 _CHILD_VARS.item_24 = _FUN_24_PARSER(_CHILD.suelo); // PARSER
                 _CHILD_VARS.item_25 = _FUN_25_PARSER(_CHILD.lote_pla);// PARSER
 
@@ -401,7 +403,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     </div>
                     <div className="col-6">
                         <label>2.3 Identificación Catastral</label>
-                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_23} disabled />
+                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_232 || _CHILD_VARS.item_23} disabled />
                     </div>
                 </div>
                 <div className="row">

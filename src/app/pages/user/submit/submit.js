@@ -246,6 +246,18 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 'CORRECCIONES SOLICITUD',
                 'TRAMITE',
                 'PQRS',
+                'FOTO VALLA',
+                'SOLICITUD LICENCIAS URBANISTICA',
+                'SOLICITUD MODIFICACION LICENCIA VIGENTE',
+                'SOLICITUD DE CONCEPTO DE USO',
+                'SOLICITUD DE NORMA URBANA',
+                'SOLICITUD OTRAS ACTUACIONES',
+                'SOLICITUD PRORROGA',
+                'SOLICITUD REVALIDACION',
+                'PAGO EXPENSAS Y/O IMPUESTOS / OTROS',
+                'DOCUMENTOS PARA RLDF',
+                'DOCUMENTOS ACTAS OBSERVACIONES',
+                'DOCUMENTOS TRAMITE',
             ]
             const rows = [];
 
@@ -273,12 +285,12 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                         var pages = element ? element.split(",") : [];
                         pages.map(p => folios += Number(p));
 
-                        const doc_codes =  d.sub_lists[i].list_code;
-                         var codes = doc_codes ? doc_codes.split(",") : [];
-                         codes.map(c => {
-                            if ( ListsCodes[c] ) docs.push(ListsCodes[c])
-                         });
-                        
+                        const doc_codes = d.sub_lists[i].list_code;
+                        var codes = doc_codes ? doc_codes.split(",") : [];
+                        codes.map(c => {
+                            if (ListsCodes[c]) docs.push(ListsCodes[c])
+                        });
+
 
                     }
                 }

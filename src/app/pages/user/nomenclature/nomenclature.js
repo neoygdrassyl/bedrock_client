@@ -426,6 +426,8 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                     paginationRowsPerPageOptions={[20, 50, 100]}
                                     className="data-table-component"
                                     noHeader
+                                    defaultSortFieldId={1}
+                                    defaultSortAsc={false}
                             
                                 />
                             ) : (

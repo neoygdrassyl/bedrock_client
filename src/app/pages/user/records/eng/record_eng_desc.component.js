@@ -91,6 +91,7 @@ function RECORD_ENG_DESC(props) {
         let _GET_STEP_TYPE_ENG = (_id_public, _type) => {
             var STEP = LOAD_STEP_ENG(_id_public);
             if (!STEP.id) return null;
+            if (!STEP[_type]) return null;
             var value = STEP[_type]
             value = value.split(';');
             return value

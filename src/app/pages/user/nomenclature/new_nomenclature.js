@@ -34,6 +34,8 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                 recipe_office_date: "",
                 recipe_county_id: "",
                 recipe_county_date: "",
+                vr: "",
+                oa: "",
             }
             if (_CHILD) {
                 _CHILD_VARS.id = _CHILD.id;
@@ -56,6 +58,8 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                 _CHILD_VARS.recipe_office_date = _CHILD.recipe_office_date;
                 _CHILD_VARS.recipe_county_id = _CHILD.recipe_county_id;
                 _CHILD_VARS.recipe_county_date = _CHILD.recipe_county_date;
+                _CHILD_VARS.vr = _CHILD.vr;
+                _CHILD_VARS.oa = _CHILD.oa;
             }
             return _CHILD_VARS;
         }
@@ -137,7 +141,30 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                 </div>
                 <div className="row">
                     <div className="col-4">
-                        <label >4.1 Nombre Solicitante</label>
+                        <label >4. Número de VR</label>
+                        <div class="input-group mb-1">
+                            <span class="input-group-text bg-info text-white">
+                                <i class="far fa-file-alt"></i>
+                            </span>
+                            <input type="text" class="form-control" id="nomen_vr" defaultValue={_CHILD.vr} />
+                        </div>
+                    </div>
+                    <div className="col-4">
+                        <label >5. Número de OA</label>
+                        <div class="input-group mb-1">
+                            <span class="input-group-text bg-info text-white">
+                                <i class="far fa-file-alt"></i>
+                            </span>
+                            <input type="text" class="form-control" id="nomen_oa" defaultValue={_CHILD.oa} />
+                        </div>
+                    </div>
+                    <div className="col-4">
+
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-4">
+                        <label >6.1 Nombre Solicitante</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-user"></i>
@@ -147,7 +174,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >4.2 Apellido(s) Solicitante</label>
+                        <label >6.2 Apellido(s) Solicitante</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-user"></i>
@@ -157,7 +184,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >5. Documento Solicitante</label>
+                        <label >7. Documento Solicitante</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-id-card"></i>
@@ -170,7 +197,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                 </div>
                 <div className="row">
                     <div className="col-4">
-                        <label >6. Dirección Predio</label>
+                        <label >8. Dirección Predio</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-home"></i>
@@ -180,21 +207,21 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >7.1 Tipo localizacion</label>
+                        <label >9.1 Tipo localizacion</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-home"></i>
                             </span>
                             <select class="form-select" required id="nomen_16_1"
-                            defaultValue={_CHILD.neighbour[1]}>
-                            <option>BARRIO</option>
-                            <option>URBANIZACIÓN</option>
-                            <option>VEREDA</option>
-                        </select>
+                                defaultValue={_CHILD.neighbour[1]}>
+                                <option>BARRIO</option>
+                                <option>URBANIZACIÓN</option>
+                                <option>VEREDA</option>
+                            </select>
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >7.2 Barrio</label>
+                        <label >9.2 Barrio</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-home"></i>
@@ -207,7 +234,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
 
                 <div className="row">
                     <div className="col-6">
-                        <label >8. Número Predial/Catastral</label>
+                        <label >10. Número Predial/Catastral</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-home"></i>
@@ -217,7 +244,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                         </div>
                     </div>
                     <div className="col-6">
-                        <label >9. Número de Matrícula</label>
+                        <label >11. Número de Matrícula</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-home"></i>
@@ -228,7 +255,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                     </div>
                 </div>
                 <div className="row">
-                    <label >10. Destino</label>
+                    <label >12. Destino</label>
                     <div className='row p-3'>
                         <div className="col">
                             <div class="form-group form-check">
@@ -270,7 +297,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
 
                 <div className="row">
                     <div className="col-4">
-                        <label >11.1. Fecha Radicación</label>
+                        <label >13.1. Fecha Radicación</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-calendar-check"></i>
@@ -280,7 +307,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >11.2 Fecha Expedición</label>
+                        <label >13.2 Fecha Expedición</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-calendar-times"></i>
@@ -292,7 +319,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                 </div>
                 <div className="row">
                     <div className="col-4">
-                        <label >12.1. Número de Recibo Curaduría</label>
+                        <label >14.1. Número de Recibo Curaduría</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-money-check-alt"></i>
@@ -302,7 +329,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >12.2 Fecha de Recibo Curaduría</label>
+                        <label >14.2 Fecha de Recibo Curaduría</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-calendar-alt"></i>
@@ -314,7 +341,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                 </div>
                 <div className="row">
                     <div className="col-4">
-                        <label >13.1. Número de Recibo Municipal</label>
+                        <label >15.1. Número de Recibo Municipal</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="fas fa-money-check-alt"></i>
@@ -324,7 +351,7 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                         </div>
                     </div>
                     <div className="col-4">
-                        <label >13.2 Fecha de Recibo Municipal</label>
+                        <label >15.2 Fecha de Recibo Municipal</label>
                         <div class="input-group mb-1">
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-calendar-alt"></i>
@@ -336,14 +363,14 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                 </div>
                 <div className="row mt-2">
                     <div className="col-12">
-                        <label >14. Observaciones (Máximo 2000 Caracteres)</label>
+                        <label >16. Observaciones (Máximo 2000 Caracteres)</label>
                         <textarea class="form-control mb-3" rows="3" maxLength="1900" id="nomen_10"
                             defaultValue={_CHILD.details}></textarea>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-13">
-                        <label >15. Nota (Máximo 1000 Caracteres)</label>
+                        <label >17. Nota (Máximo 1000 Caracteres)</label>
                         <textarea class="form-control mb-3" rows="2" maxLength="1000" id="nomen_17"
                             defaultValue={_CHILD.note}></textarea>
                     </div>
@@ -381,7 +408,11 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
             if (details) formData.set('details', details);
             let number = document.getElementById("nomen_11").value;
             if (number) formData.set('number', number);
-            let neighbour = [] 
+            let vr = document.getElementById("nomen_vr").value;
+            formData.set('vr', vr);
+            let oa = document.getElementById("nomen_oa").value;
+            formData.set('oa', oa);
+            let neighbour = []
             neighbour.push(document.getElementById("nomen_16").value || '')
             neighbour.push(document.getElementById("nomen_16_1").value || '');
             if (neighbour.length) formData.set('neighbour', neighbour.join(";"));
