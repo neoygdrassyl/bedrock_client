@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
-import { PLAYWRIGHT_TMP, initPlaywrightTmp, cleanupPlaywrightTmp } from './src/__playwright/config.js';
+import { PLAYWRIGHT_TMP } from './src/__playwright/config.js';
 
 /**
  * Playwright E2E configuration for Dovela Frontend.
@@ -81,15 +81,11 @@ export default defineConfig({
   /**
    * Global setup: Initialize Playwright temp directory before tests run.
    */
-  globalSetup: async () => {
-    await initPlaywrightTmp();
-  },
+  globalSetup: './e2e/global-setup.js',
 
   /**
    * Global teardown: Clean up Playwright temp directory after tests complete.
    * Removes all screenshots, traces, videos, etc. to avoid leaving "mugre" behind.
    */
-  globalTeardown: async () => {
-    await cleanupPlaywrightTmp();
-  },
+  globalTeardown: './e2e/global-teardown.js',
 });
