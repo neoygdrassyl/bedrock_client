@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import { transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // Custom plugin: treat .js files in src/ as JSX (CRA migration compat)
 function jsxInJs() {
@@ -33,6 +34,12 @@ function cssNoop() {
 
 export default defineConfig({
   plugins: [cssNoop(), jsxInJs(), react()],
+
+  resolve: {
+    alias: {
+      '@': path.resolve(import.meta.dirname, './src'),
+    },
+  },
 
   test: {
     globals: true,
