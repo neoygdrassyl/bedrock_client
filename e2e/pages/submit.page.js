@@ -89,6 +89,7 @@ export class SubmitPage {
 
   /** Open the "NUEVA ENTRADA" modal */
   async openNewEntryModal() {
+    await expect(this.newEntryButton).toBeEnabled({ timeout: 15_000 });
     await this.newEntryButton.click();
     await expect(this.newEntryModal).toBeVisible();
   }
