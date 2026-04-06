@@ -1,6 +1,6 @@
 import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip, MDBTypography } from '../../../components/ui';
 import moment from 'moment';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
 import FunService from '../../../services/fun.service';
 import PqrsMainDataService from '../../../services/pqrs_main.service';
@@ -26,6 +26,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
     const [worker_list, setWorkerList] = useState([]);
     const [dataAsign, setDataAsign] = useState([]);
     const [lic_list, setLicList] = useState(false);
+    const hasSyncedListIncomplete = useRef(false);
 
     const get_lastVRTime = (items) => {
         var screated = items.screated ? items.screated.split(';') : [];
@@ -83,6 +84,8 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
     }, [swaMsg]);
 
     useEffect(() => {
+        if (simple) return;
+
         var end_date = moment().format('YYYY-MM-DD');
         var start_date = momentB(end_date, 'YYYY-MM-DD').businessSubtract(15)._d;
         start_date = moment(start_date).format('YYYY-MM-DD')
@@ -97,7 +100,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                         for (var i = 0; i < response.data.length; i++) {
                             submitItems.push(response.data[i].id)
                         }
-                        setSubtmitRows(submitItems);
+                        setSubtmitRows?.(submitItems);
                     }
                 })
                 .catch(e => {
@@ -115,7 +118,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                             submitItems.push(response.data[i].id);
                             console.log(response.data[i])
                         }
-                        setSubtmitRows(submitItems);
+                        setSubtmitRows?.(submitItems);
                     }
                 })
                 .catch(e => {
@@ -125,11 +128,21 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
 
         retrieveWorker();
         if (type == "LIC") loadIcoplete();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [loadIcoplete, retrieveWorker, setSubtmitRows, simple, type]);
 
     useEffect(() => {
+        if (simple || type != "LIC") return;
+        if (!hasSyncedListIncomplete.current) {
+            hasSyncedListIncomplete.current = true;
+            return;
+        }
         loadIcoplete();
-    }, [listIncomplete, loadIcoplete]);
+    }, [listIncomplete, loadIcoplete, simple, type]);
+
+    useEffect(() => {
+        if (!simple || type != "LIC" || !lic_list || incomplete.length) return;
+        loadIcoplete();
+    }, [incomplete.length, lic_list, loadIcoplete, simple, type]);
         const customStylesForModal = {
             overlay: {
                 position: 'fixed',

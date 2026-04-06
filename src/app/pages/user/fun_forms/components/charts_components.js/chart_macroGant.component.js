@@ -33,22 +33,73 @@ const reviewTimes = [
 ]
 const TYPE_TIME = { 'iv': 45, 'iii': 35, 'ii': 25, 'i': 20, 'oa': 15 };
 
+function LegacyMacroGanttLoading() {
+    return (
+        <div
+            className="d-flex flex-column justify-content-center gap-3 py-4"
+            style={{ minHeight: 280 }}
+            data-testid="legacy-macro-gantt-loading"
+        >
+            <div className="d-flex align-items-center">
+                <div className="spinner-border spinner-border-sm text-primary" role="status">
+                    <span className="visually-hidden">Cargando gráfico de dispersión…</span>
+                </div>
+                <div className="ms-3">
+                    <div className="fw-semibold text-dark">Cargando gráfico de dispersión…</div>
+                    <div className="text-muted" style={{ fontSize: 13 }}>
+                        Preparando la dispersión temporal y sus divisiones.
+                    </div>
+                </div>
+            </div>
+
+            <div
+                className="progress overflow-hidden"
+                style={{ height: 10, backgroundColor: '#e2e8f0' }}
+                aria-label="Progreso de carga del gráfico de dispersión"
+            >
+                <div
+                    className="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                    role="progressbar"
+                    style={{ width: '100%' }}
+                    aria-valuenow={100}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                />
+            </div>
+
+            <div className="d-flex justify-content-between text-muted" style={{ fontSize: 12 }}>
+                <span>Clasificando licencias</span>
+                <span>Renderizando puntos</span>
+            </div>
+        </div>
+    );
+}
+
 function FUN_CHART_MACRO_GRANTT(props) {
     const { translation, swaMsg, globals, items, margin, hideExp, _UPDATE_FILTERS, _UPDATE_FILTERS_IDPUBIC } = props;
     const [data, setData] = useState(_emptyData);
     const [bt_scope, setBt_scope] = useState(2);
     const [hovered, setHovered] = useState(false);
     const [total, setTotal] = useState(0);
-    const prevItemsLengthRef = useRef(0);
+    const [loading, setLoading] = useState(true);
 
     const safeItems = Array.isArray(items) ? items : [];
 
     useEffect(() => {
-        if (prevItemsLengthRef.current !== safeItems.length) {
-            prevItemsLengthRef.current = safeItems.length;
+        let cancelled = false;
+        setLoading(true);
+
+        const timer = setTimeout(() => {
+            if (cancelled) return;
             setList();
-        }
-    }, [safeItems.length]);
+            setLoading(false);
+        }, 0);
+
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
+    }, [safeItems]);
 
     function setList() {
         let items = safeItems;
@@ -526,6 +577,10 @@ function FUN_CHART_MACRO_GRANTT(props) {
         return '';
     };
 
+    if (loading) {
+        return <LegacyMacroGanttLoading />;
+    }
+
     return (
         <div>
             <div className="row text-center my-2">
@@ -571,6 +626,8 @@ function FUN_CHART_MACRO_GRANTT(props) {
                                             <Scatter key={s.dataKey} name={s.dataKey}
                                                 data={safeData}
                                                 fill={s.color}
+                                                isAnimationActive={false}
+                                                animationDuration={0}
                                                 onClick={handleScatterClick}
                                                 style={{ cursor: 'pointer' }}
                                             />
