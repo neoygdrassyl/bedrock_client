@@ -52,7 +52,7 @@ describe('Dashboard — Integración del panel principal', () => {
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
-    expect(screen.getByText('Módulos de Trabajo')).toBeInTheDocument();
+    expect(screen.getByText('Operacion y Gestion')).toBeInTheDocument();
 
     // Verificar que al menos 9 cards de módulos de trabajo están visibles
     const workCards = [
@@ -78,7 +78,7 @@ describe('Dashboard — Integración del panel principal', () => {
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
-    expect(screen.getByText('Utilidades y Documentación')).toBeInTheDocument();
+    expect(screen.getByText('Utilidades y Documentacion')).toBeInTheDocument();
 
     // Cards de utilidades presentes
     expect(screen.getByTestId('dashboard-card-osha')).toBeInTheDocument();
