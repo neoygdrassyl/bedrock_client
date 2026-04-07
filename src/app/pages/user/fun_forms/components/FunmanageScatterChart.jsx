@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   ScatterChart,
   Scatter,
@@ -10,23 +10,24 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
-import FunManageDashboardService from '../../../../services/funmanage_dashboard.service';
 
 // ── Mapeo categoría ↔ eje Y numérico ─────────────────────────────────────────
-const CAT_TO_NUM = { I: 1, II: 2, III: 3, IV: 4, OA: 5 };
-const NUM_TO_CAT = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'OA' };
+const CAT_TO_NUM = { I: 1, II: 2, III: 3, IV: 4 };
+const NUM_TO_CAT = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV' };
 
-// ── Paleta de colores por estado ──────────────────────────────────────────────
+// ── Paleta de colores por estado (nuevos nombres) ─────────────────────────────
 const STATUS_COLORS = {
-  OPTIMAL: '#22c55e',
-  AVERAGE: '#eab308',
-  LIMIT:   '#ef4444',
+  OPTIMO:    '#22c55e',
+  PROMEDIO:  '#eab308',
+  EN_RIESGO: '#ef4444',
+  VENCIDO:   '#991b1b',
 };
 
 const STATUS_LABELS = {
-  OPTIMAL: 'Óptimo',
-  AVERAGE: 'Promedio',
-  LIMIT:   'En Riesgo',
+  OPTIMO:    'Óptimo',
+  PROMEDIO:  'Promedio',
+  EN_RIESGO: 'En Riesgo',
+  VENCIDO:   'Vencido',
 };
 
 // ── Tick personalizado para el eje Y (categorías) ─────────────────────────────
@@ -57,7 +58,6 @@ function ScatterTooltip({ active, payload }) {
 
   const statusColor = STATUS_COLORS[d.status] ?? '#94a3b8';
   const statusLabel = STATUS_LABELS[d.status] ?? d.status ?? '—';
-  const catLabel    = d.categoria ?? (typeof d.y === 'string' ? d.y : (NUM_TO_CAT[d.y] ?? '—'));
 
   return (
     <div
@@ -79,20 +79,20 @@ function ScatterTooltip({ active, payload }) {
 
       {/* Fase */}
       <p style={{ margin: '5px 0 0', fontSize: 12, color: '#475569' }}>
-        <strong>Fase:</strong> {d.fase ?? '—'}
+        <strong>Fase:</strong> {d.fase_label ?? '—'}
       </p>
 
       {/* Categoría */}
       <p style={{ margin: '3px 0 0', fontSize: 12, color: '#475569' }}>
-        <strong>Categoría:</strong> {catLabel}
+        <strong>Categoría:</strong> {d.categoria ?? '—'}
       </p>
 
       {/* Días transcurridos */}
       <p style={{ margin: '3px 0 0', fontSize: 12, color: '#475569' }}>
         <strong>Días transcurridos:</strong>{' '}
-        <span style={{ fontWeight: 600 }}>{d.x ?? '—'}</span>
-        {d.maxDays ? (
-          <span style={{ color: '#94a3b8' }}> / {d.maxDays} máx.</span>
+        <span style={{ fontWeight: 600 }}>{d.dias_habiles_usados ?? '—'}</span>
+        {d.dias_habiles_limite ? (
+          <span style={{ color: '#94a3b8' }}> / {d.dias_habiles_limite} máx.</span>
         ) : null}
       </p>
 
@@ -114,9 +114,9 @@ function ScatterTooltip({ active, payload }) {
       </p>
 
       {/* Trámite / Responsable */}
-      {d.tramite && (
+      {d.responsable && (
         <p style={{ margin: '5px 0 0', fontSize: 11, color: '#94a3b8' }}>
-          <i className="fas fa-user me-1"></i>{d.tramite}
+          <i className="fas fa-user me-1"></i>{d.responsable}
         </p>
       )}
     </div>
@@ -127,52 +127,18 @@ function ScatterTooltip({ active, payload }) {
 /**
  * Gráfico de dispersión de solicitudes de curaduría.
  *
- * @param {{ dashboardFilter: { status: string|null, phase: string|null } }} props
+ * @param {{ data: Array, loading: boolean }} props
  */
-export function FunmanageScatterChart({ dashboardFilter }) {
-  const [rawData, setRawData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Re-fetch cuando cambia el filtro activo
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-
-    FunManageDashboardService.getChartData(dashboardFilter)
-      .then(res => {
-        if (!cancelled) {
-          setRawData(Array.isArray(res.data) ? res.data : []);
-          setLoading(false);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setError('No se pudo cargar el gráfico.');
-          setLoading(false);
-        }
-      });
-
-    return () => { cancelled = true; };
-  }, [dashboardFilter]);
-
-  // Transformación + filtrado client-side (doble seguridad si backend no filtra)
+export function FunmanageScatterChart({ data, loading }) {
+  // Transformar datos del backend al formato del scatter chart
   const plotData = useMemo(() => {
-    return rawData
-      .filter(d => {
-        if (dashboardFilter?.status && d.status !== dashboardFilter.status) return false;
-        if (dashboardFilter?.phase  && d.fase  !== dashboardFilter.phase)  return false;
-        return true;
-      })
-      .map(d => {
-        // Normalizar yNum — soporta y numérico o categórico ("I","II","III","IV")
-        let yNum = typeof d.y === 'number'
-          ? d.y
-          : CAT_TO_NUM[d.y] ?? CAT_TO_NUM[d.categoria] ?? 1;
-        return { ...d, yNum };
-      });
-  }, [rawData, dashboardFilter]);
+    if (!Array.isArray(data)) return [];
+    return data.map(d => ({
+      ...d,
+      x: d.dias_habiles_usados ?? 0,
+      yNum: CAT_TO_NUM[d.categoria] ?? 1,
+    }));
+  }, [data]);
 
   // Segmentar por estado para asignar color uniforme por serie
   const byStatus = status => plotData.filter(d => d.status === status);
@@ -216,19 +182,6 @@ export function FunmanageScatterChart({ dashboardFilter }) {
           <span>Consultando datos del dashboard</span>
           <span>Renderizando puntos</span>
         </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div
-        className="alert alert-warning d-flex align-items-center py-3"
-        role="alert"
-        data-testid="scatter-chart-error"
-      >
-        <i className="fas fa-exclamation-triangle me-2"></i>
-        {error}
       </div>
     );
   }
@@ -277,8 +230,8 @@ export function FunmanageScatterChart({ dashboardFilter }) {
             type="number"
             dataKey="yNum"
             name="Categoría"
-            domain={[0.5, 5.5]}
-            ticks={[1, 2, 3, 4, 5]}
+            domain={[0.5, 4.5]}
+            ticks={[1, 2, 3, 4]}
             tick={<CategoryTick />}
             width={38}
           />
