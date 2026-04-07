@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   BarChart,
   Bar,
@@ -9,17 +9,38 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import FunManageDashboardService from '../../../../services/funmanage_dashboard.service';
 
-// Paleta por fase
+// Paleta por fase (usa las labels del backend)
 const PHASE_COLORS = {
-  'Radicación':     '#3b82f6',
-  'Revisión Legal': '#8b5cf6',
-  'Informes':       '#f59e0b',
-  'Correcciones':   '#ef4444',
-  'Expedición':     '#10b981',
-  'Resolución':     '#6366f1',
+  'Radicación LDF':              '#3b82f6',
+  'Estudio y Observaciones':     '#8b5cf6',
+  'Notificación Observaciones':  '#a78bfa',
+  'Correcciones del Solicitante':'#ef4444',
+  'Revisión y Viabilidad':       '#f59e0b',
+  'Notificación Viabilidad':     '#fbbf24',
+  'Liquidación y Pagos':         '#f97316',
+  'Generación de Resolución':    '#10b981',
+  'Notificación Resolución':     '#34d399',
+  'Ejecutoria y Recurso':        '#6366f1',
+  'Entrega de Licencia':         '#14b8a6',
+  'Sin Iniciar':                 '#94a3b8',
+  'Completado':                  '#64748b',
 };
+
+// Orden preferido de fases
+const PHASE_ORDER = [
+  'Radicación LDF',
+  'Estudio y Observaciones',
+  'Notificación Observaciones',
+  'Correcciones del Solicitante',
+  'Revisión y Viabilidad',
+  'Notificación Viabilidad',
+  'Liquidación y Pagos',
+  'Generación de Resolución',
+  'Notificación Resolución',
+  'Ejecutoria y Recurso',
+  'Entrega de Licencia',
+];
 
 function PhaseTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
@@ -46,72 +67,34 @@ function PhaseTooltip({ active, payload }) {
 /**
  * Gráfico de barras horizontales — distribución por fase procesal.
  *
- * @param {{ dashboardFilter: { status: string|null, phase: string|null }, onPhaseClick?: Function }} props
+ * @param {{ porFase: Object, loading: boolean, dashboardFilter: { status: string|null, phase: string|null }, onPhaseClick?: Function }} props
  */
-export function FunmanagePhaseChart({ dashboardFilter, onPhaseClick }) {
-  const [rawData, setRawData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-
-    FunManageDashboardService.getChartData(dashboardFilter)
-      .then(res => {
-        if (!cancelled) {
-          setRawData(Array.isArray(res.data) ? res.data : []);
-          setLoading(false);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setError('No se pudo cargar el gráfico.');
-          setLoading(false);
-        }
-      });
-
-    return () => { cancelled = true; };
-  }, [dashboardFilter]);
-
+export function FunmanagePhaseChart({ porFase, loading, dashboardFilter, onPhaseClick }) {
   const chartData = useMemo(() => {
-    const map = {};
-    for (const d of rawData) {
-      const phase = d.fase || 'Sin fase';
-      map[phase] = (map[phase] || 0) + 1;
-    }
-    const total = rawData.length || 1;
+    if (!porFase || typeof porFase !== 'object') return [];
+    const total = Object.values(porFase).reduce((a, b) => a + b, 0) || 1;
 
-    // Orden fijo
-    const order = ['Radicación', 'Revisión Legal', 'Informes', 'Correcciones', 'Expedición', 'Resolución'];
     const result = [];
-    for (const phase of order) {
-      if (map[phase]) {
-        result.push({ phase, count: map[phase], pct: Math.round((map[phase] / total) * 100) });
-        delete map[phase];
+    // Orden fijo primero
+    for (const phase of PHASE_ORDER) {
+      if (porFase[phase]) {
+        result.push({ phase, count: porFase[phase], pct: Math.round((porFase[phase] / total) * 100) });
       }
     }
-    // Fases no esperadas
-    for (const [phase, count] of Object.entries(map)) {
-      result.push({ phase, count, pct: Math.round((count / total) * 100) });
+    // Fases no esperadas (desistimiento, etc.)
+    for (const [phase, count] of Object.entries(porFase)) {
+      if (!PHASE_ORDER.includes(phase)) {
+        result.push({ phase, count, pct: Math.round((count / total) * 100) });
+      }
     }
     return result;
-  }, [rawData]);
+  }, [porFase]);
 
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center py-5">
         <div className="spinner-border spinner-border-sm text-primary me-2" role="status" />
         <span className="text-muted" style={{ fontSize: 13 }}>Cargando…</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="alert alert-warning py-2" role="alert" style={{ fontSize: 13 }}>
-        <i className="fas fa-exclamation-triangle me-2"></i>{error}
       </div>
     );
   }

@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import FunManageDashboardService from '@/app/services/funmanage_dashboard.service';
 
 /**
  * Configuración de los 4 KPIs del dashboard de licencias.
- * statusFilter / phaseFilter → parámetros que se envían al grid/chart al hacer clic.
+ * statusFilter / phaseFilter → parámetros que se propagan al filtrar.
  * key → identificador interno para el toggle activo.
  */
 const KPI_CONFIG = [
@@ -22,7 +20,7 @@ const KPI_CONFIG = [
   {
     key: 'en_riesgo',
     dataField: 'en_riesgo',
-    statusFilter: 'LIMIT',
+    statusFilter: 'EN_RIESGO',
     phaseFilter: null,
     label: 'En Riesgo',
     icon: 'fas fa-exclamation-triangle',
@@ -32,9 +30,9 @@ const KPI_CONFIG = [
   },
   {
     key: 'correcciones',
-    dataField: 'correcciones',
+    dataField: 'en_correcciones',
     statusFilter: null,
-    phaseFilter: 'Correcciones',
+    phaseFilter: 'CORR',
     label: 'En Correcciones',
     icon: 'fas fa-pencil-alt',
     colorClass: 'text-yellow-600',
@@ -42,15 +40,15 @@ const KPI_CONFIG = [
     description: 'Esperando respuesta de correcciones',
   },
   {
-    key: 'listos',
-    dataField: 'listos',
+    key: 'en_expedicion',
+    dataField: 'en_expedicion',
     statusFilter: null,
-    phaseFilter: 'Expedición',
-    label: 'Listos para Viabilidad',
+    phaseFilter: null,
+    label: 'En Expedición',
     icon: 'fas fa-check-circle',
     colorClass: 'text-green-600',
     ringClass: 'ring-green-500',
-    description: 'Dentro del plazo óptimo',
+    description: 'Resolución, notificación o entrega',
   },
 ];
 
@@ -58,22 +56,12 @@ const KPI_CONFIG = [
  * Tarjetas de KPIs para el dashboard de Gestión de Licencias.
  *
  * @param {Object} props
- * @param {Function} props.onFilterChange  - Callback: ({ status, phase, key }) → void
- * @param {string|null} props.activeFilterKey - Clave del KPI activo (o null = sin filtro)
+ * @param {{ total, en_riesgo, en_correcciones, en_expedicion }} props.kpis
+ * @param {boolean}       props.loading
+ * @param {Function}      props.onFilterChange  - ({ status, phase, key }) → void
+ * @param {string|null}   props.activeFilterKey  - Clave del KPI activo (o null)
  */
-export function FunDashboardKPIs({ onFilterChange, activeFilterKey }) {
-  const [kpis, setKpis] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-    setError(false);
-    FunManageDashboardService.getKPIs()
-      .then(r => setKpis(r.data))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
+export function FunDashboardKPIs({ kpis, loading, onFilterChange, activeFilterKey }) {
 
   return (
     <div
@@ -124,17 +112,13 @@ export function FunDashboardKPIs({ onFilterChange, activeFilterKey }) {
               />
             </CardHeader>
             <CardContent>
-              {error ? (
-                <div className="text-2xl font-bold text-muted-foreground">—</div>
-              ) : (
-                <div className={`text-3xl font-bold ${cfg.colorClass}`}>
-                  {loading ? (
-                    <span className="text-muted-foreground text-xl">...</span>
-                  ) : (
-                    value ?? 0
-                  )}
-                </div>
-              )}
+              <div className={`text-3xl font-bold ${cfg.colorClass}`}>
+                {loading ? (
+                  <span className="text-muted-foreground text-xl">...</span>
+                ) : (
+                  value ?? 0
+                )}
+              </div>
               <p className="text-xs text-muted-foreground mt-1">{cfg.description}</p>
             </CardContent>
           </Card>
