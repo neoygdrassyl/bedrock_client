@@ -17,17 +17,17 @@ const NUM_TO_CAT = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV' };
 
 // ── Paleta de colores por estado (nuevos nombres) ─────────────────────────────
 const STATUS_COLORS = {
-  OPTIMO:    '#22c55e',
-  PROMEDIO:  '#eab308',
-  EN_RIESGO: '#ef4444',
-  VENCIDO:   '#991b1b',
+  EN_TERMINO:          '#22c55e',
+  PRONTO_A_VENCER:     '#eab308',
+  ALERTA_VENCIMIENTO:  '#ef4444',
+  VENCIDO:             '#991b1b',
 };
 
 const STATUS_LABELS = {
-  OPTIMO:    'Óptimo',
-  PROMEDIO:  'Promedio',
-  EN_RIESGO: 'En Riesgo',
-  VENCIDO:   'Vencido',
+  EN_TERMINO:          'En Término',
+  PRONTO_A_VENCER:     'Pronto a Vencer',
+  ALERTA_VENCIMIENTO:  'Alerta Vencimiento',
+  VENCIDO:             'Vencido',
 };
 
 // ── Tick personalizado para el eje Y (categorías) ─────────────────────────────
@@ -58,6 +58,7 @@ function ScatterTooltip({ active, payload }) {
 
   const statusColor = STATUS_COLORS[d.status] ?? '#94a3b8';
   const statusLabel = STATUS_LABELS[d.status] ?? d.status ?? '—';
+  const pctDisplay = d.x != null ? `${d.x}%` : '—';
 
   return (
     <div
@@ -67,7 +68,7 @@ function ScatterTooltip({ active, payload }) {
         borderRadius: 8,
         padding: '10px 14px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.14)',
-        minWidth: 210,
+        minWidth: 230,
         pointerEvents: 'none',
       }}
     >
@@ -87,12 +88,18 @@ function ScatterTooltip({ active, payload }) {
         <strong>Categoría:</strong> {d.categoria ?? '—'}
       </p>
 
-      {/* Días transcurridos */}
+      {/* % del tiempo usado */}
       <p style={{ margin: '3px 0 0', fontSize: 12, color: '#475569' }}>
-        <strong>Días transcurridos:</strong>{' '}
+        <strong>Tiempo usado:</strong>{' '}
+        <span style={{ fontWeight: 600, color: statusColor }}>{pctDisplay}</span>
+      </p>
+
+      {/* Días hábiles detalle */}
+      <p style={{ margin: '3px 0 0', fontSize: 12, color: '#475569' }}>
+        <strong>Días:</strong>{' '}
         <span style={{ fontWeight: 600 }}>{d.dias_habiles_usados ?? '—'}</span>
         {d.dias_habiles_limite ? (
-          <span style={{ color: '#94a3b8' }}> / {d.dias_habiles_limite} máx.</span>
+          <span style={{ color: '#94a3b8' }}> / {d.dias_habiles_limite} días límite</span>
         ) : null}
       </p>
 
@@ -113,7 +120,7 @@ function ScatterTooltip({ active, payload }) {
         </span>
       </p>
 
-      {/* Trámite / Responsable */}
+      {/* Responsable */}
       {d.responsable && (
         <p style={{ margin: '5px 0 0', fontSize: 11, color: '#94a3b8' }}>
           <i className="fas fa-user me-1"></i>{d.responsable}
@@ -131,11 +138,14 @@ function ScatterTooltip({ active, payload }) {
  */
 export function FunmanageScatterChart({ data, loading }) {
   // Transformar datos del backend al formato del scatter chart
+  // X-axis: % del tiempo usado (dias_usados / dias_limite * 100)
   const plotData = useMemo(() => {
     if (!Array.isArray(data)) return [];
     return data.map(d => ({
       ...d,
-      x: d.dias_habiles_usados ?? 0,
+      x: d.dias_habiles_limite > 0
+        ? Math.round((d.dias_habiles_usados / d.dias_habiles_limite) * 100)
+        : 0,
       yNum: CAT_TO_NUM[d.categoria] ?? 1,
     }));
   }, [data]);
@@ -204,20 +214,21 @@ export function FunmanageScatterChart({ data, loading }) {
         <ScatterChart margin={{ top: 12, right: 24, bottom: 28, left: 4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
 
-          {/* Eje X: días transcurridos */}
-          {/* Líneas de referencia: plazos legales por categoría */}
-          <ReferenceLine x={20}  stroke="#22c55e" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: '20d', position: 'top', fontSize: 9, fill: '#22c55e' }} />
-          <ReferenceLine x={45}  stroke="#eab308" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: '45d', position: 'top', fontSize: 9, fill: '#eab308' }} />
+          {/* Líneas de referencia: umbrales de semáforo */}
+          <ReferenceLine x={80}  stroke="#eab308" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: '80%', position: 'top', fontSize: 9, fill: '#eab308' }} />
+          <ReferenceLine x={95}  stroke="#ef4444" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: '95%', position: 'top', fontSize: 9, fill: '#ef4444' }} />
+          <ReferenceLine x={100} stroke="#991b1b" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: '100%', position: 'top', fontSize: 9, fill: '#991b1b' }} />
 
           <XAxis
             type="number"
             dataKey="x"
-            name="Días"
+            name="% Tiempo"
             domain={[0, 'auto']}
             tickCount={8}
             tick={{ fontSize: 11, fill: '#6b7280' }}
+            unit="%"
             label={{
-              value: 'Días transcurridos',
+              value: '% Tiempo usado',
               position: 'insideBottom',
               offset: -14,
               fontSize: 11,

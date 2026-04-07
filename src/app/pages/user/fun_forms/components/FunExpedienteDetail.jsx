@@ -4,17 +4,17 @@ import { Button } from '@/components/ui/button';
 
 // ── Status visual config ─────────────────────────────────────────────────────
 const STATUS_META = {
-  OPTIMO:    { label: 'Óptimo',    bg: '#dcfce7', color: '#166534', barColor: '#22c55e' },
-  PROMEDIO:  { label: 'Promedio',  bg: '#fef9c3', color: '#854d0e', barColor: '#eab308' },
-  EN_RIESGO: { label: 'En Riesgo', bg: '#fee2e2', color: '#991b1b', barColor: '#ef4444' },
-  VENCIDO:   { label: 'Vencido',   bg: '#fecaca', color: '#7f1d1d', barColor: '#dc2626' },
+  EN_TERMINO:          { label: 'En Término',          bg: '#dcfce7', color: '#166534', barColor: '#22c55e', icon: 'fas fa-check-circle' },
+  PRONTO_A_VENCER:     { label: 'Pronto a Vencer',     bg: '#fef9c3', color: '#854d0e', barColor: '#eab308', icon: 'fas fa-exclamation-circle' },
+  ALERTA_VENCIMIENTO:  { label: 'Alerta Vencimiento',  bg: '#fee2e2', color: '#991b1b', barColor: '#ef4444', icon: 'fas fa-exclamation-triangle' },
+  VENCIDO:             { label: 'Vencido',             bg: '#fecaca', color: '#7f1d1d', barColor: '#dc2626', icon: 'fas fa-times-circle' },
 };
 
 // ── Componente principal ─────────────────────────────────────────────────────
 export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
   if (!expediente) return null;
 
-  const s = STATUS_META[expediente.status] || STATUS_META.PROMEDIO;
+  const s = STATUS_META[expediente.status] || STATUS_META.EN_TERMINO;
   const pct = Math.min(expediente.porcentaje_avance ?? 0, 100);
 
   return (
@@ -66,12 +66,13 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
           <div className="mb-4">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <Badge
-                style={{ backgroundColor: s.bg, color: s.color, border: `1px solid ${s.color}22` }}
+                style={{ backgroundColor: s.bg, color: s.color, border: `1px solid ${s.color}33` }}
                 className="text-xs font-semibold px-2 py-1"
               >
+                <i className={`${s.icon} me-1`} style={{ fontSize: '0.65rem' }} />
                 {s.label}
               </Badge>
-              <span className="text-sm text-muted-foreground tabular-nums">
+              <span className="text-sm font-semibold tabular-nums" style={{ color: s.color }}>
                 {pct}%
               </span>
             </div>
@@ -94,6 +95,24 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
               <span>{expediente.dias_habiles_limite} días límite</span>
             </div>
           </div>
+
+          {/* Sugerencia de acción */}
+          {expediente.sugerencia && (
+            <div
+              className="rounded px-3 py-2 mb-4 d-flex align-items-start gap-2"
+              style={{ backgroundColor: s.bg, border: `1px solid ${s.color}22` }}
+            >
+              <i className="fas fa-lightbulb mt-1" style={{ color: s.color, fontSize: '0.8rem' }} />
+              <div>
+                <span className="d-block text-xs font-semibold" style={{ color: s.color }}>
+                  Acción sugerida
+                </span>
+                <span className="text-xs" style={{ color: s.color, opacity: 0.9 }}>
+                  {expediente.sugerencia}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Info grid */}
           <div className="row g-3 mb-4">
@@ -118,7 +137,7 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
             )}
           </div>
 
-          {/* Flags */}
+          {/* Flags / Alertas */}
           {(expediente.esta_pausado || expediente.tiene_suspension || expediente.tiene_extension || expediente.es_desistido || expediente.intervalo_notificacion_activo) && (
             <div className="mb-4">
               <span className="text-xs font-semibold text-uppercase text-muted d-block mb-2" style={{ letterSpacing: '0.06em' }}>
@@ -131,7 +150,7 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
                 {expediente.intervalo_notificacion_activo && (
                   <FlagBadge
                     icon="fas fa-bell"
-                    label={`Intervalo de notificación: ${labelNotificacion(expediente.tipo_notificacion_actual)}`}
+                    label={`Intervalo: ${labelNotificacion(expediente.tipo_notificacion_actual)}`}
                     bg="#e0f2fe"
                     color="#0c4a6e"
                   />
@@ -139,7 +158,7 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
                 {expediente.tiene_suspension && (
                   <FlagBadge
                     icon="fas fa-ban"
-                    label={expediente.suspension_activa ? 'Suspensión activa' : 'Con suspensión registrada'}
+                    label={expediente.suspension_activa ? 'Suspensión activa' : 'Suspensión registrada'}
                     bg="#fef3c7"
                     color="#92400e"
                   />
@@ -147,7 +166,7 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
                 {expediente.tiene_extension && (
                   <FlagBadge
                     icon="fas fa-clock"
-                    label={expediente.prorroga_activa ? 'Prórroga activa' : 'Con prórroga registrada'}
+                    label={expediente.prorroga_activa ? 'Prórroga activa' : 'Prórroga registrada'}
                     bg="#e0e7ff"
                     color="#3730a3"
                   />
@@ -163,7 +182,121 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
             </div>
           )}
 
-          {/* Metadata */}
+          {/* Seguimiento de tiempo legal */}
+          <div className="mb-4">
+            <span className="text-xs font-semibold text-uppercase text-muted d-block mb-2" style={{ letterSpacing: '0.06em' }}>
+              Seguimiento de Tiempo Legal
+            </span>
+            <div
+              className="rounded px-3 py-2"
+              style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}
+            >
+              <div className="d-flex align-items-center gap-3 mb-2">
+                <div className="text-center" style={{ minWidth: 60 }}>
+                  <span className="d-block text-lg font-bold" style={{ color: s.color }}>
+                    {expediente.dias_habiles_usados}
+                  </span>
+                  <span className="text-xs text-muted-foreground">Usados</span>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div className="rounded-pill overflow-hidden" style={{ height: 6, backgroundColor: '#e2e8f0' }}>
+                    <div
+                      className="rounded-pill"
+                      style={{
+                        height: '100%',
+                        width: `${Math.min(pct, 100)}%`,
+                        backgroundColor: s.barColor,
+                        transition: 'width 0.3s',
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="text-center" style={{ minWidth: 60 }}>
+                  <span className="d-block text-lg font-bold text-slate-600">
+                    {expediente.dias_habiles_limite}
+                  </span>
+                  <span className="text-xs text-muted-foreground">Límite</span>
+                </div>
+              </div>
+              <div className="d-flex justify-content-between text-xs text-muted-foreground">
+                <span>
+                  <i className="fas fa-calendar-check me-1"></i>
+                  Inicio: {expediente.fecha_radicacion || '—'}
+                </span>
+                <span>
+                  <i className="fas fa-calendar-times me-1"></i>
+                  Vence: {expediente.fecha_limite || '—'}
+                </span>
+              </div>
+              {expediente.control_temporal_activo && (
+                <div className="mt-2 text-xs">
+                  <FlagBadge
+                    icon="fas fa-shield-alt"
+                    label={`${expediente.control_temporal_label} (desde ${expediente.control_temporal_fecha_inicio || '—'})`}
+                    bg="#f0f9ff"
+                    color="#0369a1"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bitácora - últimos movimientos */}
+          {Array.isArray(expediente.bitacora) && expediente.bitacora.length > 0 && (
+            <div className="mb-4">
+              <span className="text-xs font-semibold text-uppercase text-muted d-block mb-2" style={{ letterSpacing: '0.06em' }}>
+                Últimos Movimientos
+              </span>
+              <div
+                className="rounded"
+                style={{ border: '1px solid #e2e8f0', overflow: 'hidden' }}
+              >
+                {expediente.bitacora.map((entry, i) => (
+                  <div
+                    key={i}
+                    className="d-flex align-items-start gap-2 px-3 py-2"
+                    style={{
+                      borderBottom: i < expediente.bitacora.length - 1 ? '1px solid #f1f5f9' : 'none',
+                      backgroundColor: i % 2 === 0 ? '#fff' : '#fafbfc',
+                    }}
+                  >
+                    <div className="d-flex flex-column align-items-center" style={{ minWidth: 16, paddingTop: 2 }}>
+                      <div
+                        style={{
+                          width: 8, height: 8, borderRadius: '50%',
+                          backgroundColor: i === 0 ? s.barColor : '#cbd5e1',
+                        }}
+                      />
+                      {i < expediente.bitacora.length - 1 && (
+                        <div style={{ width: 1, flex: 1, backgroundColor: '#e2e8f0', marginTop: 2 }} />
+                      )}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span className="text-xs font-semibold text-slate-700">
+                          Estado {entry.state}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {entry.date || '—'}
+                        </span>
+                      </div>
+                      {entry.desc && (
+                        <span
+                          className="text-xs text-muted-foreground d-block"
+                          style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                          title={entry.desc}
+                        >
+                          {entry.desc}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Metadata técnica */}
           <div
             className="rounded px-3 py-2"
             style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}

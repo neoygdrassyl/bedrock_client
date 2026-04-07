@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 /**
- * Configuración de los 4 KPIs del dashboard de licencias.
+ * Configuración de los KPIs del dashboard de licencias.
  * statusFilter / phaseFilter → parámetros que se propagan al filtrar.
  * key → identificador interno para el toggle activo.
  */
@@ -20,13 +20,13 @@ const KPI_CONFIG = [
   {
     key: 'en_riesgo',
     dataField: 'en_riesgo',
-    statusFilter: 'EN_RIESGO',
+    statusFilter: 'ALERTA_VENCIMIENTO',
     phaseFilter: null,
     label: 'En Riesgo',
     icon: 'fas fa-exclamation-triangle',
     colorClass: 'text-red-600',
     ringClass: 'ring-red-500',
-    description: 'Superan el 80% del plazo legal',
+    description: 'Alerta de vencimiento o vencido',
   },
   {
     key: 'correcciones',
@@ -50,13 +50,35 @@ const KPI_CONFIG = [
     ringClass: 'ring-green-500',
     description: 'Resolución, notificación o entrega',
   },
+  {
+    key: 'en_desistimiento',
+    dataField: 'en_desistimiento',
+    statusFilter: null,
+    phaseFilter: 'DESIST_RES',
+    label: 'En Desistimiento',
+    icon: 'fas fa-hourglass-half',
+    colorClass: 'text-orange-600',
+    ringClass: 'ring-orange-500',
+    description: 'Proceso de desistimiento en curso',
+  },
+  {
+    key: 'desistidos',
+    dataField: 'desistidos',
+    statusFilter: null,
+    phaseFilter: 'DESIST_CERRADO',
+    label: 'Desistidos',
+    icon: 'fas fa-times-circle',
+    colorClass: 'text-slate-600',
+    ringClass: 'ring-slate-500',
+    description: 'Cerrados por desistimiento',
+  },
 ];
 
 /**
  * Tarjetas de KPIs para el dashboard de Gestión de Licencias.
  *
  * @param {Object} props
- * @param {{ total, en_riesgo, en_correcciones, en_expedicion }} props.kpis
+ * @param {{ total, en_riesgo, en_correcciones, en_expedicion, en_desistimiento, desistidos }} props.kpis
  * @param {boolean}       props.loading
  * @param {Function}      props.onFilterChange  - ({ status, phase, key }) → void
  * @param {string|null}   props.activeFilterKey  - Clave del KPI activo (o null)
@@ -65,7 +87,7 @@ export function FunDashboardKPIs({ kpis, loading, onFilterChange, activeFilterKe
 
   return (
     <div
-      className="grid grid-cols-1 md:grid-cols-4 gap-4 my-4"
+      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 my-4"
       data-testid="dashboard-kpis"
     >
       {KPI_CONFIG.map(cfg => {
