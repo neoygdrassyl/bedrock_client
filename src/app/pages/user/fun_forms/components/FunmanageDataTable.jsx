@@ -8,10 +8,10 @@ import { Badge } from '@/components/ui/badge';
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 const STATUS_META = {
-  OPTIMO:    { label: 'Óptimo',    className: 'bg-green-100 text-green-800 border-green-200' },
-  PROMEDIO:  { label: 'Promedio',  className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  EN_RIESGO: { label: 'En Riesgo', className: 'bg-red-100 text-red-800 border-red-200' },
-  VENCIDO:   { label: 'Vencido',   className: 'bg-red-200 text-red-900 border-red-300' },
+  EN_TERMINO:          { label: 'En Término',          className: 'bg-green-100 text-green-800 border-green-200' },
+  PRONTO_A_VENCER:     { label: 'Pronto a Vencer',     className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+  ALERTA_VENCIMIENTO:  { label: 'Alerta Vencimiento',  className: 'bg-red-100 text-red-800 border-red-200' },
+  VENCIDO:             { label: 'Vencido',             className: 'bg-red-200 text-red-900 border-red-300' },
 };
 
 // Extrae el valor de un campo con fallback

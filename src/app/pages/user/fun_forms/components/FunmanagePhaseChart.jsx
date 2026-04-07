@@ -23,11 +23,17 @@ const PHASE_COLORS = {
   'Notificación Resolución':     '#34d399',
   'Ejecutoria y Recurso':        '#6366f1',
   'Entrega de Licencia':         '#14b8a6',
+  // Fases de desistimiento
+  'Resolución Desistida':        '#be123c',
+  'Notificación Desistimiento':  '#e11d48',
+  'Ejecutoria Desistimiento':    '#f43f5e',
+  'Cerrado por Desistimiento':   '#881337',
+  // Otros
   'Sin Iniciar':                 '#94a3b8',
   'Completado':                  '#64748b',
 };
 
-// Orden preferido de fases
+// Orden preferido de fases (flujo normal)
 const PHASE_ORDER = [
   'Radicación LDF',
   'Estudio y Observaciones',
@@ -40,6 +46,14 @@ const PHASE_ORDER = [
   'Notificación Resolución',
   'Ejecutoria y Recurso',
   'Entrega de Licencia',
+];
+
+// Orden de fases desistimiento
+const DESIST_PHASE_ORDER = [
+  'Resolución Desistida',
+  'Notificación Desistimiento',
+  'Ejecutoria Desistimiento',
+  'Cerrado por Desistimiento',
 ];
 
 function PhaseTooltip({ active, payload }) {
@@ -66,29 +80,46 @@ function PhaseTooltip({ active, payload }) {
 
 /**
  * Gráfico de barras horizontales — distribución por fase procesal.
+ * Usa chartData (todos los filtrados) para reconstruir distribución,
+ * mostrando fases de desistimiento cuando corresponde.
  *
- * @param {{ porFase: Object, loading: boolean, dashboardFilter: { status: string|null, phase: string|null }, onPhaseClick?: Function }} props
+ * @param {{ porFase: Object, chartData: Array, loading: boolean, dashboardFilter: { status: string|null, phase: string|null }, onPhaseClick?: Function }} props
  */
-export function FunmanagePhaseChart({ porFase, loading, dashboardFilter, onPhaseClick }) {
-  const chartData = useMemo(() => {
-    if (!porFase || typeof porFase !== 'object') return [];
-    const total = Object.values(porFase).reduce((a, b) => a + b, 0) || 1;
+export function FunmanagePhaseChart({ porFase, chartData, loading, dashboardFilter, onPhaseClick }) {
+  const computedChartData = useMemo(() => {
+    // Si hay chartData, recalcular distribución desde los datos completos
+    const source = Array.isArray(chartData) && chartData.length > 0
+      ? chartData.reduce((acc, e) => {
+          const label = e.fase_label || 'Sin Iniciar';
+          acc[label] = (acc[label] || 0) + 1;
+          return acc;
+        }, {})
+      : porFase;
+
+    if (!source || typeof source !== 'object') return [];
+    const total = Object.values(source).reduce((a, b) => a + b, 0) || 1;
+
+    // Detectar si hay fases de desistimiento
+    const hasDesist = DESIST_PHASE_ORDER.some(p => source[p]);
+    const orderList = hasDesist
+      ? [...PHASE_ORDER, ...DESIST_PHASE_ORDER]
+      : PHASE_ORDER;
 
     const result = [];
     // Orden fijo primero
-    for (const phase of PHASE_ORDER) {
-      if (porFase[phase]) {
-        result.push({ phase, count: porFase[phase], pct: Math.round((porFase[phase] / total) * 100) });
+    for (const phase of orderList) {
+      if (source[phase]) {
+        result.push({ phase, count: source[phase], pct: Math.round((source[phase] / total) * 100) });
       }
     }
-    // Fases no esperadas (desistimiento, etc.)
-    for (const [phase, count] of Object.entries(porFase)) {
-      if (!PHASE_ORDER.includes(phase)) {
+    // Fases no esperadas
+    for (const [phase, count] of Object.entries(source)) {
+      if (!orderList.includes(phase)) {
         result.push({ phase, count, pct: Math.round((count / total) * 100) });
       }
     }
     return result;
-  }, [porFase]);
+  }, [porFase, chartData]);
 
   if (loading) {
     return (
@@ -99,7 +130,7 @@ export function FunmanagePhaseChart({ porFase, loading, dashboardFilter, onPhase
     );
   }
 
-  if (chartData.length === 0) {
+  if (computedChartData.length === 0) {
     return (
       <div className="text-center text-muted py-4" style={{ fontSize: 13 }}>
         <i className="fas fa-chart-bar me-2"></i>Sin datos disponibles.
@@ -111,7 +142,7 @@ export function FunmanagePhaseChart({ porFase, loading, dashboardFilter, onPhase
     <div data-testid="phase-chart" className="w-100">
       <ResponsiveContainer width="100%" height={300}>
         <BarChart
-          data={chartData}
+          data={computedChartData}
           layout="vertical"
           margin={{ top: 8, right: 24, bottom: 8, left: 8 }}
         >
@@ -131,7 +162,7 @@ export function FunmanagePhaseChart({ porFase, loading, dashboardFilter, onPhase
             onClick={(data) => onPhaseClick?.(data.phase)}
             cursor="pointer"
           >
-            {chartData.map((entry, i) => (
+            {computedChartData.map((entry, i) => (
               <Cell
                 key={i}
                 fill={PHASE_COLORS[entry.phase] || '#94a3b8'}

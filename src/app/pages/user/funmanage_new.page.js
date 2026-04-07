@@ -34,6 +34,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
   // ---- Dashboard data (single fetch) ----
   const PAGE_SIZE = 12;
   const [dashData, setDashData]       = useState([]);
+  const [dashChartData, setDashChartData] = useState([]);
   const [dashKpis, setDashKpis]       = useState(null);
   const [dashTotal, setDashTotal]     = useState(0);
   const [dashPage, setDashPage]       = useState(1);
@@ -69,8 +70,8 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
     setDashLoading(true);
     setDashError(null);
 
-    const sortField = dashSorting[0]?.id || 'dias_habiles_usados';
-    const sortOrder = dashSorting[0]?.desc ? 'DESC' : 'ASC';
+    const sortField = dashSorting[0]?.id || 'fecha_radicacion';
+    const sortOrder = dashSorting[0]?.desc !== undefined ? (dashSorting[0].desc ? 'DESC' : 'ASC') : 'DESC';
 
     FunManageDashboardService.getExpedientes({
       page: dashPage,
@@ -85,6 +86,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
         const body = res.data;
         setDashKpis(body.kpis || null);
         setDashData(Array.isArray(body.data) ? body.data : []);
+        setDashChartData(Array.isArray(body.chartData) ? body.chartData : []);
         setDashTotal(typeof body.total === 'number' ? body.total : 0);
         setDashLoading(false);
       })
@@ -96,8 +98,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
 
   const handleCloseWorkspace = useCallback(() => {
     setWorkspaceExpediente(null);
-    fetchDashboard();
-  }, [fetchDashboard]);
+  }, []);
 
   // Reset page on filter/search/sort change
   useEffect(() => {
@@ -181,6 +182,10 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                 <SelectItem value="NOT_RES">Notificación Resolución</SelectItem>
                 <SelectItem value="EJEC">Ejecutoria y Recurso</SelectItem>
                 <SelectItem value="ENT">Entrega de Licencia</SelectItem>
+                <SelectItem value="DESIST_RES">Resolución Desistida</SelectItem>
+                <SelectItem value="DESIST_NOTIF">Notificación Desistimiento</SelectItem>
+                <SelectItem value="DESIST_EJEC">Ejecutoria Desistimiento</SelectItem>
+                <SelectItem value="DESIST_CERRADO">Cerrado por Desistimiento</SelectItem>
               </SelectContent>
             </Select>
 
@@ -196,9 +201,9 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">Todos los estados</SelectItem>
-                <SelectItem value="OPTIMO">Óptimo</SelectItem>
-                <SelectItem value="PROMEDIO">Promedio</SelectItem>
-                <SelectItem value="EN_RIESGO">En Riesgo</SelectItem>
+                <SelectItem value="EN_TERMINO">En Término</SelectItem>
+                <SelectItem value="PRONTO_A_VENCER">Pronto a Vencer</SelectItem>
+                <SelectItem value="ALERTA_VENCIMIENTO">Alerta Vencimiento</SelectItem>
                 <SelectItem value="VENCIDO">Vencido</SelectItem>
               </SelectContent>
             </Select>
@@ -279,7 +284,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                 >
                   <i className="fas fa-circle-nodes me-2"></i>Tiempo por Categoría
                 </h6>
-                <FunmanageScatterChart data={dashData} loading={dashLoading} />
+                <FunmanageScatterChart data={dashChartData} loading={dashLoading} />
               </div>
 
               {/* Distribución de Fases */}
@@ -296,6 +301,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                 </h6>
                 <FunmanagePhaseChart
                   porFase={dashKpis?.por_fase}
+                  chartData={dashChartData}
                   loading={dashLoading}
                   dashboardFilter={dashboardFilter}
                   onPhaseClick={phase => {
@@ -306,6 +312,8 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                       'Liquidación y Pagos': 'PAG', 'Generación de Resolución': 'RES',
                       'Notificación Resolución': 'NOT_RES', 'Ejecutoria y Recurso': 'EJEC',
                       'Entrega de Licencia': 'ENT',
+                      'Resolución Desistida': 'DESIST_RES', 'Notificación Desistimiento': 'DESIST_NOTIF',
+                      'Ejecutoria Desistimiento': 'DESIST_EJEC', 'Cerrado por Desistimiento': 'DESIST_CERRADO',
                     };
                     const faseId = LABEL_TO_ID[phase] || null;
                     setDashboardFilter(f => ({ ...f, fase: f.fase === faseId ? null : faseId }));
