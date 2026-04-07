@@ -109,10 +109,17 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
               value={`${expediente.dias_habiles_totales ?? '—'} hábiles desde radicación`}
               icon="fas fa-business-time"
             />
+            {expediente.intervalo_notificacion_activo && (
+              <InfoField
+                label="Intervalo actual"
+                value={`${labelNotificacion(expediente.tipo_notificacion_actual)} · ${expediente.dias_intervalo_notificacion ?? '—'} días`}
+                icon="fas fa-bell"
+              />
+            )}
           </div>
 
           {/* Flags */}
-          {(expediente.esta_pausado || expediente.tiene_suspension || expediente.tiene_extension || expediente.es_desistido) && (
+          {(expediente.esta_pausado || expediente.tiene_suspension || expediente.tiene_extension || expediente.es_desistido || expediente.intervalo_notificacion_activo) && (
             <div className="mb-4">
               <span className="text-xs font-semibold text-uppercase text-muted d-block mb-2" style={{ letterSpacing: '0.06em' }}>
                 Alertas
@@ -121,11 +128,29 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
                 {expediente.esta_pausado && (
                   <FlagBadge icon="fas fa-pause-circle" label="Pausado" bg="#dbeafe" color="#1e40af" />
                 )}
+                {expediente.intervalo_notificacion_activo && (
+                  <FlagBadge
+                    icon="fas fa-bell"
+                    label={`Intervalo de notificación: ${labelNotificacion(expediente.tipo_notificacion_actual)}`}
+                    bg="#e0f2fe"
+                    color="#0c4a6e"
+                  />
+                )}
                 {expediente.tiene_suspension && (
-                  <FlagBadge icon="fas fa-ban" label="Suspendido" bg="#fef3c7" color="#92400e" />
+                  <FlagBadge
+                    icon="fas fa-ban"
+                    label={expediente.suspension_activa ? 'Suspensión activa' : 'Con suspensión registrada'}
+                    bg="#fef3c7"
+                    color="#92400e"
+                  />
                 )}
                 {expediente.tiene_extension && (
-                  <FlagBadge icon="fas fa-clock" label="Extensión" bg="#e0e7ff" color="#3730a3" />
+                  <FlagBadge
+                    icon="fas fa-clock"
+                    label={expediente.prorroga_activa ? 'Prórroga activa' : 'Con prórroga registrada'}
+                    bg="#e0e7ff"
+                    color="#3730a3"
+                  />
                 )}
                 {expediente.es_desistido && (
                   <FlagBadge
@@ -209,4 +234,11 @@ function FlagBadge({ icon, label, bg, color }) {
       {label}
     </span>
   );
+}
+
+function labelNotificacion(value) {
+  if (value === 'aviso') return 'Por aviso';
+  if (value === 'personal') return 'Personal';
+  if (value === 'comunicar') return 'Comunicación';
+  return 'No definida';
 }
