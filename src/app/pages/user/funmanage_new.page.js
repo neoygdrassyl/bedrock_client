@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button';
 // =============================================================================
 function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
   // ---- Dashboard filter state ----
-  const [dashboardFilter, setDashboardFilter] = useState({ status: null, fase: null });
+  const [dashboardFilter, setDashboardFilter] = useState({ status: null, fase: null, desistido: null, causal: null });
   const [kpiActiveFilterKey, setKpiActiveFilterKey] = useState(null);
   const [selectedExpediente, setSelectedExpediente] = useState(null);
   const [workspaceExpediente, setWorkspaceExpediente] = useState(null);
@@ -44,19 +44,24 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
   const [dashSorting, setDashSorting] = useState([]);
   const debouncedDashSearch = useDebounce(dashSearch, 450);
 
-  const handleKPIFilterChange = useCallback(({ status, phase, key }) => {
+  const handleKPIFilterChange = useCallback(({ status, phase, desistido, causal, key }) => {
     setKpiActiveFilterKey(prev => {
       if (prev === key) {
-        setDashboardFilter({ status: null, fase: null });
+        setDashboardFilter({ status: null, fase: null, desistido: null, causal: null });
         return null;
       }
-      setDashboardFilter({ status: status || null, fase: phase || null });
+      setDashboardFilter({
+        status: status || null,
+        fase: phase || null,
+        desistido: desistido || null,
+        causal: causal || null,
+      });
       return key;
     });
   }, []);
 
   const clearDashboardFilter = useCallback(() => {
-    setDashboardFilter({ status: null, fase: null });
+    setDashboardFilter({ status: null, fase: null, desistido: null, causal: null });
     setKpiActiveFilterKey(null);
   }, []);
 
@@ -78,6 +83,8 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
       limit: PAGE_SIZE,
       fase: dashboardFilter.fase || undefined,
       status: dashboardFilter.status || undefined,
+      desistido: dashboardFilter.desistido || undefined,
+      causal: dashboardFilter.causal || undefined,
       search: debouncedDashSearch || undefined,
       sort: sortField,
       order: sortOrder,
@@ -162,7 +169,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
             <Select
               value={dashboardFilter.fase || '__all__'}
               onValueChange={val => {
-                setDashboardFilter(f => ({ ...f, fase: val === '__all__' ? null : val }));
+                setDashboardFilter(f => ({ ...f, fase: val === '__all__' ? null : val, desistido: null, causal: null }));
                 setKpiActiveFilterKey(null);
               }}
             >
@@ -192,7 +199,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
             <Select
               value={dashboardFilter.status || '__all__'}
               onValueChange={val => {
-                setDashboardFilter(f => ({ ...f, status: val === '__all__' ? null : val }));
+                setDashboardFilter(f => ({ ...f, status: val === '__all__' ? null : val, desistido: null, causal: null }));
                 setKpiActiveFilterKey(null);
               }}
             >
@@ -208,7 +215,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
               </SelectContent>
             </Select>
 
-            {(dashboardFilter.status || dashboardFilter.fase) && (
+            {(dashboardFilter.status || dashboardFilter.fase || dashboardFilter.desistido || dashboardFilter.causal) && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -218,9 +225,9 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                 <i className="fas fa-times me-1"></i> Limpiar filtros
               </Button>
             )}
-            {(dashboardFilter.status || dashboardFilter.fase) && (
+            {(dashboardFilter.status || dashboardFilter.fase || dashboardFilter.desistido || dashboardFilter.causal) && (
               <span className="text-xs text-muted-foreground ms-auto">
-                Activo: {[dashboardFilter.fase, dashboardFilter.status].filter(Boolean).join(' · ')}
+                Activo: {[dashboardFilter.fase, dashboardFilter.status, dashboardFilter.desistido && 'Desistidos', dashboardFilter.causal && `Causal: ${dashboardFilter.causal}`].filter(Boolean).join(' · ')}
               </span>
             )}
           </div>
@@ -316,7 +323,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                       'Ejecutoria Desistimiento': 'DESIST_EJEC', 'Cerrado por Desistimiento': 'DESIST_CERRADO',
                     };
                     const faseId = LABEL_TO_ID[phase] || null;
-                    setDashboardFilter(f => ({ ...f, fase: f.fase === faseId ? null : faseId }));
+                    setDashboardFilter(f => ({ ...f, fase: f.fase === faseId ? null : faseId, desistido: null, causal: null }));
                     setKpiActiveFilterKey(null);
                   }}
                 />
