@@ -2,13 +2,12 @@ import './App.css';
 import React, { useContext, createContext, useState } from "react";
 import {
   BrowserRouter as Router,
-  Switch,
+  Routes,
   Route,
-  Redirect,
-  useHistory,
-  //useLocation,
+  Navigate,
+  useNavigate,
+  useLocation,
   Link,
-  //useParams,
 } from "react-router-dom";
 
 // PQRS
@@ -40,6 +39,7 @@ import SUBMIT from './pages/user/submit/submit';
 import ARCHIVE from './pages/user/archive/archive.page';
 import DICTIONARY from './pages/user/dictionary.page';
 import FUN_MANAGE from './pages/user/funmanage.page';
+import FUN_MANAGE_NEW from './pages/user/funmanage_new.page';
 
 // Components
 import Footer from './components/footer'
@@ -54,8 +54,9 @@ import { useTranslation } from "react-i18next";
 import "./translation/i18n";
 
 // Dark Theme Services
-import { ThemeProvider } from 'styled-components'
-import { lightTheme, darkTheme } from './components/theme';
+import { StyleSheetManager, ThemeProvider } from 'styled-components'
+import isPropValid from '@emotion/is-prop-valid'
+// Color themes removed — dark mode handled by BS5 data-bs-theme attribute
 import { fontZise1, fontZise2, fontZise3, fontZise4, fontZise5 } from './components/font';
 import { GlobalStyles } from './components/global';
 
@@ -74,12 +75,50 @@ import ZONE_USE from './pages/user/zone_use/zone_use.page';
 
 const MySwal = withReactContent(Swal);
 
+class RouteErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, info) {
+    console.error('Route subtree error captured:', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className='container py-4'>
+          <div className='alert alert-danger'>
+            <h4 className='mb-2'>Error en este modulo</h4>
+            <p className='mb-2'>La vista actual presento un error y se detuvo para evitar una pantalla en blanco.</p>
+            <p className='mb-0'><a href='/dashboard'>Volver al panel</a></p>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function RoutesWithBoundary({ children }) {
+  const location = useLocation();
+  return <RouteErrorBoundary key={location.pathname}>{children}</RouteErrorBoundary>;
+}
+
 export default function App() {
   const { t } = useTranslation();
   const [theme, setTheme] = useState('light');
   const [font, setFont] = useState(3);
   const toggleTheme = () => {
-    theme === 'light' ? setTheme('dark') : setTheme('light')
+    const next = theme === 'light' ? 'dark' : 'light';
+    setTheme(next);
+    document.documentElement.setAttribute('data-bs-theme', next);
   }
   const changeFontsizePlus = () => {
     if (font >= 1 && font < 5) {
@@ -96,7 +135,7 @@ export default function App() {
   return (
     <ProvideAuth>
       <Router>
-        <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme} font={font === 5 ? fontZise1 : fontZise2}>
+        <StyleSheetManager shouldForwardProp={(prop) => isPropValid(prop)}>
           <ThemeProvider theme={font === 5 ? fontZise5 : font === 4 ? fontZise4 : font === 3 ? fontZise3 : font === 2 ? fontZise2 : fontZise1} >
             <>
               <GlobalStyles />
@@ -114,7 +153,7 @@ export default function App() {
                 </div>
 
                 <main className="app-main" id="main-content">              
-                    <div class="bg-image-gr">
+                    <div className="bg-image-gr">
                       <div id="overlayer" className="container-fluid overlay-container container-primary p-2">
                         
                         {/* <Route render={(props) => (
@@ -125,210 +164,247 @@ export default function App() {
                         {/* <div className="sticky-top" style={{ zIndex: 2000 }}>
                           <Navbar1 authBtn={<AuthButton />} />
                         </div> */}
-                        <Switch>
+                        <RoutesWithBoundary>
+                        <Routes>
 
-                          <Route path='/home'
-                            render={(props) => (
-                              <LoginPage {...props}
+                          <Route path='/home' element={
+                              <LoginPage
                                 translation={t("login", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
                               />
-                            )}
+                            }
                           />
 
-                          <Route path='/login'
-                            render={(props) => (
-                              <LoginPage {...props}
+                          <Route path='/login' element={
+                              <LoginPage
                                 translation={t("login", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
                               />
-                            )}
+                            }
                           />
 
 
-                          <PrivateRoute path='/dashboard'>
-                            <Dashboard translation={t("title", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              theme={theme}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/publish'>
-                            <Publish translation={t("title", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/seals'>
-                            <Seals translation={t("title", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/appointments'>
-                            <Appointments translation={t("scheduling.scheduling", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/mail'>
-                            <Mail translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/fun'>
-                            <FUN
-                              translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/funmanage'>
-                            <FUN_MANAGE
-                              translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/pqrsadmin'>
-                            <PQRSADMIN translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation_form={t("transparency.pqrs_form", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/osha'>
-                            <OSHA translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation_form={t("transparency.pqrs_form", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/nomenclature'>
-                            <NOMENCLATURE translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation_form={t("transparency.pqrs_form", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/submit'>
-                            <SUBMIT translation={t("title", { returnObjects: true })}
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/calculator'>
-                            <Liquidator
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                              versioni={'2024'} hideInfo useSelector
-                            />
-                          </PrivateRoute>
-                          <PrivateRoute path='/archive'>
-                            <ARCHIVE
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
+                          <Route path='/dashboard' element={
+                            <PrivateRoute>
+                              <Dashboard translation={t("title", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                                theme={theme}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/publish' element={
+                            <PrivateRoute>
+                              <Publish translation={t("title", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/seals' element={
+                            <PrivateRoute>
+                              <Seals translation={t("title", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/appointments' element={
+                            <PrivateRoute>
+                              <Appointments translation={t("scheduling.scheduling", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/mail' element={
+                            <PrivateRoute>
+                              <Mail translation={t("title", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/fun' element={
+                            <PrivateRoute>
+                              <FUN
+                                translation={t("title", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/funmanage' element={
+                            <PrivateRoute>
+                              <FUN_MANAGE
+                                translation={t("title", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/funmanage-new' element={
+                            <PrivateRoute>
+                              <FUN_MANAGE_NEW
+                                translation={t("title", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/pqrsadmin' element={
+                            <PrivateRoute>
+                              <PQRSADMIN translation={t("title", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                                translation_form={t("transparency.pqrs_form", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/osha' element={
+                            <PrivateRoute>
+                              <OSHA translation={t("title", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                                translation_form={t("transparency.pqrs_form", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/nomenclature' element={
+                            <PrivateRoute>
+                              <NOMENCLATURE translation={t("title", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                                translation_form={t("transparency.pqrs_form", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/submit' element={
+                            <PrivateRoute>
+                              <SUBMIT translation={t("title", { returnObjects: true })}
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/calculator' element={
+                            <PrivateRoute>
+                              <Liquidator
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                                translation={t("liquidator.liquidator", { returnObjects: true })}
+                                versioni={'2024'} hideInfo useSelector
+                              />
+                            </PrivateRoute>
+                          } />
+                          <Route path='/archive' element={
+                            <PrivateRoute>
+                              <ARCHIVE
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                                translation={t("liquidator.liquidator", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
 
-                          <PrivateRoute path='/dictionary'>
-                            <DICTIONARY
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
+                          <Route path='/dictionary' element={
+                            <PrivateRoute>
+                              <DICTIONARY
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                                translation={t("liquidator.liquidator", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
 
 
-                          <PrivateRoute path='/profesionals'>
-                            <PROFESIONALS
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                            />
+                          <Route path='/profesionals' element={
+                            <PrivateRoute>
+                              <PROFESIONALS
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                                translation={t("liquidator.liquidator", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
 
-                          </PrivateRoute>
+                          <Route path='/guide_user' element={
+                            <PrivateRoute>
+                              <GUIDE_USER
+                                globals={t("globals", { returnObjects: true })}
+                                swaMsg={t("swa_messages", { returnObjects: true })}
+                                breadCrums={t("breadCrums", { returnObjects: true })}
+                                translation={t("liquidator.liquidator", { returnObjects: true })}
+                              />
+                            </PrivateRoute>
+                          } />
 
-                          <PrivateRoute path='/guide_user'>
-                            <GUIDE_USER
-                              globals={t("globals", { returnObjects: true })}
-                              swaMsg={t("swa_messages", { returnObjects: true })}
-                              breadCrums={t("breadCrums", { returnObjects: true })}
-                              translation={t("liquidator.liquidator", { returnObjects: true })}
-                            />
-                          </PrivateRoute>
-
-                          <Route path='/dev-guide'>
+                          <Route path='/dev-guide' element={
                             <DEV_GUIDE
                               globals={t("globals", { returnObjects: true })}
                               swaMsg={t("swa_messages", { returnObjects: true })}
                               breadCrums={t("breadCrums", { returnObjects: true })}
                               translation={t("liquidator.liquidator", { returnObjects: true })}
                             />
-                          </Route>
+                          } />
 
 
-                          <Route exact path='/norms'
-                            render={(props) => (
-                              <NORMS {...props}
+                          <Route path='/norms' element={
+                              <NORMS
                                 translation={t("login", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
                               />
-                            )}
+                            }
                           />
 
 
-                          <Route exact path='/certs'
-                            render={(props) => (
-                              <CERTIFICATE_WORKER {...props}
+                          <Route path='/certs' element={
+                              <CERTIFICATE_WORKER
                                 translation={t("login", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
                               />
-                            )}
+                            }
                           />
 
-                           <Route exact path='/zone_use'
-                            render={(props) => (
-                              <ZONE_USE {...props}
+                           <Route path='/zone_use' element={
+                              <ZONE_USE
                                 translation={t("login", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
                               />
-                            )}
+                            }
                           />
 
 
-                          <Route exact path='/'
-                            render={(props) => (
-                              <LoginPage {...props}
+                          <Route path='/' element={
+                              <LoginPage
                                 translation={t("login", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
                               />
-                            )}
+                            }
                           />
 
-                          <Route path='*' exact={true} component={LoginPage} />
-                        </Switch>
+                          <Route path='*' element={<LoginPage />} />
+                        </Routes>
+                        </RoutesWithBoundary>
                       </div>
                     </div>
                 </main>
@@ -336,7 +412,7 @@ export default function App() {
               </div>
             </>
           </ThemeProvider>
-        </ThemeProvider>
+        </StyleSheetManager>
       </Router>
     </ProvideAuth>
   );
@@ -387,7 +463,14 @@ function useAuth() {
 }
 
 function useProvideAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Restore session from localStorage on initial load
+    if (DataSerive.restoreSession()) {
+      fakeAuth.isAuthenticated = true;
+      return DataSerive.getUserData();
+    }
+    return null;
+  });
 
   const signin = cb => {
     return fakeAuth.signin(() => {
@@ -410,80 +493,68 @@ function useProvideAuth() {
     signout
   };
 }
-const MyLink = React.forwardRef(({ href, as, children, ...rest }, ref) => (
+const MyLink = ({ href, as, children, ref, ...rest }) => (
   <Link
     ref={ref}
     to={href}
     {...rest}
-    style={{ color: '#575757', textDecoration: 'none' }}
+    style={{ color: 'var(--bs-body-color)', textDecoration: 'none' }}
   >
     {children}
   </Link>
-));
+);
 function AuthButton() {
-  let history = useHistory();
+  const navigate = useNavigate();
   let auth = useAuth();
-  // let params = useParams();
 
   return auth.user ? (
     <div className='px-2'>
       <Nav pullRight className='px-2 mx-4'>
-        <Nav.Menu title={<label><i class="fas fa-user-circle "></i> <label >{auth.user.name + ' ' + auth.user.surname}</label></label>} >
-          <Nav.Item eventKey="5" as={MyLink} href="/dashboard"><i class="fas fa-tv"></i> Panel de Control</Nav.Item>
+        <Nav.Menu title={<label><i className="fas fa-user-circle "></i> <label >{auth.user.name + ' ' + auth.user.surname}</label></label>} >
+          <Nav.Item eventKey="5" as={MyLink} href="/dashboard"><i className="fas fa-tv"></i> Panel de Control</Nav.Item>
           <hr className='bg-info'></hr>
-          <Nav.Item eventKey="6" as={MyLink} href="/mail"><i class="fas fa-envelope-open-text" style={{ "color": "Crimson" }}></i> Buzón de mensajes</Nav.Item>
-          <Nav.Item eventKey="7" as={MyLink} href="/appointments"><i class="far fa-calendar-alt" style={{ "color": "MediumSeaGreen" }}></i> Calendario de citas</Nav.Item>
-          <Nav.Item eventKey="8" as={MyLink} href="/submit"> <i class="fas fa-file-import" style={{ "color": "Khaki" }}></i> Ventanilla única</Nav.Item>
+          <Nav.Item eventKey="6" as={MyLink} href="/mail"><i className="fas fa-envelope-open-text" style={{ "color": "Crimson" }}></i> Buzón de mensajes</Nav.Item>
+          <Nav.Item eventKey="7" as={MyLink} href="/appointments"><i className="far fa-calendar-alt" style={{ "color": "MediumSeaGreen" }}></i> Calendario de citas</Nav.Item>
+          <Nav.Item eventKey="8" as={MyLink} href="/submit"> <i className="fas fa-file-import" style={{ "color": "Khaki" }}></i> Ventanilla única</Nav.Item>
           <hr className='bg-info'></hr>
-          <Nav.Item eventKey="9" as={MyLink} href="/publish"><i class="fas fa-newspaper" style={{ "color": "LightSalmon" }}></i> Publicaciones</Nav.Item>
-          <Nav.Item eventKey="10" as={MyLink} href="/fun"><i class="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Solicitudes y Licencias</Nav.Item>
-          <Nav.Item eventKey="10" as={MyLink} href="/funmanage"><i class="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Gestion Soli. y Lic.</Nav.Item>
-          <Nav.Item eventKey="11" as={MyLink} href="/nomenclature"><i class="fas fa-file-signature" style={{ "color": "Plum" }}></i> Nomenclaturas</Nav.Item>
-          <Nav.Item eventKey="12" as={MyLink} href="/pqrsadmin"><i class="fas fa-file-invoice" style={{ "color": "MediumPurple" }}></i>  Peticiones PQRS</Nav.Item>
+          <Nav.Item eventKey="9" as={MyLink} href="/publish"><i className="fas fa-newspaper" style={{ "color": "LightSalmon" }}></i> Publicaciones</Nav.Item>
+          <Nav.Item eventKey="10" as={MyLink} href="/fun"><i className="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Solicitudes y Licencias</Nav.Item>
+          <Nav.Item eventKey="10" as={MyLink} href="/funmanage"><i className="fas fa-file-alt" style={{ "color": "DodgerBlue" }}></i> Gestion Soli. y Lic.</Nav.Item>
+          <Nav.Item eventKey="10a" as={MyLink} href="/funmanage-new"><i className="fas fa-layer-group" style={{ "color": "DodgerBlue" }}></i> Gestion Lic. Nuevo</Nav.Item>
+          <Nav.Item eventKey="11" as={MyLink} href="/nomenclature"><i className="fas fa-file-signature" style={{ "color": "Plum" }}></i> Nomenclaturas</Nav.Item>
+          <Nav.Item eventKey="12" as={MyLink} href="/pqrsadmin"><i className="fas fa-file-invoice" style={{ "color": "MediumPurple" }}></i>  Peticiones PQRS</Nav.Item>
           <hr className='bg-info'></hr>
           <Nav.Item eventKey="13" onClick={() => {
-            auth.signout(() => history.push("/home"));
-          }}> Log out <i class="fas fa-sign-out-alt"></i></Nav.Item>
+            auth.signout(() => navigate("/home"));
+          }}> Log out <i className="fas fa-sign-out-alt"></i></Nav.Item>
         </Nav.Menu>
       </Nav>
     </div>
   ) : (
     <Nav pullRight>
-      <Nav.Item eventKey="" as={MyLink} href="/login"><i class="fas fa-sign-in-alt px-1"></i> Login</Nav.Item>
+      <Nav.Item eventKey="" as={MyLink} href="/login"><i className="fas fa-sign-in-alt px-1"></i> Login</Nav.Item>
       <Navbar.Brand> </Navbar.Brand>
     </Nav>
   );
 }
 
-function PrivateRoute({ children, ...rest }) {
+function PrivateRoute({ children }) {
   let auth = useAuth();
-  const { t } = useTranslation();
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        auth.user ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: location },
-              translation: t("login", { returnObjects: true })
-            }}
-          />
-        )
-      }
-    />
-  );
+  const location = useLocation();
+
+  if (!auth.user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
 }
 
 function LoginPage() {
   let sha256 = require('js-sha256');
   const { t } = useTranslation();
-  let history = useHistory();
+  const navigate = useNavigate();
   let auth = useAuth();
-  const recaptchaRef = React.createRef();
+  const recaptchaRef = React.useRef(null);
   var formData = new FormData();
 
   let { from } = { from: { pathname: "/dashboard" } };
@@ -494,18 +565,22 @@ function LoginPage() {
     recaptchaRef.current.execute().then(response => {
       CustomsDataService.appLogin(formData)
         .then(response => {
-          if (response.data.length === 1) {
-            let userInfo = {};
-            userInfo.name = response.data[0].name;
-            userInfo.surname = response.data[0].surname;
-            userInfo.role = response.data[0].role.name;
-            userInfo.role_short = response.data[0].role.short;
-            userInfo.roleDesc = response.data[0].role.desc;
-            userInfo.active = response.data[0].active;
-            userInfo.roleId = response.data[0].roleId;
-            userInfo.id = response.data[0].id;
-            userInfo.name_short = response.data[0].name + ' ' + response.data[0].surname;
-            userInfo.name_full = response.data[0].name + ' ' + response.data[0].name_2 + ' ' + response.data[0].surname + ' ' + response.data[0].surname_2;
+          let userInfo = {};
+
+          if (response.data.token && response.data.user) {
+            // JWT format: { token, user: { ..., Role: { name, desc, short } } }
+            const u = response.data.user;
+            userInfo.name = u.name;
+            userInfo.surname = u.surname;
+            userInfo.role = u.Role.name;
+            userInfo.role_short = u.Role.short;
+            userInfo.roleDesc = u.Role.desc;
+            userInfo.active = u.active;
+            userInfo.roleId = u.roleId;
+            userInfo.id = u.id;
+            userInfo.name_short = u.name + ' ' + u.surname;
+            userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
+            DataSerive.saveToken(response.data.token);
             DataSerive.setUser(userInfo);
             login();
           } else {
@@ -520,6 +595,13 @@ function LoginPage() {
         })
         .catch(e => {
           console.log(e);
+          MySwal.fire({
+            title: <h2>CERTIFICACION FALLIDA</h2>,
+            text: 'Credenciales inválidas o error de conexión',
+            footer: 'Revise sus credenciales e intentelo nuevamente',
+            icon: 'error',
+            confirmButtonText: 'CONTINUAR',
+          })
         });
     }).catch(e => {
       console.log(e);
@@ -530,7 +612,7 @@ function LoginPage() {
 
   let login = () => {
     auth.signin(() => {
-      history.replace(from);
+      navigate(from, { replace: true });
     });
   };
 
@@ -542,25 +624,25 @@ function LoginPage() {
           <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
           <div className="d-flex justify-content-center mt-5">
             <div className="w-75 rounded">
-              <div class="card-body" style={{backgroundColor: '#d3d3d3'}}>
+              <div className="card-body" style={{backgroundColor: '#d3d3d3'}}>
                 <form onSubmit={handleSubmit}>
-                  <div class="mb-3">
-                    <label for="email" class="form-label text-black">{t('login.str_user')}</label>
-                    <input type="email" class="form-control" id="email"
+                  <div className="mb-3">
+                    <label htmlFor="email" className="form-label text-black">{t('login.str_user')}</label>
+                    <input type="email" className="form-control" id="email"
                       onChange={(e) => formData.set('email', e.target.value)} />
                   </div>
-                  <div class="mb-3">
-                    <label for="password" class="form-label text-black">{t('login.str_pass')}</label>
-                    <input type="password" class="form-control" id="password"
+                  <div className="mb-3">
+                    <label htmlFor="password" className="form-label text-black">{t('login.str_pass')}</label>
+                    <input type="password" className="form-control" id="password"
                       onChange={(e) => formData.set('password', sha256(e.target.value))} />
                   </div>
                   <div className="text-center pt-4 mt-3">
-                    <button type="submit" class="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
+                    <button type="submit" className="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
                   </div>
                   <ReCAPTCHA
                     ref={recaptchaRef}
                     size="invisible"
-                    sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_HTML}
+                    sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
                   />
                 </form>
               </div>

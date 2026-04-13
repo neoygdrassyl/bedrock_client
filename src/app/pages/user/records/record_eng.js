@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn, MDBCard, MDBCardBody, MDBTypography } from 'mdb-react-ui-kit';
+import { useState, useEffect } from 'react';
+import { MDBBtn, MDBCard, MDBCardBody, MDBTypography } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -39,95 +39,29 @@ import { ENG_FUEGO } from './eng/record_eng_fuego.component';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ENG extends Component {
-    constructor(props) {
-        super(props);
-        this.setItem_RecordArc = this.setItem_RecordArc.bind(this);
-        this.loadArcSteps = this.loadArcSteps.bind(this);
-        this.requestUpdateRecord = this.requestUpdateRecord.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.state = {
-            currentRecord: null,
-            currentVersionR: null,
-            loaded: false,
-            pqrsxfun: false,
-            arcSteps: [],
-        };
-    }
-    componentDidMount() {
-        this.setItem_RecordArc();
-        this.retrieveItem(this.props.currentId);
-        this.loadArcSteps(this.props.currentId)
-    }
-    loadArcSteps(id) {
-        RECORD_ARCSERVICE.getSteps(id)
+function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION }) {
+    const [currentRecord, setCurrentRecord] = useState(null);
+    const [currentVersionR, setCurrentVersionR] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [arcSteps, setArcSteps] = useState([]);
+    const [currentItem, setCurrentItem] = useState(null);
+
+    const retrievePQRSxFUN = (id_public) => {
+        FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                if (response.data.length < 1) {
-                    this.setState({
-                        arcSteps: [],
-                    });
-                } else {
-                    this.setState({
-                        arcSteps: response.data.record_arc_steps,
-                    });
-                }
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    setItem_RecordArc() {
-        RECORD_ENG_SERVICE.findIdRelated(this.props.currentId)
-            .then(response => {
-                if (response.data.length < 1) {
-                    this.setState({
-                        currentRecord: null,
-                        currentVersionR: null,
-                        loaded: true,
-                    });
-                } else {
-                    this.setState({
-                        currentRecord: response.data[0],
-                        currentVersionR: response.data[0].version,
-                        loaded: true,
-                    });
-                }
-            })
-            .catch(e => {
-                console.log(e);
-                MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-            });
-    }
-    requestUpdateRecord(id) {
-        RECORD_ENG_SERVICE.findIdRelated(id)
-            .then(response => {
-                this.setState({
-                    currentRecord: response.data[0],
-                    currentVersionR: response.data[0].version,
-                    loaded: true,
-                });
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-    }
-    retrieveItem(id) {
+    };
+
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
+                setCurrentItem(response.data);
+                retrievePQRSxFUN(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -135,34 +69,81 @@ class RECORD_ENG extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    retrievePQRSxFUN(id_public) {
-        FUN_SERVICE.loadPQRSxFUN(id_public)
+    };
+
+    const loadArcSteps = (id) => {
+        RECORD_ARCSERVICE.getSteps(id)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                if (response.data.length < 1) {
+                    setArcSteps([]);
+                } else {
+                    setArcSteps(response.data.record_arc_steps);
+                }
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    navigation_version = (STEP) => {
+    };
+
+    const setItem_RecordArc = () => {
+        RECORD_ENG_SERVICE.findIdRelated(currentId)
+            .then(response => {
+                if (response.data.length < 1) {
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
+                } else {
+                    setCurrentRecord(response.data[0]);
+                    setCurrentVersionR(response.data[0].version);
+                    setLoaded(true);
+                }
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+    };
+
+    const requestUpdateRecord = (id) => {
+        RECORD_ENG_SERVICE.findIdRelated(id)
+            .then(response => {
+                setCurrentRecord(response.data[0]);
+                setCurrentVersionR(response.data[0].version);
+                setLoaded(true);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    };
+
+    const requestUpdate = (id) => {
+        retrieveItem(id);
+    };
+
+    const navigation_version = (STEP) => {
         switch (STEP) {
             case "minus":
-                this.setState({ currentVersionR: this.state.currentVersionR - 1 });
+                setCurrentVersionR(prev => prev - 1);
                 break;
             case "plus":
-                this.setState({ currentVersionR: this.state.currentVersionR + 1 });
+                setCurrentVersionR(prev => prev + 1);
                 break;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem, arcSteps } = this.state;
+    };
+
+    useEffect(() => {
+        setItem_RecordArc();
+        retrieveItem(currentId);
+        loadArcSteps(currentId);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
         const title = { 0: '', 1: 'ESTUDIO', 2: 'CERTIFICACIÓN' }
         var formData = new FormData();
         const STEP_PROVIDER = () => {
@@ -270,7 +251,7 @@ class RECORD_ENG extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdateRecord(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -304,7 +285,7 @@ class RECORD_ENG extends Component {
             formData0.set('rules', currentRules.join(';'));
 
             funService.update(currentItem.id, formData0).then(response => {
-                if (response.data === 'OK') this.retrieveItem(currentItem.id)
+                if (response.data === 'OK') retrieveItem(currentItem.id)
             });
 
             formData.set('category', value);
@@ -318,7 +299,7 @@ class RECORD_ENG extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdateRecord(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -357,7 +338,7 @@ class RECORD_ENG extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdateRecord(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
                     } else {
                         if (useSwal) MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -425,7 +406,7 @@ class RECORD_ENG extends Component {
                                     _FUN_R={_GET_CHILD_REVIEW()}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                     readOnly={false}
                                     docsScope={'eng'} />
 
@@ -434,7 +415,7 @@ class RECORD_ENG extends Component {
                                     _FUN_6={_GET_CHILD_6()}
                                     currentItem={currentItem}
                                     currentRecord={currentRecord}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                     useCB
                                     profs={[
                                         ['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'],
@@ -455,9 +436,9 @@ class RECORD_ENG extends Component {
                                     swaMsg={swaMsg}
                                     globals={globals}
                                     currentItem={currentItem}
-                                    currentId={this.props.currentId}
+                                    currentId={currentId}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                     readOnly
                                 />
 
@@ -488,8 +469,8 @@ class RECORD_ENG extends Component {
                                     currentVersion={currentVersion}
                                     currentRecord={currentRecord}
                                     currentVersionR={currentVersionR}
-                                    requestUpdate={this.requestUpdate}
-                                    requestUpdateRecord={this.requestUpdateRecord}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
                                 />
 
                                 <div className="row border my-2 py-4 border border-warning" id="re_cc" style={{ backgroundColor: 'Gainsboro', borderWidth: '3px' }}>
@@ -499,7 +480,7 @@ class RECORD_ENG extends Component {
                                     <div className="col-4">
                                         <select className="form-select" defaultValue={currentRecord.category ?? 0} id="r_e_select_category"
                                             onChange={() => selectCategory()}>
-                                            <option selected={currentRecord.category == null ? true : false} disabled value="0">SELECCIONE UNA CATEGORIA...</option>
+                                            <option disabled value="0">SELECCIONE UNA CATEGORIA...</option>
                                             <option value="rule">NO REQUIERE ESTUDIO</option>
                                             <option value="2">CERTIFICACIÓN</option>
                                             <option value="1">ESTUDIO</option>
@@ -528,8 +509,8 @@ class RECORD_ENG extends Component {
                                             currentVersion={currentVersion}
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
-                                            requestUpdate={this.requestUpdate}
-                                            requestUpdateRecord={this.requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
                                             category={currentRecord.category}
                                             arcSteps={arcSteps}
                                         />
@@ -539,7 +520,7 @@ class RECORD_ENG extends Component {
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
                                             SERVICE={RECORD_LAW_SERVICE}
-                                            requestUpdateRecord={this.requestUpdateRecord}
+                                            requestUpdateRecord={requestUpdateRecord}
                                             AIM={"Jurídico"}
                                             readOnly
                                         />
@@ -549,7 +530,7 @@ class RECORD_ENG extends Component {
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
                                             SERVICE={RECORD_ARCSERVICE}
-                                            requestUpdateRecord={this.requestUpdateRecord}
+                                            requestUpdateRecord={requestUpdateRecord}
                                             AIM={"Arquitectura"}
                                             PATH={"record_arc"}
                                             readOnly
@@ -560,7 +541,7 @@ class RECORD_ENG extends Component {
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
                                             SERVICE={RECORD_ENG_SERVICE}
-                                            requestUpdateRecord={this.requestUpdateRecord}
+                                            requestUpdateRecord={requestUpdateRecord}
                                             AIM={"Estructural"}
                                         />
                                         {currentRecord.category == 0
@@ -576,8 +557,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                 />
                                             </>
                                             : ""}
@@ -601,8 +582,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                 />
 
                                                 <RECORD_ENG_STEP_433P
@@ -611,8 +592,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                 />
 
                                                 <RECORD_ENG_STEP_432
@@ -621,8 +602,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                 />
                                                 <RECORD_ENG_STEP_4323
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -630,8 +611,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                 />
 
                                                 <RECORD_ENG_SISMIC
@@ -640,8 +621,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                 />
                                                 <RECORD_ENG_STEP_433
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -649,8 +630,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                 />
 
                                                 <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_44">
@@ -662,8 +643,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                 />
                                             </>
                                             : ""}
@@ -683,8 +664,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                     version={2}
                                                 />
 
@@ -697,8 +678,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                 />
 
                                                 {
@@ -711,8 +692,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                     version={2}
                                                 />
 
@@ -729,8 +710,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                     version={2}
                                                 />
 
@@ -743,8 +724,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                     version={2}
                                                 />
 
@@ -757,8 +738,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                     version={2}
                                                 />
 
@@ -768,8 +749,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                     version={2}
                                                 />
 
@@ -779,8 +760,8 @@ class RECORD_ENG extends Component {
                                                     currentVersion={currentVersion}
                                                     currentRecord={currentRecord}
                                                     currentVersionR={currentVersionR}
-                                                    requestUpdate={this.requestUpdate}
-                                                    requestUpdateRecord={this.requestUpdateRecord}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
                                                     version={2}
                                                 />
 
@@ -798,8 +779,8 @@ class RECORD_ENG extends Component {
                                             currentVersion={currentVersion}
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
-                                            requestUpdate={this.requestUpdate}
-                                            requestUpdateRecord={this.requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
                                         />
                                     </>
 
@@ -824,7 +805,7 @@ class RECORD_ENG extends Component {
                         translation={translation}
                         currentItem={currentRecord}
                         currentVersion={currentVersionR}
-                        NAVIGATION_VERSION={this.navigation_version}
+                        NAVIGATION_VERSION={navigation_version}
                         _RECORD
                     />
                     <FUN_MODULE_NAV
@@ -832,15 +813,14 @@ class RECORD_ENG extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"record_eng"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
                 </fieldset>}
             </div >
         );
-    }
 }
 
 const NAV_FUNA = (currentRecord) => {

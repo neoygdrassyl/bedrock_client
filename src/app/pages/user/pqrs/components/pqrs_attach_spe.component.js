@@ -1,22 +1,12 @@
-import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../../components/Collapsible';
 import PQRS_PDFGEN_CONFIRM from './pqrs_genPDF_confirm.component';
 import PQRS_PDFGEN_REPLY from './pqrs_genPDF_reply.component';
 
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
-class PQRS_COMPONENT_ATTACH_SPECIAL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_ATTACH_SPECIAL({ translation, swaMsg, globals, currentItem }) {
 
         return (
             <div>
@@ -39,7 +29,6 @@ class PQRS_COMPONENT_ATTACH_SPECIAL extends Component {
                 
             </div>
         );
-    }
 }
 
 export default PQRS_COMPONENT_ATTACH_SPECIAL;

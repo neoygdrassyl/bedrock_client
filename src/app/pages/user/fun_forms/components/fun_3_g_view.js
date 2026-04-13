@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -8,15 +7,7 @@ import { dateParser } from '../../../../components/customClasses/typeParse'
 import VIZUALIZER from '../../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
-class FUN_3_G_VIEW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { _FUN_3, _FUN_6 } = this.props;
-        const { } = this.state;
+function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
 
         // DATA GETTERS
         let _SET_CHILD_3 = () => {
@@ -113,14 +104,14 @@ class FUN_3_G_VIEW extends Component {
             const columns_3 = [
                 {
                     name: <label>DIRECCIÓN DEL PREDIO</label>,
-                    selector: 'direccion_1',
+                    selector: row => row.direccion_1,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_1}</label>
                 },
                 {
                     name: <label>DIRECCIÓN DE CORRESPONDENCIA</label>,
-                    selector: 'direccion_2',
+                    selector: row => row.direccion_2,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_2}</label>
@@ -135,21 +126,21 @@ class FUN_3_G_VIEW extends Component {
                 },
                 {
                     name: <label>ESTADO CITACIÓN</label>,
-                    selector: 'row.state',
+                    selector: row => row.state,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{_GET_NEIGHBOUR_STATE(row.state)}</label>
                 },
                 {
                     name: <label>CONSECUTIVO RELACIONADO</label>,
-                    selector: 'id_cub',
+                    selector: row => row.id_cub,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.id_cub}</label>
                 },
                 {
                     name: <label>GUIÁ DE CONFIRMACIÓN</label>,
-                    selector: 'id_alerted',
+                    selector: row => row.id_alerted,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.id_alerted == "-1"
@@ -158,7 +149,7 @@ class FUN_3_G_VIEW extends Component {
                 },
                 {
                     name: <label>FECHA RECIBIDO</label>,
-                    selector: 'alerted',
+                    selector: row => row.alerted,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.state == 1 ? dateParser(row.alerted) : ""}</label>
@@ -206,7 +197,6 @@ class FUN_3_G_VIEW extends Component {
                 {_CHILD_3_LIST()}
             </div>
         );
-    }
 }
 
 export default FUN_3_G_VIEW;

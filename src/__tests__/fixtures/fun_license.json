@@ -1,0 +1,69 @@
+{
+  "license_complete": {
+    "id": 1,
+    "id_public": "LC26-0001",
+    "type": "CONSTRUCCIÓN",
+    "subtype": "OBRA NUEVA",
+    "owner_name": "Juan Carlos",
+    "owner_surname": "Pérez García",
+    "owner_cc": "13.456.789",
+    "owner_phone": "3001234567",
+    "owner_email": "test@example.com",
+    "address": "CL 45 # 23-15",
+    "neighborhood": "CABECERA",
+    "estrato": 4,
+    "area_lot": 250.5,
+    "area_build": 180.0,
+    "floors": 3,
+    "status": "ESTUDIO",
+    "date_created": "2026-01-15",
+    "date_rad": "2026-01-16",
+    "profesional_id": 5,
+    "curador_id": 1,
+    "version": 1,
+    "active": 1
+  },
+  "license_minimal": {
+    "id": 2,
+    "id_public": "LC26-0002",
+    "type": "DEMOLICIÓN",
+    "subtype": "TOTAL",
+    "owner_name": "María",
+    "owner_surname": "López",
+    "owner_cc": "63.789.012",
+    "address": "KR 15 # 30-42",
+    "status": "RADICADO",
+    "date_created": "2026-02-01",
+    "version": 1,
+    "active": 1
+  },
+  "license_list": [
+    {
+      "id": 1,
+      "id_public": "LC26-0001",
+      "type": "CONSTRUCCIÓN",
+      "owner_name": "Juan Carlos Pérez",
+      "address": "CL 45 # 23-15",
+      "status": "ESTUDIO",
+      "date_created": "2026-01-15"
+    },
+    {
+      "id": 2,
+      "id_public": "LC26-0002",
+      "type": "DEMOLICIÓN",
+      "owner_name": "María López",
+      "address": "KR 15 # 30-42",
+      "status": "RADICADO",
+      "date_created": "2026-02-01"
+    },
+    {
+      "id": 3,
+      "id_public": "LC26-0003",
+      "type": "URBANISMO",
+      "owner_name": "Pedro Sánchez",
+      "address": "AV 33 # 12-08",
+      "status": "RESOLUCIÓN",
+      "date_created": "2026-02-10"
+    }
+  ]
+}

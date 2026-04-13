@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -9,20 +8,7 @@ import NOMENCLATURE_ANEX from './nomenclature_anex.componen';
 
 const MySwal = withReactContent(Swal);
 
-class NOMENCLATURE_NEW extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-        };
-    }
-
-    refreshList(id) {
-        this.props.refreshList(id);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshList, closeModal }) {
 
         // DATA GETTERS
         let GET_NOMENCLATURE = () => {
@@ -107,7 +93,7 @@ class NOMENCLATURE_NEW extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -477,7 +463,7 @@ class NOMENCLATURE_NEW extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.refreshList(currentItem.id);
+                            refreshList(currentItem.id);
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACION",
@@ -516,8 +502,8 @@ class NOMENCLATURE_NEW extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.refreshList();
-                            this.props.closeModal();
+                            refreshList();
+                            closeModal();
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACION",
@@ -573,13 +559,12 @@ class NOMENCLATURE_NEW extends Component {
                         <NOMENCLATURE_ANEX
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
-                            refreshItem={this.refreshList}
+                            refreshItem={refreshList}
                         />
                     </fieldset>
                     : ""}
             </div >
         );
-    }
 }
 
 export default NOMENCLATURE_NEW;

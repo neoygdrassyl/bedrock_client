@@ -1,5 +1,4 @@
-
-import React from 'react';
+import { Fragment } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
@@ -108,7 +107,7 @@ export default function FUN_C_CLOCKS(props) {
     }
 
     let _COMPONENT_CLOCK_LIST = () => {
-        return record_clocks.map((value, i) => <>
+        return record_clocks.map((value, i) => <Fragment key={value.state}>
             {value.alert ? <div className="row mx-2 my-0 text-center">
                 <div className="col border border-danger">
                     <label className="fw-bold mt-2 "> {value.alert}</label>
@@ -134,7 +133,7 @@ export default function FUN_C_CLOCKS(props) {
                         {value.types
                             ? <select className='form-select' id={'clock_acta_res_' + i} defaultValue={_GET_CLOCK_STATE(value.state).resolver_context ?? 0}
                                 onChange={(e) => save_clock2(value, i)}>
-                                {value.types.map(value => <option>{value}</option>)}
+                                {value.types.map((v, idx) => <option key={idx}>{v}</option>)}
                             </select>
                             : ''}
                     </div>
@@ -158,7 +157,7 @@ export default function FUN_C_CLOCKS(props) {
                 </div>}
 
 
-        </>)
+        </Fragment>)
     }
 
     let _COMPONENT_CLOCK_PRO = () => {

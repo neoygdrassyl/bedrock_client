@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -10,25 +10,20 @@ import PQRS_EDIT_INFO from './components/pqrs_manage_info.component';
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 
 const MySwal = withReactContent(Swal);
-class PQRS_EDIT extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-        };
-    }
 
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+function PQRS_EDIT({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         PQRS_Service.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
+                setCurrentItem(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
@@ -36,19 +31,15 @@ class PQRS_EDIT extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este ítem, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
-    render() {
-        const { translation, swaMsg, globals, translation_form, } = this.props;
-        const { currentItem, load } = this.state;
+    };
+
+    const refreshList = () => {
+        refreshListProp();
+    };
 
         return (
             <div>
@@ -58,21 +49,21 @@ class PQRS_EDIT extends Component {
                         <PQRS_EDIT_SOLICITORS
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
-                            refreshCurrentItem={this.retrieveItem}
+                            refreshCurrentItem={retrieveItem}
                         />
                         <hr />
                         <label className="app-p lead text-start fw-bold text-uppercase">2. CONTACTOS</label>
                         <PQRS_EDIT_CONTACT
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
-                            refreshCurrentItem={this.retrieveItem}
+                            refreshCurrentItem={retrieveItem}
                         />
                         <hr />
                         <label className="app-p lead text-start fw-bold text-uppercase">3. CASOS DE ACTUACIONES Y LICENCIAS</label>
                         <PQRS_EDIT_FUN
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
-                            refreshCurrentItem={this.retrieveItem}
+                            refreshCurrentItem={retrieveItem}
                         />
                         <hr />
                         <label className="app-p lead text-start fw-bold text-uppercase">4. DESCRIPCIÓN DE LA SOLICITUD</label>
@@ -80,15 +71,15 @@ class PQRS_EDIT extends Component {
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             translation_form={translation_form}
                             currentItem={currentItem}
-                            refreshCurrentItem={this.retrieveItem}
-                            refreshList={this.refreshList}
+                            refreshCurrentItem={retrieveItem}
+                            refreshList={refreshList}
                         />
                         <hr />
                         <label className="app-p lead text-start fw-bold text-uppercase">5. DOCUMENTOS ANEXOS</label>
                         <PQRS_EDIT_ATTACH
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
-                            refreshCurrentItem={this.retrieveItem}
+                            refreshCurrentItem={retrieveItem}
                         />
                         <hr />
                     </> : <fieldset className="p-3" id="fung_0">
@@ -101,11 +92,10 @@ class PQRS_EDIT extends Component {
                     translation={translation}
                     currentItem={currentItem}
                     FROM={"edit"}
-                    NAVIGATION={this.props.NAVIGATION}
+                    NAVIGATION={NAVIGATION}
                 />
             </div>
         );
-    }
 }
 
 export default PQRS_EDIT;

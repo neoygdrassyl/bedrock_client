@@ -1,6 +1,6 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
-import ReactHTMLDatalist from 'react-html-datalist';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
+import { useEffect, useState } from 'react';
+import HTMLDatalist from '../../../components/HTMLDatalist';
 import ReactModal from 'react-modal';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -11,7 +11,7 @@ import FUN_6_UPLOAD from '../fun_forms/components/fun_6_upload.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 const customStylesForModal = {
     overlay: {
@@ -82,7 +82,7 @@ export default function ARCHIVE_X_FUN(props) {
                         <span class="input-group-text bg-primary text-white">
                             <i class="fas fa-search"></i>
                         </span>
-                        <ReactHTMLDatalist
+                        <HTMLDatalist
                             name={"lic"}
                             onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
                             classNames={"form-control"}

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBTypography } from 'mdb-react-ui-kit';
+import { useState, useEffect } from 'react';
+import { MDBTypography } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -11,28 +11,24 @@ import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import PQRS_SET_REPLY from './components/pqrs_setReply.component';
 
 const MySwal = withReactContent(Swal);
-class PQRSREPLY extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.closeModa = this.closeModa.bind(this);
-        this.state = {
-        };
-    }
-    clearForm() {
+
+function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, closeModal, NAVIGATION }) {
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+
+    const clearForm = () => {
         document.getElementById("app-formReply").reset()
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+    };
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         PQRS_Service.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
+                setCurrentItem(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
@@ -40,22 +36,19 @@ class PQRSREPLY extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
-    closeModa() {
-        this.props.closeModal();
-    }
-    render() {
-        const { translation, swaMsg, globals, translation_form, } = this.props;
-        const { currentItem, load } = this.state;
+    };
+
+    const refreshList = () => {
+        refreshListProp();
+    };
+
+    const closeModa = () => {
+        closeModal();
+    };
 
         let _REPLIES_COUNTER_COMPONENT = () => {
             var counter = 0;
@@ -146,9 +139,9 @@ class PQRSREPLY extends Component {
                                 <PQRS_SET_REPLY
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
-                                    retrieveItem={this.retrieveItem}
-                                    refreshList={this.refreshList}
-                                    closeModal={this.closeModa}
+                                    retrieveItem={retrieveItem}
+                                    refreshList={refreshList}
+                                    closeModal={closeModa}
                                     hardReset
                                 />
 
@@ -164,11 +157,10 @@ class PQRSREPLY extends Component {
                     translation={translation}
                     currentItem={currentItem}
                     FROM={"formal"}
-                    NAVIGATION={this.props.NAVIGATION}
+                    NAVIGATION={NAVIGATION}
                 />
             </div>
         );
-    }
 }
 
 export default PQRSREPLY;

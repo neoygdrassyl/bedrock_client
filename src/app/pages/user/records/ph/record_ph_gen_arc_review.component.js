@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
@@ -17,7 +17,7 @@ export default function RECORD_PH_GEN_REVIEW(props) {
     const REVIEW = REVIEW_DOCS;
     // ******************* DATA GETERS ********************* //
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_ph_steps;
+        var _CHILD = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }

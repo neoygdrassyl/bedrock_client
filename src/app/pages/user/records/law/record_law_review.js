@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -7,31 +7,27 @@ import FUN_SERVICE from '../../../../services/fun.service'
 
 import moment from 'moment';
 import RECORD_LAW_PDF from './record_law_pdf';
-import { MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTypography } from '../../../../components/ui';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 const MySwal = withReactContent(Swal);
 
-class RECORD_LAW_EVALUATION extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            VRDocs: [],
-            load: false
-        };
-    }
-    componentDidMount() {
-        this.setVRList(this.props.currentItem ? this.props.currentItem.id_public : false);
-    }
-    setVRList(id_public) {
+function RECORD_LAW_EVALUATION(props) {
+    const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord } = props;
+
+    const [VRDocs, setVRDocs] = useState([]);
+    const [load, setLoad] = useState(false);
+    const [dynState, setDynState] = useState({});
+
+    const setVRList = (id_public) => {
         if (!id_public) return;
-        if (this.state.load) return;
-        submitService.getIdRelated(this.props.currentItem.id_public).then(response => {
+        if (load) return;
+        submitService.getIdRelated(currentItem.id_public).then(response => {
             let newList = [];
-            let List = response.data;
+            let List = Array.isArray(response.data) ? response.data : [];
             List.map((value, i) => {
-                let subList = value.sub_lists;
+                let subList = Array.isArray(value.sub_lists) ? value.sub_lists : [];
                 subList.map(valuej => {
                     let name = valuej.list_name ? valuej.list_name.split(";") : []
                     let category = valuej.list_category ? valuej.list_category.split(",") : []
@@ -52,13 +48,15 @@ class RECORD_LAW_EVALUATION extends Component {
                     })
                 })
             })
-            this.setState({ VRDocs: newList, load: true })
+            setVRDocs(newList);
+            setLoad(true);
         })
 
     };
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { VRDocs } = this.state;
+
+    useEffect(() => {
+        setVRList(currentItem ? currentItem.id_public : false);
+    }, []);
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -180,10 +178,9 @@ class RECORD_LAW_EVALUATION extends Component {
         }
         let _GET_PROFESIONAL_NAME = () => {
             var _ROLEID = window.user.roleId;
-            return window.user.name + " " + window.user.surname
             //THIS ROLES ARE PROGRAMER MASTER, CURATOR AND ARCHITEC
             if (_ROLEID == 1 || _ROLEID == 2 || _ROLEID == 6) {
-
+                return window.user.name + " " + window.user.surname
             } else {
                 return "NO ESTA AUTORIZADO A REALIZAR ESTA ACCION"
             }
@@ -324,7 +321,7 @@ class RECORD_LAW_EVALUATION extends Component {
                                 <label className='fw-bold'>{value}</label>
                             </div>
                             <div className="col-3 text-center">
-                                {this.state['REW' + i]
+                                {dynState['REW' + i]
                                     ? <input type="text" class="form-control me-1" id={"r_l_review_1_" + i}
                                         defaultValue={iworker} disabled />
                                     : <label>{iworker}</label>
@@ -334,7 +331,7 @@ class RECORD_LAW_EVALUATION extends Component {
                                 <label>{iasing}</label>
                             </div>
                             <div className="col text-center">
-                                {this.state['REW' + i]
+                                {dynState['REW' + i]
                                     ? <select className="form-select form-control form-control-sm" defaultValue={ireview} id={"r_l_review_2_" + i}>
                                         <option value="0" className="text-danger">NO ES VIABLE</option>
                                         {ALLOW_REVIEW ? <option value="1" className="text-success">SI ES VIABLE</option> : ''}
@@ -343,17 +340,17 @@ class RECORD_LAW_EVALUATION extends Component {
                                 }
                             </div>
                             <div className="col text-center">
-                                {this.state['REW' + i]
+                                {dynState['REW' + i]
                                     ? <input type="date" class="form-control form-control-sm" id={"r_l_review_3_" + i} max="2100-01-01"
                                         defaultValue={idate} />
                                     : <label>{idate ?? ''}</label>
                                 }
                             </div>
                             <div className="col-1">
-                                {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={this.state['REW' + i]}
-                                    onClick={() => this.setState({ ['REW' + i]: !this.state['REW' + i] })}><i class="far fa-edit"></i></MDBBtn>
+                                {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={dynState['REW' + i]}
+                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i class="far fa-edit"></i></MDBBtn>
                                     : ''}
-                                {this.state['REW' + i]
+                                {dynState['REW' + i]
                                     ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
                                         onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
                                     : ""
@@ -364,7 +361,7 @@ class RECORD_LAW_EVALUATION extends Component {
                                         currentVersion={currentVersion}
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
-                                        requestUpdate={this.props.requestUpdate}
+                                        requestUpdate={requestUpdate}
                                         swaMsg={swaMsg}
                                         id6={"law" + i} />
                                     : ''
@@ -441,8 +438,8 @@ class RECORD_LAW_EVALUATION extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            requestUpdateRecord(currentItem.id);
+                            setDynState(prev => ({ ...prev, ['REW0']: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -479,8 +476,8 @@ class RECORD_LAW_EVALUATION extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({ ['REW0']: false })
+                            requestUpdateRecord(currentItem.id);
+                            setDynState(prev => ({ ...prev, ['REW0']: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -575,8 +572,8 @@ class RECORD_LAW_EVALUATION extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setDynState(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -613,8 +610,8 @@ class RECORD_LAW_EVALUATION extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
-                            if (Number(closeIndex)) this.setState({ ['REW' + closeIndex]: false })
+                            requestUpdate(currentItem.id);
+                            if (Number(closeIndex)) setDynState(prev => ({ ...prev, ['REW' + closeIndex]: false }))
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -640,27 +637,26 @@ class RECORD_LAW_EVALUATION extends Component {
             }
 
         }
-        return (
-            <div className="record_lar_evaluation container">
-                <h3 className="py-3" >3.1. Observaciones</h3>
-                {_COMPOENTN_CORRECTIONS_HISTORIC()}
-                {_COMPONENT_CORRECTIONS()}
-                <div className="row text-center">
-                    <label className='fw-bold my-2'>GENERAR PDFS</label>
-                    <div className="col">
-                        <RECORD_LAW_PDF
-                            currentItem={currentItem}
-                            currentVersion={currentVersion}
-                            currentRecord={currentRecord}
-                            currentVersionR={currentVersionR}
-                            swaMsg={swaMsg} />
-                    </div>
+    return (
+        <div className="record_lar_evaluation container">
+            <h3 className="py-3" >3.1. Observaciones</h3>
+            {_COMPOENTN_CORRECTIONS_HISTORIC()}
+            {_COMPONENT_CORRECTIONS()}
+            <div className="row text-center">
+                <label className='fw-bold my-2'>GENERAR PDFS</label>
+                <div className="col">
+                    <RECORD_LAW_PDF
+                        currentItem={currentItem}
+                        currentVersion={currentVersion}
+                        currentRecord={currentRecord}
+                        currentVersionR={currentVersionR}
+                        swaMsg={swaMsg} />
                 </div>
-                <h3 className="py-3" >3.2. Evaluar Viabilidad</h3>
-                {_COMPONENT_REVIEW()}
-            </div >
-        );
-    }
+            </div>
+            <h3 className="py-3" >3.2. Evaluar Viabilidad</h3>
+            {_COMPONENT_REVIEW()}
+        </div >
+    );
 }
 
 export default RECORD_LAW_EVALUATION;

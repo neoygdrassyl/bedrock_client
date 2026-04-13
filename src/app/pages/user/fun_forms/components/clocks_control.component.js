@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import EXP_CLOCKS from '../../clocks/centralClocks.component';
@@ -13,7 +13,7 @@ const styles = {
         paddingLeft: '0',
         display: 'flex',
         listStyle: 'none',
-        borderBottom: '1px solid #dee2e6',
+        borderBottom: '1px solid var(--bs-border-color)',
     },
     tabItem: {
         marginRight: '0.25rem',
@@ -21,71 +21,64 @@ const styles = {
     tabLink: {
         cursor: 'pointer',
         padding: '0.75rem 1.25rem',
-        color: '#495057',
+        color: 'var(--bs-secondary-color)',
         textDecoration: 'none',
         display: 'block',
-        backgroundColor: '#f8f9fa',
-        border: '1px solid #dee2e6',
+        backgroundColor: 'var(--bs-tertiary-bg)',
+        border: '1px solid var(--bs-border-color)',
         borderBottom: 'none',
         borderTopLeftRadius: '.35rem',
         borderTopRightRadius: '.35rem',
         transition: 'background-color 0.2s ease-in-out',
     },
     tabLinkActive: {
-        color: '#0056b3',
-        backgroundColor: '#fff',
-        borderTop: '3px solid #007bff',
-        borderLeft: '1px solid #dee2e6',
-        borderRight: '1px solid #dee2e6',
-        borderBottom: '1px solid #fff', // Esto hace que se funda con el panel
+        color: 'var(--bs-primary)',
+        backgroundColor: 'var(--bs-body-bg)',
+        borderTop: '3px solid var(--bs-primary)',
+        borderLeft: '1px solid var(--bs-border-color)',
+        borderRight: '1px solid var(--bs-border-color)',
+        borderBottom: '1px solid var(--bs-body-bg)', // Esto hace que se funda con el panel
         fontWeight: 'bold',
         marginBottom: '-1px', // Compensa el borde inferior del contenedor
     },
     tabPane: {
         padding: '1.5rem',
-        border: '1px solid #dee2e6',
+        border: '1px solid var(--bs-border-color)',
         borderTop: 'none',
         borderRadius: '0 0 .35rem .35rem',
-        backgroundColor: '#fff',
+        backgroundColor: 'var(--bs-body-bg)',
         marginTop: '-1px', // solapa con el borde del nav
     }
 };
 
-class CLOCKS_CONTROL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            activeTab: 'tiempos'
-        };
-    }
+function CLOCKS_CONTROL(props) {
+    const [activeTab, setActiveTab] = useState('tiempos');
+    const { translation, swaMsg, globals, currentItem, currentVersion, secondary } = props;
 
-    requestUpdate = (id) => {
-        if (this.props.requestUpdate) {
-            this.props.requestUpdate(id);
+    const requestUpdate = (id) => {
+        if (props.requestUpdate) {
+            props.requestUpdate(id);
         }
     }
     
-    requestRefresh = () => {
-        if (this.props.requestRefresh) {
-            this.props.requestRefresh();
+    const requestRefresh = () => {
+        if (props.requestRefresh) {
+            props.requestRefresh();
         }
     }
 
-    handleTabChange = (tabName) => {
-        this.setState({ activeTab: tabName });
+    const handleTabChange = (tabName) => {
+        setActiveTab(tabName);
     }
     
-    getTabLinkStyle = (tabName) => {
+    const getTabLinkStyle = (tabName) => {
         const baseStyle = styles.tabLink;
-        if (this.state.activeTab === tabName) {
+        if (activeTab === tabName) {
             return { ...baseStyle, ...styles.tabLinkActive };
         }
         return baseStyle;
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, secondary } = this.props;
-        const { activeTab } = this.state;
         const stepsToCheck = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
         const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
         
@@ -440,8 +433,8 @@ class CLOCKS_CONTROL extends Component {
                     {tabs.map(tab => (
                         <li key={tab.id} style={styles.tabItem}>
                             <a
-                                style={this.getTabLinkStyle(tab.id)}
-                                onClick={() => this.handleTabChange(tab.id)}
+                                style={getTabLinkStyle(tab.id)}
+                                onClick={() => handleTabChange(tab.id)}
                                 className={tab.className || ''}
                             >
                                 {tab.label}
@@ -454,8 +447,8 @@ class CLOCKS_CONTROL extends Component {
                     <div style={styles.tabPane}>
                         {activeTab === 'tiempos' && (
                             <EXP_CLOCKS 
-                                {...this.props}
-                                requestUpdate={this.requestUpdate}
+                                {...props}
+                                requestUpdate={requestUpdate}
                             />
                         )}
                         {activeTab === 'principal' && (
@@ -471,13 +464,13 @@ class CLOCKS_CONTROL extends Component {
                         )}
                         {activeTab === 'eventos' && (
                             <FUN_CLOCK_EVENTS
-                                {...this.props}
-                                requestUpdate={this.requestUpdate}
+                                {...props}
+                                requestUpdate={requestUpdate}
                             />
                         )}
                         {activeTab === 'grafico' && (
                             <FUN_CLOCK_CHART
-                                {...this.props}
+                                {...props}
                             />
                         )}
                         {activeTab === 'desistimientos' && (
@@ -486,9 +479,9 @@ class CLOCKS_CONTROL extends Component {
                                     <label className="app-p lead text-center fw-normal text-uppercase text-light">CONTROL DE PROCESOS DE DESISTIMIENTOS</label>
                                 </legend>
                                 <FUN_CLOCKS_NEGATIVE
-                                    {...this.props}
-                                    requestUpdate={this.requestUpdate}
-                                    requestRefresh={this.requestRefresh}
+                                    {...props}
+                                    requestUpdate={requestUpdate}
+                                    requestRefresh={requestRefresh}
                                 />
                             </>
                         )}
@@ -496,7 +489,6 @@ class CLOCKS_CONTROL extends Component {
                 </div>
             </div>
         );
-    }
 }
 
 export default CLOCKS_CONTROL;

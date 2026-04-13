@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 
@@ -26,8 +25,7 @@ import LGOG20 from '../img/contacts/supernotariado.png'
 import LGOG21 from '../img/contacts/vanti.png'
 import { Button_navigation } from './button.component';
 
-class CarouselITems extends Component {
-  render() {
+function CarouselITems() {
     const responsive = {
         superLargeDesktop: {
           // the naming can be any, depends on you.
@@ -48,7 +46,7 @@ class CarouselITems extends Component {
         }
       };
 
-    let commonStyle = {backgroundColor: 'white'};
+    let commonStyle = {backgroundColor: 'var(--bs-body-bg)'};
     return (
       <div className="Carousel Items">
         <h3 class="text-uppercase text-center m-3 mt-5">Entidades, agremaciones, asociaciones y otros grupos de interes {<Button_navigation Iddown={null} Idup={null} />}</h3>
@@ -72,7 +70,6 @@ class CarouselITems extends Component {
             </Carousel>
       </div >
     );
-  }
 }
 
 export default CarouselITems;

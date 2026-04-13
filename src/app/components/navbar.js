@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Title from './title';
 import { useTranslation } from 'react-i18next';
 import '../translation/i18n';
@@ -19,7 +19,7 @@ export default function Navbar1(props) {
   } = props;
 
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   // Sidebar
@@ -84,16 +84,16 @@ export default function Navbar1(props) {
   }, [location.pathname]);
 
   // Link sin anidar <a>
-  const MyLink = React.forwardRef(({ href, as, children, ...rest }, ref) => (
-    <Link ref={ref} to={href} {...rest} style={{ color: '#575757', textDecoration: 'none' }}>
+  const MyLink = ({ href, as, children, ref, ...rest }) => (
+    <Link ref={ref} to={href} {...rest} style={{ color: 'var(--bs-body-color)', textDecoration: 'none' }}>
       {children}
     </Link>
-  ));
+  );
 
   const handleSidebarToggle = () => setSidebarExpanded(v => !v);
 
   const handleModuleClick = (href) => {
-    history.push(href);
+    navigate(href);
     if (window.innerWidth <= 768) setSidebarExpanded(false);
   };
 
@@ -116,24 +116,24 @@ export default function Navbar1(props) {
                       className={`module-item ${isActive ? 'active' : ''}`}
                       onClick={() => handleModuleClick(module.href)}
                       onMouseEnter={(e) => {
-                        if (!isActive) e.currentTarget.style.backgroundColor = '#e9ecef';
+                        if (!isActive) e.currentTarget.style.backgroundColor = '';
                       }}
                       onMouseLeave={(e) => {
-                        if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
+                        if (!isActive) e.currentTarget.style.backgroundColor = '';
                       }}
                     >
                       <span className="module-icon">
                         <i
                           className={module.icon}
                           style={{
-                            color: isActive ? '#2651A8' : module.color
+                            color: isActive ? 'var(--bs-primary)' : module.color
                           }}
                         />
                       </span>
                       <span
                         className="module-name"
                         style={{
-                          color: isActive ? '#2651A8' : '#495057',
+                          color: isActive ? 'var(--bs-primary)' : 'var(--bs-body-color)',
                           fontWeight: isActive ? 600 : 500
                         }}
                       >
@@ -191,7 +191,7 @@ export default function Navbar1(props) {
         )}
 
         {/* NAVBAR superior (siempre visible) */}
-        <Navbar {...props} className="app-navbar" style={{ backgroundColor: '##F7F7FA' }}>
+        <Navbar {...props} className="app-navbar">
           {/* MUY IMPORTANTE: evitar <a> para no anidar con Title */}
           <Navbar.Brand as="div"
             style={{
@@ -230,7 +230,7 @@ export default function Navbar1(props) {
             </div>
 
             {/* Separador vertical */}
-            <span aria-hidden="true" style={{ width: 1, height: '1.25rem', background: '#000', opacity: 0.75 }} />
+            <span aria-hidden="true" style={{ width: 1, height: '1.25rem', background: 'var(--bs-body-color)', opacity: 0.75 }} />
 
             {/* Título compacto */}
             <div style={{ minWidth: 0, display: 'flex', alignItems: 'center' }}>

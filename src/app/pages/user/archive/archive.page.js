@@ -1,7 +1,12 @@
-import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
+import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip } from '../../../components/ui';
+import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
-import { Tag, TagGroup } from 'rsuite';
+const TagGroup = ({ children }) => <span className="d-flex flex-wrap gap-1">{children}</span>;
+const Tag = ({ color, children }) => (
+  <span className="badge" style={{ backgroundColor: color === 'blue' ? 'var(--dvl-info)' : 'var(--dvl-primary-500)', fontSize: 'var(--dvl-text-xs)' }}>
+    {children}
+  </span>
+);
 
 import Modal from 'react-modal';
 
@@ -16,7 +21,7 @@ import { getJSON, getJSONFull, regexChecker_isPh } from '../../../components/cus
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import { nomens } from '../../../components/jsons/vars';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 const customStylesForModal = {
     overlay: {

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState, } from 'react';
+import { Suspense, useEffect, useState, } from 'react';
 import Zone_Use_Service from "../../../services/zone_use.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -146,7 +146,7 @@ export default function ZONE_USE_COMPONENT(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/zone_use/" + "CONCEPTO DE USO DEL SUELO " + (item.id_out ?? '') + ".pdf");
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/zone_use/" + "CONCEPTO DE USO DEL SUELO " + (item.id_out ?? '') + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,

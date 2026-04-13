@@ -1,5 +1,5 @@
-import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane, MDBPopover, MDBPopoverHeader, MDBPopoverBody, MDBCol, MDBPagination, MDBRow, MDBBtnGroup } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
+import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane, MDBPopover, MDBPopoverHeader, MDBPopoverBody, MDBCol, MDBPagination, MDBRow, MDBBtnGroup } from '../../components/ui';
+import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 
 import SERVICE_CUSTOM from '../../services/custom.service';
@@ -8,12 +8,11 @@ import { formsParser1, getJSONFull } from '../../components/customClasses/typePa
 import TIPOLOGIA from '../../components/jsons/fun6DocsList.json'
 import SERIES from '../../components/jsons/funCodes.json'
 import SERIES_CB1 from '../../components/jsons/funcCodes.cb1.json'
-import { MDBPageItem, MDBPageNav } from 'mdbreact';
 import DataTable from 'react-data-table-component';
 import VIZUALIZER from '../../components/vizualizer.component';
 import { infoCud } from '../../components/jsons/vars';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function DICTIONARY(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
 
@@ -169,33 +168,33 @@ export default function DICTIONARY(props) {
 
         let PageNacITems = [];
         for (let i = 0; i < limit; i++) {
-            PageNacITems.push(<>
-                <MDBPageItem active={i + 1 == _page} onClick={() => _func(i + 1)}>
-                    <MDBPageNav>
+            PageNacITems.push(
+                <li key={i} className={`page-item${i + 1 == _page ? ' active' : ''}`} onClick={() => _func(i + 1)}>
+                    <a className="page-link" role="button">
                         {i + 1} {i + 1 == _page ? <span className="sr-only">(current)</span> : ''}
-                    </MDBPageNav>
-                </MDBPageItem>
-            </>)
+                    </a>
+                </li>
+            )
         }
 
         return <>
             <MDBRow>
                 <MDBCol>
                     <MDBPagination className="m-3">
-                        <MDBPageItem disabled={_page == 1} onClick={() => { if (_page != 1) _func(_page - 1) }}>
-                            <MDBPageNav aria-label="Anterior">
+                        <li className={`page-item${_page == 1 ? ' disabled' : ''}`} onClick={() => { if (_page != 1) _func(_page - 1) }}>
+                            <a className="page-link" role="button" aria-label="Anterior">
                                 <i class="fas fa-chevron-left"></i>
                                 <span className="sr-only">Anterior</span>
-                            </MDBPageNav>
-                        </MDBPageItem>
+                            </a>
+                        </li>
                         {PageNacITems}
-                        <MDBPageItem disabled={_page == limit || limit < 2} onClick={() => _func(_page + 1)}>
-                            <MDBPageNav aria-label="Siguiente">
+                        <li className={`page-item${_page == limit || limit < 2 ? ' disabled' : ''}`} onClick={() => _func(_page + 1)}>
+                            <a className="page-link" role="button" aria-label="Siguiente">
                                 <i class="fas fa-chevron-right"></i>
                                 <span className="sr-only">Siguiente</span>
-                            </MDBPageNav>
-                        </MDBPageItem>
-                        <MDBPageItem> <label className='lead'>{(_limit) * (_page - 1) == 0 ? 1 : (_limit) * (_page - 1)} - {LIST.length < _limit * _page ? LIST.length : _limit * _page}</label> </MDBPageItem>
+                            </a>
+                        </li>
+                        <li className="page-item"> <label className='lead'>{(_limit) * (_page - 1) == 0 ? 1 : (_limit) * (_page - 1)} - {LIST.length < _limit * _page ? LIST.length : _limit * _page}</label> </li>
                     </MDBPagination>
                 </MDBCol>
                 <MDBCol className="m-3 text-end">

@@ -5,6 +5,10 @@ class CustomlDataService {
     return http.post(`/login`, data);
   }
 
+  getMe() {
+    return http.get(`/me`);
+  }
+
   searchDate(date) {
     return http.get(`/searchdate/${date}`);
   }

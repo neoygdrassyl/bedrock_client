@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../components/customClasses/typeParse'
 import FUNService from '../../../../services/fun.service'
 import Swal from 'sweetalert2'
@@ -7,34 +7,30 @@ import CubXVrDataService from '../../../../services/cubXvr.service'
 import moment from 'moment';
 import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import DCO_LIS from '../../../../components/jsons/fun6DocsList.json'
 import SubmitService from '../../../../services/submit.service'
 
 const MySwal = withReactContent(Swal);
-class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: [],
-            vrSelected: null,
-            cubSelected: null,
-            idCUBxVr: null,
-        }
-    }
-    componentDidUpdate(prevProps) {
-        // Uso tipico (no olvides de comparar las props):
-        if (this.props.currentVersion !== prevProps.currentVersion && this.props.currentVersion != null) {
-            var _CHILD_1 = this._SET_CHILD_1_FOREIGNER();
+function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, requestUpdate, swaMsg }) {
+        const [vrsRelated, setVrsRelated] = useState([]);
+        const [vrSelected, setVrSelected] = useState(null);
+        const [cubSelected, setCubSelected] = useState(null);
+        const [idCUBxVr, setIdCUBxVr] = useState(null);
+    useEffect(() => {
+        if (currentVersion != null) {
+            var _CHILD_1 = _SET_CHILD_1_FOREIGNER();
             document.getElementById('geni_type').value = formsParser1(_CHILD_1)
         }
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    _SET_CHILD_1_FOREIGNER = () => {
-        var _CHILD = this.props.currentItem.fun_1s;
-        var _CURRENT_VERSION = this.props.currentVersion - 1;
+    }, [currentVersion]);
+
+    useEffect(() => {
+        retrieveItem();
+    }, []);
+
+    let _SET_CHILD_1_FOREIGNER = () => {
+        var _CHILD = currentItem.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
             tipo: [],
             tramite: [],
@@ -53,22 +49,24 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
         }
         return _CHILD_VARS;
     }
-    async retrieveItem() {
+    const retrieveItem = async () => {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data)
             })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'CARTA INCOMPLETO');
 
-            if(data) document.getElementById("vr_selected1").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            if(data) {
+                document.getElementById("vr_selected1").value = data.vr
+                setVrSelected(data.vr);
+                setCubSelected(data.cub);
+                setIdCUBxVr(data.id)
+            }
         } catch (error) {
             console.log(error);
         }
     }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
 
         function capitalize(s) {
             return s && s[0].toUpperCase() + s.slice(1);
@@ -88,7 +86,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -227,24 +225,23 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         <label className="mt-1">5.3 {infoCud.serials.end} Carta Incompleto</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="geng_cub_inc"
-                                defaultValue={_GET_CHILD_LAW().cub_inc || this.state.cubSelected || ""} />
-                            {this.props.edit  ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
+                                defaultValue={_GET_CHILD_LAW().cub_inc || cubSelected || ""} />
+                            {edit  ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">5.2.1 {infoCud.serials.start}</label>
                             <div class="input-group">
-                                <select class="form-select" id="vr_selected1" defaultValue={this.state.vrSelected || ""}>
+                                <select class="form-select" id="vr_selected1" defaultValue={vrSelected || ""}>
                                     <option disabled value=''>Seleccione una opción</option>
-                                    {this.state.vrsRelated.map((value, key) => (
+                                    {vrsRelated.map((value, key) => (
                                         <option key={value.id} value={value.id_public}>
                                             {value.id_public}
                                         </option>
                                     ))}
                                 </select>
                             </div>
-
 
                     </div>
 
@@ -338,7 +335,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/confirminc/" + "Carta_Incompleto_" + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/confirminc/" + "Carta_Incompleto_" + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -357,7 +354,6 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-
 
         }
 
@@ -382,7 +378,6 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             let type = document.getElementById("geni_type").value;
             let missing = document.getElementById("geni_missing").value;
 
-
             cub_inc_json.date_doc = date_doc;
             cub_inc_json.date = date;
             cub_inc_json.date_limit = date_limit;
@@ -398,7 +393,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
 
             manage_law(true, formData);
             createVRxCUB_relation(new_id);
-            this.retrieveItem();
+            retrieveItem();
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -423,7 +418,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdate(currentItem.id)
+                                requestUpdate(currentItem.id)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
@@ -467,7 +462,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdate(currentItem.id)
+                                requestUpdate(currentItem.id)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
@@ -517,11 +512,11 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             let date = document.getElementById('geng_date_doc').value;
 
             formatData.set('date', date);
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } 
                     })
                     .catch((error) => {
@@ -533,7 +528,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } 
                     })
                     .catch((error) => {
@@ -547,7 +542,7 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             <form id="genc_doc_form" onSubmit={save_doc}>
                 {_GENDOC_COMPONENT()}
                 <div className="row text-center">
-                    {this.props.edit ?
+                    {edit ?
                         <div className="col">
                             <button className="btn btn-success my-3"><i class="fas fa-share-square"></i> GUARDAR DATOS</button>
                         </div>
@@ -559,7 +554,6 @@ class FUN_DOC_CONFIRM_INCOMPLETE extends Component {
             </form>
 
         );
-    }
 }
 
 export default FUN_DOC_CONFIRM_INCOMPLETE;

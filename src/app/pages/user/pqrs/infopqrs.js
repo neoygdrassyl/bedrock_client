@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import PQRS_COMPONENT_INFO from './components/pqrs_gen.component';
 import PQRS_COMPONENT_CLOCKS from './components/pqrs_clock.component';
 import PQRS_COMPONENT_LICENCE from './components/pqrs_licence.component';
@@ -18,23 +18,20 @@ import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import { PQRS_COMPONENT_REPLIES_PROFESIONAL1 } from './components/pqrs_replices_11.component';
 import { PQRS_COMPONENT_REPLIES_TOSOLICITOR2 } from './components/pqrs_replies_22.component';
 const MySwal = withReactContent(Swal);
-class PQRSINFO extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.state = {
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+
+function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, NAVIGATION }) {
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         PQRS_Service.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
+                setCurrentItem(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
@@ -42,16 +39,11 @@ class PQRSINFO extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este ítem, inténtelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
-    }
-    render() {
-        const { translation, swaMsg, globals, translation_form, } = this.props;
-        const { currentItem, load } = this.state;
+    };
 
         // DATA CONVERTERS
         let _checkForReplies = () => {
@@ -175,7 +167,7 @@ class PQRSINFO extends Component {
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
                                     add
-                                    retrieveItem={this.retrieveItem}
+                                    retrieveItem={retrieveItem}
                                 />
                             </fieldset>
 
@@ -207,11 +199,10 @@ class PQRSINFO extends Component {
                     translation={translation}
                     currentItem={currentItem}
                     FROM={"general"}
-                    NAVIGATION={this.props.NAVIGATION}
+                    NAVIGATION={NAVIGATION}
                 />
             </div>
         );
-    }
 }
 
 export default PQRSINFO;

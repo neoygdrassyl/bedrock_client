@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
-import { MDBBtn, MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBCard, MDBCardBody } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
@@ -20,38 +20,39 @@ import { _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import CubXVrDataService from '../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
-class FUN_ALERT extends Component {
-    constructor(props) {
-        super(props);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.state = {
-            new_neighbour: false,
-            confirm: false,
-            edit_type: false,
-            currentItem: null,
-            cb: false,
-            pqrsxfun: false,
-            vr: null,
-            cubSelected: null,
-            idCUBxVr: null
-        };
-    }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
 
-    retrieveItem(id) {
+function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION_VERSION, NAVIGATION, requestUpdate: requestUpdateProp }) {
+    const [new_neighbour, setNewNeighbour] = useState(false);
+    const [confirm, setConfirm] = useState(false);
+    const [edit_type, setEditType] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [cb, setCb] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [vr, setVr] = useState(null);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const [cb0, setCb0] = useState(false);
+    const [cb_1, setCb1] = useState(false);
+    const [cb_2, setCb2] = useState(false);
+    const [cb_3, setCb3] = useState(false);
+    const [cb_4, setCb4] = useState(false);
+    const [sign_pdf, setSignPdf] = useState(false);
+
+    const requestUpdate = (id) => {
+        retrieveItem(id);
+    };
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                })
-                this.SET_DEFAULT_OBJECT();
-                this.retrievePQRSxFUN(response.data.id_public);
-                this.retrieveCubXvrs(response.data.id_public);
+                setCurrentItem(response.data);
+                SET_DEFAULT_OBJECT(response.data);
+                retrievePQRSxFUN(response.data.id_public);
+                retrieveCubXvrs(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -59,153 +60,108 @@ class FUN_ALERT extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    retrievePQRSxFUN(id_public) {
+    };
+
+    const retrievePQRSxFUN = (id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    async retrieveCubXvrs(id_public) {
+    };
+
+    const retrieveCubXvrs = async (id_public) => {
         const response = await CubXVrDataService.getByFUN(id_public)
         const data = response.data.find(item => item.process === 'PUBLICIDAD COMUNICACION A VECINOS')
-        
-        if (data) this.setState({ vr: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
-    }
-    SET_DEFAULT_OBJECT() {
-        let _CHILD = this.state.currentItem.fun_3s[0];
+        if (data) {
+            setVr(data.vr);
+            setCubSelected(data.cub);
+            setIdCUBxVr(data.id);
+        }
+    };
+
+    const SET_DEFAULT_OBJECT = (item) => {
+        let _CHILD = item.fun_3s[0];
         if (_CHILD) {
             if (_CHILD.alters_info) {
                 document.getElementById('confirm_cb').checked = true;
-                this.setState({ cb0: true })
+                setCb0(true);
                 if (_CHILD.alters_info) {
                     document.getElementById('confirm_cb_2').checked = true;
-                    this.setState({ cb: true })
+                    setCb(true);
                     if (_CHILD.alters_info.includes('ALERT_1')) {
                         document.getElementById('cb1').checked = true;
-                        this.setState({ cb_1: true })
+                        setCb1(true);
                     }
                     if (_CHILD.alters_info.includes('ALERT_2')) {
                         document.getElementById('cb2').checked = true;
-                        this.setState({ cb_2: true })
+                        setCb2(true);
                     }
                     if (_CHILD.alters_info.includes('ALERT_3')) {
                         document.getElementById('cb3').checked = true;
-                        this.setState({ cb_3: true })
+                        setCb3(true);
                     }
                     if (_CHILD.alters_info.includes('ALERT_4')) {
                         document.getElementById('cb4').checked = true;
-                        this.setState({ cb_4: true })
+                        setCb4(true);
                     }
                 }
             }
         }
-
-    }
-    componentDidUpdate(prevState) {
-        // SET THE INITIAL STATE OF THE PLETHORA OF CHECKBOXES, I DON'T KNOW WHY I DID THIS, I HATE MYSELF NOW...
-
-        if (this.state.cb0 !== prevState.cb0 && this.state.cb0) {
-            document.getElementById('confirm_cb').checked = true;
-            if (this.state.cb !== prevState.cb && this.state.cb) {
-                document.getElementById('confirm_cb_2').checked = true;
-            } else {
-                document.getElementById('confirm_cb_2').checked = false;
+    };
+    // Sync checkboxes when cb0/cb change
+    useEffect(() => {
+        const confirmCb = document.getElementById('confirm_cb');
+        const confirmCb2 = document.getElementById('confirm_cb_2');
+        if (!confirmCb) return;
+        if (cb0) {
+            confirmCb.checked = true;
+            if (confirmCb2) {
+                confirmCb2.checked = cb ? true : false;
             }
-
         } else {
-            document.getElementById('confirm_cb').checked = false;
+            confirmCb.checked = false;
         }
+    }, [cb0, cb]);
 
-
-
-        if (this.state.cb && this.state.cb0) {
-            if (this.state.cb_1 !== prevState.cb_1 && this.state.cb_1) {
-                let _ID = document.getElementById('alert_id_3').value;
-                let _CHILD = this.state.currentItem.fun_3s[_ID];
-                if (_CHILD) {
-                    let ALERTS = _CHILD.alters_info;
-                    if (ALERTS) {
-                        ALERTS = ALERTS.split(',');
-                        for (var i = 0; i < ALERTS.length; i++) {
-                            if (ALERTS[i].includes('ALERT_1')) {
-                                document.getElementById('cb1').checked = true;
-                                let _DATA = ALERTS[i].split('&');
-                                document.getElementById('cb1_ni').value = _DATA[2]
-                                document.getElementById('cb1_nd').value = _DATA[1]
-                            }
-                        }
-                    }
-                }
-            }
-            if (this.state.cb_2 !== prevState.cb_2 && this.state.cb_2) {
-                let _ID = document.getElementById('alert_id_3').value;
-                let _CHILD = this.state.currentItem.fun_3s[_ID];
-                if (_CHILD) {
-                    let ALERTS = _CHILD.alters_info;
-                    if (ALERTS) {
-                        ALERTS = ALERTS.split(',');
-                        for (var i = 0; i < ALERTS.length; i++) {
-                            if (ALERTS[i].includes('ALERT_2')) {
-                                document.getElementById('cb2').checked = true;
-                                let _DATA = ALERTS[i].split('&');
-                                document.getElementById('cb2_ni').value = _DATA[2]
-                                document.getElementById('cb2_nd').value = _DATA[1]
-                            }
-                        }
-                    }
-                }
-            }
-            if (this.state.cb_3 !== prevState.cb_3 && this.state.cb_3) {
-                let _ID = document.getElementById('alert_id_3').value;
-                let _CHILD = this.state.currentItem.fun_3s[_ID];
-                if (_CHILD) {
-                    let ALERTS = _CHILD.alters_info;
-                    if (ALERTS) {
-                        ALERTS = ALERTS.split(',');
-                        for (var i = 0; i < ALERTS.length; i++) {
-                            if (ALERTS[i].includes('ALERT_3')) {
-                                document.getElementById('cb3').checked = true;
-                                let _DATA = ALERTS[i].split('&');
-                                document.getElementById('cb3_ni').value = _DATA[2]
-                                document.getElementById('cb3_nd').value = _DATA[1]
-                            }
-                        }
-                    }
-                }
-            }
-            if (this.state.cb_4 !== prevState.cb_4 && this.state.cb_4) {
-                let _ID = document.getElementById('alert_id_3').value;
-                let _CHILD = this.state.currentItem.fun_3s[_ID];
-                if (_CHILD) {
-                    let ALERTS = _CHILD.alters_info;
-                    if (ALERTS) {
-                        ALERTS = ALERTS.split(',');
-                        for (var i = 0; i < ALERTS.length; i++) {
-                            if (ALERTS[i].includes('ALERT_4')) {
-                                document.getElementById('cb4').checked = true;
-                                let _DATA = ALERTS[i].split('&');
-                                document.getElementById('cb4_ni').value = _DATA[2]
-                                document.getElementById('cb4_nd').value = _DATA[1]
-                            }
-                        }
+    // Populate alert form fields when cb_N flags change
+    useEffect(() => {
+        if (!cb || !cb0 || !currentItem) return;
+        const alertId3El = document.getElementById('alert_id_3');
+        if (!alertId3El) return;
+        const _ID = alertId3El.value;
+        const _CHILD = currentItem.fun_3s[_ID];
+        if (!_CHILD) return;
+        let ALERTS = _CHILD.alters_info;
+        if (!ALERTS) return;
+        const alertsArr = ALERTS.split(',');
+        const checkboxMap = [
+            { flag: cb_1, prefix: 'ALERT_1', cbId: 'cb1' },
+            { flag: cb_2, prefix: 'ALERT_2', cbId: 'cb2' },
+            { flag: cb_3, prefix: 'ALERT_3', cbId: 'cb3' },
+            { flag: cb_4, prefix: 'ALERT_4', cbId: 'cb4' },
+        ];
+        for (const { flag, prefix, cbId } of checkboxMap) {
+            if (flag) {
+                for (let i = 0; i < alertsArr.length; i++) {
+                    if (alertsArr[i].includes(prefix)) {
+                        const el = document.getElementById(cbId);
+                        if (el) el.checked = true;
+                        let _DATA = alertsArr[i].split('&');
+                        const niEl = document.getElementById(cbId + '_ni');
+                        const ndEl = document.getElementById(cbId + '_nd');
+                        if (niEl) niEl.value = _DATA[2];
+                        if (ndEl) ndEl.value = _DATA[1];
                     }
                 }
             }
         }
-
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { currentItem } = this.state;
+    }, [cb, cb0, cb_1, cb_2, cb_3, cb_4, currentItem]);
 
         // DATA GETTERS
         let _SET_CHILD_3 = () => {
@@ -318,7 +274,7 @@ class FUN_ALERT extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -333,34 +289,34 @@ class FUN_ALERT extends Component {
             document.getElementById('alert_date_confirm').value = _CHILD.alerted;
 
             if (_CHILD.alters_info) {
-                this.setState({ cb0: true })
+                setCb0(true);
                 if (_CHILD.alters_info) {
-                    this.setState({ cb: true })
+                    setCb(true);
                     if (_CHILD.alters_info.includes('ALERT_1')) {
-                        this.setState({ cb_1: true })
+                        setCb1(true);
                     } else {
-                        this.setState({ cb_1: false })
+                        setCb1(false);
                     }
                     if (_CHILD.alters_info.includes('ALERT_2')) {
-                        this.setState({ cb_2: true })
+                        setCb2(true);
                     } else {
-                        this.setState({ cb_2: false })
+                        setCb2(false);
                     }
                     if (_CHILD.alters_info.includes('ALERT_3')) {
-                        this.setState({ cb_3: true })
+                        setCb3(true);
                     } else {
-                        this.setState({ cb_3: false })
+                        setCb3(false);
                     }
                     if (_CHILD.alters_info.includes('ALERT_4')) {
-                        this.setState({ cb_4: true })
+                        setCb4(true);
                     } else {
-                        this.setState({ cb_4: false })
+                        setCb4(false);
                     }
                 } else {
-                    this.setState({ cb: false })
+                    setCb(false);
                 }
             } else {
-                this.setState({ cb0: false })
+                setCb0(false);
             }
 
         }
@@ -410,7 +366,7 @@ class FUN_ALERT extends Component {
                             <label>2.2.3 Consecutivo de Salida</label>
                             <div class="input-group my-1">
                                 <input type="text" class="form-control" id="alert_id_cub"
-                                    defaultValue={_CHILD.id_cub || this.state.cubSelected || ""} />
+                                    defaultValue={_CHILD.id_cub || cubSelected || ""} />
                                    <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                             </div>
                         </div>
@@ -439,40 +395,40 @@ class FUN_ALERT extends Component {
                     </div>
 
                     <div class="form-check my-3 px-5">
-                        <input class="form-check-input" type="checkbox" id="confirm_cb" onChange={(e) => this.setState({ cb0: e.target.checked })}
+                        <input class="form-check-input" type="checkbox" id="confirm_cb" onChange={(e) => setCb0(e.target.checked)}
                         />
                         <p class="form-check-label text-start" > NO FUE POSIBLE CITAR (Se negó a recibir - no reside - no se encontró dirección - otra)</p>
                     </div>
-                    {this.state.cb0
+                    {cb0
                         ? <>
                             <div class="form-check my-3 px-5">
-                                <input class="form-check-input" type="checkbox" id="confirm_cb_2" onChange={(e) => this.setState({ cb: e.target.checked })} />
+                                <input class="form-check-input" type="checkbox" id="confirm_cb_2" onChange={(e) => setCb(e.target.checked)} />
                                 <p class="form-check-label text-start" > Se realizó publicación en:</p>
                             </div>
-                            {this.state.cb
+                            {cb
                                 ? <>
                                     <div className="row">
                                         <div className="col-3">
                                             <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb1'} onChange={(e) => this.setState({ cb_1: e.target.checked })} />
+                                                <input class="form-check-input" type="checkbox" id={'cb1'} onChange={(e) => setCb1(e.target.checked)} />
                                                 <label class="form-check-label text-start" > Periódico</label>
                                             </div>
                                         </div>
                                         <div className="col-3">
                                             <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb2'} onChange={(e) => this.setState({ cb_2: e.target.checked })} />
+                                                <input class="form-check-input" type="checkbox" id={'cb2'} onChange={(e) => setCb2(e.target.checked)} />
                                                 <label class="form-check-label text-start" > Radio</label>
                                             </div>
                                         </div>
                                         <div className="col-3">
                                             <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb3'} onChange={(e) => this.setState({ cb_3: e.target.checked })} />
+                                                <input class="form-check-input" type="checkbox" id={'cb3'} onChange={(e) => setCb3(e.target.checked)} />
                                                 <label class="form-check-label text-start" >Pagina Web</label>
                                             </div>
                                         </div>
                                         <div className="col-3">
                                             <div class="form-check ms-3 px-5">
-                                                <input class="form-check-input" type="checkbox" id={'cb4'} onChange={(e) => this.setState({ cb_4: e.target.checked })} />
+                                                <input class="form-check-input" type="checkbox" id={'cb4'} onChange={(e) => setCb4(e.target.checked)} />
                                                 <label class="form-check-label text-start" > Físico</label>
                                             </div>
                                         </div>
@@ -480,7 +436,7 @@ class FUN_ALERT extends Component {
 
                                     <div className="row">
                                         <div className="col-3">
-                                            {this.state.cb_1
+                                            {cb_1
                                                 ? <>
                                                     <label>Fecha Periódico</label>
                                                     <input type="hidden" readOnly value="ALERT_1" name="neighbbour_inforalert_name" />
@@ -494,7 +450,7 @@ class FUN_ALERT extends Component {
                                                 </> : ""}
                                         </div>
                                         <div className="col-3">
-                                            {this.state.cb_2
+                                            {cb_2
                                                 ? <>
                                                     <label>Fecha Radio</label>
                                                     <input type="hidden" readOnly value="ALERT_2" name="neighbbour_inforalert_name" />
@@ -508,7 +464,7 @@ class FUN_ALERT extends Component {
                                                 </> : ""}
                                         </div>
                                         <div className="col-3">
-                                            {this.state.cb_3
+                                            {cb_3
                                                 ? <>
                                                     <label>Fecha Pagina Web</label>
                                                     <input type="hidden" readOnly value="ALERT_3" name="neighbbour_inforalert_name" />
@@ -522,7 +478,7 @@ class FUN_ALERT extends Component {
                                                 </> : ""}
                                         </div>
                                         <div className="col-3">
-                                            {this.state.cb_4
+                                            {cb_4
                                                 ? <>
                                                     <label>Fecha Físico</label>
                                                     <input type="hidden" readOnly value="ALERT_4" name="neighbbour_inforalert_name" />
@@ -549,7 +505,8 @@ class FUN_ALERT extends Component {
             </>
         }
         let _COMPONENT_FUNXPQRS = () => {
-            var objectsPQRS = this.state.pqrsxfun;
+            var objectsPQRS = Array.isArray(pqrsxfun) ? pqrsxfun : [];
+            if (objectsPQRS.length === 0) return <label className="fw-bold">No hay solicitudes PQRS asociadas a este trámite.</label>;
             var map = objectsPQRS.map((value, index) => { // FIX: Added index parameter for key
                 var solicitors = {
                     names: value.solicitors_names ? value.solicitors_names.split(';') : [],
@@ -647,7 +604,6 @@ class FUN_ALERT extends Component {
                         </div>
                     })}
                 </React.Fragment>
-                {/* FIX: Changed from fragment to React.Fragment to support key */}
             })
             return <>
                 {map}
@@ -684,7 +640,7 @@ class FUN_ALERT extends Component {
                                 confirmButtonText: swaMsg.text_btn,
                             });
                             document.getElementById("form_alter_address").reset();
-                            this.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -713,7 +669,7 @@ class FUN_ALERT extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -765,7 +721,7 @@ class FUN_ALERT extends Component {
                             confirmButtonText: swaMsg.text_btn,
                         });
                         document.getElementById("app-form_neighbour").reset();
-                        this.requestUpdate(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -790,17 +746,17 @@ class FUN_ALERT extends Component {
             let cub = cub_selected;
             let formatData = new FormData();
 
-            formatData.set('vr', this.state.vr);
+            formatData.set('vr', vr);
             formatData.set('cub', cub);
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'PUBLICIDAD COMUNICACION A VECINOS');
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdateProp(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -813,7 +769,7 @@ class FUN_ALERT extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdateProp(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -900,7 +856,7 @@ class FUN_ALERT extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdate(currentItem.id)
+                        requestUpdate(currentItem.id)
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACION",
@@ -927,8 +883,8 @@ class FUN_ALERT extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 });
-            this.retrieveItem(this.props.currentId);
-        }
+            retrieveItem(currentId);
+        };
 
         return (
             <div>
@@ -977,11 +933,11 @@ class FUN_ALERT extends Component {
                         </form>
 
                         <div class="form-check my-3 px-5">
-                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={(e) => this.setState({ sign_pdf: e.target.checked })} />
+                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={(e) => setSignPdf(e.target.checked)} />
                             <p class="form-check-label text-start" >Generar PDF de la Valla.</p>
                         </div>
 
-                        {this.state.sign_pdf
+                        {sign_pdf
                             ? <FUN_SIGN_PDF
                                 translation={translation}
                                 swaMsg={swaMsg}
@@ -1002,10 +958,10 @@ class FUN_ALERT extends Component {
 
 
                         <div class="form-check my-3 px-5">
-                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => this.setState({ new_neighbour: !this.state.new_neighbour })} />
+                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => setNewNeighbour(!new_neighbour)} />
                             <p class="form-check-label text-start" >Añadir nuevos vecinos a esta solicitud.</p>
                         </div>
-                        {this.state.new_neighbour
+                        {new_neighbour
                             ? <> <form onSubmit={new_3} id="app-form_neighbour">
                                 <div className="row mb-3">
                                     <div className="col-6">
@@ -1042,8 +998,8 @@ class FUN_ALERT extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            vr={this.state.vr}
-                            setVr={(item) => this.setState({ vr: item })}
+                            vr={vr}
+                            setVr={(item) => setVr(item)}
                         />
 
                         <label className="app-p lead fw-normal text-uppercase my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>
@@ -1052,7 +1008,7 @@ class FUN_ALERT extends Component {
 
                     </fieldset>
 
-                    {this.state.pqrsxfun.length
+                    {pqrsxfun.length
                         ? <>
                             <fieldset className="p-3">
                                 <legend className="my-2 px-3 text-uppercase Collapsible" id="fun_alert_2">
@@ -1068,7 +1024,7 @@ class FUN_ALERT extends Component {
                         translation={translation}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                        NAVIGATION_VERSION={this.props.NAVIGATION_VERSION}
+                        NAVIGATION_VERSION={NAVIGATION_VERSION}
 
                     />
                     <FUN_MODULE_NAV
@@ -1076,15 +1032,14 @@ class FUN_ALERT extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"alert"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
                 </fieldset>}
             </div>
         );
-    }
 }
 /*
 const NAV_FUNA = () => {

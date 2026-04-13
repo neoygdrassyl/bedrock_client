@@ -1,20 +1,10 @@
-import React, { Component } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 
 const MySwal = withReactContent(Swal);
-class FUNN2 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
         var formData = new FormData();
 
@@ -351,7 +341,7 @@ class FUNN2 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -381,7 +371,7 @@ class FUNN2 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else {
                             if (response.status == 500) {
                                 MySwal.close();
@@ -411,7 +401,6 @@ class FUNN2 extends Component {
                 </div>
             </fieldset>
         </>);
-    }
-}
+};
 
 export default FUNN2;

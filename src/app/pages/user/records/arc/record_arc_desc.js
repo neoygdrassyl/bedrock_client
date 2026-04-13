@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -11,32 +11,20 @@ import EXP_AREAS_RECORD from '../exp_areas_record.component';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ARC_DESC extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new_area: false,
-            new_blueprint: false,
-            edit_area: false,
-            edit_blueprint: false,
-            sort: 'asc',
-            sort2: 'asc',
-            fillActive: 'tab2',
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit_blueprint !== prevState.edit_blueprint && this.state.edit_blueprint != false) {
-            var _ITEM = this.state.edit_blueprint;
+function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
+    const [editBlueprint, setEditBlueprint] = useState(false);
+    const [saveState, setSaveState] = useState({});
+
+    useEffect(() => {
+        if (editBlueprint) {
+            var _ITEM = editBlueprint;
             document.getElementById("r_a_33_blueprint_1_edit").value = _ITEM.id_public;
             document.getElementById("r_a_33_blueprint_2_edit").value = _ITEM.use;
             document.getElementById("r_a_33_blueprint_3_edit").value = _ITEM.scale;
             document.getElementById("r_a_33_blueprint_4_edit").value = _ITEM.category
             document.getElementById("r_a_33_blueprint_5_edit").value = _ITEM.id6_blueprint ? _ITEM.id6_blueprint : 0;
-            //document.getElementById("r_a_33_blueprint_6_edit").value = _ITEM.active == 1 ? 1 : 0;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R } = this.props;
+    }, [editBlueprint]);
         // DATA GETERS
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -54,7 +42,7 @@ class RECORD_ARC_DESC extends Component {
             return _CHILD_VARS;
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_arc_steps || [];
+            var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -88,8 +76,8 @@ class RECORD_ARC_DESC extends Component {
                     </div>
 
                     <textarea className="input-group" maxLength="8000" name="s_33_values" rows="4"
-                        defaultValue={values[0]} onBlur={() => {this.setState({ant: '1'}); manage_ra_33(false, 'ant')}}></textarea>
-                    <label>  (maximo 8000 caracteres) {_SAVING_STATE(this.state.ant)}</label>
+                        defaultValue={values[0]} onBlur={() => {setSaveState(prev => ({...prev, ant: '1'})); manage_ra_33(false, 'ant')}}></textarea>
+                    <label>  (maximo 8000 caracteres) {_SAVING_STATE(saveState.ant)}</label>
                 </div>
 
                 <div className="row">
@@ -108,8 +96,8 @@ class RECORD_ARC_DESC extends Component {
                         </div>
                     </div>
                     <textarea className="input-group" maxLength="8000" name="s_33_values" rows="4"
-                        defaultValue={values[1]} onBlur={() => {this.setState({desc: '1'});  manage_ra_33(false, 'desc')}}></textarea>
-                    <label>  (maximo 8000 caracteres) {_SAVING_STATE(this.state.desc)}</label>
+                        defaultValue={values[1]} onBlur={() => {setSaveState(prev => ({...prev, desc: '1'})); manage_ra_33(false, 'desc')}}></textarea>
+                    <label>  (maximo 8000 caracteres) {_SAVING_STATE(saveState.desc)}</label>
                 </div>
             </>
         }
@@ -151,7 +139,7 @@ class RECORD_ARC_DESC extends Component {
 
         }
         let save_step = (_id_public, useSwal, formData, state) => {
-            this.setState({[state]: 1})
+            setSaveState(prev => ({...prev, [state]: 1}))
             var STEP = LOAD_STEP(_id_public);
 
             if (useSwal) MySwal.fire({
@@ -171,8 +159,8 @@ class RECORD_ARC_DESC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({[state]: 2})
+                            requestUpdateRecord(currentItem.id);
+                            setSaveState(prev => ({...prev, [state]: 2}))
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -180,7 +168,7 @@ class RECORD_ARC_DESC extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.setState({[state]: 3})
+                            setSaveState(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
@@ -191,7 +179,7 @@ class RECORD_ARC_DESC extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.setState({[state]: 3})
+                        setSaveState(prev => ({...prev, [state]: 3}))
                     });
             }
             else {
@@ -205,8 +193,8 @@ class RECORD_ARC_DESC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.setState({[state]: 2})
+                            requestUpdateRecord(currentItem.id);
+                            setSaveState(prev => ({...prev, [state]: 2}))
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -214,7 +202,7 @@ class RECORD_ARC_DESC extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.setState({[state]: 3})
+                            setSaveState(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
@@ -225,7 +213,7 @@ class RECORD_ARC_DESC extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.setState({[state]: 3})
+                        setSaveState(prev => ({...prev, [state]: 3}))
                     });
             }
         }
@@ -235,7 +223,6 @@ class RECORD_ARC_DESC extends Component {
                     {_COMPONENT_1()}
                 </div>
         );
-    }
 }
 
 export default RECORD_ARC_DESC;

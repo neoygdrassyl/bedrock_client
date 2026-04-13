@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse'
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
@@ -6,49 +6,42 @@ import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
 import { infoCud } from '../../../components/jsons/vars';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import RecordReviewService from '../../../services/record_review.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
-class RECORD_DOC_LETTER extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: [],
-            vrSelected: null,
-            cubSelected: null,
-            idCUBxVr: null
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    async retrieveItem() {
+function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentVersion, edit, requestUpdate }) {
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [vrSelected, setVrSelected] = useState(null);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+
+    const retrieveItem = async () => {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
-            })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data);
+            });
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'CARTA DE RATIFICACION');
             
-            if(data) document.getElementById("vr_selected").value = data.vr
-            this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+            if(data) document.getElementById("vr_selected").value = data.vr;
+            setVrSelected(data?.vr);
+            setCubSelected(data?.cub);
+            setIdCUBxVr(data?.id);
         } catch (error) {
             console.log(error);
         }
-    }
-    componentDidUpdate(prevProps) {
-        // Uso tipico (no olvides de comparar las props):
-        if (this.props.currentVersion !== prevProps.currentVersion && this.props.currentVersion != null) {
-            var _CHILD_1 = this._SET_CHILD_1_FOREIGNER();
-            document.getElementById('gena_type').value = formsParser1(_CHILD_1)
-        }
-    }
-    _SET_CHILD_1_FOREIGNER = () => {
-        var _CHILD = this.props.currentItem.fun_1s;
-        var _CURRENT_VERSION = this.props.currentVersion - 1;
+    };
+
+    useEffect(() => {
+        retrieveItem();
+    }, []);
+
+    const _SET_CHILD_1_FOREIGNER = () => {
+        var _CHILD = currentItem.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
             tipo: [],
             tramite: [],
@@ -66,10 +59,15 @@ class RECORD_DOC_LETTER extends Component {
             }
         }
         return _CHILD_VARS;
+    };
 
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+    useEffect(() => {
+        if (currentVersion != null) {
+            var _CHILD_1 = _SET_CHILD_1_FOREIGNER();
+            const el = document.getElementById('gena_type');
+            if (el) el.value = formsParser1(_CHILD_1);
+        }
+    }, [currentVersion]);
 
         function capitalize(s) {
             return s && s[0].toUpperCase() + s.slice(1);
@@ -89,7 +87,7 @@ class RECORD_DOC_LETTER extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -172,17 +170,17 @@ class RECORD_DOC_LETTER extends Component {
                         <label className="mt-1">{infoCud.serials.end} Carta Acta de Obs.</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="gena_cub_act"
-                                defaultValue={_GET_CHILD_LAW().cub_act || this.state.cubSelected || ""} />
-                            {this.props.edit  ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act')}>GENERAR</button>
+                                defaultValue={_GET_CHILD_LAW().cub_act || cubSelected || ""} />
+                            {edit  ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col  mb-auto" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group">
-                            <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected || ""}>
+                            <select class="form-select" id="vr_selected" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
+                                {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
@@ -267,7 +265,7 @@ class RECORD_DOC_LETTER extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/confirmact/" + "Carta_Alerta_Acta_Observaciones_" + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/confirmact/" + "Carta_Alerta_Acta_Observaciones_" + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -322,7 +320,7 @@ class RECORD_DOC_LETTER extends Component {
 
             manage_law(true, formData);
             createVRxCUB_relation(new_id);
-            this.retrieveItem();
+            retrieveItem();
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -347,7 +345,7 @@ class RECORD_DOC_LETTER extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdate(currentItem.id)
+                                requestUpdate(currentItem.id)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
@@ -391,7 +389,7 @@ class RECORD_DOC_LETTER extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdate(currentItem.id)
+                                requestUpdate(currentItem.id)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
@@ -440,12 +438,12 @@ class RECORD_DOC_LETTER extends Component {
             let date = document.getElementById('gena_date_doc').value;
             formatData.set('date', date);
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } 
                     })
                     .catch((error) => {
@@ -457,7 +455,7 @@ class RECORD_DOC_LETTER extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } 
                     })
                     .catch((error) => {
@@ -469,7 +467,7 @@ class RECORD_DOC_LETTER extends Component {
             <form id="genc_doc_form" onSubmit={save_doc}>
                 {_GENDOC_COMPONENT()}
                 <div className="row text-center">
-                    {this.props.edit ?
+                    {edit ?
                         <div className="col">
                             <button className="btn btn-success my-3"><i class="fas fa-share-square"></i> GUARDAR DATOS</button>
                         </div>
@@ -481,7 +479,6 @@ class RECORD_DOC_LETTER extends Component {
             </form>
 
         );
-    }
 }
 
 export default RECORD_DOC_LETTER;

@@ -1,31 +1,18 @@
-import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBTooltip } from '../../../../components/ui';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import CodesJson from '../../../../components/jsons/fun6DocsList.json';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
 const MySwal = withReactContent(Swal);
 
-class RECORD_ENG_DOCS_CHECK extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, _FUN_6, currentItem, currentVersion, currentRecord, currentVersionR, _DOCS } = this.props;
-        const { } = this.state;
+function RECORD_ENG_DOCS_CHECK(props) {
+        const { translation, swaMsg, globals, _FUN_6, currentItem, currentVersion, currentRecord, currentVersionR, _DOCS, requestUpdateRecord } = props;
 
         let _GET_CHILD_6 = () => {
             var _CHILD = _FUN_6;
-            var _LIST = [];
-            if (_CHILD) {
-                _LIST = _CHILD;
-            }
-            return _LIST;
+            return Array.isArray(_CHILD) ? _CHILD : [];
         }
         let _GET_CHILD_REVIEW_GEN = () => {
             var _CHILD = currentRecord.review_check;
@@ -36,7 +23,7 @@ class RECORD_ENG_DOCS_CHECK extends Component {
             return _LIST;
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_eng_steps;
+            var _CHILD = Array.isArray(currentRecord.record_eng_steps) ? currentRecord.record_eng_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -181,7 +168,7 @@ class RECORD_ENG_DOCS_CHECK extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -212,7 +199,7 @@ class RECORD_ENG_DOCS_CHECK extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -246,7 +233,6 @@ class RECORD_ENG_DOCS_CHECK extends Component {
                 </form>
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_DOCS_CHECK;

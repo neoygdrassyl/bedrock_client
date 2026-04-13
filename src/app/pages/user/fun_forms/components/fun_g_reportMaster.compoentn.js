@@ -1,14 +1,4 @@
-import React, { Component } from 'react';
-
-class FUN_G_REPORT_MASTER extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id } = this.props;
-        const { } = this.state;
+function FUN_G_REPORT_MASTER({ translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id }) {
         const empty_model = { version: '', worker_name: '', worker_id: '', date_asign: '', worker_prev: '' }
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -115,7 +105,6 @@ class FUN_G_REPORT_MASTER extends Component {
                 {_COMPONENT_REPORT_MASTER()}
             </div >
         );
-    }
 }
 
 export default FUN_G_REPORT_MASTER;

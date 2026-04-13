@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react';
 import { dateParser, dateParser_finalDate, formsParser1 } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import { infoCud } from '../../../../components/jsons/vars';
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
 const moment = require('moment');

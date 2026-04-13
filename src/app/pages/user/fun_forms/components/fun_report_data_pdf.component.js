@@ -1,23 +1,14 @@
-import React, { Component } from 'react';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from '../../../../services/fun.service'
 import { cities, infoCud } from '../../../../components/jsons/vars';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 
 const MySwal = withReactContent(Swal);
 const moment = require('moment');
-class FUN_REPORT_DATA_PDF extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
 
         // DATA GETERS
@@ -516,7 +507,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/planing/" + "Informe Planeacion " + _GET_CHILD_LAW().report_cub + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/planing/" + "Informe Planeacion " + _GET_CHILD_LAW().report_cub + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -597,7 +588,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACION",
@@ -636,7 +627,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             MySwal.fire({
                                 title: "ERROR DE DUPLICACION",
@@ -669,7 +660,7 @@ class FUN_REPORT_DATA_PDF extends Component {
             <div className="fun_report_pdf container py-3 border border-danger p-2">
                 <form id="form_report_data_edit" onSubmit={save_reportData}>
 
-                    {process.env.REACT_APP_GLOBAL_ID == 'cb1' ?
+                    {import.meta.env.VITE_GLOBAL_ID == 'cb1' ?
                         <>
                             {_PAGE_1_COMPONENT()}
                             <label className="fw-bold py-3">INVENTARIO</label>
@@ -681,7 +672,7 @@ class FUN_REPORT_DATA_PDF extends Component {
                         </>
                         : ''}
 
-                    {process.env.REACT_APP_GLOBAL_ID == 'cp1' ?
+                    {import.meta.env.VITE_GLOBAL_ID == 'cp1' ?
                         <>
                             {_PAGE_CUP1_COMPONENT()}
                         </>
@@ -703,7 +694,6 @@ class FUN_REPORT_DATA_PDF extends Component {
                 </form>
             </div >
         );
-    }
 }
 
 export default FUN_REPORT_DATA_PDF;

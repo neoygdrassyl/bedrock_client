@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { MDBBtn, MDBCollapse } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBCollapse } from '../../../../components/ui';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../components/TagInput';
 import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import FUNService from '../../../../services/fun.service'
-import { ReactGrid } from "@silevis/reactgrid";
-import "@silevis/reactgrid/styles.css";
 import RECORD_ARC_AREAS_RESUME from './record_arc_areas_resumen.component';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 
-var tagHRef = React.createRef();
-var tagERef = React.createRef();
-
 export default function RECORD_ARC_AREAS_2(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const tagHRef = useRef(null);
+    const tagERef = useRef(null);
     const _Header = [
         "#",
         "Sótano/Piso",
@@ -217,7 +214,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         return _AREAS;
     }
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_arc_steps;
+        var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
         }
@@ -963,30 +960,107 @@ export default function RECORD_ARC_AREAS_2(props) {
         setData(newData)
     }
     // ******************************* JSX ***************************** // 
+    let _handleCellEdit = (rowIdx, cellName, cellId, newValue) => {
+        let changes = [{
+            previousCell: { name: cellName, ref: cellId },
+            newCell: { text: newValue },
+        }];
+        change_areas(changes);
+    };
+
     let _COMPONENT_TABLE_2 = () => {
-        const getColumns = () => Header.map((v, i) => { return { columnId: v || 'column_' + i, width: i === 0 ? 50 : 150 } });
-        const headerRow = {
-            rowId: "header",
-            cells: Header.map(v => { return { type: "header", text: v } }),
-        };
+        const safeData = Array.isArray(data) ? data : [];
+        const safeHeader = Array.isArray(Header) ? Header : [];
 
-        const getRows = (_data) => [
-            headerRow,
-            ..._data.map((d, idx) => ({
-                rowId: idx,
-                cells: d.map(c => ({ type: "text", text: String(c.value) || ' ', ref: d[0].id || 'cell_' + idx, name: c.name, style: { background: c.readOnly ? 'gainsboro' : '', color: c.color }, nonEditable: c.readOnly })),
-            }))
-        ];
-
-        const rows = getRows(data);
-        const columns = getColumns();
-
-        return <div className='ovx'><ReactGrid rows={rows} columns={columns} stickyLeftColumns={2}
-            onCellsChanged={(dataChange) => change_areas(dataChange)}
-            enableFillHandle
-            enableRangeSelection
-            enableGroupIdRender
-        /></div>
+        return (
+            <div className='ovx' style={{ overflowX: 'auto' }}>
+                <table className='table table-bordered table-sm' style={{ minWidth: safeHeader.length * 150, tableLayout: 'fixed' }}>
+                    <thead>
+                        <tr>
+                            {safeHeader.map((h, i) => (
+                                <th key={'th_' + i}
+                                    style={{
+                                        width: i === 0 ? 50 : 150,
+                                        position: i < 2 ? 'sticky' : undefined,
+                                        left: i === 0 ? 0 : i === 1 ? 50 : undefined,
+                                        zIndex: i < 2 ? 2 : undefined,
+                                        background: '#f8f9fa',
+                                        whiteSpace: 'nowrap',
+                                        fontSize: '0.8rem',
+                                    }}
+                                    className='text-center'
+                                >
+                                    {h}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {safeData.map((row, rowIdx) => {
+                            const safeRow = Array.isArray(row) ? row : [];
+                            return (
+                                <tr key={'row_' + rowIdx}>
+                                    {safeRow.map((cell, colIdx) => {
+                                        const isReadOnly = cell.readOnly || false;
+                                        const cellValue = cell.value != null ? String(cell.value) : '';
+                                        const cellId = cell.id || null;
+                                        const cellName = cell.name || '';
+                                        return (
+                                            <td key={'cell_' + rowIdx + '_' + colIdx}
+                                                style={{
+                                                    width: colIdx === 0 ? 50 : 150,
+                                                    position: colIdx < 2 ? 'sticky' : undefined,
+                                                    left: colIdx === 0 ? 0 : colIdx === 1 ? 50 : undefined,
+                                                    zIndex: colIdx < 2 ? 1 : undefined,
+                                                    background: isReadOnly ? 'gainsboro' : '#fff',
+                                                    color: cell.color || undefined,
+                                                    fontSize: '0.8rem',
+                                                    padding: '2px 4px',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    minWidth: colIdx === 0 ? 50 : 150,
+                                                    maxWidth: colIdx === 0 ? 50 : 150,
+                                                }}
+                                                className={cell.className || ''}
+                                            >
+                                                {isReadOnly ? (
+                                                    <span>{cellValue}</span>
+                                                ) : (
+                                                    <input
+                                                        type='text'
+                                                        defaultValue={cellValue}
+                                                        style={{
+                                                            width: '100%',
+                                                            border: 'none',
+                                                            outline: 'none',
+                                                            background: 'transparent',
+                                                            color: 'inherit',
+                                                            fontSize: 'inherit',
+                                                            padding: 0,
+                                                        }}
+                                                        onBlur={(e) => {
+                                                            if (e.target.value !== cellValue) {
+                                                                _handleCellEdit(rowIdx, cellName, cellId, e.target.value);
+                                                            }
+                                                        }}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                e.target.blur();
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        );
     }
     let _COMPONENT_BTNS = () => {
         return <>
@@ -1054,7 +1128,7 @@ export default function RECORD_ARC_AREAS_2(props) {
                     <div className='row mb-1'>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Otros (Históricos, Etapas, etc...):</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsH}
                                 placeholder="Histórico..."
                                 onChange={(newTags) => { setTagH(newTags); manage_step(newTags, 'h') }}
@@ -1064,7 +1138,7 @@ export default function RECORD_ARC_AREAS_2(props) {
                         </div>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Empate:</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsE}
                                 placeholder="Empate..."
                                 onChange={(newTags) => { setTagE(newTags); manage_step(newTags, 'e') }}
@@ -1182,11 +1256,13 @@ export default function RECORD_ARC_AREAS_2(props) {
 
     // ************
     let change_areas = (changes) => {
+        if (!Array.isArray(changes)) return;
         setSaving(0);
-        let old_data = data;
+        let old_data = Array.isArray(data) ? data : [];
         let new_data = [];
 
         new_data = old_data.map(od => {
+            if (!Array.isArray(od)) return od;
             return od.map(cell => {
                 let newCell = {};
                 let findCell = changes.find(f => cell.name === f.previousCell.name && cell.id === f.previousCell.ref)
@@ -1282,11 +1358,12 @@ export default function RECORD_ARC_AREAS_2(props) {
         let newCells = [];
         let delCells = [];
 
-        let usedData = new_data || data;
+        let usedData = Array.isArray(new_data) ? new_data : (Array.isArray(data) ? data : []);
 
         let finish_flag = usedData.length - 2;
 
         usedData.map((d, i) => {
+            if (!Array.isArray(d)) return;
             if (i < finish_flag + 1) {
                 let _id = d[0].id;
                 if (_id) {
@@ -1297,7 +1374,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         })
 
         originalAreas.map(a => {
-            if (!usedData.find(d => d[0].id === a.id)) delCells.push([{ id: a.id }])
+            if (!usedData.find(d => Array.isArray(d) && d[0] && d[0].id === a.id)) delCells.push([{ id: a.id }])
 
         })
 

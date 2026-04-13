@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { Spreadsheet } from "react-spreadsheet";
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { MDBBtn, MDBCollapse } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBCollapse } from '../../../../components/ui';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../components/TagInput';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import FUNService from '../../../../services/fun.service';
 
-var tagHRef = React.createRef();
-var tagERef = React.createRef();
-
 export default function RECORD_ARC_AREAS(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const tagHRef = useRef(null);
+    const tagERef = useRef(null);
     const _Header = [
         "Refe",
         "ID Plano",
@@ -200,7 +199,7 @@ export default function RECORD_ARC_AREAS(props) {
         return _AREAS;
     }
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_arc_steps;
+        var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
         }
@@ -910,7 +909,7 @@ export default function RECORD_ARC_AREAS(props) {
                     <div className='row mb-1'>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Otros (Históricos, Etapas, etc...):</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsH}
                                 placeholder="Histórico..."
                                 onChange={(newTags) => { setTagH(newTags); manage_step(newTags, 'h') }}
@@ -920,7 +919,7 @@ export default function RECORD_ARC_AREAS(props) {
                         </div>
                         <div className='col'>
                             <label className='mx-2 fw-bold'>Añadir Empate:</label>
-                            <ReactTagInput
+                            <TagInput
                                 tags={tagsE}
                                 placeholder="Empate..."
                                 onChange={(newTags) => { setTagE(newTags); manage_step(newTags, 'e') }}

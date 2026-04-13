@@ -1,53 +1,44 @@
 import moment from 'moment';
 import DataTable from 'react-data-table-component';
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 import FUN_SERVICE from "../../../../services/fun.service"
 import FUN_CLOCKS_EMAILS from './fun_clocks_email.component';
 import { dateParser_finalDate, dateParser_timePassed } from '../../../../components/customClasses/typeParse';
-import { MDBBtn, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from '../../../../components/ui';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
 
-class FUN_CLOCKS_NEGATIVE extends Component {
-    constructor(props) {
-        super(props);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.manage_clock = this.manage_clock.bind(this);
-        this.state = {
-            fillActive: null,
-        };
-    }
+function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMsg }) {
+        const [fillActive, setFillActive] = useState(null);
+        const [edit, setEdit] = useState(false);
 
-    requestUpdate(id) {
-        this.props.requestUpdate(id)
-    }
+    useEffect(() => {
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
-            document.getElementById("f_clock_edit_1").value = _ITEM.resolver_sattus ? _ITEM.resolver_sattus : 0;
-            document.getElementById("f_clock_edit_2").value = _ITEM.resolver_id6 ? _ITEM.resolver_id6 : 0;
-            document.getElementById("f_clock_edit_3").value = _ITEM.resolver_context;
-            document.getElementById("f_clock_edit_4").value = _ITEM.date_start ? _ITEM.date_start : moment().format('YYYY-MM-DD');
+        if (edit != false) {
+            var _ITEM = edit;
+            document.getElementById("f_clock_edit_1") && (document.getElementById("f_clock_edit_1").value = _ITEM.resolver_sattus ? _ITEM.resolver_sattus : 0);
+            document.getElementById("f_clock_edit_2") && (document.getElementById("f_clock_edit_2").value = _ITEM.resolver_id6 ? _ITEM.resolver_id6 : 0);
+            document.getElementById("f_clock_edit_3") && (document.getElementById("f_clock_edit_3").value = _ITEM.resolver_context);
+            document.getElementById("f_clock_edit_4") && (document.getElementById("f_clock_edit_4").value = _ITEM.date_start ? _ITEM.date_start : moment().format('YYYY-MM-DD'));
         }
-        // Verificar si hay nuevos datos para ejecutar la autoguardado
-        if (this.props.currentItem !== prevProps.currentItem) {
-            this.autoSaveMissingStartClock();
-        }
-    }
+        autoSaveMissingStartClock();
 
-    componentDidMount() {
-        this.setState({ fillActive: this.props.currentItem.state });
-        this.autoSaveMissingStartClock();
-    }
+    }, [currentItem, edit]);
+
+    useEffect(() => {
+
+        setFillActive(currentItem.state);
+        autoSaveMissingStartClock();
+
+    }, []);
 
     // --- DATA GETTERS MOVIDOS A METODOS DE CLASE ---
-    get_child_clock() {
-        var _CHILD = this.props.currentItem.fun_clocks;
+    const get_child_clock = () => {
+        var _CHILD = currentItem.fun_clocks;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
@@ -55,8 +46,8 @@ class FUN_CLOCKS_NEGATIVE extends Component {
         return _LIST;
     }
 
-    get_clock_state_version(_state, _version) {
-        var _CLOCK = this.get_child_clock();
+    const get_clock_state_version = (_state, _version) => {
+        var _CLOCK = get_child_clock();
         if (_state == null) return false;
         for (var i = 0; i < _CLOCK.length; i++) {
             if (_CLOCK[i].state == _state && _CLOCK[i].version == _version) return _CLOCK[i];
@@ -65,12 +56,12 @@ class FUN_CLOCKS_NEGATIVE extends Component {
     }
 
     // --- LOGICA DE AUTOGUARDADO ---
-    autoSaveMissingStartClock() {
+    const autoSaveMissingStartClock = () => {
         const versionsToCheck = [-1, -2, -3, -4, -5, -6]; // Versiones posibles de desistimiento
 
         versionsToCheck.forEach(version => {
-            let clock50 = this.get_clock_state_version(-50, version);
-            let clock5 = this.get_clock_state_version(-5, version);
+            let clock50 = get_clock_state_version(-50, version);
+            let clock5 = get_clock_state_version(-5, version);
 
             // SI EXISTE -5 (Citación) PERO NO EXISTE -50 (Inicio Desistimiento)
             if (clock5 && !clock50) {
@@ -84,18 +75,17 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 formDataClock.set('desc', "Inicio de proceso generado automáticamente desde Citación."); 
                 formDataClock.set('state', -50);
                 formDataClock.set('version', version);
-                formDataClock.set('fun0Id', this.props.currentItem.id);
+                formDataClock.set('fun0Id', currentItem.id);
 
                 // Llamamos a manage_clock en modo silencioso (false)
-                this.manage_clock(false, -50, version, formDataClock);
+                manage_clock(false, -50, version, formDataClock);
             }
         });
     }
 
     // --- API ACTION ---
-    manage_clock(useMySwal, state, version, formDataClock) {
-        const { swaMsg, currentItem } = this.props;
-        var _CHILD = this.get_clock_state_version(state, version);
+    const manage_clock = (useMySwal, state, version, formDataClock) => {
+        var _CHILD = get_clock_state_version(state, version);
 
         if (useMySwal) {
             MySwal.fire({
@@ -117,7 +107,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                         confirmButtonText: swaMsg.text_btn,
                     });
                 }
-                this.props.requestUpdate(currentItem.id);
+                requestUpdate(currentItem.id);
             } else {
                 if (useMySwal) {
                     MySwal.fire({
@@ -153,9 +143,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
         }
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { fillActive } = this.state;
+        // Props and state already available from function signature and useState hooks
 
         const ClockDictionary = {
             '-3': {
@@ -247,7 +235,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
 
         // DATA GETTERS
         // Usamos los métodos de clase ahora, pero mantenemos alias locales si es necesario para compatibilidad con el resto del código en render
-        let _GET_CHILD_CLOCK = () => this.get_child_clock();
+        let _GET_CHILD_CLOCK = () => get_child_clock();
         
         let _GET_CHILD_6 = () => {
             var _CHILD = currentItem.fun_6s;
@@ -268,7 +256,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             return _CHILD;
         }
         // DATA CONVERTERS
-        let _GET_CLOCK_STATE_VERSION = (_state, _version) => this.get_clock_state_version(_state, _version);
+        let _GET_CLOCK_STATE_VERSION = (_state, _version) => get_clock_state_version(_state, _version);
 
         let _GET_CLOCK_STATE = (_state) => {
             var _CLOCKS = _GET_CHILD_CLOCK();
@@ -516,7 +504,6 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                     </div>
                 </div>
 
-
                 <div className="row mb-3 text-center">
                     <div className="col">
                         <button className="btn btn-success my-3" onClick={() => save_clock(data)}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
@@ -555,8 +542,6 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                         : ''}
                 </div>
 
-
-
                 {window.user.id == 1 ? preData : ''}
             </>
 
@@ -569,7 +554,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             const columns = [
                 {
                     name: <label className="text-center">EVENTO</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     minWidth: '250px',
@@ -582,7 +567,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 },
                 {
                     name: <label className="text-center">FECHA EVENTO</label>,
-                    selector: 'date_start',
+                    selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -590,7 +575,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 },
                 {
                     name: <label className="text-center">FECHA LIMITE</label>,
-                    selector: 'date_start',
+                    selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -733,7 +718,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', process);
             formDataClock.set('fun0Id', currentItem.id);
 
-            this.manage_clock(true, state, process, formDataClock);
+            manage_clock(true, state, process, formDataClock);
 
             formData = new FormData();
             let new_state = Number(process) - 100;
@@ -770,8 +755,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', data.version);
             formDataClock.set('fun0Id', currentItem.id);
 
-
-            this.manage_clock(true, data.state, data.version, formDataClock);
+            manage_clock(true, data.state, data.version, formDataClock);
         }
         let save_close = (version) => {
             formDataClock = new FormData();
@@ -788,7 +772,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', version);
             formDataClock.set('fun0Id', currentItem.id);
 
-            this.manage_clock(false, state, currentVersion, formDataClock);
+            manage_clock(false, state, currentVersion, formDataClock);
 
         }
         let save_archive = () => {
@@ -806,7 +790,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', currentVersion);
             formDataClock.set('fun0Id', currentItem.id);
 
-            this.manage_clock(false, state, currentVersion, formDataClock);
+            manage_clock(false, state, currentVersion, formDataClock);
 
         }
         let final_clock = () => {
@@ -825,7 +809,7 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             formDataClock.set('version', OngoingProcess);
             formDataClock.set('fun0Id', currentItem.id);
 
-            this.manage_clock(false, state, OngoingProcess, formDataClock);
+            manage_clock(false, state, OngoingProcess, formDataClock);
         }
         
         // NOTA: Se ha movido manage_clock a un método de clase para ser usado en el ciclo de vida.
@@ -854,8 +838,8 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                                 confirmButtonText: swaMsg.text_btn,
                             });
                         }
-                        this.props.requestRefresh();
-                        this.props.requestUpdate(currentItem.id)
+                        requestRefresh();
+                        requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
                             MySwal.fire({
@@ -912,8 +896,8 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestRefresh();
-                                this.props.requestUpdate(currentItem.id)
+                                requestRefresh();
+                                requestUpdate(currentItem.id)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -967,8 +951,8 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestRefresh();
-                                this.props.requestUpdate(currentItem.id)
+                                requestRefresh();
+                                requestUpdate(currentItem.id)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -991,10 +975,10 @@ class FUN_CLOCKS_NEGATIVE extends Component {
             });
         }
         const handleFillClick = (state) => {
-            if (state === this.state.fillActive) {
+            if (state === fillActive) {
                 return;
             }
-            this.setState({ fillActive: state });
+            setFillActive(state);
         };
         return (
             <div className="fun_clocks_negative">
@@ -1010,8 +994,6 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                             </>
                             : ""}
 
-
-
                         <legend className="my-2 px-3 text-uppercase bg-danger text-white" id="new_process">
                             <label className="app-p lead text-center fw-normal text-uppercase">NUEVO PROCESO DE DESESTIMIENTO</label>
                         </legend>
@@ -1022,54 +1004,54 @@ class FUN_CLOCKS_NEGATIVE extends Component {
 
                 <MDBTabs fill className='mb-3'>
                     <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-101')} active={this.state.fillActive == '-101'}>
+                        <MDBTabsLink onClick={() => handleFillClick('-101')} active={fillActive == '-101'}>
                             <label className="upper-case">INCOMPLETO</label>
                         </MDBTabsLink>
                     </MDBTabsItem>
                     <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-102')} active={this.state.fillActive == '-102'}>
+                        <MDBTabsLink onClick={() => handleFillClick('-102')} active={fillActive == '-102'}>
                             <label className="upper-case">FALTA VALLA INFORMATIVA</label>
                         </MDBTabsLink>
                     </MDBTabsItem>
                     <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-103')} active={this.state.fillActive == '-103'}>
+                        <MDBTabsLink onClick={() => handleFillClick('-103')} active={fillActive == '-103'}>
                             <label className="upper-case">NO CUMPLE ACTA CORRECIONES</label>
                         </MDBTabsLink>
                     </MDBTabsItem>
                     <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-104')} active={this.state.fillActive == '-104'}>
+                        <MDBTabsLink onClick={() => handleFillClick('-104')} active={fillActive == '-104'}>
                             <label className="upper-case">NO PAGA EXPENSAS</label>
                         </MDBTabsLink>
                     </MDBTabsItem>
                     <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-105')} active={this.state.fillActive == '-105'}>
+                        <MDBTabsLink onClick={() => handleFillClick('-105')} active={fillActive == '-105'}>
                             <label className="upper-case">VOLUNTARIO</label>
                         </MDBTabsLink>
                     </MDBTabsItem>
                     <MDBTabsItem>
-                    <MDBTabsLink onClick={() => handleFillClick('-106')} active={this.state.fillActive == '-106'}>
+                    <MDBTabsLink onClick={() => handleFillClick('-106')} active={fillActive == '-106'}>
                         <label className="upper-case">NEGADA</label>
                     </MDBTabsLink>
                 </MDBTabsItem>
                 </MDBTabs>
 
                 <MDBTabsContent>
-                    <MDBTabsPane show={this.state.fillActive == '-101'}>
+                    <MDBTabsPane show={fillActive == '-101'}>
                         {_MANAGE_NEGATIVE_PROCESS('-1')}
                     </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-102'}>
+                    <MDBTabsPane show={fillActive == '-102'}>
                         {_MANAGE_NEGATIVE_PROCESS('-2')}
                     </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-103'}>
+                    <MDBTabsPane show={fillActive == '-103'}>
                         {_MANAGE_NEGATIVE_PROCESS('-3')}
                     </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-104'}>
+                    <MDBTabsPane show={fillActive == '-104'}>
                         {_MANAGE_NEGATIVE_PROCESS('-4')}
                     </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-105'}>
+                    <MDBTabsPane show={fillActive == '-105'}>
                         {_MANAGE_NEGATIVE_PROCESS('-5')}
                     </MDBTabsPane>
-                    <MDBTabsPane show={this.state.fillActive == '-106'}>
+                    <MDBTabsPane show={fillActive == '-106'}>
                     {_MANAGE_NEGATIVE_PROCESS('-6')}
                 </MDBTabsPane>
                 </MDBTabsContent>
@@ -1089,7 +1071,6 @@ class FUN_CLOCKS_NEGATIVE extends Component {
                 </> : ""}
             </div>
         );
-    }
 }
 
 export default FUN_CLOCKS_NEGATIVE;

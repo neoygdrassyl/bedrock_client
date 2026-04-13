@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useCallback } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -6,31 +6,13 @@ import withReactContent from 'sweetalert2-react-content'
 import Nomenclature_Service from '../../../services/nomeclature.service'
 import moment from 'moment';
 import VIZUALIZER from '../../../components/vizualizer.component';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import { cities } from '../../../components/jsons/vars';
 
 
 const MySwal = withReactContent(Swal);
 
-class NOMENCLATURE_ANEX extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshItem = this.refreshItem.bind(this);
-        this.state = {
-        };
-    }
-    refreshList() {
-        this.props.refreshList();
-    }
-    refreshItem(id) {
-        this.props.refreshItem(id);
-    }
-
-
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshList, refreshItem }) {
         var formData = new FormData();
 
         // DATA GETTER
@@ -93,7 +75,7 @@ class NOMENCLATURE_ANEX extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.refreshItem(currentItem.id);
+                            refreshItem(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -122,7 +104,7 @@ class NOMENCLATURE_ANEX extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.refreshItem(currentItem.id);
+                            refreshItem(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -185,7 +167,7 @@ class NOMENCLATURE_ANEX extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/nomenclaure/" + "Nomenclature " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/nomenclaure/" + "Nomenclature " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -303,7 +285,6 @@ class NOMENCLATURE_ANEX extends Component {
                 </form>
             </div >
         );
-    }
 }
 
 export default NOMENCLATURE_ANEX;

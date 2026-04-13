@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { PDFDocument } from 'pdf-lib';
 import { Document, Page, pdfjs } from "react-pdf";
-import 'react-pdf/dist/umd/Page/AnnotationLayer.css';
-import { Button, FlexboxGrid, Message, toaster } from 'rsuite';
-import { MDBBtn } from 'mdb-react-ui-kit';
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+import { MDBBtn } from './ui';
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString();
 
 
 const customStylesForModal = {
@@ -148,38 +151,31 @@ export default function VIEWER(props) {
                     </div>
                 </div>
 
-                <FlexboxGrid justify="center" >
-                    {loadData === 0 ?
-                        <Message showIcon type={'info'}
-                            header={<label className='fw-b'>Cargargando documento...</label>}>
-                            <label>Espero un momento</label>
-                        </Message>
-                        : null}
+                <div className="d-flex flex-column align-items-center w-100">
+                    {loadData === 0 ? (
+                        <div className="alert alert-info w-100">
+                            <strong>Cargando documento...</strong> Espere un momento.
+                        </div>
+                    ) : null}
 
-                    {loadData === 1 && (urlFile || file) ?
-                        <FlexboxGrid.Item colspan={24}>
-                            <div style={{ paddingLeft: `calc((100vw - ${795 * scale}px)/2)`, paddingRight: `calc((100vw - ${795 * scale}px)/2)` }}>
-                                <Document file={urlFile || file} onLoadSuccess={onDocumentLoadSuccess} >
-                                    {pagesComponent.map(page => page)}
-                                </Document>
-                            </div>
-                        </FlexboxGrid.Item>
-                        : null}
+                    {loadData === 1 && (urlFile || file) ? (
+                        <div style={{ paddingLeft: `calc((100vw - ${795 * scale}px)/2)`, paddingRight: `calc((100vw - ${795 * scale}px)/2)` }}>
+                            <Document file={urlFile || file} onLoadSuccess={onDocumentLoadSuccess}>
+                                {pagesComponent.map(page => page)}
+                            </Document>
+                        </div>
+                    ) : null}
 
-                    {loadData === 2 ?
-                        <Message showIcon type={'error'}
-                            header={<label className='fw-b'>Documento no encontrado</label>}>
-                            <label>El documento no se encontró de la base de datos, comuníquese con el administrador</label>
-                        </Message>
-                        : null}
+                    {loadData === 2 ? (
+                        <div className="alert alert-danger w-100">
+                            <strong>Documento no encontrado.</strong> El documento no se encontró en la base de datos, comuníquese con el administrador.
+                        </div>
+                    ) : null}
 
-
-                    <FlexboxGrid.Item colspan={24}>
-                        <img src={urlImg || fimage} hidden={!urlImg || !fimage} id={'viewer_img'} alt="Image" height={100 * scale + '%'} width={100 * scale + '%'}></img>
-                    </FlexboxGrid.Item>
-
-
-                </FlexboxGrid>
+                    <div className="w-100">
+                        <img src={urlImg || fimage} hidden={!urlImg || !fimage} id={'viewer_img'} alt="Image" height={100 * scale + '%'} width={100 * scale + '%'} />
+                    </div>
+                </div>
                 <hr />
                 <div className="text-end py-2">
                     <a className="btn btn-sm btn-danger me-2" href={urlImg || urlFile} target='_blank'><i class="fas fa-cloud-download-alt"></i> DESCARGA</a>

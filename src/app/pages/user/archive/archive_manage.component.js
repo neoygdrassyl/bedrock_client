@@ -1,12 +1,11 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React from 'react';
+import { MDBBtn } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
 
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 
 export default function ARCHIVE_MANAGE(props) {

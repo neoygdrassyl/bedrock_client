@@ -1,5 +1,5 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
+import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -7,17 +7,13 @@ import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_PH_BLUEPRINT extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
 
             document.getElementById("r_ph_bl_1_edit").value = _ITEM.id_public;
             document.getElementById("r_ph_bl_2_edit").value = _ITEM.floor;
@@ -33,10 +29,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                 }
             }
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    }, [edit]);
 
         // DATA GETTERS
         let _GET_CHILD_BLUEPRINTS = () => {
@@ -56,7 +49,7 @@ class RECORD_PH_BLUEPRINT extends Component {
             const columns = [
                 {
                     name: <label className="text-center">ID Plano</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -64,7 +57,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                 },
                 {
                     name: <label className="text-center">Sótano / Piso</label>,
-                    selector: 'floor',
+                    selector: row => row.floor,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -72,7 +65,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                 },
                 {
                     name: <label className="text-center">Área total construida m2</label>,
-                    selector: 'area',
+                    selector: row => row.area,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -150,7 +143,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                 },
                 {
                     name: <label className="text-center">Descripción otros bienes (espacios)</label>,
-                    selector: 'units_other',
+                    selector: row => row.units_other,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -163,7 +156,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => this.setState({ edit: row })}><i class="far fa-edit fa-2x"></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}><i class="far fa-edit fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                             <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
@@ -363,7 +356,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_ph_blueprint_new').reset();
                     } else {
                         MySwal.fire({
@@ -410,8 +403,8 @@ class RECORD_PH_BLUEPRINT extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit: false });
+                                requestUpdateRecord(currentItem.id);
+                                setEdit(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -461,7 +454,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            RECORD_PH_SERVICE.update_blueprint(this.state.edit.id, formData)
+            RECORD_PH_SERVICE.update_blueprint(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -471,9 +464,9 @@ class RECORD_PH_BLUEPRINT extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_ph_blueprint_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -498,12 +491,12 @@ class RECORD_PH_BLUEPRINT extends Component {
                 <label className="app-p lead fw-bold">RELACIÓN DE PLANOS PRESENTADOS</label>
 
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Nuevo Plano
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_ph_blueprint_new" onSubmit={new_item}>
                             {_COMPONENT_MANAGE()}
@@ -517,7 +510,7 @@ class RECORD_PH_BLUEPRINT extends Component {
                     : ""}
                 {_CHILD_LICENCE_LIST()}
                 {_COMPONENT_TOTAL()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_ph_blueprint_edit" onSubmit={edit_item}>
                             <h3 className="my-3 text-center">Actualizar Plano</h3>
@@ -532,7 +525,6 @@ class RECORD_PH_BLUEPRINT extends Component {
                     : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_PH_BLUEPRINT;

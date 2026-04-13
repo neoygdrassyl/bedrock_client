@@ -1,4 +1,3 @@
-import React from 'react'
 import moment from 'moment';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -106,7 +105,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                 .then((response) => {
                     if (response.data === 'OK') {
                         // Refrescar la UI
-                        this.props.requestUpdate(currentItem.id, true);
+                        props.requestUpdate(currentItem.id, true);
                     }
                 })
                 .catch((error) => {

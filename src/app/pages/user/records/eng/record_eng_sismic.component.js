@@ -1,5 +1,5 @@
-import { MDBBtn, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
+import { MDBBtn, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip } from '../../../../components/ui';
+import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -7,19 +7,17 @@ import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ENG_SISMIC extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-            sort: 'desc',
-        };
-    }
-    componentDidMount() {
-        this.set_values();
-    }
-    get_d233() {
+function RECORD_ENG_SISMIC(props) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [sort, setSort] = useState('desc');
+    const [d237, setD237] = useState(undefined);
+    const [qedit, setQedit] = useState({});
+
+    useEffect(() => {
+        set_values();
+    }, []);
+    function get_d233() {
         let d232 = document.getElementById('d232') ? document.getElementById('d232').value : 0;
         d232 = Number(d232);
         let op = 0;
@@ -30,11 +28,11 @@ class RECORD_ENG_SISMIC extends Component {
         op = Number(op).toFixed(2)
         return op;
     }
-    set_d231() {
-        var op = this._GET_STEP_TYPE_INDEX('s4237', 'value', 20) ?? this._GET_STEP_TYPE_INDEX('s4238', 'value', 0) ?? ''
+    function set_d231() {
+        var op = _GET_STEP_TYPE_INDEX('s4237', 'value', 20) ?? _GET_STEP_TYPE_INDEX('s4238', 'value', 0) ?? ''
         if (document.getElementById('d231')) document.getElementById('d231').value = op;
     }
-    set_d232() {
+    function set_d232() {
         let d232 = document.getElementById('d232') ? document.getElementById('d232').value : 0;
         d232 = Number(d232);
         let op = 0;
@@ -45,7 +43,7 @@ class RECORD_ENG_SISMIC extends Component {
         op = Number(op).toFixed(2)
         if (document.getElementById('d233')) document.getElementById('d233').value = op;
     }
-    set_d233() {
+    function set_d233() {
         let d232 = document.getElementById('d232') ? document.getElementById('d232').value : 0;
         d232 = Number(d232);
         let op = 0;
@@ -56,14 +54,14 @@ class RECORD_ENG_SISMIC extends Component {
         op = Number(op).toFixed(2)
         if (document.getElementById('d233')) document.getElementById('d233').value = op;
     }
-    set_d236() {
+    function set_d236() {
         let d231 = document.getElementById('d231') ? document.getElementById('d231').value : 0;
         let tot = 0;
-        let _LIST = this._GET_CHILD_SISMIC();
+        let _LIST = _GET_CHILD_SISMIC();
         for (var i = 0; i < _LIST.length; i++) {
             let condition = String(_LIST[i].name).toLowerCase().includes('piso 1');
             if (!condition) {
-                tot += Number(this._get_TOT(_LIST[i]))
+                tot += Number(_get_TOT(_LIST[i]))
             }
         }
 
@@ -71,14 +69,14 @@ class RECORD_ENG_SISMIC extends Component {
         op = Number(op).toFixed(2)
         if (document.getElementById('d236')) document.getElementById('d236').value = op;
     }
-    get_d236() {
+    function get_d236() {
         let d231 = document.getElementById('d231') ? document.getElementById('d231').value : 0;
         let tot = 0;
-        let _LIST = this._GET_CHILD_SISMIC();
+        let _LIST = _GET_CHILD_SISMIC();
         for (var i = 0; i < _LIST.length; i++) {
             let condition = String(_LIST[i].name).toLowerCase().includes('piso 1');
             if (!condition) {
-                tot += Number(this._get_TOT(_LIST[i]))
+                tot += Number(_get_TOT(_LIST[i]))
             }
         }
 
@@ -86,39 +84,35 @@ class RECORD_ENG_SISMIC extends Component {
         op = Number(op).toFixed(2)
         return op;
     }
-    set_d237() {
+    function set_d237() {
         let d236 = document.getElementById('d236') ? document.getElementById('d236').value : 0;
         let op = d236 / 10;
         op = Number(op).toFixed(2)
-        this.setState({ d237: op })
+        setD237(op)
         if (document.getElementById('d237')) document.getElementById('d237').value = op;
     }
-    set_values() {
-        this.set_d231();
-        this.set_d232();
-        this.set_d233();
-        this.set_d236();
-        this.set_d237();
+    function set_values() {
+        set_d231();
+        set_d232();
+        set_d233();
+        set_d236();
+        set_d237();
     }
     // DATA GETTERS
-    _GET_CHILD_SISMIC = () => {
-        var _CHILD = this.props.currentRecord.record_eng_sismics;
-        var _LIST = [];
-        if (_CHILD) {
-            _LIST = _CHILD;
-        }
-        return _LIST;
+    const _GET_CHILD_SISMIC = () => {
+        var _CHILD = props.currentRecord.record_eng_sismics;
+        return Array.isArray(_CHILD) ? _CHILD : [];
     }
-    LOAD_STEP(_id_public) {
-        var _CHILD = this.props.currentRecord.record_eng_steps;
+    function LOAD_STEP(_id_public) {
+        var _CHILD = Array.isArray(props.currentRecord.record_eng_steps) ? props.currentRecord.record_eng_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
-            if (_CHILD[i].version == this.props.currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
+            if (_CHILD[i].version == props.currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }
         return []
     }
     // DATA CONVERTERS
-    _GET_STEP_TYPE_INDEX = (_id_public, _type, _index) => {
-        var STEP = this.LOAD_STEP(_id_public);
+    const _GET_STEP_TYPE_INDEX = (_id_public, _type, _index) => {
+        var STEP = LOAD_STEP(_id_public);
         if (!STEP) return null;
         if (!STEP['id']) return null;
         var value = STEP[_type]
@@ -126,66 +120,66 @@ class RECORD_ENG_SISMIC extends Component {
         value = value.split(';');
         return value[_index]
     }
-    _GET_DENPLAC_VALUE = () => {
-        return this._GET_STEP_TYPE_INDEX('s4322', 'value', 30);
+    const _GET_DENPLAC_VALUE = () => {
+        return _GET_STEP_TYPE_INDEX('s4322', 'value', 30);
     }
-    _GET_PESOPLAC_VALUE = (row) => {
+    const _GET_PESOPLAC_VALUE = (row) => {
         if (!row.area || !row.name) return '';
         let area = row.area;
         let denplac = row.denplac;
         return Number(area * denplac).toFixed(2);
     }
-    _get_COLPAN_VALUE = (row) => {
-        let wc = this._GET_STEP_TYPE_INDEX('sis_wc', 'value', 0) ?? 24;
+    const _get_COLPAN_VALUE = (row) => {
+        let wc = _GET_STEP_TYPE_INDEX('sis_wc', 'value', 0) ?? 24;
         let column;
         column = JSON.parse(row.column);
         column = JSON.parse(column);
         if (!column) column = { n: 9, c1: 0.3, c2: 0.3 }
         return Number(row.height * column.c1 * column.c2 * column.n * wc).toFixed(2);
     }
-    _get_VIGA = (height) => {
-        let wc = this._GET_STEP_TYPE_INDEX('sis_wc', 'value', 0) ?? 24;
+    const _get_VIGA = (height) => {
+        let wc = _GET_STEP_TYPE_INDEX('sis_wc', 'value', 0) ?? 24;
         return Number(height * 0.3 * 0.3 * 9 * wc * 0.85).toFixed(2);
     }
-    _get_TOT = (row) => {
-        let pesoplac = this._GET_PESOPLAC_VALUE(row);
-        let colpan = this._get_COLPAN_VALUE(row)
-        let viga = this._get_VIGA(row.height)
+    const _get_TOT = (row) => {
+        let pesoplac = _GET_PESOPLAC_VALUE(row);
+        let colpan = _get_COLPAN_VALUE(row)
+        let viga = _get_VIGA(row.height)
         let esca = row.esca;
         let sum = Number(pesoplac) + Number(colpan) + Number(viga) + Number(esca);
         return (sum).toFixed(2)
     }
-    _get_WIHIK = (row) => {
-        var k = this.get_d233() || this._GET_STEP_TYPE_INDEX('s4238', 'value', 2) || 1;
-        //var hi = Math.abs(this._get_SUMLEVEL(row.id, row.name, true));
+    const _get_WIHIK = (row) => {
+        var k = get_d233() || _GET_STEP_TYPE_INDEX('s4238', 'value', 2) || 1;
+        //var hi = Math.abs(_get_SUMLEVEL(row.id, row.name, true));
         var hi = Number(row.height);
-        var wi = this._get_TOT(row);
+        var wi = _get_TOT(row);
         let op = wi * Math.pow(hi, k);
         op = Number(op).toFixed(2)
         return op;
     }
-    _get_CVI = (row) => {
-        var wihik = this._get_WIHIK(row);
-        var wihik_total = this._GET_TOTAL().wihik;
+    const _get_CVI = (row) => {
+        var wihik = _get_WIHIK(row);
+        var wihik_total = _GET_TOTAL().wihik;
         let op = wihik / wihik_total;
         op = Number(op).toFixed(3)
         return op;
     }
-    _get_F_x = (row) => {
-        var cvi = this._get_CVI(row);
+    const _get_F_x = (row) => {
+        var cvi = _get_CVI(row);
         let d236 = document.getElementById('d236') ? Number(document.getElementById('d236').value) ? Number(document.getElementById('d236').value) : 1 : 1;
-        let op = cvi * d236 || this.get_d236();
+        let op = cvi * d236 || get_d236();
         op = Number(op).toFixed(2)
         return op;
     }
-    _get_F_y = (row) => {
-        var f_x = this._get_F_x(row);
+    const _get_F_y = (row) => {
+        var f_x = _get_F_x(row);
         let op = f_x * 0.3;
         op = Number(op).toFixed(2)
         return op;
     }
-    _get_SUMLEVEL = (_id, _floor, includeP1) => {
-        let _CHILDREN = this._GET_CHILD_SISMIC();
+    const _get_SUMLEVEL = (_id, _floor, includeP1) => {
+        let _CHILDREN = _GET_CHILD_SISMIC();
         _CHILDREN.sort((a, b) => a.pos - b.pos);
 
         let floor = _floor ? _floor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
@@ -229,9 +223,9 @@ class RECORD_ENG_SISMIC extends Component {
 
         }
     }
-    _GET_TOTAL = () => {
-        var _LIST = this._GET_CHILD_SISMIC();
-        let d237 = this.state.d237 ?? 1;
+    const _GET_TOTAL = () => {
+        var _LIST = _GET_CHILD_SISMIC();
+        let _d237 = d237 ?? 1;
         let d236 = document.getElementById('d236') ? Number(document.getElementById('d236').value) ? Number(document.getElementById('d236').value) : 1 : 1;
 
         var _TOTALES = {
@@ -252,32 +246,33 @@ class RECORD_ENG_SISMIC extends Component {
             let floor = _LIST[i].name ? _LIST[i].name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
             let con_down = (floor).includes('sotano') || (floor).includes('semisotano');
             _TOTALES.height += Math.abs(Number(con_down ? 0 : _LIST[i].height));
-            _TOTALES.pesoplac += Number(this._GET_PESOPLAC_VALUE(_LIST[i]));
-            _TOTALES.colpan += Number(this._get_COLPAN_VALUE(_LIST[i]));
-            _TOTALES.viga += Number(this._get_VIGA(Math.abs(_LIST[i].height)));
+            _TOTALES.pesoplac += Number(_GET_PESOPLAC_VALUE(_LIST[i]));
+            _TOTALES.colpan += Number(_get_COLPAN_VALUE(_LIST[i]));
+            _TOTALES.viga += Number(_get_VIGA(Math.abs(_LIST[i].height)));
             _TOTALES.esca += Number(_LIST[i].esca);
-            _TOTALES.wihik += Number(this._get_WIHIK(_LIST[i]));
-            _TOTALES.tot += Number(this._get_TOT(_LIST[i]));
+            _TOTALES.wihik += Number(_get_WIHIK(_LIST[i]));
+            _TOTALES.tot += Number(_get_TOT(_LIST[i]));
         }
 
         // THIS IS DONE IN ORDER TO PREVENT RECURSION
         for (var i = 0; i < _LIST.length; i++) {
             let condition = _LIST[i].pos == 1;
             if (condition) continue;
-            let d231 = this._GET_STEP_TYPE_INDEX('s4237', 'value', 20) || 1
+            let d231 = _GET_STEP_TYPE_INDEX('s4237', 'value', 20) || 1
 
-            let cvi = Number(this._get_WIHIK(_LIST[i])) / Number(_TOTALES.wihik);
+            let cvi = Number(_get_WIHIK(_LIST[i])) / Number(_TOTALES.wihik);
             _TOTALES.cvi += cvi
-            _TOTALES.f_x += cvi * Number(this.get_d236());
-            _TOTALES.f_y += cvi * Number(this.get_d236()) * 0.3;
+            _TOTALES.f_x += cvi * Number(get_d236());
+            _TOTALES.f_y += cvi * Number(get_d236()) * 0.3;
         }
 
 
         return _TOTALES;
     }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
 
             document.getElementById("r_eng_sismic_1_edit").value = _ITEM.name;
             document.getElementById("r_eng_sismic_2_edit").value = _ITEM.height;
@@ -295,14 +290,14 @@ class RECORD_ENG_SISMIC extends Component {
             document.getElementById("r_eng_sismic_column_2_edit").value = column.c1;
             document.getElementById("r_eng_sismic_column_3_edit").value = column.c2;
         }
-    }
+    }, [edit]);
 
     // EXTRA ACTIONS
 
-    async new_x(dir, pos, isCopy) {
+    async function new_x(dir, pos, isCopy) {
         let op = '-1';
         let x = 1;
-        let sort = this.state.sort;
+        let _sort = sort;
 
         if (dir == 'up' && sort == 'asc') op = '-1';
         else if (dir == 'dw' && sort == 'asc') op = '0';
@@ -332,7 +327,7 @@ class RECORD_ENG_SISMIC extends Component {
             x = Number(formValues);
 
             var formData = new FormData();
-            formData.set('recordEngId', this.props.currentRecord.id);
+            formData.set('recordEngId', props.currentRecord.id);
             formData.set('op', op);
             formData.set('x', x);
             formData.set('pos', pos);
@@ -340,8 +335,8 @@ class RECORD_ENG_SISMIC extends Component {
             if (isCopy) formData.set('copy', 1);
 
             MySwal.fire({
-                title: this.props.swaMsg.title_wait,
-                text: this.props.swaMsg.text_wait,
+                title: props.swaMsg.title_wait,
+                text: props.swaMsg.text_wait,
                 icon: 'info',
                 showConfirmButton: false,
             });
@@ -350,48 +345,46 @@ class RECORD_ENG_SISMIC extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
-                            title: this.props.swaMsg.publish_success_title,
-                            text: this.props.swaMsg.publish_success_text,
-                            footer: this.props.swaMsg.text_footer,
+                            title: props.swaMsg.publish_success_title,
+                            text: props.swaMsg.publish_success_text,
+                            footer: props.swaMsg.text_footer,
                             icon: 'success',
-                            confirmButtonText: this.props.swaMsg.text_btn,
+                            confirmButtonText: props.swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(this.props.currentItem.id);
-                        this.setState({ edit: false });
+                        props.requestUpdateRecord(props.currentItem.id);
+                        setEdit(false);
                     } else {
                         MySwal.fire({
-                            title: this.props.swaMsg.generic_eror_title,
-                            text: this.props.swaMsg.generic_error_text,
+                            title: props.swaMsg.generic_eror_title,
+                            text: props.swaMsg.generic_error_text,
                             icon: 'warning',
-                            confirmButtonText: this.props.swaMsg.text_btn,
+                            confirmButtonText: props.swaMsg.text_btn,
                         });
                     }
                 })
                 .catch(e => {
                     console.log(e);
                     MySwal.fire({
-                        title: this.props.swaMsg.generic_eror_title,
-                        text: this.props.swaMsg.generic_error_text,
+                        title: props.swaMsg.generic_eror_title,
+                        text: props.swaMsg.generic_error_text,
                         icon: 'warning',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: props.swaMsg.text_btn,
                     });
                 });
         }
 
 
     }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version } = this.props;
-        const { } = this.state;
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version, requestUpdateRecord } = props;
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
 
         const SISMIC_ELASTIC_DATA_01_X = [
             { i: 0, name: 'Tx modal', open: true, calc: () => null },
             {
                 i: 1, name: 'Tajuste x', calc: () => {
-                    let tx_modal = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 0) || document.getElementById('rees_01_0')?.value || 0;
-                    let ta_usado = Number(this._GET_STEP_TYPE_INDEX('s4237', 'value', 8)) || 0;
-                    let t_max = Number(this._GET_STEP_TYPE_INDEX('s4237', 'value', 7)) || 0;
+                    let tx_modal = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 0) || document.getElementById('rees_01_0')?.value || 0;
+                    let ta_usado = Number(_GET_STEP_TYPE_INDEX('s4237', 'value', 8)) || 0;
+                    let t_max = Number(_GET_STEP_TYPE_INDEX('s4237', 'value', 7)) || 0;
 
                     if (tx_modal < ta_usado) return ta_usado.toFixed(2)
                     if (tx_modal > t_max) return t_max.toFixed(2)
@@ -400,13 +393,13 @@ class RECORD_ENG_SISMIC extends Component {
             },
             {
                 i: 2, name: 'SaX(g)', calc: () => {
-                    let Tajuste = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 1)) || document.getElementById('rees_01_1')?.value || 0;
-                    let tc = this._GET_STEP_TYPE_INDEX('s4237', 'value', 12) || 0;
-                    let Aa = this._GET_STEP_TYPE_INDEX('s4233', 'value', 0) || 0;
-                    let Fa = this._GET_STEP_TYPE_INDEX('s4313', 'value', 19) || 0;
-                    let Ci = this._GET_STEP_TYPE_INDEX('s4234', 'value', 2) || 0;
-                    let Av = this._GET_STEP_TYPE_INDEX('s4233', 'value', 1) || 0;
-                    let Fv = this._GET_STEP_TYPE_INDEX('s4313', 'value', 20) || 0;
+                    let Tajuste = Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 1)) || document.getElementById('rees_01_1')?.value || 0;
+                    let tc = _GET_STEP_TYPE_INDEX('s4237', 'value', 12) || 0;
+                    let Aa = _GET_STEP_TYPE_INDEX('s4233', 'value', 0) || 0;
+                    let Fa = _GET_STEP_TYPE_INDEX('s4313', 'value', 19) || 0;
+                    let Ci = _GET_STEP_TYPE_INDEX('s4234', 'value', 2) || 0;
+                    let Av = _GET_STEP_TYPE_INDEX('s4233', 'value', 1) || 0;
+                    let Fv = _GET_STEP_TYPE_INDEX('s4313', 'value', 20) || 0;
 
                     if (Tajuste < tc) return (2.5 * Aa * Fa * Ci).toFixed(2);
                     return (1.2 * Av * Fv * Ci / (Tajuste || 1)).toFixed(2);
@@ -414,15 +407,15 @@ class RECORD_ENG_SISMIC extends Component {
             },
             {
                 i: 3, name: 'VsX ton', calc: () => {
-                    let tot = this._GET_TOTAL().tot;
-                    let SaX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2) || document.getElementById('rees_01_2')?.value || 0;
+                    let tot = _GET_TOTAL().tot;
+                    let SaX = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2) || document.getElementById('rees_01_2')?.value || 0;
 
                     return (tot / 9.80665 * SaX).toFixed(2);
                 }
             },
             {
                 i: 4, name: 'VsY * g', calc: () => {
-                    let VsX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 3) || document.getElementById('rees_01_3')?.value || 0;
+                    let VsX = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 3) || document.getElementById('rees_01_3')?.value || 0;
                     return (VsX * 9.81).toFixed(2);
                 }
             },
@@ -430,14 +423,14 @@ class RECORD_ENG_SISMIC extends Component {
                 i: 5, name: '90ntaX%', calc: () => {
                     // =(C256/100)*D236
                     let ajuste = 0; // C256
-                    let VsX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 3) || document.getElementById('rees_01_3')?.value || 0; // D236
+                    let VsX = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 3) || document.getElementById('rees_01_3')?.value || 0; // D236
 
                     return (ajuste / 100.0 * VsX).toFixed(2);
                 }
             },
             {
                 i: 6, name: '90ntaX% * g', calc: () => {
-                    let _90nta = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 5) || document.getElementById('rees_01_5')?.value || 0;
+                    let _90nta = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 5) || document.getElementById('rees_01_5')?.value || 0;
                     return (_90nta * 9.81).toFixed(2);
                 }
             },
@@ -447,9 +440,9 @@ class RECORD_ENG_SISMIC extends Component {
             { i: 7, name: 'Ty modal', open: true, calc: () => null },
             {
                 i: 8, name: 'Tajuste y', calc: () => {
-                    let ty_modal = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 7) || document.getElementById('rees_01_7')?.value || 0;
-                    let ta_usado = Number(this._GET_STEP_TYPE_INDEX('s4237', 'value', 8)) || 0;
-                    let t_max = Number(this._GET_STEP_TYPE_INDEX('s4237', 'value', 7)) || 0;
+                    let ty_modal = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 7) || document.getElementById('rees_01_7')?.value || 0;
+                    let ta_usado = Number(_GET_STEP_TYPE_INDEX('s4237', 'value', 8)) || 0;
+                    let t_max = Number(_GET_STEP_TYPE_INDEX('s4237', 'value', 7)) || 0;
 
                     if (ty_modal < ta_usado) return ta_usado.toFixed(2);
                     if (ty_modal > t_max) return t_max.toFixed(2);
@@ -458,13 +451,13 @@ class RECORD_ENG_SISMIC extends Component {
             },
             {
                 i: 9, name: 'SaY[g]', calc: () => {
-                    let Tajuste = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 1)) || document.getElementById('rees_01_1')?.value || 0; // D234
-                    let tc = this._GET_STEP_TYPE_INDEX('s4237', 'value', 12) || 0; // K220
-                    let Aa = this._GET_STEP_TYPE_INDEX('s4233', 'value', 0) || 0; // E113
-                    let Fa = this._GET_STEP_TYPE_INDEX('s4313', 'value', 19) || 0; // E123
-                    let Ci = this._GET_STEP_TYPE_INDEX('s4234', 'value', 2) || 0; // H174
-                    let Av = this._GET_STEP_TYPE_INDEX('s4233', 'value', 1) || 0; // I113
-                    let Fv = this._GET_STEP_TYPE_INDEX('s4313', 'value', 20) || 0; // E124
+                    let Tajuste = Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 1)) || document.getElementById('rees_01_1')?.value || 0; // D234
+                    let tc = _GET_STEP_TYPE_INDEX('s4237', 'value', 12) || 0; // K220
+                    let Aa = _GET_STEP_TYPE_INDEX('s4233', 'value', 0) || 0; // E113
+                    let Fa = _GET_STEP_TYPE_INDEX('s4313', 'value', 19) || 0; // E123
+                    let Ci = _GET_STEP_TYPE_INDEX('s4234', 'value', 2) || 0; // H174
+                    let Av = _GET_STEP_TYPE_INDEX('s4233', 'value', 1) || 0; // I113
+                    let Fv = _GET_STEP_TYPE_INDEX('s4313', 'value', 20) || 0; // E124
 
                     if (Tajuste < tc) return (2.5 * Aa * Fa * Ci).toFixed(2);
                     return (1.2 * Av * Fv * Ci / (Tajuste || 1)).toFixed(2);
@@ -472,29 +465,29 @@ class RECORD_ENG_SISMIC extends Component {
             },
             {
                 i: 10, name: 'VsY', calc: () => {
-                    let tot = this._GET_TOTAL().tot; // M296
-                    let SaX = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2) || document.getElementById('rees_01_2')?.value || 0; // D235
+                    let tot = _GET_TOTAL().tot; // M296
+                    let SaX = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2) || document.getElementById('rees_01_2')?.value || 0; // D235
 
                     return (tot / 9.80665 * SaX).toFixed(2);
                 }
             },
             {
                 i: 11, name: 'VsY * g', calc: () => {
-                    let VsY = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 10) || document.getElementById('rees_01_10')?.value || 0;
+                    let VsY = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 10) || document.getElementById('rees_01_10')?.value || 0;
                     return (VsY * 9.81).toFixed(2);
                 }
             },
             {
                 i: 12, name: '90ntaY%', calc: () => {
                     let ajuste = 0; // C256
-                    let VsY = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 10) || document.getElementById('rees_01_10')?.value || 0; // H236
+                    let VsY = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 10) || document.getElementById('rees_01_10')?.value || 0; // H236
 
                     return (ajuste / 100.0 * VsY).toFixed(2);
                 }
             },
             {
                 i: 13, name: '90nta%Y * g', calc: () => {
-                    let _90ntaY = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 12) || document.getElementById('rees_01_12')?.value || 0;
+                    let _90ntaY = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 12) || document.getElementById('rees_01_12')?.value || 0;
                     return (_90ntaY * 9.81).toFixed(2);
                 }
             },
@@ -503,26 +496,26 @@ class RECORD_ENG_SISMIC extends Component {
         const SISMIC_ELASTIC_DATA_01_Z = [
             {
                 i: 14, name: 'Tx modal', calc: () => {
-                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 0)) || document.getElementById('rees_01_0')?.value || 0;
+                    let tx_modal = Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 0)) || document.getElementById('rees_01_0')?.value || 0;
                     console.log("tx_modal", tx_modal)
                     return Number(tx_modal|| 0).toFixed(2)
                 }
             },
             {
                 i: 15, name: 'SaX modal (g)', calc: () => {
-                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2)) || document.getElementById('rees_01_2')?.value || 0;
+                    let tx_modal = Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 2)) || document.getElementById('rees_01_2')?.value || 0;
                     return Number(tx_modal|| 0).toFixed(2)
                 }
             },
             {
                 i: 16, name: 'Ty modal', calc: () => {
-                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 7)) || document.getElementById('rees_01_7')?.value || 0;
+                    let tx_modal = Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 7)) || document.getElementById('rees_01_7')?.value || 0;
                     return Number(tx_modal|| 0).toFixed(2)
                 }
             },
             {
                 i: 17, name: 'SaY modal (g)', calc: () => {
-                    let tx_modal = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 9)) || document.getElementById('rees_01_9')?.value || 0;
+                    let tx_modal = Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 9)) || document.getElementById('rees_01_9')?.value || 0;
                     return Number(tx_modal|| 0).toFixed(2)
                 }
             },
@@ -545,12 +538,12 @@ class RECORD_ENG_SISMIC extends Component {
                 if (elem && !item.open) elem.value = item.calc();
             });
 
-            let f1x = Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 18)) || document.getElementById('rees_01_18')?.value || 0; // D251
-            let f2x =  Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 19)) || document.getElementById('rees_01_19')?.value || 0; // E251
+            let f1x = Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 18)) || document.getElementById('rees_01_18')?.value || 0; // D251
+            let f2x =  Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 19)) || document.getElementById('rees_01_19')?.value || 0; // E251
             let Vsx_total = Math.sqrt(Math.pow(f1x, 2) + Math.pow(f2x, 2)).toFixed(2);
 
-            let f1y =  Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 21)) || document.getElementById('rees_01_21')?.value || 0; // D252
-            let f2y =  Number(this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 22)) || document.getElementById('rees_01_22')?.value || 0; // E252
+            let f1y =  Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 21)) || document.getElementById('rees_01_21')?.value || 0; // D252
+            let f2y =  Number(_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 22)) || document.getElementById('rees_01_22')?.value || 0; // E252
             let Vsy_total = Math.sqrt(Math.pow(f1y, 2) + Math.pow(f2y, 2)).toFixed(2);
 
             const elem20 = document.getElementById('rees_01_20');
@@ -558,15 +551,15 @@ class RECORD_ENG_SISMIC extends Component {
             if (elem20) elem20.value = Vsx_total;
             if (elem23) elem23.value = Vsy_total;
 
-            let Rx = this._GET_STEP_TYPE_INDEX('s4236', 'value', 9); // F132
-            let Ro = this._GET_STEP_TYPE_INDEX('s4236', 'value', 0); // F127
+            let Rx = _GET_STEP_TYPE_INDEX('s4236', 'value', 9); // F132
+            let Ro = _GET_STEP_TYPE_INDEX('s4236', 'value', 0); // F127
             const elem24 = document.getElementById('rees_01_24');
             if (elem24) {
                 if (Rx < Ro) elem24.value = 90;
                 else elem24.value = 80;
             }
 
-            let _90mx = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 5); // D238
+            let _90mx = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 5); // D238
             // Vsx_total = F251
             let ajuste_x = (_90mx / (Vsx_total || 1)).toFixed(2);
             if (ajuste_x < 1.0 ) ajuste_x = 1
@@ -575,7 +568,7 @@ class RECORD_ENG_SISMIC extends Component {
             if (elem25) elem25.value = ajuste_x;
             if (elem26) elem26.value = (ajuste_x * 9.81).toFixed(2);
 
-            let _90my = this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 12); // E238
+            let _90my = _GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 12); // E238
             // Vsy_total = G251
             let ajuste_y = (_90my / (Vsy_total || 1)).toFixed(2);
             if (ajuste_y < 1.0 ) ajuste_y = 1;
@@ -606,18 +599,18 @@ class RECORD_ENG_SISMIC extends Component {
 
         let popBtn = (row) => {
             return <>
-                {this.state['qedit_' + row.id]
+                {qedit[row.id]
                     ? <button type="button" onClick={() => manage_edit_item(row.id)} class="btn btn-sm btn-success">Guardar</button>
                     : <MDBPopover size='sm' color='info' btnChildren={'OPCIONES'} placement='left' dismiss>
                         <MDBPopoverBody>
                             <div class="list-group list-group-flush">
-                                <button type="button" onClick={() => this.setState({ ['qedit_' + row.id]: true })} class="list-group-item list-group-item-action" ><i class="fas fa-pencil-alt"></i> Edición Rapida</button>
-                                <button type="button" onClick={() => this.setState({ edit: row })} class="list-group-item list-group-item-action"><i class="fas fa-pencil-alt"></i> Edición Completa</button>
+                                <button type="button" onClick={() => setQedit(prev => ({ ...prev, [row.id]: true }))} class="list-group-item list-group-item-action" ><i class="fas fa-pencil-alt"></i> Edición Rapida</button>
+                                <button type="button" onClick={() => setEdit(row)} class="list-group-item list-group-item-action"><i class="fas fa-pencil-alt"></i> Edición Completa</button>
                                 <button type="button" onClick={() => delete_item(row.id)} class="list-group-item list-group-item-action list-group-item-danger"><i class="fas fa-trash-alt"></i> Eliminar</button>
-                                <button type="button" onClick={() => this.new_x('up', row.pos)} class="list-group-item list-group-item-action"><i class="fas fa-plus"></i> Añadir Arriba</button>
-                                <button type="button" onClick={() => this.new_x('dw', row.pos)} class="list-group-item list-group-item-action"><i class="fas fa-plus"></i> Añadir Abajo</button>
-                                <button type="button" onClick={() => this.new_x('up', row.pos, true)} class="list-group-item list-group-item-action"><i class="fas fa-copy"></i> Copiar Arriba</button>
-                                <button type="button" onClick={() => this.new_x('dw', row.pos, true)} class="list-group-item list-group-item-action"><i class="fas fa-copy"></i> Copiar Abajo</button>
+                                <button type="button" onClick={() => new_x('up', row.pos)} class="list-group-item list-group-item-action"><i class="fas fa-plus"></i> Añadir Arriba</button>
+                                <button type="button" onClick={() => new_x('dw', row.pos)} class="list-group-item list-group-item-action"><i class="fas fa-plus"></i> Añadir Abajo</button>
+                                <button type="button" onClick={() => new_x('up', row.pos, true)} class="list-group-item list-group-item-action"><i class="fas fa-copy"></i> Copiar Arriba</button>
+                                <button type="button" onClick={() => new_x('dw', row.pos, true)} class="list-group-item list-group-item-action"><i class="fas fa-copy"></i> Copiar Abajo</button>
                             </div>
                         </MDBPopoverBody>
                     </MDBPopover>
@@ -634,22 +627,22 @@ class RECORD_ENG_SISMIC extends Component {
                 <div className="col-2 border border-dark px-2 pt-2"><label className="fw-bold">Peso Concreto</label></div>
                 <div className="col-2 border border-dark px-2">  <input type="number" step="0.01"
                     className="form-control my-1" name="recprd_eng_sis_wc" id='k202' onBlur={() => manage_step_sis_wc()}
-                    defaultValue={this._GET_STEP_TYPE_INDEX('sis_wc', 'value', 0) ?? 24} /></div>
+                    defaultValue={_GET_STEP_TYPE_INDEX('sis_wc', 'value', 0) ?? 24} /></div>
                 <div className="col-1 border border-dark px-2 pt-2"><label className="fw-bold">KN/m<sup>3</sup></label></div>
             </div>
         }
         let _CHILD_LICENCE_LIST = () => {
-            let _LIST = this._GET_CHILD_SISMIC();
+            let _LIST = _GET_CHILD_SISMIC();
 
             const columns = [
                 {
                     name: <label className="text-center text-success">Nivel</label>,
-                    selector: 'pos',
+                    selector: row => row.pos,
                     sortable: true,
                     filterable: true,
                     center: true,
                     cell: row => <>{
-                        this.state['qedit_' + row.id]
+                        qedit[row.id]
                             ? <div class="input-group input-group-sm">
                                 <input type="number" step="1" class="form-control me-1" id={"r_eng_sismic_5_edit_" + row.id} defaultValue={row.pos} />
                             </div>
@@ -660,7 +653,7 @@ class RECORD_ENG_SISMIC extends Component {
                     name: <label className="text-center">Descripción</label>,
                     center: true,
                     cell: row => <>{
-                        this.state['qedit_' + row.id]
+                        qedit[row.id]
                             ? <div class="input-group input-group-sm">
                                 <input type="text" class="form-control me-1" id={"r_eng_sismic_1_edit_" + row.id} defaultValue={row.name} />
                             </div>
@@ -670,13 +663,13 @@ class RECORD_ENG_SISMIC extends Component {
                 {
                     name: <label className="text-center">Nivel j [m]</label>,
                     center: true,
-                    cell: row => <label>{this._get_SUMLEVEL(row.id, row.name)}</label>
+                    cell: row => <label>{_get_SUMLEVEL(row.id, row.name)}</label>
                 },
                 {
                     name: <label className="text-center">h Piso [m]</label>,
                     center: true,
                     cell: row => <>{
-                        this.state['qedit_' + row.id]
+                        qedit[row.id]
                             ? <div class="input-group input-group-sm">
                                 <input type="number" step="0.01" class="form-control me-1" id={"r_eng_sismic_2_edit_" + row.id} defaultValue={row.height} />
                             </div>
@@ -687,7 +680,7 @@ class RECORD_ENG_SISMIC extends Component {
                     name: <label className="text-center">Área placa [m2]</label>,
                     center: true,
                     cell: row => <>{
-                        this.state['qedit_' + row.id]
+                        qedit[row.id]
                             ? <div class="input-group input-group-sm">
                                 <input type="number" step="0.01" class="form-control me-1" id={"r_eng_sismic_3_edit_" + row.id} defaultValue={row.area} />
                             </div>
@@ -700,7 +693,7 @@ class RECORD_ENG_SISMIC extends Component {
                     minWidth: "40px",
                     compact: true,
                     cell: row => <>{
-                        this.state['qedit_' + row.id]
+                        qedit[row.id]
                             ? <div class="input-group input-group-sm">
                                 <input type="number" step="0.01" class="form-control me-1" id={"r_eng_sismic_6_edit_" + row.id} defaultValue={row.denplac} />
                             </div>
@@ -712,21 +705,21 @@ class RECORD_ENG_SISMIC extends Component {
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label >{row.pos <= 1 ? '' : this._GET_PESOPLAC_VALUE(row)}</label>
+                    cell: row => <label >{row.pos <= 1 ? '' : _GET_PESOPLAC_VALUE(row)}</label>
                 },
                 {
                     name: <label className="text-center">Col/Pan [KN]</label>,
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label >{row.pos <= 1 ? '' : this._get_COLPAN_VALUE(row)}</label>
+                    cell: row => <label >{row.pos <= 1 ? '' : _get_COLPAN_VALUE(row)}</label>
                 },
                 {
                     name: <label className="text-center">Viga [KN]</label>,
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label >{row.pos <= 1 ? '' : this._get_VIGA(row.height)}</label>
+                    cell: row => <label >{row.pos <= 1 ? '' : _get_VIGA(row.height)}</label>
                 },
                 {
                     name: <label className="text-center">Esca [kN]</label>,
@@ -734,7 +727,7 @@ class RECORD_ENG_SISMIC extends Component {
                     minWidth: "40px",
                     compact: true,
                     cell: row => <>{
-                        this.state['qedit_' + row.id]
+                        qedit[row.id]
                             ? <div class="input-group input-group-sm">
                                 <input type="number" step="0.01" class="form-control me-1" id={"r_eng_sismic_4_edit_" + row.id} defaultValue={row.esca} />
                             </div>
@@ -746,7 +739,7 @@ class RECORD_ENG_SISMIC extends Component {
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label >{row.pos <= 1 ? '' : this._get_TOT(row)}</label>
+                    cell: row => <label >{row.pos <= 1 ? '' : _get_TOT(row)}</label>
                 },
                 {
                     name: <label>ACCION</label>,
@@ -769,16 +762,16 @@ class RECORD_ENG_SISMIC extends Component {
                 dense
                 defaultSortFieldId={1}
                 defaultSortAsc={false}
-                onSort={(selectedColumn, sortDirection) => this.setState({ sort: sortDirection })}
+                onSort={(selectedColumn, sortDirection) => setSort(sortDirection)}
             />
         }
         let _CHILD_LICENCE_LIST_FHE = () => {
-            let _LIST = this._GET_CHILD_SISMIC();
+            let _LIST = _GET_CHILD_SISMIC();
 
             const columns = [
                 {
                     name: <label className="text-center text-success">Nivel</label>,
-                    selector: 'pos',
+                    selector: row => row.pos,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -792,7 +785,7 @@ class RECORD_ENG_SISMIC extends Component {
                 {
                     name: <label className="text-center">Nivel i [m]</label>,
                     center: true,
-                    cell: row => <label>{this._get_SUMLEVEL(row.id, row.name)}</label>
+                    cell: row => <label>{_get_SUMLEVEL(row.id, row.name)}</label>
                 },
                 {
                     name: <label className="text-center">hi [m]</label>,
@@ -802,35 +795,35 @@ class RECORD_ENG_SISMIC extends Component {
                 {
                     name: <label className="text-center">Wi [m]</label>,
                     center: true,
-                    cell: row => <label>{this._get_TOT(row)}</label>
+                    cell: row => <label>{_get_TOT(row)}</label>
                 },
                 {
                     name: <label className="text-center">Wi *(hi)^k</label>,
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label >{this._get_WIHIK(row)}</label>
+                    cell: row => <label >{_get_WIHIK(row)}</label>
                 },
                 {
                     name: <label className="text-center">cvi</label>,
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label>{this._get_CVI(row)}</label>
+                    cell: row => <label>{_get_CVI(row)}</label>
                 },
                 {
                     name: <label className="text-center">F_x [kN]</label>,
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label>{this._get_F_x(row)}</label>
+                    cell: row => <label>{_get_F_x(row)}</label>
                 },
                 {
                     name: <label className="text-center">F_y [kN]</label>,
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label>{this._get_F_y(row)}</label>
+                    cell: row => <label>{_get_F_y(row)}</label>
                 },
             ]
             return <DataTable
@@ -854,7 +847,7 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col">
                         <label>Nivel</label>
                         <div class="input-group my-1">
-                            <input type="number" min="1" step="1" class="form-control" id={"r_eng_sismic_5" + edit} defaultValue={this._GET_CHILD_SISMIC().length + 1} required />
+                            <input type="number" min="1" step="1" class="form-control" id={"r_eng_sismic_5" + edit} defaultValue={_GET_CHILD_SISMIC().length + 1} required />
                         </div>
                     </div>
                     <div className="col-3">
@@ -885,7 +878,7 @@ class RECORD_ENG_SISMIC extends Component {
                         <label>Den Planc [kN/m2]</label>
                         <div class="input-group my-1">
                             <input type="number" step="0.01" class="form-control" id={"r_eng_sismic_6" + edit}
-                                defaultValue={this._GET_DENPLAC_VALUE()} />
+                                defaultValue={_GET_DENPLAC_VALUE()} />
                         </div>
                     </div>
                 </div>
@@ -916,7 +909,7 @@ class RECORD_ENG_SISMIC extends Component {
             </>
         }
         let _COMPONENT_TOTAL = () => {
-            let _LIST = this._GET_TOTAL();
+            let _LIST = _GET_TOTAL();
             return <>
                 <div className="row mx-2 py-2">
                     <div className="col-12  text-center">
@@ -952,7 +945,7 @@ class RECORD_ENG_SISMIC extends Component {
             </>
         }
         let _COMPONENT_TOTAL_PHE = () => {
-            let _LIST = this._GET_TOTAL();
+            let _LIST = _GET_TOTAL();
             return <>
                 <div className="row mx-2 py-2">
                     <div className="col-12  text-center">
@@ -996,11 +989,11 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-2">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_s08" id='d231' disabled
-                            defaultValue={this._GET_STEP_TYPE_INDEX('s4237', 'value', 20) ?? this._GET_STEP_TYPE_INDEX('s4238', 'value', 0) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 20) ?? _GET_STEP_TYPE_INDEX('s4238', 'value', 0) ?? ''} />
                     </div>
                     <div className="col-3"><label>T {'<'} 0.5     K= 1.0</label></div>
                     <div className="col-2"> </div>
-                    <div className="col-2"><button className='btn btn-info btn-sm' onClick={() => this.set_values()}>ACTUALIZAR</button></div>
+                    <div className="col-2"><button className='btn btn-info btn-sm' onClick={() => set_values()}>ACTUALIZAR</button></div>
                 </div>
 
                 <div className="row mb-1">
@@ -1010,7 +1003,7 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-2">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_s08" id='d232' disabled
-                            defaultValue={this._GET_STEP_TYPE_INDEX('s4237', 'value', 18) ?? this._GET_STEP_TYPE_INDEX('s4238', 'value', 1) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 18) ?? _GET_STEP_TYPE_INDEX('s4238', 'value', 1) ?? ''} />
                     </div>
                     <div className="col-3"><label>T(0.5 y 2.5) K=0.75+0.5T</label></div>
                     <div className="col-2"> </div>
@@ -1024,7 +1017,7 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-2">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_s08" id='d233' disabled
-                            defaultValue={this.get_d233() ?? this._GET_STEP_TYPE_INDEX('s4238', 'value', 2) ?? ''} />
+                            defaultValue={get_d233() ?? _GET_STEP_TYPE_INDEX('s4238', 'value', 2) ?? ''} />
                     </div>
                     <div className="col-3"><label>T {'>'} 2.5     K= 2.0</label></div>
                     <div className="col-2"> </div>
@@ -1047,7 +1040,7 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-2">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_s08" id='d236' disabled style={{ background: 'DarkKhaki' }}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('s4238', 'value', 3) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('s4238', 'value', 3) ?? ''} />
                     </div>
                     <div className="col-3"></div>
                     <div className="col-2"> </div>
@@ -1060,7 +1053,7 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-2">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_s08" id='d237' disabled style={{ background: 'DarkKhaki' }}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('s4238', 'value', 4) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('s4238', 'value', 4) ?? ''} />
                     </div>
                     <div className="col-3"></div>
                     <div className="col-2"> </div>
@@ -1081,7 +1074,7 @@ class RECORD_ENG_SISMIC extends Component {
                                     <input type="number" step="0.01"
                                         className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_' + item.i} disabled={item.open !== true}
                                         onBlur={() => STEP_08_02()}
-                                        defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', item.i) ?? item.calc() ?? ''} />
+                                        defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', item.i) ?? item.calc() ?? ''} />
                                 </div>
                             </>)}
                         </div>
@@ -1094,7 +1087,7 @@ class RECORD_ENG_SISMIC extends Component {
                                     <input type="number" step="0.01"
                                         className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_' + item.i} disabled={item.open !== true}
                                         onBlur={() => STEP_08_02()}
-                                        defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', item.i) ?? item.calc() ?? ''} />
+                                        defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', item.i) ?? item.calc() ?? ''} />
                                 </div>
                             </>)}
                         </div>
@@ -1109,7 +1102,7 @@ class RECORD_ENG_SISMIC extends Component {
                             <input type="number" step="0.01"
                                 className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_' + item.i} disabled={item.open !== true}
                                 onBlur={() => STEP_08_02()}
-                                defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', item.i) ?? item.calc() ?? ''} />
+                                defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', item.i) ?? item.calc() ?? ''} />
                         </div>
                     </>)}
                 </div>
@@ -1128,17 +1121,17 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_18'} onBlur={() => STEP_08_02()}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 18) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 18) ?? ''} />
                     </div>
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_19'} onBlur={() => STEP_08_02()}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 19) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 19) ?? ''} />
                     </div>
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_20'} disabled={true}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 20) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 20) ?? ''} />
                     </div>
                 </div>
 
@@ -1147,17 +1140,17 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_21'} onBlur={() => STEP_08_02()}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 21) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 21) ?? ''} />
                     </div>
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_22'} onBlur={() => STEP_08_02()}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 22) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 22) ?? ''} />
                     </div>
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_23'} disabled={true}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 23) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 23) ?? ''} />
                     </div>
                 </div>
 
@@ -1167,7 +1160,7 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-3 mb-1 border border-black">
                     <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_24'} disabled={true}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 24) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 24) ?? ''} />
                     </div>
                     <div className="col-9 mb-1 border border-black">FACTOR COORRECCIÓN</div>
                 </div>
@@ -1177,12 +1170,12 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_25'} disabled={true}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 25) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 25) ?? ''} />
                     </div>
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_26'} disabled={true}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 26) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 26) ?? ''} />
                     </div>
                     <div className="col-3 mb-1 border border-black">m/s2</div>
                 </div>
@@ -1192,12 +1185,12 @@ class RECORD_ENG_SISMIC extends Component {
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_27'} disabled={true}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 27) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 27) ?? ''} />
                     </div>
                     <div className="col-3 mb-1 border border-black">
                         <input type="number" step="0.01"
                             className="form-control" name="recprd_eng_elastic_sismic" id={'rees_01_28'} disabled={true}
-                            defaultValue={this._GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 28) ?? ''} />
+                            defaultValue={_GET_STEP_TYPE_INDEX('elastic_sismi', 'value', 28) ?? ''} />
                     </div>
                     <div className="col-3 mb-1 border border-black">m/s2</div>
                 </div>
@@ -1249,7 +1242,7 @@ class RECORD_ENG_SISMIC extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_end_sismic_new').reset();
                     } else {
                         MySwal.fire({
@@ -1286,9 +1279,9 @@ class RECORD_ENG_SISMIC extends Component {
                         icon: 'info',
                         showConfirmButton: false,
                     });
-                    let sort = this.state.sort;
-                    sort = String(sort).toUpperCase()
-                    RECORD_ENG_SERVICE.delete_sis(id, sort, currentRecord.id)
+                    let _sort = sort;
+                    _sort = String(_sort).toUpperCase()
+                    RECORD_ENG_SERVICE.delete_sis(id, _sort, currentRecord.id)
                         .then(response => {
                             if (response.data === 'OK') {
                                 MySwal.fire({
@@ -1298,8 +1291,8 @@ class RECORD_ENG_SISMIC extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit: false });
+                                requestUpdateRecord(currentItem.id);
+                                setEdit(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -1326,7 +1319,7 @@ class RECORD_ENG_SISMIC extends Component {
             manage_edit_item();
         }
         let manage_edit_item = (id = "") => {
-            let _id = this.state.edit.id || id;
+            let _id = edit.id || id;
             let strId = ""
             if (id) strId = '_' + id
             formData = new FormData();
@@ -1369,10 +1362,10 @@ class RECORD_ENG_SISMIC extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         //document.getElementById('form_end_sismic_edit').reset();
-                        this.setState({ edit: false });
-                        this.setState({ ['qedit_' + _id]: false });
+                        setEdit(false);
+                        setQedit(prev => ({ ...prev, [_id]: false }));
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1412,7 +1405,7 @@ class RECORD_ENG_SISMIC extends Component {
 
         }
         let save_step = (_id_public, useSwal, formData) => {
-            var STEP = this.LOAD_STEP(_id_public);
+            var STEP = LOAD_STEP(_id_public);
 
             if (useSwal) MySwal.fire({
                 title: swaMsg.title_wait,
@@ -1431,7 +1424,7 @@ class RECORD_ENG_SISMIC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1462,7 +1455,7 @@ class RECORD_ENG_SISMIC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1491,13 +1484,13 @@ class RECORD_ENG_SISMIC extends Component {
                     <label className="app-p fw-bold text-uppercase my-2">Paso 8, Análisis sísmico de la estructura. Aplicación de los movimientos sísmicos de diseño (Cap. A.3) este análisis se realiza sin ser dividido por el coeficiente de capacidad de disipación de energía, R, según los resultados del paso 6, se determinan los desplazamientos máximos de diseño y las fuerzas internas que se derivan de ellos. Desplazamiento máximo corresponde al 1% de la altura de entrepisos.</label>
                     {_CONCRETE_VAR()}
                     <div class="form-check ms-5">
-                        <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                        <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                         <label class="form-check-label" for="flexCheckDefault">
                             Nuevo Piso
                         </label>
                     </div>
 
-                    {this.state.new
+                    {isNew
                         ? <>
                             <form id="form_end_sismic_new" onSubmit={new_item}>
                                 {_COMPONENT_MANAGE()}
@@ -1515,7 +1508,7 @@ class RECORD_ENG_SISMIC extends Component {
 
                     {_CHILD_LICENCE_LIST()}
                     {_COMPONENT_TOTAL()}
-                    {this.state.edit
+                    {edit
                         ? <>
                             <form id="form_end_sismic_edit" onSubmit={edit_item}>
                                 <h3 className="my-3 text-center">Actualizar Piso</h3>
@@ -1529,14 +1522,13 @@ class RECORD_ENG_SISMIC extends Component {
                         </>
                         : ""}
                     {COMPONENT_STEP_08()}
-                    {version === 2 && this._GET_STEP_TYPE_INDEX('s4236', 'value', 11) == 'Análisis dinámico elástico' ? COMPONENT_STEP_08_02() : null}
+                    {version === 2 && _GET_STEP_TYPE_INDEX('s4236', 'value', 11) == 'Análisis dinámico elástico' ? COMPONENT_STEP_08_02() : null}
                     <label className="app-p fw-bold my-2">ANÁLISIS SÍSMICO     MÉTODO FHE.</label>
                     {_CHILD_LICENCE_LIST_FHE()}
                     {_COMPONENT_TOTAL_PHE()}
                 </> : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_SISMIC;

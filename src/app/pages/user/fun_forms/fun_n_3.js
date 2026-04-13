@@ -1,33 +1,26 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
-class FUNN3 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
             document.getElementById("f_31_edit").value = _ITEM.direccion_1;
             document.getElementById("f_32_edit").value = _ITEM.direccion_2;
             document.getElementById("f_33a_edit").value = _ITEM.part;
             document.getElementById("f_33b_edit").value = _ITEM.part_id;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+    }, [edit]);
 
         var formData = new FormData();
 
@@ -90,7 +83,7 @@ class FUNN3 extends Component {
                 if (_alerts_array[i].includes("ALERT_1")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pediódico:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
                             <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                         <br />
                     </>);
@@ -98,7 +91,7 @@ class FUNN3 extends Component {
                 if (_alerts_array[i].includes("ALERT_2")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Radio:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
                             <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                         <br />
                     </>);
@@ -106,7 +99,7 @@ class FUNN3 extends Component {
                 if (_alerts_array[i].includes("ALERT_3")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pagina Web:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
                             <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                         <br />
                     </>);
@@ -114,7 +107,7 @@ class FUNN3 extends Component {
                 if (_alerts_array[i].includes("ALERT_4")) {
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Físico:
                         <a target="_blank"
-                            href={process.env.REACT_APP_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
+                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
                             <i class="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
                     </>);
                 }
@@ -206,7 +199,7 @@ class FUNN3 extends Component {
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                        <MDBBtn className="btn btn-secondary btn-sm m-0 p-2 shadow-none" onClick={() => this.setState({ edit: row })}>
+                        <MDBBtn className="btn btn-secondary btn-sm m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
                             <i class="far fa-edit fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
@@ -349,7 +342,7 @@ class FUNN3 extends Component {
                             confirmButtonText: swaMsg.text_btn,
                         });
                         document.getElementById('form_fun_3_new').reset();
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -395,8 +388,8 @@ class FUNN3 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdate(currentItem.id);
-                                this.setState({ edit: false });
+                                requestUpdate(currentItem.id);
+                                setEdit(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -436,7 +429,7 @@ class FUNN3 extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            FUNService.update_3(this.state.edit.id, formData)
+            FUNService.update_3(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -446,9 +439,9 @@ class FUNN3 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdate(currentItem.id);
                         document.getElementById('form_fun_3_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -475,12 +468,12 @@ class FUNN3 extends Component {
                     <label className="app-p lead text-center fw-normal text-uppercase">3. Información de Vecinos Colindantes</label>
                 </legend>
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Añadir Vecino Colidante
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_fun_3_new" onSubmit={new_3}>
                             {_COMPONENT_NEW_FUN_3()}
@@ -492,7 +485,7 @@ class FUNN3 extends Component {
                         </form>
                     </> : ""}
                 {_CHILD_3_LIST()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_fun_3_edit" onSubmit={edit_3}>
                             <h3 className="my-3 text-center">Actualizar Vecino</h3>
@@ -507,7 +500,6 @@ class FUNN3 extends Component {
                     : ""}
             </fieldset>
         </>);
-    }
-}
+};
 
 export default FUNN3;

@@ -1,11 +1,11 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { useState } from 'react';
+import { MDBBtn } from '../../../components/ui';
+import { useState } from 'react';
 import Modal from 'react-modal';
 import { infoCud } from '../../../components/jsons/vars';
 import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../components/customClasses/typeParse';
 import moment from 'moment';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {
     overlay: {
         position: 'fixed',

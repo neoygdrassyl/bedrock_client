@@ -1,16 +1,16 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, } from '../../../components/ui';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import ReCAPTCHA from "react-google-recaptcha";
-import React from 'react';
+import React, { useRef } from 'react';
 
 const MySwal = withReactContent(Swal);
-const recaptchaRef = React.createRef();
 
 export default function PROFESIONALS_EMAIL(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
+    const recaptchaRef = useRef(null);
 
     // ***************************  DATA GETTERS *********************** //
     // *************************  DATA CONVERTERS ********************** //
@@ -85,7 +85,7 @@ export default function PROFESIONALS_EMAIL(props) {
                             <div className="row d-flex justify-content-center my-2">
                                 <ReCAPTCHA
                                     ref={recaptchaRef}
-                                    sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_HTML}
+                                    sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
                                 />
                             </div>
                             <div className="text-center my-2">

@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
-import { MDBTypography } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody } from '../../../components/ui';
+import { MDBTypography } from '../../../components/ui';
 
 // FUN FAMILY
 import FUNN1 from './fun_n_1'
@@ -23,29 +23,19 @@ import FUN_ANEX from './fun_anex';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 
 const MySwal = withReactContent(Swal);
-class FUNN extends Component {
-    constructor(props) {
-        super(props);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.state = {
-            pqrsxfun: false
-        };
-    }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-        this.props.requesRefresh()
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesRefresh, NAVIGATION, NAVIGATION_VERSION }) {
+    const [currentItem, setCurrentItem] = useState(null);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+
+    const requestUpdate = (id) => {
+        retrieveItem(id);
+        requesRefresh();
+    };
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
+                setCurrentItem(response.data);
+                retrievePQRSxFUN(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -53,28 +43,28 @@ class FUNN extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    retrievePQRSxFUN(id_public) {
+    };
+    const retrievePQRSxFUN = (id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { currentItem } = this.state;
+    };
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
         return (
             <div className="py-3">
                 {currentItem != null ? <>
-                    <MDBTypography note noteColor='info'>
+                    <div className='note note-info'>
                         <h3 className="text-justify text-dark">RECOMENDACIONES GENERALES PARA LA FORMULACIÓN DE SOLICITUDES</h3>
                         <ul>
                             <li>Cedulas de Ciudadanía y documentos de identificación, usar punto cada 3 números. (x.xxx.xxx.xxx)</li>
@@ -83,7 +73,7 @@ class FUNN extends Component {
                             <li>Numero de Matricula Inmobiliaria, comenzar el valor con 300- (300-xxxxx)</li>
                             <li>Numero de Identificación Catastral, usar - para su separación (xx-xx-xxxx-xxx-xxx)</li>
                         </ul>
-                    </MDBTypography>
+                    </div>
                     {currentItem != null ? <>
                         <h2 className="text-center">ACTUALIZAR RADICACIÓN</h2>
 
@@ -97,7 +87,7 @@ class FUNN extends Component {
                                 globals={globals}
                                 currentItem={currentItem}
                                 currentVersion={currentVersion}
-                                requestUpdate={this.requestUpdate} />
+                                requestUpdate={requestUpdate} />
 
                             <legend className="my-2 px-3 text-uppercase bg-light" id="fun_arch">
                                 <label className="app-p lead fw-normal text-uppercase">ARCHIVO</label>
@@ -117,7 +107,7 @@ class FUNN extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate} />
+                            requestUpdate={requestUpdate} />
 
 
                         <FUNN2
@@ -126,7 +116,7 @@ class FUNN extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate} />
+                            requestUpdate={requestUpdate} />
 
                         <FUNN3
                             translation={translation}
@@ -134,7 +124,7 @@ class FUNN extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate} />
+                            requestUpdate={requestUpdate} />
 
                         <FUNN4
                             translation={translation}
@@ -142,7 +132,7 @@ class FUNN extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate} />
+                            requestUpdate={requestUpdate} />
 
 
                         <legend className="my-2 px-3 text-uppercase Collapsible">
@@ -155,7 +145,7 @@ class FUNN extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate} />
+                            requestUpdate={requestUpdate} />
 
                         <FUNN52
                             translation={translation}
@@ -163,7 +153,7 @@ class FUNN extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate} />
+                            requestUpdate={requestUpdate} />
 
                         <FUNN53
                             translation={translation}
@@ -171,7 +161,7 @@ class FUNN extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate} />
+                            requestUpdate={requestUpdate} />
 
                         {/* <NAV_FUNN /> */}
                         <FUN_MODULE_NAV
@@ -179,15 +169,15 @@ class FUNN extends Component {
                             currentItem={currentItem}
                             currentVersion={currentVersion}
                             FROM={"edit"}
-                            NAVIGATION={this.props.NAVIGATION}
-                            pqrsxfun={this.state.pqrsxfun}
+                            NAVIGATION={NAVIGATION}
+                            pqrsxfun={pqrsxfun}
 
                         />
                         <FUN_VERSION_NAV
                             translation={translation}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            NAVIGATION_VERSION={this.props.NAVIGATION_VERSION}
+                            NAVIGATION_VERSION={NAVIGATION_VERSION}
                             ON
                         />
                     </> : ""}
@@ -199,7 +189,7 @@ class FUNN extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate} />
+                            requestUpdate={requestUpdate} />
                         : ''}
 
 
@@ -220,7 +210,6 @@ class FUNN extends Component {
                 </fieldset>}
             </div>
         );
-    }
 }
 
 // const NAV_FUNN = () => {

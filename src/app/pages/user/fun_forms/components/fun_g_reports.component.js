@@ -1,16 +1,7 @@
-import React, { Component } from 'react';
 import { regexChecker_isPh, regexChecker_movTierra } from '../../../../components/customClasses/typeParse';
 //import VIZUALIZER from '../../../../components/vizualizer.component';
 
-class FUN_G_REPORTS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id } = this.props;
-        const { } = this.state;
+function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id, textAlign }) {
         const empty_model = { version: '', worker_name: '', worker_id: '', date_asign: '', worker_prev: '' }
         const reviewStr = ['NO CUMPLE', 'CUMPLE', 'NO APLICA']
         // DATA GETTERS
@@ -123,7 +114,7 @@ class FUN_G_REPORTS extends Component {
             if (REVIEWS) {
                 let asigns = REVIEWS.split(';');
                 let reviews = _REVIEW_CLOCK ? _REVIEW_CLOCK.split(';') : [_REVIEW];
-                return asigns.map((value, index) => res[reviews[index]] ?? res['-1'])
+                return asigns.map((value, index) => <span key={index}>{res[reviews[index]] ?? res['-1']}</span>)
             } else return res[_REVIEW] ?? res['-1']
         }
         let _GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS) => {
@@ -138,12 +129,12 @@ class FUN_G_REPORTS extends Component {
                 let asigns = REVIEWS.split(';');
                 let reviews_c = _REVIEW_CLOCK ? _REVIEW_CLOCK.split(';') : [_REVIEW].join(',');
                 return ['R1:', 'R2:'].map((value, index) =>
-                    <>
+                    <span key={index}>
                         <label>{value}
-                            {asigns.map((value2, index2) => res[reviews_c[index2] ? reviews_c[index2].split(',')[index] : '-1'] ?? res['-1'])}
+                            {asigns.map((value2, index2) => <span key={index2}>{res[reviews_c[index2] ? reviews_c[index2].split(',')[index] : '-1'] ?? res['-1']}</span>)}
                         </label><br />
-                    </>)
-            } else return revies.map((value, index) => <><label>R{index + 1}: {res[value] ?? res['-1']}</label><br /></>)
+                    </span>)
+            } else return revies.map((value, index) => <span key={index}><label>R{index + 1}: {res[value] ?? res['-1']}</label><br /></span>)
 
         }
         let _TABLE_INFO = () => {
@@ -379,8 +370,8 @@ class FUN_G_REPORTS extends Component {
                 </div>
             </div>
 
-            const BODY = data.map(value => {
-                return <div className="row ">
+            const BODY = data.map((value, i) => {
+                return <div className="row" key={i}>
                     <div className="col-2 border text-center">
                         <h5 className="text-uppercase">{value.icon} {value.type}</h5>
                     </div>
@@ -417,7 +408,7 @@ class FUN_G_REPORTS extends Component {
         return (
             <div className="fun_g_mix">
 
-                <legend className={`my-2 px-3 text-uppercase Collapsible text-white ${this.props.textAlign ?? ''}`} id={id}>
+                <legend className={`my-2 px-3 text-uppercase Collapsible text-white ${textAlign ?? ''}`} id={id}>
                     <label className="app-p lead text-center fw-normal text-uppercase">{nomenclature} INFORMES</label>
                 </legend>
 
@@ -425,7 +416,6 @@ class FUN_G_REPORTS extends Component {
 
             </div >
         );
-    }
 }
 
 export default FUN_G_REPORTS;

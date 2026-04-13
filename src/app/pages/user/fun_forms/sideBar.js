@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Sidebar from "react-sidebar";
 
 import Page from '../fun'
@@ -6,36 +6,26 @@ import Page from '../fun'
 
 const mql = window.matchMedia(`(min-width: 800px)`);
 
-class SideBar extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            sidebarOpen: true,
-            sidebarDocked: mql.matches,
-            items: []
-        };
-        this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
-        this.onUpdateList = this.onUpdateList.bind(this);
-    }
+function SideBar({ translation, swaMsg, globals, breadCrums }) {
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarDocked] = useState(mql.matches);
+    const [items, setItems] = useState([]);
 
-    onSetSidebarOpen() {
-        this.setState({ sidebarOpen: !this.state.sidebarOpen });
-    }
-    onUpdateList(listName, listItems){
+    const onSetSidebarOpen = () => {
+        setSidebarOpen(prev => !prev);
+    };
+    const onUpdateList = (listName, listItems) => {
         console.log("here! on function call");
-        this.setState({items : listItems})
-    }
-    render() {
-        const { translation, swaMsg, globals, breadCrums } = this.props;
-        const { items } = this.state;
-        
+        setItems(listItems);
+    };
+
         return (
             <Sidebar
                 sidebar={<SideBarContent itemsList={items}/>}
-                open={this.state.sidebarOpen}
-                onSetOpen={this.onSetSidebarOpen}
+                open={sidebarOpen}
+                onSetOpen={onSetSidebarOpen}
                 styles={{ sidebar: { background: "white" } }}
-                docked={this.state.sidebarDocked}
+                docked={sidebarDocked}
             >
               <div className="container-primary p-3 m-0" style={{ position: 'relative', zIndex: '1' }}> 
                     <Page
@@ -43,36 +33,28 @@ class SideBar extends Component {
                         swaMsg={swaMsg}
                         globals={globals}
                         breadCrums={breadCrums}
-                        onUpdateList={this.onUpdateList}
+                        onUpdateList={onUpdateList}
                     />
                </div>
             </Sidebar>
         );
-    }
 }
 
-class SideBarContent extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            itemsList: [],
-        };
-        this.componentDidUpdate = this.componentDidUpdate.bind(this);
-    }
-    componentDidUpdate(PrevProps, prevState) {
-        if (this.props.itemsList !== PrevProps.itemsList && this.props.itemsList !== null) {
-           this.setState({itemsList : this.props.itemsLis})
-           this.getList();
+function SideBarContent({ itemsList }) {
+    const prevItemsListRef = useRef(itemsList);
+
+    const getList = () => {
+        for (const item in itemsList) {
+            console.log(item);
         }
-    }
-    getList = () => {
-        for (const item in this.props.itemsList) {
-            console.log(item)
-          }
-    }
-    render() {
-        const { itemsList } = this.state;
-        
+    };
+
+    useEffect(() => {
+        if (itemsList !== prevItemsListRef.current && itemsList !== null) {
+            getList();
+        }
+        prevItemsListRef.current = itemsList;
+    }, [itemsList]);
 
         return (
             <div>
@@ -84,8 +66,7 @@ class SideBarContent extends Component {
                     <p className="lead fw-normal">LEGAL Y DEBIDA FORMA</p>
                     </div>
             </div>
-        )
-    };
+        );
 }
 
 export default SideBar;

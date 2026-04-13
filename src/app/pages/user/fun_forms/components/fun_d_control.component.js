@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { useEffect } from 'react';
+import { MDBBtn } from '../../../../components/ui';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -7,28 +7,11 @@ import Codes from '../../../../components/jsons/fun6DocsList.json';
 import { SERIES_DOCS, _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 
 const MySwal = withReactContent(Swal);
-class FUN_D_CONTROL extends Component {
-    constructor(props) {
-        super(props);
-        this._GET_CHILD_1 = this._GET_CHILD_1.bind(this);
-        this.state = {
-        };
-    }
-    componentDidMount() {
-        let SERIE = document.getElementById('fun_doc_control_0').value;
-        let _CHILD = this._GET_CHILD_1();
-        if (!SERIE) SERIE = 0;
-        let str = _GET_SERIE_STR(_CHILD)
-        document.getElementById('fun_doc_control_1').value = str;
+function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
-        SERIE = document.getElementById('fun_doc_control_2').value;
-        if (!SERIE) SERIE = 0;
-        str = _GET_SUBSERIE_STR(_CHILD);
-        document.getElementById('fun_doc_control_3').value = str;
-    }
-    _GET_CHILD_1 = () => {
-        var _CHILD = this.props.currentItem.fun_1s;
-        var _CURRENT_VERSION = this.props.currentVersion - 1;
+    const _GET_CHILD_1 = () => {
+        var _CHILD = currentItem.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
             item_0: "",
             item_1: "",
@@ -62,9 +45,18 @@ class FUN_D_CONTROL extends Component {
         return _CHILD_VARS;
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+    useEffect(() => {
+        let SERIE = document.getElementById('fun_doc_control_0').value;
+        let _CHILD = _GET_CHILD_1();
+        if (!SERIE) SERIE = 0;
+        let str = _GET_SERIE_STR(_CHILD)
+        document.getElementById('fun_doc_control_1').value = str;
+
+        SERIE = document.getElementById('fun_doc_control_2').value;
+        if (!SERIE) SERIE = 0;
+        str = _GET_SUBSERIE_STR(_CHILD);
+        document.getElementById('fun_doc_control_3').value = str;
+    }, []);
         let sumPages = 0;
         const _SERIES_DOCS = SERIES_DOCS
         // DATA GETTERS
@@ -113,7 +105,7 @@ class FUN_D_CONTROL extends Component {
         }
         // COMPONENT JSX
         let _GET_SERIES = () => {
-            let _CHILD = this._GET_CHILD_1();
+            let _CHILD = _GET_CHILD_1();
             let _SERIE = _GET_SERIE_COD(_CHILD);
             let _SUBSERIE = _GET_SUBSERIE_COD(_CHILD);
             return <>
@@ -186,7 +178,7 @@ class FUN_D_CONTROL extends Component {
             </>
         }
         let _COMPONENT_LIST = () => {
-            let _CHILD = this._GET_CHILD_1();
+            let _CHILD = _GET_CHILD_1();
             let _SERIE = _GET_SERIE_COD(_CHILD);
             let _SUBSERIE = _GET_SUBSERIE_COD(_CHILD);
             let _LIST = [];
@@ -324,7 +316,7 @@ class FUN_D_CONTROL extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -355,7 +347,7 @@ class FUN_D_CONTROL extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -452,7 +444,7 @@ class FUN_D_CONTROL extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/controlcheck/" + "Hoja de control serie documental - " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/controlcheck/" + "Hoja de control serie documental - " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -478,7 +470,6 @@ class FUN_D_CONTROL extends Component {
                 {_GET_SERIES()}
             </div>
         );
-    }
 }
 
 export default FUN_D_CONTROL;

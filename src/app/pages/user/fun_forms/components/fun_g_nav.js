@@ -1,12 +1,6 @@
-import React, { Component } from 'react';
-import { MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody } from '../../../../components/ui';
 
-class FUNG_NAV extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+function FUNG_NAV({ translation, swaMsg, globals, currentItem, currentVersion }) {
         return (
             <div className="btn-navpqrs">
                 <div className="fung_nav">
@@ -141,7 +135,6 @@ class FUNG_NAV extends Component {
                 </div>
             </div>
         );
-    }
 }
 
 export default FUNG_NAV;

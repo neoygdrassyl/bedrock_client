@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn, MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
+import { useState, useEffect } from 'react';
+import { MDBBtn, MDBCard, MDBCardBody } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -12,7 +12,7 @@ import CUSTOM_DATA_SERVICE from '../../../services/custom.service';
 import EXP_1 from './exp_1.component';
 import EXP_AREAS from './exp_areas.component';
 import EXP_DOCS from './exp_docs.component';
-import EXP_CLOCKS from './exp_clocks.component_OLD';
+import EXP_CLOCKS from './exp_clocks.component';
 import EXP_LIC from './exp_lic.component';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_2 from './exp_2.component';
@@ -21,116 +21,43 @@ import EXP_2 from './exp_2.component';
 
 const MySwal = withReactContent(Swal);
 
-class EXPEDITION extends Component {
-   
-    constructor(props) {
-        super(props);
-        this.setItem_Record = this.setItem_Record.bind(this);
-        this.requestUpdateRecord = this.requestUpdateRecord.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.setItem_RecordArc = this.setItem_RecordArc.bind(this);
-        this.requestOutCodes = this.requestOutCodes.bind(this);
-        this.state = {
-            currentRecord: null,
-            currentVersionR: null,
-            loaded: false,
-            currentStepIndex: 0,
-            pqrsxfun: false,
-            recordArc: null,
-            outCodes : [],
-        };
-    }
-    componentDidMount() {
-        this.setItem_Record();
-        this.retrieveItem(this.props.currentId);
-        this.setItem_RecordArc();
-    }
-    requestOutCodes(id) {
+function EXPEDITION(props) {
+    const { currentId, currentVersion, swaMsg, translation, globals, closeModal: closeModalProp, requesRefresh, NAVIGATION } = props;
+
+    const [currentRecord, setCurrentRecord] = useState(null);
+    const [currentVersionR, setCurrentVersionR] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [recordArc, setRecordArc] = useState(null);
+    const [outCodes, setOutCodes] = useState([]);
+    const [currentItem, setCurrentItem] = useState(null);
+
+    const requestOutCodes = (id) => {
         CUSTOM_DATA_SERVICE.loadDictionary_cub_id(id)
             .then(response => {
-                this.setState({
-                    outCodes: response.data,
-                });
+                setOutCodes(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    setItem_Record() {
-        EXPEDITION_SERVICE.getRecord(this.props.currentId)
+    };
+
+    const retrievePQRSxFUN = (id_public) => {
+        FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                if (response.data.length < 1) {
-                    this.setState({
-                        currentRecord: null,
-                        currentVersionR: null,
-                        loaded: true,
-                    });
-                } else {
-                    this.setState({
-                        currentRecord: response.data[0],
-                        currentVersionR: response.data[0].version,
-                        loaded: true,
-                    });
-                }
-            })
-            .catch(e => {
-                console.log(e);
-                MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-            });
-    }
-    requestUpdateRecord(id) {
-        EXPEDITION_SERVICE.getRecord(id)
-            .then(response => {
-                this.setState({
-                    currentRecord: response.data[0],
-                    currentVersionR: response.data[0].version,
-                    loaded: true,
-                });
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-    }
-    setItem_RecordArc() {
-        RECORD_LAW_SERVICE.getRecord(this.props.currentId)
-            .then(response => {
-                if (response.data.length < 1) {
-                    this.setState({
-                        recordArc: {},
-                    });
-                } else {
-                    this.setState({
-                        recordArc: response.data[0],
-                    });
-                }
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
-    closeModal() {
-        this.props.closeModal();
-        this.props.requesRefresh();
-    }
-    retrieveItem(id) {
+    };
+
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
-                this.requestOutCodes(response.data.id_public)
+                setCurrentItem(response.data);
+                retrievePQRSxFUN(response.data.id_public);
+                requestOutCodes(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -138,24 +65,81 @@ class EXPEDITION extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    retrievePQRSxFUN(id_public) {
-        FUN_SERVICE.loadPQRSxFUN(id_public)
+    };
+
+    const setItem_Record = () => {
+        EXPEDITION_SERVICE.getRecord(currentId)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                if (response.data.length < 1) {
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
+                } else {
+                    setCurrentRecord(response.data[0]);
+                    setCurrentVersionR(response.data[0].version);
+                    setLoaded(true);
+                }
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
+                    icon: 'warning',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+    };
+
+    const requestUpdateRecord = (id) => {
+        EXPEDITION_SERVICE.getRecord(id)
+            .then(response => {
+                if (response.data.length < 1) {
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
+                } else {
+                    setCurrentRecord(response.data[0]);
+                    setCurrentVersionR(response.data[0].version);
+                    setLoaded(true);
+                }
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { loaded, currentRecord, currentVersionR, currentItem, recordArc } = this.state;
+    };
+
+    const requestUpdate = (id) => {
+        retrieveItem(id);
+    };
+
+    const setItem_RecordArc = () => {
+        RECORD_LAW_SERVICE.getRecord(currentId)
+            .then(response => {
+                if (response.data.length < 1) {
+                    setRecordArc({});
+                } else {
+                    setRecordArc(response.data[0]);
+                }
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    };
+
+    const closeModal = () => {
+        closeModalProp();
+        requesRefresh();
+    };
+
+    useEffect(() => {
+        setItem_Record();
+        retrieveItem(currentId);
+        setItem_RecordArc();
+    }, []);
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -208,7 +192,7 @@ class EXPEDITION extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.requestUpdateRecord(currentItem.id)
+                        requestUpdateRecord(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -242,8 +226,8 @@ class EXPEDITION extends Component {
                                         currentVersion={currentVersion}
                                         currentRecord={currentRecord}
                                         currentVersionR={currentVersionR}
-                                        requestUpdate={this.requestUpdate}
-                                        requestUpdateRecord={this.requestUpdateRecord} />
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord} />
 
                                     {!conOA() && !isPH() ? <>
                                         <EXP_AREAS
@@ -252,8 +236,8 @@ class EXPEDITION extends Component {
                                             currentVersion={currentVersion}
                                             currentRecord={currentRecord}
                                             currentVersionR={currentVersionR}
-                                            requestUpdate={this.requestUpdate}
-                                            requestUpdateRecord={this.requestUpdateRecord} />
+                                            requestUpdate={requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord} />
                                     </> : ''}
 
                                     {!isPH() ?
@@ -264,8 +248,8 @@ class EXPEDITION extends Component {
                                                 currentVersion={currentVersion}
                                                 currentRecord={currentRecord}
                                                 currentVersionR={currentVersionR}
-                                                requestUpdate={this.requestUpdate}
-                                                requestUpdateRecord={this.requestUpdateRecord} />
+                                            requestUpdate={requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord} />
 
 
                                             <EXP_DOCS
@@ -275,8 +259,8 @@ class EXPEDITION extends Component {
                                                 currentRecord={currentRecord}
                                                 currentVersionR={currentVersionR}
                                                 recordArc={recordArc}
-                                                requestUpdate={this.requestUpdate}
-                                                requestUpdateRecord={this.requestUpdateRecord} />
+                                                requestUpdate={requestUpdate}
+                                                requestUpdateRecord={requestUpdateRecord} />
 
                                             <EXP_CLOCKS
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -284,8 +268,8 @@ class EXPEDITION extends Component {
                                                 currentVersion={currentVersion}
                                                 currentRecord={currentRecord}
                                                 currentVersionR={currentVersionR}
-                                                requestUpdate={this.requestUpdate}
-                                                outCodes={this.state.outCodes}
+                                                requestUpdate={requestUpdate}
+                                                outCodes={outCodes}
                                             />
 
                                             <EXP_LIC
@@ -294,8 +278,8 @@ class EXPEDITION extends Component {
                                                 currentVersion={currentVersion}
                                                 currentRecord={currentRecord}
                                                 currentVersionR={currentVersionR}
-                                                requestUpdate={this.requestUpdate}
-                                                closeModal={this.closeModal}
+                                                requestUpdate={requestUpdate}
+                                                closeModal={closeModal}
                                             />
                                         </> : null}
 
@@ -316,7 +300,7 @@ class EXPEDITION extends Component {
                         translation={translation}
                         currentItem={currentRecord}
                         currentVersion={currentVersionR}
-                        NAVIGATION_VERSION={this.navigation_version}
+                        NAVIGATION_VERSION={undefined}
                         _RECORD
                     />
                     <FUN_MODULE_NAV
@@ -324,15 +308,14 @@ class EXPEDITION extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"expedition"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
                 </fieldset>}
             </div >
         );
-    }
 }
 
 const NAV_FUNA = (_CHILD) => {

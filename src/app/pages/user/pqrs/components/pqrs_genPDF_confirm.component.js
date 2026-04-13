@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -9,15 +8,7 @@ import { cities } from '../../../../components/jsons/vars';
 
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
-class PQRS_PDFGEN_CONFIRM extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
         var formData = new FormData();
 
         // DATA GETTERS 
@@ -212,7 +203,7 @@ class PQRS_PDFGEN_CONFIRM extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/reply/" + "Oficio_Confirmacion_" + currentItem.id_publico + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_Confirmacion_" + currentItem.id_publico + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -237,7 +228,6 @@ class PQRS_PDFGEN_CONFIRM extends Component {
                 {_GEN_CONFIRM_PDF_COMPONENT()}
             </div>
         );
-    }
 }
 
 export default PQRS_PDFGEN_CONFIRM;

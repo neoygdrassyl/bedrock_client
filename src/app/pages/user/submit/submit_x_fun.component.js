@@ -1,7 +1,6 @@
-import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip, MDBTypography } from 'mdb-react-ui-kit';
-import { MDBCollapse } from "mdbreact";
+import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip, MDBTypography } from '../../../components/ui';
 import moment from 'moment';
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
 import FunService from '../../../services/fun.service';
 import PqrsMainDataService from '../../../services/pqrs_main.service';
@@ -16,89 +15,20 @@ import withReactContent from 'sweetalert2-react-content'
 const MySwal = withReactContent(Swal);
 
 var momentB = require('moment-business-days');
-class SUBMIT_X_FUN extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveWorker = this.retrieveWorker.bind(this);
-        this.retrieveMacro = this.retrieveMacro.bind(this);
-        this.state = {
-            currentItems: [],
-            collapseID: false,
-            load: false,
-            incomplete: [],
-            modal: false,
-            selectedItem: null,
-            worker_list: [],
-            dataAsign: []
-        };
-    }
-    componentDidMount() {
-        this.loadSubmit();
-        this.retrieveWorker();
-        if (this.props.type == "LIC") this.loadIcoplete();
 
-    }
-    componentDidUpdate(prevProps) {
-        if (prevProps.listIncomplete != this.props.listIncomplete) this.loadIcoplete();
-    }
-    loadSubmit() {
-        var end_date = moment().format('YYYY-MM-DD');
-        var start_date = momentB(end_date, 'YYYY-MM-DD').businessSubtract(15)._d;
-        start_date = moment(start_date).format('YYYY-MM-DD')
+function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSubtmitRows, openModal, listIncomplete }) {
+    const [currentItems, setCurrentItems] = useState([]);
+    const [collapseID, setCollapseID] = useState(false);
+    const [load, setLoad] = useState(false);
+    const [incomplete, setIncomplete] = useState([]);
+    const [modal, setModal] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [worker_list, setWorkerList] = useState([]);
+    const [dataAsign, setDataAsign] = useState([]);
+    const [lic_list, setLicList] = useState(false);
+    const hasSyncedListIncomplete = useRef(false);
 
-        if (this.props.type == "LIC") {
-            FunService.loadSubmit2(start_date, end_date)
-                .then(response => {
-                    if (response.data.length) {
-                        this.setState({
-                            currentItems: response.data,
-                            load: true,
-                        })
-                        var submitItems = [];
-                        for (var i = 0; i < response.data.length; i++) {
-                            submitItems.push(response.data[i].id)
-                        }
-                        this.props.setSubtmitRows(submitItems);
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                });
-        }
-        if (this.props.type == "PQRS") {
-            PqrsMainDataService.loadSubmit(start_date, end_date)
-                .then(response => {
-                    if (response.data.length) {
-                        this.setState({
-                            currentItems: response.data
-                        })
-                        var submitItems = [];
-                        var incompleteItems = [];
-                        for (var i = 0; i < response.data.length; i++) {
-                            submitItems.push(response.data[i].id);
-                            console.log(response.data[i])
-                        }
-                        this.props.setSubtmitRows(submitItems);
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                });
-        }
-
-    }
-    loadIcoplete() {
-        FunService.getAll_incDocs()
-            .then(response => {
-                if (response.data.length) {
-                    this.setState({ incomplete: response.data })
-                }
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
-    get_lastVRTime(items) {
+    const get_lastVRTime = (items) => {
         var screated = items.screated ? items.screated.split(';') : [];
         var today = moment();
         var diff = moment(today).diff(screated[0], 'days', true);
@@ -107,11 +37,24 @@ class SUBMIT_X_FUN extends Component {
             if (diffi < diff) diff = diffi
         })
         return diff;
-    }
-    retrieveWorker() {
+    };
+
+    const loadIcoplete = useCallback(() => {
+        FunService.getAll_incDocs()
+            .then(response => {
+                if (response.data.length) {
+                    setIncomplete(response.data);
+                }
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }, []);
+
+    const retrieveWorker = useCallback(() => {
         USER_SERVICE.getAll()
             .then(response => {
-                this.setState({ worker_list: response.data })
+                setWorkerList(response.data);
             })
             .catch(e => {
                 console.log(e);
@@ -119,14 +62,15 @@ class SUBMIT_X_FUN extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    retrieveMacro(id1, id2) {
+    }, [swaMsg]);
+
+    const retrieveMacro = useCallback((id1, id2) => {
         FunService.loadMacroAsigns(id1, id2)
             .then(response => {
-                this.setState({ dataAsign: response.data });
+                setDataAsign(response.data);
             })
             .catch(e => {
                 console.log(e);
@@ -134,13 +78,71 @@ class SUBMIT_X_FUN extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, inténtelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    render() {
-        const { translation, globals, swaMsg, type, simple, hide } = this.props;
-        const { currentItems, load, incomplete, selectedItem } = this.state;
+    }, [swaMsg]);
+
+    useEffect(() => {
+        if (simple) return;
+
+        var end_date = moment().format('YYYY-MM-DD');
+        var start_date = momentB(end_date, 'YYYY-MM-DD').businessSubtract(15)._d;
+        start_date = moment(start_date).format('YYYY-MM-DD')
+
+        if (type == "LIC") {
+            FunService.loadSubmit2(start_date, end_date)
+                .then(response => {
+                    if (response.data.length) {
+                        setCurrentItems(response.data);
+                        setLoad(true);
+                        var submitItems = [];
+                        for (var i = 0; i < response.data.length; i++) {
+                            submitItems.push(response.data[i].id)
+                        }
+                        setSubtmitRows?.(submitItems);
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+        }
+        if (type == "PQRS") {
+            PqrsMainDataService.loadSubmit(start_date, end_date)
+                .then(response => {
+                    if (response.data.length) {
+                        setCurrentItems(response.data);
+                        var submitItems = [];
+                        var incompleteItems = [];
+                        for (var i = 0; i < response.data.length; i++) {
+                            submitItems.push(response.data[i].id);
+                            console.log(response.data[i])
+                        }
+                        setSubtmitRows?.(submitItems);
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+        }
+
+        retrieveWorker();
+        if (type == "LIC") loadIcoplete();
+    }, [loadIcoplete, retrieveWorker, setSubtmitRows, simple, type]);
+
+    useEffect(() => {
+        if (simple || type != "LIC") return;
+        if (!hasSyncedListIncomplete.current) {
+            hasSyncedListIncomplete.current = true;
+            return;
+        }
+        loadIcoplete();
+    }, [listIncomplete, loadIcoplete, simple, type]);
+
+    useEffect(() => {
+        if (!simple || type != "LIC" || !lic_list || incomplete.length) return;
+        loadIcoplete();
+    }, [incomplete.length, lic_list, loadIcoplete, simple, type]);
         const customStylesForModal = {
             overlay: {
                 position: 'fixed',
@@ -233,7 +235,7 @@ class SUBMIT_X_FUN extends Component {
             </>
         }
         let get_lastVR = (items) => {
-            var diff = this.get_lastVRTime(items)
+            var diff = get_lastVRTime(items)
             var days = Math.trunc(diff);
             var hours = Math.trunc(diff * 24) % 24;
             var mins = Math.trunc(diff * 24 * 60) % 60;
@@ -341,7 +343,7 @@ class SUBMIT_X_FUN extends Component {
             const columns = [
                 {
                     name: <label className="text-center"># RADICACION</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -407,7 +409,7 @@ class SUBMIT_X_FUN extends Component {
                         {listIncPopOver(row)}
                         <MDBTooltip title='Documentos' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                             <button
-                                onClick={() => this.props.openModal({ ...row, version: 1 }, 'archive')}
+                                onClick={() => openModal({ ...row, version: 1 }, 'archive')}
                                 className="px-1 btn-sm btn-secondary btn"
                             ><i class="fas fa-archive"></i>
                             </button>
@@ -447,7 +449,7 @@ class SUBMIT_X_FUN extends Component {
             const columns = [
                 {
                     name: <label className="text-center"># RADICACION</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -456,7 +458,7 @@ class SUBMIT_X_FUN extends Component {
                 },
                 {
                     name: <label className="text-center">ESTADO</label>,
-                    selector: 'state',
+                    selector: row => row.state,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -466,7 +468,7 @@ class SUBMIT_X_FUN extends Component {
                 {
                     name: <label className="text-center">ULTIMO VR</label>,
                     center: true,
-                    selector: row => this.get_lastVRTime(row),
+                    selector: row => get_lastVRTime(row),
                     sortable: true,
                     filterable: true,
                     minWidth: '100px',
@@ -487,14 +489,14 @@ class SUBMIT_X_FUN extends Component {
                         {listItemPopOver(row)}
                         <MDBTooltip title='Informacion Solicitud' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                             <button
-                                onClick={() => this.props.openModal(row, 'general')}
+                                onClick={() => openModal(row, 'general')}
                                 className="px-1 btn-sm btn-info btn"
                             > <i class="far fa-folder-open" ></i>
                             </button>
                         </MDBTooltip>
                         <MDBTooltip title='Asignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                             <button
-                                onClick={() => this.setState({ modal: true, selectedItem: row})}
+                                onClick={() => { setModal(true); setSelectedItem(row); }}
                                 className="px-1 btn-sm btn-warning btn"
                             > <i class="fas fa-user-clock"></i>
                             </button>
@@ -535,18 +537,18 @@ class SUBMIT_X_FUN extends Component {
                             <MDBBtn
                                 color="info"
                                 size="sm"
-                                onClick={() => this.setState({ lic_list: !this.state.lic_list })}
+                                onClick={() => setLicList(prev => !prev)}
                                 className="px-2"
                             > <i class="fas fa-info-circle fa-2x"></i>
                             </MDBBtn>
                         </MDBTooltip>
                     </div>
                 </div>
-                <MDBCollapse id='lic_list' isOpen={this.state.lic_list}>
+                {lic_list && (
                     <ul class="list-group mx-2">
-                        {this.props.type == "LIC" ? _COMPONENT_LIST_DOCS_CHECK(simple) : ''}
+                        {type == "LIC" ? _COMPONENT_LIST_DOCS_CHECK(simple) : ''}
                     </ul>
-                </MDBCollapse>
+                )}
 
             </MDBTypography>
         }
@@ -563,41 +565,40 @@ class SUBMIT_X_FUN extends Component {
 
             : hide ? '' : <div className="submit_x_fun  container">
                 <div className="row d-flex justify-content-center">
-                    {this.props.type == "LIC" ? _COMPONENT_LIST_DOCS_CHECK() : ''}
+                    {type == "LIC" ? _COMPONENT_LIST_DOCS_CHECK() : ''}
                     {_COMPONENT_SUBMIT_LIST()}
                 </div>
 
 
                 <Modal contentLabel="ASIGN PROFS"
-                    isOpen={this.state.modal}
+                    isOpen={modal}
                     style={customStylesForModal}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i class="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {selectedItem ? selectedItem.id_public : ''} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.setState({ modal: false })}></MDBBtn>
+                        <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
                     </div>
 
                     {selectedItem ?
                         <TABLE_COMPONENT_EXPANDED currentItem={{ ...selectedItem, rec_review: selectedItem.rec_review, rec_review_2: selectedItem.rec_rev_2 }}
-                            requestUpdate={() => this.retrieveMacro()}
+                            requestUpdate={() => retrieveMacro()}
                             translation={translation} swaMsg={swaMsg} globals={globals}
-                            worker_list={this.state.worker_list}
-                            lenghtL={this.state.dataAsign.lenght}
-                            dataL={this.state.dataAsign}
+                            worker_list={worker_list}
+                            lenghtL={dataAsign.lenght}
+                            dataL={dataAsign}
                         />
                         : null}
 
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={() => this.setState({ modal: false })}>
+                        <MDBBtn color='info' onClick={() => setModal(false)}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
 
             </div >
-    }
 }
 
 export default SUBMIT_X_FUN;

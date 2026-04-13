@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useCallback } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -8,15 +8,11 @@ import moment from 'moment';
 import { cities, domains, states } from '../../../../components/jsons/vars';
 
 const MySwal = withReactContent(Swal);
-class FUN_PDF extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    _GET_CHILD_1 = () => {
-        var _CHILD = this.props.currentItem.fun_1s;
-        var _CURRENT_VERSION = this.props.currentVersion - 1;
+function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
+
+    let _GET_CHILD_1 = () => {
+        var _CHILD = currentItem.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
         var _CHILD_VARS = {
             item_0: "",
             item_1: "",
@@ -52,8 +48,8 @@ class FUN_PDF extends Component {
         }
         return _CHILD_VARS;
     }
-    _GET_CHILD_2 = () => {
-        var _CHILD = this.props.currentItem.fun_2;
+    let _GET_CHILD_2 = () => {
+        var _CHILD = currentItem.fun_2;
         var _CHILD_VARS = {
             item_20: "",
             item_211: "",
@@ -89,41 +85,41 @@ class FUN_PDF extends Component {
         }
         return _CHILD_VARS;
     }
-    _GET_CHILD_3 = () => {
-        var _CHILD = this.props.currentItem.fun_3s;
+    let _GET_CHILD_3 = () => {
+        var _CHILD = currentItem.fun_3s;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
         }
         return _LIST;
     }
-    _GET_CHILD_4 = () => {
-        var _CHILD = this.props.currentItem.fun_4s;
+    let _GET_CHILD_4 = () => {
+        var _CHILD = currentItem.fun_4s;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
         }
         return _LIST;
     }
-    _GET_CHILD_51 = () => {
-        var _CHILD = this.props.currentItem.fun_51s;
+    let _GET_CHILD_51 = () => {
+        var _CHILD = currentItem.fun_51s;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
         }
         return _LIST;
     }
-    GET_CHILD_52 = () => {
-        var _CHILD = this.props.currentItem.fun_52s;
+    let GET_CHILD_52 = () => {
+        var _CHILD = currentItem.fun_52s;
         var _LIST = [];
         if (_CHILD) {
             _LIST = _CHILD;
         }
         return _LIST;
     }
-    _GET_CHILD_53 = () => {
-        var _CHILD = this.props.currentItem.fun_53s;
-        var _CURRENT_VERSION = this.props.currentItem.version - 1;
+    let _GET_CHILD_53 = () => {
+        var _CHILD = currentItem.fun_53s;
+        var _CURRENT_VERSION = currentItem.version - 1;
         var _CHILD_VARS = {
             item_530: "",
             item_5311: "",
@@ -151,9 +147,9 @@ class FUN_PDF extends Component {
         return _CHILD_VARS;
     }
 
-    async getPdfForm() {
-        let swaMsg = this.props.swaMsg;
-        let model = this.props.currentItem.model
+    const getPdfForm = async () => {
+        let swaMsg = swaMsg;
+        let model = currentItem.model
         if (!model) return MySwal.fire({
             title: 'SOLICITUD SIN MODELO',
             text: 'Para poder generar el PDF de esta solicitud, se debe de definir el modelo.',
@@ -168,18 +164,24 @@ class FUN_PDF extends Component {
             icon: 'info',
             showConfirmButton: false,
         });
+<<<<<<< HEAD
         var formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
         if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
         else if (Number(model) >= 2022 && Number(model) <= 2025) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
         else if (Number(model) >= 2026) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2026";
         //if (model == '2023') formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
+=======
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
+        if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
+        if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
+        //if (model == '2023') formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
+>>>>>>> diego
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
         var _child = null;
         var _array = null;
-        const currentItem = this.props.currentItem;
-
+        const currentItem = currentItem;
 
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
@@ -229,7 +231,7 @@ class FUN_PDF extends Component {
             page.drawText(document.getElementById('fun_pdf_0_5').value, { size: 9 })
 
             // FUN 1
-            _child = this._GET_CHILD_1();
+            _child = _GET_CHILD_1();
             // FUN 1.1
             if (_child) {
                 // FUN 1.1
@@ -336,7 +338,7 @@ class FUN_PDF extends Component {
                 if (_child.item_101 == 'C') { page.moveTo(225, 356); page.drawText('x', { size: 9 }) }
             }
             // FUN 2
-            _child = this._GET_CHILD_2();
+            _child = _GET_CHILD_2();
             page.moveTo(56, 252); page.drawText(_child.item_211 ? _child.item_211 : "", { size: 9 })
             page.moveTo(320, 252); page.drawText(_child.item_212 ? _child.item_212 : "", { size: 9 })
             page.moveTo(56, 198); page.drawText(_child.item_22 ? _child.item_22 : "", { size: 9 })
@@ -373,13 +375,13 @@ class FUN_PDF extends Component {
 
             // FUN 3
             let _child_3 = [];
-            _child = this._GET_CHILD_3();
+            _child = _GET_CHILD_3();
             for (var i = 0; i < _child.length; i++) {
                 _child_3.push(_child[i]);
             }
             // FUN 4
             let _child_4 = null;
-            _child_4 = this._GET_CHILD_4();
+            _child_4 = _GET_CHILD_4();
             var _child_4_n = [];
             var _child_4_s = [];
             var _child_4_e = [];
@@ -392,7 +394,7 @@ class FUN_PDF extends Component {
             }
             // FUN 51
             let _child_51 = [];
-            _child = this._GET_CHILD_51();
+            _child = _GET_CHILD_51();
             for (var i = 0; i < _child.length; i++) {
                 _child_51.push(_child[i]);
             }
@@ -514,9 +516,9 @@ class FUN_PDF extends Component {
             // IF THIS MINIMUN NUMBER IS SURPASSED AN ADITIONAL PAGE 2 IS REQUIRED.
             // DOES AN INTITIAL WRITE FOR FUN 3, FUN 4 AND FUN 51
 
-            const _items_FUN_3 = this._GET_CHILD_3().length;
-            const _item_FUN_4 = this._GET_CHILD_4();
-            const _items_FUN_51 = this._GET_CHILD_51().length
+            const _items_FUN_3 = _GET_CHILD_3().length;
+            const _item_FUN_4 = _GET_CHILD_4();
+            const _items_FUN_51 = _GET_CHILD_51().length
             const pages_fun_3 = Math.trunc(_items_FUN_3 / 8);
             const pages_fun_51 = Math.trunc(_items_FUN_51 / 4);
 
@@ -546,7 +548,7 @@ class FUN_PDF extends Component {
 
             for (var j = 0; j < GREATER_NUMBER; j++) {
 
-                var PdfUrl_2pg = process.env.REACT_APP_API_URL + "/pdf/funform2pgflat";
+                var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
                 var Buffer_2pg = await fetch(PdfUrl_2pg).then((res) => res.arrayBuffer())
                 var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
                 let page = PdfDoc_2pg.getPage(0);
@@ -667,7 +669,7 @@ class FUN_PDF extends Component {
             page = pdfDoc.getPage(2);
 
             // FUN 52
-            _child = this.GET_CHILD_52();
+            _child = GET_CHILD_52();
             if (_child.length) {
                 for (var i = 0; i < _child.length; i++) {
                     if (_child[i].role.includes("URBANIZADOR O CONSTRUCTOR RESPONSABLE")) {
@@ -742,7 +744,7 @@ class FUN_PDF extends Component {
             }
 
             // FUN 53
-            _child = this._GET_CHILD_53();
+            _child = _GET_CHILD_53();
             page.moveTo(118, 132); page.drawText(_child.item_5311 + ' ' + _child.item_5312, { size: 9 });
             page.moveTo(118, 111); page.drawText(_child.item_532 ? _child.item_532 : "", { size: 9 });
             page.moveTo(430, 111); page.drawText(_child.item_534 ? _child.item_534 : "", { size: 9 }); // NUMBER
@@ -1474,7 +1476,7 @@ class FUN_PDF extends Component {
             page.drawText(document.getElementById('fun_pdf_0_5').value, { size: 9 })
 
             // FUN 1
-            _child = this._GET_CHILD_1();
+            _child = _GET_CHILD_1();
             // FUN 1.1
             if (_child) {
                 // FUN 1.1
@@ -1585,7 +1587,7 @@ class FUN_PDF extends Component {
             }
             */
             // FUN 2
-            _child = this._GET_CHILD_2();
+            _child = _GET_CHILD_2();
             page.moveTo(50, 380); page.drawText(_child.item_211 ? _child.item_211 : "", { size: 9 })
             page.moveTo(320, 380); page.drawText(_child.item_212 ? _child.item_212 : "", { size: 9 })
             page.moveTo(50, 310); page.drawText(_child.item_22 ? _child.item_22 : "", { size: 9 })
@@ -1622,13 +1624,13 @@ class FUN_PDF extends Component {
 
             // FUN 3
             let _child_3 = [];
-            _child = this._GET_CHILD_3();
+            _child = _GET_CHILD_3();
             for (var i = 0; i < _child.length; i++) {
                 _child_3.push(_child[i]);
             }
             // FUN 4
             let _child_4 = null;
-            _child_4 = this._GET_CHILD_4();
+            _child_4 = _GET_CHILD_4();
             var _child_4_n = [];
             var _child_4_s = [];
             var _child_4_e = [];
@@ -1641,7 +1643,7 @@ class FUN_PDF extends Component {
             }
             // FUN 51
             let _child_51 = [];
-            _child = this._GET_CHILD_51();
+            _child = _GET_CHILD_51();
             for (var i = 0; i < _child.length; i++) {
                 _child_51.push(_child[i]);
             }
@@ -1763,9 +1765,9 @@ class FUN_PDF extends Component {
             // IF THIS MINIMUN NUMBER IS SURPASSED AN ADITIONAL PAGE 2 IS REQUIRED.
             // DOES AN INTITIAL WRITE FOR FUN 3, FUN 4 AND FUN 51
 
-            const _items_FUN_3 = this._GET_CHILD_3().length;
-            const _item_FUN_4 = this._GET_CHILD_4();
-            const _items_FUN_51 = this._GET_CHILD_51().length
+            const _items_FUN_3 = _GET_CHILD_3().length;
+            const _item_FUN_4 = _GET_CHILD_4();
+            const _items_FUN_51 = _GET_CHILD_51().length
             const pages_fun_3 = Math.trunc(_items_FUN_3 / 8);
             const pages_fun_51 = Math.trunc(_items_FUN_51 / 4);
 
@@ -1795,7 +1797,7 @@ class FUN_PDF extends Component {
 
             for (var j = 0; j < GREATER_NUMBER; j++) {
 
-                var PdfUrl_2pg = process.env.REACT_APP_API_URL + "/pdf/funform2pgflat";
+                var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
                 var Buffer_2pg = await fetch(PdfUrl_2pg).then((res) => res.arrayBuffer())
                 var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
                 let page = PdfDoc_2pg.getPage(0);
@@ -1916,7 +1918,7 @@ class FUN_PDF extends Component {
             page = pdfDoc.getPage(2);
 
             // FUN 52
-            _child = this.GET_CHILD_52();
+            _child = GET_CHILD_52();
             if (_child.length) {
                 for (var i = 0; i < _child.length; i++) {
                     if (_child[i].role.includes("URBANIZADOR/PARCELADOR")) {
@@ -2009,14 +2011,14 @@ class FUN_PDF extends Component {
             }
 
             // FUN 53
-            _child = this._GET_CHILD_53();
+            _child = _GET_CHILD_53();
             page.moveTo(118, 130); page.drawText(_child.item_5311 + ' ' + _child.item_5312, { size: 9 });
             page.moveTo(118, 110); page.drawText(_child.item_532 ? _child.item_532 : "", { size: 9 }); // ID NUMBER
             page.moveTo(430, 110); page.drawText(_child.item_534 ? _child.item_534 : "", { size: 9 }); // NUMBER
             page.moveTo(350, 76); page.drawText(_child.item_535 ? _child.item_535 : "", { size: 9 }); // EMAIL
             page.moveTo(118, 76); page.drawText(_child.item_536 ? _child.item_536 : "", { size: 9 }); // ADDRESS
 
-            _child = this._GET_CHILD_1();
+            _child = _GET_CHILD_1();
             let A1 = _child.anex1 ? _child.anex1.split(';') : [];
             let A2 = getJSONFull(_child.anex2);
             let A3 = _child.anex3 ? _child.anex3.split(';') : [];
@@ -2112,14 +2114,12 @@ class FUN_PDF extends Component {
             let A2_9 = A2.a29 ? A2.a29.split(';') : [];
             if (A2_9[0]) { page.moveTo(485, 382); page.drawText(A2_9[0], { size: 9 }); }
 
-
             // FUN ANEX 3
 
             if (A3[0]) { page.moveTo(520, 348); page.drawText(A3[0], { size: 9 }); }
             if (A3[1]) { page.moveTo(520, 330); page.drawText(A3[1], { size: 9 }); }
             if (A3[2]) { page.moveTo(520, 315); page.drawText(A3[2], { size: 9 }); }
         }
-
 
         let _author = document.getElementById('fun_pdf_0_1').value + ' DE ' + document.getElementById('fun_pdf_0_4').value
         pdfDoc.setAuthor(_author);
@@ -2144,9 +2144,7 @@ class FUN_PDF extends Component {
         })
         */
     }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+
         let _GET_CLOCK = () => {
             var _CHILD = currentItem.fun_clocks;
             var _LIST = [];
@@ -2218,13 +2216,11 @@ class FUN_PDF extends Component {
 
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button className="btn btn-danger my-3" onClick={() => this.getPdfForm()}><i class="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
+                        <button className="btn btn-danger my-3" onClick={() => getPdfForm()}><i class="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
                     </div>
                 </div>
             </div>
         );
-    }
 }
-
 
 export default FUN_PDF;

@@ -1,18 +1,15 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ENG_STEP_4323 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            list_159: ['-', '-', '-', '-', '-']
-        };
-    }
-    componentDidMount() {
+function RECORD_ENG_STEP_4323(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;
+        const [list_159, setList_159] = useState(['-', '-', '-', '-', '-']);
+
+        useEffect(() => {
         let value = document.getElementById('f159') ? document.getElementById('f159').value : 0;
         const analSismic = {
             'Fuerza horizontal equivalente': [
@@ -52,7 +49,7 @@ class RECORD_ENG_STEP_4323 extends Component {
             ]
         }
         const newValue = analSismic[value];
-        this.setState({ list_159: newValue })
+        setList_159(newValue);
 
         let j183 = document.getElementById('j183') ? document.getElementById('j183').value : 0;
         let j186 = document.getElementById('j186') ? document.getElementById('j186').value : 0;
@@ -66,11 +63,7 @@ class RECORD_ENG_STEP_4323 extends Component {
         else op = "1,2*Av*Fv*TL*I/T^2"
 
         if (document.getElementById('h196')) document.getElementById('h196').value = op
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+        }, []);
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
         //  CONST
         const coelfmpor = {
@@ -266,11 +259,11 @@ class RECORD_ENG_STEP_4323 extends Component {
         }
         let _set_analSismic = (value) => {
             const newValue = analSismic[value];
-            this.setState({ list_159: newValue })
+            setList_159(newValue);
         }
 
         let _LIST_F159 = () => {
-            let list = this.state.list_159 ?? [];
+            let list = list_159 ?? [];
             return <>
                 {list.map((value, i) => (
                     <li class="list-group-item">{value}</li>
@@ -1609,7 +1602,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1640,7 +1633,7 @@ class RECORD_ENG_STEP_4323 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1693,7 +1686,6 @@ class RECORD_ENG_STEP_4323 extends Component {
                 </> : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_STEP_4323;

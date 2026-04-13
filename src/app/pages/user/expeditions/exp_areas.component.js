@@ -1,5 +1,5 @@
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
+import { useState, useEffect, useRef } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -10,38 +10,17 @@ import RECORD_ARC_AREAS_RESUME from '../records/arc/record_arc_areas_resumen.com
 import EXP_CALC from './exp_calc.component';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class EXP_AREAS extends Component {
-    constructor(props) {
-        super(props);
-        this.setItem_RecordArc = this.setItem_RecordArc.bind(this);
-        this.state = {
-            new: false,
-            edit: false,
-            currentRecordArc: null,
-            currentVersionRArc: null,
-        };
-    }
-    componentDidMount() {
-        this.setItem_RecordArc(this.props.currentItem.id)
-    }
+function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [currentRecordArc, setCurrentRecordArc] = useState(null);
+    const [currentVersionRArc, setCurrentVersionRArc] = useState(null);
+    const prevEditRef = useRef(false);
 
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
-
-            document.getElementById("expedition_area_1_edit").value = _ITEM.area;
-            document.getElementById("expedition_area_2_edit").value = _ITEM.charge;
-            document.getElementById("expedition_area_3_edit").value = _ITEM.use;
-            document.getElementById("expedition_area_4_edit").value = _ITEM.desc;
-            document.getElementById("expedition_area_5_edit").value = _ITEM.payment;
-            document.getElementById("expedition_area_6_edit").value = _ITEM.units;
-        }
-    }
-
-    setItem_RecordArc(id) {
-        record_arcService.getRecord(id || this.props.currentItem.id)
+    const setItem_RecordArc = (id) => {
+        record_arcService.getRecord(id || currentItem.id)
             .then(response => {
                 let record_arc = response.data.record_arc
                 if (record_arc){
@@ -55,26 +34,37 @@ class EXP_AREAS extends Component {
                     record_arc.record_arc_35_locations = response.data.record_arc_35_locations;
                     record_arc.record_arc_38s = response.data.record_arc_38s;
     
-                    this.setState({
-                        currentRecordArc: record_arc,
-                        currentVersionRArc: record_arc.version,
-                        loaded: true,
-                    });
+                    setCurrentRecordArc(record_arc);
+                    setCurrentVersionRArc(record_arc.version);
                 }
             })
             .catch(e => {
                 console.log(e);
                 MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
                     icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { currentRecordArc, currentVersionRArc } = this.state;
+    };
+
+    useEffect(() => {
+        setItem_RecordArc(currentItem.id);
+    }, []);
+
+    useEffect(() => {
+        if (edit !== prevEditRef.current && edit !== false) {
+            var _ITEM = edit;
+            document.getElementById("expedition_area_1_edit").value = _ITEM.area;
+            document.getElementById("expedition_area_2_edit").value = _ITEM.charge;
+            document.getElementById("expedition_area_3_edit").value = _ITEM.use;
+            document.getElementById("expedition_area_4_edit").value = _ITEM.desc;
+            document.getElementById("expedition_area_5_edit").value = _ITEM.payment;
+            document.getElementById("expedition_area_6_edit").value = _ITEM.units;
+        }
+        prevEditRef.current = edit;
+    }, [edit]);
 
         // DATA GETTERS
         let _GET_CHILD_AREAS = () => {
@@ -160,7 +150,7 @@ class EXP_AREAS extends Component {
                     maxWidth: '50px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => this.setState({ edit: row })}><i class="far fa-edit"></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i class="far fa-edit"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
                             <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
@@ -278,7 +268,7 @@ class EXP_AREAS extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_expedition_area').reset();
                     } else {
                         MySwal.fire({
@@ -325,8 +315,8 @@ class EXP_AREAS extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdateRecord(currentItem.id);
-                                this.setState({ edit: false });
+                                requestUpdateRecord(currentItem.id);
+                                setEdit(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -372,7 +362,7 @@ class EXP_AREAS extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            EXPEDITION_SERVICE.update_exp_area(this.state.edit.id, formData)
+            EXPEDITION_SERVICE.update_exp_area(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -382,9 +372,9 @@ class EXP_AREAS extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById('form_expedition_area_edit').reset();
-                        this.setState({ edit: false });
+                        setEdit(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -427,12 +417,12 @@ class EXP_AREAS extends Component {
 
                 <hr />
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Nueva Área
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_expedition_area" onSubmit={new_item}>
                             {_COMPONENT_MANAGE()}
@@ -454,7 +444,7 @@ class EXP_AREAS extends Component {
                     </>
                     : ""}
                 {_CHILD_AREA_LIST()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="form_expedition_area_edit" onSubmit={edit_item}>
                             <h3 className="my-3 text-center">Actualizar Área</h3>
@@ -478,7 +468,6 @@ class EXP_AREAS extends Component {
                     : ""}
             </div >
         );
-    }
 }
 
 export default EXP_AREAS;

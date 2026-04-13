@@ -1,21 +1,11 @@
-import React, { Component } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 
 const MySwal = withReactContent(Swal);
-class FUNN4 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
         var formData = new FormData();
 
@@ -32,21 +22,21 @@ class FUNN4 extends Component {
             const columns_4 = [
                 {
                     name: <label>LINDEROS</label>,
-                    selector: 'coord',
+                    selector: row => row.coord,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.coord}</label>
                 },
                 {
                     name: <label>LONGITUD</label>,
-                    selector: 'longitud',
+                    selector: row => row.longitud,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.longitud}</label>
                 },
                 {
                     name: <label>COLINDA CON</label>,
-                    selector: 'colinda',
+                    selector: row => row.colinda,
                     cell: row => <label>{row.colinda}</label>
                 },
                 {
@@ -99,7 +89,7 @@ class FUNN4 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdate(currentItem.id)
+                        requestUpdate(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -145,7 +135,7 @@ class FUNN4 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdate(currentItem.id)
+                                requestUpdate(currentItem.id)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -215,7 +205,6 @@ class FUNN4 extends Component {
                 {_CHILD_4_LIST()}
             </fieldset>
         </>);
-    }
-}
+};
 
 export default FUNN4;

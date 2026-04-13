@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -7,47 +7,40 @@ import Submit_Service from '../../../services/submit.service'
 import funService from '../../../services/fun.service';
 import moment from 'moment';
 import VIZUALIZER from '../../../components/vizualizer.component';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import DataTable from 'react-data-table-component';
 
 
 const MySwal = withReactContent(Swal);
 
-class SUBMIT_ANEX extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshItem = this.refreshItem.bind(this);
-        this.loadFun6 = this.loadFun6.bind(this);
-        this.state = {
-            fun6: []
-        };
+function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: propRefreshList, refreshItem: propRefreshItem }) {
+    const [fun6, setFun6] = useState([]);
+
+    useEffect(() => {
+        loadFun6();
+    }, []);
+
+    function refreshList() {
+        propRefreshList();
+        loadFun6();
     }
-    componentDidMount() {
-        this.loadFun6()
+
+    function refreshItem(id) {
+        propRefreshItem(id);
+        loadFun6();
     }
-    refreshList() {
-        this.props.refreshList();
-        this.loadFun6()
-    }
-    refreshItem(id) {
-        this.props.refreshItem(id);
-        this.loadFun6()
-    }
-    loadFun6() {
-        funService.getAll_VrFun(this.props.currentItem.id_related, this.props.currentItem.id_public)
+
+    function loadFun6() {
+        funService.getAll_VrFun(currentItem.id_related, currentItem.id_public)
         .then(response => {
-            this.setState({fun6: response.data})
+            setFun6(response.data)
         })
     }
 
 
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
-        var formData = new FormData();
+    var formData = new FormData();
 
-        // DATA GETTER
+    // DATA GETTER
         let _GET_DOC = () => {
             var _CHILD = currentItem.sub_doc;
             var _VARS = {
@@ -67,18 +60,18 @@ class SUBMIT_ANEX extends Component {
 
 
         let _CHILD_6_LIST = () => {
-            let _LIST = this.state.fun6;
+            let _LIST = fun6;
             const columns = [
                 {
                     name: <label className="text-center">DESCRIPCIÓN</label>,
-                    selector: 'description',
+                    selector: row => row.description,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.description}</label>
                 },
                 {
                     name: <label>CÓDIGO</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     maxWidth: '50px',
@@ -86,7 +79,7 @@ class SUBMIT_ANEX extends Component {
                 },
                 {
                     name: <label>FOLIOS</label>,
-                    selector: 'pages',
+                    selector: row => row.pages,
                     sortable: true,
                     filterable: true,
                     maxWidth: '40px',
@@ -94,7 +87,7 @@ class SUBMIT_ANEX extends Component {
                 },
                 {
                     name: <label>FECHA RADICACIÓN</label>,
-                    selector: 'date',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',
@@ -173,7 +166,7 @@ class SUBMIT_ANEX extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.refreshList(currentItem.id);
+                            refreshList(currentItem.id);
                         } 
                         else {
                             MySwal.fire({
@@ -203,7 +196,7 @@ class SUBMIT_ANEX extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.refreshItem(currentItem.id);
+                            refreshItem(currentItem.id);
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -242,7 +235,7 @@ class SUBMIT_ANEX extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/submit/" + "Control Ingreso Documentos " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/submit/" + "Control Ingreso Documentos " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -336,7 +329,6 @@ class SUBMIT_ANEX extends Component {
 
             </div >
         );
-    }
 }
 
 export default SUBMIT_ANEX;

@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
@@ -7,16 +6,8 @@ import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ENG_DESC extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, category, arcSteps } = this.props;
-        const { } = this.state;
+function RECORD_ENG_DESC(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, category, arcSteps, requestUpdateRecord } = props;
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -229,7 +220,7 @@ class RECORD_ENG_DESC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -259,7 +250,7 @@ class RECORD_ENG_DESC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -313,7 +304,7 @@ class RECORD_ENG_DESC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -344,7 +335,7 @@ class RECORD_ENG_DESC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -371,7 +362,6 @@ class RECORD_ENG_DESC extends Component {
                 {COMPONENT_DESC()}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_DESC;

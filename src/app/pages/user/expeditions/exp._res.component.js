@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -8,14 +8,14 @@ import FUN_SERVICE from '../../../services/fun.service';
 
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
 import moment from "moment";
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_RES(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
@@ -275,7 +275,7 @@ export default function EXP_RES(props) {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
 
@@ -3317,7 +3317,7 @@ export default function EXP_RES(props) {
                         <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_right" defaultValue={1.9} />
                     </div>
                 </div>
-                {process.env.REACT_APP_GLOBAL_ID == 'cb1' ? (
+                {import.meta.env.VITE_GLOBAL_ID == 'cb1' ? (
                     <>
                         <div className="col d-flex justify-content-center">
                             <div className="input-group-sm my-1">
@@ -3354,7 +3354,7 @@ export default function EXP_RES(props) {
                         <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
                             <i className="far fa-file-pdf"></i> GENERAR PDF
                         </MDBBtn>
-                        {process.env.REACT_APP_GLOBAL_ID == 'cb1' && (
+                        {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
                             <MDBBtn className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
                                 <i className="fas fa-edit"></i> EDITAR PDF
                             </MDBBtn>
@@ -3797,7 +3797,7 @@ export default function EXP_RES(props) {
                         MySwal.close();
                     } else {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdocres/" + "Resolucion " + currentItem.id_public + ".pdf");
                     }
                 } else {
                     console.warn('⚠️ Status no es OK:', response.data);
@@ -4095,7 +4095,7 @@ export default function EXP_RES(props) {
                 </form>
             </div>
             <div>
-                {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
+                {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
                     <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model || 'open'} />
                 )}
             </div>

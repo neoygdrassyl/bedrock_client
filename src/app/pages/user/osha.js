@@ -1,20 +1,11 @@
-import React, { Component } from 'react';
-import { MDBBreadcrumb, MDBBreadcrumbItem } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem } from '../../components/ui';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 const MySwal = withReactContent(Swal);
-class OSHA extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
 
-    render() {
-        const { translation, swaMsg, breadCrums } = this.props;
-        const { } = this.state;
+function OSHA({ translation, swaMsg, breadCrums }) {
         const HOMEPATH = '//www.curaduria1bucaramanga.com/public_docs/OTHERS/osha/';
         const HOMEPATH2 = '//www.curaduria1bucaramanga.com/public_docs/OTHERS/intranet/';
         const HOMEPATH3 = '//www.curaduria1bucaramanga.com/public_docs/OTHERS/tutorials/';
@@ -214,7 +205,6 @@ class OSHA extends Component {
                 </div>
             </div >
         );
-    }
 }
 
 export default OSHA;

@@ -1,32 +1,23 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 
 const MySwal = withReactContent(Swal);
-class FUNN1 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            dis_m_urb: true,
-            dis_m_sub: true,
-            dis_m_lic: true,
-        };
-    }
+const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
+    const [dis_m_urb, setDisMUrb] = useState(true);
+    const [dis_m_sub, setDisMSub] = useState(true);
+    const [dis_m_lic, setDisMLic] = useState(true);
 
-    componentDidMount() {
-        let _CHILD = this.props.currentItem.fun_1s ? this.props.currentItem.fun_1s[0] : {};
+    useEffect(() => {
+        let _CHILD = currentItem.fun_1s ? currentItem.fun_1s[0] : {};
         if (_CHILD && _CHILD.tipo) {
-            if (_CHILD.tipo.includes('A')) this.setState({ dis_m_urb: false });
-            if (_CHILD.tipo.includes('C')) this.setState({ dis_m_sub: false });
-            if (_CHILD.tipo.includes('D')) this.setState({ dis_m_lic: false });
+            if (_CHILD.tipo.includes('A')) setDisMUrb(false);
+            if (_CHILD.tipo.includes('C')) setDisMSub(false);
+            if (_CHILD.tipo.includes('D')) setDisMLic(false);
         }
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+    }, []);
 
         var formData = new FormData();
 
@@ -74,11 +65,11 @@ class FUNN1 extends Component {
         let _CHILD_11 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.1 Tipo de Solicitud</label>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="A" name="f_11"
-                        defaultChecked={_CHILD_VARS.item_1.includes('A') ? true : false} onChange={e => this.setState({ dis_m_urb: !e.target.checked })} />
+                        defaultChecked={_CHILD_VARS.item_1.includes('A') ? true : false} onChange={e => setDisMUrb(!e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         A. Licencia de Urbanización
                     </label>
@@ -92,14 +83,14 @@ class FUNN1 extends Component {
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="C" name="f_11"
-                        defaultChecked={_CHILD_VARS.item_1.includes('C') ? true : false} onChange={e => this.setState({ dis_m_sub: !e.target.checked })} />
+                        defaultChecked={_CHILD_VARS.item_1.includes('C') ? true : false} onChange={e => setDisMSub(!e.target.checked)} />
                     <label class="form-check-label" for="flexCheckChecked">
                         C. Licencia de Subdivisión
                     </label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="D" name="f_11"
-                        defaultChecked={_CHILD_VARS.item_1.includes('D') ? true : false} onChange={e => this.setState({ dis_m_lic: !e.target.checked })} />
+                        defaultChecked={_CHILD_VARS.item_1.includes('D') ? true : false} onChange={e => setDisMLic(!e.target.checked)} />
                     <label class="form-check-label" for="flexCheckChecked">
                         D. Licencia de Construcción
                     </label>
@@ -125,12 +116,12 @@ class FUNN1 extends Component {
                         G. Otras Actuaciones
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_12 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.2 Objeto del Tramite</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_12"
@@ -173,13 +164,13 @@ class FUNN1 extends Component {
                         defaultValue={_CHILD_VARS.item_2 != 'A' && _CHILD_VARS.item_2 != 'B' && _CHILD_VARS.item_2 != 'C'
                             && _CHILD_VARS.item_2 != 'D' ? _CHILD_VARS.item_2 : ""} id="f_12_o" />
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_13 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let disabled = this.state.dis_m_urb;
+            let disabled = dis_m_urb;
 
-            return <td>
+            return <div>
                 <label>1.3 Modalidad Licencia de Urbanización</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_13"
@@ -202,13 +193,13 @@ class FUNN1 extends Component {
                         C. Reurbanización
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_14 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let disabled =  this.state.dis_m_sub;
+            let disabled =  dis_m_sub;
 
-            return <td>
+            return <div>
                 <label>1.4 Modalidad Licencia de Subdivisión</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_14"
@@ -231,13 +222,13 @@ class FUNN1 extends Component {
                         C. Reloteo
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_15 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let disabled =  this.state.dis_m_lic;
+            let disabled =  dis_m_lic;
 
-            return <td>
+            return <div>
                 <label>1.5 Modalidad Licencia de Construcción</label>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="A" name="f_15"
@@ -309,7 +300,7 @@ class FUNN1 extends Component {
                         I. Cerramiento
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_16 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
@@ -331,7 +322,7 @@ class FUNN1 extends Component {
                     _otherValue = _CHILD_VARS.item_6;
                 }
             }
-            return <td>
+            return <div>
                 <label>1.6 Usos</label>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="A" name="f_16"
@@ -368,12 +359,12 @@ class FUNN1 extends Component {
                     <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
                         id="f_16_o" defaultValue={_otherValue} />
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_17 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.7 Área Construida</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_17"
@@ -407,12 +398,12 @@ class FUNN1 extends Component {
                             </label>
                         </div>
                         : ''}
-            </td>
+            </div>
         }
         let _CHILD_18 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.8 Tipo de Vivienda</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_18"
@@ -435,12 +426,12 @@ class FUNN1 extends Component {
                         C. NO VIS
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_19 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
 
-            return <td>
+            return <div>
                 <label>1.9  Bien de Interés Cultural</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_19"
@@ -456,11 +447,11 @@ class FUNN1 extends Component {
                         B. NO
                     </label>
                 </div>
-            </td>
+            </div>
         }
         let _CHILD_101 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let JSXC = <td colSpan="2">
+            let JSXC = <div>
                 <label >1.10.1  Declaración sobre medidas de construcción sostenible</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_101"
@@ -483,7 +474,7 @@ class FUNN1 extends Component {
                         C. Medidas Activas y Pasivas
                     </label>
                 </div>
-            </td>
+            </div>
             return currentItem.model == 2021 ?
                 JSXC
                 : currentItem.model == 2022 ?
@@ -492,7 +483,7 @@ class FUNN1 extends Component {
         }
         let _CHILD_102 = () => {
             let _CHILD_VARS = _SET_CHILD_1();
-            let JSXC = <td>
+            let JSXC = <div>
                 <label >1.10.2  Zónificacion Climática</label>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" value="A" name="f_102"
@@ -530,7 +521,7 @@ class FUNN1 extends Component {
                         defaultValue={_CHILD_VARS.item_102 != 'A' && _CHILD_VARS.item_102 != 'B' && _CHILD_VARS.item_102 != 'C'
                             && _CHILD_VARS.item_102 != 'D' ? _CHILD_VARS.item_102 : ""} />
                 </div>
-            </td>
+            </div>
             return currentItem.model == 2021 ?
                 JSXC
                 : currentItem.model == 2022 ?
@@ -753,7 +744,7 @@ class FUNN1 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -783,7 +774,7 @@ class FUNN1 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdate(currentItem.id)
+                            requestUpdate(currentItem.id)
                         } else {
                             if (response.status == 500) {
                                 MySwal.close();
@@ -857,7 +848,6 @@ class FUNN1 extends Component {
                 </div>
             </fieldset>
         </>);
-    }
-}
+};
 
 export default FUNN1;

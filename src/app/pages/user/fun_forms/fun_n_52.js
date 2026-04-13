@@ -1,32 +1,28 @@
-import React, { Component } from 'react';
-import ReactDOM from "react-dom";
-import ReactHTMLDatalist from "react-html-datalist";
+import { useState, useEffect } from 'react';
+import HTMLDatalist from '../../../components/HTMLDatalist';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import { dateParser, dateParser_timePassed, dateParser_yearsPassed } from '../../../components/customClasses/typeParse'
 import VIZUALIZER from '../../../components/vizualizer.component';
-import { Divider } from 'rsuite';
+const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 import profesionalsService from '../../../services/profesionals.service';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 const moment = require('moment');
-class FUNN51 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new: false,
-            edit: false,
-            dataListPrfesionals: [],
-            searchingP: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit !== prevState.edit && this.state.edit != false) {
-            var _ITEM = this.state.edit;
+
+function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
+    const [isNew, setIsNew] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [dataListPrfesionals, setDataListPrfesionals] = useState([]);
+    const [searchingP, setSearchingP] = useState(false);
+
+    useEffect(() => {
+        if (edit !== false) {
+            var _ITEM = edit;
             document.getElementById("f_5211_edit").value = _ITEM.name;
             document.getElementById("f_5212_edit").value = _ITEM.surname;
             document.getElementById("f_522_edit").value = _ITEM.id_number;
@@ -65,10 +61,7 @@ class FUNN51 extends Component {
             }
 
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { dataListPrfesionals } = this.state;
+    }, [edit]);
 
         var formData = new FormData();
 
@@ -310,7 +303,7 @@ class FUNN51 extends Component {
                                 <i class="far fa-eye"></i>
                             </span>
                             <select class="form-select" id="f_528">
-                                <option selected>N/A</option>
+                                <option>N/A</option>
                                 <option>SI</option>
                                 <option>NO</option>
                             </select>
@@ -536,7 +529,7 @@ class FUNN51 extends Component {
                                 <i class="far fa-eye"></i>
                             </span>
                             <select class="form-select" id="f_528_edit">
-                                <option selected>N/A</option>
+                                <option>N/A</option>
                                 <option>SI</option>
                                 <option>NO</option>
                             </select>
@@ -732,8 +725,8 @@ class FUNN51 extends Component {
                                 role="button" 
                                 tabIndex={0} 
                                 className="btn btn-secondary btn-sm  m-0 p-2 shadow-none" 
-                                onClick={() => this.setState({ edit: row })}
-                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') this.setState({ edit: row }); }}
+                                onClick={() => setEdit(row)}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setEdit(row); }}
                                 style={{cursor: 'pointer'}}>
                                 <i className="far fa-edit fa-2x"></i>
                             </span>
@@ -770,12 +763,12 @@ class FUNN51 extends Component {
             return <>
                 <div className="row">
                     <div className="col">
-                        <label>Busqueda de Profesional. {this.state.searchingP ? <label className='fw-bold'>Buscando...</label> : ''}</label>
+                        <label>Busqueda de Profesional. {searchingP ? <label className='fw-bold'>Buscando...</label> : ''}</label>
                         <div class="input-group my-1">
                             <span class="input-group-text bg-success text-white">
                                 <i class="fas fa-search"></i>
                             </span>
-                            <ReactHTMLDatalist
+                            <HTMLDatalist
                                 name={"search_52"}
                                 onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
                                 classNames={"form-control"}
@@ -856,7 +849,7 @@ class FUNN51 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdate(currentItem.id);
                         document.getElementById('form_fun_52_new').reset();
                     } else {
                         MySwal.fire({
@@ -929,7 +922,7 @@ class FUNN51 extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            FUNService.update_52(this.state.edit.id, formData)
+            FUNService.update_52(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -939,8 +932,8 @@ class FUNN51 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdate(currentItem.id);
-                        this.setState({ edit: false });
+                        requestUpdate(currentItem.id);
+                        setEdit(false);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -986,8 +979,8 @@ class FUNN51 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdate(currentItem.id);
-                                this.setState({ edit: false });
+                                requestUpdate(currentItem.id);
+                                setEdit(false);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -1019,7 +1012,7 @@ class FUNN51 extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        this.props.requestUpdate(currentItem.id)
+                        requestUpdate(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1120,12 +1113,13 @@ class FUNN51 extends Component {
         let profSearch = (val) => {
             if (val.length) {
                 let _val = val.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                this.setState({ searchingP: true })
+                setSearchingP(true)
 
                 profesionalsService.getByName(_val)
                     .then(response => {
                         if (response.data.length) {
-                            this.setState({ dataListPrfesionals: response.data, searchingP: false })
+                            setDataListPrfesionals(response.data);
+                            setSearchingP(false);
                         }
                     })
                     .catch(e => {
@@ -1138,7 +1132,7 @@ class FUNN51 extends Component {
                         });
                     });
             }
-            else this.setState({ dataListPrfesionals: [], searchingP: false })
+            else { setDataListPrfesionals([]); setSearchingP(false); }
         }
 
         return (<>
@@ -1148,12 +1142,12 @@ class FUNN51 extends Component {
                 </legend>
 
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Añadir nuevo Profesional
                     </label>
                 </div>
-                {this.state.new
+                {isNew
                     ? <>
                         <form id="form_fun_52_new" onSubmit={new_52}>
                             {_COMPONENT_NEW()}
@@ -1177,7 +1171,7 @@ class FUNN51 extends Component {
                     <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "tomato" }}></i></a> : Estudios de postgrado</label>
                      <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "gray" }}></i></a> : Certificados</label>
                 </div>
-                {this.state.edit
+                {edit
                     ? <form id="form_fun_52_edit" onSubmit={edit_52}>
                         <h3 className="my-3 text-center">Actualizar Profesional</h3>
                         {_COMPONENT_EDIT()}
@@ -1190,7 +1184,6 @@ class FUNN51 extends Component {
                     : ""}
             </fieldset>
         </>);
-    }
 }
 
 export default FUNN51;

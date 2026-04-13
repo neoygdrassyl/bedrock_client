@@ -1,16 +1,7 @@
-import React, { Component } from 'react';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import FUN_REPORT_DATA from './fun_report_data';
 
-class FUN_G_MIX extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }) {
 
         // DATA GETTERS
         let _SET_CHILD_1 = () => {
@@ -162,7 +153,6 @@ class FUN_G_MIX extends Component {
                 </fieldset>
             </div>
         );
-    }
 }
 
 export default FUN_G_MIX;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -11,7 +11,7 @@ import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
 import RECORD_ARC_SERVICE from '../../../../services/record_arc.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
 import { dateParser_finalDate, formsParser1, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
-import { MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBTooltip } from '../../../../components/ui';
 import FUN_ICON_PROGRESS from './icon_progress.compoennt';
 
 export default function FUN_MACROTABLE_CLOCKS(props) {
@@ -121,7 +121,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
     const columns = [
         {
             name: <label>No. RADICACION</label>,
-            selector: 'id_public',
+            selector: row => row.id_public,
             sortable: true,
             filterable: true,
             minWidth: '150px',
@@ -145,7 +145,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
         },
         {
             name: <label className="text-center">ESTADO</label>,
-            selector: 'state',
+            selector: row => row.state,
             sortable: true,
             filterable: true,
             center: true,
@@ -154,7 +154,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
         },
         {
             name: <label className="text-center">CATEGORIA</label>,
-            selector: 'type',
+            selector: row => row.type,
             sortable: true,
             filterable: true,
             center: true,

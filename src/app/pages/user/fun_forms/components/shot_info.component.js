@@ -1,12 +1,6 @@
-import React, { Component } from 'react';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 
-class SHORT_INFO extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+function SHORT_INFO({ translation, swaMsg, globals, currentItem, currentVersion }) {
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
             var _CURRENT_VERSION = currentVersion - 1;
@@ -191,7 +185,6 @@ class SHORT_INFO extends Component {
                 {_COMPONENT()}
             </div>
         );
-    }
 }
 
 export default SHORT_INFO;

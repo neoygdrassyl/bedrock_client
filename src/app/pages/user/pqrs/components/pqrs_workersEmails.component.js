@@ -1,5 +1,5 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { Component } from 'react';
+import { MDBBtn } from '../../../../components/ui';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -7,25 +7,19 @@ import USERS_Service from '../../../../services/users.service';
 
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
-class PQRS_WORKERS_EMAILS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            users_list: [],
-            attachsForEmails: 0,
-            load: false,
-        };
-    }
-    componentDidMount() {
-        this.retrieveuUsers();
-    }
-    retrieveuUsers() {
+function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker, email_types, retrieveItem, closeComponent }) {
+    const [usersList, setUsersList] = useState([]);
+    const [attachsForEmails, setAttachsForEmails] = useState(0);
+    const [load, setLoad] = useState(false);
+
+    useEffect(() => {
+        retrieveUsers();
+    }, []);
+    const retrieveUsers = () => {
         USERS_Service.getAll()
             .then(response => {
-                this.setState({
-                    users_list: response.data,
-                    load: true
-                })
+                setUsersList(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
@@ -33,47 +27,39 @@ class PQRS_WORKERS_EMAILS extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este ítem, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
-    }
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.worker !== prevProps.worker && this.props.worker != false) {
-            var _ITEM = this.props.worker;
-            this._SET_FORM(_ITEM);
+    };
+    useEffect(() => {
+        if (load && worker) {
+            _SET_FORM(worker);
         }
-        if (this.state.load == true) {
-            var _ITEM = this.props.worker;
-            this._SET_FORM(_ITEM);
-        }
-    }
+    }, [worker, load]);
 
-    minusAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails - 1 })
-    }
-    addAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails + 1 })
-    }
+    const minusAttachEmail = () => {
+        setAttachsForEmails(prev => prev - 1);
+    };
+    const addAttachEmail = () => {
+        setAttachsForEmails(prev => prev + 1);
+    };
 
-    _SET_FORM = (_ITEM) => {
-        let USER = this._GET_USER(_ITEM.worker_id);
+    const _SET_FORM = (_ITEM) => {
+        let USER = _GET_USER(_ITEM.worker_id);
         document.getElementById("pqrs_email_notify_worker_1").value = USER.email;
-        this._GET_EMAIL_BODY_WORKER_NOTIFY(this.props.email_types[0]);
+        _GET_EMAIL_BODY_WORKER_NOTIFY(email_types[0]);
     }
-    _GET_USER = (_id) => {
-        let _users = this.state.users_list;
-        for (var i = 0; i < _users.length; i++) {
-            if (_users[i].id == _id) return _users[i]
+    const _GET_USER = (_id) => {
+        for (var i = 0; i < usersList.length; i++) {
+            if (usersList[i].id == _id) return usersList[i]
         }
         return false;
     }
-    _GET_EMAIL_BODY_WORKER_NOTIFY = (_body) => {
+    const _GET_EMAIL_BODY_WORKER_NOTIFY = (_body) => {
         let _email_body = "";
-        let CURRENT_ITEM = this.props.currentItem;
-        let USER = this._GET_USER(this.props.worker.worker_id);
+        let CURRENT_ITEM = currentItem;
+        let USER = _GET_USER(worker.worker_id);
         // ASIGN 
         if (_body == 0 || _body == null) {
             _email_body = `
@@ -128,16 +114,12 @@ class PQRS_WORKERS_EMAILS extends Component {
         }
         document.getElementById('pqrs_email_notify_worker_2').value = _email_body;
     }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { load, attachsForEmails } = this.state;
 
 
         // DATA GETTERS 
         // DATA CONVERTERS
         let _GET_EMAIL_TYPES = () => {
             let _COMPONENT = [];
-            let email_types = this.props.email_types;
             for (var i = 0; i < email_types.length; i++) {
                 if (email_types[i] == 0) _COMPONENT.push(<option value="0">CORREO DE NOTIFICACIÓN DE ASIGNACIÓN</option>)
                 if (email_types[i] == 1) _COMPONENT.push(<option value="1">CORREO DE REITERACIÓN DE ASIGNACIÓN</option>)
@@ -167,7 +149,7 @@ class PQRS_WORKERS_EMAILS extends Component {
                             <span class="input-group-text bg-info text-white">
                                 <i class="far fa-envelope"></i>
                             </span>
-                            <select class="form-control" id="pqrs_email_notify_worker_3" onChange={(e) => this._GET_EMAIL_BODY_WORKER_NOTIFY(e.target.value)}>
+                            <select class="form-control" id="pqrs_email_notify_worker_3" onChange={(e) => _GET_EMAIL_BODY_WORKER_NOTIFY(e.target.value)}>
                                 {_GET_EMAIL_TYPES()}
                             </select>
                         </div>
@@ -204,7 +186,7 @@ class PQRS_WORKERS_EMAILS extends Component {
             e.preventDefault();
             formData = new FormData();
 
-            formData.set('id', this.props.worker.id);
+            formData.set('id', worker.id);
             formData.set('sent_email_notify', moment().format('YYYY-MM-DD'));
 
             let email_list = document.getElementById("pqrs_email_notify_worker_1").value;
@@ -237,8 +219,8 @@ class PQRS_WORKERS_EMAILS extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.retrieveItem(currentItem.id);
-                        this.props.closeComponent()
+                        retrieveItem(currentItem.id);
+                        closeComponent()
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -266,14 +248,14 @@ class PQRS_WORKERS_EMAILS extends Component {
                         <form id="form_extension_email" onSubmit={notifyEmail}>
                             <div className="border border-warning p-3" >
                                 {_EMAIL_NOTIFY_WORKER()}
-                                {this.props.email_types.indexOf(2) > -1
+                                {email_types.indexOf(2) > -1
                                     ? <>
                                         <div className="text-end m-3">
                                             <p className="text-end fw-bold text-uppercase">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <MDBBtn className="btn btn-secondary mx-3" onClick={() => this.minusAttachEmail()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <MDBBtn className="btn btn-secondary mx-3" onClick={() => minusAttachEmail()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                                 : ""}
-                                            <MDBBtn className="btn btn-secondary" onClick={() => this.addAttachEmail()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <MDBBtn className="btn btn-secondary" onClick={() => addAttachEmail()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>
@@ -284,7 +266,6 @@ class PQRS_WORKERS_EMAILS extends Component {
 
             </div>
         );
-    }
 }
 
 export default PQRS_WORKERS_EMAILS;

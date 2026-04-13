@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FUNService from '../../../services/fun.service'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -13,31 +13,23 @@ import submitService from '../../../services/submit.service';
 
 
 const MySwal = withReactContent(Swal);
-class FUN_6_VIEW extends Component {
-    constructor(props) {
-        super(props);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.retrieveItemVR = this.retrieveItemVR.bind(this);
-        this.state = {
-            attachs: 0,
-            edit: false,
-            item: null,
-            show_doc_1: false,
-            modal_searchList: false,
-            currentItem6: [],
-            VRList: [],
-            load: false,
-        };
-    }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-        this.retrieveItemVR(this.props.currentItem.id_public);
-    }
-    retrieveItemVR(id) {
+function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, readOnly, title, VREdit, parentLoad, updateParentLoad }) {
+    const [attachs, setAttachs] = useState(0);
+    const [edit, setEdit] = useState(false);
+    const [item, setItem] = useState(null);
+    const [show_doc_1, setShowDoc1] = useState(false);
+    const [modal_searchList, setModalSearchList] = useState(false);
+    const [currentItem6, setCurrentItem6] = useState([]);
+    const [VRList, setVRList] = useState([]);
+    const [load, setLoad] = useState(false);
+
+    const prevItemRef = useRef(item);
+    const prevCurrentItemRef = useRef(currentItem);
+
+    const requestUpdate = (id) => {
+        retrieveItem(id);
+    };
+    const retrieveItemVR = (id) => {
         submitService.getIdRelated(id).then(response => {
             let newList = [];
             let List = response.data
@@ -46,16 +38,15 @@ class FUN_6_VIEW extends Component {
                 let vr = value.id_public;
                 if (!newList.includes(vr)) newList.push(vr)
             })
-            this.setState({ VRList: newList, load: true })
+            setVRList(newList);
+            setLoad(true);
         })
-    }
-    retrieveItem(id) {
+    };
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem6: response.data.fun_6s,
-                    load: true
-                })
+                setCurrentItem6(response.data.fun_6s);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
@@ -63,30 +54,40 @@ class FUN_6_VIEW extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
-    }
+    };
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.item !== prevState.item && this.state.item != null) {
-            document.getElementById('fun6_descriptions_edit').value = this.state.item.description;
-            document.getElementById('fun6_codes_edit').value = this.state.item.id_public;
-            document.getElementById('fun6_pages_edit').value = this.state.item.pages;
-            document.getElementById('fun6_dates_edit').value = this.state.item.date;
-        }
-        if (this.props.currentItem !== prevProps.currentItem && this.props.currentItem != null) {
-            this.retrieveItem(this.props.currentId);
-        }
-        if (this.props.parentLoad == 0 && this.props.parentLoad != undefined) {
-            this.retrieveItem(this.props.currentId);
-            this.props.updateParentLoad(1);
-        }
-    }
+    useEffect(() => {
+        retrieveItem(currentId);
+        retrieveItemVR(currentItem.id_public);
+    }, []);
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, readOnly, title } = this.props;
-        const { currentItem6, load } = this.state;
+    useEffect(() => {
+        if (item !== prevItemRef.current && item != null) {
+            document.getElementById('fun6_descriptions_edit').value = item.description;
+            document.getElementById('fun6_codes_edit').value = item.id_public;
+            document.getElementById('fun6_pages_edit').value = item.pages;
+            document.getElementById('fun6_dates_edit').value = item.date;
+        }
+        prevItemRef.current = item;
+    }, [item]);
+
+    useEffect(() => {
+        if (currentItem !== prevCurrentItemRef.current && currentItem != null) {
+            retrieveItem(currentId);
+        }
+        prevCurrentItemRef.current = currentItem;
+    }, [currentItem]);
+
+    useEffect(() => {
+        if (parentLoad == 0 && parentLoad != undefined) {
+            retrieveItem(currentId);
+            updateParentLoad(1);
+        }
+    }, [parentLoad]);
+
         var formData = new FormData();
 
         let _CHILD_6_LIST = () => {
@@ -95,27 +96,27 @@ class FUN_6_VIEW extends Component {
             const columns = [
                 {
                     name: <label className="text-center">DESCRIPCIÓN</label>,
-                    selector: 'description',
+                    selector: row => row.description,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.description}</label>
                 },
                 {
                     name: <label>VR</label>,
-                    selector: 'id_replace',
+                    selector: row => row.id_replace,
                     sortable: true,
                     filterable: true,
                     minWidth: '50px',
                     maxWidth: '150px',
-                    cell: row => this.props.VREdit && !isRewDoc(row.id_replace || '') ? <select className='form-select form-select-sm' id="f_6_vr" defaultValue={row.id_replace || ''}
+                    cell: row => VREdit && !isRewDoc(row.id_replace || '') ? <select className='form-select form-select-sm' id="f_6_vr" defaultValue={row.id_replace || ''}
                         onChange={(e) => edit_6_vr(row.id, e.target.value)}>
                         <option value="">SIN VR</option>
-                        {this.state.VRList.map(vr => <option>{vr}</option>)}
+                        {VRList.map(vr => <option>{vr}</option>)}
                     </select> : isRewDoc(row.id_replace || '') ? 'INFORME' : <label>{row.id_replace}</label>
                 },
                 {
                     name: <label>CÓDIGO</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     maxWidth: '50px',
@@ -123,7 +124,7 @@ class FUN_6_VIEW extends Component {
                 },
                 {
                     name: <label>FOLIOS</label>,
-                    selector: 'pages',
+                    selector: row => row.pages,
                     sortable: true,
                     filterable: true,
                     maxWidth: '40px',
@@ -131,7 +132,7 @@ class FUN_6_VIEW extends Component {
                 },
                 {
                     name: <label>FECHA RADICACIÓN</label>,
-                    selector: 'date',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',
@@ -253,7 +254,7 @@ class FUN_6_VIEW extends Component {
             FUNService.update_6(id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        this.requestUpdate(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else {
                         if (response.status == 500) {
                         }
@@ -290,8 +291,8 @@ class FUN_6_VIEW extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.requestUpdate(currentItem.id);
-                                this.setState({ edit: false })
+                                requestUpdate(currentItem.id);
+                                setEdit(false)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -314,10 +315,8 @@ class FUN_6_VIEW extends Component {
             });
         }
         let set_edit_6 = (_item) => {
-            this.setState({
-                item: _item,
-                edit: true
-            })
+            setItem(_item);
+            setEdit(true);
         }
         let edit_6 = (e) => {
             e.preventDefault();
@@ -351,7 +350,7 @@ class FUN_6_VIEW extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            FUNService.update_6(this.state.item.id, formData)
+            FUNService.update_6(item.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.fire({
@@ -360,8 +359,8 @@ class FUN_6_VIEW extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.setState({ edit: false, item: null });
-                        this.requestUpdate(currentItem.id);
+                        setEdit(false); setItem(null);
+                        requestUpdate(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -389,8 +388,8 @@ class FUN_6_VIEW extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
 
-                        this.setState({ edit: false, item: null });
-                        this.requestUpdate(currentItem.id);
+                        setEdit(false); setItem(null);
+                        requestUpdate(currentItem.id);
                     }
                 })
                 .catch(e => {
@@ -401,7 +400,7 @@ class FUN_6_VIEW extends Component {
         return (
             <div>
                 {_CHILD_6_LIST()}
-                {this.state.edit
+                {edit
                     ? <>
                         <form id="fun_6_d_edit" onSubmit={edit_6} className="py-3">
                             {_EDIT_COMPONENT()}
@@ -413,7 +412,6 @@ class FUN_6_VIEW extends Component {
                         </form></> : ""}
             </div>
         );
-    }
 }
 
 export default FUN_6_VIEW;

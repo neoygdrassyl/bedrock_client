@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PublishService from '../../services/publish.service'
 import {
   MDBRow, MDBCol, MDBCard, MDBCardBody,
@@ -10,12 +10,12 @@ import {
   MDBModalTitle,
   MDBModalBody,
   MDBModalFooter, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent
-} from 'mdb-react-ui-kit';
+} from '../../components/ui';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../components/Collapsible';
 import { PUBLISH_TYPE_ARRAY } from '../../components/vars.global'
 import Modal from 'react-modal';
 import publishService from '../../services/publish.service';
@@ -24,64 +24,33 @@ import publishService from '../../services/publish.service';
 const moment = require('moment');
 
 
-class Publish extends Component {
-  constructor(props) {
-    super(props);
-    this.retrievePublish = this.retrievePublish.bind(this);
-    this.refreshList = this.refreshList.bind(this);
-    this.state = {
-      selectedValue: "",
-      error: null,
-      isLoaded: false,
-      items: [],
-      currentItem: null,
-      currentIndex: -1,
-      fillActive: '1',
-      modal: false,
-      items_00: [], // Administrative Acts
-      items_01: [], // Replies to neighbours
-      items_02: [],
-      items_03: [],
-      items_04: [],
-      items_05: [],
-      items_06: [],
-      items_07: [],
-      items_08: [],
-      items_09: [],
-      items_10: [],
-      items_11: [],
-      items_12: [],
-      Subtype: [
-        'Negada',
-        'Otorgada',
-        'Desistida',
-        'Aclaratoria',
-        'Revocatoria',
-        'Recurso',
-        'Renuncia',
-      ],
-      Subtype2: [
-        'Negada',
-        'Otorgada',
-        'Desistida',
-        'Aclaratoria',
-        'Revocatoria',
-        'Recurso',
-        'Renuncia',
-      ],
-      modalEdit: false,
-      edit: false,
+function Publish({ translation, swaMsg, breadCrums }) {
+  const [selectedValue, setSelectedValue] = useState("");
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [items, setItems] = useState([]);
+  const [currentItem, setCurrentItem] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [fillActive, setFillActive] = useState('1');
+  const [modal, setModal] = useState(false);
+  const [items_00, setItems_00] = useState([]);
+  const [items_01, setItems_01] = useState([]);
+  const [items_02, setItems_02] = useState([]);
+  const [items_03, setItems_03] = useState([]);
+  const [items_04, setItems_04] = useState([]);
+  const [items_05, setItems_05] = useState([]);
+  const [items_06, setItems_06] = useState([]);
+  const [items_07, setItems_07] = useState([]);
+  const [items_08, setItems_08] = useState([]);
+  const [items_09, setItems_09] = useState([]);
+  const [items_10, setItems_10] = useState([]);
+  const [items_11, setItems_11] = useState([]);
+  const [items_12, setItems_12] = useState([]);
+  const [modalEdit, setModalEdit] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [filterStates, setFilterStates] = useState({});
 
-    };
-  }
-
-
-
-  componentDidMount() {
-    this.retrievePublish();
-  }
-
-  retrievePublish() {
+  const retrievePublish = useCallback(() => {
     PublishService.getAll()
       .then(response => {
         let list_00 = [];
@@ -138,74 +107,61 @@ class Publish extends Component {
             list_12.push(item);
           }
         });
-        this.setState({
-          items: response.data,
-          items_00: list_00,
-          items_01: list_01,
-          items_02: list_02,
-          items_03: list_03,
-          items_04: list_04,
-          items_05: list_05,
-          items_06: list_06,
-          items_07: list_07,
-          items_08: list_08,
-          items_08: list_08,
-          items_09: list_09,
-          items_10: list_10,
-          items_11: list_11,
-          items_12: list_12,
-          isLoaded: true,
-        });
+        setItems(response.data);
+        setItems_00(list_00);
+        setItems_01(list_01);
+        setItems_02(list_02);
+        setItems_03(list_03);
+        setItems_04(list_04);
+        setItems_05(list_05);
+        setItems_06(list_06);
+        setItems_07(list_07);
+        setItems_08(list_08);
+        setItems_09(list_09);
+        setItems_10(list_10);
+        setItems_11(list_11);
+        setItems_12(list_12);
+        setIsLoaded(true);
       })
       .catch(e => {
         console.log(e);
       });
-  }
-  refreshList() {
-    this.retrievePublish();
-    this.setState({
-      currentItem: null,
-      currentIndex: -1,
+  }, []);
 
-    });
-  }
-  toggle = () => {
-    this.setState({
-      modal: !this.state.modal
-    });
-  }
-  getToggle = () => {
-    return this.state.modal;
-  }
-  setItem(item) {
-    this.setState({
-      currentItem: item,
-      modal: !this.state.modal,
-    });
-  }
+  const refreshList = useCallback(() => {
+    retrievePublish();
+    setCurrentItem(null);
+    setCurrentIndex(-1);
+  }, [retrievePublish]);
 
-  toggleManage = (item) => {
-    if (item) this.setItem(item);
-    this.setState({
-      edit: !this.state.edit
-    });
-  }
+  const toggle = useCallback(() => {
+    setModal(prev => !prev);
+  }, []);
 
+  const setItemFn = useCallback((item) => {
+    setCurrentItem(item);
+    setModal(prev => !prev);
+  }, []);
 
-  render() {
-    const { translation, swaMsg, breadCrums } = this.props;
-    const { currentItem, isLoaded, items, items_00, items_01, items_02, items_03, items_04, items_05,
-      items_06, items_07, items_08, items_09, items_10, items_11, items_12, } = this.state;
+  const toggleManage = useCallback((item) => {
+    if (item) setItemFn(item);
+    setEdit(prev => !prev);
+  }, [setItemFn]);
+
+  useEffect(() => {
+    retrievePublish();
+  }, [retrievePublish]);
+
     const selectTypePublish = PUBLISH_TYPE_ARRAY.map(function (item, i) {
       return <option>{item}</option>
     })
 
     const handleChange = (e) => {
-      this.setState({ selectedValue: e.target.value })
+      setSelectedValue(e.target.value);
     }
 
     const Selector = () => {
-      if (this.state.selectedValue == 'oa' || this.state.selectedValue == 'lu' || this.state.selectedValue == 'mpr') {
+      if (selectedValue == 'oa' || selectedValue == 'lu' || selectedValue == 'mpr') {
         return <>
           <option value={'neg'}>Negada</option>
           <option value={'oto'}>Otorgada</option>
@@ -215,7 +171,7 @@ class Publish extends Component {
           <option value={'rec'}>Recurso</option>
           <option value={'ren'}>Renuncia</option>
         </>
-      } else if (this.state.selectedValue != 'oa' || this.state.selectedValue != 'lu' || this.state.selectedValue != 'mpr') {
+      } else if (selectedValue != 'oa' || selectedValue != 'lu' || selectedValue != 'mpr') {
         return <option value={'publicado'}>Publicado</option>
       }
     }
@@ -338,8 +294,8 @@ class Publish extends Component {
       {
         name: <h4>Publicado</h4>,
         minWidth: '100px',
-        cell: row => <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" defaultChecked={row.publish} role="switch" id="checkbox1" onChange={(e) => handleCheck(e, row)} />
+        cell: row => <div className="form-check form-switch">
+          <input className="form-check-input" type="checkbox" defaultChecked={row.publish} role="switch" id="checkbox1" onChange={(e) => handleCheck(e, row)} />
         </div>
       },
       {
@@ -347,13 +303,13 @@ class Publish extends Component {
         button: true,
         minWidth: '170px',
         cell: row => <>
-          <button className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => { this.toggleManage(); this.setState({ edit: row }) }}><i class="fas fa-edit"></i></button>
+          <button className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => { toggleManage(); setEdit(row); }}><i className="fas fa-edit"></i></button>
           <div className='px-1'>
-            <button className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => handleDelete(row)}><i class="fas fa-trash"></i></button>
+            <button className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => handleDelete(row)}><i className="fas fa-trash"></i></button>
           </div>
           <div className='px-0'></div>
           <a className="btn btn-sm btn-danger px-1" target="_blank"
-            href={process.env.REACT_APP_API_URL + '/files/publish/' + _PARSE_URL(row.type) + '/publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path} ><i class="fas fa-cloud-download-alt"></i> Descargar</a></>
+            href={import.meta.env.VITE_API_URL + '/files/publish/' + _PARSE_URL(row.type) + '/publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path} ><i className="fas fa-cloud-download-alt"></i> Descargar</a></>
         ,
       },
     ]
@@ -430,9 +386,7 @@ class Publish extends Component {
             formData = new FormData();
             formData.set('type', 0);
             formData.set('file', null);
-            this.refreshList();
-          } else {
-            // TODO
+            refreshList();
           }
         })
         .catch(e => {
@@ -464,7 +418,7 @@ class Publish extends Component {
         showConfirmButton: false,
       });
 
-      PublishService.update(this.state.edit.id, formData)
+      PublishService.update(edit.id, formData)
         .then(response => {
           if (response.data === 'OK') {
             MySwal.fire({
@@ -478,10 +432,8 @@ class Publish extends Component {
             formData = new FormData();
             formData.set('type', 0);
             formData.set('file', null);
-            this.refreshList();
-            this.toggleManage()
-          } else {
-            // TODO
+            refreshList();
+            toggleManage();
           }
         })
         .catch(e => {
@@ -518,8 +470,8 @@ class Publish extends Component {
                   icon: 'success',
                   confirmButtonText: swaMsg.text_btn,
                 });
-                this.refreshList();
-                this.setState({ edit: false });
+                refreshList();
+                setEdit(false);
               } else {
                 MySwal.fire({
                   title: swaMsg.generic_eror_title,
@@ -547,11 +499,11 @@ class Publish extends Component {
 
       const subHeaderComponentMemo = () => {
         return (
-          <div class="input-group mb-2">
-            <span class="input-group-text bg-info text-white">
-              <i class="fas fa-search"></i>
+          <div className="input-group mb-2">
+            <span className="input-group-text bg-info text-white">
+              <i className="fas fa-search"></i>
             </span>
-            <input type='text' className='form-control' placeholder='Busqueda...' onChange={(e) => this.setState({ [ID]: e.target.value })} />
+            <input type='text' className='form-control' placeholder='Busqueda...' onChange={(e) => setFilterStates(prev => ({ ...prev, [ID]: e.target.value }))} />
           </div>
         );
       }
@@ -561,7 +513,7 @@ class Publish extends Component {
         noDataComponent="No hay publicaciones en estos momentos"
         striped="true"
         columns={columns}
-        data={datas.filter(item => item.id_publico && item.id_publico.toLowerCase().includes((this.state[ID] ?? '').toLowerCase()))}
+        data={datas.filter(item => item.id_publico && item.id_publico.toLowerCase().includes((filterStates[ID] ?? '').toLowerCase()))}
         highlightOnHover
 
         pagination
@@ -586,7 +538,7 @@ class Publish extends Component {
     let COLLAPSIBLE_JSX = (title, data, ID) => {
       return <>
         <Collapsible trigger={<><label className="mx-2"> {title} ({data.length})</label>
-          <button className="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Ver Lista</button></>}>
+          <button className="btn btn-primary btn-sm"><i className="fas fa-plus"></i> Ver Lista</button></>}>
           {LIISTS(data, ID)}
         </Collapsible>
       </>
@@ -600,18 +552,18 @@ class Publish extends Component {
               <MDBRow>
                 <MDBCol md="6">
                   <label>Identificador público</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="ID Documento" required id="publish_1" />
+                    <input type="text" className="form-control" placeholder="ID Documento" required id="publish_1" />
                   </div>
                   <label>Tipo de documento</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" id="publish_2" required onChange={(e) => handleChange(e)}>
+                    <select className="form-select" id="publish_2" required onChange={(e) => handleChange(e)}>
                       <option value="lu">Licencias urbanísticas</option>
                       <option value="oa">Otras actuaciones</option>
                       <option value="mpr">MPR</option>
@@ -623,36 +575,36 @@ class Publish extends Component {
                     </select>
                   </div>
                   <label>Estado documento</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" id="publish_4" >
+                    <select className="form-select" id="publish_4" >
                       {Selector()}
                     </select>
                   </div>
                   <label>Fecha</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="date" class="form-control" required id="publish_date" />
+                    <input type="date" className="form-control" required id="publish_date" />
                   </div>
                 </MDBCol>
                 <MDBCol md="6">
                   <label>Documento a subir</label><br />
-                  <div class="input-group my-2">
-                    <label class="input-group-text bg-info  text-white" for="file"><i class="fas fa-paperclip"></i></label>
-                    <input type="file" class="form-control" id="file" accept="application/pdf" required />
+                  <div className="input-group my-2">
+                    <label className="input-group-text bg-info  text-white" htmlFor="file"><i className="fas fa-paperclip"></i></label>
+                    <input type="file" className="form-control" id="file" accept="application/pdf" required />
                   </div>
                   <label>Tipo de actuación</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" required id="publish_3">
+                    <select className="form-select" required id="publish_3">
                       <option>Otros</option>
-                      <option selected disabled className='fw-bold'> LICENCIAS URBANÍSTICAS O RECONOCIMIENTOS</option>
+                      <option disabled className='fw-bold'> LICENCIAS URBANÍSTICAS O RECONOCIMIENTOS</option>
                         <option>Licencias de construcción</option>
                         <option>Reconocimientos de edificación</option>
                         <option>Licencias de urbanización</option>
@@ -674,11 +626,11 @@ class Publish extends Component {
                     </select>
                   </div>
                   <label>Modalidad y/o detalle</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="Detalles de la publicacion..." id="publish_5" />
+                    <input type="text" className="form-control" placeholder="Detalles de la publicacion..." id="publish_5" />
                   </div>
                 </MDBCol>
                 <div className="text-center py-1 mt-1">
@@ -695,7 +647,7 @@ class Publish extends Component {
     }
 
     let Edit_components = () => {
-      var _ITEM = this.state.edit;
+      var _ITEM = edit;
 
       return <>
         <MDBCard className="bg- my-4 py-4">
@@ -704,19 +656,19 @@ class Publish extends Component {
               <MDBRow>
                 <MDBCol md="6">
                   <label>Id publico</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="ID Documento" defaultValue={_ITEM.id_publico} required id="edit_id" disabled />
+                    <input type="text" className="form-control" placeholder="ID Documento" defaultValue={_ITEM.id_publico} required id="edit_id" disabled />
                   </div>
                   <label>Tipo de documento</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" id="type_edit" defaultValue={_ITEM.type} required onChange={(e) => handleChange(e)}>
-                      <option selected disabled >Tipo de Documento</option>
+                    <select className="form-select" id="type_edit" defaultValue={_ITEM.type} required onChange={(e) => handleChange(e)}>
+                      <option disabled >Tipo de Documento</option>
                       <option value={'lu'}>Licencias urbanisticas</option>
                       <option value={'oa'}>Otras actuaciones</option>
                       <option value={'mpr'}>MPR</option>
@@ -728,11 +680,11 @@ class Publish extends Component {
                     </select>
                   </div>
                   <label>Estado documento</label><br />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" id="estate_edit" defaultValue={_ITEM.subtype} >
+                    <select className="form-select" id="estate_edit" defaultValue={_ITEM.subtype} >
                       <option value={'neg'}>Negada</option>
                       <option value={'oto'}>Otorgada</option>
                       <option value={'des'}>Desistida</option>
@@ -745,18 +697,18 @@ class Publish extends Component {
                 </MDBCol>
                 <MDBCol md="6">
                   <label>Fecha</label><br />
-                  <div class="input-group my-2">
-                    <label class="input-group-text bg-info  text-white" for="date"><i class="fas fa-paperclip"></i></label>
-                    <input type="date" class="form-control" id="date_edit" defaultValue={_ITEM.date} required />
+                  <div className="input-group my-2">
+                    <label className="input-group-text bg-info  text-white" htmlFor="date"><i className="fas fa-paperclip"></i></label>
+                    <input type="date" className="form-control" id="date_edit" defaultValue={_ITEM.date} required />
                   </div>
                   <label>Tipo de actuacion</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white" id="type-pqrs">
-                      <i class="fas fa-id-card"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white" id="type-pqrs">
+                      <i className="fas fa-id-card"></i>
                     </span>
-                    <select class="form-select" defaultValue={_ITEM.detail} required id="detail_edit">
+                    <select className="form-select" defaultValue={_ITEM.detail} required id="detail_edit">
                       <option>Otros</option>
-                      <option selected disabled className='fw-bold'> LICENCIAS URBANÍSTICAS O RECONOCIMIENTOS</option>
+                      <option disabled className='fw-bold'> LICENCIAS URBANÍSTICAS O RECONOCIMIENTOS</option>
                       <option >Licencias de construcción</option>
                       <option >Reconocimientos de edificación</option>
                       <option >Licencias de urbanización </option>
@@ -778,11 +730,11 @@ class Publish extends Component {
                     </select>
                   </div>
                   <label>Modalidad y/o detalle</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-info text-white">
-                      <i class="fas fa-file-signature"></i>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text bg-info text-white">
+                      <i className="fas fa-file-signature"></i>
                     </span>
-                    <input type="text" class="form-control" defaultValue={_ITEM.subdetail}  id="sub_edit" />
+                    <input type="text" className="form-control" defaultValue={_ITEM.subdetail}  id="sub_edit" />
                   </div>
                 </MDBCol>
                 <div className="text-center py-1 mt-1">
@@ -802,12 +754,12 @@ class Publish extends Component {
           <div className="col-12 d-flex justify-content-start p-0">
             <MDBBreadcrumb className="mb-0 p-0 ms-0">
               <MDBBreadcrumbItem>
-                <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
               </MDBBreadcrumbItem>
               <MDBBreadcrumbItem>
-                <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
               </MDBBreadcrumbItem>
-              <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u3}</label></MDBBreadcrumbItem>
+              <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u3}</label></MDBBreadcrumbItem>
             </MDBBreadcrumb>
           </div>
           <div className="col-lg-11 col-md-12">
@@ -838,24 +790,23 @@ class Publish extends Component {
           </div>
         </div>
         <Modal contentLabel="MANAGE EDIT"
-          isOpen={this.state.edit}
+          isOpen={edit}
           style={customStyles}
           ariaHideApp={false}
         >
           <div className="my-4 d-flex justify-content-between">
             <h3>MODIFICAR PETICION</h3>
-            <div className='btn-close' color='none' onClick={() => { this.toggleManage() }}></div>
+            <div className='btn-close' color='none' onClick={() => { toggleManage() }}></div>
           </div>
           <hr />
           {Edit_components()}
 
           <div className="text-end py-4 mt-3">
-            <button className="btn btn-lg btn-info" onClick={() => this.toggleManage()}><i class="fas fa-times-circle"></i> CERRAR </button>
+            <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i className="fas fa-times-circle"></i> CERRAR </button>
           </div>
         </Modal>
       </div >
     );
-  }
 }
 
 export default Publish;

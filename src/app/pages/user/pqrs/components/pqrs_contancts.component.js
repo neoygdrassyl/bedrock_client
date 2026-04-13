@@ -1,17 +1,7 @@
-import React, { Component } from 'react';
 import DataTable from 'react-data-table-component';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 
-class PQRS_COMPONENT_CONTACTS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_CONTACTS({ translation, swaMsg, globals, currentItem }) {
 
         //DATA GETTERS
         let _GET_CONTACTS = () => {
@@ -31,14 +21,14 @@ class PQRS_COMPONENT_CONTACTS extends Component {
             const columns = [
                 {
                     name: <label>DIRECCIÓN</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.address}</label>,
                 },
                 {
                     name: <label>BARRIO</label>,
-                    selector: 'competence',
+                    selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.neighbour}</label>,
@@ -49,7 +39,7 @@ class PQRS_COMPONENT_CONTACTS extends Component {
                 },
                 {
                     name: <label>TELÉFONO</label>,
-                    selector: 'asign',
+                    selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.phone}</label>,
@@ -81,13 +71,12 @@ class PQRS_COMPONENT_CONTACTS extends Component {
             />
             return _COMPONENT;
         }
-        return (
-            <div>
-                {_CONTACTS_COMPONENT()}
+    return (
+        <div>
+            {_CONTACTS_COMPONENT()}
 
-            </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_CONTACTS;

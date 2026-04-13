@@ -1,5 +1,5 @@
-import { MDBBtn } from 'mdb-react-ui-kit';
-import React, { useEffect, useState } from 'react';
+import { MDBBtn } from '../../../components/ui';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Modal from 'react-modal';

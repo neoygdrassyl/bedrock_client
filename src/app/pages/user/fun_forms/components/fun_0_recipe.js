@@ -1,27 +1,21 @@
-import React, { Component } from 'react';
+import React, { useState, useRef } from 'react';
 import FUNService from '../../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import VIZUALIZER from '../../../../components/vizualizer.component';
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../components/TagInput';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class FUN_0_RECIPE extends Component {
-    constructor(props) {
-        super(props);
-        this.tagInput = React.createRef();
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.state = {
-            tags: null,
-        };
+function FUN_0_RECIPE(props) {
+    const [tags, setTags] = useState(null);
+    const tagInput = useRef(null);
+    const { translation, swaMsg, globals, currentItem, currentVersion } = props;
+
+    const requestUpdate = (id) => {
+        props.requestUpdate(id);
     }
-    requestUpdate(id) {
-        this.props.requestUpdate(id);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
-        const { } = this.state;
+
         const MySwal = withReactContent(Swal);
 
         let _GET_CHILD_1 = () => {
@@ -184,12 +178,12 @@ class FUN_0_RECIPE extends Component {
                     </div>
                 </div>
                 <div>
-                    <ReactTagInput
-                        tags={this.state.tags ?? (currentItem.tags ? currentItem.tags.split(',') : [])}
+                    <TagInput
+                        tags={tags ?? (currentItem.tags ? currentItem.tags.split(',') : [])}
                         placeholder="Etiquetas de la solicitud"
-                        onChange={(newTags) => this.setState({ tags: newTags })}
+                        onChange={(newTags) => setTags(newTags)}
                         removeOnBackspace={true}
-                        ref={this.tagInput}
+                        ref={tagInput}
                     />
                 </div>
                 <div className="row my-2">
@@ -249,7 +243,7 @@ class FUN_0_RECIPE extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdate(currentItem.id);
+                                props.requestUpdate(currentItem.id);
                             }
                         } else {
                             if (useMySwal) {
@@ -287,7 +281,7 @@ class FUN_0_RECIPE extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
+                            props.requestUpdate(currentItem.id);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -456,7 +450,7 @@ class FUN_0_RECIPE extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id)
+                            props.requestUpdate(currentItem.id)
                         } else {
                             if (response.status == 500) {
                                 MySwal.close();
@@ -479,7 +473,7 @@ class FUN_0_RECIPE extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id)
+                            props.requestUpdate(currentItem.id)
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -514,7 +508,7 @@ class FUN_0_RECIPE extends Component {
             let model = document.getElementById("fun_0_model").value;
             formData0.set('model', model);
 
-            let tags = this.tagInput.current.props.tags ?? []
+            let tags = tagInput.current.props.tags ?? []
             formData0.set('tags', tags.join(','));
 
             let rules_html = document.getElementsByName('fun_0_rules');
@@ -527,7 +521,7 @@ class FUN_0_RECIPE extends Component {
             formData0.set('rules', rules.join(';'));
 
             FUNService.update(currentItem.id, formData0).then(response => {
-                if (response.data === 'OK') this.props.requestUpdate(currentItem.id)
+                if (response.data === 'OK') props.requestUpdate(currentItem.id)
             });
         }
 
@@ -543,7 +537,6 @@ class FUN_0_RECIPE extends Component {
 
             </>
         );
-    }
 }
 
 export default FUN_0_RECIPE;

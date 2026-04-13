@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
+import { useState, useEffect, useRef } from 'react';
+import DataTable from 'react-data-table-component';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import USERS_Service from '../../../services/users.service'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import { dateParser, dateParser_finalDate } from '../../../components/customClasses/typeParse'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 import PQRS_COMPONENT_ATTACH_PROFESIONAL from './components/pqrs_attach_pro.component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 import { PQRS_SET_REPLY1 } from './components/pqrs_setReply2.component';
 import JoditEditor from "jodit-pro-react";
 import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
@@ -261,7 +261,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         const columns = [
             {
                 name: <label><b>PROFESIONAL</b></label>,
-                selector: 'name',
+                selector: row => row.name,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
@@ -277,7 +277,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             },
             {
                 name: <label><b>FECHA ASIGNACIÓN</b></label>,
-                selector: 'asign',
+                selector: row => row.asign,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
@@ -285,7 +285,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             },
             {
                 name: <label><b>FECHA RESPUESTA</b></label>,
-                selector: 'date_reply',
+                selector: row => row.date_reply,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
@@ -293,7 +293,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             },
             {
                 name: <label><b>FECHA LIMITE </b></label>,
-                selector: 'date_reply',
+                selector: row => row.date_reply,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
@@ -301,7 +301,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             },
             {
                 name: <label><b>DIAS HABILES</b></label>,
-                selector: '',
                 minWidth: '150px',
                 center: true,
                 sortable: true,
@@ -356,7 +355,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         const columns = [
             {
                 name: <label><b>PROFESIONAL</b></label>,
-                selector: 'name',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
                 cell: row => <h6 className="text-center">{row.name}</h6>
@@ -620,7 +619,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/reply/" + "Oficio_" + currentItem.id_reply + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,
@@ -857,14 +856,14 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         const columns = [
             {
                 name: <h3>NOMBRE</h3>,
-                selector: 'name',
+                selector: row => row.name,
                 sortable: true,
                 filterable: true,
                 cell: row => <p className="pt-3 text-center">{row.public_name}</p>
             },
             {
                 name: <h3>TIPO</h3>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 cell: row => <p className="pt-3">{row.type}</p>
@@ -874,7 +873,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <a className="btn btn-sm btn-danger mx-1" target="_blank" href={process.env.REACT_APP_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
+                    <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
                     <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
                 </>,
             },
@@ -1094,7 +1093,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 </> : ""}
                         </form>
 
-                        <div className="my-2 px-3 text-uppercase bg-white" id="pqrs_info_1">
+                        <div className="my-2 px-3 text-uppercase bg-body-secondary" id="pqrs_info_1">
                             <label className="app-p lead text-start fw-normal text-uppercase">PROFESIONALES ASIGNADOS</label>
                         </div>
                         <div className="mb-2">

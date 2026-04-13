@@ -1,23 +1,13 @@
-import React, { Component } from 'react';
 import Swal from 'sweetalert2'
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import withReactContent from 'sweetalert2-react-content'
 import FUNService from '../../../services/fun.service'
 import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'
 
 
-class FUN_NEWVERSION extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, toCreate, aim } = this.props;
-        const { } = this.state;
-        var formData = new FormData();
-        const MySwal = withReactContent(Swal);
+const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVersion, toCreate, aim, requestUpdate }) => {
+    var formData = new FormData();
+    const MySwal = withReactContent(Swal);
 
         let _COPY_CHILD = () => {
             formData = new FormData();
@@ -693,7 +683,7 @@ class FUN_NEWVERSION extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdate(currentItem.id)
+                        requestUpdate(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -731,7 +721,7 @@ class FUN_NEWVERSION extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdate(currentItem.id)
+                        requestUpdate(currentItem.id)
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -896,8 +886,7 @@ class FUN_NEWVERSION extends Component {
                 </div>
             </div>
         </>);
-    }
-}
+};
 
 
 export default FUN_NEWVERSION;

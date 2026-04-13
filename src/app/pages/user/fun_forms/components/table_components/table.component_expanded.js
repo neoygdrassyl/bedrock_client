@@ -1,4 +1,4 @@
-import ReactTagInput from '@pathofdev/react-tag-input';
+import TagInput from '../../../../../components/TagInput';
 import React, { useEffect, useState } from 'react';
 import FUN_SERVICE from '../../../../../services/fun.service';
 import USER_SERVICE from '../../../../../services/users.service';
@@ -9,7 +9,7 @@ import RECORD_PH_SERVICE from '../../../../../services/record_ph.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh } from '../../../../../components/customClasses/typeParse';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../../components/ui';
 
 
 const MySwal = withReactContent(Swal);
@@ -47,7 +47,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     const ci = row => !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : '';
 
     useEffect(() => {
-        if (load === 0) {
+        if (load === 0 && currentItem?.id) {
             setLoad(1)
             loadAsignClocks(currentItem.id);
             getCurrentItem(currentItem.id);
@@ -496,7 +496,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
             <div className='row text-center'>
                 <div className='col border '><h6 className='py-1 fw-normal'>ETIQUETAS</h6></div>
                 <div className='col border'><h6 className='py-1 fw-bold'>{
-                    <ReactTagInput
+                    <TagInput
                         tags={tags}
                         onChange={(newTags) => saveTags(newTags)}
                         placeholder="Etiquetas de la solicitud"

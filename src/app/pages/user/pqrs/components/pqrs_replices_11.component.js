@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react';
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
 const moment = require('moment');

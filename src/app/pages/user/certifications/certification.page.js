@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { addDecimalPoints, formsParser1 } from '../../../components/customClasses/typeParse';
 import UsersService from '../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from 'mdb-react-ui-kit';
-import { Link } from 'react-router-dom/cjs/react-router-dom.min';
+import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from '../../../components/ui';
+import { Link } from 'react-router-dom';
 
 export default function CERTIFICATE_WORKER(props) {
     const translation = props.translation
@@ -176,7 +176,7 @@ export default function CERTIFICATE_WORKER(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/certificate_data/" + "Historial Progesional " + title + ".pdf");
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/certificate_data/" + "Historial Progesional " + title + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,

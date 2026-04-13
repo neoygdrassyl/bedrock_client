@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import FUNService from '../../../../services/fun.service'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
-import Collapsible from 'react-collapsible';
+import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+import Collapsible from '../../../../components/Collapsible';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import moment from 'moment';
@@ -29,40 +29,34 @@ import { regexChecker_isOA, regexChecker_isOA_2, regexChecker_isOA_3 } from '../
 import FUN_CERTIFICATION from './fun_doc_certification.component';
 
 import { PDFDocument } from 'pdf-lib'
-import fs from 'fs'
 import FUN_D_ABDICATE from './fun_doc_abdicate.component';
 import FUN_D_CONTROL_2 from './fun_d_control.component_2';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-class FUN_DOCS extends Component {
-    constructor(props) {
-        super(props);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.state = {
-            attachs: 0,
-            edit: false,
-            item: null,
-            show_doc_1: false,
-            modal_searchList: false,
-            pqrsxfun: false,
-            funVRList: []
-        };
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translation, globals, currentVersion }) {
+        const [attachs, setAttachs] = useState(0);
+        const [edit, setEdit] = useState(false);
+        const [item, setItem] = useState(null);
+        const [show_doc_1, setShow_doc_1] = useState(false);
+        const [modal_searchList, setModal_searchList] = useState(false);
+        const [pqrsxfun, setPqrsxfun] = useState(false);
+        const [funVRList, setFunVRList] = useState([]);
+        const [currentItem, setCurrentItem] = useState(null);
+        const [load, setLoad] = useState(null);
+    const requestUpdate = (id) => {
+        retrieveItem(id);
     }
-    requestUpdate(id) {
-        this.retrieveItem(id);
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         FUN_SERVICE.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
+                setCurrentItem(response.data);
+                setLoad(true)
+                retrievePQRSxFUN(response.data.id_public);
             })
             .catch(e => {
                 console.log(e);
@@ -70,38 +64,36 @@ class FUN_DOCS extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
     }
-    retrievePQRSxFUN(id_public) {
+    const retrievePQRSxFUN = (id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                setPqrsxfun(response.data)
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    componentDidUpdate(prevState) {
-        // Uso tipico (no olvides de comparar las props):
-        if (this.state.item !== prevState.item && this.state.item != null) {
-            document.getElementById('fun6_descriptions_edit').value = this.state.item.description;
-            document.getElementById('fun6_codes_edit').value = this.state.item.id_public;
-            document.getElementById('fun6_pages_edit').value = this.state.item.pages;
-            document.getElementById('fun6_dates_edit').value = this.state.item.date;
+    useEffect(() => {
+        if (item != null) {
+            document.getElementById('fun6_descriptions_edit').value = item.description;
+            document.getElementById('fun6_codes_edit').value = item.id_public;
+            document.getElementById('fun6_pages_edit').value = item.pages;
+            document.getElementById('fun6_dates_edit').value = item.date;
         }
+    }, [item]);
+
+    const addAttach = () => {
+        setAttachs(attachs + 1)
     }
-    addAttach() {
-        this.setState({ attachs: this.state.attachs + 1 })
-    }
-    minusAttach() {
-        this.setState({ attachs: this.state.attachs - 1 })
+    const minusAttach = () => {
+        setAttachs(attachs - 1)
     }
 
-    async readPDF(file, i) {
+    const readPDF = async (file, i) => {
         if (file.type == "application/pdf") {
             var path = (window.URL || window.webkitURL).createObjectURL(file);
             const url = path
@@ -112,9 +104,6 @@ class FUN_DOCS extends Component {
         }
     };
 
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { attachs, currentItem, funVRList } = this.state;
         var formData = new FormData();
 
         let _GET_CHILD_1 = () => {
@@ -148,7 +137,7 @@ class FUN_DOCS extends Component {
                             <div class="input-group">
                                 <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
                                 <input type="file" class="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf"
-                                    required onChange={(e) => this.readPDF(e.target.files[0], i)} />
+                                    required onChange={(e) => readPDF(e.target.files[0], i)} />
                             </div>
                             <div class="input-group">
                                 <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
@@ -245,8 +234,8 @@ class FUN_DOCS extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.setState({ attachs: 0 });
-                        this.requestUpdate(currentItem.id);
+                        setAttachs(0);
+                        requestUpdate(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -281,7 +270,6 @@ class FUN_DOCS extends Component {
             let csvContent = "data:text/csv;charset=utf-8,"
                 + rows.map(e => e.join(";")).join("\n");
 
-
             var encodedUri = encodeURI(csvContent);
             const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
 
@@ -311,9 +299,9 @@ class FUN_DOCS extends Component {
                         swaMsg={swaMsg}
                         globals={globals}
                         currentItem={currentItem}
-                        currentId={this.props.currentId}
+                        currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
+                        requestUpdate={requestUpdate}
                         VREdit
                     />
 
@@ -333,7 +321,7 @@ class FUN_DOCS extends Component {
 
                     <SUBMIT_SINGLE_VIEW
                         translation={translation} swaMsg={swaMsg} globals={globals}
-                        id_related={currentItem.id_public} setVRList={(data) => this.setState({funVRList: data})}
+                        id_related={currentItem.id_public} setVRList={(data) => setFunVRList(data)}
                     />
 
                     <fieldset className="p-3">
@@ -351,9 +339,9 @@ class FUN_DOCS extends Component {
                             <div className="col text-end m-3">
 
                                 {attachs > 0
-                                    ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                    ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                     : ""}
-                                <MDBBtn className="btn btn-lg btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                             </div>
                         </div>
 
@@ -379,14 +367,12 @@ class FUN_DOCS extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate}
+                            requestUpdate={requestUpdate}
                             readOnly
                         />
                     </fieldset>
 
-
                     <h3 class="text-uppercase text-center py-3" id="fund_4">4. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
-
 
                     <div id="fund_pdf">
                         <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">PDF Formulario Único Nacional</label>}>
@@ -425,7 +411,7 @@ class FUN_DOCS extends Component {
                                     globals={globals}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                 />
                             </div>
                         </Collapsible>
@@ -441,7 +427,7 @@ class FUN_DOCS extends Component {
                                             globals={globals}
                                             currentItem={currentItem}
                                             currentVersion={currentVersion}
-                                            requestUpdate={this.requestUpdate}
+                                            requestUpdate={requestUpdate}
                                             VIEW_G
                                         />
                                     </div>
@@ -483,7 +469,6 @@ class FUN_DOCS extends Component {
                         </div>
                         : null}
 
-
                     {rules[0] != 1 || conOA() ?
                         <div id="fund_22">
                             <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info text-uppercase">DOCUMENTOS DE CITACIÓN A VECINOS</label>}>
@@ -511,7 +496,7 @@ class FUN_DOCS extends Component {
                                             globals={globals}
                                             currentItem={currentItem}
                                             currentVersion={currentVersion}
-                                            requestUpdate={this.requestUpdate}
+                                            requestUpdate={requestUpdate}
                                         />
                                     </div>
                                 </Collapsible>
@@ -526,7 +511,7 @@ class FUN_DOCS extends Component {
                                             globals={globals}
                                             currentItem={currentItem}
                                             currentVersion={currentVersion}
-                                            requestUpdate={this.requestUpdate}
+                                            requestUpdate={requestUpdate}
                                         />
                                     </div>
                                 </Collapsible>
@@ -543,7 +528,7 @@ class FUN_DOCS extends Component {
                                     globals={globals}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                 />
                             </div>
                         </Collapsible>
@@ -559,7 +544,7 @@ class FUN_DOCS extends Component {
                                     globals={globals}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                 />
                             </div>
                         </Collapsible>
@@ -582,31 +567,28 @@ class FUN_DOCS extends Component {
                         </Collapsible>
                     </div>
 
-
                     {/* <FUND_NAV currentItem={currentItem} /> */}
                     <FUN_MODULE_NAV
                         translation={translation}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"archive"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                        NAVIGATION_VERSION={this.props.NAVIGATION_VERSION}
+                        NAVIGATION_VERSION={NAVIGATION_VERSION}
                         ON
                     />
                 </> : <fieldset className="p-3" id="fung_0">
                     <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
                 </fieldset>}
 
-
             </div>
         );
-    }
 }
 
 export default FUN_DOCS;

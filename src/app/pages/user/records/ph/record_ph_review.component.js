@@ -1,15 +1,15 @@
 import moment from 'moment';
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import FUN_SERVICE from "../../../../services/fun.service"
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import FUNService from '../../../../services/fun.service';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { handleArchCheck } from '../../../../components/customClasses/pdfCheckHandler';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../../components/Collapsible';
 import { cities, domains_number, infoCud } from '../../../../components/jsons/vars';
 import { getJSONFull, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
@@ -17,45 +17,43 @@ import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-class RECORD_PH_REVIEW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: [],
-            cubSelected: null,
-            idCUBxVr: null,
-            cubSelected_ph: null,
-            idCUBxVr_ph: null
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    async retrieveItem() {
+function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate, requestRefresh, closeModal }) {
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const [cubSelected_ph, setCubSelected_ph] = useState(null);
+    const [idCUBxVr_ph, setIdCUBxVr_ph] = useState(null);
+
+    useEffect(() => {
+        retrieveItem();
+    }, []);
+
+    async function retrieveItem() {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data)
             })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'DOCUMENTOS PH / CITACIÓN PARA NOTIFICACIÓN');
-            this.setState({ cubSelected: data.cub, idCUBxVr: data.id })
+            setCubSelected(data.cub);
+            setIdCUBxVr(data.id);
             const data_ph = responseCubXVr.data.find(item => item.process === 'PROPIEDAD HORIZONTAL');
-            this.setState({ cubSelected_ph: data_ph.cub, idCUBxVr_ph: data_ph.id })
+            setCubSelected_ph(data_ph.cub);
+            setIdCUBxVr_ph(data_ph.id);
         } catch (error) {
             console.log(error);
         }
     }
-    async CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
-        let swaMsg = this.props.swaMsg;
+    async function CREATE_CHECK(_detail, chekcs, _currentItem, _headers) {
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
             icon: 'info',
             showConfirmButton: false,
         });
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/recordarcextra";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
@@ -100,9 +98,7 @@ class RECORD_PH_REVIEW extends Component {
 
     }
 
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    // render body starts here
 
         // DATA GETTERS
         let _GET_CHILD_53 = () => {
@@ -177,7 +173,7 @@ class RECORD_PH_REVIEW extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -196,13 +192,13 @@ class RECORD_PH_REVIEW extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_ph_steps;
+            var _CHILD = Array.isArray(currentRecord.record_ph_steps) ? currentRecord.record_ph_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -666,8 +662,8 @@ class RECORD_PH_REVIEW extends Component {
                             confirmButtonText: swaMsg.text_btn,
                         });
 
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACIÓN",
@@ -744,7 +740,7 @@ class RECORD_PH_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -781,7 +777,7 @@ class RECORD_PH_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.props.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -870,7 +866,7 @@ class RECORD_PH_REVIEW extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordph/" + "Informe Revision Propiedad Horizontal " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordph/" + "Informe Revision Propiedad Horizontal " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -923,7 +919,7 @@ class RECORD_PH_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                                 save_close();
-                                this.props.requestRefresh(currentItem.id);
+                                requestRefresh(currentItem.id);
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -980,8 +976,8 @@ class RECORD_PH_REVIEW extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                                 save_archive();
-                                this.props.requestRefresh(currentItem.id);
-                                this.props.closeModal();
+                                requestRefresh(currentItem.id);
+                                closeModal();
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -1227,7 +1223,7 @@ class RECORD_PH_REVIEW extends Component {
             headers.city = _city;
             headers.number = _number
 
-            this.CREATE_CHECK(_RESUME, checks, currentItem, headers)
+            CREATE_CHECK(_RESUME, checks, currentItem, headers)
         }
         let createVRxCUB_relation_PH = () => {
             let vr = document.getElementById("f_01_ph").value;
@@ -1242,12 +1238,12 @@ class RECORD_PH_REVIEW extends Component {
             // formatData.set('desc', desc);
 
             // Mostrar mensaje inicial de espera
-            if (this.state.idCUBxVr_ph) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr_ph, formatData)
+            if (idCUBxVr_ph) {
+                CubXVrDataService.updateCubVr(idCUBxVr_ph, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -1265,8 +1261,8 @@ class RECORD_PH_REVIEW extends Component {
                 CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.props.requestUpdate(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
+                            requestUpdate(currentItem.id);
                         }
                     })
                     .catch(e => {
@@ -1336,7 +1332,7 @@ class RECORD_PH_REVIEW extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1367,7 +1363,7 @@ class RECORD_PH_REVIEW extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -1403,12 +1399,12 @@ class RECORD_PH_REVIEW extends Component {
             let date = document.getElementById('phnot_date_doc').value;
             formatData.set('date', date);
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } 
                     })
                     .catch((error) => {
@@ -1420,8 +1416,8 @@ class RECORD_PH_REVIEW extends Component {
                 CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
-                            this.props.requestUpdateRecord(currentItem.id);
-                            this.props.requestUpdate(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
+                            requestUpdate(currentItem.id);
                         }
                     })
                     .catch(e => {
@@ -1465,8 +1461,8 @@ class RECORD_PH_REVIEW extends Component {
                             confirmButtonText: swaMsg.text_btn,
                         });
 
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACIÓN",
@@ -1526,7 +1522,7 @@ class RECORD_PH_REVIEW extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/recordphnot/" + "CITACIÓN PARA NOTIFICACIÓN " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordphnot/" + "CITACIÓN PARA NOTIFICACIÓN " + (currentRecord.id_public ?? currentItem.id_public) + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1609,7 +1605,6 @@ class RECORD_PH_REVIEW extends Component {
                 {_COMPONENT_NOT_DETAILS()}
             </div >
         );
-    }
 }
 
 export default RECORD_PH_REVIEW;

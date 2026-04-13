@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -10,29 +10,21 @@ import { dateParser_finalDate } from '../../../../components/customClasses/typeP
 const moment = require('moment');
 const momentB = require('moment-business-days');
 const MySwal = withReactContent(Swal);
-class PQRS_EDIT_INFO extends Component {
-    constructor(props) {
-        super(props);
-        this.refreshCurrentItem = this.refreshCurrentItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-        };
-    }
-    componentDidMount() {
-        if (this.props.currentItem.pqrs_law) {
-            if (this.props.currentItem.pqrs_law.extension) this.setState({ email: true });
-        }
+function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, currentItem, refreshCurrentItem: propRefreshCurrentItem, refreshList: propRefreshList }) {
+    const [email, setEmail] = useState(false);
 
-    }
-    refreshCurrentItem(id) {
-        this.props.refreshCurrentItem(this.props.currentItem.id);
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
-    render() {
-        const { translation, swaMsg, globals, translation_form, currentItem } = this.props;
-        const { } = this.state;
+    useEffect(() => {
+        if (currentItem.pqrs_law) {
+            if (currentItem.pqrs_law.extension) setEmail(true);
+        }
+    }, []);
+
+    const refreshCurrentItem = () => {
+        propRefreshCurrentItem(currentItem.id);
+    };
+    const refreshList = () => {
+        propRefreshList();
+    };
 
         // WORKING SELECTS
         const selectTypeMaster = translation_form.form_type_request.map(function (item, i) {
@@ -100,7 +92,7 @@ class PQRS_EDIT_INFO extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -144,12 +136,12 @@ class PQRS_EDIT_INFO extends Component {
                 document.getElementById('pqrs_edit_info_8').value = _CHILD.time;
                 document.getElementById('pqrs_extension_2').disabled = false;
                 document.getElementById('pqrs_extension_date1').disabled = false;
-                this.setState({ email: true });
+                setEmail(true);
             } else {
                 document.getElementById('pqrs_edit_info_8').value = _CHILD.time;
                 document.getElementById('pqrs_extension_2').disabled = true;
                 document.getElementById('pqrs_extension_date1').disabled = true;
-                this.setState({ email: false });
+                setEmail(false);
             }
         }
         // COMPONENTS JSX
@@ -406,8 +398,8 @@ class PQRS_EDIT_INFO extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshCurrentItem(currentItem.id);
-                        this.props.refreshList();
+                        propRefreshCurrentItem(currentItem.id);
+                        propRefreshList();
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACION",
@@ -448,15 +440,15 @@ class PQRS_EDIT_INFO extends Component {
                         </button>
                     </div>
                 </form>
-                {this.state.email
+                {email
                     ? <>
                         <h4 className=""><b>4.1.1 CORREO DE PRORROGA</b></h4>
                         <PQRS_EMAILS
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
                             email_types={[1]}
-                            refreshCurrentItem={this.refreshCurrentItem}
-                            closeComponent={() => this.setState({ email: false })}
+                            refreshCurrentItem={refreshCurrentItem}
+                            closeComponent={() => setEmail(false)}
                             attachs
                         />
                     </>
@@ -467,14 +459,13 @@ class PQRS_EDIT_INFO extends Component {
                         <PQRS_SET_REPLY
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
-                            retrieveItem={this.refreshCurrentItem}
-                            refreshList={this.refreshList}
+                            retrieveItem={refreshCurrentItem}
+                            refreshList={refreshList}
                         />
                     </>
                 : ""*/}
             </div>
         );
-    }
 }
 
 export default PQRS_EDIT_INFO;

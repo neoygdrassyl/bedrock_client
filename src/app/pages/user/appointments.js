@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AppointmentService from '../../services/appointments.service'
 import UserslDataService from '../../services/users.service'
 import {
@@ -11,10 +11,10 @@ import {
     MDBModalTitle,
     MDBModalBody,
     MDBModalFooter, MDBBreadcrumb, MDBBreadcrumbItem
-} from 'mdb-react-ui-kit';
+} from '../../components/ui';
 import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../components/Collapsible';
 import Modal from 'react-modal';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -24,31 +24,30 @@ import { dateParser } from '../../components/customClasses/typeParse'
 const moment = require('moment');
 const MySwal = withReactContent(Swal)
 
-class Appointments extends Component {
-    constructor(props) {
-        super(props);
-        this.retrievePublish = this.retrievePublish.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.loadUsers = this.loadUsers.bind(this);
-        this.state = {
-            error: null,
-            isLoaded: false,
-            currentItem: null,
-            currentIndex: -1,
-            modal: false,
-            modal_edit: false,
-            items: [],
-            items_2: [],
-            items_3: [],
-            users: [],
-        };
-    }
-    componentDidMount() {
-        this.retrievePublish();
-        this.loadUsers();
+function Appointments({ translation, globals, breadCrums, swaMsg }) {
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [modal, setModal] = useState(false);
+    const [modal_edit, setModalEdit] = useState(false);
+    const [items, setItems] = useState([]);
+    const [items_2, setItems2] = useState([]);
+    const [items_3, setItems3] = useState([]);
+    const [users, setUsers] = useState([]);
 
-    }
-    retrievePublish() {
+    const toggle = useCallback(() => setModal(prev => !prev), []);
+    const toggle_edit = useCallback(() => setModalEdit(prev => !prev), []);
+
+    const setItemFn = useCallback((item) => {
+        setCurrentItem(item);
+        setModal(true);
+    }, []);
+
+    const setItem_edit = useCallback((item) => {
+        setCurrentItem(item);
+        setModalEdit(true);
+    }, []);
+
+    const retrievePublish = useCallback(() => {
         AppointmentService.getAll()
             .then(response => {
                 let list = [];
@@ -66,67 +65,32 @@ class Appointments extends Component {
                         list_3.push(item);
                     }
                 });
-                this.setState({
-                    items: list,
-                    items_2: list_2,
-                    items_3: list_3,
-                    isLoaded: true,
-                });
+                setItems(list);
+                setItems2(list_2);
+                setItems3(list_3);
+                setIsLoaded(true);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    refreshList() {
-        this.retrievePublish();
-        this.setState({
-            currentItem: null,
-            currentIndex: -1,
-        });
-    }
-    loadUsers() {
+    }, []);
+
+    const loadUsers = useCallback(() => {
         UserslDataService.getAllWorkers()
         .then(response => {
-            if(response.data) this.setState({users: response.data})
+            if(response.data) setUsers(response.data)
         })
         .catch(console.log);
+    }, []);
 
-    }
-    toggle = () => {
-        this.setState({
-            modal: !this.state.modal
-        });
-    }
-    getToggle = () => {
-        return this.state.modal;
-    }
-    setItem(item) {
-        this.setState({
-            currentItem: item,
-            modal: !this.state.modal,
-        });
-    }
-    toggle_edit = () => {
-        this.setState({
-            modal_edit: !this.state.modal_edit
-        });
-    }
-    getToggle_edit = () => {
-        return this.state.modal_edit;
-    }
-    setItem_edit(item) {
-        this.setState({
-            currentItem: item,
-        });
-        this.toggle_edit()
-    }
-    render() {
-        const { translation, globals, breadCrums, swaMsg } = this.props;
-        const { currentItem, isLoaded, items, items_2, items_3, users } = this.state;
+    useEffect(() => {
+        retrievePublish();
+        loadUsers();
+    }, [retrievePublish, loadUsers]);
         const columns = [
             {
                 name: <h4>CONSECUTIVO</h4>,
-                selector: 'id',
+                selector: row => row.id,
                 sortable: true,
                 filterable: true,
                 minWidth: '40px',
@@ -135,7 +99,7 @@ class Appointments extends Component {
             },
             {
                 name: <h4>FECHA</h4>,
-                selector: 'date',
+                selector: row => row.date,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -143,21 +107,21 @@ class Appointments extends Component {
             },
             {
                 name: <h4>HORA</h4>,
-                selector: 'time',
+                selector: row => row.time,
                 sortable: true,
                 center: true,
                 cell: row => <label>{row.time}</label>
             },
             {
                 name: <h4>PROFESIONAL</h4>,
-                selector: 'profesional',
+                selector: row => row.profesional,
                 sortable: true,
                 center: true,
                 cell: row => <label>{row.profesional}</label>
             },
             {
                 name: <h4>DESCRIPCIÓN</h4>,
-                selector: 'profesional',
+                selector: row => row.profesional,
                 sortable: true,
                 center: true,
                 minWidth: '100px',
@@ -165,7 +129,7 @@ class Appointments extends Component {
             },
                         {
                 name: <h4>OBSERVACIONES</h4>,
-                selector: 'profesional',
+                selector: row => row.profesional,
                 sortable: true,
                 center: true,
                 minWidth: '100px',
@@ -173,7 +137,7 @@ class Appointments extends Component {
             },
             {
                 name: <h4>ASISTENCIA SEÑAS</h4>,
-                selector: 'profesional',
+                selector: row => row.profesional,
                 sortable: true,
                 center: true,
                 minWidth: '250px',
@@ -186,9 +150,9 @@ class Appointments extends Component {
                 ignoreCSV: true,
                 cell: row => <>
                     {moment().diff(row.date, 'days') <= 0
-                        ? <button className="btn btn-secondary btn-sm me-1" onClick={() => this.setItem_edit(row)}><i class="far fa-edit fa-2x"></i></button>
+                        ? <button className="btn btn-secondary btn-sm me-1" onClick={() => setItem_edit(row)}><i class="far fa-edit fa-2x"></i></button>
                         : ""}
-                    <button className="btn btn-info btn-sm" onClick={() => this.setItem(row)}><i class="fas fa-info-circle fa-2x"></i></button>
+                    <button className="btn btn-info btn-sm" onClick={() => setItemFn(row)}><i class="fas fa-info-circle fa-2x"></i></button>
                 </>
                 ,
             },
@@ -254,8 +218,8 @@ class Appointments extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         })
-                        this.toggle_edit();
-                        this.retrievePublish();
+                        toggle_edit();
+                        retrievePublish();
                     } else {
                         MySwal.fire({
                             title: swaMsg.scheduling_error_title,
@@ -407,12 +371,12 @@ class Appointments extends Component {
                         </div>
                     </div>
                 </div>
-                <MDBModal show={this.getToggle()} tabIndex='-2' staticBackdrop >
+                <MDBModal show={modal} tabIndex='-2' staticBackdrop >
                     <MDBModalDialog size="lg">
                         <MDBModalContent className="container-primary">
                             <MDBModalHeader>
                                 <MDBModalTitle><h2 className="text-center"><i class="far fa-file-alt"></i> DETALLES DE LA CITA {currentItem ? currentItem.id : ''} </h2></MDBModalTitle>
-                                <MDBBtn className='btn-close' color='none' onClick={this.toggle}></MDBBtn>
+                                <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                             </MDBModalHeader>
                             <MDBModalBody>
                                 <MDBCard className="bg-card">
@@ -501,7 +465,7 @@ class Appointments extends Component {
                                 </MDBCard>
                             </MDBModalBody>
                             <MDBModalFooter>
-                                <MDBBtn color='info' onClick={this.toggle}>
+                                <MDBBtn color='info' onClick={toggle}>
                                     <h4 className="pt-2"><i class="fas fa-times-circle"></i> Cerrar</h4>
                                 </MDBBtn>
                             </MDBModalFooter>
@@ -510,13 +474,13 @@ class Appointments extends Component {
                 </MDBModal>
 
                 <Modal contentLabel="GENERAL VIEW FUN"
-                    isOpen={this.state.modal_edit}
+                    isOpen={modal_edit}
                     style={customStyles}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i class="far fa-file-alt"></i>ACTUALIZAR LA CITA {currentItem ? currentItem.id : ''} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={this.toggle_edit}></MDBBtn>
+                        <MDBBtn className='btn-close' color='none' onClick={toggle_edit}></MDBBtn>
                     </div>
                     <form id="appointment_edit" onSubmit={app_edit}>
                         <MDBRow>
@@ -629,14 +593,13 @@ class Appointments extends Component {
 
                         <div className="text-end py-4 mt-3">
                             <button className="btn btn-lg btn-secondary me-1"><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
-                            <MDBBtn className="btn btn-lg btn-info" onClick={() => this.toggle_edit()}><i class="fas fa-times-circle"></i> CERRAR </MDBBtn>
+                            <MDBBtn className="btn btn-lg btn-info" onClick={() => toggle_edit()}><i class="fas fa-times-circle"></i> CERRAR </MDBBtn>
                         </div>
                     </form>
                 </Modal>
 
             </div >
-        );
-    }
+    );
 }
 
 export default Appointments;

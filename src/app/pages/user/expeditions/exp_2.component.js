@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
@@ -10,16 +10,9 @@ import { getJSONFull, regexChecker_isOA_2, _MANAGE_IDS } from '../../../componen
 import EXP_CALC from './exp_calc.component';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-class EXP_2 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate }) {
+    const [pym, setPym] = useState(undefined);
 
         // DATA GETTERS
         let _GET_EXPEDITION_JSON = (field) => {
@@ -42,7 +35,7 @@ class EXP_2 extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -340,7 +333,7 @@ class EXP_2 extends Component {
         }
 
         let save_step = (_id_public, useSwal, formData, state) => {
-            if (state) this.setState({ [state]: 1 })
+            if (state) setPym(1)
             var STEP = LOAD_STEP(_id_public);
 
             if (useSwal) MySwal.fire({
@@ -360,8 +353,8 @@ class EXP_2 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setPym(2)
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -369,7 +362,7 @@ class EXP_2 extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            if (state) this.setState({ [state]: 3 })
+                            if (state) setPym(3)
                         }
                     })
                     .catch(e => {
@@ -380,7 +373,7 @@ class EXP_2 extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        if (state) this.setState({ [state]: 3 })
+                        if (state) setPym(3)
                     });
             }
             else {
@@ -394,8 +387,8 @@ class EXP_2 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setPym(2)
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -403,7 +396,7 @@ class EXP_2 extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            if (state) this.setState({ [state]: 3 })
+                            if (state) setPym(3)
                         }
                     })
                     .catch(e => {
@@ -414,7 +407,7 @@ class EXP_2 extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        if (state) this.setState({ [state]: 3 })
+                        if (state) setPym(3)
                     });
             }
         }
@@ -437,8 +430,8 @@ class EXP_2 extends Component {
                             confirmButtonText: swaMsg.text_btn,
                         });
 
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         if (useMySwal) MySwal.fire({
                             title: "ERROR DE DUPLICACION",
@@ -469,7 +462,7 @@ class EXP_2 extends Component {
         return (
             <div className="record_ph_gen container p-3">
                 <legend className="my-2 px-3 text-uppercase bg-light" id="nav_expedition_10">
-                    <label className="app-p lead fw-normal">Control para Entidades Supervisoras {_SAVING_STATE(this.state.pym)}</label>
+                    <label className="app-p lead fw-normal">Control para Entidades Supervisoras {_SAVING_STATE(pym)}</label>
                 </legend>
 
                 {currentItem.record_arc ? <>
@@ -481,7 +474,6 @@ class EXP_2 extends Component {
 
             </div >
         );
-    }
 }
 
 export default EXP_2;

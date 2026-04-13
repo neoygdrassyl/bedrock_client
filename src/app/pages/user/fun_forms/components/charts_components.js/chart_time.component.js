@@ -1,7 +1,7 @@
-import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBIcon } from '../../../../../components/ui';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { Crosshair, CustomSVGSeries, Hint, HorizontalGridLines, MarkSeries, VerticalGridLines, XAxis, XYPlot, YAxis } from 'react-vis';
+import { useEffect, useState, memo } from 'react';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser_dateDiff, formsParser1, formsParser1_exlucde2, regexChecker_isOA } from '../../../../../components/customClasses/typeParse';
@@ -12,7 +12,7 @@ const MySwal = withReactContent(Swal);
 const _tickValues = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200];
 const YtickValues = [0, 1, 2, 3, 4, 5];
 const BUILD_AREAS = ['OBRA NUEVA', 'AMPLIADA', 'ADECUADA', 'MODIFICADA', 'RESTAURADA', 'REFORZADA', 'DEMOLIDA TOTAL', 'DEMOLIDA PARCIAL', 'RECONSTRUIDA', 'REFORZADA', 'RECONOCIDA']
-export default function FUN_CHART_TIME(props) {
+function FUN_CHART_TIME(props) {
     var [hovered, setHovered] = useState(false);
 
     var [filterId, SetFilterId] = useState([`${infoCud.nomen}${moment().subtract(1, 'year').format('YY')}-0000`, `${infoCud.nomen}${moment().format('YY')}-9999`]);
@@ -513,57 +513,50 @@ export default function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className="chart-clock mx-2" style={{ width: '2500px' }}>
-                <XYPlot width={2000} height={300} margin={{ bottom: 45, left: 50, right: 50 }}
-                    yPadding={20} xDomain={[filterD[0], filterD[1]]} yDomain={[0, 5]}>
-
-                    <VerticalGridLines
-                        tickValues={_tickValues}
-                        tickTotal={_tickValues.length}
-                    />
-                    <HorizontalGridLines
-                        tickValues={YtickValues}
-                        tickTotal={YtickValues.length}
-                    />
-
-                    <XAxis tickFormat={function tickFormat(value) {
-                        return value + ' d';
-                    }}
-                        tickValues={_tickValues}
+                <ScatterChart width={2000} height={300} margin={{ bottom: 45, left: 50, right: 50, top: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                        type="number"
+                        dataKey="x"
+                        domain={[Number(filterD[0]), Number(filterD[1])]}
+                        ticks={_tickValues}
+                        tickFormatter={(value) => value + ' d'}
                         style={{ fontSize: 12 }}
                     />
-
-
-                    <YAxis tickValues={[1, 2, 3, 4, 5]} tickFormat={tick => {
-                        if (tick == 5) return ' IV '
-                        if (tick == 4) return ' III '
-                        if (tick == 3) return ' II '
-                        if (tick == 2) return ' I '
-                        if (tick == 1) return ' NC '
-                    }}
+                    <YAxis
+                        type="number"
+                        dataKey="y"
+                        domain={[0, 5]}
+                        ticks={[1, 2, 3, 4, 5]}
+                        tickFormatter={(tick) => {
+                            if (tick == 5) return ' IV ';
+                            if (tick == 4) return ' III ';
+                            if (tick == 3) return ' II ';
+                            if (tick == 2) return ' I ';
+                            if (tick == 1) return ' NC ';
+                            return '';
+                        }}
                     />
-
-                    <MarkSeries
-                        sizeRange={[1, 5]}
-                        data={data}
-                        color={'DodgerBlue'}
-                        onValueMouseOver={e => setHovered(e)}
-                        onValueMouseOut={e => setHovered(false)}
-                        onValueClick={(e) => props._UPDATE_FILTERS_IDPUBIC(e.group)} />
-
-                    <Crosshair values={[{ x: mean }]} >
-                        <div style={{ background: 'black', background: 'rgba(0,0,0,0.65)', marginTop: '0%', width: '120px', fontSize: 'small' }}>
-                            <p className='ms-1'>Media: {mean}</p>
-                        </div>
-                    </Crosshair>
-
-                    {hovered ?
-                        <Hint value={hovered}>
-                            <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', marginTop: '0%', width: '200px', fontSize: 'small' }}>
-                                {_GET_HOOVER_BOX_CONTENT(hovered)}
-                            </div>
-                        </Hint>
-                        : null}
-                </XYPlot>
+                    <Tooltip
+                        content={({ active, payload }) => {
+                            if (active && payload && payload.length > 0) {
+                                const point = payload[0].payload;
+                                return (
+                                    <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', fontSize: 'small' }}>
+                                        {_GET_HOOVER_BOX_CONTENT(point)}
+                                    </div>
+                                );
+                            }
+                            return null;
+                        }}
+                    />
+                    <ReferenceLine x={Number(mean)} stroke="rgba(0,0,0,0.65)" strokeDasharray="3 3" label={{ value: `Media: ${mean}`, position: 'top', fill: 'black', fontSize: 12 }} />
+                    <Scatter
+                        data={Array.isArray(data) ? data : []}
+                        fill="DodgerBlue"
+                        onClick={(point) => { if (point && point.group) props._UPDATE_FILTERS_IDPUBIC(point.group); }}
+                    />
+                </ScatterChart>
             </div >
             <div className='row text-center my-1 mx-1'>
                 <div className='col'>
@@ -671,7 +664,7 @@ export default function FUN_CHART_TIME(props) {
                 <div className='row text-center my-1'>
                     <div className='col'>
                         <div class="d-flex flex-wrap">
-                            {data.map(value => <div class="input-group-prepend border border-success">
+                            {(Array.isArray(data) ? data : []).map(value => <div class="input-group-prepend border border-success">
                                 <div class="input-group-text">
                                     <label>{(value.name.slice(-7))}</label></div>
                             </div>)}
@@ -687,7 +680,7 @@ export default function FUN_CHART_TIME(props) {
                             <MDBIcon fas icon='eye' /></MDBBtn></div>
                         {seeNotValid1 ?
                             <div class="d-flex flex-wrap">
-                                {datano.map(value => <div class="input-group-prepend border border-primary">
+                                {(Array.isArray(datano) ? datano : []).map(value => <div class="input-group-prepend border border-primary">
                                     <div class="input-group-text">
                                         <label>{(value.slice(-7))}</label></div>
                                 </div>)}
@@ -708,74 +701,73 @@ export default function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className="chart-clock mx-2" style={{ width: '2500px' }}>
-                <XYPlot width={2000} height={300} margin={{ bottom: 45, left: 50, right: 50 }}
-                    yPadding={20} xDomain={[filterD[0], filterD[1]]} yDomain={[0, 5]}>
-
-                    <VerticalGridLines
-                        tickValues={_tickValues}
-                        tickTotal={_tickValues.length}
-                    />
-                    <HorizontalGridLines
-                        tickValues={YtickValues}
-                        tickTotal={YtickValues.length}
-                    />
-
-                    <XAxis tickFormat={function tickFormat(value) {
-                        return value + ' d';
-                    }}
-                        tickValues={_tickValues}
+                <ScatterChart width={2000} height={300} margin={{ bottom: 45, left: 50, right: 50, top: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                        type="number"
+                        dataKey="x"
+                        domain={[Number(filterD[0]), Number(filterD[1])]}
+                        ticks={_tickValues}
+                        tickFormatter={(value) => value + ' d'}
                         style={{ fontSize: 12 }}
                     />
-
-                    <CustomSVGSeries
-                        className="custom-marking"
-                        customComponent="square"
+                    <YAxis
+                        type="number"
+                        dataKey="y"
+                        domain={[0, 5]}
+                        ticks={[1, 2, 3, 4, 5]}
+                        tickFormatter={(tick) => {
+                            if (tick == 5) return ' IV ';
+                            if (tick == 4) return ' III ';
+                            if (tick == 3) return ' II ';
+                            if (tick == 2) return ' I ';
+                            if (tick == 1) return ' NC ';
+                            return '';
+                        }}
+                    />
+                    <Tooltip
+                        content={({ active, payload }) => {
+                            if (active && payload && payload.length > 0) {
+                                const point = payload[0].payload;
+                                return (
+                                    <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', width: '200px', fontSize: 'small' }}>
+                                        {_GET_HOOVER_BOX_CONTENT(point)}
+                                    </div>
+                                );
+                            }
+                            return null;
+                        }}
+                    />
+                    <ReferenceLine x={Number(mean2)} stroke="rgba(0,0,0,0.65)" strokeDasharray="3 3" label={{ value: `Media: ${mean2}`, position: 'top', fill: 'black', fontSize: 12 }} />
+                    {/* Star markers for norm days */}
+                    <Scatter
                         data={[
-                            { x: 90, y: 1, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 45, y: 1, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 65, y: 2, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 20, y: 2, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 70, y: 3, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 25, y: 3, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 80, y: 4, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 35, y: 4, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 90, y: 5, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'SlateGrey' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
-                            { x: 45, y: 5, customComponent: () => { return <g><text x={0} y={0} style={{ fontSize: '30px', fill: 'Orange' }}><tspan x="-14" y="8">&#9733;</tspan></text></g> } },
+                            { x: 90, y: 1, _starColor: 'SlateGrey' },
+                            { x: 45, y: 1, _starColor: 'Orange' },
+                            { x: 65, y: 2, _starColor: 'SlateGrey' },
+                            { x: 20, y: 2, _starColor: 'Orange' },
+                            { x: 70, y: 3, _starColor: 'SlateGrey' },
+                            { x: 25, y: 3, _starColor: 'Orange' },
+                            { x: 80, y: 4, _starColor: 'SlateGrey' },
+                            { x: 35, y: 4, _starColor: 'Orange' },
+                            { x: 90, y: 5, _starColor: 'SlateGrey' },
+                            { x: 45, y: 5, _starColor: 'Orange' },
                         ]}
+                        shape={(shapeProps) => {
+                            const { cx, cy, payload } = shapeProps;
+                            return (
+                                <text x={cx} y={cy} style={{ fontSize: '30px', fill: payload._starColor }} textAnchor="middle" dominantBaseline="central">
+                                    {'\u2605'}
+                                </text>
+                            );
+                        }}
                     />
-
-
-                    <YAxis tickValues={[1, 2, 3, 4, 5]} tickFormat={tick => {
-                        if (tick == 5) return ' IV '
-                        if (tick == 4) return ' III '
-                        if (tick == 3) return ' II '
-                        if (tick == 2) return ' I '
-                        if (tick == 1) return ' NC '
-                    }}
+                    <Scatter
+                        data={Array.isArray(data2) ? data2 : []}
+                        fill="ForestGreen"
+                        onClick={(point) => { if (point && point.group) props._UPDATE_FILTERS_IDPUBIC(point.group); }}
                     />
-
-                    <MarkSeries
-                        sizeRange={[1, 5]}
-                        data={data2}
-                        color={'ForestGreen'}
-                        onValueMouseOver={e => setHovered(e)}
-                        onValueMouseOut={e => setHovered(false)}
-                        onValueClick={(e) => props._UPDATE_FILTERS_IDPUBIC(e.group)} />
-
-                    <Crosshair values={[{ x: mean2 }]} >
-                        <div style={{ background: 'black', background: 'rgba(0,0,0,0.65)', marginTop: '0%', width: '120px', fontSize: 'small' }}>
-                            <p className='ms-1'>Media: {mean2}</p>
-                        </div>
-                    </Crosshair>
-
-                    {hovered ?
-                        <Hint value={hovered}>
-                            <div className="text-white p-2 m-2" style={{ background: 'rgba(0,0,0,0.75)', marginTop: '0%', width: '200px', fontSize: 'small' }}>
-                                {_GET_HOOVER_BOX_CONTENT(hovered)}
-                            </div>
-                        </Hint>
-                        : null}
-                </XYPlot>
+                </ScatterChart>
             </div >
             <div className='row text-center my-1 mx-1'>
                 <div className='col'>
@@ -892,7 +884,7 @@ export default function FUN_CHART_TIME(props) {
                 <div className='row text-center my-1'>
                     <div className='col'>
                         <div class="d-flex flex-wrap">
-                            {data2.map(value => <div class="input-group-prepend border border-success">
+                            {(Array.isArray(data2) ? data2 : []).map(value => <div class="input-group-prepend border border-success">
                                 <div class="input-group-text">
                                     <label>{(value.name.slice(-7))}</label></div>
                             </div>)}
@@ -908,7 +900,7 @@ export default function FUN_CHART_TIME(props) {
                             <MDBIcon fas icon='eye' /></MDBBtn></div>
                         {seeNotValid2 ?
                             <div class="d-flex flex-wrap">
-                                {datano2.map(value => <div class="input-group-prepend border border-primary">
+                                {(Array.isArray(datano2) ? datano2 : []).map(value => <div class="input-group-prepend border border-primary">
                                     <div class="input-group-text">
                                         <label>{(value.slice(-7))}</label></div>
                                 </div>)}
@@ -927,7 +919,7 @@ export default function FUN_CHART_TIME(props) {
                     <h3><label className='fw-bold my-1 text-light'> TABLA DE LICENCIAS</label></h3>
                 </div>
             </div>
-            {dataType.map(data => {
+            {(Array.isArray(dataType) ? dataType : []).map(data => {
                 return <div className='row mx-1'>
                     <div className='col border'>{data.type}</div>
                     <div className='col-4 border'>{data.ids.join(' | ')}</div>
@@ -936,7 +928,7 @@ export default function FUN_CHART_TIME(props) {
             })}
             <div className='row mx-1'>
                 <div className='col border fw-bold text-end'>TOTAL</div>
-                <div className='col-1 border'>{dataType.reduce((total, num) => Number(total) + Number(num.n), 0)}</div>
+                <div className='col-1 border'>{(Array.isArray(dataType) ? dataType : []).reduce((total, num) => Number(total) + Number(num.n), 0)}</div>
             </div>
         </>
     }
@@ -950,7 +942,7 @@ export default function FUN_CHART_TIME(props) {
                             <h3><label className='fw-bold my-1 text-light'> TABLA DE AREAS</label></h3>
                         </div>
                     </div>
-                    {build.map((b, i) => {
+                    {(Array.isArray(build) ? build : []).map((b, i) => {
                         return <div className='row mx-1'>
                             <div className='col border'>{BUILD_AREAS[i]}</div>
                             <div className='col-2 border'>{b.toFixed(2)}</div>
@@ -998,3 +990,5 @@ export default function FUN_CHART_TIME(props) {
         </>
     );
 }
+
+export default memo(FUN_CHART_TIME);

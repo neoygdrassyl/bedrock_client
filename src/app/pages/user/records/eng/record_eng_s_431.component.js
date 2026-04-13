@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
@@ -6,40 +6,36 @@ import Estudios_Simico from '../../../../components/jsons/estudio_eng.json'
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_ENG_STEP_431 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
+function RECORD_ENG_STEP_431(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP, version, requestUpdateRecord } = props;
+        const [showSection, setShowSection] = useState(false);
+        const [showSelect, setShowSelect] = useState(false);
 
-    componentDidMount() {
-        if (!this.props.isP) this.setState({ showSection: true });
-        else this.setState({ showSelect: true });
-        this.checkForStudy();
-    }
-    checkForStudy() {
-        var _CHILD = this.props.currentRecord.record_eng_steps;
-        var STEP = null;
-        for (var i = 0; i < _CHILD.length; i++) {
-            if (_CHILD[i].version == this.props.currentVersionR && _CHILD[i].id_public == 'sp') {
-                STEP = _CHILD[i];
-                break;
+        const checkForStudy = () => {
+            var _CHILD = currentRecord.record_eng_steps;
+            var STEP = null;
+            for (var i = 0; i < _CHILD.length; i++) {
+                if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == 'sp') {
+                    STEP = _CHILD[i];
+                    break;
+                }
             }
-        }
-        if (STEP) {
-            //document.getElementById('r_e_p_select').value = STEP.check
-            if (STEP.check == 1) this.setState({ showSection: true });
-            if (STEP.check == 0) this.setState({ showSection: false });
-        }
-    }
-    componentDidUpdate(prevProps) {
-        if (this.props.currentRecord !== prevProps.currentRecord) this.checkForStudy();
+            if (STEP) {
+                //document.getElementById('r_e_p_select').value = STEP.check
+                if (STEP.check == 1) setShowSection(true);
+                if (STEP.check == 0) setShowSection(false);
+            }
+        };
 
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP, version } = this.props;
-        const { } = this.state;
+        useEffect(() => {
+            if (!isP) setShowSection(true);
+            else setShowSelect(true);
+            checkForStudy();
+        }, []);
+
+        useEffect(() => {
+            checkForStudy();
+        }, [currentRecord]);
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
         //  CONST
         const STEP_01_SUPPORT = {
@@ -810,7 +806,7 @@ class RECORD_ENG_STEP_431 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -841,7 +837,7 @@ class RECORD_ENG_STEP_431 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -881,7 +877,7 @@ class RECORD_ENG_STEP_431 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -911,7 +907,7 @@ class RECORD_ENG_STEP_431 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
+                            requestUpdateRecord(currentItem.id);
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -967,7 +963,6 @@ class RECORD_ENG_STEP_431 extends Component {
                     : ""}
             </div >
         );
-    }
 }
 
 export default RECORD_ENG_STEP_431;

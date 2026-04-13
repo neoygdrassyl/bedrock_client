@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { useState, useEffect } from 'react';
+import { MDBBtn } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -10,25 +10,21 @@ import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
-class PQRSINFORMAL extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-            attachs: 0,
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+
+function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentId, currentItemAsign, refreshList: refreshListProp, closeModal, NAVIGATION }) {
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(false);
+    const [attachs, setAttachs] = useState(0);
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
+
+    const retrieveItem = (id) => {
         PQRS_Service.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
+                setCurrentItem(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
@@ -36,29 +32,27 @@ class PQRSINFORMAL extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este ítem, inténtelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
-    clearForm() {
-        document.getElementById("app-formInformal").reset()
-    }
-    addAttach() {
-        this.setState({ attachs: this.state.attachs + 1 })
-    }
-    minusAttach() {
-        this.setState({ attachs: this.state.attachs - 1 })
-    }
+    };
 
-    render() {
-        const { translation, swaMsg, globals, translation_form, currentItemAsign } = this.props;
-        const { attachs, currentItem, load } = this.state;
+    const refreshList = () => {
+        refreshListProp();
+    };
+
+    const clearForm = () => {
+        document.getElementById("app-formInformal").reset()
+    };
+
+    const addAttach = () => {
+        setAttachs(attachs + 1);
+    };
+
+    const minusAttach = () => {
+        setAttachs(attachs - 1);
+    };
         var formData = new FormData();
 
         let _ATTACHS_COMPONENT = () => {
@@ -127,10 +121,10 @@ class PQRSINFORMAL extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.clearForm();
-                        this.retrieveItem(currentItem.id);
-                        this.refreshList();
-                        this.props.closeModal()
+                        clearForm();
+                        retrieveItem(currentItem.id);
+                        refreshList();
+                        closeModal()
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -207,9 +201,9 @@ class PQRSINFORMAL extends Component {
                                 <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
                                 <div className="text-end m-3">
                                     {attachs > 0
-                                        ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                        ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
                                         : ""}
-                                    <MDBBtn className="btn btn-lg btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                                    <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
                                 </div>
                                 {_ATTACHS_COMPONENT()}
 
@@ -240,11 +234,10 @@ class PQRSINFORMAL extends Component {
                     translation={translation}
                     currentItem={currentItem}
                     FROM={"informal"}
-                    NAVIGATION={this.props.NAVIGATION}
+                    NAVIGATION={NAVIGATION}
                 />
             </div>
         );
-    }
 }
 
 export default PQRSINFORMAL;

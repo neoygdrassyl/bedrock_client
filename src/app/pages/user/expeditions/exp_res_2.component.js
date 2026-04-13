@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { ResoEngineTemplate } from "../../../utils/ResoEngineTemplate";
 import { ActDesistEngineTemp } from "../../../utils/ActDesistEngineTemp";
 import { ExecEngineTemp } from "../../../utils/ExecEngineTemp";
@@ -111,7 +111,7 @@ export default function EXP_RES_2(props) {
       const editorHTML = editor.current?.value;
 
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/pdf-generate/generate-pdf`,
+        `${import.meta.env.VITE_API_URL}/pdf-generate/generate-pdf`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

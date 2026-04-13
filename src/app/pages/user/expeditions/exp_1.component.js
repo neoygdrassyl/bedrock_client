@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
@@ -13,51 +13,46 @@ import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-class EXP_1 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: [],
-            vrSelected1: null,
-            vrSelected2: null,
-            cubSelected1: null,
-            cubSelected2: null,
-            idCUBxVr1: null,
-            idCUBxVr2: null,
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    async retrieveItem() {
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord }) {
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [vrSelected1, setVrSelected1] = useState(null);
+    const [vrSelected2, setVrSelected2] = useState(null);
+    const [cubSelected1, setCubSelected1] = useState(null);
+    const [cubSelected2, setCubSelected2] = useState(null);
+    const [idCUBxVr1, setIdCUBxVr1] = useState(null);
+    const [idCUBxVr2, setIdCUBxVr2] = useState(null);
+
+    const retrieveItem = async () => {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data);
             })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             //findOne
             const data1 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - ACTO TRAMITE LICENCIA');
             const data2 = responseCubXVr.data.find(item => item.process === 'EXPEDICION - INFORMACION GENERAL - DEBERES URBANISTICO');
 
             if (data1) {
-                this.setState({ vrSelected1: data1.vr, cubSelected1: data1.cub, idCUBxVr1: data1.id })
-                document.getElementById("vr_selected").value = data1.vr
+                setVrSelected1(data1.vr);
+                setCubSelected1(data1.cub);
+                setIdCUBxVr1(data1.id);
+                document.getElementById("vr_selected").value = data1.vr;
             }
             if (data2 && document.getElementById("vr_selected1")) {
-                document.getElementById("vr_selected1").value = data2.vr
-                this.setState({ vrSelected2: data2.vr, cubSelected2: data2.cub, idCUBxVr2: data2.id })
+                document.getElementById("vr_selected1").value = data2.vr;
+                setVrSelected2(data2.vr);
+                setCubSelected2(data2.cub);
+                setIdCUBxVr2(data2.id);
             }
-
-
-
         } catch (error) {
             console.log(error);
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    };
+
+    useEffect(() => {
+        retrieveItem();
+    }, []);
         // DATA GETTERS
         let _GET_CHILD_CLOCK = () => {
             var _CHILD = currentItem.fun_clocks;
@@ -87,7 +82,7 @@ class EXP_1 extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -264,7 +259,7 @@ class EXP_1 extends Component {
             let taxes = _GET_EXPEDITION_JSON('taxes');
             let mun_tax = zonesTable[_GET_EXPEDITION_JSON('tmp').zone] ?? 0.1;
             let mun_1 = _GET_EXP_SECOND_COST();
-            //console.log(this.state.vrsRelated)
+            //console.log(vrsRelated)
             return <>
                 <div class="card border border-dark mb-3">
                     <div class="card-header text-uppercase">Expensas Fijas</div>
@@ -348,16 +343,16 @@ class EXP_1 extends Component {
                                     <label className="mt-1">{infoCud.serials.end} Acto</label>
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="expedition_2"
-                                            defaultValue={currentRecord.cub1 || this.state.cubSelected1 || ""} />
+                                            defaultValue={currentRecord.cub1 || cubSelected1 || ""} />
                                         <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
                                     </div>
                                 </div>
                                 <div className="col-3" >
                                     <label className="mt-1">{infoCud.serials.start}</label>
                                     <div class="input-group">
-                                        <select class="form-select" id="vr_selected" defaultValue={this.state.vrSelected1 || ""}>
+                                        <select class="form-select" id="vr_selected" defaultValue={vrSelected1 || ""}>
                                             <option disabled value=''>Seleccione una opción</option>
-                                            {this.state.vrsRelated.map((value, key) => (
+                                            {vrsRelated.map((value, key) => (
                                                 <option key={value.id} value={value.id_public}>
                                                     {value.id_public}
                                                 </option>
@@ -497,16 +492,16 @@ class EXP_1 extends Component {
                                         <label className="mt-1">{infoCud.serials.end}</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="expedition_11"
-                                                defaultValue={currentRecord.cub2 || this.state.cubSelected2 || ""} />
+                                                defaultValue={currentRecord.cub2 || cubSelected2 || ""} />
                                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
                                         </div>
                                     </div>
                                     <div className="col" >
                                         <label className="mt-1">{infoCud.serials.start}</label>
                                         <div class="input-group">
-                                            <select class="form-select" id="vr_selected1" defaultValue={this.state.vrSelected2 || ""}>
+                                            <select class="form-select" id="vr_selected1" defaultValue={vrSelected2 || ""}>
                                                 <option disabled value=''>Seleccione una opción</option>
-                                                {this.state.vrsRelated.map((value, key) => (
+                                                {vrsRelated.map((value, key) => (
                                                     <option key={value.id} value={value.id_public}>
                                                         {value.id_public}
                                                     </option>
@@ -656,7 +651,7 @@ class EXP_1 extends Component {
 
             createVRxCUB_relation(cub1, cub2)
             manage_exp();
-            this.retrieveItem()
+            retrieveItem()
         }
 
         let createVRxCUB_relation = (cub_selected, cub_selected1) => {
@@ -700,14 +695,14 @@ class EXP_1 extends Component {
 
 
             // Mostrar mensaje inicial de espera
-            if ((type === 1 && this.state.idCUBxVr1) || (type === 2 && this.state.idCUBxVr2)) {
-                const id = type === 1 ? this.state.idCUBxVr1 : this.state.idCUBxVr2;
+            if ((type === 1 && idCUBxVr1) || (type === 2 && idCUBxVr2)) {
+                const id = type === 1 ? idCUBxVr1 : idCUBxVr2;
 
                 CubXVrDataService.updateCubVr(id, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -720,7 +715,7 @@ class EXP_1 extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -747,8 +742,8 @@ class EXP_1 extends Component {
                             confirmButtonText: swaMsg.text_btn,
                         });
 
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACION",
@@ -791,7 +786,6 @@ class EXP_1 extends Component {
                 </form>
             </div >
         );
-    }
 }
 
 export default EXP_1;

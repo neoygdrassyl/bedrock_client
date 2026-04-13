@@ -1,19 +1,9 @@
-import { MDBTooltip } from 'mdb-react-ui-kit';
-import { findLastMatch } from 'pdf-lib';
-import React, { Component } from 'react';
-import { find } from 'rsuite/esm/utils/ReactChildren';
+import React from 'react';
+import { MDBTooltip } from '../../../../components/ui';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
-class FUN_ICON_PROGRESS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, globals, currentItem, small } = this.props;
-        const { } = this.state;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
 
         // DATA CONVERTERS
         let _GET_LAW_REPORT_DATA_ICON = (_ITEM) => {
@@ -62,9 +52,9 @@ class FUN_ICON_PROGRESS extends Component {
                     if (sign[1] != undefined) _COMPONENT.push(<MDBTooltip title='VALLA RADICADA' tag='a' >
                         <i class={`fas fa-sign ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
                     else _COMPONENT.push(<MDBTooltip title='VALLA SIN RADICAR' tag='a' >
-                        <i class={`fas fa-sign ${size}`} style={{ color: 'Black', fontSize: fontSize }}></i></MDBTooltip>)
+                        <i class={`fas fa-sign ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
                 } else _COMPONENT.push(<MDBTooltip title='VALLA SIN RADICAR' tag='a' >
-                    <i class={`fas fa-sign ${size}`} style={{ color: 'Black', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i class={`fas fa-sign ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
             }
 
             let report_data = _GET_LAW_REPORT_DATA_ICON(row);
@@ -86,7 +76,7 @@ class FUN_ICON_PROGRESS extends Component {
                 if (row.seal) _COMPONENT.push(<MDBTooltip title='SELLO CREADO' tag='a' >
                     <i class={`fab fa-wpforms ${size}`} style={{ color: 'Green', fontSize: fontSize }}></i></MDBTooltip>)
                 else _COMPONENT.push(<MDBTooltip title='SELLO NO CREADO' tag='a' >
-                    <i class={`fab fa-wpforms ${size}`} style={{ color: 'Black', fontSize: fontSize }}></i></MDBTooltip>)
+                    <i class={`fab fa-wpforms ${size}`} style={{ color: 'var(--bs-body-color)', fontSize: fontSize }}></i></MDBTooltip>)
             }
 
 
@@ -189,14 +179,13 @@ class FUN_ICON_PROGRESS extends Component {
 
 
 
-            return <>{_COMPONENT}</>
+            return <>{_COMPONENT.map((item, i) => React.cloneElement(item, { key: i }))}</>
         }
         return (
             <div>
                 {_PROGRESS_COMPONENT(currentItem)}
             </div>
         );
-    }
 }
 
 

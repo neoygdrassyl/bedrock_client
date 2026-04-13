@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React, { useReducer, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
-import { MDBBadge, MDBBtn, MDBCollapse, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from 'mdb-react-ui-kit';
-import ReactTagInput from "@pathofdev/react-tag-input";
-import Collapsible from 'react-collapsible';
-import "@pathofdev/react-tag-input/build/index.css";
+import { MDBBadge, MDBBtn, MDBCollapse, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from '../../../components/ui';
+import TagInput from "../../../components/TagInput";
+import Collapsible from '../../../components/Collapsible';
+
 
 import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
@@ -37,6 +37,7 @@ import TABLE_COMPONENT_EXPANDED from './components/table_components/table.compon
 import FUN_MACROTABLE_FILTERLIST from './components/fun_macro_filterList.component';
 import FUN_CHART_NEGATIVE from './components/charts_components.js/chart_negative.component';
 import FUN_CHART_TIME from './components/charts_components.js/chart_time.component';
+import ChartErrorBoundary from '../../../components/ChartErrorBoundary';
 
 
 const MySwal = withReactContent(Swal);
@@ -112,15 +113,11 @@ const _fun_0_type_days_matrix = {
     '0': { 'law': 1, 'arc': 1, 'eng': 0 },
 }
 const moment = require('moment');
-class FUN_MACROTABLE extends Component {
-    constructor(props) {
-        super(props);
-        this.tagRef = React.createRef();
-        this.retrieveMacro = this.retrieveMacro.bind(this);
-        this.retrieveMacroClocks = this.retrieveMacroClocks.bind(this);
-        this._UPDATE_FILTERS = this._UPDATE_FILTERS.bind(this);
-        this._UPDATE_FILTERS_IDPUBIC = this._UPDATE_FILTERS_IDPUBIC.bind(this);
-        this.state = {
+function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilter, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
+    const tagRef = useRef(null);
+    const [state, setState] = useReducer(
+        (prev, next) => ({ ...prev, ...next }),
+        {
             load: false,
             data_include: [],
             data_macro: [],
@@ -147,37 +144,37 @@ class FUN_MACROTABLE extends Component {
             tags: [],
             includeCompelte: false,
             includeEx: false,
-        };
-    }
-    componentDidMount() {
-        this.retrieveMacro();
-        this.retrieveMacroNegative();
-        this.retrieveWorkerList();
-        //this.retrieveMacroClocks();
-    }
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.data_macro !== prevState.data_macro && this.state.data_macro.length > 0) {
-            this.setDefaultFilters();
         }
+    );
+    useEffect(() => {
+        retrieveMacro();
+        retrieveMacroNegative();
+        retrieveWorkerList();
+        //retrieveMacroClocks();
+    }, []);
+    const prevDataMacroRef = useRef(state.data_macro);
+    useEffect(() => {
+        if (state.data_macro !== prevDataMacroRef.current && state.data_macro.length > 0) {
+            setDefaultFilters();
+        }
+        prevDataMacroRef.current = state.data_macro;
         /*
-if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.data_macro_filter.length > 0) ||
-            (this.state.data_macro_clocks !== prevState.data_macro_clocks && this.state.data_macro_clocks.length > 0)) {
-            this.equalizeLists();
+        if ((state.data_macro_filter.length > 0) || (state.data_macro_clocks.length > 0)) {
+            equalizeLists();
         }
         */
-
+    }, [state.data_macro]);
+    function setDefaultFilters() {
+        let filter = defaultFilter;
+        if (state.tags.length) _FILTER_LIST(state.tags);
+        else if (filter) _UPDATE_FILTERS_IDPUBIC([filter])
+        else _FILTER_LIST([]);
     }
-    setDefaultFilters() {
-        let filter = this.props.defaultFilter;
-        if (this.state.tags.length) this._FILTER_LIST(this.state.tags);
-        else if (filter) this._UPDATE_FILTERS_IDPUBIC([filter])
-        else this._FILTER_LIST([]);
-    }
-    InitialFilter(_list) {
+    function InitialFilter(_list) {
         var list_f = [];
         var list_oa = [];
         var list_oa_f = [];
-        if (this.state.includeCompelte) {
+        if (state.includeCompelte) {
             list_f = _list;
         } else {
             for (let i = 0; i < _list.length; i++) {
@@ -195,7 +192,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         }
         list_f = _SET_PRIORITY(list_f);
 
-        this.setState({
+        setState({
             data_include: _list,
             data_exlucde: list_f,
             data_macro: list_f,
@@ -205,13 +202,13 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             load: true,
         })
 
-        this.setDefaultFilters();
+        setDefaultFilters();
 
     }
-    retrieveMacro(LoadFilter = true) {
-        FUN_SERVICE.loadMacro(this.props.date_start, this.props.date_end)
+    function retrieveMacro(LoadFilter = true) {
+        FUN_SERVICE.loadMacro(date_start, date_end)
             .then(response => {
-                this.InitialFilter(response.data);
+                InitialFilter(response.data);
             })
             .catch(e => {
                 console.log(e);
@@ -219,14 +216,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
     }
-    retrieveMacroClocks() {
-        FUN_SERVICE.loadMacroClocksControl(this.props.date_start, this.props.date_end)
+    function retrieveMacroClocks() {
+        FUN_SERVICE.loadMacroClocksControl(date_start, date_end)
             .then(response => {
-                this.setState({ data_macro_clocks: response.data })
+                setState({ data_macro_clocks: response.data })
 
             })
             .catch(e => {
@@ -235,14 +232,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
     }
-    retrieveMacroNegative() {
-        FUN_SERVICE.loadMacronegative(this.props.date_start, this.props.date_end)
+    function retrieveMacroNegative() {
+        FUN_SERVICE.loadMacronegative(date_start, date_end)
             .then(response => {
-                this.asignNegativeList(response.data)
+                asignNegativeList(response.data)
             })
             .catch(e => {
                 console.log(e);
@@ -250,14 +247,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
     }
-    retrieveWorkerList() {
+    function retrieveWorkerList() {
         USER_SERVICE.getAll()
             .then(response => {
-                this.setState({ worker_list: response.data })
+                setState({ worker_list: response.data })
             })
             .catch(e => {
                 console.log(e);
@@ -265,70 +262,70 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
     }
-    asignNegativeList(LIST) {
+    function asignNegativeList(LIST) {
         let negative_list = [];
         let negative_list_full = [];
         for (var i = 0; i < LIST.length; i++) {
             negative_list_full.push(LIST[i]);
             if (LIST[i].state < 0) negative_list.push(LIST[i]);
         }
-        this.setState({ data_negative_simple: negative_list, data_negative: negative_list, data_negative_full: negative_list_full })
+        setState({ data_negative_simple: negative_list, data_negative: negative_list, data_negative_full: negative_list_full })
     }
-    changeList = (value) => {
-        if (value) this.setState({
-            data_macro: this.state.data_include,
-            data_macro_filter: this.state.data_include,
-            data_oa: this.state.data_oa_includes,
+    function changeList(value) {
+        if (value) setState({
+            data_macro: state.data_include,
+            data_macro_filter: state.data_include,
+            data_oa: state.data_oa_includes,
             includeEx: value
         })
-        else this.setState({
-            data_macro: this.state.data_exlucde,
-            data_macro_filter: this.state.data_exlucde,
+        else setState({
+            data_macro: state.data_exlucde,
+            data_macro_filter: state.data_exlucde,
             includeEx: value,
-            data_oa: this.state.data_oa,
+            data_oa: state.data_oa,
         })
-        //this.setDefaultFilters();
+        //setDefaultFilters();
     }
-    equalizeLists() {
+    function equalizeLists() {
         var newData = [];
         console.log("EQUILIZE!")
-        this.state.data_macro_filter.map(value => {
-            this.state.data_macro_clocks.map(valueJ => {
+        state.data_macro_filter.map(value => {
+            state.data_macro_clocks.map(valueJ => {
                 if (value.id_public == valueJ.id_public) newData.push(valueJ)
             })
         })
-        this.setState({ data_macro_clocks_filter: newData })
+        setState({ data_macro_clocks_filter: newData })
     }
 
     // INPUT TAG WORK FUNCTIONS
-    _GET_LAW_REPORT_DATA_ICON(_ITEM) {
+    function _GET_LAW_REPORT_DATA_ICON(_ITEM) {
         if (!_ITEM.tipo) return 2;
         if (_ITEM.tipo.includes('F')) return 1
         return 2;
     }
-    _UPDATE_FILTERS(_FILTER) {
-        let _ARRAY_TAGS = this.state.tags;
+    function _UPDATE_FILTERS(_FILTER) {
+        let _ARRAY_TAGS = state.tags;
         if (_ARRAY_TAGS.includes(_FILTER)) _ARRAY_TAGS.splice(_ARRAY_TAGS.indexOf(_FILTER), 1);
         else _ARRAY_TAGS.push(_FILTER);
-        this._FILTER_LIST(_ARRAY_TAGS);
+        _FILTER_LIST(_ARRAY_TAGS);
     }
 
-    _UPDATE_FILTERS_IDPUBIC(_ARRAY) {
-        let _ARRAY_TAGS = this.state.tags;
+    function _UPDATE_FILTERS_IDPUBIC(_ARRAY) {
+        let _ARRAY_TAGS = state.tags;
         let newTag = 'num:' + _ARRAY.join(',')
         _ARRAY_TAGS.push(newTag)
-        this._FILTER_LIST(_ARRAY_TAGS);
+        _FILTER_LIST(_ARRAY_TAGS);
     }
-    _FILTER_LIST(_FILTERS) {
-        this.setState({ tags: _FILTERS, load: false });
-        if (_FILTERS.length == 0) return this.setState({ data_macro_filter: this.state.data_macro, load: true });
-        else if (_FILTERS.length == 1 && _FILTERS[0] == 'relax') return this.setState({ data_macro_filter: this.state.data_macro, load: true });
+    function _FILTER_LIST(_FILTERS) {
+        setState({ tags: _FILTERS, load: false });
+        if (_FILTERS.length == 0) return setState({ data_macro_filter: state.data_macro, load: true });
+        else if (_FILTERS.length == 1 && _FILTERS[0] == 'relax') return setState({ data_macro_filter: state.data_macro, load: true });
 
-        let _FULL_LIST = this.state.data_macro;
+        let _FULL_LIST = state.data_macro;
         let _FILTER_LIST = [];
         let meetConditions = 0;
         let forcedConditions = true
@@ -652,13 +649,13 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 if (sFILTER == 'sellono' && _FULL_LIST[i].seal == null) meetCondition = true;
                 // REPORT
                 if (sFILTER == 'rep') {
-                    let reportRequirement = this._GET_LAW_REPORT_DATA_ICON(_FULL_LIST[i]);
+                    let reportRequirement = _GET_LAW_REPORT_DATA_ICON(_FULL_LIST[i]);
                     if (reportRequirement == 1) {
                         if (_FULL_LIST[i].report_cub) meetCondition = true;
                     }
                 }
                 if (sFILTER == 'repno') {
-                    let reportRequirement = this._GET_LAW_REPORT_DATA_ICON(_FULL_LIST[i]);
+                    let reportRequirement = _GET_LAW_REPORT_DATA_ICON(_FULL_LIST[i]);
                     if (reportRequirement == 1) {
                         if (!_FULL_LIST[i].report_cub) meetCondition = true;
                     }
@@ -967,14 +964,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             meetConditions = 0;
         }
 
-        this.setState({ data_macro_filter: _FILTER_LIST, load: true })
+        setState({ data_macro_filter: _FILTER_LIST, load: true })
     }
-    myDataWorkers = () => {
+    function myDataWorkers() {
         const workersNames_bundle = []
         var vals = [];
         var vals_p = []
-        let _workers = this.state.worker_list;
-        let items = this.state.data_macro_filter;
+        let _workers = state.worker_list;
+        let items = state.data_macro_filter;
 
         for (var i = 0; i < _workers.length; i++) {
             workersNames_bundle.push(_workers[i].name + ' ' + _workers[i].surname);
@@ -1014,7 +1011,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         return data;
     }
 
-    _GET_MIN_VALUE(row) {
+    function _GET_MIN_VALUE(row) {
         let v1a = Number(row.priority_left || 0);
         let v1b = Number(row.priority_rec || 0);
         // let v1c = Number(row.priority_corr || 0);
@@ -1029,20 +1026,18 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         return Math.min(...arr1)
     }
 
-    render() {
-        const { translation, swaMsg, globals, selectedRow, defaultFilter } = this.props;
-        const { load } = this.state;
+        const { load } = state;
         //  WORIKING CONSTS
         const ExpandedComponent = ({ data }) => <>
             <div style={{ width: '95vw' }} className="m-3">
                 <TABLE_COMPONENT_EXPANDED currentItem={data}
-                    requestUpdate={() => this.retrieveMacro()}
+                    requestUpdate={() => retrieveMacro()}
                     translation={translation} swaMsg={swaMsg} globals={globals}
-                    worker_list={this.state.worker_list}
-                    lenghtL={this.state.data_macro_filter.length}
-                    dataL={this.state.data_macro_filter}
-                    date_start={this.props.date_start}
-                    date_end={this.props.date_end} />
+                    worker_list={state.worker_list}
+                    lenghtL={state.data_macro_filter.length}
+                    dataL={state.data_macro_filter}
+                    date_start={date_start}
+                    date_end={date_end} />
             </div>
         </>;
 
@@ -1096,7 +1091,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         const columns = [
             {
                 name: <label>No. RADICACION</label>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 minWidth: '140px',
@@ -1135,7 +1130,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center">CATEGORIA</label>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1255,8 +1250,8 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
               conditionalCellStyles: conditionalCellStylesJUR,
               cellStyle: CellStylesJUR,
               center: true,
-              omit: this.state.hide_jur,
-              cell: row => this.state['asign_jur_' + row.id]
+              omit: state.hide_jur,
+              cell: row => state['asign_jur_' + row.id]
                   ? <>{_WORKERS_SELECT(
                       !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.asign_law_worker_id : row.asign_ph_law_worker_id,
                       !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_id : row.ph_id,
@@ -1268,18 +1263,18 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         
            *   {
              name: <label>ASIGNAR</label>,
-             omit: (this.state.hide_jur && !(window.user.id == 1 || window.user.roleId == 3)),
+             omit: (state.hide_jur && !(window.user.id == 1 || window.user.roleId == 3)),
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
              center: true,
              minWidth: '70px',
              cell: row => <div class="form-check">
-                 <input class="form-check-input" type="checkbox" defaultChecked={this.state['asign_jur_' + row.id]} onChange={(e) => this.setState({ ['asign_jur_' + row.id]: e.target.checked })} />
+                 <input class="form-check-input" type="checkbox" defaultChecked={state['asign_jur_' + row.id]} onChange={(e) => setState({ ['asign_jur_' + row.id]: e.target.checked })} />
              </div>
          },
          {
              name: <label>#</label>,
-             omit: this.state.hide_jur,
+             omit: state.hide_jur,
              minWidth: '70px',
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
@@ -1294,7 +1289,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
              center: true,
-             omit: this.state.hide_jur,
+             omit: state.hide_jur,
              cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.asign_ph_law_date}</label>
          },
          {
@@ -1308,7 +1303,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
              center: true,
-             omit: this.state.hide_jur,
+             omit: state.hide_jur,
              cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                  ?
                  _GET_ASIGN_DATE(row.asign_law_date, 11, row)
@@ -1329,7 +1324,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
              center: true,
-             omit: this.state.hide_jur,
+             omit: state.hide_jur,
              cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_law : row.jur_date}</label>
          },
           {
@@ -1344,7 +1339,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
               cellStyle: CellStylesJUR,
               center: true,
               minWidth: '70px',
-              omit: this.state.hide_jur,
+              omit: state.hide_jur,
               cell: row => {
                   let diff = dateParser_dateDiff(
                       !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_date : row.ph_date_law,
@@ -1370,27 +1365,27 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 conditionalCellStyles: conditionalCellStylesJUR,
                 cellStyle: CellStylesJUR,
                 center: true,
-                omit: this.state.hide_jur,
+                omit: state.hide_jur,
                 cvsCB: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law, false, false, true) : _GET_REVIEW(row.jur_review, row.clock_review_law_c, row.clock_asign_law, true),
                 cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law) : _GET_REVIEW(row.jur_review, row.clock_review_law_c, row.clock_asign_law)}</label>
             },
             /**
                         {
                             name: <label>ASIGNAR</label>,
-                            omit: this.state.hide_arc && !(window.user.id == 1 || window.user.roleId == 3),
+                            omit: state.hide_arc && !(window.user.id == 1 || window.user.roleId == 3),
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
                             center: true,
                             minWidth: '70px',
                             cell: row => <div class="form-check">
-                                <input class="form-check-input" type="checkbox" defaultChecked={this.state['asign_arc_' + row.id]} onChange={(e) => this.setState({ ['asign_arc_' + row.id]: e.target.checked })} />
+                                <input class="form-check-input" type="checkbox" defaultChecked={state['asign_arc_' + row.id]} onChange={(e) => setState({ ['asign_arc_' + row.id]: e.target.checked })} />
                             </div>
                         },
                         {
                             name: <label>#</label>,
                             center: true,
                             minWidth: '70px',
-                            omit: this.state.hide_arc,
+                            omit: state.hide_arc,
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
                             cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_arc ? row.clock_asign_arc.split(';').length : row.arc_version}</label>
@@ -1404,7 +1399,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
                             center: true,
-                            omit: this.state.hide_arc,
+                            omit: state.hide_arc,
                             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.asign_ph_law_date}</label>
                         },
                         {
@@ -1418,7 +1413,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
                             center: true,
-                            omit: this.state.hide_arc,
+                            omit: state.hide_arc,
                             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                                 ?
                                 _GET_ASIGN_DATE(row.asign_arc_date, 13, row)
@@ -1439,7 +1434,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
                             center: true,
-                            omit: this.state.hide_arc,
+                            omit: state.hide_arc,
                             cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_arc : row.arc_date}</label>
                         },
                         {
@@ -1454,7 +1449,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cellStyle: CellStylesARQ,
                 center: true,
                 minWidth: '70px',
-                omit: this.state.hide_arc,
+                omit: state.hide_arc,
                 cell: row => {
                     let diff = dateParser_dateDiff(
                         !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_date : row.ph_date_arc,
@@ -1478,8 +1473,8 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 conditionalCellStyles: conditionalCellStylesARQ,
                 cellStyle: CellStylesARQ,
                 center: true,
-                omit: this.state.hide_arc,
-                cell: row => this.state['asign_arc_' + row.id]
+                omit: state.hide_arc,
+                cell: row => state['asign_arc_' + row.id]
                     ? <>{_WORKERS_SELECT(
                         !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.asign_arc_worker_id : row.sign_ph_arc_worker_id,
                         !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_id : row.ph_id,
@@ -1498,7 +1493,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 conditionalCellStyles: conditionalCellStylesARQ,
                 cellStyle: CellStylesARQ,
                 center: true,
-                omit: this.state.hide_arc,
+                omit: state.hide_arc,
                 cvsCB: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review, false, false, true) : _GET_REVIEW(row.arc_review, row.clock_review_arc_c, row.clock_asign_arc, true),
                 cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review) : _GET_REVIEW(row.arc_review, row.clock_review_arc_c, row.clock_asign_arc)}</label>
             },
@@ -1507,18 +1502,18 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
         {
             name: <label>ASIGNAR</label>,
-            omit: this.state.hide_ing && !(window.user.id == 1 || window.user.roleId == 3),
+            omit: state.hide_ing && !(window.user.id == 1 || window.user.roleId == 3),
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             center: true,
             minWidth: '70px',
             cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? <div class="form-check">
-                <input class="form-check-input" type="checkbox" defaultChecked={this.state['asign_eng_' + row.id]} onChange={(e) => this.setState({ ['asign_eng_' + row.id]: e.target.checked })} />
+                <input class="form-check-input" type="checkbox" defaultChecked={state['asign_eng_' + row.id]} onChange={(e) => setState({ ['asign_eng_' + row.id]: e.target.checked })} />
             </div> : ""
         },
         {
             name: <label>#</label>,
-            omit: this.state.hide_ing,
+            omit: state.hide_ing,
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             minWidth: '70px',
@@ -1534,7 +1529,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             center: true,
-            omit: this.state.hide_ing,
+            omit: state.hide_ing,
             cell: row => <label>{_GET_ASIGN_DATE(row.asign_eng_date, 12, row)}</label>
         },
         {
@@ -1546,7 +1541,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             center: true,
-            omit: this.state.hide_ing,
+            omit: state.hide_ing,
             cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                 ? <label>{
                     _GET_ASIGN_DATE(row.asign_eng_date, 12, row)
@@ -1558,14 +1553,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         },
         {
             name: <label>EST. FECHA REV.</label>,
-            selector: 'eng_date',
+            selector: row => row.eng_date,
             sortable: true,
             filterable: true,
             minWidth: '150px',
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             center: true,
-            omit: this.state.hide_ing,
+            omit: state.hide_ing,
             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.eng_date : ""}</label>
         },
         {
@@ -1577,7 +1572,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 cellStyle: CellStylesENG,
                 center: true,
                 minWidth: '70px',
-                omit: this.state.hide_ing,
+                omit: state.hide_ing,
                 cell: row => {
                     if (!_REGEX_MATCH_PH(_PARSE_FUN_1(row))) {
                         let diff = dateParser_dateDiff(row.eng_date, _GET_ASIGN_DATE(row.asign_eng_date, 12, row), true)
@@ -1592,15 +1587,15 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
             {
                 name: <label>EST. PROF. ASIG.</label>,
-                selector: 'asign_eng_worker_name',
+                selector: row => row.asign_eng_worker_name,
                 sortable: true,
                 filterable: true,
                 minWidth: '200px',
                 conditionalCellStyles: conditionalCellStylesENG,
                 cellStyle: CellStylesENG,
                 center: true,
-                omit: this.state.hide_ing,
-                cell: row => this.state['asign_eng_' + row.id]
+                omit: state.hide_ing,
+                cell: row => state['asign_eng_' + row.id]
                     ? <>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                         ? <>{_WORKERS_SELECT(
                             row.asign_eng_worker_id,
@@ -1615,14 +1610,13 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 */
             {
                 name: <label>EST. REVISION</label>,
-                selector: '',
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
                 conditionalCellStyles: conditionalCellStylesENG,
                 cellStyle: CellStylesENG,
                 center: true,
-                omit: this.state.hide_ing,
+                omit: state.hide_ing,
                 cvsCB: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? GET_REVIEW_ENG([row.eng_review, row.eng_review_2], row.clock_review_eng_c, row.clock_asign_eng, true) : 'NA',
                 cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ?
                     <label>{GET_REVIEW_ENG([row.eng_review, row.eng_review_2], row.clock_review_eng_c, row.clock_asign_eng)}</label>
@@ -1632,7 +1626,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
             {
                 name: <label className="text-center text-primary fw-bold">FECHA ACTA P.1</label>,
-                selector: 'clock_record_p1',
+                selector: row => row.clock_record_p1,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1641,7 +1635,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label>ACTA P.1 REV.</label>,
-                selector: 'rec_review',
+                selector: row => row.rec_review,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1650,7 +1644,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             /*{
                 name: <label className="text-center">¿REQ. CORRECIONES?</label>,
-                selector: 'rec_review',
+                selector: row => row.rec_review,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1683,7 +1677,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center">FECHA ENTREGA CORRECIONES</label>,
-                selector: 'clock_corrections',
+                selector: row => row.clock_corrections,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1691,7 +1685,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center text-primary fw-bold">FECHA ACTA P.2</label>,
-                selector: 'clock_record_p2',
+                selector: row => row.clock_record_p2,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1700,7 +1694,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label>ACTA P.2 REV.</label>,
-                selector: 'rec_review_2',
+                selector: row => row.rec_review_2,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1709,7 +1703,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center">CARTA VIABILIDAD</label>,
-                selector: 'clock_pay2',
+                selector: row => row.clock_pay2,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1727,7 +1721,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center">RESOLUCIÓN</label>,
-                selector: 'clock_resolution',
+                selector: row => row.clock_resolution,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1745,7 +1739,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center fw-bold text-primary">FECHA LICENCIA</label>,
-                selector: 'clock_license',
+                selector: row => row.clock_license,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1754,7 +1748,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center fw-bold">CONSECUTIVO LICENCIA</label>,
-                selector: 'exp_id',
+                selector: row => row.exp_id,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1762,7 +1756,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
             {
                 name: <label className="text-center fw-bold">ARCHIVO</label>,
-                selector: 'clock_archive',
+                selector: row => row.clock_archive,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -1772,7 +1766,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
         const columns_negative = [
             {
                 name: <label>No. RADICACION</label>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
@@ -1947,16 +1941,16 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             },
 
         ]
-        const handleFillClick = (state) => {
-            if (state === this.state.fillActive) {
+        const handleFillClick = (value) => {
+            if (value === state.fillActive) {
                 return;
             }
-            this.setState({ fillActive: state });
+            setState({ fillActive: value });
         };
 
         // DATA GETTER
         let _GET_WORKER_BY_ID = (_ID) => {
-            let _workers = this.state.worker_list;
+            let _workers = state.worker_list;
             for (var i = 0; i < _workers.length; i++) {
                 if (_workers[i].id == _ID) return `${_workers[i].name} ${_workers[i].surname}`
             }
@@ -2123,8 +2117,8 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             return nextStepString.join(' ó ')
         }
         let _SHOW_NEGATIVE = (value) => {
-            if (value) this.setState({ data_negative: this.state.data_negative_full })
-            else this.setState({ data_negative: this.state.data_negative_simple })
+            if (value) setState({ data_negative: state.data_negative_full })
+            else setState({ data_negative: state.data_negative_simple })
         }
         let _GET_TIME_FOR_NEGATIVE_PROCESS = (row) => {
             let time = 0
@@ -2202,30 +2196,30 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             let rules = row.rules ? row.rules.split(';') : [];
             return <MDBPopoverBody>
                 <div class="list-group list-group-flush">
-                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'general', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
-                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'clock', 'macro')} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'archive', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
+                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'general', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
+                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'clock', 'macro')} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
+                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'archive', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
                     {row.state != 101 && row.state <= 200 ?
                         <>
-                            <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'edit', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                            <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'check', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
+                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'edit', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
+                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'check', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
                             {regexChecker_isPh(row, true) ?
                                 <>
-                                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_ph', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'expedition', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_ph', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>
                                 :
                                 <>
                                     {!isOA && rules[0] != 1 ? <>
-                                        <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'alert', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
+                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'alert', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_law', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_law', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
                                     {!isOA ? <>
-                                        <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_arc', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
-                                        {rules[1] != 1 ? <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_eng', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-                                        <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'record_review', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
+                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_arc', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
+                                        {rules[1] != 1 ? <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
+                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_review', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => this.props.NAVIGATION_GEN(row, 'expedition', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>}
                         </> : <></>}
                 </div>
@@ -2236,7 +2230,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             return <div>
                 <div className="row my-1">
                     <div className="col text-center">
-                        <label className="app-p fw-bold text-uppercase"> GRAFICAS DE SOLICITUDES ({this.state.data_macro_filter.length})</label>
+                        <label className="app-p fw-bold text-uppercase"> GRAFICAS DE SOLICITUDES ({state.data_macro_filter.length})</label>
                     </div>
                 </div>
 
@@ -2248,33 +2242,41 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     <div>
                         <div className="row">
                             <div className="col-4">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_STATE
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                             <div className="col-4">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_TYPE
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                             <div className="col-4">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_CATEGORY
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_TYPE2
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    itemsOA={this.state.data_oa}
-                                    itemsNegative={this.state.data_negative_simple}
-                                    itemsNegativeFull={this.state.data_negative_full}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    itemsOA={state.data_oa}
+                                    itemsNegative={state.data_negative_simple}
+                                    itemsNegativeFull={state.data_negative_full}
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                         </div>
                     </div>
@@ -2291,17 +2293,19 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                          * 
                          * <FUN_CHART_WORKER_REPORT
                             translation={translation} swaMsg={swaMsg} globals={globals}
-                            items={this.state.data_macro_filter} workers={this.state.worker_list}
-                            _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                            items={state.data_macro_filter} workers={state.worker_list}
+                            _UPDATE_FILTERS={_UPDATE_FILTERS} />
                          * 
                          */
                             }
 
                             <div className="col">
+                                <ChartErrorBoundary>
                                 <FUN_CHART_WORKER
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter} workers={this.state.worker_list}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter} workers={state.worker_list}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                         </div>
                     </div>
@@ -2316,30 +2320,38 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                         <div className="row">
                             <div className="col-4">
 
+                                <ChartErrorBoundary>
                                 <FUN_CHART_PAYMENT_1
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                             <div className="col-4">
 
+                                <ChartErrorBoundary>
                                 <FUN_CHART_LAW_R
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
 
+                                <ChartErrorBoundary>
                                 <FUN_CHART_NEGATIVE
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    itemsNegative={this.state.data_negative}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    itemsNegative={state.data_negative}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                             <div className="col-4">
 
+                                <ChartErrorBoundary>
                                 <FUN_CHART_RECORD_1
                                     translation={translation} swaMsg={swaMsg} globals={globals}
-                                    items={this.state.data_macro_filter}
-                                    _UPDATE_FILTERS={this._UPDATE_FILTERS} />
+                                    items={state.data_macro_filter}
+                                    _UPDATE_FILTERS={_UPDATE_FILTERS} />
+                                </ChartErrorBoundary>
                             </div>
                         </div>
                     </div>
@@ -2352,10 +2364,12 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 </MDBBtn>}>
                     <div>
                         <div className="row">
+                            <ChartErrorBoundary>
                             <FUN_CHART_TIME
                                 translation={translation} swaMsg={swaMsg} globals={globals}
-                                items={this.state.data_include}
-                                _UPDATE_FILTERS_IDPUBIC={this._UPDATE_FILTERS_IDPUBIC} />
+                                items={state.data_include}
+                                _UPDATE_FILTERS_IDPUBIC={_UPDATE_FILTERS_IDPUBIC} />
+                            </ChartErrorBoundary>
                         </div>
                     </div>
                 </Collapsible>
@@ -2366,9 +2380,9 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
             return <>
 
                 <div className="row">
-                    <ReactTagInput
-                        tags={this.state.tags}
-                        onChange={(newTags) => this._FILTER_LIST(newTags)}
+                    <TagInput
+                        tags={state.tags}
+                        onChange={(newTags) => _FILTER_LIST(newTags)}
                         placeholder="Filtros de lista..."
                         removeOnBackspace={true}
                     />
@@ -2376,14 +2390,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 <div className="row">
                     <div class="input-group my-1">
                         <div class="input-group-text" style={{ backgroundColor: "lightGray" }}>
-                            <label>{`Numero de Solicitudes Filtradas: ${this.state.data_macro_filter.length}`} </label>
+                            <label>{`Numero de Solicitudes Filtradas: ${state.data_macro_filter.length}`} </label>
                         </div>
                         <div class="input-group-prepend">
-                            <button className="btn btn-secondary" onClick={() => this._FILTER_LIST([])}><i class="far fa-window-close"></i> LIMPIAR FILTROS</button>
+                            <button className="btn btn-secondary" onClick={() => _FILTER_LIST([])}><i class="far fa-window-close"></i> LIMPIAR FILTROS</button>
                         </div>
-                        <FUN_MACROTABLE_FILTERLIST idRef={'btn-filter'} setValues={(newTags) => this._UPDATE_FILTERS(newTags)} text={'LISTA DE FILTROS'} />
+                        <FUN_MACROTABLE_FILTERLIST idRef={'btn-filter'} setValues={(newTags) => _UPDATE_FILTERS(newTags)} text={'LISTA DE FILTROS'} />
                         <div class="input-group-prepend">
-                            <MDBBtn color='secondary' outline={this.state.includeEx} onClick={(e) => this.changeList(!this.state.includeEx)}><i class="fas fa-database"></i> {this.state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</MDBBtn>
+                            <MDBBtn color='secondary' outline={state.includeEx} onClick={(e) => changeList(!state.includeEx)}><i class="fas fa-database"></i> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</MDBBtn>
                         </div>
                     </div>
                 </div>
@@ -2781,18 +2795,18 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
                 <MDBTabs fill className='m-0 border' pills>
                     <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('1')} active={this.state.fillActive === '1'}>
-                            <label className="upper-case">GENERAL ({this.state.data_macro_filter.length})</label>
+                        <MDBTabsLink onClick={() => handleFillClick('1')} active={state.fillActive === '1'}>
+                            <label className="upper-case">GENERAL ({state.data_macro_filter.length})</label>
                         </MDBTabsLink>
                     </MDBTabsItem>
                     <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('2')} active={this.state.fillActive === '2'}>
-                            <label className="upper-case">OTRAS ACTUACIONES ({this.state.data_oa.length})</label>
+                        <MDBTabsLink onClick={() => handleFillClick('2')} active={state.fillActive === '2'}>
+                            <label className="upper-case">OTRAS ACTUACIONES ({state.data_oa.length})</label>
                         </MDBTabsLink>
                     </MDBTabsItem>
                     <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-1')} active={this.state.fillActive === '-1'}>
-                            <label className="upper-case text-danger">DESISTIMIENTOS ({this.state.data_negative.length})</label>
+                        <MDBTabsLink onClick={() => handleFillClick('-1')} active={state.fillActive === '-1'}>
+                            <label className="upper-case text-danger">DESISTIMIENTOS ({state.data_negative.length})</label>
                         </MDBTabsLink>
                     </MDBTabsItem>
 
@@ -2800,7 +2814,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
 
                 <MDBTabsContent>
 
-                    <MDBTabsPane show={this.state.fillActive === '1'}>
+                    <MDBTabsPane show={state.fillActive === '1'}>
                         <div className="row">
 
                             <DataTable
@@ -2808,7 +2822,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
                                 striped="true"
                                 columns={columns}
-                                data={(this.state.data_macro_filter)}
+                                data={(state.data_macro_filter)}
                                 highlightOnHover
                                 pagination
                                 paginationPerPage={30}
@@ -2818,7 +2832,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 title={
                                     <div class="d-flex justify-content-between">
                                         <div><h5>LICENCIAS URBANISTICAS</h5></div>
-                                        <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(this.state.data_macro_filter) }}
+                                        <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(state.data_macro_filter) }}
                                         ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
                                     </div>
                                 }
@@ -2836,14 +2850,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 //expandableRowDisabled={row => row.disabled}
                                 defaultSortFieldId={1}
                                 defaultSortAsc={false}
-                                onRowClicked={(e) => this.props.setSelectedRow(e.id)}
+                                onRowClicked={(e) => setSelectedRow(e.id)}
                             //onRowDoubleClicked={(row, event) => console.log(row, event)}
                             />
 
                         </div>
                     </MDBTabsPane>
 
-                    <MDBTabsPane show={this.state.fillActive === '2'}>
+                    <MDBTabsPane show={state.fillActive === '2'}>
                         <div className="row">
 
                             <DataTable
@@ -2851,7 +2865,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
                                 striped="true"
                                 columns={columns}
-                                data={this.state.data_oa}
+                                data={state.data_oa}
                                 highlightOnHover
                                 pagination
                                 paginationPerPage={30}
@@ -2862,7 +2876,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 title={
                                     <div class="d-flex justify-content-between">
                                         <div><h5>OTRAS ACTUACIONES</h5></div>
-                                        <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(this.state.data_oa, "OTRAS ACTUACIONES") }}
+                                        <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(state.data_oa, "OTRAS ACTUACIONES") }}
                                         ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
                                     </div>
                                 }
@@ -2878,14 +2892,14 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                 //expandableRowDisabled={row => row.disabled}
                                 defaultSortFieldId={1}
                                 defaultSortAsc={false}
-                                onRowClicked={(e) => this.props.setSelectedRow(e.id)}
+                                onRowClicked={(e) => setSelectedRow(e.id)}
                             //onRowDoubleClicked={(row, event) => console.log(row, event)}
                             />
 
                         </div>
                     </MDBTabsPane>
 
-                    <MDBTabsPane show={this.state.fillActive === '-1'}>
+                    <MDBTabsPane show={state.fillActive === '-1'}>
                         <div className="row">
                             <div className="col-2">
                                 <div class="input-group mb-3">
@@ -2904,7 +2918,7 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                     noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
                                     striped="true"
                                     columns={columns_negative}
-                                    data={this.state.data_negative}
+                                    data={state.data_negative}
                                     highlightOnHover
                                     pagination
                                     paginationPerPage={50}
@@ -2914,12 +2928,12 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                                     title={
                                         <div class="d-flex justify-content-between">
                                             <div><h5>DESISTIDOS / DESISTENDO</h5></div>
-                                            <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVSNegative(this.state.data_negative, "DESISTIDOS") }}
+                                            <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVSNegative(state.data_negative, "DESISTIDOS") }}
                                             ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
                                         </div>
                                     }
                                     dense
-                                    onRowClicked={(e) => this.props.setSelectedRow(e.id_sistem)}
+                                    onRowClicked={(e) => setSelectedRow(e.id_sistem)}
                                 />
                             ) : (
                                 <div className="text-center">
@@ -2934,20 +2948,20 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                     {
                         /*
     
-    <MDBTabsPane show={this.state.fillActive === '2'}>
+    <MDBTabsPane show={state.fillActive === '2'}>
                         <FUN_MACROTABLE_CLOCKS translation={translation} swaMsg={swaMsg} globals={globals}
-                            date_start={this.props.date_start}
-                            date_end={this.props.date_end}
-                            dataFilter={this.state.data_macro_clocks_filter}
-                            setSelectedRow={this.props.setSelectedRow}
+                            date_start={date_start}
+                            date_end={date_end}
+                            dataFilter={state.data_macro_clocks_filter}
+                            setSelectedRow={setSelectedRow}
                             selectedRow={selectedRow}
-                            hide_jur={this.state.hide_jur}
-                            hide_arc={this.state.hide_arc}
-                            hide_ing={this.state.hide_ing}
-                            worker_list={this.state.worker_list}
-                            NAVIGATION_GEN={this.props.NAVIGATION_GEN}
-                            retrieveMacroClocks={this.retrieveMacroClocks}
-                            retrieveMacro={this.retrieveMacro}
+                            hide_jur={state.hide_jur}
+                            hide_arc={state.hide_arc}
+                            hide_ing={state.hide_ing}
+                            worker_list={state.worker_list}
+                            NAVIGATION_GEN={NAVIGATION_GEN}
+                            retrieveMacroClocks={retrieveMacroClocks}
+                            retrieveMacro={retrieveMacro}
                             load={load}
                         />
                     </MDBTabsPane>
@@ -2958,7 +2972,6 @@ if ((this.state.data_macro_filter !== prevState.data_macro_filter && this.state.
                 </MDBTabsContent>
             </div >
         );
-    }
 }
 
 export default FUN_MACROTABLE;

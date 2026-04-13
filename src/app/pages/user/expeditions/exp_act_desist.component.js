@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import SubmitService from '../../../services/submit.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 
 
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
@@ -11,13 +11,13 @@ import FUN_SERVICE from '../../../services/fun.service';
 import '../../../../styles/docs-expediente.css';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_ACT_DESIST(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
@@ -440,7 +440,7 @@ const restoreDocs = useCallback(() => {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
             });
 
@@ -852,7 +852,7 @@ const restoreDocs = useCallback(() => {
                                 </tbody>
                                 </table>
                             </div>
-                            <div className="card-footer bg-white py-2 small text-muted">
+                            <div className="card-footer bg-body-secondary py-2 small text-muted">
                                 Usa el check (columna derecha) para mostrar/ocultar. Los demás
                                 cambios se guardarán al confirmar.
                             </div>
@@ -1107,7 +1107,7 @@ const restoreDocs = useCallback(() => {
                                 </table>
                                 </div>
 
-                                <div className="card-footer bg-white py-2 small text-muted">
+                                <div className="card-footer bg-body-secondary py-2 small text-muted">
                                 Usa el check (columna derecha) para mostrar/ocultar. Los cambios se
                                 guardan al confirmar en la pantalla principal.
                                 </div>
@@ -1263,7 +1263,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
             <MDBBtn className="btn btn-success my-3" onClick={save_exp_res}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
         </div>
         <div className="col">
-            {process.env.REACT_APP_GLOBAL_ID === 'cb1' && (
+            {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
                 <MDBBtn className="btn my-3" color="primary" onClick={() => pdf_gen_res(true)}>
                     <i className="fas fa-edit me-2" />
                     Editar PDF
@@ -1997,7 +1997,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
                
 
                 <div>
-                    {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
+                    {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
                         <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_des || 'delete'}/>
                     )}
                 </div>  

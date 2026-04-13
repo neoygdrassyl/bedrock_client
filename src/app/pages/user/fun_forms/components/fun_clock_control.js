@@ -1,14 +1,8 @@
-import React, { Component } from 'react';
 import { dateParser_dateDiff, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 
 var momentB = require('moment-business-days');
 
-class FUN_CLOCK_CONTROL extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion }) {
 
         // DATA GETTERS
         let _GET_CHILD_CLOCK = () => {
@@ -57,7 +51,7 @@ class FUN_CLOCK_CONTROL extends Component {
             if (_clock.state > 10 && _clock.state < 15) return <i class="far fa-dot-circle" style={{ color: 'Teal' }}></i>
             if (_clock.state == 30 || _clock.state == 50 || _clock.state == 49) return <i class="far fa-check-circle" style={{ color: 'MidnightBlue' }}></i>
             if (_clock.state >= 31 || _clock.state < 49) return <i class="far fa-dot-circle" style={{ color: 'MidnightBlue' }}></i>
-            if (_clock.state == 100) return <i class="far fa-pause-circle" style={{ color: 'Black' }}></i>
+            if (_clock.state == 100) return <i class="far fa-pause-circle" style={{ color: 'var(--bs-body-color)' }}></i>
             return ""
         }
         let _GET_TIME_FOR_CLOCK_STATE = (_state) => {
@@ -344,7 +338,6 @@ class FUN_CLOCK_CONTROL extends Component {
 
             </div>
         );
-    }
 }
 
 export default FUN_CLOCK_CONTROL;

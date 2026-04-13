@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import SealsService from '../../services/seal.service'
 import CustomService from '../../services/custom.service'
 import {
@@ -11,7 +11,7 @@ import {
     MDBModalTitle,
     MDBModalBody,
     MDBModalFooter, MDBBreadcrumb, MDBBreadcrumbItem
-} from 'mdb-react-ui-kit';
+} from '../../components/ui';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -21,77 +21,69 @@ const moment = require('moment');
 const MySwal = withReactContent(Swal);
 
 
-class Seals extends Component {
-    constructor(props) {
-        super(props);
-        this.retrievePublish = this.retrievePublish.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-            error: null,
-            isLoaded: false,
-            currentItem: null,
-            currentIndex: -1,
-            modal: false,
-            items: [],
-            helpText: <label className="text-dark">Ingrese numero de radicado</label>,
-            allowCreate: false,
-            action: "create"
-        };
-    }
-    componentDidMount() {
-        this.retrievePublish();
-    }
-    retrievePublish() {
+function Seals({ translation, swaMsg, breadCrums }) {
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(-1);
+    const [modal, setModal] = useState(false);
+    const [items, setItems] = useState([]);
+    const [helpText, setHelpText] = useState(<label className="text-dark">Ingrese numero de radicado</label>);
+    const [allowCreate, setAllowCreate] = useState(false);
+    const [action, setAction] = useState("create");
+
+    const retrievePublish = useCallback(() => {
         SealsService.getAll()
             .then(response => {
-                this.setState({
-                    items: response.data,
-                    isLoaded: true,
-                });
+                setItems(response.data);
+                setIsLoaded(true);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    retrieveSearch(field, string) {
+    }, []);
+
+    useEffect(() => {
+        retrievePublish();
+    }, [retrievePublish]);
+
+    const retrieveSearch = (field, string) => {
         SealsService.getSearch(field, string)
             .then(response => {
                 MySwal.close();
                 if (response.data.length) {
-                    this.setItem(response.data[0])
+                    setItem(response.data[0])
                 } else {
                     MySwal.fire({
                         title: "NO SE ENCONTRO SELLO",
                         text: "Asegurese de que el sello que busca existe y cullo numero de radicacion es valido",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 }
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    refreshList() {
-        this.retrievePublish();
-        this.setState({
-            currentItem: null,
-            currentIndex: -1,
-        });
-    }
-    toggle = () => {
-        this.setState({
-            modal: !this.state.modal
-        });
-    }
-    getToggle = () => {
-        return this.state.modal;
-    }
-    setItem(item) {
-        this.setState({
-            currentItem: item,
-            modal: !this.state.modal,
-        });
+    };
+
+    const refreshList = () => {
+        retrievePublish();
+        setCurrentItem(null);
+        setCurrentIndex(-1);
+    };
+
+    const toggle = () => {
+        setModal(prev => !prev);
+    };
+
+    const getToggle = () => {
+        return modal;
+    };
+
+    const setItem = (item) => {
+        setCurrentItem(item);
+        setModal(prev => !prev);
         SealsService.getParent(item.fun_0.id_public)
             .then(response => {
                 if (response.data.length > 0) {
@@ -115,14 +107,11 @@ class Seals extends Component {
                 document.getElementById("t_11").value = "VACIO, ESTO NO DEBERIA APARECER AQUI, CONTACTAR CON EL INGERNIERO";
                 console.log(e);
             });
-    }
-    render() {
-        const { translation, swaMsg, breadCrums } = this.props;
-        const { currentItem, isLoaded, items, helpText, allowCreate, action } = this.state;
+    };
         const columns = [
             {
                 name: <h3>No. Radicado</h3>,
-                selector: 'id_request',
+                selector: row => row.id_request,
                 sortable: true,
                 filterable: true,
                 minWidth: '100px',
@@ -130,13 +119,13 @@ class Seals extends Component {
             },
             {
                 name: <h3>Sello Consecutivo</h3>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 cell: row => <p className="pt-3">{row.id_public}</p>
             },
             {
                 name: <h3>Fecha de Expedición</h3>,
-                selector: 'date',
+                selector: row => row.date,
                 sortable: true,
                 cell: row => <p className="pt-3 text-center">{dateParser(row.fun_0.date)}</p>
             },
@@ -145,7 +134,7 @@ class Seals extends Component {
                 button: true,
                 minWidth: '100px',
                 cell: row =>
-                    <button className="btn btn-danger btn-sm" onClick={() => this.setItem(row)}><i class="fas fa-file-alt"></i> Ver</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><i class="fas fa-file-alt"></i> Ver</button>
                 ,
             },
         ]
@@ -189,10 +178,8 @@ class Seals extends Component {
                                 confirmButtonText: swaMsg.text_btn,
                             });
                             document.getElementById("app-form").reset();
-                            this.setState({ formData: new FormData() })
-                            this.refreshList();
-                        } else {
-                            // TODO
+                            formData = new FormData();
+                            refreshList();
                         }
                     })
                     .catch(e => {
@@ -211,10 +198,8 @@ class Seals extends Component {
                                 confirmButtonText: swaMsg.text_btn,
                             });
                             document.getElementById("app-form").reset();
-                            this.setState({ formData: new FormData() })
-                            this.refreshList();
-                        } else {
-                            // TODO
+                            formData = new FormData();
+                            refreshList();
                         }
                     })
                     .catch(e => {
@@ -267,32 +252,30 @@ class Seals extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
                         document.getElementById("app-form").reset();
                         formData = new FormData();
-                        this.refreshList();
+                        refreshList();
                         MySwal.close();
-                    } else {
-                        // TODO
                     }
                 })
                 .catch(e => {
                     console.log(e);
                 });
-            this.toggle();
+            toggle();
         };
 
         let loadParent = () => {
             let id_public = document.getElementById("f_02").value;
-            this.setState({ helpText: <label className="text-warning">Buscando...</label> })
+            setHelpText(<label className="text-warning">Buscando...</label>)
             SealsService.getParent(id_public)
                 .then(response => {
                     if (response.data.length > 0) {
                         
                         if (response.data[0].seal) {
-                            this.setState({ helpText: <label className="text-warning">Ya existe un sello para esta solicitud, si se crea el sello, este será reemplazado por el nuevo sello.</label>,
-                            allowCreate: true,
-                            action: "edit" },)
+                            setHelpText(<label className="text-warning">Ya existe un sello para esta solicitud, si se crea el sello, este será reemplazado por el nuevo sello.</label>);
+                            setAllowCreate(true);
+                            setAction("edit");
                             document.getElementById("s_1").value = response.data[0].seal.id;
                             document.getElementById("s_4").value = response.data[0].seal.area;
                             document.getElementById("s_0").value = response.data[0].seal.id_public;
@@ -300,11 +283,9 @@ class Seals extends Component {
                             document.getElementById("drives").value = response.data[0].seal.drives;
                             document.getElementById("folders").value = response.data[0].seal.folders;
                         } else {
-                            this.setState({
-                                helpText: <label className="text-success">Se ha encontrado esta Solicitud</label>,
-                                allowCreate: true,
-                                action: "create"
-                            })
+                            setHelpText(<label className="text-success">Se ha encontrado esta Solicitud</label>);
+                            setAllowCreate(true);
+                            setAction("create");
                             document.getElementById("s_1").value = "";
                             document.getElementById("s_4").value = "";
                             document.getElementById("s_0").value = "";
@@ -319,10 +300,8 @@ class Seals extends Component {
                             document.getElementById("f_0").value = parent_id;
                             let modalidaObject = response.data[0].fun_1s;
                             if (modalidaObject.length == 0) {
-                                this.setState({
-                                    helpText: <label className="text-warning">Se ha encontrado esta Solicitud, pero no se ha especificado su modalidad</label>,
-                                    allowCreate: false
-                                })
+                                setHelpText(<label className="text-warning">Se ha encontrado esta Solicitud, pero no se ha especificado su modalidad</label>);
+                                setAllowCreate(false);
                             }
                             if (modalidaObject.length == 1) {
                                 let string = formsParser1_exlucde2(modalidaObject[0])
@@ -330,11 +309,11 @@ class Seals extends Component {
                             }
                             if (modalidaObject.length > 1) {
                                 if (response.data[0].seal) {
-                                    this.setState({ helpText: <label className="text-success">Se ha encontrado esta Solicitud, con un total de ({modalidaObject.length}) Versiones, se usara su ultima version. Ya existe un sello para esta solicitud, si se crea el sello, este será reemplazado por el nuevo sello.</label>,
-                                    action: "edit" })
+                                    setHelpText(<label className="text-success">Se ha encontrado esta Solicitud, con un total de ({modalidaObject.length}) Versiones, se usara su ultima version. Ya existe un sello para esta solicitud, si se crea el sello, este será reemplazado por el nuevo sello.</label>);
+                                    setAction("edit");
                                 }else{
-                                    this.setState({ helpText: <label className="text-success">Se ha encontrado esta Solicitud, con un total de ({modalidaObject.length}) Versiones, se usara su ultima version.</label>, 
-                                    action: "create"})
+                                    setHelpText(<label className="text-success">Se ha encontrado esta Solicitud, con un total de ({modalidaObject.length}) Versiones, se usara su ultima version.</label>);
+                                    setAction("create");
                                 }
                                 
                                 let string = formsParser1_exlucde2(modalidaObject[modalidaObject.length - 1])
@@ -342,10 +321,8 @@ class Seals extends Component {
                             }
                         
                     } else {
-                        this.setState({
-                            helpText: <label className="text-danger">No se encontraron datos para esta solicitud</label>,
-                            allowCreate: false
-                        })
+                        setHelpText(<label className="text-danger">No se encontraron datos para esta solicitud</label>);
+                        setAllowCreate(false);
                         document.getElementById("f_03").value = null;
                         document.getElementById("f_11").value = null;
                         document.getElementById("f_0").value = "";
@@ -353,10 +330,8 @@ class Seals extends Component {
                     }
                 })
                 .catch(e => {
-                    this.setState({
-                        helpText: <label className="text-danger">Un error se ha presentado.</label>,
-                        allowCreate: false
-                    })
+                    setHelpText(<label className="text-danger">Un error se ha presentado.</label>);
+                    setAllowCreate(false);
                     console.log(e);
                 });
 
@@ -371,7 +346,7 @@ class Seals extends Component {
                 icon: 'info',
                 showConfirmButton: false,
             });
-            this.retrieveSearch(field, string)
+            retrieveSearch(field, string)
 
         }
         return (
@@ -519,12 +494,12 @@ class Seals extends Component {
                         </MDBRow>
                     </div>
                 </div>
-                <MDBModal show={this.getToggle()} tabIndex='-2' staticBackdrop >
+                <MDBModal show={getToggle()} tabIndex='-2' staticBackdrop >
                     <MDBModalDialog size="md">
                         <MDBModalContent className="container-primary">
                             <MDBModalHeader>
                                 <MDBModalTitle><h2 className="text-center"><i class="far fa-file-alt"></i> DETALLES DE EL SELLO: {currentItem ? currentItem.id_public : ''} </h2></MDBModalTitle>
-                                <MDBBtn className='btn-close' color='none' onClick={this.toggle}></MDBBtn>
+                                <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                             </MDBModalHeader>
                             <MDBModalBody>
                                 <MDBCard className="bg-card">
@@ -583,7 +558,7 @@ class Seals extends Component {
                                 <MDBBtn color='success' onClick={() => generate(0)}>
                                     <h4 className="pt-2"><i class="far fa-file"></i> GENERAR TITULAR</h4>
                                 </MDBBtn>
-                                <MDBBtn color='info' onClick={this.toggle}>
+                                <MDBBtn color='info' onClick={toggle}>
                                     <h4 className="pt-2"><i class="fas fa-times-circle"></i> Cerrar</h4>
                                 </MDBBtn>
                             </MDBModalFooter>
@@ -592,7 +567,6 @@ class Seals extends Component {
                 </MDBModal>
             </div >
         );
-    }
 }
 
 export default Seals;

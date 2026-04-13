@@ -1,16 +1,7 @@
-import React, { Component } from 'react';
 import { addDecimalPoints, dateParser } from '../../../../components/customClasses/typeParse';
 
 
-class FUN_PLANING_DATA extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
 
 
         // DATA GETERS
@@ -100,7 +91,7 @@ class FUN_PLANING_DATA extends Component {
                     <div className="col-6 p-1">
                         {_ARRAY[6] > 0
                             ? <a className="btn btn-sm btn-danger" target="_blank"
-                                href={process.env.REACT_APP_API_URL + '/files/' + _FIND_6(_ARRAY[6]).path + "/" + _FIND_6(_ARRAY[6]).filename} ><i class="fas fa-cloud-download-alt fa-2x"></i></a>
+                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[6]).path + "/" + _FIND_6(_ARRAY[6]).filename} ><i class="fas fa-cloud-download-alt fa-2x"></i></a>
                             : <label className="fw-bold">SIN DOCUMENTO</label>}
                     </div>
                 </div>
@@ -111,7 +102,7 @@ class FUN_PLANING_DATA extends Component {
                     <div className="col-6 p-1">
                         {_ARRAY[7] > 0
                             ? <a className="btn btn-sm btn-danger" target="_blank"
-                                href={process.env.REACT_APP_API_URL + '/files/' + _FIND_6(_ARRAY[7]).path + "/" + _FIND_6(_ARRAY[7]).filename} ><i class="fas fa-cloud-download-alt fa-2x"></i></a>
+                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[7]).path + "/" + _FIND_6(_ARRAY[7]).filename} ><i class="fas fa-cloud-download-alt fa-2x"></i></a>
                             : <label className="fw-bold">SIN DOCUMENTO</label>}
                     </div>
 
@@ -123,7 +114,7 @@ class FUN_PLANING_DATA extends Component {
                     <div className="col-6 p-1">
                         {_ARRAY[8] > 0
                             ? <a className="btn btn-sm btn-danger" target="_blank"
-                                href={process.env.REACT_APP_API_URL + '/files/' + _FIND_6(_ARRAY[8]).path + "/" + _FIND_6(_ARRAY[8]).filename} ><i class="fas fa-cloud-download-alt fa-2x"></i></a>
+                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[8]).path + "/" + _FIND_6(_ARRAY[8]).filename} ><i class="fas fa-cloud-download-alt fa-2x"></i></a>
                             : <label className="fw-bold">SIN DOCUMENTO</label>}
                     </div>
 
@@ -135,7 +126,6 @@ class FUN_PLANING_DATA extends Component {
                 {_COMPONENT()}
             </div >
         );
-    }
 }
 
 export default FUN_PLANING_DATA;

@@ -1,11 +1,11 @@
 .dashboard-card {
-  width: 135px;
-  height: 135px;
-  background: #ccc;
+  width: 124px;
+  height: 124px;
   border-radius: 0.4em;
-  background: linear-gradient(145deg, #e6e6e6, #ffffff);
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), 0px 0px 18px #ffffff;
-  transition: border 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,8 +16,8 @@
 }
 .dashboard-card h3 {
   margin: 4px;
-  font-size: 14px;
-  color: black;
+  font-size: 13px;
+  color: var(--bs-body-color);
 }
 
 .image-container {
@@ -30,8 +30,8 @@
 }
 
 .dashboard-card:hover {
-  background: #e2e2e2;
-  /* background: linear-gradient(90deg, rgb(93, 112, 131) 0%, rgba(0, 212, 255, 1) 100%); */
+  background: var(--bs-secondary-bg);
+  border-color: var(--bs-primary);
 }
 
 .dashboard-card:active {

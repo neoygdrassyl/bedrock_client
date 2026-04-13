@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
-import "@silevis/reactgrid/styles.css";
-import DataTable from 'react-data-table-component';
 
-var tagHRef = React.createRef();
-var tagERef = React.createRef();
+import DataTable from 'react-data-table-component';
 
 export default function RECORD_ARC_AREAS_RESUME(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
+    const tagHRef = useRef(null);
+    const tagERef = useRef(null);
     const _Header = [
         "#",
         "Sótano/Piso",
@@ -185,7 +184,7 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         return _AREAS;
     }
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_arc_steps;
+        var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version === currentVersionR && _CHILD[i].id_public === _id_public) return _CHILD[i]
         }

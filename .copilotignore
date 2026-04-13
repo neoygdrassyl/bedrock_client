@@ -1,0 +1,55 @@
+# .copilotignore — Frontend Dovela
+# Excluye archivos que consumen contexto sin aportar valor durante el desarrollo.
+# El código fuente real (src/, e2e/, .github/instructions/) permanece visible.
+# Ver AGENTS.md para el mapa de verdad operativa.
+
+# ── Build compilado (46 MB de artefactos generados) ──────────────────────────
+build/
+
+# ── Lockfiles (466 KB, cero valor para coding) ────────────────────────────────
+package-lock.json
+
+# ── Archivos binarios y temporales de editor ─────────────────────────────────
+*.docx
+*.swp
+*.swo
+
+# ── Assets estáticos en public/ (imágenes, iconos) ───────────────────────────
+# NOTA: public/templates/ NO se excluye — TemplateEngine depende de esas plantillas.
+public/favicon.ico
+public/logo192.png
+public/logo512.png
+public/logo512.png
+public/robots.txt
+public/manifest.json
+
+# ── Documentación histórica / planificación (no verdad operativa actual) ──────
+# Las fuentes de verdad activas están en ai/system-map.md y ai/auth/session-contract.md
+README.md
+REFACTOR_TRACKING_REACT19.md
+TESTING_EXECUTION_PLAN.md
+Plan_Agentes_IA_Curaduria.md
+AGENT_PROMPT_PHASE7_LEGACY_LIBS.md
+AGENTS_PRIORITY_1_PROMPT.md
+
+# ── Docs de setup local y auditorías (no app, no coding diario) ───────────────
+ai/local-dev-docker-migration-manual.md
+ai/model-scope-audit-prompts.md
+ai/prompts/backend-bootstrap-structure.md
+
+# ── Agentes históricos de migración (fase 7 legacy, ya completada) ────────────
+# NOTA: planner_agent.agent.md y las instructions/ activas NO se excluyen.
+.github/agents/abandoned-libs-replacer-agent.agent.md
+.github/agents/pre-phase7-cleanup-agent.agent.md
+.github/instructions/MIGRATION_PLAN.md
+.github/JWT_gUIDE.md
+
+# ── Scripts de auditoría (utilidades de mantenimiento, no código de la app) ───
+scripts/audit-array-method-safety.mjs
+scripts/audit-ast-structure.mjs
+scripts/generate-informe.js
+scripts/sync-vscode-customizations.mjs
+
+# ── Playwright temporary artifacts (cleanup is automatic, not source code) ────
+.playwright-mcp/
+playwright-tmp/

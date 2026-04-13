@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import SubmitService from '../../../services/submit.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 
 
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
@@ -11,13 +11,13 @@ import FUN_SERVICE from '../../../services/fun.service';
 import '../../../../styles/docs-expediente.css';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../components/ui';
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_EJEC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
@@ -465,7 +465,7 @@ export default function EXP_EJEC(props) {
                     <MDBBtn className="btn btn-success my-3" onClick={() => save_eje()}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
                 </div>
                 <div className="col">
-                    {process.env.REACT_APP_GLOBAL_ID === 'cb1' && (
+                    {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
                         <MDBBtn className="btn my-3" color="primary" onClick={() => pd_eje(true)}>
                             <i className="fas fa-edit me-2" />
                             Editar PDF
@@ -685,7 +685,7 @@ export default function EXP_EJEC(props) {
                 } else {
                 MySwal.close();
                 window.open(
-                    process.env.REACT_APP_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf"
+                    import.meta.env.VITE_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf"
                 );
                 }
             } else {
@@ -771,7 +771,7 @@ export default function EXP_EJEC(props) {
                     {_COMPONENT_EJE()}
     
                     <div>
-                        {process.env.REACT_APP_GLOBAL_ID === 'cb1' && resDocData && (
+                        {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
                             <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_exec || 'eje_open'}/>
                         )}
                     </div>  

@@ -1,15 +1,4 @@
-import React, { Component } from 'react';
-
-class PQRS_COMPONENT_LICENCE extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, translation_form, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_LICENCE({ translation, swaMsg, globals, translation_form, currentItem }) {
 
         let _LICENCE_COMPONENT = () => {
             return <>
@@ -40,12 +29,11 @@ class PQRS_COMPONENT_LICENCE extends Component {
             </>
         }
 
-        return (
-            <div>
-                {_LICENCE_COMPONENT()}
-            </div>
-        );
-    }
+    return (
+        <div>
+            {_LICENCE_COMPONENT()}
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_LICENCE;

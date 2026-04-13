@@ -1,15 +1,4 @@
-import React, { Component } from 'react';
-
-class PQRS_COMPONENT_ATTACH_PROFESIONAL extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, currentItem }) {
 
         // COMPONENTS JSX
         let _ATTACHS_COMPONENT_OUTPUT = () => {
@@ -42,7 +31,7 @@ class PQRS_COMPONENT_ATTACH_PROFESIONAL extends Component {
                         </div>
                         <div className="col-2">
                             <label >
-                                <a className="btn btn-sm btn-danger" target="_blank" href={process.env.REACT_APP_API_URL + '/files/pqrs/' + currentItem.pqrs_attaches[i].name}>
+                                <a className="btn btn-sm btn-danger" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + currentItem.pqrs_attaches[i].name}>
                                     <i class="fas fa-cloud-download-alt"></i></a></label>
                         </div>
                     </div></div>)
@@ -51,14 +40,13 @@ class PQRS_COMPONENT_ATTACH_PROFESIONAL extends Component {
             return <>{_COMPONENT}</>;
         }
 
-        return (
-            <div>
+    return (
+        <div>
 
-                {_ATTACHS_COMPONENT_OUTPUT()}
+            {_ATTACHS_COMPONENT_OUTPUT()}
 
-            </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default PQRS_COMPONENT_ATTACH_PROFESIONAL;

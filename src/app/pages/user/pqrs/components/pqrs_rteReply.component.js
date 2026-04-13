@@ -1,8 +1,7 @@
 import moment from 'moment';
-import React, { Component, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { useRef, useState } from 'react';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../components/jsons/vars';
 import { pdfExporter } from 'quill-to-pdf';

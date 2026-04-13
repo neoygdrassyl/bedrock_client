@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { useState, useEffect, useCallback } from 'react';
+import { MDBBtn } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -17,31 +17,23 @@ import PQRS_COMPONENT_WORKER_FEEDBACK from './components/pqrs_worker_feedback.co
 import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_PDFGEN_REPLY from './components/pqrs_genPDF_reply.component';
 import RTE_PQRS from './components/pqrs_rteReply.component';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
-class PQRSLOCK extends Component {
-    constructor(props) {
-        super(props);
-        this.retrieveItem = this.retrieveItem.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.state = {
-            attachs: 0,
-            attachsForEmails: 0,
-            edit: false,
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-    }
-    retrieveItem(id) {
+
+function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, refreshList: propRefreshList, NAVIGATION }) {
+    const [attachs, setAttachs] = useState(0);
+    const [attachsForEmails, setAttachsForEmails] = useState(0);
+    const [edit, setEdit] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [load, setLoad] = useState(undefined);
+
+    const retrieveItem = useCallback((id) => {
         PQRS_Service.get(id)
             .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
+                setCurrentItem(response.data);
+                setLoad(true);
             })
             .catch(e => {
                 console.log(e);
@@ -49,36 +41,41 @@ class PQRSLOCK extends Component {
                     title: "ERROR AL CARGAR",
                     text: "No ha sido posible cargar este item, intentelo nuevamente.",
                     icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
-                this.setState({
-                    load: false
-                })
+                setLoad(false);
             });
-    }
-    refreshList() {
-        this.props.refreshList()
-    }
-    clearForm() {
-        document.getElementById("app-formReply").reset()
-    }
-    addAttach() {
-        this.setState({ attachs: this.state.attachs + 1 })
-    }
-    minusAttach() {
-        this.setState({ attachs: this.state.attachs - 1 })
-    }
-    addAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails + 1 })
-    }
-    minusAttachEmail() {
-        this.setState({ attachsForEmails: this.state.attachsForEmails - 1 })
-    }
+    }, [swaMsg]);
 
-    render() {
-        const { translation, swaMsg, globals, translation_form } = this.props;
-        const { attachs, attachsForEmails, currentItem, load } = this.state;
-        var formData = new FormData();
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, [currentId, retrieveItem]);
+
+    const refreshList = () => {
+        propRefreshList();
+    };
+
+    const clearForm = () => {
+        document.getElementById("app-formReply").reset();
+    };
+
+    const addAttach = () => {
+        setAttachs(prev => prev + 1);
+    };
+
+    const minusAttach = () => {
+        setAttachs(prev => prev - 1);
+    };
+
+    const addAttachEmail = () => {
+        setAttachsForEmails(prev => prev + 1);
+    };
+
+    const minusAttachEmail = () => {
+        setAttachsForEmails(prev => prev - 1);
+    };
+
+    var formData = new FormData();
 
         let _ATTACHS_COMPONENT = () => {
             var _COMPONENT = [];
@@ -110,14 +107,14 @@ class PQRSLOCK extends Component {
             const columns = [
                 {
                     name: <h3>NOMBRE</h3>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{row.public_name}</p>
                 },
                 {
                     name: <h3>TIPO</h3>,
-                    selector: 'type',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3">{row.type}</p>
@@ -127,7 +124,7 @@ class PQRSLOCK extends Component {
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <a className="btn btn-sm btn-danger mx-1" target="_blank" href={process.env.REACT_APP_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
+                        <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
                         <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
                     </>,
                 },
@@ -221,8 +218,8 @@ class PQRSLOCK extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.retrieveItem(currentItem.id)
-                                this.refreshList()
+                                retrieveItem(currentItem.id)
+                                refreshList()
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -273,8 +270,8 @@ class PQRSLOCK extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.retrieveItem(currentItem.id)
-                        this.setState({ attachs: 0 });
+                        retrieveItem(currentItem.id)
+                        setAttachs(0);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -314,7 +311,7 @@ class PQRSLOCK extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.retrieveItem(currentItem.id)
+                                retrieveItem(currentItem.id)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -386,8 +383,8 @@ class PQRSLOCK extends Component {
                             <PQRS_COMPONENT_WORKER_FEEDBACK
                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                 currentItem={currentItem}
-                                retrieveItem={this.retrieveItem}
-                                refreshList={this.refreshList}
+                                retrieveItem={retrieveItem}
+                                refreshList={refreshList}
                             />
                         </fieldset>
 
@@ -472,7 +469,7 @@ class PQRSLOCK extends Component {
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
                                             email_types={[3]}
-                                            refreshCurrentItem={this.retrieveItem}
+                                            refreshCurrentItem={retrieveItem}
                                             attachs={true}
                                         />
                                     </div>
@@ -498,9 +495,9 @@ class PQRSLOCK extends Component {
                                         <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
                                         <div className="text-end m-3">
                                             {attachs > 0
-                                                ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                                 : ""}
-                                            <MDBBtn className="btn btn-lg btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
                                         {
@@ -530,11 +527,10 @@ class PQRSLOCK extends Component {
                     translation={translation}
                     currentItem={currentItem}
                     FROM={"lock"}
-                    NAVIGATION={this.props.NAVIGATION}
+                    NAVIGATION={NAVIGATION}
                 />
             </div>
         );
-    }
 }
 
 export default PQRSLOCK;

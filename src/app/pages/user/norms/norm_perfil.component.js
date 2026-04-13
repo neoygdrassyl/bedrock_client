@@ -1,8 +1,8 @@
-import React, { Suspense, useEffect, useState, } from 'react';
+import { Suspense, useEffect, useState, } from 'react';
 import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import DataTable from 'react-data-table-component';
 import NORM_ELEMENT from './norm_element.component';
 import PERFILES from "../../../components/jsons/PERFILES.json"

@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { addDecimalPoints, formsParser1, getJSONFull, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoCud, nomens } from '../../../components/jsons/vars';
-import { MDBBtn, MDBCollapse } from 'mdb-react-ui-kit';
-import Collapsible from 'react-collapsible';
+import { MDBBtn, MDBCollapse } from '../../../components/ui';
+import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import moment from 'moment';
 import EXP_RES from './exp._res.component';
@@ -17,43 +17,52 @@ import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
 
 
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
 var writtenNumber = require('written-number');
 const IVA = 0.19;
-class EXP_DOCS extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            vrsRelated: [],
-            vrSelected: null,
-            cubSelected: null,
-            idCUBxVr: null
-        };
-    }
-    componentDidMount() {
-        this.retrieveItem();
-    }
-    async retrieveItem() {
+
+function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc, requestUpdate, requestUpdateRecord }) {
+    const [vrsRelated, setVrsRelated] = useState([]);
+    const [vrSelected, setVrSelected] = useState(null);
+    const [cubSelected, setCubSelected] = useState(null);
+    const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const [tn, setTn] = useState(undefined);
+    const [showCollapse_expedition_21, setShowCollapse_expedition_21] = useState(false);
+    const [showCollapse_expedition_22, setShowCollapse_expedition_22] = useState(false);
+    const [showCollapse_expedition_23, setShowCollapse_expedition_23] = useState(false);
+    const [showCollapse_expedition_24, setShowCollapse_expedition_24] = useState(false);
+    const [showCollapse_expedition_25, setShowCollapse_expedition_25] = useState(false);
+    const [showCollapse_expedition_26, setShowCollapse_expedition_26] = useState(false);
+    const [showCollapse_expedition_27, setShowCollapse_expedition_27] = useState(false);
+
+    const retrieveItem = async () => {
         try {
-            await SubmitService.getIdRelated(this.props.currentItem.id_public).then(response => {
-                this.setState({ vrsRelated: response.data })
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data)
             })
-            const responseCubXVr = await CubXVrDataService.getByFUN(this.props.currentItem.id_public);
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = responseCubXVr.data.find(item => item.process === 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
 
             if (data) {
                 document.getElementById("vr_selected33").value = data.vr
-                this.setState({ vrSelected: data.vr, cubSelected: data.cub, idCUBxVr: data.id })
+                setVrSelected(data.vr);
+                setCubSelected(data.cub);
+                setIdCUBxVr(data.id);
             }
-            else this.setState({ vrSelected: null, cubSelected: null, idCUBxVr: null })
+            else {
+                setVrSelected(null);
+                setCubSelected(null);
+                setIdCUBxVr(null);
+            }
         } catch (error) {
             console.log(error);
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = this.props;
-        const { } = this.state;
+    };
+
+    useEffect(() => {
+        retrieveItem();
+    }, []);
         // DATA GETTERS
 
 
@@ -175,7 +184,7 @@ class EXP_DOCS extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -295,15 +304,15 @@ class EXP_DOCS extends Component {
                     <strong>TIPO DE NOTIFICACIÓN</strong>
 
                     <div className="col-4">
-                        <select className='form-select' id="type_not" onChange={(e) => this.setState({ 'tn': e.target.value })}>
+                        <select className='form-select' id="type_not" onChange={(e) => setTn(e.target.value)}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {process.env.REACT_APP_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
-                    {this.state.tn == 4 ?
+                    {tn == 4 ?
                         <>
                          <div className="col-4">
                                 <div class="input-group my-1">
@@ -1149,12 +1158,12 @@ class EXP_DOCS extends Component {
             formatData.set('date', date);
 
 
-            if (this.state.idCUBxVr) {
-                CubXVrDataService.updateCubVr(this.state.idCUBxVr, formatData)
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -1166,7 +1175,7 @@ class EXP_DOCS extends Component {
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
-                            this.props.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         }
                     })
                     .catch((error) => {
@@ -1593,16 +1602,16 @@ class EXP_DOCS extends Component {
                         <label className="mt-1"> {infoCud.serials.end} Carta Citación</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="exodfb_cub3_exp"
-                                defaultValue={currentRecord.cub3 || this.state.cubSelected || ""} />
+                                defaultValue={currentRecord.cub3 || cubSelected || ""} />
                             <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
                         </div>
                     </div>
                     <div className="col" >
                         <label className="mt-1">{infoCud.serials.start}</label>
                         <div class="input-group">
-                            <select class="form-select" id="vr_selected33" defaultValue={this.state.vrSelected || ""}>
+                            <select class="form-select" id="vr_selected33" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
-                                {this.state.vrsRelated.map((value, key) => (
+                                {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
                                         {value.id_public}
                                     </option>
@@ -1923,7 +1932,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc1/" + "Acto de tramite de licencia " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc1/" + "Acto de tramite de licencia " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1995,7 +2004,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc2/" + "Liquidacion de Expensas " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc2/" + "Liquidacion de Expensas " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2074,7 +2083,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc3/" + "Impuestos Minicipales " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc3/" + "Impuestos Minicipales " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2127,7 +2136,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc4/" + "Estampilla PRO-UIS " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc4/" + "Estampilla PRO-UIS " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2198,7 +2207,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc5/" + "Deber Urbanistico " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc5/" + "Deber Urbanistico " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2276,7 +2285,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc6/" + "Impuestos Delineación Urbana " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc6/" + "Impuestos Delineación Urbana " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2350,7 +2359,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoc7/" + "Liquidación Expensas " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoc7/" + "Liquidación Expensas " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2403,7 +2412,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdocfinalnot/" + "Citacio para Notificacion Resolucsion " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdocfinalnot/" + "Citacio para Notificacion Resolucsion " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2445,7 +2454,7 @@ class EXP_DOCS extends Component {
 
             createVRxCUB_relation(cub3)
             manage_exp();
-            this.retrieveItem();
+            retrieveItem();
         }
         let save_eje = () => {
             formData = new FormData();
@@ -2539,7 +2548,7 @@ class EXP_DOCS extends Component {
                 .then(response => {
                     if (response.data === 'OK') {
                         MySwal.close();
-                        window.open(process.env.REACT_APP_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf");
+                        window.open(import.meta.env.VITE_API_URL + "/pdf/expdoceje/" + "Ejecutoria " + currentItem.id_public + ".pdf");
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -2579,8 +2588,8 @@ class EXP_DOCS extends Component {
                             confirmButtonText: swaMsg.text_btn,
                         });
 
-                        this.props.requestUpdateRecord(currentItem.id);
-                        this.props.requestUpdate(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
+                        requestUpdate(currentItem.id);
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
                             title: "ERROR DE DUPLICACION",
@@ -2616,10 +2625,10 @@ class EXP_DOCS extends Component {
 
 
                 <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_21"
-                    onClick={() => this.setState({ showCollapse_expedition_21: !this.state.showCollapse_expedition_21 })}>
+                    onClick={() => setShowCollapse_expedition_21(!showCollapse_expedition_21)}>
                     <label className="app-p lead fw-normal text-info">Acto de tramite de licencia</label>
                 </MDBBtn>
-                <MDBCollapse show={this.state.showCollapse_expedition_21}>
+                <MDBCollapse show={showCollapse_expedition_21}>
                     <fieldset className="p-3">
                         <form id="form_expedition_1" onSubmit={pdf_gen_1}>
                             {_COMPONENT_DOC_1()}
@@ -2635,10 +2644,10 @@ class EXP_DOCS extends Component {
                 {_GLOBAL_ID === 'cp1' ?
                     <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_27"
-                            onClick={() => this.setState({ showCollapse_expedition_27: !this.state.showCollapse_expedition_27 })}>
+                            onClick={() => setShowCollapse_expedition_27(!showCollapse_expedition_27)}>
                             <label className="app-p lead fw-normal text-info">Liquidación de Expensas</label>
                         </MDBBtn>
-                        <MDBCollapse show={this.state.showCollapse_expedition_27}>
+                        <MDBCollapse show={showCollapse_expedition_27}>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_7}>
                                     {_COMPONENT_DOC_7()}
@@ -2656,10 +2665,10 @@ class EXP_DOCS extends Component {
 
                 {!conOA() && _GLOBAL_ID === 'cb1' || _GLOBAL_ID === 'fl2' ? <>
                     <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_22"
-                        onClick={() => this.setState({ showCollapse_expedition_22: !this.state.showCollapse_expedition_22 })}>
+                        onClick={() => setShowCollapse_expedition_22(!showCollapse_expedition_22)}>
                         <label className="app-p lead fw-normal text-info">Liquidacion de Expensas</label>
                     </MDBBtn>
-                    <MDBCollapse show={this.state.showCollapse_expedition_22}>
+                    <MDBCollapse show={showCollapse_expedition_22}>
                         <fieldset className="p-3">
                             <form id="form_expedition_2" onSubmit={pdf_gen_2}>
                                 {_COMPONENT_DOC_2()}
@@ -2675,10 +2684,10 @@ class EXP_DOCS extends Component {
 
                 {!conOA() && _GLOBAL_ID === 'cb1' ? <>
                     <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
-                        onClick={() => this.setState({ showCollapse_expedition_23: !this.state.showCollapse_expedition_23 })}>
+                        onClick={() => setShowCollapse_expedition_23(!showCollapse_expedition_23)}>
                         <label className="app-p lead fw-normal text-info">Impuestos Municipales</label>
                     </MDBBtn>
-                    <MDBCollapse show={this.state.showCollapse_expedition_23}>
+                    <MDBCollapse show={showCollapse_expedition_23}>
 
                         <fieldset className="p-3">
                             <form id="form_expedition_3" onSubmit={pdf_gen_3}>
@@ -2695,10 +2704,10 @@ class EXP_DOCS extends Component {
 
 
                 <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_24"
-                    onClick={() => this.setState({ showCollapse_expedition_24: !this.state.showCollapse_expedition_24 })}>
+                    onClick={() => setShowCollapse_expedition_24(!showCollapse_expedition_24)}>
                     <label className="app-p lead fw-normal text-info">Estampilla PRO-UIS</label>
                 </MDBBtn>
-                <MDBCollapse show={this.state.showCollapse_expedition_24}>
+                <MDBCollapse show={showCollapse_expedition_24}>
                     <fieldset className="p-3">
                         <form id="form_expedition_4" onSubmit={pdf_gen_4}>
                             {_COMPONENT_DOC_4()}
@@ -2714,10 +2723,10 @@ class EXP_DOCS extends Component {
                 {_GET_CHILD_2().item_267 > 2 && _GLOBAL_ID === 'cb1'
                     ? <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_25"
-                            onClick={() => this.setState({ showCollapse_expedition_25: !this.state.showCollapse_expedition_25 })}>
+                            onClick={() => setShowCollapse_expedition_25(!showCollapse_expedition_25)}>
                             <label className="app-p lead fw-normal text-info">Deberes Urbanisticos - Estrato: {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</label>
                         </MDBBtn>
-                        <MDBCollapse show={this.state.showCollapse_expedition_25}>
+                        <MDBCollapse show={showCollapse_expedition_25}>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_5}>
                                     {_COMPONENT_DOC_5()}
@@ -2738,10 +2747,10 @@ class EXP_DOCS extends Component {
                 {_GLOBAL_ID === 'cp1' || _GLOBAL_ID === 'fl2' ?
                     <>
                         <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_26"
-                            onClick={() => this.setState({ showCollapse_expedition_26: !this.state.showCollapse_expedition_26 })}>
+                            onClick={() => setShowCollapse_expedition_26(!showCollapse_expedition_26)}>
                             <label className="app-p lead fw-normal text-info">Impuesto Delineación Urbana</label>
                         </MDBBtn>
-                        <MDBCollapse show={this.state.showCollapse_expedition_26}>
+                        <MDBCollapse show={showCollapse_expedition_26}>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_6}>
                                     {_COMPONENT_DOC_6()}
@@ -2768,8 +2777,8 @@ class EXP_DOCS extends Component {
                         currentVersion={currentVersion}
                         currentRecord={currentRecord}
                         currentVersionR={currentVersionR}
-                        requestUpdate={this.props.requestUpdate}
-                        requestUpdateRecord={this.props.requestUpdateRecord}
+                        requestUpdate={requestUpdate}
+                        requestUpdateRecord={requestUpdateRecord}
                         recordArc={recordArc}
                     />
                 </Collapsible>
@@ -2797,8 +2806,8 @@ class EXP_DOCS extends Component {
                         currentVersion={currentVersion}
                         currentRecord={currentRecord}
                         currentVersionR={currentVersionR}
-                        requestUpdate={this.props.requestUpdate}
-                        requestUpdateRecord={this.props.requestUpdateRecord}
+                        requestUpdate={requestUpdate}
+                        requestUpdateRecord={requestUpdateRecord}
                         recordArc={recordArc}
                     /> : _COMPONENT_EJE()}
                 </Collapsible>
@@ -2811,15 +2820,14 @@ class EXP_DOCS extends Component {
                             currentVersion={currentVersion}
                             currentRecord={currentRecord}
                             currentVersionR={currentVersionR}
-                            requestUpdate={this.props.requestUpdate}
-                            requestUpdateRecord={this.props.requestUpdateRecord}
+                            requestUpdate={requestUpdate}
+                            requestUpdateRecord={requestUpdateRecord}
                             recordArc={recordArc}
                         />
                     </Collapsible> : ''
                 }
             </div >
         );
-    }
 }
 
 export default EXP_DOCS;

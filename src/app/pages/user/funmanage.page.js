@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane } from 'mdb-react-ui-kit';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane } from '../../components/ui';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -37,125 +37,118 @@ import FUN_ASIGNS_COMPONENT from './fun_forms/components/fun_asign.component';
 const moment = require('moment');
 const MySwal = withReactContent(Swal);
 
-class FUN_MANAGE extends Component {
-    constructor(props) {
-        super(props);
-        this.retrievePublish = this.retrievePublish.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.retrievSingle = this.retrievSingle.bind(this);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.navigation = this.navigation.bind(this);
-        this.navigation_version = this.navigation_version.bind(this);
-        this.setSubtmitRows = this.setSubtmitRows.bind(this);
-        this.toggle = this.toggle.bind(this);
-        this.openModal = this.openModal.bind(this);
-        this.toggle_NEGATIVE = this.toggle_NEGATIVE.bind(this);
-        this.state = {
-            error: null,
-            isLoaded: false,
-            isLoadedSearch: false,
-            currentItem: null,
-            currentIndex: -1,
+function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoadedSearch, setIsLoadedSearch] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(-1);
 
-            modal: false,
-            modal_c: false,
-            modal_n: false,
-            modal_d: false,
-            modal_alert: false,
-            modal_clocK: false,
-            modal_record_arc: false,
-            modal_record_law: false,
-            modal_record_eng: false,
-            modal_record_ph: false,
-            modal_record_review: false,
-            modal_exp: false,
-            modal_macro: false,
-            modal_report: false,
+    const [modal, setModal] = useState(false);
+    const [modal_c, setModal_c] = useState(false);
+    const [modal_n, setModal_n] = useState(false);
+    const [modal_d, setModal_d] = useState(false);
+    const [modal_alert, setModal_alert] = useState(false);
+    const [modal_clocK, setModal_clocK] = useState(false);
+    const [modal_record_arc, setModal_record_arc] = useState(false);
+    const [modal_record_law, setModal_record_law] = useState(false);
+    const [modal_record_eng, setModal_record_eng] = useState(false);
+    const [modal_record_ph, setModal_record_ph] = useState(false);
+    const [modal_record_review, setModal_record_review] = useState(false);
+    const [modal_exp, setModal_exp] = useState(false);
+    const [modal_macro, setModal_macro] = useState(false);
+    const [modal_report, setModal_report] = useState(false);
 
-            items: [],
-            currentMetaData: [],
-            currentVersion: null,
+    const [items, setItemsList] = useState([]);
+    const [currentMetaData, setCurrentMetaData] = useState([]);
+    const [currentVersion, setCurrentVersion] = useState(null);
+    const [currentId, setCurrentId] = useState(null);
+    const [currentLastVersion, setCurrentLastVersion] = useState(null);
+    const [currentDate, setCurrentDate] = useState(null);
+    const [currentPublic, setCurrentPublic] = useState(null);
 
-            list_complete: [],
-            list_search: [],
-            list_started: [],
-            list_incomplete: [],
-            list_legal: [],
-            list_profesional: [],
-            list_expedition: [],
-            list_archive: [],
+    const [list_complete, setList_complete] = useState([]);
+    const [list_search, setList_search] = useState([]);
+    const [list_started, setList_started] = useState([]);
+    const [list_incomplete, setList_incomplete] = useState([]);
+    const [list_legal, setList_legal] = useState([]);
+    const [list_profesional, setList_profesional] = useState([]);
+    const [list_expedition, setList_expedition] = useState([]);
+    const [list_archive, setList_archive] = useState([]);
 
-            selectedRow: null,
-            submitItems: [],
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [submitItems, setSubmitItems] = useState([]);
 
-            fillActive: '4',
-            fillActive2: '1',
-            clocks: [],
-        };
-    }
-    componentDidMount() {
-        this.retrievePublish();
-        if (this.props.urlParams) this.LOAD_BY_URL()
-    }
-    componentDidUpdate(prevProps) {
-        if (this.props.urlParams !== prevProps.urlParams && this.props.urlParams != null) {
-            console.log(this.props.urlParams)
-            this.LOAD_BY_URL();
+    const [fillActive, setFillActive] = useState('4');
+    const [fillActive2, setFillActive2] = useState('1');
+    const [clocks, setClocks] = useState([]);
+    const [date_start, setDate_start] = useState(null);
+    const [date_end, setDate_end] = useState(null);
+    const [defaultFilter, setDefaultFilter] = useState(false);
+    const [mountedTabs, setMountedTabs] = useState({ '4': true });
+
+    const prevUrlParamsRef = useRef(urlParams);
+
+    useEffect(() => {
+        retrievePublish();
+        if (urlParams) LOAD_BY_URL();
+    }, []);
+
+    useEffect(() => {
+        if (urlParams !== prevUrlParamsRef.current && urlParams != null) {
+            console.log(urlParams);
+            LOAD_BY_URL();
         }
-    }
-    retrievePublish() {
+        prevUrlParamsRef.current = urlParams;
+    }, [urlParams]);
+    const retrievePublish = () => {
         FUNService.getAll_fun()
             .then(response => {
-                this.asignList(response.data);
+                asignList(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    retrievSingle(id) {
+    const retrievSingle = (id) => {
         MySwal.fire({
-            title: this.props.swaMsg.title_wait,
-            text: this.props.swaMsg.text_wait,
+            title: swaMsg.title_wait,
+            text: swaMsg.text_wait,
             icon: 'info',
             showConfirmButton: false,
         });
         FUNService.get(id)
             .then(response => {
                 MySwal.close()
-                this.toggle_d(response.data);
+                toggle_d(response.data);
             })
             .catch(e => {
                 MySwal.fire({
-                    title: this.props.swaMsg.generic_eror_title,
-                    text: this.props.swaMsg.generic_error_text,
+                    title: swaMsg.generic_eror_title,
+                    text: swaMsg.generic_error_text,
                     icon: 'warning',
-                    confirmButtonText: this.props.swaMsg.text_btn,
+                    confirmButtonText: swaMsg.text_btn,
                 });
                 console.log(e);
             });
     }
-    retrieveSearch(field, string) {
+    const retrieveSearch = (field, string) => {
         FUNService.getSearch(field, string)
             .then(response => {
-                this.setState({
-                    list_search: response.data,
-                    isLoadedSearch: false,
-                });
-                //this.asignList(response.data);
+                setList_search(response.data);
+                setIsLoadedSearch(false);
                 MySwal.close();
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    refreshList() {
-        this.retrievePublish();
-        this.setState({
-            currentItem: null,
-            currentIndex: -1,
-        });
+    const refreshList = () => {
+        retrievePublish();
+        setCurrentItem(null);
+        setCurrentIndex(-1);
     }
-    asignList(_LIST) {
+    const asignList = (_LIST) => {
         let statrted = [];
         let incomplete = [];
         let legal = [];
@@ -189,346 +182,291 @@ class FUN_MANAGE extends Component {
 
 
         }
-        this.setState({
-            items: _LIST,
-            list_started: statrted,
-            list_incomplete: incomplete,
-            list_legal: legal,
-            list_expedition: expedition,
-            list_profesional: profesonal,
-            list_archive: archive,
-            list_complete: _LIST,
-            isLoaded: true,
-        });
+        setItemsList(_LIST);
+        setList_started(statrted);
+        setList_incomplete(incomplete);
+        setList_legal(legal);
+        setList_expedition(expedition);
+        setList_profesional(profesonal);
+        setList_archive(archive);
+        setList_complete(_LIST);
+        setIsLoaded(true);
     }
     //  MODAL CONTROLS
-    openModal(item, TO) {
-        this.navigation(item, TO, '');
+    const openModal = (item, TO) => {
+        navigation(item, TO, '');
     }
 
-    toggle(item) {
+    const toggle = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal: !this.state.modal,
-            modal_macro: false,
-        });
+        setModal(prev => !prev);
+        setModal_macro(false);
     }
-    toggle_NEGATIVE(item) {
+    const toggle_NEGATIVE = (item) => {
         if (item) {
-            this.setState({
-                currentVersion: item.version,
-                currentId: item.id_sistem,
-                currentLastVersion: item.version,
-                currentDate: item.date,
-                currentPublic: item.id_public,
-                selectedRow: item.id_sistem
-            });
+            setCurrentVersion(item.version);
+            setCurrentId(item.id_sistem);
+            setCurrentLastVersion(item.version);
+            setCurrentDate(item.date);
+            setCurrentPublic(item.id_public);
+            setSelectedRow(item.id_sistem);
         }
-        this.setState({
-            modal: !this.state.modal,
-            modal_macro: false,
-        });
+        setModal(prev => !prev);
+        setModal_macro(false);
     }
-    getToggle = () => {
-        return this.state.modal;
+    const getToggle = () => {
+        return modal;
     }
-    getToggle_c = () => {
-        return this.state.modal_c;
+    const getToggle_c = () => {
+        return modal_c;
     }
-    toggle_c = (item) => {
+    const toggle_c = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_c: !this.state.modal_c
-        });
+        setModal_c(prev => !prev);
     }
-    getToggle_n = () => {
-        return this.state.modal_n;
+    const getToggle_n = () => {
+        return modal_n;
     }
-    toggle_n = (item) => {
+    const toggle_n = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_n: !this.state.modal_n
-        });
+        setModal_n(prev => !prev);
     }
-    getToggle_d = () => {
-        return this.state.modal_d;
+    const getToggle_d = () => {
+        return modal_d;
     }
-    toggle_d = (item) => {
+    const toggle_d = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_d: !this.state.modal_d
-        });
+        setModal_d(prev => !prev);
     }
-    getToggle_alert = () => {
-        return this.state.modal_alert;
+    const getToggle_alert = () => {
+        return modal_alert;
     }
-    toggle_alert = (item) => {
+    const toggle_alert = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_alert: !this.state.modal_alert
-        });
+        setModal_alert(prev => !prev);
     }
-    getToggle_recordArc = () => {
-        return this.state.modal_record_arc;
+    const getToggle_recordArc = () => {
+        return modal_record_arc;
     }
-    toggle_recordArc = (item) => {
+    const toggle_recordArc = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_record_arc: !this.state.modal_record_arc
-        });
+        setModal_record_arc(prev => !prev);
     }
-    getToggle_recordLaw = () => {
-        return this.state.modal_record_law;
+    const getToggle_recordLaw = () => {
+        return modal_record_law;
     }
-    toggle_recordLaw = (item) => {
+    const toggle_recordLaw = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_record_law: !this.state.modal_record_law
-        });
+        setModal_record_law(prev => !prev);
     }
-    getToggle_recordLaw = () => {
-        return this.state.modal_record_law;
-    }
-    toggle_recordEng = (item) => {
+    const toggle_recordEng = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_record_eng: !this.state.modal_record_eng
-        });
+        setModal_record_eng(prev => !prev);
     }
-    getToggle_recordEng = () => {
-        return this.state.modal_record_eng;
+    const getToggle_recordEng = () => {
+        return modal_record_eng;
     }
-    toggle_recordLaw = (item) => {
+    const getToggle_recordPH = () => {
+        return modal_record_ph;
+    }
+    const toggle_recordPH = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_record_law: !this.state.modal_record_law
-        });
+        setModal_record_ph(prev => !prev);
     }
-    getToggle_recordPH = () => {
-        return this.state.modal_record_ph;
-    }
-    toggle_recordPH = (item) => {
+    const toggle_recordReview = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_record_ph: !this.state.modal_record_ph
-        });
+        setModal_record_review(prev => !prev);
     }
-    toggle_recordReview = (item) => {
+    const getToggle_recordReview = () => {
+        return modal_record_review;
+    }
+    const toggle_exp = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_record_review: !this.state.modal_record_review
-        });
+        setModal_exp(prev => !prev);
     }
-    getToggle_recordReview = () => {
-        return this.state.modal_record_review;
+    const getToggle_clock = () => {
+        return modal_clocK;
     }
-    toggle_exp = (item) => {
+    const toggle_clock = (item) => {
         if (item) {
-            this.setItem(item)
+            setItemData(item);
         }
-        this.setState({
-            modal_exp: !this.state.modal_exp
-        });
+        setModal_clocK(prev => !prev);
     }
-    getToggle_recordReview = () => {
-        return this.state.modal_exp;
+    const getToggle_macro = () => {
+        return modal_macro;
     }
-    getToggle_clock = () => {
-        return this.state.modal_clocK;
-    }
-    toggle_clock = (item) => {
+    const toggle_macro = (item) => {
+        setModal_macro(prev => !prev);
         if (item) {
-            this.setItem(item)
-        }
-        this.setState({
-            modal_clocK: !this.state.modal_clocK
-        });
-    }
-    getToggle_macro = () => {
-        return this.state.modal_macro;
-    }
-    toggle_macro = (item) => {
-        this.setState({
-            modal_macro: !this.state.modal_macro,
-        });
-        if (item) {
-            this.setState({
-                selectedRow: item.id,
-
-            });
+            setSelectedRow(item.id);
         } else {
-            this.setState({
-                selectedRow: null,
-
-            });
+            setSelectedRow(null);
         }
     }
-    toggle_report = (item) => {
-        this.setState({
-            modal_report: !this.state.modal_report,
-        });
+    const toggle_report = (item) => {
+        setModal_report(prev => !prev);
         if (item) {
-            this.setState({
-                selectedRow: item.id,
-
-            });
+            setSelectedRow(item.id);
         } else {
-            this.setState({
-                selectedRow: null,
-
-            });
+            setSelectedRow(null);
         }
     }
     // NAVIGATION
-    navigation = (item, TO, FROM) => {
+    const navigation = (item, TO, FROM) => {
         switch (FROM) {
             case "general":
-                this.toggle(false)
+                toggle(false)
                 break;
             case "edit":
-                this.toggle_n(false)
+                toggle_n(false)
                 break;
             case "archive":
-                this.toggle_d(false)
+                toggle_d(false)
                 break;
             case "check":
-                this.toggle_c(false)
+                toggle_c(false)
                 break;
             case "alert":
-                this.toggle_alert(false)
+                toggle_alert(false)
                 break;
             case "clock":
-                this.toggle_clock(false)
+                toggle_clock(false)
                 break;
             case "record_arc":
-                this.toggle_recordArc(false)
+                toggle_recordArc(false)
                 break;
             case "record_law":
-                this.toggle_recordLaw(false)
+                toggle_recordLaw(false)
                 break;
             case "record_eng":
-                this.toggle_recordEng(false)
+                toggle_recordEng(false)
                 break;
             case "record_ph":
-                this.toggle_recordPH(false)
+                toggle_recordPH(false)
                 break;
             case "record_review":
-                this.toggle_recordReview(false)
+                toggle_recordReview(false)
                 break;
             case "expedition":
-                this.toggle_exp(false)
+                toggle_exp(false)
                 break;
             case "macro":
-                this.toggle_macro(false)
+                toggle_macro(false)
                 break;
 
         }
         switch (TO) {
             case "general":
-                this.toggle(item)
+                toggle(item)
                 break;
             case "edit":
-                this.toggle_n(item)
+                toggle_n(item)
                 break;
             case "archive":
-                this.toggle_d(item)
+                toggle_d(item)
                 break;
             case "check":
-                this.toggle_c(item)
+                toggle_c(item)
                 break;
             case "alert":
-                this.toggle_alert(item)
+                toggle_alert(item)
                 break;
             case "clock":
-                this.toggle_clock(item)
+                toggle_clock(item)
                 break;
             case "record_arc":
-                this.toggle_recordArc(item)
+                toggle_recordArc(item)
                 break;
             case "record_law":
-                this.toggle_recordLaw(item)
+                toggle_recordLaw(item)
                 break;
             case "record_eng":
-                this.toggle_recordEng(item)
+                toggle_recordEng(item)
                 break;
             case "record_ph":
-                this.toggle_recordPH(item)
+                toggle_recordPH(item)
                 break;
             case "record_review":
-                this.toggle_recordReview(item)
+                toggle_recordReview(item)
                 break;
             case "expedition":
-                this.toggle_exp(item)
+                toggle_exp(item)
                 break;
             case "macro":
-                this.setState({
-                    date_start: moment(document.getElementById('load_macro_date_1').value).format('YYYY-MM-DD'),
-                    date_end: moment(document.getElementById('load_macro_date_2').value).format('YYYY-MM-DD'),
-                })
-                this.toggle_macro(item)
+                setDate_start(moment(document.getElementById('load_macro_date_1').value).format('YYYY-MM-DD'));
+                setDate_end(moment(document.getElementById('load_macro_date_2').value).format('YYYY-MM-DD'));
+                toggle_macro(item)
                 break;
         }
     }
-    navigation_version = (STEP) => {
+    const navigation_version = (STEP) => {
         switch (STEP) {
             case "minus":
-                this.setState({ currentVersion: this.state.currentVersion - 1 });
+                setCurrentVersion(prev => prev - 1);
                 break;
             case "plus":
-                this.setState({ currentVersion: this.state.currentVersion + 1 });
+                setCurrentVersion(prev => prev + 1);
                 break;
         }
     }
     // END MODAL CONTROLS
-    setItem(item) {
-        this.setState({
-            currentVersion: item.version,
-            currentId: item.id,
-            currentLastVersion: item.version,
-            currentDate: item.clock_payment ?? <label className='fw-bold text-danger'>FECHA PENDIENTE</label>,
-            currentPublic: item.id_public,
-            selectedRow: item.id
-        });
+    const setItemData = (item) => {
+        setCurrentVersion(item.version);
+        setCurrentId(item.id);
+        setCurrentLastVersion(item.version);
+        setCurrentDate(item.clock_payment ?? <label className='fw-bold text-danger'>FECHA PENDIENTE</label>);
+        setCurrentPublic(item.id_public);
+        setSelectedRow(item.id);
     }
 
-    requestUpdate(id) {
+    const requestUpdate = (id) => {
         FUNService.get(id).then(response => {
             let item = response.data
-            this.setState({
-                currentItem: item,
-                currentId: item.id,
-                currentVersion: item.version
-            })
-            this.retrievePublish();
+            setCurrentItem(item);
+            setCurrentId(item.id);
+            setCurrentVersion(item.version);
+            retrievePublish();
         })
     }
-    // HELPER FUNCTIONS
-    setSubtmitRows(items) {
-        this.setState({ submitItems: items })
+    const handleDuplicateSuccess = (newId) => {
+        toggle(); // close current general modal
+        FUNService.get(newId)
+            .then(response => {
+                toggle(response.data); // re-open with new project
+                retrievePublish();
+            })
+            .catch(e => {
+                console.log(e);
+            });
     }
-    _REGEX_MATCH_PH(_string) {
+    // HELPER FUNCTIONS
+    const setSubtmitRows = (items) => {
+        setSubmitItems(items);
+    }
+    const _REGEX_MATCH_PH = (_string) => {
         let regex0 = /p\.\s+h/i;
         let regex1 = /p\.h/i;
         let regex2 = /propiedad\s+horizontal/i;
@@ -536,13 +474,9 @@ class FUN_MANAGE extends Component {
         if (regex0.test(_string) || regex2.test(_string) || regex1.test(_string) || regex3.test(_string)) return true;
         return false
     }
-    render() {
-        const { translation, swaMsg, globals, breadCrums } = this.props;
-        const { currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search } = this.state;
 
-
-        const modalHeader = <div className="my-3 d-flex justify-content-between">
-            <label>ULTIMA VERSIÓN :{this.state.currentLastVersion}</label>
+    const modalHeader = <div className="my-3 d-flex justify-content-between">
+            <label>ULTIMA VERSIÓN :{currentLastVersion}</label>
         </div>
 
 
@@ -608,23 +542,21 @@ class FUN_MANAGE extends Component {
         // CREATES A NEW LICENCE
         let loadMacro = (event) => {
             event.preventDefault();
-            this.toggle_macro();
+            toggle_macro();
             let date_a = document.getElementById("load_macro_date_1").value;
             let date_b = document.getElementById("load_macro_date_2").value;
-            var date_start = date_a;
-            var date_end = date_b;
+            var date_start_val = date_a;
+            var date_end_val = date_b;
             if (moment(date_a).diff(date_b) >= 0) {
-                date_start = date_b;
-                date_end = date_a;
+                date_start_val = date_b;
+                date_end_val = date_a;
             }
-            this.setState({ date_start: date_start });
-            this.setState({ date_end: date_end })
+            setDate_start(date_start_val);
+            setDate_end(date_end_val);
         }
         const handleFillClick = (state) => {
-            if (state === this.state.fillActive) {
-                return;
-            }
-            this.setState({ fillActive: state });
+            setFillActive(prev => (prev === state ? prev : state));
+            setMountedTabs(prev => (prev[state] ? prev : { ...prev, [state]: true }));
         };
         let openReport = (event) => {
             event.preventDefault();
@@ -636,9 +568,9 @@ class FUN_MANAGE extends Component {
                 date_start = date_b;
                 date_end = date_a;
             }
-            this.setState({ date_start: date_start });
-            this.setState({ date_end: date_end })
-            this.toggle_report()
+            setDate_start(date_start);
+            setDate_end(date_end)
+            toggle_report()
         };
         return (
             <div className="Publish container p-0">
@@ -661,21 +593,20 @@ class FUN_MANAGE extends Component {
                     </div>
 
                     <SUBMIT_X_FUN translation={translation} globals={globals}
-                        setSubtmitRows={this.setSubtmitRows}
+                        setSubtmitRows={setSubtmitRows}
                         type={"LIC"} simple hide
-                        retrievSingle={this.retrievSingle}
-                        openModal={this.openModal}
-                        listIncomplete={this.state.list_started} />
+                        retrievSingle={retrievSingle}
+                        openModal={openModal} />
 
                     <FUN_WORKER_ASIGN translation={translation} globals={globals}
                         type={"law"}
-                        openModal={this.openModal} />
+                        openModal={openModal} />
                     <FUN_WORKER_ASIGN translation={translation} globals={globals}
                         type={"arc"}
-                        openModal={this.openModal} />
+                        openModal={openModal} />
                     <FUN_WORKER_ASIGN translation={translation} globals={globals}
                         type={"eng"}
-                        openModal={this.openModal} />
+                        openModal={openModal} />
 
                     <MDBRow>
                         <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
@@ -749,18 +680,18 @@ class FUN_MANAGE extends Component {
 
                     <MDBTabs fill className='m-2 border' pills>
                         <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('4')} active={this.state.fillActive === '4'}>
+                            <MDBTabsLink onClick={() => handleFillClick('4')} active={fillActive === '4'}>
                                 <label className="upper-case">PROCESOS DIARIOS</label>
                             </MDBTabsLink>
                         </MDBTabsItem>
 
                         <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('2')} active={this.state.fillActive === '2'}>
+                            <MDBTabsLink onClick={() => handleFillClick('2')} active={fillActive === '2'}>
                                 <label className="upper-case">ENTRADA DE DOCUMENTOS </label>
                             </MDBTabsLink>
                         </MDBTabsItem>
                         <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('3')} active={this.state.fillActive === '3'}>
+                            <MDBTabsLink onClick={() => handleFillClick('3')} active={fillActive === '3'}>
                                 <label className="upper-case">CARGA PROFESIONAL </label>
                             </MDBTabsLink>
                         </MDBTabsItem>
@@ -768,42 +699,42 @@ class FUN_MANAGE extends Component {
                     </MDBTabs>
 
                     <MDBTabsContent>
-                        <MDBTabsPane show={this.state.fillActive === '4'}>
-                            <FUN_DAILY_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
-                                NAVIGATION_GEN={this.navigation}
-                                requestUpdate={this.requestUpdate}
-                                requesRefresh={this.retrievePublish}
-                            />
+                        <MDBTabsPane show={fillActive === '4'}>
+                            {mountedTabs['4'] && <FUN_DAILY_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
+                                NAVIGATION_GEN={navigation}
+                                requestUpdate={requestUpdate}
+                                requesRefresh={retrievePublish}
+                            />}
                         </MDBTabsPane>
 
-                        <MDBTabsPane show={this.state.fillActive === '2'}>
-                            <SUBMIT_X_FUN translation={translation} globals={globals}
-                                setSubtmitRows={this.setSubtmitRows}
+                        <MDBTabsPane show={fillActive === '2'}>
+                            {mountedTabs['2'] && <SUBMIT_X_FUN translation={translation} globals={globals}
+                                setSubtmitRows={setSubtmitRows}
                                 type={"LIC"}
-                                retrievSingle={this.retrievSingle}
-                                openModal={this.openModal}
-                                listIncomplete={this.state.list_started} />
+                                retrievSingle={retrievSingle}
+                                openModal={openModal}
+                                listIncomplete={list_started} />}
                         </MDBTabsPane>
-                        <MDBTabsPane show={this.state.fillActive === '3'}>
-                            <FUN_ASIGNS_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
-                                NAVIGATION_GEN={this.navigation}
-                                requestUpdate={this.requestUpdate}
-                                requesRefresh={this.retrievePublish}
-                            />
+                        <MDBTabsPane show={fillActive === '3'}>
+                            {mountedTabs['3'] && <FUN_ASIGNS_COMPONENT translation={translation} swaMsg={swaMsg} globals={globals}
+                                NAVIGATION_GEN={navigation}
+                                requestUpdate={requestUpdate}
+                                requesRefresh={retrievePublish}
+                            />}
                         </MDBTabsPane>
                     </MDBTabsContent>
 
                 </div >
 
-                <Modal contentLabel="GENERAL VIEW FUN"
-                    isOpen={this.state.modal}
+                {modal && <Modal contentLabel="GENERAL VIEW FUN"
+                    isOpen={modal}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
 
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle()}></MDBBtn>
+                        <label><i class="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle()}></MDBBtn>
                     </div>
                     {modalHeader}
 
@@ -811,23 +742,24 @@ class FUN_MANAGE extends Component {
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version}
+                        onDuplicateSuccess={handleDuplicateSuccess}
                     />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => this.toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN CHECKEO"
-                    isOpen={this.state.modal_c}
+                {modal_c && <Modal contentLabel="FUN CHECKEO"
+                    isOpen={modal_c}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {this.state.currentPublic}</label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_c()}></MDBBtn>
+                        <label><i class="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {currentPublic}</label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_c()}></MDBBtn>
                     </div>
                     {modalHeader}
 
@@ -835,305 +767,305 @@ class FUN_MANAGE extends Component {
                     <FUNC translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        requesRefresh={this.retrievePublish}
-                        closeModal={this.toggle_c}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        requesRefresh={retrievePublish}
+                        closeModal={toggle_c}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_c}>
+                        <MDBBtn color='info' onClick={toggle_c}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN NEW/UPDATE"
-                    isOpen={this.state.modal_n}
+                {modal_n && <Modal contentLabel="FUN NEW/UPDATE"
+                    isOpen={modal_n}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_n()}></MDBBtn>
+                        <label><i class="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_n()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <FUNN translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        requesRefresh={this.retrievePublish}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        requesRefresh={retrievePublish}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_n}>
+                        <MDBBtn color='info' onClick={toggle_n}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN DOC CONTROL"
-                    isOpen={this.state.modal_d}
+                {modal_d && <Modal contentLabel="FUN DOC CONTROL"
+                    isOpen={modal_d}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_d()}></MDBBtn>
+                        <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_d()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <FUND translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_d}>
+                        <MDBBtn color='info' onClick={toggle_d}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN ALERTA A VECINOS"
-                    isOpen={this.state.modal_alert}
+                {modal_alert && <Modal contentLabel="FUN ALERTA A VECINOS"
+                    isOpen={modal_alert}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_alert()}></MDBBtn>
+                        <label><i class="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_alert()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <FUN_ALERT translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        closeModal={this.toggle_alert}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        closeModal={toggle_alert}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_alert}>
+                        <MDBBtn color='info' onClick={toggle_alert}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="FUN CLOCK"
-                    isOpen={this.state.modal_clocK}
+                {modal_clocK && <Modal contentLabel="FUN CLOCK"
+                    isOpen={modal_clocK}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_clock()}></MDBBtn>
+                        <label><i class="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_clock()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <FUNCLOCK translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requesRefresh={this.retrievePublish}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requesRefresh={retrievePublish}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_clock}>
+                        <MDBBtn color='info' onClick={toggle_clock}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS ARCHITECTURE"
-                    isOpen={this.state.modal_record_arc}
+                {modal_record_arc && <Modal contentLabel="RECORDS ARCHITECTURE"
+                    isOpen={modal_record_arc}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordArc()}></MDBBtn>
+                        <label><i class="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordArc()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <RECORD_ARC translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        requesRefresh={this.retrievePublish}
-                        closeModal={this.toggle_recordArc}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        requesRefresh={retrievePublish}
+                        closeModal={toggle_recordArc}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordArc}>
+                        <MDBBtn color='info' onClick={toggle_recordArc}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS LAW"
-                    isOpen={this.state.modal_record_law}
+                {modal_record_law && <Modal contentLabel="RECORDS LAW"
+                    isOpen={modal_record_law}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordLaw()}></MDBBtn>
+                        <label><i class="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordLaw()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <RECORD_LAW translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        closeModal={this.toggle_recordLaw}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        closeModal={toggle_recordLaw}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordLaw}>
+                        <MDBBtn color='info' onClick={toggle_recordLaw}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS PH"
-                    isOpen={this.state.modal_record_ph}
+                {modal_record_ph && <Modal contentLabel="RECORDS PH"
+                    isOpen={modal_record_ph}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordPH()}></MDBBtn>
+                        <label><i class="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordPH()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <RECORD_PH translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        requesRefresh={this.retrievePublish}
-                        closeModal={this.toggle_recordPH}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        requesRefresh={retrievePublish}
+                        closeModal={toggle_recordPH}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordPH}>
+                        <MDBBtn color='info' onClick={toggle_recordPH}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS ENG"
-                    isOpen={this.state.modal_record_eng}
+                {modal_record_eng && <Modal contentLabel="RECORDS ENG"
+                    isOpen={modal_record_eng}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordEng()}></MDBBtn>
+                        <label><i class="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordEng()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <RECORD_ENG translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        closeModal={this.toggle_recordLaw}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_VERSION={this.navigation_version} />
+                        requestUpdate={requestUpdate}
+                        closeModal={toggle_recordLaw}
+                        NAVIGATION={navigation}
+                        NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordEng}>
+                        <MDBBtn color='info' onClick={toggle_recordEng}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="RECORDS REVIEW"
-                    isOpen={this.state.modal_record_review}
+                {modal_record_review && <Modal contentLabel="RECORDS REVIEW"
+                    isOpen={modal_record_review}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_recordReview()}></MDBBtn>
+                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordReview()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <RECORD_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
-                        closeModal={this.toggle_recordReview}
-                        NAVIGATION={this.navigation} />
+                        requestUpdate={requestUpdate}
+                        closeModal={toggle_recordReview}
+                        NAVIGATION={navigation} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_recordReview}>
+                        <MDBBtn color='info' onClick={toggle_recordReview}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="EXPEDITION"
-                    isOpen={this.state.modal_exp}
+                {modal_exp && <Modal contentLabel="EXPEDITION"
+                    isOpen={modal_exp}
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {this.state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_exp()}></MDBBtn>
+                        <label><i class="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {currentPublic} </label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_exp()}></MDBBtn>
                     </div>
                     {modalHeader}
 
                     <EXPEDITION translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
                         currentVersion={currentVersion}
-                        requesRefresh={this.retrievePublish}
-                        closeModal={this.toggle_exp}
-                        NAVIGATION={this.navigation} />
+                        requesRefresh={retrievePublish}
+                        closeModal={toggle_exp}
+                        NAVIGATION={navigation} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={this.toggle_exp}>
+                        <MDBBtn color='info' onClick={toggle_exp}>
                             <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="MACRO TABLE"
-                    isOpen={this.state.modal_macro}
+                {modal_macro && <Modal contentLabel="MACRO TABLE"
+                    isOpen={modal_macro}
                     style={customStylesForModalMacro()}
                     ariaHideApp={false}
                     className="macro-modal-content"
                     overlayClassName="macro-modal-overlay"
                 >
                     <div className="my-1 d-flex justify-content-between">
-                        <label><i class="fas fa-th"></i> Macro tabla de seguimiento: Desde {this.state.date_start} hasta {this.state.date_end}</label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_macro()}></MDBBtn>
+                        <label><i class="fas fa-th"></i> Macro tabla de seguimiento: Desde {date_start} hasta {date_end}</label>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_macro()}></MDBBtn>
                     </div>
 
                     <FUN_MACROTABLE translation={translation} swaMsg={swaMsg} globals={globals}
-                        closeModal={this.toggle_macro}
-                        NAVIGATION={this.navigation}
-                        NAVIGATION_GEN={this.navigation}
-                        NAVIGATION_GEN_NEGATIVE={this.toggle_NEGATIVE}
-                        date_start={this.state.date_start}
-                        date_end={this.state.date_end}
-                        selectedRow={this.state.selectedRow}
-                        setSelectedRow={(id) => this.setState({ selectedRow: id })}
-                        defaultFilter={this.state.defaultFilter ?? false}
+                        closeModal={toggle_macro}
+                        NAVIGATION={navigation}
+                        NAVIGATION_GEN={navigation}
+                        NAVIGATION_GEN_NEGATIVE={toggle_NEGATIVE}
+                        date_start={date_start}
+                        date_end={date_end}
+                        selectedRow={selectedRow}
+                        setSelectedRow={(id) => setSelectedRow(id)}
+                        defaultFilter={defaultFilter ?? false}
                     />
 
-                </Modal>
+                </Modal>}
 
-                <Modal contentLabel="REPORT"
-                    isOpen={this.state.modal_report}
+                {modal_report && <Modal contentLabel="REPORT"
+                    isOpen={modal_report}
                     style={customStylesForModalMacro()}
                     ariaHideApp={false}
                     className="macro-modal-content"
@@ -1153,28 +1085,27 @@ class FUN_MANAGE extends Component {
                                 <label className='col-form-label col-3'><i class="fas fa-file-alt"></i> REPORTE GENERAL DE SOLICITUDES </label>
                                 <label className='col-form-label col-1 text-end'>FECHAS: </label>
                                 <div class="col">
-                                    <input type='date' max="2100-01-01" className='form-control form-control-sm mt-2' defaultValue={this.state.date_start} onBlur={(e) => this.setState({ date_start: e.target.value })} />
+                                    <input type='date' max="2100-01-01" className='form-control form-control-sm mt-2' defaultValue={date_start} onBlur={(e) => setDate_start(e.target.value)} />
                                 </div>
                                 <div class="col">
-                                    <input type='date' max="2100-01-01" className='form-control form-control-sm mt-2' defaultValue={this.state.date_end} onBlur={(e) => this.setState({ date_end: e.target.value })} />
+                                    <input type='date' max="2100-01-01" className='form-control form-control-sm mt-2' defaultValue={date_end} onBlur={(e) => setDate_end(e.target.value)} />
                                 </div>
                             </div>
                         </div>
-                        <div class="col-1 text-end"><MDBBtn className='btn-close' color='none' onClick={() => this.toggle_report()}></MDBBtn></div>
+                        <div class="col-1 text-end"><MDBBtn className='btn-close' color='none' onClick={() => toggle_report()}></MDBBtn></div>
                     </div>
 
                     <hr />
 
                     <FUN_REPORT_GEN translation={translation} swaMsg={swaMsg} globals={globals}
-                        data={this.state.list_complete}
-                        date_i={this.state.date_start}
-                        date_f={this.state.date_end}
+                        data={list_complete}
+                        date_i={date_start}
+                        date_f={date_end}
                     />
 
-                </Modal>
+                </Modal>}
             </div >
         );
-    }
 }
 
 export default FUN_MANAGE;

@@ -3,6 +3,8 @@
 # dependencies
 /node_modules
 /docs
+/.agents
+.vscode
 /.pnp
 .pnp.js
 /build
@@ -13,9 +15,18 @@ build_cub1.zip
 build.zip
 *.zip
 .vscode
+.venv
+
+# migration/agent temp files
+*.py
+*.ipynb
+.tmp/
 
 # testing
 /coverage
+/e2e/test-results/
+/playwright-report/
+/blob-report/
 
 # production
 /build
@@ -27,7 +38,26 @@ build.zip
 .env.development.local
 .env.test.local
 .env.production.local
+/.claude
+/.github
+/.vscode
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# MCP config (contains secrets — keep only locally)
+.mcp.json
+
+# Playwright MCP temporary artifacts (screenshots, snapshots, etc.)
+.playwright-mcp/
+
+# Playwright E2E test artifacts (handled by cleanup in config)
+/playwright-tmp/
+
+# Agent & Debugging Logs
+raw_braces.txt
+result.txt
+temp_log.txt
+test-output-debug.log
+test-output-full.log

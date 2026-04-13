@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -8,41 +8,28 @@ import SubmitService from '../../../services/submit.service';
 // LISTS
 import Fun6DocList from '../../../components/jsons/fun6DocsList.json'
 import { Lists } from '../../../components/jsons/lists_submit'
-import { MDBBtn, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import DataTable from 'react-data-table-component';
 import DOCS_LIST from '../fun_forms/components/docs_list.component';
-import { MDBDataTable } from 'mdbreact';
 
 const MySwal = withReactContent(Swal);
 
-class SUBMIT_LIST extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            lists: 0,
-            extra_items: 0,
-            list_data_table: [],
-            selected_list: [],
+function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshList }) {
+    const [lists, setLists] = useState(0);
+    const [extra_items, setExtraItems] = useState(0);
+    const [list_data_table, setListDataTable] = useState([]);
+    const [selected_list, setSelectedList] = useState([]);
+    const [list_new, setListNew] = useState(null);
+    const [isNew, setIsNew] = useState(false);
+
+    useEffect(() => {
+        // componentDidMount
+        //const interval = setInterval(() => {}, 1000);
+        return () => {
+            // componentWillUnmount cleanup
+            //clearInterval(interval);
         };
-    }
-    componentDidMount() {
-        //this.interval = setInterval(() => this.setState({ time: Date.now() }), 1000);
-    }
-    componentWillUnmount() {
-        //clearInterval(this.interval);
-    }
-    componentDidUpdate(prevState) {
-        /*if (this.state.selected_list !== prevState.selected_list && this.state.selected_list != []) {
-            for (var i = 0; i < this.state.selected_list.length; i++) {
-                let _split_value = this.state.selected_list[i].split(':');
-                if (document.getElementById(_split_value[1])) document.getElementById(_split_value[1]).value = _split_value[0];
-            }
-        }
-        */
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, list } = this.props;
-        const { } = this.state;
+    }, []);
 
         // DATA GETTERS
 
@@ -73,7 +60,7 @@ class SUBMIT_LIST extends Component {
                     break;
                 }
             }
-            this.setState({ list_new: items_set })
+            setListNew(items_set)
             //_update_doms();
         }
 
@@ -173,12 +160,12 @@ class SUBMIT_LIST extends Component {
 
         // DATA CONVERTERS FOR DATATABLE
         let _update_selected_list = (value, id) => {
-            let _array_selected_list = this.state.selected_list;
+            let _array_selected_list = [...selected_list];
             let _newEntry = value + ':' + id;
             let _searchIndex = _array_selected_list.findIndex(value => value.includes(id));
             if (_searchIndex < 0) _array_selected_list.push(_newEntry);
             else _array_selected_list[_searchIndex] = _newEntry;
-            this.setState({ selected_list: _array_selected_list });
+            setSelectedList(_array_selected_list);
         }
         let _update_doms = () => {
             /*for (var i = 0; i < this.state.selected_list.length; i++) {
@@ -187,12 +174,12 @@ class SUBMIT_LIST extends Component {
             }*/
         }
         let _GET_DATA_FOR_TITLE = () => {
-            let _LIST = this.state.list_new ? [this.state.list_new] : [Lists.list_61];
+            let _LIST = list_new ? [list_new] : [Lists.list_61];
             return <label className="fw-bold submit_list_title" id="new_list_title">
                 {Object.keys(_LIST[0])}</label>
         }
         let _GET_DATA_FOR_LIST = () => {
-            let _LIST = this.state.list_new ? [this.state.list_new] : [Lists.list_61];
+            let _LIST = list_new ? [list_new] : [Lists.list_61];
             for (var ITEM in _LIST) {
                 var items_set = Object.values(_LIST[ITEM]);
                 items_set = items_set[0] ?? [];
@@ -263,7 +250,7 @@ class SUBMIT_LIST extends Component {
                         <label className="fw-bold">Listas Totales: {currentItem.sub_lists.length}</label>
                     </div>
                     <div className="text-end col-6">
-                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => this.setState({ new: true })}>
+                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => setIsNew(true)}>
                             <i class="fas fa-plus-circle"></i> NUEVA LISTA </MDBBtn>
                     </div>
                 </div>
@@ -313,7 +300,7 @@ class SUBMIT_LIST extends Component {
 
         let _COMPONENT_NEW = () => {
             let _COMPONENT = [];
-            let _LIST = this.state.list_new ? [this.state.list_new] : [Lists.list_61];
+            let _LIST = list_new ? [list_new] : [Lists.list_61];
 
             _COMPONENT.push(<>
                 <div className="row">
@@ -325,7 +312,7 @@ class SUBMIT_LIST extends Component {
                         </select>
                     </div>
                     <div className="text-end col-6 my-3">
-                        <MDBBtn className="btn btn-info my-3 me-2" onClick={() => this.setState({ new: false })}>
+                        <MDBBtn className="btn btn-info my-3 me-2" onClick={() => setIsNew(false)}>
                             <i class="fas fa-times-circle"></i>  CANCELAR </MDBBtn>
                         <MDBBtn className="btn btn-success my-3" onClick={() => new_list()}>
                             <i class="far fa-edit"></i> GUARDAR LISTA </MDBBtn>
@@ -335,17 +322,26 @@ class SUBMIT_LIST extends Component {
             for (var ITEM in _LIST) {
 
                 if (Object.keys(_LIST[ITEM])[0]) {
+                    const rows = _GET_DATA_FOR_LIST();
                     _COMPONENT.push(<>
-                        <MDBDataTable
-                            striped
-                            bordered
-                            small
-                            data={data}
-                            searchLabel={"Buscar..."}
-                            info={false}
-                            paging={false}
-                            onSearch={_update_doms}
-                        />
+                        <table className="table table-striped table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    {data.columns.map((col, idx) => (
+                                        <th key={idx} style={col.width ? { width: col.width } : {}}>{col.label}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows.map((row, idx) => (
+                                    <tr key={idx}>
+                                        {data.columns.map((col, cidx) => (
+                                            <td key={cidx}>{row[col.field]}</td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </>)
                 } else {
                     _COMPONENT.push(<>{_COMPONENT_EXTRA_LIST()}</>)
@@ -379,7 +375,7 @@ class SUBMIT_LIST extends Component {
             </>)
 
 
-            for (var i = 0; i < this.state.extra_items; i++) {
+            for (var i = 0; i < extra_items; i++) {
                 _COMPONENT.push(<>
                     <div className="row border border-secondary py-1 text-center">
                         <div className="col-2">
@@ -423,14 +419,14 @@ class SUBMIT_LIST extends Component {
             _COMPONENT.push(<>
                 <div className="row text-center border border-secondary py-2 text-white">
                     <div className="col-6">
-                        <label className="fw-bold text-dark">ITEMS TOTALES: {this.state.extra_items}</label>
+                        <label className="fw-bold text-dark">ITEMS TOTALES: {extra_items}</label>
                     </div>
                     <div className="col-6 text-end">
-                        {this.state.extra_items > 0
-                            ? <MDBBtn className="btn btn-sm btn-secondary my-3 me-1" onClick={() => this.setState({ extra_items: this.state.extra_items - 1 })}>
+                        {extra_items > 0
+                            ? <MDBBtn className="btn btn-sm btn-secondary my-3 me-1" onClick={() => setExtraItems(extra_items - 1)}>
                                 <i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                             : ""}
-                        <MDBBtn className="btn btn-sm btn-secondary my-3" onClick={() => this.setState({ extra_items: this.state.extra_items + 1 })}>
+                        <MDBBtn className="btn btn-sm btn-secondary my-3" onClick={() => setExtraItems(extra_items + 1)}>
                             <i class="fas fa-plus-circle"></i> AÑADIR ITEM </MDBBtn>
                     </div>
                 </div>
@@ -449,7 +445,7 @@ class SUBMIT_LIST extends Component {
             formData.set('submitId', currentItem.id);
             let new_list_type = document.getElementById("submit_list_type").value;
 
-            if (new_list_type == "LISTA EXTRA" && this.state.extra_items == 0) {
+            if (new_list_type == "LISTA EXTRA" && extra_items == 0) {
                 MySwal.fire({
                     title: "LISTA EXTRA VACIA",
                     text: "Para crear una Lista Extra de documentos, debe añadir almenos un elemeno.",
@@ -502,8 +498,8 @@ class SUBMIT_LIST extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshList();
-                        this.setState({ new: false })
+                        refreshList();
+                        setIsNew(false)
                     }
                     else {
                         MySwal.fire({
@@ -574,7 +570,7 @@ class SUBMIT_LIST extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.refreshList();
+                        refreshList();
                     }
                     else {
                         MySwal.fire({
@@ -623,7 +619,7 @@ class SUBMIT_LIST extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.refreshList();
+                                refreshList();
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -649,7 +645,7 @@ class SUBMIT_LIST extends Component {
         return (
             <div className="py-3">
                 {_COMPONENT_ADD_LIS()}
-                {this.state.new
+                {isNew
                     ? <>{_COMPONENT_NEW()}</>
                     : ""}
                 <div className="row py-3">
@@ -659,7 +655,6 @@ class SUBMIT_LIST extends Component {
                 </div>
             </div >
         );
-    }
 }
 
 export default SUBMIT_LIST;

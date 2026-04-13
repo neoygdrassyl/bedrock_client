@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import ReactHTMLDatalist from "react-html-datalist";
+import { useEffect, useState } from 'react';
+import HTMLDatalist from '../../../../components/HTMLDatalist';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
 import Modal from 'react-modal';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { MDBBtn } from '../../../../components/ui';
 import FUNService from '../../../../services/fun.service';
 import moment from 'moment';
-import { Divider } from 'rsuite';
+const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;;
 
 export default function RECORD_LAW_FUN_52(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, quickModalStyle } = props;
@@ -52,7 +52,7 @@ export default function RECORD_LAW_FUN_52(props) {
         setLod(true);
     }
     let LOAD_STEP = (_id_public) => {
-        var _CHILD = currentRecord.record_law_steps;
+        var _CHILD = Array.isArray(currentRecord.record_law_steps) ? currentRecord.record_law_steps : [];
         for (var i = 0; i < _CHILD.length; i++) {
             if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
         }
@@ -186,7 +186,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <span class="input-group-text bg-success text-white">
                             <i class="fas fa-search"></i>
                         </span>
-                        <ReactHTMLDatalist
+                        <HTMLDatalist
                             name={"search_52"}
                             onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
                             classNames={"form-control"}
@@ -608,7 +608,7 @@ export default function RECORD_LAW_FUN_52(props) {
                                 <i class="far fa-eye"></i>
                             </span>
                             <select class="form-select" id="f_528" defaultValue={item.supervision}>
-                                <option selected>N/A</option>
+                                <option>N/A</option>
                                 <option>SI</option>
                                 <option>NO</option>
                             </select>

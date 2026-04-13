@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { useState, useEffect } from 'react';
+import { MDBBtn } from '../../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -12,28 +12,22 @@ import parkingData from '../../../../components/jsons/parkingData.json'
 import { SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../../components/vars.global';
 
 const MySwal = withReactContent(Swal);
-class RECORD_ARC_34 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            new_gen: false,
-            new_k: false,
-            edit_k: false,
-        };
-    }
-    componentDidUpdate(prevState) {
-        if (this.state.edit_k !== prevState.edit_k && this.state.edit_k != false) {
-            var _ITEM = this.state.edit_k;
+function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
+    const [newGen, setNewGen] = useState(false);
+    const [newK, setNewK] = useState(false);
+    const [editK, setEditK] = useState(false);
+    const [saveStates, setSaveStates] = useState({});
+
+    useEffect(() => {
+        if (editK !== false) {
+            var _ITEM = editK;
             document.getElementById("r_a_34_k_1_edit").value = _ITEM.name;
             document.getElementById("r_a_34_k_2_edit").value = _ITEM.index;
             document.getElementById("r_a_34_k_4_edit").value = _ITEM.proyect;
-            document.getElementById("r_a_34_k_5_edit").value = _ITEM.type
-            document.getElementById("r_a_34_k_6_edit").value = _ITEM.exception
+            document.getElementById("r_a_34_k_5_edit").value = _ITEM.type;
+            document.getElementById("r_a_34_k_6_edit").value = _ITEM.exception;
         }
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+    }, [editK]);
 
 
         // DATA GETERS
@@ -128,7 +122,7 @@ class RECORD_ARC_34 extends Component {
             return (_ITEM.proyect - _PARSER_NORM(_ITEM, _AREA)).toFixed(2);
         }
         let LOAD_STEP = (_id_public) => {
-            var _CHILD = currentRecord.record_arc_steps;
+            var _CHILD = Array.isArray(currentRecord.record_arc_steps) ? currentRecord.record_arc_steps : [];
             for (var i = 0; i < _CHILD.length; i++) {
                 if (_CHILD[i].version == currentVersionR && _CHILD[i].id_public == _id_public) return _CHILD[i]
             }
@@ -401,7 +395,7 @@ class RECORD_ARC_34 extends Component {
             const columns = [
                 {
                     name: <label>Norma Urbana CUB</label>,
-                    selector: 'norm',
+                    selector: row => row.norm,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -409,7 +403,7 @@ class RECORD_ARC_34 extends Component {
                 },
                 {
                     name: <label>Descripción</label>,
-                    selector: 'desc',
+                    selector: row => row.desc,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -417,7 +411,7 @@ class RECORD_ARC_34 extends Component {
                 },
                 {
                     name: <label>Fecha</label>,
-                    selector: 'date',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -425,7 +419,7 @@ class RECORD_ARC_34 extends Component {
                 },
                 {
                     name: <label>Folios</label>,
-                    selector: 'pages',
+                    selector: row => row.pages,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -1811,7 +1805,7 @@ class RECORD_ARC_34 extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                         document.getElementById("form_ra_34_gen").reset();
                     } else {
                         MySwal.fire({
@@ -1858,7 +1852,7 @@ class RECORD_ARC_34 extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.props.requestUpdateRecord(currentItem.id)
+                                requestUpdateRecord(currentItem.id)
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -1889,7 +1883,7 @@ class RECORD_ARC_34 extends Component {
             RECORD_ARCSERVICE.update_arc_34_gen(id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        this.props.requestUpdateRecord(currentItem.id);
+                        requestUpdateRecord(currentItem.id);
                     } else {
                         MySwal.fire({
                             title: swaMsg.generic_eror_title,
@@ -1911,7 +1905,7 @@ class RECORD_ARC_34 extends Component {
         }
 
         let manage_ra_34 = (state) => {
-            if (state) this.setState({ [state]: 1 })
+            if (state) setSaveStates(prev => ({...prev, [state]: 1}))
 
             let checks = [];
             let values = [];
@@ -2076,7 +2070,7 @@ class RECORD_ARC_34 extends Component {
             save_step('s34_hs', false, formData);
         }
         let manage_ra_34_te = (state) => {
-            if (state) this.setState({ [state]: 1 })
+            if (state) setSaveStates(prev => ({...prev, [state]: 1}))
 
             let checks = [];
             let values = [];
@@ -2112,7 +2106,7 @@ class RECORD_ARC_34 extends Component {
         }
 
         let manage_ra_34_vol = (state) => {
-            if (state) this.setState({ [state]: 1 })
+            if (state) setSaveStates(prev => ({...prev, [state]: 1}))
 
             let checks = [];
             let values = [];
@@ -2164,8 +2158,8 @@ class RECORD_ARC_34 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setSaveStates(prev => ({...prev, [state]: 2}))
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -2173,7 +2167,7 @@ class RECORD_ARC_34 extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            if (state) this.setState({ [state]: 3 })
+                            if (state) setSaveStates(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
@@ -2184,7 +2178,7 @@ class RECORD_ARC_34 extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        if (state) this.setState({ [state]: 3 })
+                        if (state) setSaveStates(prev => ({...prev, [state]: 3}))
                     });
             }
             else {
@@ -2198,8 +2192,8 @@ class RECORD_ARC_34 extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.requestUpdateRecord(currentItem.id);
-                            if (state) this.setState({ [state]: 2 })
+                            requestUpdateRecord(currentItem.id);
+                            if (state) setSaveStates(prev => ({...prev, [state]: 2}))
                         } else {
                             if (useSwal) MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -2207,7 +2201,7 @@ class RECORD_ARC_34 extends Component {
                                 icon: 'warning',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            if (state) this.setState({ [state]: 3 })
+                            if (state) setSaveStates(prev => ({...prev, [state]: 3}))
                         }
                     })
                     .catch(e => {
@@ -2218,7 +2212,7 @@ class RECORD_ARC_34 extends Component {
                             icon: 'warning',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        if (state) this.setState({ [state]: 3 })
+                        if (state) setSaveStates(prev => ({...prev, [state]: 3}))
                     });
             }
         }
@@ -2226,15 +2220,15 @@ class RECORD_ARC_34 extends Component {
         return (
             <div className="record_arc_32 container">
 
-                <h3 className="py-3" >3.4.1 Información General  {_SAVING_STATE(this.state.a41)}</h3>
+                <h3 className="py-3" >3.4.1 Información General  {_SAVING_STATE(saveStates.a41)}</h3>
 
                 <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => this.setState({ new_gen: e.target.checked })} />
+                    <input class="form-check-input" type="checkbox" onChange={(e) => setNewGen(e.target.checked)} />
                     <label class="form-check-label" for="flexCheckDefault">
                         Añadir Nueva Norma Urbana
                     </label>
                 </div>
-                {this.state.new_gen
+                {newGen
                     ? <form id="form_ra_34_gen" onSubmit={new_ra_34_gen}>
                         {_COMPONENT_1()}
                         <div className="text-center">
@@ -2251,12 +2245,12 @@ class RECORD_ARC_34 extends Component {
                 {_COMPONENT_A()}
                 {_COMPONENT_BJ()}
 
-                <h3 className="py-3" >Edificabilidad  {_SAVING_STATE(this.state.edi)}</h3>
+                <h3 className="py-3" >Edificabilidad  {_SAVING_STATE(saveStates.edi)}</h3>
                 {_COMPONENT_INDEX_CALC()}
                 {_COMPONENT_INDEX_CALC_2()}
                 {_COMPONENT_K_TIPOLOGY()}
 
-                <h3 className="py-3" >Voladizos  {_SAVING_STATE(this.state.vol)}</h3>
+                <h3 className="py-3" >Voladizos  {_SAVING_STATE(saveStates.vol)}</h3>
                 {_COMPONENT_VOLADISOS()}
 
                 <h3 className="my-3">3.4.2 Estudio de habitabilidad</h3>
@@ -2273,7 +2267,6 @@ class RECORD_ARC_34 extends Component {
                 {_COMPONENT_CORRECTIONS()}
             </div >
         );
-    }
 }
 
 export default RECORD_ARC_34;

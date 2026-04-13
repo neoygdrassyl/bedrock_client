@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState, } from 'react';
+import { Suspense, useEffect, useState, } from 'react';
 import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -131,7 +131,7 @@ export default function NORM_RESUME(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     MySwal.close();
-                    window.open(process.env.REACT_APP_API_URL + "/pdf/norm/" + "NORMA URBANA " + (item_general.id_out ?? item_general.id_in ?? '') + ".pdf");
+                    window.open(import.meta.env.VITE_API_URL + "/pdf/norm/" + "NORMA URBANA " + (item_general.id_out ?? item_general.id_in ?? '') + ".pdf");
                 } else {
                     MySwal.fire({
                         title: swaMsg.generic_eror_title,

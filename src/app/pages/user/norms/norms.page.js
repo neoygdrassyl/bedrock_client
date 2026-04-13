@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBCol, MDBRow, MDBTooltip } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBCol, MDBRow, MDBTooltip } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import Norms_Service from "../../../services/norm.service"
@@ -13,7 +13,7 @@ import NORM_PERFIL from './norm_perfil.component';
 import NORM_RESUME from './norm_resume.component';
 
 const MySwal = withReactContent(Swal);
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {
     overlay: {
         position: 'fixed',

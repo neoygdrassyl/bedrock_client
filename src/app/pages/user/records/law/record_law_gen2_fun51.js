@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -8,15 +7,8 @@ import VIZUALIZER from '../../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
 
-class RECORD_LAW_GEN_2_FUN51 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = this.props;
-        const { } = this.state;
+function RECORD_LAW_GEN_2_FUN51(props) {
+        const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
 
         // DATA GETTERS
         let _GET_CHILD_51 = () => {
@@ -98,7 +90,7 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                 },
                 {
                     name: <label>TIPO</label>,
-                    selector: 'type',
+                    selector: row => row.type,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -107,7 +99,7 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                 },
                 {
                     name: <label>NOMBRE</label>,
-                    selector: 'name',
+                    selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -116,7 +108,7 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                 },
                 {
                     name: <label>CC/NIT</label>,
-                    selector: 'id_number',
+                    selector: row => row.id_number,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -124,7 +116,7 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                 },
                 {
                     name: <label>NOMBRE REP. LEGAL</label>,
-                    selector: 'rep_name',
+                    selector: row => row.rep_name,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -133,7 +125,7 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                 },
                 {
                     name: <label>C.C. REP. LEGAL</label>,
-                    selector: 'rep_id_number',
+                    selector: row => row.rep_id_number,
                     sortable: true,
                     filterable: true,
                     center: true,
@@ -141,19 +133,19 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                 },
                 {
                     name: <label>TELEFONO/ CELULAR</label>,
-                    selector: 'nunber',
+                    selector: row => row.nunber,
                     center: true,
                     cell: row => <label >{row.nunber}</label>
                 },
                 {
                     name: <label>CORREO</label>,
-                    selector: 'email',
+                    selector: row => row.email,
                     center: true,
                     cell: row => <label>{row.email}</label>
                 },
                 {
                     name: <label>ROL</label>,
-                    selector: 'role',
+                    selector: row => row.role,
                     center: true,
                     minWidth: '200px',
                     cell: row => <label>{row.role}</label>
@@ -201,7 +193,7 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                                 confirmButtonText: swaMsg.text_btn,
                             });
                         }
-                        this.props.requestUpdate(currentItem.id)
+                        props.requestUpdate(currentItem.id)
                     } else {
                         if (useMySwal) {
                             MySwal.fire({
@@ -241,7 +233,6 @@ class RECORD_LAW_GEN_2_FUN51 extends Component {
                 </div>
             </div >
         );
-    }
 }
 
 export default RECORD_LAW_GEN_2_FUN51;

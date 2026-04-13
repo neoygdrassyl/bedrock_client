@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBCard, MDBCardBody, MDBCardTitle } from 'mdb-react-ui-kit';
+import { useState, useEffect, useCallback } from 'react';
+import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBCard, MDBCardBody, MDBCardTitle } from '../../../components/ui';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -16,116 +16,91 @@ import moment from 'moment';
 
 const MySwal = withReactContent(Swal);
 
-class NOMENCLATURE extends Component {
-    constructor(props) {
-        super(props);
-        this.retrievePublish = this.retrievePublish.bind(this);
-        this.refreshList = this.refreshList.bind(this);
-        this.refreshItem = this.refreshItem.bind(this);
-        this.toggle_new = this.toggle_new.bind(this);
-        this.toggle = this.toggle.bind(this)
-        this.state = {
-            error: null,
-            isLoaded: false,
-            isLoadedSearch: false,
-            currentItem: null,
+function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [currentId, setCurrentId] = useState(null);
+    const [modal, setModal] = useState(false);
+    const [newModal, setNewModal] = useState(false);
+    const [list, setList] = useState([]);
+    const [dateStart, setDateStart] = useState('');
+    const [dateEnd, setDateEnd] = useState('');
 
-            modal: false,
-            new_modal: false,
+    const asignList = useCallback((_LIST) => {
+        setList(_LIST);
+        setIsLoaded(true);
+    }, []);
 
-            list_search: [],
-            list: [],
-        };
-    }
-    componentDidMount() {
-        this.retrievePublish();
-    }
-    retrievePublish() {
+    const retrievePublish = useCallback(() => {
         Nomenclature_Service.getAll()
             .then(response => {
-                this.asignList(response.data);
+                asignList(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    retrieveSearch(field, string) {
+    }, [asignList]);
+
+    useEffect(() => {
+        retrievePublish();
+    }, [retrievePublish]);
+
+    const retrieveSearch = useCallback((field, string) => {
         Nomenclature_Service.getSearch(field, string)
             .then(response => {
-                this.asignList(response.data);
+                asignList(response.data);
                 MySwal.close();
             })
             .catch(e => {
                 console.log(e);
             });
-    }
-    refreshList(id) {
-        this.retrievePublish();
-        if (id) this.refreshItem(id)
-    }
-    refreshItem(id) {
+    }, [asignList]);
+
+    const refreshItem = useCallback((id) => {
         Nomenclature_Service.get(id).then(response => {
-            let item = response.data
-            this.setState({
-                currentItem: item,
-            })
-        })
-    }
-    asignList(_LIST) {
-        this.setState({
-            list: _LIST,
-            isLoaded: true,
+            let item = response.data;
+            setCurrentItem(item);
         });
-    }
-    //  MODAL CONTROLS
-    toggle(item) {
-        this.setState({
-            modal: !this.state.modal,
-        });
-        if (item) this.setState({
-            currentId: item.id_public,
-            currentItem: item,
-        });
-        else this.setState({
-            currentId: null,
-            currentItem: null,
-        });
-    }
-    getToggle = () => {
-        return this.state.modal;
-    }
-    toggle_new() {
-        this.setState({
-            new_modal: !this.state.new_modal,
-        });
-    }
-    getToggle_new = () => {
-        return this.state.new_modal;
-    }
+    }, []);
 
+    const refreshList = useCallback((id) => {
+        retrievePublish();
+        if (id) refreshItem(id);
+    }, [retrievePublish, refreshItem]);
 
-    render() {
-        const { translation, swaMsg, globals, breadCrums } = this.props;
-        const { currentItem, isLoaded, list } = this.state;
+    const toggle = useCallback((item) => {
+        setModal(prev => !prev);
+        if (item) {
+            setCurrentId(item.id_public);
+            setCurrentItem(item);
+        } else {
+            setCurrentId(null);
+            setCurrentItem(null);
+        }
+    }, []);
+
+    const toggle_new = useCallback(() => {
+        setNewModal(prev => !prev);
+    }, []);
 
         const columns = [
             {
                 name: <label>No. RADICACIÓN</label>,
-                selector: 'id_public',
+                selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.id_public}</label>
             },
             {
                 name: <label>TIPO</label>,
-                selector: 'type',
+                selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.type}</label>
             },
             {
                 name: <label>FECHA RADICACIÓN</label>,
-                selector: 'date_start',
+                selector: row => row.date_start,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -133,7 +108,7 @@ class NOMENCLATURE extends Component {
             },
             {
                 name: <label>FECHA EXPEDICIÓN</label>,
-                selector: 'date_end',
+                selector: row => row.date_end,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -141,7 +116,7 @@ class NOMENCLATURE extends Component {
             },
             {
                 name: <label>DOCUMENTO</label>,
-                selector: 'nome_doc',
+                selector: row => row.nome_doc,
                 sortable: true,
                 filterable: true,
                 center: true,
@@ -155,7 +130,7 @@ class NOMENCLATURE extends Component {
                 minWidth: '100px',
                 cell: row => <>
                     <MDBTooltip title='Ver detalles' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                        <button onClick={() => this.toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
+                        <button onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
                             <i class="far fa-folder-open fa-2x" ></i></button></MDBTooltip>
 
                     <MDBTooltip title='Eliminar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
@@ -220,7 +195,7 @@ class NOMENCLATURE extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.refreshList();
+                                refreshList();
                             } else {
                                 MySwal.fire({
                                     title: swaMsg.generic_eror_title,
@@ -253,13 +228,10 @@ class NOMENCLATURE extends Component {
                     icon: 'info',
                     showConfirmButton: false,
                 });
-                this.retrieveSearch(field, string);
+                retrieveSearch(field, string);
             } else {
-                this.refreshList();
-                this.setState({
-                    list_search: [],
-                    isLoadedSearch: false,
-                })
+                refreshList();
+                // list_search and isLoadedSearch state cleared by refreshList
             }
         };
 
@@ -273,7 +245,8 @@ class NOMENCLATURE extends Component {
                 date_start = date_b;
                 date_end = date_a;
             }
-            this.setState({ date_start: date_start, date_end: date_end })
+            setDateStart(date_start);
+            setDateEnd(date_end);
 
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -346,7 +319,7 @@ class NOMENCLATURE extends Component {
 
             var link = document.createElement("a");
             link.setAttribute("href", csvUrl);
-            link.setAttribute("download", `REPORTE DE NOMENCLATURAS ${this.state.date_start} - ${this.state.date_end}.csv`);
+            link.setAttribute("download", `REPORTE DE NOMENCLATURAS ${date_start} - ${date_end}.csv`);
             document.body.appendChild(link); // Required for FF
             MySwal.close()
             link.click();
@@ -374,7 +347,7 @@ class NOMENCLATURE extends Component {
                         <div className="row">
                             <div className="col-4">
                                 <div class="text-center py-4 mt-3">
-                                    <button className="btn btn-success" onClick={() => this.toggle_new()} styes={{ zIndex: -1 }} l><i class="fas fa-plus-circle"></i> CREAR NOMENCLATURA </button>
+                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><i class="fas fa-plus-circle"></i> CREAR NOMENCLATURA </button>
                                 </div>
                             </div>
                             <div className="col-4">
@@ -466,46 +439,45 @@ class NOMENCLATURE extends Component {
                 </div>
 
                 <Modal contentLabel="VIEW/EDIT"
-                    isOpen={this.state.modal}
+                    isOpen={modal}
                     style={customStyles}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i class="far fa-edit"></i> ACTUALIZAR NOMENCLATURA: {this.state.currentId} </h3>
-                        <MDBBtn className='btn-close' color='none' onClick={this.toggle}></MDBBtn>
+                        <h3><i class="far fa-edit"></i> ACTUALIZAR NOMENCLATURA: {currentId} </h3>
+                        <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                     </div>
                     <NOMENCLATURE_NEW
                         translation={translation} swaMsg={swaMsg} globals={globals}
-                        refreshList={this.refreshList}
-                        closeModal={this.toggle_new}
+                        refreshList={refreshList}
+                        closeModal={toggle_new}
                         currentItem={currentItem} />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => this.toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
                 <Modal contentLabel="NEW VIEW"
-                    isOpen={this.state.new_modal}
+                    isOpen={newModal}
                     style={customStyles}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <h3><i class="fas fa-plus-circle"></i> NUEVA NOMENCLATURA </h3>
-                        <MDBBtn className='btn-close' color='none' onClick={() => this.toggle_new()}></MDBBtn>
+                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_new()}></MDBBtn>
                     </div>
                     <NOMENCLATURE_NEW
                         translation={translation} swaMsg={swaMsg} globals={globals}
-                        refreshList={this.refreshList}
-                        closeModal={this.toggle_new} />
+                        refreshList={refreshList}
+                        closeModal={toggle_new} />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => this.toggle_new()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><i class="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
             </div >
         );
-    }
 }
 
 export default NOMENCLATURE;

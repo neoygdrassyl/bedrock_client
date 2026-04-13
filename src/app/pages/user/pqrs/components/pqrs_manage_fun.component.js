@@ -1,18 +1,9 @@
-import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 
 const MySwal = withReactContent(Swal);
-class PQRS_EDIT_FUN extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem } = this.props;
-        const { } = this.state;
+function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
 
         //DATA GETTERS
         let _GET_FUN = () => {
@@ -104,7 +95,7 @@ class PQRS_EDIT_FUN extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.refreshCurrentItem(currentItem.id)
+                            refreshCurrentItem(currentItem.id)
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -134,7 +125,7 @@ class PQRS_EDIT_FUN extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.props.refreshCurrentItem(currentItem.id)
+                            refreshCurrentItem(currentItem.id)
                         } else {
                             MySwal.fire({
                                 title: swaMsg.generic_eror_title,
@@ -167,7 +158,6 @@ class PQRS_EDIT_FUN extends Component {
                 </form>
             </div>
         );
-    }
 }
 
 export default PQRS_EDIT_FUN;

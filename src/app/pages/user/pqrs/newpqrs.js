@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { MDBBtn } from 'mdb-react-ui-kit';
+import { useState } from 'react';
+import { MDBBtn } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -8,45 +8,44 @@ import HolyDays from '../../../components/holydays.list.json'
 const moment = require('moment');
 const momentB = require('moment-business-days');
 const MySwal = withReactContent(Swal);
-class PQRSNEW extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            solicitors: 1,
-            contacts: 1,
-            licence: false,
-            attachs: 0,
-        };
-    }
-    clearForm() {
+
+function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshRequested }) {
+    const [solicitors, setSolicitors] = useState(1);
+    const [contacts, setContacts] = useState(1);
+    const [licence, setLicence] = useState(false);
+    const [attachs, setAttachs] = useState(0);
+
+    const clearForm = () => {
         document.getElementById("app-formNew").reset()
-    }
-    addSolicitor() {
-        this.setState({ solicitors: this.state.solicitors + 1 })
-    }
-    minusSolicitor() {
-        this.setState({ solicitors: this.state.solicitors - 1 })
-    }
-    addContact() {
-        this.setState({ contacts: this.state.contacts + 1 })
-    }
-    minusContact() {
-        this.setState({ contacts: this.state.contacts - 1 })
-    }
-    addAttach() {
-        this.setState({ attachs: this.state.attachs + 1 })
-    }
-    minusAttach() {
-        this.setState({ attachs: this.state.attachs - 1 })
-    }
-    toggleLicense() {
-        this.setState({
-            licence: !this.state.licence
-        });
-    }
-    render() {
-        const { translation, swaMsg, globals, translation_form, } = this.props;
-        const { solicitors, contacts, licence, attachs } = this.state;
+    };
+
+    const addSolicitor = () => {
+        setSolicitors(solicitors + 1);
+    };
+
+    const minusSolicitor = () => {
+        setSolicitors(solicitors - 1);
+    };
+
+    const addContact = () => {
+        setContacts(contacts + 1);
+    };
+
+    const minusContact = () => {
+        setContacts(contacts - 1);
+    };
+
+    const addAttach = () => {
+        setAttachs(attachs + 1);
+    };
+
+    const minusAttach = () => {
+        setAttachs(attachs - 1);
+    };
+
+    const toggleLicense = () => {
+        setLicence(!licence);
+    };
         var formData = new FormData();
 
         let _SOLICITORS_COMPONENT = () => {
@@ -363,8 +362,8 @@ class PQRSNEW extends Component {
                             icon: 'success',
                             confirmButtonText: swaMsg.text_btn,
                         });
-                        this.clearForm();
-                        this.props.refreshRequested();
+                        clearForm();
+                        refreshRequested();
                     }
                     else if (response.data === 'ERROR_DUPLICATE') {
                         MySwal.fire({
@@ -414,7 +413,7 @@ class PQRSNEW extends Component {
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
                         icon: 'error',
-                        confirmButtonText: this.props.swaMsg.text_btn,
+                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -470,9 +469,9 @@ class PQRSNEW extends Component {
                         <div className="text-end m-3">
 
                             {(solicitors && contacts)  > 1
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => (this.minusSolicitor(), this.minusContact())}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => (minusSolicitor(), minusContact())}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => (this.addSolicitor(), this.addContact())}
+                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => (addSolicitor(), addContact())}
                             ><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
                         </div>
                         {_SOLICITORS_COMPONENT()}
@@ -481,16 +480,16 @@ class PQRSNEW extends Component {
                         <label className="app-p lead text-start fw-bold text-uppercase">1.2 DATOS PARA NOTIFICACIÓN</label>
                         <div className="text-end m-3">
                             {/* {contacts > 1
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusContact()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => minusContact()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addContact()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn> */}
+                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => addContact()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn> */}
                         </div>
                         {_CONTACTS_COMPONENT()}
                         <hr className="my-3" />
 
                         <label className="app-p lead text-start fw-bold text-uppercase">1.3 CASOS DE ACTUACIONES Y LICENCIAS</label>
                         <div class="form-check my-3 px-5">
-                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => this.toggleLicense()} />
+                            <input class="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => toggleLicense()} />
                             <p class="form-check-label text-start" >¿Esta es una solicitud relacionada con una actuación urbanistica o licencia?</p>
                         </div>
                         {licence
@@ -653,9 +652,9 @@ class PQRSNEW extends Component {
                         <label className="app-p lead text-start fw-bold text-uppercase">1.5 DOCUMENTOS ANEXOS</label>
                         <div className="text-end m-3">
                             {attachs > 0
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => this.minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => this.addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
                         </div>
                         {_ATTACHS_COMPONENT()}
                         <hr className="my-3" />
@@ -685,7 +684,6 @@ class PQRSNEW extends Component {
                 </form>
             </div>
         );
-    }
 }
 
 export default PQRSNEW;

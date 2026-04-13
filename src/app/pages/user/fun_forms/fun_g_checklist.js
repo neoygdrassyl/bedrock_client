@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -7,14 +6,7 @@ import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
-class FUNG_CHECKLIST extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-        const { translation, swaMsg, globals, currentItem, currentVersion } = this.props;
+const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion }) => {
 
         let _SET_CHILD = () => {
             var _CHILD = currentItem.fun_1s;
@@ -1604,14 +1596,14 @@ class FUNG_CHECKLIST extends Component {
             const columns = [
                 {
                     name: <label className="text-center">DESCRIPCIÓN</label>,
-                    selector: 'description',
+                    selector: row => row.description,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.description}</label>
                 },
                 {
                     name: <label>CÓDIGO</label>,
-                    selector: 'id_public',
+                    selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     maxWidth: '50px',
@@ -1619,7 +1611,7 @@ class FUNG_CHECKLIST extends Component {
                 },
                 {
                     name: <label>FOLIOS</label>,
-                    selector: 'pages',
+                    selector: row => row.pages,
                     sortable: true,
                     filterable: true,
                     maxWidth: '40px',
@@ -1627,7 +1619,7 @@ class FUNG_CHECKLIST extends Component {
                 },
                 {
                     name: <label>FECHA ANEXO</label>,
-                    selector: 'date',
+                    selector: row => row.date,
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',
@@ -1687,7 +1679,6 @@ class FUNG_CHECKLIST extends Component {
                 {_CHILD_6_LIST()}
             </div>
         );
-    }
-}
+};
 
 export default FUNG_CHECKLIST;

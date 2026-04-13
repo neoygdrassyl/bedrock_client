@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { infoCud } from '../jsons/vars'
 import SERIES_CB1 from "../jsons/funcCodes.cb1.json"
-const _GLOBAL_ID = process.env.REACT_APP_GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export const SERIES_DOCS = {
     // i count = 86
@@ -939,7 +939,6 @@ export function _GET_SUBSERIE_STR(_CHILD) {
 export function addDecimalPoints(num) {
     if (!num) return '';
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
 }
 
 export function _ADDRESS_SET_FULL(_DOMID, _FUN2) {

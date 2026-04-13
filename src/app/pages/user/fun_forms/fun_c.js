@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
-import { MDBBtn, MDBCard, MDBCardBody, MDBTypography } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBCard, MDBCardBody, MDBTypography } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DCO_LIS from '../../../components/jsons/fun6DocsList.json'
@@ -12,7 +12,7 @@ import FUN_VERSION_NAV from './components/fun_versionNav';
 import FUN_CHECKLIST_N from './components/fun_checklist_n';
 import FUN_PDF_CHECK from './components/fun_pdf_check';
 import FUN_SERVICE from '../../../services/fun.service';
-import Collapsible from 'react-collapsible';
+import Collapsible from '../../../components/Collapsible';
 import FUN_DOC_CONFIRM_INCOMPLETE from './components/fun_doc_confirminc';
 import FUN_C_CLOCKS from './components/fun_c_clocks.component';
 import moment from 'moment';
@@ -20,59 +20,26 @@ import submitService from '../../../services/submit.service';
 import { GEM_CODE_LIST } from '../../../components/customClasses/typeParse';
 
 const MySwal = withReactContent(Swal);
-class FUNC extends Component {
-    constructor(props) {
-        super(props);
-        this.requestUpdate = this.requestUpdate.bind(this);
-        this.state = {
-            pqrsxfun: false,
-            VRDocs: [],
-            load: false,
-            loadVR: false
-        };
-    }
-    requestUpdate(id, isGlobal) {
-        if (isGlobal) this.retrieveItem(id);
-        else this.props.requestUpdate(id);
-    }
-    componentDidMount() {
-        this.retrieveItem(this.props.currentId);
-        
-    }
-    retrieveItem(id) {
-        FUN_SERVICE.get(id)
-            .then(response => {
-                this.setState({
-                    currentItem: response.data,
-                    load: true
-                })
-                this.retrievePQRSxFUN(response.data.id_public);
-                this.setVRList(response.data.id_public);
-            })
-            .catch(e => {
-                console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: this.props.swaMsg.text_btn,
-                });
-            });
-    }
-    retrievePQRSxFUN(id_public) {
+function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation, globals, currentVersion, NAVIGATION, NAVIGATION_VERSION, requesRefresh, closeModal }) {
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [VRDocs, setVRDocs] = useState([]);
+    const [load, setLoad] = useState(false);
+    const [loadVR, setLoadVR] = useState(false);
+    const [currentItem, setCurrentItem] = useState(undefined);
+
+    function retrievePQRSxFUN(id_public) {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
-                this.setState({
-                    pqrsxfun: response.data,
-                })
+                setPqrsxfun(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
     }
-    setVRList(id_public) {
+
+    function setVRListFn(id_public) {
         if (!id_public) return;
-        if (this.state.loadVR) return;
+        if (loadVR) return;
         submitService.getIdRelated(id_public).then(response => {
             let newList = [];
             let List = response.data;
@@ -99,14 +66,38 @@ class FUNC extends Component {
                     })
                 })
             })
-            this.setState({ VRDocs: newList, load: true })
-        })
+            setVRDocs(newList);
+            setLoad(true);
+        });
+    }
 
-    };
-    render() {
-        const { translation, swaMsg, globals, currentVersion } = this.props;
-        const { currentItem, VRDocs } = this.state;
-        const MySwal = withReactContent(Swal);
+    function retrieveItem(id) {
+        FUN_SERVICE.get(id)
+            .then(response => {
+                setCurrentItem(response.data);
+                setLoad(true);
+                retrievePQRSxFUN(response.data.id_public);
+                setVRListFn(response.data.id_public);
+            })
+            .catch(e => {
+                console.log(e);
+                MySwal.fire({
+                    title: "ERROR AL CARGAR",
+                    text: "No ha sido posible cargar este item, intentelo nuevamente.",
+                    icon: 'error',
+                    confirmButtonText: swaMsg.text_btn,
+                });
+            });
+    }
+
+    function requestUpdate(id, isGlobal) {
+        if (isGlobal) retrieveItem(id);
+        else propRequestUpdate(id);
+    }
+
+    useEffect(() => {
+        retrieveItem(currentId);
+    }, []);
 
         // DATA GETTERS
         let _GET_CHILD_1 = () => {
@@ -475,10 +466,10 @@ class FUNC extends Component {
                                     RADICACIÓN INCOMPLETA
                                 </label>
                             </div>
-                            {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
+                            {!ALLOW_REVIEW ? <div className='note note-danger'>
                                 <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                                 NO ES POSIBLE DECLARAR EN "LYDF" POR QUE FALTAN DOCUMENTOS POR APORTAR EN EL PUNTO 6
-                            </MDBTypography> : ''}
+                            </div> : ''}
                         </div>
                         <div className="col-6">
                             <label>Solicitante</label>
@@ -618,7 +609,7 @@ class FUNC extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -657,7 +648,7 @@ class FUNC extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.requestUpdate(currentItem.id, true);
+                            requestUpdate(currentItem.id, true);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -705,9 +696,9 @@ class FUNC extends Component {
                                 icon: 'success',
                                 confirmButtonText: swaMsg.text_btn,
                             });
-                            this.requestUpdate(currentItem.id);
-                            this.props.requesRefresh();
-                            if (closeModal) this.props.closeModal();
+                            requestUpdate(currentItem.id);
+                            requesRefresh();
+                            if (closeModal) closeModal();
                         }
                     } else {
                         if (useMySwal) {
@@ -775,8 +766,8 @@ class FUNC extends Component {
                                     icon: 'success',
                                     confirmButtonText: swaMsg.text_btn,
                                 });
-                                this.requestUpdate(currentItem.id);
-                                this.props.requesRefresh();
+                                requestUpdate(currentItem.id);
+                                requesRefresh();
                             }
                         } else {
                             if (useMySwal) {
@@ -814,7 +805,7 @@ class FUNC extends Component {
                                     confirmButtonText: swaMsg.text_btn,
                                 });
                             }
-                            this.requestUpdate(currentItem.id);
+                            requestUpdate(currentItem.id);
                         } else {
                             if (useMySwal) {
                                 MySwal.fire({
@@ -873,7 +864,7 @@ class FUNC extends Component {
                             globals={globals}
                             currentItem={currentItem}
                             currentVersion={currentVersion}
-                            requestUpdate={this.requestUpdate}
+                            requestUpdate={requestUpdate}
                         />
 
                         <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">CARTA - LEGAL Y DEBIDA FORMA</label>}>
@@ -884,7 +875,7 @@ class FUNC extends Component {
                                     globals={globals}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                     alert={true}
                                     edit />
                             </div>
@@ -897,7 +888,7 @@ class FUNC extends Component {
                                     globals={globals}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
-                                    requestUpdate={this.requestUpdate}
+                                    requestUpdate={requestUpdate}
                                     edit />
                             </div>
                         </Collapsible>
@@ -909,7 +900,7 @@ class FUNC extends Component {
                         globals={globals}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                        requestUpdate={this.requestUpdate}
+                        requestUpdate={requestUpdate}
                     />
                     <fieldset className="p-3">
                         <legend className="my-2 px-3 text-uppercase bg-danger" id="func_pdf">
@@ -930,14 +921,14 @@ class FUNC extends Component {
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         FROM={"check"}
-                        NAVIGATION={this.props.NAVIGATION}
-                        pqrsxfun={this.state.pqrsxfun}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
                     />
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentItem}
                         currentVersion={currentVersion}
-                        NAVIGATION_VERSION={this.props.NAVIGATION_VERSION}
+                        NAVIGATION_VERSION={NAVIGATION_VERSION}
 
                     />
                 </> : <fieldset className="p-3" id="fung_0">
@@ -945,7 +936,6 @@ class FUNC extends Component {
                 </fieldset>}
             </div>
         );
-    }
 }
 /*
 const NAV_FUNC = (state) => {

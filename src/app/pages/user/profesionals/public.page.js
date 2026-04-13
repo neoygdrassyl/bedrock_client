@@ -1,18 +1,17 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, } from 'mdb-react-ui-kit';
+import { MDBBreadcrumb, MDBBreadcrumbItem, } from '../../../components/ui';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { useParams } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-import React from 'react';
-import { Divider } from 'rsuite';
-
-const recaptchaRef = React.createRef();
+import React, { useRef } from 'react';
+const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 const MySwal = withReactContent(Swal);
 
 export default function PROFESIONALS_PUBLIC(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
+    const recaptchaRef = useRef(null);
 
     const { urlParams } = useParams();
 
@@ -287,7 +286,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                         <div className='col'>
                             <ReCAPTCHA
                                 ref={recaptchaRef}
-                                sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_HTML}
+                                sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
                             />
                         </div>
                         <div className='col'></div>
