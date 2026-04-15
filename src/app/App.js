@@ -550,7 +550,6 @@ function PrivateRoute({ children }) {
 }
 
 function LoginPage() {
-  let sha256 = require('js-sha256');
   const { t } = useTranslation();
   const navigate = useNavigate();
   let auth = useAuth();
@@ -561,6 +560,16 @@ function LoginPage() {
 
   let handleSubmit = (event) => {
     event.preventDefault();
+
+    const showAuthError = ({ title, text, footer }) => {
+      MySwal.fire({
+        title,
+        text,
+        footer,
+        icon: 'error',
+        confirmButtonText: 'CONTINUAR',
+      });
+    };
 
     recaptchaRef.current.execute().then(response => {
       CustomsDataService.appLogin(formData)
@@ -584,24 +593,39 @@ function LoginPage() {
             DataSerive.setUser(userInfo);
             login();
           } else {
-            MySwal.fire({
-              title: <h2>CERTIFICACION FALLIDA</h2>,
-              text: 'Hubo un error de acceso a la aplicación',
-              footer: 'Revise sus credenciales e intentelo nuevamente',
-              icon: 'error',
-              confirmButtonText: 'CONTINUAR',
-            })
+            showAuthError({
+              title: 'CERTIFICACION FALLIDA',
+              text: 'Respuesta de autenticación inválida',
+              footer: 'El servidor respondió sin token o sin datos de usuario',
+            });
           }
         })
         .catch(e => {
-          console.log(e);
-          MySwal.fire({
-            title: <h2>CERTIFICACION FALLIDA</h2>,
-            text: 'Credenciales inválidas o error de conexión',
-            footer: 'Revise sus credenciales e intentelo nuevamente',
-            icon: 'error',
-            confirmButtonText: 'CONTINUAR',
-          })
+          console.log('[AUTH] Login error', e);
+
+          if (!e.response) {
+            showAuthError({
+              title: 'ERROR DE CONEXION',
+              text: 'No fue posible conectar con el servidor',
+              footer: 'Verifique que el backend esté en línea y VITE_API_URL apunte correctamente',
+            });
+            return;
+          }
+
+          if (e.response.status === 401) {
+            showAuthError({
+              title: 'CREDENCIALES INVALIDAS',
+              text: 'Usuario o contraseña incorrectos',
+              footer: 'Revise sus credenciales e intentelo nuevamente',
+            });
+            return;
+          }
+
+          showAuthError({
+            title: 'ERROR EN EL SERVIDOR',
+            text: 'No fue posible iniciar sesión en este momento',
+            footer: 'Intente nuevamente o contacte al administrador',
+          });
         });
     }).catch(e => {
       console.log(e);
@@ -634,7 +658,7 @@ function LoginPage() {
                   <div className="mb-3">
                     <label htmlFor="password" className="form-label text-black">{t('login.str_pass')}</label>
                     <input type="password" className="form-control" id="password"
-                      onChange={(e) => formData.set('password', sha256(e.target.value))} />
+                      onChange={(e) => formData.set('password', e.target.value)} />
                   </div>
                   <div className="text-center pt-4 mt-3">
                     <button type="submit" className="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
