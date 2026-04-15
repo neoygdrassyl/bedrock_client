@@ -164,18 +164,11 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             icon: 'info',
             showConfirmButton: false,
         });
-<<<<<<< HEAD
         var formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
         if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
         else if (Number(model) >= 2022 && Number(model) <= 2025) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
         else if (Number(model) >= 2026) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2026";
         //if (model == '2023') formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
-=======
-        var formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
-        if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
-        if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
-        //if (model == '2023') formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
->>>>>>> diego
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
