@@ -1,33 +1,31 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
 } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import FunManageDashboardService from '../../../../services/funmanage_dashboard.service';
 
 // ── Constantes ────────────────────────────────────────────────────────────────
-const PAGE_SIZE = 20;
-
 const STATUS_META = {
-  OPTIMAL: { label: 'Óptimo',   className: 'bg-green-100 text-green-800 border-green-200' },
-  AVERAGE: { label: 'Promedio', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  LIMIT:   { label: 'En Riesgo', className: 'bg-red-100 text-red-800 border-red-200' },
+  EN_TERMINO:          { label: 'En Término',          className: 'bg-green-100 text-green-800 border-green-200' },
+  PRONTO_A_VENCER:     { label: 'Pronto a Vencer',     className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+  ALERTA_VENCIMIENTO:  { label: 'Alerta Vencimiento',  className: 'bg-red-100 text-red-800 border-red-200' },
+  VENCIDO:             { label: 'Vencido',             className: 'bg-red-200 text-red-900 border-red-300' },
 };
 
-// Extrae el valor de un campo con fallback entre dos nombres posibles
+// Extrae el valor de un campo con fallback
 function field(row, a, b) {
   return row[a] ?? row[b] ?? '—';
 }
 
 // ── Definición de columnas ────────────────────────────────────────────────────
-function buildColumns() {
+function buildColumns(onViewDetail, onOpenWorkspace) {
   return [
     {
       id: 'radicado',
       header: 'Radicado',
-      accessorFn: row => field(row, 'radicado', 'id_related'),
+      accessorFn: row => row.radicado ?? '—',
       cell: info => (
         <span className="font-mono text-[0.78rem] font-semibold text-slate-700">
           {info.getValue() ?? '—'}
@@ -37,7 +35,7 @@ function buildColumns() {
     {
       id: 'fase',
       header: 'Fase Actual',
-      accessorFn: row => field(row, 'fase', 'fase_actual'),
+      accessorFn: row => row.fase_label ?? '—',
       cell: info => (
         <span className="text-sm text-slate-600">{info.getValue()}</span>
       ),
@@ -45,7 +43,7 @@ function buildColumns() {
     {
       id: 'categoria',
       header: 'Cat.',
-      accessorFn: row => field(row, 'categoria', 'type'),
+      accessorFn: row => row.categoria ?? '—',
       cell: info => (
         <span className="inline-flex items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-xs w-7 h-7">
           {info.getValue()}
@@ -53,7 +51,7 @@ function buildColumns() {
       ),
     },
     {
-      id: 'daysElapsed',
+      id: 'dias_habiles_usados',
       header: ({ column }) => (
         <button
           className="flex items-center gap-1 font-semibold text-xs uppercase tracking-wide hover:text-slate-900 transition-colors"
@@ -64,11 +62,11 @@ function buildColumns() {
           <SortIcon direction={column.getIsSorted()} />
         </button>
       ),
-      accessorFn: row => row.daysElapsed ?? row.dias ?? row.dias_transcurridos ?? row.x ?? 0,
+      accessorFn: row => row.dias_habiles_usados ?? 0,
       cell: info => {
         const dias = info.getValue();
         const row  = info.row.original;
-        const max  = row.maxDays ?? row.max_days;
+        const max  = row.dias_habiles_limite;
         return (
           <span className="tabular-nums text-sm font-medium">
             {dias}
@@ -110,17 +108,25 @@ function buildColumns() {
       enableSorting: false,
       cell: info => {
         const row = info.row.original;
-        const id  = row.id ?? row.fun_id;
         return (
           <div className="flex gap-2 justify-end">
-            <a
-              href={`/fun/${id}`}
+            <button
+              type="button"
               className="btn btn-sm btn-outline-primary py-0 px-2"
               title="Ver detalles"
-              target="_self"
+              onClick={() => onViewDetail?.(row)}
             >
               <i className="fas fa-eye"></i>
-            </a>
+            </button>
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary py-0 px-2"
+              title="Abrir gestión completa"
+              onClick={() => onOpenWorkspace?.(row)}
+              disabled={row.id == null}
+            >
+              <i className="fas fa-expand-alt"></i>
+            </button>
           </div>
         );
       },
@@ -135,81 +141,34 @@ function SortIcon({ direction }) {
   return <i className="fas fa-sort text-slate-300 text-[10px]"></i>;
 }
 
-// ── Hook: debounce ────────────────────────────────────────────────────────────
-function useDebounce(value, delay = 400) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return debounced;
-}
-
 // ── Componente principal ──────────────────────────────────────────────────────
 /**
- * Tabla de gestión de solicitudes de curaduría con paginación server-side.
+ * Tabla de gestión de solicitudes con paginación server-side.
+ * Recibe data, paginación y callbacks del padre (que controla el fetch).
  *
- * @param {{ dashboardFilter: { status: string|null, phase: string|null } }} props
+ * @param {{ data: Array, totalRows: number, page: number, pageSize: number, loading: boolean, error: string|null, search: string, onSearchChange: Function, sorting: Array, onSortingChange: Function, onPageChange: Function, onRetry: Function }} props
  */
-export function FunmanageDataTable({ dashboardFilter }) {
-  // ── Estado ──────────────────────────────────────────────────────────────────
-  const [data,       setData]       = useState([]);
-  const [totalRows,  setTotalRows]  = useState(0);
-  const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState(null);
-  const [page,       setPage]       = useState(1);
-  const [search,     setSearch]     = useState('');
-  const [sorting,    setSorting]    = useState([]);   // [{ id, desc }]
-
-  const debouncedSearch = useDebounce(search, 450);
-
-  // Ref para cancelar llamadas en vuelo
-  const controllerRef = useRef(null);
-
-  // ── Fetch ────────────────────────────────────────────────────────────────────
-  const fetchData = useCallback(() => {
-    // Cancelar llamada anterior si aún está en vuelo
-    controllerRef.current?.abort();
-
-    setLoading(true);
-    setError(null);
-
-    const sortField = sorting[0]?.id      ?? '';
-    const sortOrder = sorting[0]?.desc    ? 'DESC' : 'ASC';
-
-    FunManageDashboardService.getGrid({
-      page,
-      limit:  PAGE_SIZE,
-      status: dashboardFilter?.status  ?? '',
-      phase:  dashboardFilter?.phase   ?? '',
-      search: debouncedSearch,
-      sort:   sortField,
-      order:  sortOrder,
-    })
-      .then(res => {
-        const body = res.data;
-        setData(Array.isArray(body.data) ? body.data : []);
-        setTotalRows(typeof body.total === 'number' ? body.total : 0);
-        setLoading(false);
-      })
-      .catch(err => {
-        if (err?.code === 'ERR_CANCELED') return;
-        setError('No se pudo cargar la tabla. Verifica la conexión.');
-        setLoading(false);
-      });
-  }, [page, debouncedSearch, sorting, dashboardFilter]);
-
-  // Cuando cambia el filtro externo, volver a página 1
-  useEffect(() => {
-    setPage(1);
-  }, [dashboardFilter, debouncedSearch, sorting]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
+export function FunmanageDataTable({
+  data = [],
+  totalRows = 0,
+  page = 1,
+  pageSize = 50,
+  loading,
+  error,
+  search,
+  onSearchChange,
+  sorting = [],
+  onSortingChange,
+  onPageChange,
+  onRetry,
+  onViewDetail,
+  onOpenWorkspace,
+}) {
   // ── Tabla ────────────────────────────────────────────────────────────────────
-  const columns = useMemo(() => buildColumns(), []);
+  const columns = useMemo(
+    () => buildColumns(onViewDetail, onOpenWorkspace),
+    [onViewDetail, onOpenWorkspace]
+  );
 
   const table = useReactTable({
     data,
@@ -217,13 +176,13 @@ export function FunmanageDataTable({ dashboardFilter }) {
     state: { sorting },
     manualPagination: true,
     manualSorting: true,
-    pageCount: Math.max(1, Math.ceil(totalRows / PAGE_SIZE)),
-    onSortingChange: setSorting,
+    pageCount: Math.max(1, Math.ceil(totalRows / pageSize)),
+    onSortingChange,
     getCoreRowModel: getCoreRowModel(),
   });
 
   // ── Paginación ────────────────────────────────────────────────────────────────
-  const totalPages  = Math.max(1, Math.ceil(totalRows / PAGE_SIZE));
+  const totalPages  = Math.max(1, Math.ceil(totalRows / pageSize));
   const canPrev     = page > 1;
   const canNext     = page < totalPages;
 
@@ -243,8 +202,8 @@ export function FunmanageDataTable({ dashboardFilter }) {
             className="form-control ps-5 py-1"
             style={{ fontSize: '0.875rem' }}
             placeholder="Buscar por radicado…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+            value={search ?? ''}
+            onChange={e => onSearchChange?.(e.target.value)}
             data-testid="table-search"
           />
         </div>
@@ -257,12 +216,19 @@ export function FunmanageDataTable({ dashboardFilter }) {
       {error && !loading && (
         <div className="alert alert-warning d-flex align-items-center py-2 mb-3" role="alert">
           <i className="fas fa-exclamation-triangle me-2"></i>{error}
-          <button className="btn btn-sm btn-link ms-auto" onClick={fetchData}>Reintentar</button>
+          <button className="btn btn-sm btn-link ms-auto" onClick={onRetry}>Reintentar</button>
         </div>
       )}
 
       {/* Tabla */}
-      <div className="table-responsive rounded border" style={{ borderColor: '#e2e8f0' }}>
+      <div
+        className="table-responsive rounded border"
+        style={{
+          borderColor: '#e2e8f0',
+          maxHeight: 'clamp(300px, calc(100vh - 340px), 900px)',
+          overflowY: 'auto',
+        }}
+      >
         <table className="table table-sm mb-0" style={{ fontSize: '0.875rem' }}>
           <thead style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
             {table.getHeaderGroups().map(hg => (
@@ -331,7 +297,7 @@ export function FunmanageDataTable({ dashboardFilter }) {
             <button
               className="btn btn-sm btn-outline-secondary"
               disabled={!canPrev || loading}
-              onClick={() => setPage(p => Math.max(1, p - 1))}
+              onClick={() => onPageChange?.(Math.max(1, page - 1))}
               data-testid="pagination-prev"
             >
               <i className="fas fa-chevron-left me-1"></i> Anterior
@@ -339,7 +305,7 @@ export function FunmanageDataTable({ dashboardFilter }) {
             <button
               className="btn btn-sm btn-outline-secondary"
               disabled={!canNext || loading}
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => onPageChange?.(Math.min(totalPages, page + 1))}
               data-testid="pagination-next"
             >
               Siguiente <i className="fas fa-chevron-right ms-1"></i>

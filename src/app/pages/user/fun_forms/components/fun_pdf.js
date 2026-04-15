@@ -164,11 +164,11 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             icon: 'info',
             showConfirmButton: false,
         });
-        var formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
-        if (Number(model) == 2021) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat";
-        else if (Number(model) >= 2022 && Number(model) <= 2025) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
-        else if (Number(model) >= 2026) formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2026";
-        //if (model == '2023') formUrl = process.env.REACT_APP_API_URL + "/pdf/funflat2022";
+        var formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
+        if (Number(model) == 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat";
+        else if (Number(model) >= 2022 && Number(model) <= 2025) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
+        else if (Number(model) >= 2026) formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2026";
+        //if (model == '2023') formUrl = import.meta.env.VITE_API_URL + "/pdf/funflat2022";
         var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
@@ -784,7 +784,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             page.drawText(document.getElementById('fun_pdf_0_5').value, { size: 9 })
 
             // FUN 1
-            _child = this._GET_CHILD_1();
+            _child = _GET_CHILD_1();
             // FUN 1.1
             if (_child) {
                 // FUN 1.1
@@ -895,7 +895,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             }
             */
             // FUN 2
-            _child = this._GET_CHILD_2();
+            _child = _GET_CHILD_2();
             page.moveTo(50, 380); page.drawText(_child.item_211 ? _child.item_211 : "", { size: 9 })
             page.moveTo(320, 380); page.drawText(_child.item_212 ? _child.item_212 : "", { size: 9 })
             page.moveTo(50, 310); page.drawText(_child.item_22 ? _child.item_22 : "", { size: 9 })
@@ -932,13 +932,13 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
 
             // FUN 3
             let _child_3 = [];
-            _child = this._GET_CHILD_3();
+            _child = _GET_CHILD_3();
             for (var i = 0; i < _child.length; i++) {
                 _child_3.push(_child[i]);
             }
             // FUN 4
             let _child_4 = null;
-            _child_4 = this._GET_CHILD_4();
+            _child_4 = _GET_CHILD_4();
             var _child_4_n = [];
             var _child_4_s = [];
             var _child_4_e = [];
@@ -951,7 +951,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             }
             // FUN 51
             let _child_51 = [];
-            _child = this._GET_CHILD_51();
+            _child = _GET_CHILD_51();
             for (var i = 0; i < _child.length; i++) {
                 _child_51.push(_child[i]);
             }
@@ -1073,9 +1073,9 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             // IF THIS MINIMUN NUMBER IS SURPASSED AN ADITIONAL PAGE 2 IS REQUIRED.
             // DOES AN INTITIAL WRITE FOR FUN 3, FUN 4 AND FUN 51
 
-            const _items_FUN_3 = this._GET_CHILD_3().length;
-            const _item_FUN_4 = this._GET_CHILD_4();
-            const _items_FUN_51 = this._GET_CHILD_51().length
+            const _items_FUN_3 = _GET_CHILD_3().length;
+            const _item_FUN_4 = _GET_CHILD_4();
+            const _items_FUN_51 = _GET_CHILD_51().length
             const pages_fun_3 = Math.trunc(_items_FUN_3 / 8);
             const pages_fun_51 = Math.trunc(_items_FUN_51 / 4);
 
@@ -1105,7 +1105,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
 
             for (var j = 0; j < GREATER_NUMBER; j++) {
 
-                var PdfUrl_2pg = process.env.REACT_APP_API_URL + "/pdf/funform2pgflat";
+                var PdfUrl_2pg = import.meta.env.VITE_API_URL + "/pdf/funform2pgflat";
                 var Buffer_2pg = await fetch(PdfUrl_2pg).then((res) => res.arrayBuffer())
                 var PdfDoc_2pg = await PDFDocument.load(Buffer_2pg)
                 let page = PdfDoc_2pg.getPage(0);
@@ -1226,7 +1226,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             page = pdfDoc.getPage(2);
 
             // FUN 52
-            _child = this.GET_CHILD_52();
+            _child = GET_CHILD_52();
             if (_child.length) {
                 for (var i = 0; i < _child.length; i++) {
                     if (_child[i].role.includes("URBANIZADOR/PARCELADOR")) {
@@ -1319,14 +1319,14 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
             }
 
             // FUN 53
-            _child = this._GET_CHILD_53();
+            _child = _GET_CHILD_53();
             page.moveTo(118, 130); page.drawText(_child.item_5311 + ' ' + _child.item_5312, { size: 9 });
             page.moveTo(118, 110); page.drawText(_child.item_532 ? _child.item_532 : "", { size: 9 }); // ID NUMBER
             page.moveTo(430, 110); page.drawText(_child.item_534 ? _child.item_534 : "", { size: 9 }); // NUMBER
             page.moveTo(350, 76); page.drawText(_child.item_535 ? _child.item_535 : "", { size: 9 }); // EMAIL
             page.moveTo(118, 76); page.drawText(_child.item_536 ? _child.item_536 : "", { size: 9 }); // ADDRESS
 
-            _child = this._GET_CHILD_1();
+            _child = _GET_CHILD_1();
             let A1 = _child.anex1 ? _child.anex1.split(';') : [];
             let A2 = getJSONFull(_child.anex2);
             let A3 = _child.anex3 ? _child.anex3.split(';') : [];

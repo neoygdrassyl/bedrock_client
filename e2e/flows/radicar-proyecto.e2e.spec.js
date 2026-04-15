@@ -14,13 +14,28 @@ import { FunPage } from '../pages/fun.page';
  * Prerequisite: Backend running at VITE_API_URL with valid test data.
  */
 
-test.describe.skip('E2E: Radicacion de Proyecto', () => {
+test.describe('E2E: Radicacion de Proyecto', () => {
   /** @type {FunPage} */
   let funPage;
 
   test.beforeEach(async ({ authenticatedPage }) => {
     funPage = new FunPage(authenticatedPage);
   });
+
+  // Helper function to find a tab with data
+  async function ensureTabWithData(funPage, page) {
+    await funPage.waitForTable();
+    let count = await funPage.getActionToggleCount();
+    if (count > 0) return true;
+    
+    // Try different tabs to find data (based on mock states 5 and 70)
+    for (const tab of ['evaluacion', 'expedicion', 'otrasActuaciones', 'radicacion']) {
+      await funPage.switchTab(tab);
+      count = await funPage.getActionToggleCount();
+      if (count > 0) return true;
+    }
+    return false;
+  }
 
   test('navigate to /fun and verify the page loads with heading and form', async ({ authenticatedPage }) => {
     await funPage.goto();
@@ -47,6 +62,9 @@ test.describe.skip('E2E: Radicacion de Proyecto', () => {
 
     // Click "GENERAR LIC" to auto-generate a license number
     await funPage.generateIdButton.click();
+    
+    // Add stability wait after click
+    await authenticatedPage.waitForTimeout(500);
 
     // The id field should now contain a value (format: NOMEN-YY-NNNN)
     await expect.poll(() => funPage.idPublicInput.inputValue(), { timeout: 15_000 }).not.toBe('');
@@ -106,12 +124,11 @@ test.describe.skip('E2E: Radicacion de Proyecto', () => {
   test('row action popover opens with expected menu items for a license', async ({ authenticatedPage }) => {
     await funPage.goto();
     await funPage.waitForPageLoad();
-    await funPage.waitForTable();
 
-    // Check if there are any rows in the active DataTable
-    const actionCount = await funPage.getActionToggleCount();
-    if (actionCount === 0) {
-      test.skip(true, 'No licenses in DataTable to test row actions');
+    // Use helper to find a tab with data
+    const hasData = await ensureTabWithData(funPage, authenticatedPage);
+    if (!hasData) {
+      test.skip(true, 'No licenses in any tab');
       return;
     }
 
