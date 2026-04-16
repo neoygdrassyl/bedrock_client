@@ -390,7 +390,7 @@ export default function RECORD_ARC_37(props) {
 
     let _COMPONENTN_IMPORT = () => {
         let areas = _GET_CHILD_33_AREAS();
-        areas.sort((a, b) => array_sort(a, b));
+        areas = [...areas].sort((a, b) => array_sort(a, b));
         return <>
             <div className='row'>
                 <div className='col-1'></div>
@@ -610,7 +610,7 @@ export default function RECORD_ARC_37(props) {
             noDataComponent="No hay Items"
             striped="true"
             columns={columns}
-            data={_LIST.sort((a, b) => array_sort(a, b))}
+            data={[..._LIST].sort((a, b) => array_sort(a, b))}
             highlightOnHover
             className="data-table-component"
             noHeader

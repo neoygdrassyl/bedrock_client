@@ -217,7 +217,7 @@ export default function RECORD_LAW_FUN_52(props) {
             'REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES': 7,
             'OTROS PROFESIONALES ESPECIALISTAS': 8,
         };
-        original_f52.sort((a, b) => fl[a.role] - fl[b.role]);
+        original_f52 = [...original_f52].sort((a, b) => fl[a.role] - fl[b.role]);
         return <>
             <div className='row  border bg-info text-light text-center fwb-bold py-1 '>
                 <div className='col'>

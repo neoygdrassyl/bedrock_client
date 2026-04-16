@@ -193,7 +193,7 @@ function FUN_CHART_TIME(props) {
                 }, newData);
             }
         })
-        newTypes.sort((a, b) => {
+        newTypes = [...newTypes].sort((a, b) => {
             if (a.type < b.type) { return -1; }
             if (a.type > b.type) { return 1; }
             return 0;
@@ -207,7 +207,7 @@ function FUN_CHART_TIME(props) {
         setDatan(newTotalC);
         setDatano(newDatano);
 
-        values.sort((prev, next) => prev - next);
+        values = [...values].sort((prev, next) => prev - next);
         // ---------------- MEAN -----------------
         newAvg = Number(newAvg / values.length).toFixed(2)
         newAvgC = newAvgC.map((avg, i) => Number(avg / newTotalC[i]).toFixed(2))
@@ -226,7 +226,7 @@ function FUN_CHART_TIME(props) {
         valuesC = valuesC.map(_values => {
             let _valuesA = _values.trim().split(' ');
             let newValuesA = _valuesA.slice(0, _valuesA.length);
-            newValuesA.sort((a, b) => a - b);
+            newValuesA = [...newValuesA].sort((a, b) => a - b);
             return newValuesA;
         })
 
@@ -365,7 +365,7 @@ function FUN_CHART_TIME(props) {
         setDatan2(newTotalC);
         setDatano2(newDatano);
 
-        values.sort((prev, next) => prev - next);
+        values = [...values].sort((prev, next) => prev - next);
         // ---------------- MEAN -----------------
         newAvg = Number(newAvg / values.length).toFixed(2)
         newAvgC = newAvgC.map((avg, i) => Number(avg / newTotalC[i]).toFixed(2))
@@ -384,7 +384,7 @@ function FUN_CHART_TIME(props) {
         valuesC = valuesC.map(_values => {
             let _valuesA = _values.trim().split(' ');
             let newValuesA = _valuesA.slice(0, _valuesA.length);
-            newValuesA.sort((a, b) => a - b);
+            newValuesA = [...newValuesA].sort((a, b) => a - b);
             return newValuesA;
         })
 

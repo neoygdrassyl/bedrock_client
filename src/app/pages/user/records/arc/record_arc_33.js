@@ -241,7 +241,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                 noDataComponent="No hay Items"
                 striped="true"
                 columns={columns}
-                data={_LIST.sort((a, b) => {
+                data={[..._LIST].sort((a, b) => {
                     let custtomSortArray = {
                         'Georreferenciado / Localizacion': 9,
                         'Urbanos': 8,

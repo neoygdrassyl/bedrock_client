@@ -298,7 +298,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                 _LIST_SORTED.push(_LIST_NEGATIVE[state]);
             }
 
-            _LIST_SORTED.sort(function (a, b) {
+            _LIST_SORTED = [..._LIST_SORTED].sort(function (a, b) {
                 return b.date_start - a.date_start;
             });
             */

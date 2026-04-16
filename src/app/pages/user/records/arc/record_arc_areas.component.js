@@ -288,7 +288,7 @@ export default function RECORD_ARC_AREAS(props) {
         let currentfloorNumber = (_floor || '').replace(/^\D+/g, '');
 
         let areas = _GET_CHILD_33_AREAS();
-        areas.sort((a, b) => array_sort(a, b));
+        areas = [...areas].sort((a, b) => array_sort(a, b));
 
         let new_areas = areas.filter(item => {
             let floor = item.floor ? item.floor : ' ';
@@ -311,7 +311,7 @@ export default function RECORD_ARC_AREAS(props) {
         });
         let floor_index = -1;
         let sum = 0;
-        if (con) new_areas.reverse();
+        if (con) new_areas = [...new_areas].reverse();
 
         new_areas.map((item, i) => { if (_floor === item.floor) floor_index = i; })
         if (floor_index != -1) {
@@ -523,7 +523,7 @@ export default function RECORD_ARC_AREAS(props) {
 
         // SORTS THE ARRAYS AND PROCESS TO FILL THE VALUES OF THE SPREADSHEET
         setHeader(_header);
-        var newData = _AREAS.sort((a, b) => array_sort(a, b));
+        var newData = [..._AREAS].sort((a, b) => array_sort(a, b));
         let cells = (v, i) => {
             return _cells.map(c => {
                 return {
@@ -1296,7 +1296,7 @@ export default function RECORD_ARC_AREAS(props) {
             if (index === -1) {
                 value.push('F');
             }
-            value.sort()
+            value = [...value].sort()
         }
         formData.set('tipo', value.join(','));
         save_fun_1(formData, false)
