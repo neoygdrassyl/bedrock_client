@@ -147,7 +147,9 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
         return _CHILD_VARS;
     }
 
-    const getPdfForm = async () => {
+    const getPdfForm = useCallback(async () => {
+        // NOTE: Direct DOM queries (document.getElementById) are kept for this PDF generator
+        // to handle the uncontrolled inputs without adding excessive state management overhead for these specific fields.
         let swaMsg = swaMsg;
         let model = currentItem.model
         if (!model) return MySwal.fire({
@@ -2136,7 +2138,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
           console.log(`${type}: ${name}`)
         })
         */
-    }
+    }, [currentItem, currentVersion, swaMsg]);
 
         let _GET_CLOCK = () => {
             var _CHILD = currentItem.fun_clocks;
@@ -2160,23 +2162,23 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
                 <div className="row mb-3">
                     <div className="col-5">
                         <label>Oficina Responsable</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"fun_pdf_0_1"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"fun_pdf_0_1"}>
                                 {domains}
                             </select>
                         </div>
                     </div>
                     <div className="col-4">
                         <label>No. de Radicación</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id="fun_pdf_0_2"
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id="fun_pdf_0_2"
                                 defaultValue={currentItem.id_public} disabled />
                         </div>
                     </div>
                     <div className="col">
                         <label>Modelo</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id="fun_pdf_0_6"
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id="fun_pdf_0_6"
                                 defaultValue={currentItem.model} disabled />
                         </div>
                     </div>
@@ -2184,24 +2186,24 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
                 <div className="row mb-3">
                     <div className="col-4">
                         <label>Departamento</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"fun_pdf_0_3"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"fun_pdf_0_3"}>
                                 {states}
                             </select>
                         </div>
                     </div>
                     <div className="col-4">
                         <label>Municipio</label>
-                        <div class="input-group my-1">
-                            <select class="form-select me-1" id={"fun_pdf_0_4"}>
+                        <div className="input-group my-1">
+                            <select className="form-select me-1" id={"fun_pdf_0_4"}>
                                 {cities}
                             </select>
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Fecha (Pago de Expensas)</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id="fun_pdf_0_5"
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id="fun_pdf_0_5"
                                 defaultValue={dateParser(_GET_CLOCK_STATE(3).date_start)} disabled />
                         </div>
                     </div>
@@ -2209,7 +2211,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
 
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button className="btn btn-danger my-3" onClick={() => getPdfForm()}><i class="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
+                        <button className="btn btn-danger my-3" onClick={getPdfForm}><i className="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
                     </div>
                 </div>
             </div>
