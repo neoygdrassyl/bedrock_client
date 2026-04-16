@@ -298,7 +298,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             let con = floor_c[0].toLowerCase() == 's';
 
             let areas = _GET_CHILD_33_AREAS();
-            areas.sort((a, b) => array_sort(a, b));
+            areas = [...areas].sort((a, b) => array_sort(a, b));
 
             let new_areas = areas.filter(item => {
                 if (con) {
@@ -318,7 +318,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             });
             let floor_index = -1;
             let sum = 0;
-            if (con) new_areas.reverse();
+            if (con) new_areas = [...new_areas].reverse();
 
             new_areas.map((item, i) => { if (_floor == item.floor) floor_index = i; })
             if (floor_index != -1) {

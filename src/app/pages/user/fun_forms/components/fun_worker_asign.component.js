@@ -196,7 +196,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
             var vrtime = get_lastVRTime(lItem);
             list1.push({ ...lItem, vrtime: vrtime });
         }
-        list1.sort((a, b) => a.vrtime - b.vrtime)
+        list1 = [...list1].sort((a, b) => a.vrtime - b.vrtime)
 
         setCurrentItems(list1.filter(item => {
                 if (type == 'law') {
@@ -409,7 +409,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     snames: snames[i],
                 }
             ))
-            vrItem.sort((a, b) => new Date(b.screated) - new Date(a.screated));
+            vrItem = [...vrItem].sort((a, b) => new Date(b.screated) - new Date(a.screated));
             return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: 400 }}
                 btnChildren={<i class="fas fa-file-import fa-2x"></i>}
                 btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>

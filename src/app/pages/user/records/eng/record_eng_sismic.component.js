@@ -180,7 +180,7 @@ function RECORD_ENG_SISMIC(props) {
     }
     const _get_SUMLEVEL = (_id, _floor, includeP1) => {
         let _CHILDREN = _GET_CHILD_SISMIC();
-        _CHILDREN.sort((a, b) => a.pos - b.pos);
+        _CHILDREN = [..._CHILDREN].sort((a, b) => a.pos - b.pos);
 
         let floor = _floor ? _floor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
         let con_up = (floor).includes('piso') || (floor).includes('nivel') || (floor).includes('planta') || (floor).includes('cubierta') || (floor).includes('atico');
@@ -213,7 +213,7 @@ function RECORD_ENG_SISMIC(props) {
                 return con_floor;
             })
 
-            _CHILDREN.reverse();
+            _CHILDREN = [..._CHILDREN].reverse();
 
             _CHILDREN.map((item, i) => { if (item.id == _id) index = i })
 
