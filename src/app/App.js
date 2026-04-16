@@ -554,7 +554,7 @@ function LoginPage() {
   const navigate = useNavigate();
   let auth = useAuth();
   const recaptchaRef = React.useRef(null);
-  var formData = new FormData();
+  const credentialsRef = React.useRef({ email: "", password: "" });
 
   let { from } = { from: { pathname: "/dashboard" } };
 
@@ -572,7 +572,7 @@ function LoginPage() {
     };
 
     recaptchaRef.current.execute().then(response => {
-      CustomsDataService.appLogin(formData)
+      CustomsDataService.appLoginCompatible(credentialsRef.current)
         .then(response => {
           let userInfo = {};
 
@@ -590,6 +590,20 @@ function LoginPage() {
             userInfo.name_short = u.name + ' ' + u.surname;
             userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
             DataSerive.saveToken(response.data.token);
+            DataSerive.setUser(userInfo);
+            login();
+          } else if (Array.isArray(response.data) && response.data.length === 1) {
+            const u = response.data[0];
+            userInfo.name = u.name;
+            userInfo.surname = u.surname;
+            userInfo.role = u.role?.name;
+            userInfo.role_short = u.role?.short;
+            userInfo.roleDesc = u.role?.desc;
+            userInfo.active = u.active;
+            userInfo.roleId = u.roleId;
+            userInfo.id = u.id;
+            userInfo.name_short = u.name + ' ' + u.surname;
+            userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
             DataSerive.setUser(userInfo);
             login();
           } else {
@@ -653,12 +667,12 @@ function LoginPage() {
                   <div className="mb-3">
                     <label htmlFor="email" className="form-label text-black">{t('login.str_user')}</label>
                     <input type="email" className="form-control" id="email"
-                      onChange={(e) => formData.set('email', e.target.value)} />
+                      onChange={(e) => { credentialsRef.current.email = e.target.value; }} />
                   </div>
                   <div className="mb-3">
                     <label htmlFor="password" className="form-label text-black">{t('login.str_pass')}</label>
                     <input type="password" className="form-control" id="password"
-                      onChange={(e) => formData.set('password', e.target.value)} />
+                      onChange={(e) => { credentialsRef.current.password = e.target.value; }} />
                   </div>
                   <div className="text-center pt-4 mt-3">
                     <button type="submit" className="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>

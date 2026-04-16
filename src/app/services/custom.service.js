@@ -1,8 +1,49 @@
 import http from "../../http-common";
+import { sha256 } from "js-sha256";
 
 class CustomlDataService {
   appLogin(data) {
     return http.post(`/login`, data);
+  }
+
+  buildLoginFormData(email, password) {
+    const formData = new FormData();
+    formData.set("email", email);
+    formData.set("password", password);
+    return formData;
+  }
+
+  isRecognizedLoginResponse(data) {
+    if (!data) {
+      return false;
+    }
+
+    if (data.token && data.user) {
+      return true;
+    }
+
+    return Array.isArray(data) && data.length === 1;
+  }
+
+  async appLoginCompatible({ email, password }) {
+    const safeEmail = (email || "").trim();
+    const safePassword = password || "";
+
+    const plainPayload = this.buildLoginFormData(safeEmail, safePassword);
+
+    try {
+      const response = await this.appLogin(plainPayload);
+      if (this.isRecognizedLoginResponse(response.data)) {
+        return response;
+      }
+    } catch (error) {
+      if (!error.response || ![400, 401, 422, 500].includes(error.response.status)) {
+        throw error;
+      }
+    }
+
+    const legacyPayload = this.buildLoginFormData(safeEmail, sha256(safePassword));
+    return this.appLogin(legacyPayload);
   }
 
   getMe() {
