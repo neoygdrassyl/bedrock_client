@@ -1,10 +1,10 @@
-import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useState, useRef, useImperativeHandle } from 'react';
 
 /**
  * Drop-in replacement for @pathofdev/react-tag-input.
  * API: <TagInput tags={[]} onChange={(newTags) => {}} placeholder="" removeOnBackspace={true} />
  */
-const TagInput = forwardRef(function TagInput({ tags = [], onChange, placeholder = '', removeOnBackspace = true }, ref) {
+function TagInput({ tags = [], onChange, placeholder = '', removeOnBackspace = true, ref }) {
     const [inputValue, setInputValue] = useState('');
     const inputRef = useRef(null);
 
@@ -61,6 +61,6 @@ const TagInput = forwardRef(function TagInput({ tags = [], onChange, placeholder
             />
         </div>
     );
-});
+}
 
 export default TagInput;
