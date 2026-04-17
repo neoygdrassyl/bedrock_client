@@ -160,7 +160,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         setIsLoadedAsign(true);
     };
 
-    const retrievePublish = () => {
+    const retrievePublish = useCallback(() => {
         PQRS_Main.getAllPqrs()
             .then(response => {
                 setItemsGeneral(response.data);
@@ -170,9 +170,9 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             .catch(e => {
                 console.log(e);
             });
-    };
+    }, []);
 
-    const retrievePending = () => {
+    const retrievePending = useCallback(() => {
         PQRS_Main.getAllPqrsPending()
             .then(response => {
                 setPending(response.data);
@@ -180,14 +180,14 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             .catch(e => {
                 console.log(e);
             });
-    };
+    }, []);
 
-    const refreshList = () => {
+    const refreshList = useCallback(() => {
         retrievePending();
         retrievePublish();
         setCurrentItem(null);
         setCurrentIndex(-1);
-    };
+    }, [retrievePending, retrievePublish]);
     // MODAL CONTROLS
     const toggle = () => {
         setModalNew(prev => !prev);
@@ -367,14 +367,14 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         setModalLock(false);
         refreshList();
     };
-    const refreshCurrentItem = (id) => {
+    const refreshCurrentItem = useCallback((id) => {
         PQRS_Main.get(id).then(response => {
             let item = response.data;
             setCurrentItem(item);
             setCurrentVersion(item.version);
             retrievePublish();
         });
-    };
+    }, [retrievePublish]);
     const setSubtmitRows = (rowItems) => {
         setSubmitItemsState(rowItems);
     };

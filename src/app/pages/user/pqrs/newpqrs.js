@@ -44,7 +44,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
     };
 
     const toggleLicense = () => {
-        setLicence(!licence);
+        setLicence(prev => !prev);
     };
         var formData = new FormData();
 
