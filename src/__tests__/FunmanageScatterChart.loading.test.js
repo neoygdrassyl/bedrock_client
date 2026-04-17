@@ -35,6 +35,7 @@ describe('FunmanageScatterChart loading state', () => {
     render(
       <FunmanageScatterChart
         dashboardFilter={{ status: null, phase: null }}
+        loading={true}
       />
     );
 
