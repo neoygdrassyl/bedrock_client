@@ -43,7 +43,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
         PQRS_Service.get(id)
             .then(response => {
                 setCurrentItem(response.data)
-                if (toogle) setModal(!review_modal)
+                if (toogle) setModal(prev => !prev)
             })
             .catch(e => {
                 console.log(e);
@@ -521,7 +521,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
                 {currentItem ? <>
                     <div className="my-4 d-flex justify-content-between">
                         <label><i class="fas fa-th"></i> Control Administrativo {currentItem.id_global}</label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => setModal(!review_modal)}></MDBBtn>
+                        <MDBBtn className='btn-close' color='none' onClick={() => setModal(prev => !prev)}></MDBBtn>
                     </div>
                     <hr />
                     {SOLICITORS_COMPONENT()}
@@ -534,7 +534,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
 
                 <div className="text-end py-4 mt-3">
-                    <button className="btn btn-lg btn-info" onClick={() => setModal(!review_modal)}>
+                    <button className="btn btn-lg btn-info" onClick={() => setModal(prev => !prev)}>
                         <i class="fas fa-times-circle"></i> CERRAR </button>
                 </div>
             </Modal>
