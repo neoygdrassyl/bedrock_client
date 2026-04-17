@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
@@ -82,7 +82,7 @@ export default function RTE_PQRS(props) {
         'link', 'image', 'color', 'background', 'align', 'table',
     ];
     const textHTML = `
-    <p>${infoCud.city}, ${dateParser(moment().format('YYYY-MM-DD'))}</p>
+    <p>${infoCud.city}, ${dateParser(dayjs().format('YYYY-MM-DD'))}</p>
     <p>${currentItem.id_publico} ${currentItem.id_reply} </p>
     <br/>
     <p>Senor(a).</p>

@@ -14,7 +14,7 @@ import {
 import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import Collapsible from '../../components/Collapsible';
-const moment = require('moment');
+import dayjs from 'dayjs';
 
 function Mail({ translation, globals, breadCrums }) {
     const [error, setError] = useState(null);
@@ -77,7 +77,7 @@ function Mail({ translation, globals, breadCrums }) {
                 selector: row => row.createdAt,
                 sortable: true,
                 filterable: true,
-                cell: row => <p className="pt-3">{moment(row.createdAt).format("DD-MM-YYYY")}</p>
+                cell: row => <p className="pt-3">{dayjs(row.createdAt).format("DD-MM-YYYY")}</p>
             },
             {
                 name: <h3>ASUNTO</h3>,
@@ -164,7 +164,7 @@ function Mail({ translation, globals, breadCrums }) {
                                                             </tr>
                                                             <tr>
                                                                 <td><label>Fecha de Expedicion</label></td>
-                                                                <td><label className="fw-bold">{moment(currentItem.createdAt).format("DD-MM-YYYY HH:mm")}</label></td>
+                                                                <td><label className="fw-bold">{dayjs(currentItem.createdAt).format("DD-MM-YYYY HH:mm")}</label></td>
                                                             </tr>
                                                             <tr>
                                                                 <td><label>Email de Contacto</label></td>

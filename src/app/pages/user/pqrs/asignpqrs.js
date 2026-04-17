@@ -13,7 +13,7 @@ import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_PDFGEN_CONFIRM from './components/pqrs_genPDF_confirm.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 
 function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
@@ -112,8 +112,8 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
             return false;
         }
         let _GET_DOC_BODY = () => {
-            return `Me permito comunicarle que el ${dateParser(moment(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
-            a las ${moment(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
+            return `Me permito comunicarle que el ${dateParser(dayjs(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
+            a las ${dayjs(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
             solicitud con el número ${currentItem.id_publico}. A partir de este momento, la Curaduría Urbana Estudiará
             su peticion y en el termino de ${currentItem.pqrs_time.time} días hábiles le dará respuesta de manera clara, precisa y
             de fondo. No obstante de requerir un mayor término para lograr este cometido la Curaduría

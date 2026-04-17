@@ -7,7 +7,7 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import USERS_Service from '../../../../services/users.service';
 import { PQRS_SEND_DATE } from './pqrs_send_date.component';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email_types, refreshCurrentItem, closeComponent }) {
     const [usersList, setUsersList] = useState([]);

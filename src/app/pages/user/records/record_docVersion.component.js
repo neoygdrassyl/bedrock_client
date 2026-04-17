@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Modal from 'react-modal';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import FUNService from '../../../services/fun.service';
 import { PDFDocument } from 'pdf-lib';
 import VIEWER from '../../../components/viewer.component';
@@ -125,7 +125,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
                 </div>
                 <div className="col">
                     <div className="input-group">
-                        <input type="date" className="form-control" id={'fun6_date'} defaultValue={moment().format('YYYY-MM-DD')} hidden />
+                        <input type="date" className="form-control" id={'fun6_date'} defaultValue={dayjs().format('YYYY-MM-DD')} hidden />
                     </div>
                 </div>
             </div>
@@ -144,7 +144,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         let formData = new FormData();
         formData.set('fun0Id', currentItem.id);
 
-        let _creationYear = moment(currentItem.createdAt).format('YY');
+        let _creationYear = dayjs(currentItem.createdAt).format('YY');
         let _folder = currentItem.id_public;
 
         // GET DATA OF ATTACHS

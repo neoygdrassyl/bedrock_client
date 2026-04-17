@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { GanttPreview } from './gantt/GanttPreview';
 import { GanttModal } from './gantt/GanttModal';
 
@@ -29,10 +29,10 @@ const escapeHtml = (s) => {
     .replaceAll("'", '&#039;');
 };
 
-const formatShortDate = (d) => (d ? moment(d).format('DD MMM YY') : '—');
+const formatShortDate = (d) => (d ? dayjs(d).format('DD MMM YY') : '—');
 
 const getResolvedStatus = (status, remainingDays, endDate, limitDate) => {
-  if (status === 'COMPLETADO' && limitDate && endDate && moment(endDate).isAfter(limitDate, 'day')) {
+  if (status === 'COMPLETADO' && limitDate && endDate && dayjs(endDate).isAfter(limitDate, 'day')) {
     return STATUS_MAP.VENCIDO;
   }
   if (status === 'ACTIVO' && remainingDays < 0) return STATUS_MAP.VENCIDO;
@@ -334,7 +334,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
       const diasLDFActa1 = ldfDate && acta1Date ? calcularDiasHabiles(ldfDate, acta1Date, true) : 'N/A';
       const diasActa1Corr = acta1Date && corrDate ? calcularDiasHabiles(acta1Date, corrDate, true) : 'N/A';
       
-      const fmt = (d) => (d ? moment(d).format('YYYY-MM-DD') : '—');
+      const fmt = (d) => (d ? dayjs(d).format('YYYY-MM-DD') : '—');
 
       MySwal.fire({
           title: 'Diagnóstico de Fases y Tiempos',

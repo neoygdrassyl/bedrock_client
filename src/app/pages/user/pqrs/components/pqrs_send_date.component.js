@@ -1,8 +1,7 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
-//const moment = require('moment');
 
 
 const MySwal = withReactContent(Swal);
@@ -62,7 +61,7 @@ export const PQRS_SEND_DATE = (props) => {
                     <span className="input-group-text bg-info text-white">
                         <i className="fas fa-calendar-alt"></i>
                     </span>
-                    <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_1" defaultValue={validations ?? moment().format('YYYY-MM-DD')} onBlur={crearteReply} required></input>
+                    <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_1" defaultValue={validations ?? dayjs().format('YYYY-MM-DD')} onBlur={crearteReply} required></input>
                 </div>
             </div>
         </div>

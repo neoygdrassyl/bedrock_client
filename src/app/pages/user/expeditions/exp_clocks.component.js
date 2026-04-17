@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -89,7 +89,7 @@ export default function EXP_CLOCKS(props) {
       end: endClock,
       days: startClock?.date_start && endClock?.date_start
         ? dateParser_dateDiff(startClock.date_start, endClock.date_start)
-        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, moment().format('YYYY-MM-DD')) : 0)
+        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, dayjs().format('YYYY-MM-DD')) : 0)
     };
   }
 
@@ -102,7 +102,7 @@ export default function EXP_CLOCKS(props) {
       end: endClock,
       days: startClock?.date_start && endClock?.date_start
         ? dateParser_dateDiff(startClock.date_start, endClock.date_start)
-        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, moment().format('YYYY-MM-DD')) : 0)
+        : (startClock?.date_start ? dateParser_dateDiff(startClock.date_start, dayjs().format('YYYY-MM-DD')) : 0)
     };
   }
 
@@ -192,7 +192,7 @@ export default function EXP_CLOCKS(props) {
         remaining: baseTotal,   // aún no corre
         reference: null,
         from: 'NOT_STARTED',
-        today: moment().format('YYYY-MM-DD'),
+        today: dayjs().format('YYYY-MM-DD'),
         suspensions: totalSuspensionDays,
         extension: extensionDays,
         preActaUsed: 0,
@@ -215,12 +215,12 @@ export default function EXP_CLOCKS(props) {
     if (corrTime)                    firstEventCandidates.push({ date: corrTime,                 type: 'CORR_35' });
 
     const validFirsts = firstEventCandidates.filter(c =>
-      c.date && (moment(c.date).isAfter(ldfTime) || moment(c.date).isSame(ldfTime))
+      c.date && (dayjs(c.date).isAfter(ldfTime) || dayjs(c.date).isSame(ldfTime))
     );
 
     let firstEvent = null;
     if (validFirsts.length) {
-      validFirsts.sort((a, b) => (moment(a.date).isBefore(b.date) ? -1 : 1));
+      validFirsts.sort((a, b) => (dayjs(a.date).isBefore(b.date) ? -1 : 1));
       firstEvent = validFirsts[0];
     }
 
@@ -248,7 +248,7 @@ export default function EXP_CLOCKS(props) {
           remaining: remainingPaused,
           reference: null,
           from: 'PAUSED',
-          today: moment().format('YYYY-MM-DD'),
+          today: dayjs().format('YYYY-MM-DD'),
           suspensions: totalSuspensionDays,
           extension: extensionDays,
           preActaUsed,
@@ -266,7 +266,7 @@ export default function EXP_CLOCKS(props) {
         remaining: baseTotal,
         reference: null,
         from: 'NOT_STARTED',
-        today: moment().format('YYYY-MM-DD'),
+        today: dayjs().format('YYYY-MM-DD'),
         suspensions: totalSuspensionDays,
         extension: extensionDays,
         preActaUsed: 0,
@@ -279,20 +279,20 @@ export default function EXP_CLOCKS(props) {
       };
     }
 
-    candidates.sort((a, b) => (moment(a.date).isAfter(b.date) ? -1 : 1));
+    candidates.sort((a, b) => (dayjs(a.date).isAfter(b.date) ? -1 : 1));
     const lastRef = candidates[0];
 
     // Suspensión activa posterior a la referencia => congelar en su inicio
-    let effectiveToday = moment().format('YYYY-MM-DD');
+    let effectiveToday = dayjs().format('YYYY-MM-DD');
     if (acta1Time) {
       if (postSusp.exists && !postSusp.end?.date_start && postSusp.start?.date_start) {
-        if (moment(postSusp.start.date_start).isAfter(lastRef.date)) {
+        if (dayjs(postSusp.start.date_start).isAfter(lastRef.date)) {
           effectiveToday = postSusp.start.date_start;
         }
       }
     } else {
       if (preSusp.exists && !preSusp.end?.date_start && preSusp.start?.date_start) {
-        if (moment(preSusp.start.date_start).isAfter(lastRef.date)) {
+        if (dayjs(preSusp.start.date_start).isAfter(lastRef.date)) {
           effectiveToday = preSusp.start.date_start;
         }
       }
@@ -337,7 +337,7 @@ export default function EXP_CLOCKS(props) {
       const st = _GET_CLOCK_STATE(element);
       const date = st ? st.date_start : null;
       if (!newDate && date) newDate = date;
-      else if (date && moment(date).isAfter(newDate)) newDate = date;
+      else if (date && dayjs(date).isAfter(newDate)) newDate = date;
     });
     return newDate;
   }
@@ -395,7 +395,7 @@ export default function EXP_CLOCKS(props) {
 
     const showDesistModal = () => {
       const reason = getDesistReason();
-      const ordered = [...desistEvents].sort((a, b) => (moment(a.date_start).isAfter(b.date_start) ? -1 : 1));
+      const ordered = [...desistEvents].sort((a, b) => (dayjs(a.date_start).isAfter(b.date_start) ? -1 : 1));
       const rows = ordered.map(e => {
         const lbl = NegativePRocessTitle?.[String(e.version)] || `Estado ${e.state}`;
         return `<tr>
@@ -902,7 +902,7 @@ export default function EXP_CLOCKS(props) {
         if (pre?.start?.date_start) startCandidates.push({ date: pre.start.date_start, kind: 'SUSP_PRE_START' });
 
         const pickMostRecent = (arr) => {
-          const sorted = [...arr].sort((a, b) => (moment(a.date).isAfter(b.date) ? -1 : 1));
+          const sorted = [...arr].sort((a, b) => (dayjs(a.date).isAfter(b.date) ? -1 : 1));
           return sorted[0];
         };
 
@@ -920,7 +920,7 @@ export default function EXP_CLOCKS(props) {
         }
 
         // Días de prórroga aplicables si ya inició antes de la Acta 1
-        const extDays = (ext?.exists && ext.start?.date_start && moment(ext.start.date_start).isSameOrAfter(ldf)) ? ext.days : 0;
+        const extDays = (ext?.exists && ext.start?.date_start && dayjs(ext.start.date_start).isSameOrAfter(ldf)) ? ext.days : 0;
 
         let remainingDays = baseDays - usedBeforeBase + extDays;
         if (remainingDays < 0) remainingDays = 0;
@@ -943,7 +943,7 @@ export default function EXP_CLOCKS(props) {
 
         const pre = _GET_SUSPENSION_PRE_ACTA();
         const post = _GET_SUSPENSION_POST_ACTA();
-        const today = moment().format('YYYY-MM-DD');
+        const today = dayjs().format('YYYY-MM-DD');
 
         const otherUsed = isEndPre
           ? (post?.start?.date_start && post?.end?.date_start ? post.days : 0)

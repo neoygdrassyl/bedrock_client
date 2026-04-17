@@ -6,7 +6,7 @@ import { dateParser } from '../../../../components/customClasses/typeParse'
 import { cities } from '../../../../components/jsons/vars';
 
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
         var formData = new FormData();
@@ -61,7 +61,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                                     <i className="far fa-calendar-alt"></i>
                                 </span>
                                 <input type="date" max="2100-01-01" className="form-control" id="pqrs_reply_date" 
-                                defaultValue={moment().format('YYYY-MM-DD')} required />
+                                defaultValue={dayjs().format('YYYY-MM-DD')} required />
                             </div>
                         </div>
                         <div className="col">

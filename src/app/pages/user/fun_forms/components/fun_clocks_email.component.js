@@ -6,7 +6,7 @@ import { dateParser, dateParser_finalDate } from '../../../../components/customC
 import FUN_SERVICE from '../../../../services/fun.service'
 import USERS_Service from '../../../../services/users.service';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 function FUN_CLOCKS_EMAILS(props) {
     const [users_list, setUsers_list] = useState([]);

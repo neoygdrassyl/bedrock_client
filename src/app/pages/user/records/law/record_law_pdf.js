@@ -2,7 +2,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { handleLAWhCheck } from '../../../../components/customClasses/pdfCheckHandler';
 const MySwal = withReactContent(Swal);
@@ -153,7 +153,7 @@ function RECORD_LAW_PDF(props) {
 
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'juridico']);
         pdfDoc.setLanguage('es-co');

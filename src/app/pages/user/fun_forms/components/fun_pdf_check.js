@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { dateParser } from '../../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, domains, domains_number } from '../../../../components/jsons/vars';
 
 const MySwal = withReactContent(Swal);
@@ -897,7 +897,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto']);
         pdfDoc.setLanguage('es-co');

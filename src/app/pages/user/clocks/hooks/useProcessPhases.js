@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { calcularDiasHabiles, sumarDiasHabiles, FUN_0_TYPE_TIME } from './useClocksManager';
 
 export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPreActa, suspensionPostActa, extension, phaseOptions }) => {
@@ -89,7 +89,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
     const calculateUsedDaysFromNextDay = (startDate, endDate, defaultEnd = today, include_today=false) => {
       if (!startDate) return 0;
       const calcEnd = endDate || defaultEnd;
-      if (moment(calcEnd).isBefore(startDate)) return 0;
+      if (dayjs(calcEnd).isBefore(startDate)) return 0;
       let usedDays = calcularDiasHabiles(startDate, calcEnd, include_today);
       return usedDays;
     };
@@ -676,7 +676,7 @@ export const useProcessPhases = ({ clocksData, currentItem, today, suspensionPre
             let recursoExpired = false;
             if (notificacionResDate && !recursoDate && !renunciaTerminos) {
                 const recursoLimitDate = sumarDiasHabiles(notificacionResDate, RECURSO_LIMIT_DAYS);
-                if (moment(today).isAfter(recursoLimitDate)) recursoExpired = true;
+                if (dayjs(today).isAfter(recursoLimitDate)) recursoExpired = true;
             }
             let ejecutoriaEndDate = ejecutoriaDate; //|| renunciaTerminos;
             if (recursoDate && !ejecutoriaDate && !renunciaTerminos) ejecutoriaEndDate = null; 

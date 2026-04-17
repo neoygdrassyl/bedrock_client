@@ -5,7 +5,7 @@ import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { MDBBtn } from '../../../../components/ui';
@@ -299,7 +299,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                     <div className="col">
                         <label>5.1. Fecha del documento</label>
                         <input type="date" className="form-control mb-3" max='2100-01-01' id="geng_date_doc" required
-                            defaultValue={_JSON.date_doc ?? moment().format('YYYY-MM-DD')} />
+                            defaultValue={_JSON.date_doc ?? dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>5.2. Fecha LyDF</label>
@@ -413,7 +413,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
             curatedList.map(obj => {
                 let date = obj.date
                 if (docsToCheck.includes(obj.code)) {
-                    if (moment(date).isAfter(lastDate)) {
+                    if (dayjs(date).isAfter(lastDate)) {
                         lastDate = date
                         last_vr = obj.id_public
                     }
@@ -427,7 +427,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
             let control_clock = _GET_CLOCK_STATE_VERSION(0, 5)
             let name_1 = control_clock.name ? control_clock.name.split(';')[0] : window.user.name + ' ' + window.user.surname
             let name_2 = control_clock.name ? control_clock.name.split(';')[1] : 'Radicación extemporánea';
-            let date = control_clock.date_start || moment().format('YYYY-MM-DD');
+            let date = control_clock.date_start || dayjs().format('YYYY-MM-DD');
             let desc = control_clock.desc || ''
 
             let fun_c_control = _GET_CHILD_LAW().fun_c_control ? _GET_CHILD_LAW().fun_c_control.split(';') : []

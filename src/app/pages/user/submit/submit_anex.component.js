@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 // SERVICES
 import Submit_Service from '../../../services/submit.service'
 import funService from '../../../services/fun.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import { MDBBtn } from '../../../components/ui';
 import DataTable from 'react-data-table-component';
@@ -130,7 +130,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
             formData = new FormData();
             formData.set('submitId', currentItem.id);
 
-            let _creationYear = moment(currentItem.createdAt).format('YY');
+            let _creationYear = dayjs(currentItem.createdAt).format('YY');
             let _folder = currentItem.id_public;
 
             // GET DATA OF ATTACHS

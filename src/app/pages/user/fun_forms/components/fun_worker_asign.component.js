@@ -1,11 +1,10 @@
 import { MDBBtn, MDBTooltip, MDBTypography, MDBPopover, MDBPopoverBody, MDBPopoverHeader, } from '../../../../components/ui';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import { dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 import FunService from '../../../../services/fun.service';
 
-var momentB = require('moment-business-days');
 const _fun_0_state = {
     '1': 'RADICACIÓN',
     '-1': 'RADICACIÓN',
@@ -55,10 +54,10 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
 
     const get_lastVRTime = (items) => {
         var screated = items.screated ? items.screated.split(';') : [];
-        var today = moment();
-        var diff = moment(today).diff(screated[0], 'days', true);
+        var today = dayjs();
+        var diff = dayjs(today).diff(screated[0], 'days', true);
         screated.map(value => {
-            var diffi = moment(today).diff(value, 'days', true)
+            var diffi = dayjs(today).diff(value, 'days', true)
             if (diffi < diff) diff = diffi
         })
         return diff;

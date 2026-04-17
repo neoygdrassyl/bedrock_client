@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -121,7 +121,7 @@ parentRetrieveItem(currentItem.id);
                         if (concecutive < 1000) concecutive = "0" + concecutive
                         if (concecutive < 100) concecutive = "0" + concecutive
                         if (concecutive < 10) concecutive = "0" + concecutive
-                        new_id = res1+(moment().format('YY')).split('-')[0] + "-" + concecutive
+                        new_id = res1+(dayjs().format('YY')).split('-')[0] + "-" + concecutive
                         document.getElementById('pqrs_master_idreply').value = new_id;
                     } else {
                         concecutive = new_id.split('-')[1];
@@ -168,7 +168,7 @@ parentRetrieveItem(currentItem.id);
                                     <i className="fas fa-hashtag"></i>
                                 </span>
                                 <input type="date" max="2100-01-01" className="form-control"
-                                    defaultValue={currentItem.pqrs_time ? currentItem.pqrs_time.reply_formal : moment().format('YYYY-MM-DD')}
+                                    defaultValue={currentItem.pqrs_time ? currentItem.pqrs_time.reply_formal : dayjs().format('YYYY-MM-DD')}
                                     id="pqrs_reply_time_formalReply" require />
                             </div>
                         </div>

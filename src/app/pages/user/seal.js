@@ -17,7 +17,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
 import { formsParser1_exlucde2, dateParser, formsParser1 } from '../../components/customClasses/typeParse'
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 
 
@@ -294,7 +294,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                             document.getElementById("folders").value = "";
                         }
                         
-                            let date = moment(response.data[0].date).format("YYYY-MM-DD");
+                            let date = dayjs(response.data[0].date).format("YYYY-MM-DD");
                             let parent_id = response.data[0].id
                             document.getElementById("f_03").value = date;
                             document.getElementById("f_0").value = parent_id;

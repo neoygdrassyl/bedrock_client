@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Modal from 'react-modal';
 import { infoCud } from '../../../components/jsons/vars';
 import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {
@@ -32,7 +32,7 @@ const customStylesForModal = {
 
     }
 };
-const CURRENT_YEAR = moment().format('YYYY')
+const CURRENT_YEAR = dayjs().format('YYYY')
 const SMMV = get_SMMV(CURRENT_YEAR);
 const UVT = get_UVT(CURRENT_YEAR);
 

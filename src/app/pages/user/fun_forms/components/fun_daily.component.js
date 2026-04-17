@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -105,11 +106,10 @@ export default function FUN_DAILY_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
     const TYPE_TIME = { 'iv': 45, 'iii': 35, 'ii': 25, 'i': 20, 'oa': 15 }
     const MySwal = withReactContent(Swal);
-    const moment = require('moment');
     const defaultData = createDefaultData();
     const VRDI = VR_DOCUMENTS_OF_INTEREST;
-    var [id1, setId1] = useState(`${nomens}${moment().subtract(1, 'year').format('YY')}-0000`);
-    var [id2, setId2] = useState(`${nomens}${moment().format('YY')}-9999`);
+    var [id1, setId1] = useState(`${nomens}${dayjs().subtract(1, 'year').format('YY')}-0000`);
+    var [id2, setId2] = useState(`${nomens}${dayjs().format('YY')}-9999`);
     var [data, setData] = useState([])
     var [datac, setDatac] = useState(defaultData)
     var [load, setLoad] = useState(false)
@@ -308,7 +308,7 @@ export default function FUN_DAILY_COMPONENT(props) {
             if (con3 && lastAi == lastRi) {
                 row.vrdocs.map(vr => {
                     if (conAsist) return;
-                    let condDate = moment(lastRD).isBefore(vr.date)
+                    let condDate = dayjs(lastRD).isBefore(vr.date)
                     if (condDate) {
                         conAsist = vr.codes.some(code => docsInerest.includes(',' + code + ','))
                     }
@@ -359,7 +359,7 @@ export default function FUN_DAILY_COMPONENT(props) {
             if (con3 && lastAi == lastRi) {
                 row.vrdocs.map(vr => {
                     if (conAsist) return;
-                    let condDate = moment(lastRD).isBefore(vr.date)
+                    let condDate = dayjs(lastRD).isBefore(vr.date)
                     if (condDate) {
                         conAsist = vr.codes.some(code => docsInerest.includes(code))
                     }
@@ -410,7 +410,7 @@ export default function FUN_DAILY_COMPONENT(props) {
             if (con3 && lastAi == lastRi) {
                 row.vrdocs.map(vr => {
                     if (conAsist) return;
-                    let condDate = moment(lastRD).isBefore(vr.date)
+                    let condDate = dayjs(lastRD).isBefore(vr.date)
                     if (condDate) {
                         conAsist = vr.codes.some(code => docsInerest.includes(code))
                     }
@@ -683,7 +683,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 let lastVR = { date: row.clock_payment || row.clock_date, codes: [], type: 0 };
 
                 (row.vrdocs || []).map(doc => {
-                    if (moment(doc.date).isSameOrAfter(lastVR.date)) lastVR = doc;
+                    if (dayjs(doc.date).isSameOrAfter(lastVR.date)) lastVR = doc;
                 })
 
 
@@ -754,11 +754,11 @@ export default function FUN_DAILY_COMPONENT(props) {
                 let timeEva1 = dateParser_dateDiff(row.clock_record_p1, row.clock_date);
 
                 let limit_timeEva2 = dateParser_finalDate(row.clock_corrections, (limit_part_1 - timeEva1));
-                //let timeEva2 = dateParser_dateDiff(row.clock_corrections, row.clock_pay2 || moment().format('YYYY-MM-DD'));
+                //let timeEva2 = dateParser_dateDiff(row.clock_corrections, row.clock_pay2 || dayjs().format('YYYY-MM-DD'));
 
-                let dayEva = dateParser_timeLeft(row.clock_not_1 || row.clock_not_2 || row.clock_record_p1 || row.clock_date || row.clock_payment, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                let dayEva = dateParser_timeLeft(row.clock_not_1 || row.clock_not_2 || row.clock_record_p1 || row.clock_date || row.clock_payment, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
                 //let limitDate = dateParser_finalDate(row.clock_not_1 || row.clock_not_2, clock_ext ? 45 : 30)
-                let dayEva2 = dateParser_timeLeft(limit_timeEva2, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                let dayEva2 = dateParser_timeLeft(limit_timeEva2, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
 
 
                 //let con8 = rowCon.cor
@@ -773,7 +773,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                     /** pay2 */
                     rowCon = _con_pay2(row);
                     if ((row.clock_pay_not_1 || row.clock_pay_not_2) && !row.clock_pay_69) {
-                        let paymentTime = dateParser_dateDiff(row.clock_pay_not_1 ?? row.clock_pay_not_2, moment().format('YYYY-MM-DD'));
+                        let paymentTime = dateParser_dateDiff(row.clock_pay_not_1 ?? row.clock_pay_not_2, dayjs().format('YYYY-MM-DD'));
                         let _color = 30 - paymentTime >= 10 ? 'primary' : 30 - paymentTime > 0 ? 'warning' : 'danger'
                         if (paymentTime <= 30) _datac.pay2.push({ ...row, color: _color, contextTest: 30 - paymentTime })
                         /** neg 2 -  4 */
@@ -806,7 +806,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                     /** rsc */
                     let conRsc = row.clock_resource
                     let conRscOut = row.clock_resource_solve
-                    let daysRsc = moment().diff(conRsc, 'days');
+                    let daysRsc = dayjs().diff(conRsc, 'days');
                     if (conClockRes && conRes && resNot && conRsc && daysRsc <= 60 && !conRscOut) _datac.rsc.push({ ...row })
                     if (conClockRes && conRes && resNot && conRsc && daysRsc > 60 && !conRscOut) _datac.rsc.push({ ...row, color: 'warning' })
 
@@ -828,7 +828,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 if (row.state < -100) _datac.neg.push({ ...row, color: 'danger' }) /** neg */
 
                 if (row.state == 1 || row.state == -1) {
-                    let days_rad = conOA ? dateParser_dateDiff(dateParser_finalDate(row.clock_prorroga, -30), moment().format('YYYY-MM-DD'), true) : (30 - dateParser_timePassed(row.clock_payment));
+                    let days_rad = conOA ? dateParser_dateDiff(dateParser_finalDate(row.clock_prorroga, -30), dayjs().format('YYYY-MM-DD'), true) : (30 - dateParser_timePassed(row.clock_payment));
                     /** inc */
                     let color = !row.clock_payment ? 'danger' : days_rad < 0 ? 'danger' : days_rad < 10 ? 'warning' : 'primary';
                     if (conOA) color = !row.clock_prorroga ? 'danger' : days_rad < 0 ? 'danger' : days_rad < 10 ? 'warning' : 'primary';

@@ -2,7 +2,7 @@ import PQRS_SERVICES from '../../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 
 
@@ -32,8 +32,8 @@ export const SEEN_COMPONENT_FORM = (props) => {
         // se implementa la historia de usuario
 
         var _HISTORY = {
-            date: moment().format('YYYY-MM-DD'),
-            time: moment().format('hh-mm'),
+            date: dayjs().format('YYYY-MM-DD'),
+            time: dayjs().format('hh-mm'),
             id: worker.id,
             feedback_argument: pqrsvisto3,
             feedback: pqrsvisto1,
@@ -95,7 +95,7 @@ export const SEEN_COMPONENT_FORM = (props) => {
                     <span className="input-group-text bg-info text-white">
                         <i className="fas fa-calendar-alt"></i>
                     </span>
-                    <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_2" defaultValue={worker.feedback_date ?? moment().format('YYYY-MM-DD')} required></input>
+                    <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_2" defaultValue={worker.feedback_date ?? dayjs().format('YYYY-MM-DD')} required></input>
                 </div>
             </div>
         </div>

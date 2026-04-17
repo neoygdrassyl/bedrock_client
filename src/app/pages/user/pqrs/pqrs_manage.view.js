@@ -28,7 +28,7 @@ import { HISTORY_PQRS_INFO } from './components/pqrs_histoy.component';
 import { PQRS_ID_CONFIRM } from './components/pqrs_id_confitm.component';
 import cubXvrService from '../../../services/cubXvr.service';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 
 const MySwal = withReactContent(Swal);
 
@@ -203,8 +203,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return false;
     }
     let _GET_DOC_BODY = () => {
-        return `Me permite Comunicarle que el ${dateParser(moment(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
-        a las ${moment(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
+        return `Me permite Comunicarle que el ${dateParser(dayjs(currentItem.pqrs_time.creation.split(" ")[0]).format('YYYY-MM-DD'))} 
+        a las ${dayjs(currentItem.pqrs_time.creation, 'YYYY-MM-DD HH:mm').format('HH:mm')} se ha registrado con éxito su
         Solicitud con el numero ${currentItem.id_publico}. A partir de este momento la Curaduría Urbana Estudiará
         su peticion y en el termino de ${currentItem.pqrs_time.time} días hábiles le dará respuesta de manera clara, precisa y
         de fondo. No obstante de requerir un mayor término para lograr este cometido la Curaduría
@@ -1192,7 +1192,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                                     <span className="input-group-text bg-info text-white">
                                                         <i className="far fa-calendar-alt"></i>
                                                     </span>
-                                                    <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={value.date_reply ?? moment().format('YYYY-MM-DD')} required />
+                                                    <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={value.date_reply ?? dayjs().format('YYYY-MM-DD')} required />
                                                 </div>
                                             </div>
                                         </div>

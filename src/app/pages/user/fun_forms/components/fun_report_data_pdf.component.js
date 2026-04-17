@@ -7,7 +7,7 @@ import { MDBBtn } from '../../../../components/ui';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 
 const MySwal = withReactContent(Swal);
-const moment = require('moment');
+import dayjs from 'dayjs';
 function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
 
@@ -147,7 +147,7 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                 <div className="row">
                     <div className="col-3">
                         <label>Fecha del documento</label>
-                        <input type="date" max="2100-01-01" className="form-control" id="fun_report_pdf_1" defaultValue={moment().format('YYYY-MM-DD')} />
+                        <input type="date" max="2100-01-01" className="form-control" id="fun_report_pdf_1" defaultValue={dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col-3">
                         <label>N° CUB</label>
@@ -335,7 +335,7 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                 <div className="row">
                     <div className="col-3">
                         <label>Fecha del documento</label>
-                        <input type="date" max="2100-01-01" className="form-control" id="fun_report_pdf_1" defaultValue={moment().format('YYYY-MM-DD')} />
+                        <input type="date" max="2100-01-01" className="form-control" id="fun_report_pdf_1" defaultValue={dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col-3">
                         <label>N° {infoCud.serials.end}</label>

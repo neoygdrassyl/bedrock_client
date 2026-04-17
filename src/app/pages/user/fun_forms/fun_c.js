@@ -15,7 +15,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 import Collapsible from '../../../components/Collapsible';
 import FUN_DOC_CONFIRM_INCOMPLETE from './components/fun_doc_confirminc';
 import FUN_C_CLOCKS from './components/fun_c_clocks.component';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import submitService from '../../../services/submit.service';
 import { GEM_CODE_LIST } from '../../../components/customClasses/typeParse';
 
@@ -246,7 +246,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             let last_date = false;
             VRDocs.map(vr => {
                 if(vr.type != 1) return
-                if (last_date && moment(vr.date).isAfter(last_date)) last_date = vr.date;
+                if (last_date && dayjs(vr.date).isAfter(last_date)) last_date = vr.date;
                 if (!last_date) last_date = vr.date;
             })
             return last_date;

@@ -1,4 +1,5 @@
 import { procesarFecha, procesarFechaRestar } from './BusinessDaysCol';
+import dayjs from 'dayjs';
 
 export class BaseDocumentUtils {
   constructor(data, htmlString) {
@@ -150,10 +151,7 @@ export class BaseDocumentUtils {
   };
 
   dateParser(date) {
-    const moment = require("moment");
-    let esLocale = require("moment/locale/es");
-    var momentLocale = moment(date, "YYYY-MM-DD").locale("es", esLocale);
-    return momentLocale.format("LL");
+    return dayjs(date, "YYYY-MM-DD").format("LL");
   }
 
   getDateByState(s) {

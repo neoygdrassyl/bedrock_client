@@ -6,7 +6,7 @@ import { formsParser1_exlucde2, regexChecker_isPh } from '../../../../components
 import DataTable from 'react-data-table-component';
 
 const MySwal = withReactContent(Swal);
-const moment = require('moment')
+import dayjs from 'dayjs';
 
 export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
     const { swaMsg, translation, globals, name, id, type } = props;

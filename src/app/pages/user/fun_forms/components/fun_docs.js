@@ -4,7 +4,7 @@ import { MDBBtn, MDBTooltip } from '../../../../components/ui';
 import Collapsible from '../../../../components/Collapsible';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import FUN6DATALIST from './fun_6_datalist';
 
 import FUN_DOC_CONFIRMLEGAL from './fun_doc_confirmlegal';
@@ -163,7 +163,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         <div className="col-4">
                             <div className="input-group">
                                 <span className="input-group-text bg-info text-white"><i className="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
-                                <input type="date" className="form-control" max="2100-01-01" defaultValue={moment().format('YYYY-MM-DD')} name="fun6_dates" />
+                                <input type="date" className="form-control" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} name="fun6_dates" />
                             </div>
                         </div>
                     </div>
@@ -175,7 +175,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
             formData = new FormData();
             formData.set('fun0Id', currentItem.id);
 
-            let _creationYear = moment(currentItem.createdAt).format('YY');
+            let _creationYear = dayjs(currentItem.createdAt).format('YY');
             let _folder = currentItem.id_public;
 
             // GET DATA OF ATTACHS

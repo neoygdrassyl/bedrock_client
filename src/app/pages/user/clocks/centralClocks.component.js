@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { useClocksManager, useScheduleConfig } from './hooks/useClocksManager';
 import { generateClocks } from './config/clocks.definitions';
@@ -36,7 +36,7 @@ export default function EXP_CLOCKS(props) {
   const [showAlarms, setShowAlarms] = useState(true); // CAMBIO: true por defecto
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const [systemDate, setSystemDate] = useState(moment().format('YYYY-MM-DD'));
+  const [systemDate, setSystemDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   // Estado para secciones colapsables (Acordeón)
   const [collapsedSections, setCollapsedSections] = useState({});
@@ -539,7 +539,7 @@ export default function EXP_CLOCKS(props) {
           const startDate = document.getElementById('ext_start').value;
           const endDate = document.getElementById('ext_end').value;
           if (!startDate) { Swal.showValidationMessage('La fecha de inicio es obligatoria'); return false; }
-          if (endDate && moment(endDate).isBefore(startDate)) {
+          if (endDate && dayjs(endDate).isBefore(startDate)) {
             Swal.showValidationMessage('La fecha de fin no puede ser anterior a la fecha de inicio');
             return false;
           }
@@ -751,7 +751,7 @@ export default function EXP_CLOCKS(props) {
     states.forEach((element) => {
       const date = getClock(element)?.date_start;
       if (!newDate && date) newDate = date;
-      else if (date && moment(date).isAfter(newDate)) newDate = date;
+      else if (date && dayjs(date).isAfter(newDate)) newDate = date;
     });
     return newDate;
   };
@@ -761,11 +761,11 @@ export default function EXP_CLOCKS(props) {
   };
 
   const handleDateShift = (days) => {
-    setSystemDate(prevDate => moment(prevDate).add(days, 'days').format('YYYY-MM-DD'));
+    setSystemDate(prevDate => dayjs(prevDate).add(days, 'days').format('YYYY-MM-DD'));
   };
 
   const resetDate = () => {
-    setSystemDate(moment().format('YYYY-MM-DD'));
+    setSystemDate(dayjs().format('YYYY-MM-DD'));
   };
 
   const renderClockList = () => {

@@ -41,10 +41,8 @@ import PQRS_MANAGE_COMPONENT from './pqrs_manage.view';
 import { ACESS_EDIT } from './access_edit';
 
 // JSONS
-//const momentHolydays = require('../../components/jsons/holydaysmoment.json')
-
-const moment = require('moment');
-const momentB = require('moment-business-days');
+import dayjs from 'dayjs';
+import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
 const MySwal = withReactContent(Swal);
 
 function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums }) {
@@ -289,7 +287,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         if (!item) return ""
         let startDate = item.legal
         let time = item.time;
-        let endate = momentB(startDate, 'YYYY-MM-DD').businessAdd(time)._d;
+        const _bd = new DiasHabilesColombia();
+        let endate = _bd.sumarDiasHabiles(startDate, time);
         let parseDate = dateParser(endate)
         return parseDate;
     };
@@ -347,9 +346,9 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 toggleLock(item);
                 break;
             case "macro":
-                let base_date = moment(item.createdAt).format('YYYY-MM-DD');
-                setDate_start(moment(base_date).subtract(6, 'months').format('YYYY-MM-DD'));
-                setDate_end(moment(base_date).add(6, 'months').format('YYYY-MM-DD'));
+                let base_date = dayjs(item.createdAt).format('YYYY-MM-DD');
+                setDate_start(dayjs(base_date).subtract(6, 'months').format('YYYY-MM-DD'));
+                setDate_end(dayjs(base_date).add(6, 'months').format('YYYY-MM-DD'));
                 toggle_macro(item);
                 break;
             case "manage":
@@ -850,7 +849,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         let date_b = document.getElementById("load_macro_date_2").value;
         var date_start_val = date_a;
         var date_end_val = date_b;
-        if (moment(date_a).diff(date_b) >= 0) {
+        if (dayjs(date_a).diff(date_b) >= 0) {
             date_start_val = date_b;
             date_end_val = date_a;
         }
@@ -932,14 +931,14 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                                 <i className="far fa-calendar-alt"></i>
                                             </span>
                                             <input type="date" className="form-control" id="load_macro_date_1" required
-                                                defaultValue={moment().subtract(6, 'months').format('YYYY-MM-DD')} />
+                                                defaultValue={dayjs().subtract(6, 'months').format('YYYY-MM-DD')} />
                                         </div>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
                                                 <i className="far fa-calendar-alt"></i>
                                             </span>
                                             <input type="date" className="form-control" id="load_macro_date_2" required
-                                                defaultValue={moment().format('YYYY-MM-DD')} />
+                                                defaultValue={dayjs().format('YYYY-MM-DD')} />
                                         </div>
                                         <div className="text-center py-4 mt-3">
                                             <button className="btn btn-lg btn-danger"><i className="fas fa-th"></i> CARGAR </button>

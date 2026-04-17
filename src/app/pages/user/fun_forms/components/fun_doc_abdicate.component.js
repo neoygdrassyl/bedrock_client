@@ -3,7 +3,7 @@ import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -152,7 +152,7 @@ export default function FUN_D_ABDICATE(props) {
         RES_DATA = RES_DATA.reso ? getJSONFull(RES_DATA.reso) : {};
         var writtenNumber = require('written-number');
         writtenNumber.defaults.lang = 'es';
-        let date_1 = dateParser(moment().format('YYYY-MM-DD'));
+        let date_1 = dateParser(dayjs().format('YYYY-MM-DD'));
         date_1 = date_1.split(' ').map(s => {
             if (!isNaN(s)) return writtenNumber(s)
             return s
@@ -172,7 +172,7 @@ export default function FUN_D_ABDICATE(props) {
                     <label>Fecha</label>
                     <div className="row">
                         <div className="col mx-0 px-0">
-                            <input type="date" className="form-control form-control-sm" id="fda_date_1" max="2100-01-01" defaultValue={moment().format('YYYY-MM-DD')} />
+                            <input type="date" className="form-control form-control-sm" id="fda_date_1" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} />
                         </div>
                         <div className="col mx-0 px-0">
                             <input type="text" className="form-control form-control-sm" id="fda_date_2" max="2100-01-01" defaultValue={date_1} />
@@ -184,7 +184,7 @@ export default function FUN_D_ABDICATE(props) {
                     <label>Hora</label>
                     <div className="row">
                         <div className="col mx-0 px-0">
-                            <input type="time" className="form-control form-control-sm mx-0" id="fda_time_n" defaultValue={moment().format('HH:mm')} />
+                            <input type="time" className="form-control form-control-sm mx-0" id="fda_time_n" defaultValue={dayjs().format('HH:mm')} />
                         </div>
                         <div className="col mx-0 px-0">
                             <input type="text" className="form-control form-control-sm mx-0" id="fda_time_t" defaultValue={''} />

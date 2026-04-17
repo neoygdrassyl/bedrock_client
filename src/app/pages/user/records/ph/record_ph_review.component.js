@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -83,7 +83,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
         }
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'estructural', 'ingenieria']);
         pdfDoc.setLanguage('es-co');
@@ -164,8 +164,8 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${concecutive}`
                             document.getElementById('f_02_ph').value = new_id;
-                        } else document.getElementById('f_02_ph').value = "OA" + moment().format('YY') + "-0001";
-                    } else document.getElementById('f_02_ph').value = "OA" + moment().format('YY') + "-0001";
+                        } else document.getElementById('f_02_ph').value = "OA" + dayjs().format('YY') + "-0001";
+                    } else document.getElementById('f_02_ph').value = "OA" + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
@@ -261,7 +261,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <i className="far fa-calendar-alt"></i>
                             </span>
                             <input type="date" className="form-control" id="record_ph_worker_arc_2" required
-                                defaultValue={currentRecord.date_arc_review ? currentRecord.date_arc_review : moment().format('YYYY-MM-DD')} />
+                                defaultValue={currentRecord.date_arc_review ? currentRecord.date_arc_review : dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                     <div className="col-3">
@@ -366,7 +366,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     <div className="col">
                         <label>Fecha del documento</label>
                         <input type="date" className="form-control mb-3" max='2100-01-01' id="phnot_date_doc" required
-                            defaultValue={_JSON.date_doc || moment().format('YYYY-MM-DD')} />
+                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
 
                     <div className="col">
@@ -812,7 +812,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
             let date_arc_review = document.getElementById("record_ph_worker_arc_2").value;
             formData.set('date_arc_review', date_arc_review);
-            let date = date_arc_review ?? moment().format('YYYY-MM-DD');
+            let date = date_arc_review ?? dayjs().format('YYYY-MM-DD');
 
             formDataClock.set('date_start', date);
             formDataClock.set('name', "ARCHIVACIÓN");
@@ -828,7 +828,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             let state = 100 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
 
             let worker = window.user.name + " " + window.user.surname;
-            let date = moment().format('YYYY-MM-DD');
+            let date = dayjs().format('YYYY-MM-DD');
 
             formDataClock.set('date_start', date);
             formDataClock.set('name', "CERRADA");

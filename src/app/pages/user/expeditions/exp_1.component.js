@@ -8,7 +8,7 @@ import { axis, infoCud, zones, zonesTable } from '../../../components/jsons/vars
 import { regexChecker_isOA_2, _MANAGE_IDS, _CALCULATE_EXPENSES, formsParser1, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_CALC from './exp_calc.component';
 import { _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
-import moment from 'moment'
+import dayjs from 'dayjs'
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
 
@@ -244,7 +244,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
             var use = _FUN_6_PARSER(_GET_CHILD_1().usos, true);
             var st = _GET_CHILD_2().item_267 - 1;
             var Q = area || _GET_EXPEDITION_JSON('taxes').id_payment_0_area || false;
-            var year = moment(_GET_CLOCK(3).date_start).format('YYYY')
+            var year = dayjs(_GET_CLOCK(3).date_start).format('YYYY')
 
             var expenses = _CALCULATE_EXPENSES(rule, subrule, use, st, Q, year)
             return expenses

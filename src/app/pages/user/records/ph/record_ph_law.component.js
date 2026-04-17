@@ -6,7 +6,7 @@ import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import VIZUALIZER from '../../../../components/vizualizer.component';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import RECORD_LAW_PDF from '../law/record_law_pdf';
 
 const MySwal = withReactContent(Swal);
@@ -153,7 +153,7 @@ function RECORD_PH_LAW(props) {
                                 <i className="far fa-calendar-alt"></i>
                             </span>
                             <input type="date" className="form-control" id="record_ph_worker_law_2" required
-                                defaultValue={currentRecord.date_law_review ? currentRecord.date_law_review : moment().format('YYYY-MM-DD')} />
+                                defaultValue={currentRecord.date_law_review ? currentRecord.date_law_review : dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
 

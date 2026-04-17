@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 import EmailsService from '../services/emails.service';
 import { MDBBtn, MDBTooltip } from './ui';
 import DataTable from 'react-data-table-component';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import VIEWER from './viewer.component';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -205,7 +205,7 @@ export default function EMAILS_COMPONENT(props) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{CheckMark(row.send)} {row.send_date ? moment(row.send_date).format('YYYY-MM-DD HH:mm') : ''}</label>,
+                cell: row => <label>{CheckMark(row.send)} {row.send_date ? dayjs(row.send_date).format('YYYY-MM-DD HH:mm') : ''}</label>,
             },
             {
                 name: <label>Abierto</label>,
@@ -213,7 +213,7 @@ export default function EMAILS_COMPONENT(props) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{CheckMark(row.open)} {row.open_date ? moment(row.open_date).format('YYYY-MM-DD HH:mm') : ''}</label>,
+                cell: row => <label>{CheckMark(row.open)} {row.open_date ? dayjs(row.open_date).format('YYYY-MM-DD HH:mm') : ''}</label>,
             },
             {
                 name: <label>Programado</label>,
@@ -221,7 +221,7 @@ export default function EMAILS_COMPONENT(props) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{CheckMark(row.schedule)} {row.schedule_date ? moment(row.schedule_date).format('YYYY-MM-DD HH:mm') : ''}</label>
+                cell: row => <label>{CheckMark(row.schedule)} {row.schedule_date ? dayjs(row.schedule_date).format('YYYY-MM-DD HH:mm') : ''}</label>
             },
             {
                 name: <label>Acción</label>,

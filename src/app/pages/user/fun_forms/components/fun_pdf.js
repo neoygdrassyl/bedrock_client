@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, domains, states } from '../../../../components/jsons/vars';
 
 const MySwal = withReactContent(Swal);
@@ -2118,7 +2118,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
 
         let _author = document.getElementById('fun_pdf_0_1').value + ' DE ' + document.getElementById('fun_pdf_0_4').value
         pdfDoc.setAuthor(_author);
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto']);
         pdfDoc.setLanguage('es-co');

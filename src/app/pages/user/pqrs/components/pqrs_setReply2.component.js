@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -7,7 +7,6 @@ import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import CubXVrDataService from '../../../../services/cubXvr.service'
-//const moment = require('moment');
 
 const MySwal = withReactContent(Swal);
 export const PQRS_SET_REPLY1 = (props) => {
@@ -34,7 +33,7 @@ export const PQRS_SET_REPLY1 = (props) => {
     const textdefauld = (conten) => (`
     <p style="margin-left: 150px; line-height: 1.5;"><span style="font-family: arial, helvetica, sans-serif;"><br></span></p> 
     <p style="margin-left: 80px; line-height: 1.5;"><span style="font-family: arial, helvetica, sans-serif;"><br></span></p> 
-    <p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};">${infoCud.city}, ${dateParser(moment().format('YYYY-MM-DD'))}</span></p>
+    <p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};">${infoCud.city}, ${dateParser(dayjs().format('YYYY-MM-DD'))}</span></p>
     <p style="text-align: center; margin-left: 470px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};"><strong>${currentItem.id_reply ?? ''}</strong></span></p>
     <p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};, margin-left: 30px;"><strong>Peticionario: </strong></span></p>
     ${get_email() ? `<p style="margin-left: 80px; line-height: 0.5;"><span style="font-family: arial, helvetica, sans-serif; ${fontSize};, margin-left: 30px;"><strong>${get_email()}</strong></span></p>` : ""}
@@ -241,7 +240,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                     if (concecutive < 1000) concecutive = "0" + concecutive
                     if (concecutive < 100) concecutive = "0" + concecutive
                     if (concecutive < 10) concecutive = "0" + concecutive
-                    new_id = res1 + (moment().format('YY')).split('-')[0] + "-" + concecutive
+                    new_id = res1 + (dayjs().format('YY')).split('-')[0] + "-" + concecutive
                     document.getElementById('pqrs_master_idreply').value = new_id;
                 } else {
                     concecutive = new_id.split('-')[1];
@@ -328,7 +327,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                                 <i className="fas fa-hashtag"></i>
                             </span>
                             <input type="date" max="2100-01-01" className="form-control"
-                                defaultValue={validar ?? moment().format('YYYY-MM-DD')}
+                                defaultValue={validar ?? dayjs().format('YYYY-MM-DD')}
                                 id="pqrs_reply_time_formalReply" require />
                         </div>
                     </div>

@@ -1,7 +1,8 @@
 import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip, MDBTypography } from '../../../components/ui';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
+import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
 import FunService from '../../../services/fun.service';
 import PqrsMainDataService from '../../../services/pqrs_main.service';
 import Codes from '../../../components/jsons/fun6DocsList.json';
@@ -14,7 +15,6 @@ import withReactContent from 'sweetalert2-react-content'
 
 const MySwal = withReactContent(Swal);
 
-var momentB = require('moment-business-days');
 
 function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSubtmitRows, openModal, listIncomplete }) {
     const [currentItems, setCurrentItems] = useState([]);
@@ -30,10 +30,10 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
 
     const get_lastVRTime = (items) => {
         var screated = items.screated ? items.screated.split(';') : [];
-        var today = moment();
-        var diff = moment(today).diff(screated[0], 'days', true);
+        var today = dayjs();
+        var diff = dayjs(today).diff(screated[0], 'days', true);
         screated.map(value => {
-            var diffi = moment(today).diff(value, 'days', true)
+            var diffi = dayjs(today).diff(value, 'days', true)
             if (diffi < diff) diff = diffi
         })
         return diff;
@@ -86,9 +86,9 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
     useEffect(() => {
         if (simple) return;
 
-        var end_date = moment().format('YYYY-MM-DD');
-        var start_date = momentB(end_date, 'YYYY-MM-DD').businessSubtract(15)._d;
-        start_date = moment(start_date).format('YYYY-MM-DD')
+        var end_date = dayjs().format('YYYY-MM-DD');
+        const _bd = new DiasHabilesColombia();
+        var start_date = _bd.restarDiasHabiles(end_date, 15);
 
         if (type == "LIC") {
             FunService.loadSubmit2(start_date, end_date)

@@ -3,7 +3,7 @@ import FUNService from '../../../services/fun.service'
 import { MDBBtn, MDBCard, MDBCardBody } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import FUN6DATALIST from './components/fun_6_datalist';
 import FUN_VERSION_NAV from './components/fun_versionNav';
@@ -390,7 +390,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                         <div className="col-3">
                             <label>2.2.6 Fecha de Confirmación</label>
                             <input type="date" className="form-control mb-3" max='2100-01-01' id="alert_date_confirm" required
-                                defaultValue={_CHILD.alerted ?? moment().format('YYYY-MM-DD')} />
+                                defaultValue={_CHILD.alerted ?? dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
 

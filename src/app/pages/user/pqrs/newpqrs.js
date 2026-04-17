@@ -3,10 +3,8 @@ import { MDBBtn } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
-import HolyDays from '../../../components/holydays.list.json'
-
-const moment = require('moment');
-const momentB = require('moment-business-days');
+import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 
 function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshRequested }) {
@@ -419,28 +417,19 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
 
         }
 
+        const _bd = new DiasHabilesColombia();
         let _SET_LEGAL_TIME = () => {
             let _date = document.getElementById('pqrs_time_1').value;
             let _legal_date = _date;
             let _time = document.getElementById('pqrs_time_10').value;
 
-            let _now = moment().format('YYYY-MM-DD');
+            let _now = dayjs().format('YYYY-MM-DD');
             _now = _now + " " + _time;
-            let _hour = moment(_now).format('HH');
-            if (momentB(_date).isBusinessDay()) {
+            let _hour = dayjs(_now).format('HH');
+            if (_bd.esHabil(_date)) {
                 if (_hour < 17) document.getElementById('pqrs_time_2').value = _legal_date;
-                else document.getElementById('pqrs_time_2').value = _GET_NEXT_BUSSINESS_DAY(_date)
-            } else document.getElementById('pqrs_time_2').value = _GET_NEXT_BUSSINESS_DAY(_date)
-        }
-
-        let _GET_NEXT_BUSSINESS_DAY = (_date) => {
-            let date = _date;
-            date = momentB(date).nextBusinessDay();
-            let _year = moment(date).format('YYYY');
-            let _month = moment(date).format('MM') - 1;
-            let _day = moment(date).format('D');
-            if (HolyDays[_year][_month][_day]) return _GET_NEXT_BUSSINESS_DAY(date)
-            return moment(date).format('YYYY-MM-DD');
+                else document.getElementById('pqrs_time_2').value = _bd.siguienteDiaHabil(_date)
+            } else document.getElementById('pqrs_time_2').value = _bd.siguienteDiaHabil(_date)
         }
 
         let _SET_REPLY_TIME = () => {
@@ -674,7 +663,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <span className="input-group-text bg-info text-white">
                                     <i className="far fa-calendar-alt"></i>
                                 </span>
-                                <input type="date" className="form-control" defaultValue={moment().format('YYYY-MM-DD')} disabled />
+                                <input type="date" className="form-control" defaultValue={dayjs().format('YYYY-MM-DD')} disabled />
                             </div>
                         </div>
                         <div className="text-center py-4 mt-3">

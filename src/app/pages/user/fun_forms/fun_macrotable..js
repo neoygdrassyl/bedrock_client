@@ -112,7 +112,7 @@ const _fun_0_type_days_matrix = {
     'oa': { 'law': 1, 'arc': 1, 'eng': 0 },
     '0': { 'law': 1, 'arc': 1, 'eng': 0 },
 }
-const moment = require('moment');
+import dayjs from 'dayjs';
 function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilter, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
     const tagRef = useRef(null);
     const [state, setState] = useReducer(
@@ -812,7 +812,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 if (!isNaN(splitCon[0]) && Number(_FULL_LIST[i].exp_id) == Number(splitCon[0])) condition = true;
                             }
                             if (splitCon[0] && splitCon[1]) {
-                                if (!isNaN(splitCon[0]) && Number(_FULL_LIST[i].exp_id) == Number(splitCon[0]) && splitCon[1] == moment(_FULL_LIST[i].clock_resolution, 'YYYY-MM-DD').format('YY', true)) condition = true;
+                                if (!isNaN(splitCon[0]) && Number(_FULL_LIST[i].exp_id) == Number(splitCon[0]) && splitCon[1] == dayjs(_FULL_LIST[i].clock_resolution, 'YYYY-MM-DD').format('YY', true)) condition = true;
                             }
 
                         }
@@ -834,8 +834,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                         let date1 = fiterBody[2];
                         let date2 = fiterBody[3];
                         let case_1 = date1 && (date2 == undefined);
-                        let case_2 = moment(date2, 'YYYY-MM-DD', true).isValid() && moment(date2, 'YYYY-MM-DD', true).isValid();
-                        let case_3 = moment(date2, 'YYYY-MM-DD', true).isValid() && !isNaN(date2);
+                        let case_2 = dayjs(date2, 'YYYY-MM-DD', true).isValid() && dayjs(date2, 'YYYY-MM-DD', true).isValid();
+                        let case_3 = dayjs(date2, 'YYYY-MM-DD', true).isValid() && !isNaN(date2);
                         let case_4 = date1[0] == '-' && (date1[1] == 'd' || date1[1] == 'w' || date1[1] == 'm' || date1[1] == 'y');
 
                         let dates;
@@ -852,11 +852,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 if (date.includes(date1)) meetCondition = true;
                             }
                             if (case_2) {
-                                if (moment(date).isBetween(date1, date2, undefined, '[]')) meetCondition = true;
+                                if (dayjs(date).isBetween(date1, date2, undefined, '[]')) meetCondition = true;
                             }
                             if (case_3) {
                                 let finalDate = dateParser_finalDate(date1, date2)
-                                if (moment(date).isBetween(date1, finalDate, undefined, '[]')) meetCondition = true;
+                                if (dayjs(date).isBetween(date1, finalDate, undefined, '[]')) meetCondition = true;
                             }
                             if (case_4) {
                                 let numberT = date1.substring(2, date1.length)
@@ -864,24 +864,24 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 else numberT = Number(numberT);
 
                                 if (!isNaN(numberT)) {
-                                    let today = moment();
+                                    let today = dayjs();
                                     let lastDate;
                                     if (date1[1] == 'd') {
                                         lastDate = today.subtract(numberT, "days");
                                     }
                                     if (date1[1] == 'w') {
                                         lastDate = today.subtract(numberT, "week");
-                                        lastDate.startOf('isoWeek');
+                                        lastDate = lastDate.startOf('isoWeek');
                                     }
                                     if (date1[1] == 'm') {
                                         lastDate = today.subtract(numberT, "month");
-                                        lastDate.startOf('month');
+                                        lastDate = lastDate.startOf('month');
                                     }
                                     if (date1[1] == 'y') {
                                         lastDate = today.subtract(numberT, "year");
-                                        lastDate.startOf('year');
+                                        lastDate = lastDate.startOf('year');
                                     }
-                                    if (moment(date).isBetween(lastDate, moment(), undefined, '[]')) meetCondition = true;
+                                    if (dayjs(date).isBetween(lastDate, dayjs(), undefined, '[]')) meetCondition = true;
                                 }
                             }
                         })
@@ -1307,9 +1307,9 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                  ?
                  _GET_ASIGN_DATE(row.asign_law_date, 11, row)
-                     ? dateParser_finalDate(moment(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                     ? dateParser_finalDate(dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
                      : dateParser_finalDate(row.clock_date, _fun_0_type_days[row.type] ?? 5)
-                 : dateParser_finalDate(moment(row.asign_ph_law_date).isSameOrAfter(row.clock_date, 'day') >= 0 ? row.asign_ph_law_date : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                 : dateParser_finalDate(dayjs(row.asign_ph_law_date).isSameOrAfter(row.clock_date, 'day') >= 0 ? row.asign_ph_law_date : row.clock_date, _fun_0_type_days[row.type] ?? 5)
              } {!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                  ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) && !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : ''
                  : row.asign_ph_law_date && !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : ''}
@@ -1331,7 +1331,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
               name: <label>DIAS</label>,
               selector: row => dateParser_dateDiff(
                   !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_date : row.ph_date_law,
-                  !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? moment(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
+                  !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
                   , true),
               sortable: true,
               filterable: true,
@@ -1343,7 +1343,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
               cell: row => {
                   let diff = dateParser_dateDiff(
                       !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_date : row.ph_date_law,
-                      !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? moment(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
+                      !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
                       , true)
                   return <>
                       <label> <label className={diff < 0 ? 'text-success fw-bold' : diff > (_fun_0_type_days[row.type] ?? 5) ? 'text-danger' : ''}>{diff}</label>
@@ -1417,7 +1417,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                                 ?
                                 _GET_ASIGN_DATE(row.asign_arc_date, 13, row)
-                                    ? dateParser_finalDate(moment(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                                    ? dateParser_finalDate(dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
                                     : dateParser_finalDate(row.clock_date, _fun_0_type_days[row.type] ?? 5)
                                 : dateParser_finalDate(row.asign_ph_arc_date, _fun_0_type_days[row.type] ?? 5)
                             }  {!_REGEX_MATCH_PH(_PARSE_FUN_1(row))
@@ -1441,7 +1441,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 name: <label>DIAS</label>,
                 selector: row => dateParser_dateDiff(
                     !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_date : row.ph_date_arc,
-                    !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? moment(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
+                    !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
                     , true),
                 sortable: true,
                 filterable: true,
@@ -1453,7 +1453,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => {
                     let diff = dateParser_dateDiff(
                         !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_date : row.ph_date_arc,
-                        !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? moment(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
+                        !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
                         , true)
                     return <>
                         <label> <label className={diff < 0 ? 'text-success fw-bold' : diff > (_fun_0_type_days[row.type] ?? 5) ? 'text-danger' : ''}>{diff} </label>
@@ -1545,7 +1545,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             cell: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                 ? <label>{
                     _GET_ASIGN_DATE(row.asign_eng_date, 12, row)
-                        ? dateParser_finalDate(moment(_GET_ASIGN_DATE(row.asign_eng_date, 12, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_eng_date, 12, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
+                        ? dateParser_finalDate(dayjs(_GET_ASIGN_DATE(row.asign_eng_date, 12, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_eng_date, 12, row) : row.clock_date, _fun_0_type_days[row.type] ?? 5)
                         : dateParser_finalDate(row.clock_date, _fun_0_type_days[row.type] ?? 5)
                 }
                     {_GET_ASIGN_DATE(row.asign_eng_date, 12, row) && !_fun_0_type_days[row.type] ? <label className='fw-bold text-danger'>?</label> : ''}</label>
@@ -2430,13 +2430,13 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
         let _GET_OLDEST_DATE = (DATES, inTime) => {
             let dates = DATES ? DATES.split(';') : [];
-            let oldestDate = moment();
+            let oldestDate = dayjs();
             dates.forEach((element) => {
-                if (!moment(element).isSameOrAfter(oldestDate)) {
+                if (!dayjs(element).isSameOrAfter(oldestDate)) {
                     oldestDate = element;
                 }
             });
-            if (inTime) return dateParser_timePassed(moment(oldestDate).format('YYYY-MM-DD'))
+            if (inTime) return dateParser_timePassed(dayjs(oldestDate).format('YYYY-MM-DD'))
             else return oldestDate;
 
         }

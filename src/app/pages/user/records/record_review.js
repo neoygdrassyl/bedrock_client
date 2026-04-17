@@ -13,7 +13,7 @@ import { dateParser_finalDate, dateParser_timeLeft, regexChecker_isOA_2, _MANAGE
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FunService from '../../../services/fun.service';
 import { cities, domains_number, infoCud } from '../../../components/jsons/vars';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { handleArchCheck, handleEnghCheck, handleLAWhCheck } from '../../../components/customClasses/pdfCheckHandler';
 import RECORD_DOC_LETTER from './record_letter.component';
 import RECORD_DOC_LETTER_2 from './record_letter_2.component';
@@ -189,7 +189,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         }
 
         mergedPdf.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        mergedPdf.setCreationDate(moment().toDate());
+        mergedPdf.setCreationDate(dayjs().toDate());
         mergedPdf.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         mergedPdf.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'juridico']);
         mergedPdf.setLanguage('es-co');
@@ -890,7 +890,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         <label>Fecha expedición</label>
                         <div className="input-group my-1">
                             <input type="date" max="2100-01-01" className="form-control me-1" id="record_date"
-                                defaultValue={moment().format('YYYY-MM-DD')} />
+                                defaultValue={dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                 </div>

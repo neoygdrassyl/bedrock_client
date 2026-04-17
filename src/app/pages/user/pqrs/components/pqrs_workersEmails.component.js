@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import USERS_Service from '../../../../services/users.service';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker, email_types, retrieveItem, closeComponent }) {
     const [usersList, setUsersList] = useState([]);
@@ -187,7 +187,7 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
             formData = new FormData();
 
             formData.set('id', worker.id);
-            formData.set('sent_email_notify', moment().format('YYYY-MM-DD'));
+            formData.set('sent_email_notify', dayjs().format('YYYY-MM-DD'));
 
             let email_list = document.getElementById("pqrs_email_notify_worker_1").value;
             formData.set('email_list', email_list);

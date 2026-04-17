@@ -1,5 +1,5 @@
 import { MDBTooltip } from '../../../../components/ui';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -116,7 +116,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                                 <i className="far fa-calendar-alt"></i>
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="pqrs_worker_feeback_2"
-                                disabled required defaultValue={moment().format('YYYY-MM-DD')} />
+                                disabled required defaultValue={dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                 </div>
