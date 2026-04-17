@@ -106,6 +106,32 @@ export default defineConfig({
   build: {
     outDir: 'build',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+
+          // Core React + UI runtime — merged to avoid circular deps
+          // (rsuite imports react internals, creating a cycle if split)
+          if (/react-dom|react\/|scheduler|react-router|rsuite|styled-components|@emotion/.test(id)) return 'vendor-react';
+
+          // PDF generation & viewing (heavy, only needed in doc views)
+          if (/react-pdf|pdfjs-dist|pdf-lib|jspdf|html2canvas/.test(id)) return 'vendor-pdf';
+
+          // Icon libraries
+          if (/react-icons|lucide-react/.test(id)) return 'vendor-icons';
+
+          // Date/time handling
+          if (/moment|moment-business-days/.test(id)) return 'vendor-datetime';
+
+          // Rich text editor
+          if (/jodit/.test(id)) return 'vendor-editor';
+
+          // Bootstrap (CSS-in-JS part) + DOMPurify
+          if (/bootstrap|dompurify/.test(id)) return 'vendor-bootstrap';
+        },
+      },
+    },
   },
 
   // Resolve
