@@ -378,7 +378,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 <div className="row">
                     <div className="col">
                         <label className="lead fw-bold me-3">Descargar Excel</label>
-                        <a target="_blank" onClick={() => generateCVS()} ><i className="far fa-file-excel fa-2x" style={{ color: "darkgreen" }}></i> </a>
+                        <button type="button" onClick={() => generateCVS()} ><i className="far fa-file-excel fa-2x" style={{ color: "darkgreen" }}></i> </button>
                     </div>
                 </div>
 

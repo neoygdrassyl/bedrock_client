@@ -57,9 +57,9 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                 <div className="m-1 text-center">
 
                                     <div className="row mx-2 mb-1">
-                                        <a onClick={() => NAVIGATION(currentItem, "close", FROM)} className="btn btn-info m-0 p-2 shadow-none">
+                                        <button type="button" onClick={() => NAVIGATION(currentItem, "close", FROM)} className="btn btn-info m-0 p-2 shadow-none">
                                             <i className="fas fa-times-circle fa-2x" ></i> <label className="fs-6 align-top">CERRAR</label>
-                                        </a>
+                                        </button>
                                     </div>
 
                                     {FROM == "general"

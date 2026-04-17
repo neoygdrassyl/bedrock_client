@@ -72,10 +72,10 @@ function VIZUALIZER({ url, id, apipath, icon, color, iconWrapper, iconStyle }) {
     return (<>
 
         {icon
-            ? <a  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + url)}><i className={icon} style={{...iconStyle, color: color }}></i></a>
+            ? <button type="button"  className={aWrapper} onClick={() => id ? _LOAD_BY_ID() :_OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + url)}><i className={icon} style={{...iconStyle, color: color }}></i></button>
             : <MDBTooltip title='Visualizar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <a className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + url)}>
-                    <i className="fas fa-search"></i></a> </MDBTooltip>
+                <button type="button" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => id ? _LOAD_BY_ID() : _OPEN_WINDOW(import.meta.env.VITE_API_URL + apipath + url)}>
+                    <i className="fas fa-search"></i></button> </MDBTooltip>
         }
 
 
