@@ -282,10 +282,10 @@ export default function NORM_PREDIOS(props) {
             minWidth: '80px',
             cell: row => row.noactions ? null : <>
                 <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                    <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i class="far fa-edit"></i></MDBBtn>
+                    <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i className="far fa-edit"></i></MDBBtn>
                 </MDBTooltip>
                 <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                    <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                    <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
                 </MDBTooltip>
             </>,
         },
@@ -313,34 +313,34 @@ export default function NORM_PREDIOS(props) {
             <div className="row">
                 <div className="col">
                     <label>Nr. Predial</label>
-                    <div class="input-group my-1">
-                        <input type="text" class="form-control" defaultValue={editItem ? editItem.predial : ""} id={"predio_predial" + edit} />
+                    <div className="input-group my-1">
+                        <input type="text" className="form-control" defaultValue={editItem ? editItem.predial : ""} id={"predio_predial" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Dirección</label>
-                    <div class="input-group my-1">
-                        <input type="text" defaultValue={editItem ? editItem.dir : ""} class="form-control" id={"predio_dir" + edit} />
+                    <div className="input-group my-1">
+                        <input type="text" defaultValue={editItem ? editItem.dir : ""} className="form-control" id={"predio_dir" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Area (m2)</label>
-                    <div class="input-group my-1">
-                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.area : ""} class="form-control" id={"predio_area" + edit} />
+                    <div className="input-group my-1">
+                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.area : ""} className="form-control" id={"predio_area" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Frente (m)</label>
-                    <div class="input-group my-1">
-                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.front : ""} class="form-control" id={"predio_front" + edit} />
+                    <div className="input-group my-1">
+                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.front : ""} className="form-control" id={"predio_front" + edit} />
                     </div>
                 </div>
             </div>
             <div className="row">
                 <div className="col-3">
                     <label>BIC</label>
-                    <div class="input-group my-1">
-                        <select class="form-select" defaultValue={editItem ? editItem.bic_pred : ""} id={"norm_bic_pred" + edit}>
+                    <div className="input-group my-1">
+                        <select className="form-select" defaultValue={editItem ? editItem.bic_pred : ""} id={"norm_bic_pred" + edit}>
                             <option>NO</option>
                             <option>SI</option>
                             {BICS.map( bic => <option>{bic.name}</option>)}
@@ -349,8 +349,8 @@ export default function NORM_PREDIOS(props) {
                 </div>
                 <div className="col-3">
                     <label>Área BIC</label>
-                    <div class="input-group my-1">
-                    <select class="form-select" defaultValue={editItem ? editItem.bic_area : ""} id={"predio_bic_area" + edit}>
+                    <div className="input-group my-1">
+                    <select className="form-select" defaultValue={editItem ? editItem.bic_area : ""} id={"predio_bic_area" + edit}>
                             <option value={0}>NO</option>
                             <option value={1}>SI</option>
                         </select>
@@ -358,8 +358,8 @@ export default function NORM_PREDIOS(props) {
                 </div>
                 <div className="col-3">
                     <label>Sujeto a Copm. Esp. Publico</label>
-                    <div class="input-group my-1">
-                    <select class="form-select" defaultValue={editItem ? editItem.art_192 : ""} id={"norm_art_192" + edit}>
+                    <div className="input-group my-1">
+                    <select className="form-select" defaultValue={editItem ? editItem.art_192 : ""} id={"norm_art_192" + edit}>
                             <option value={0}>NO</option>
                             <option value={1}>SI</option>
                         </select>
@@ -370,9 +370,9 @@ export default function NORM_PREDIOS(props) {
     }
 
     const NEW_ITEM = <>
-        <div class="form-check ms-5">
-            <input class="form-check-input" type="checkbox" id="cb_new" onChange={(e) => setNewItem(e.target.checked)} />
-            <label class="form-check-label" for="flexCheckDefault">
+        <div className="form-check ms-5">
+            <input className="form-check-input" type="checkbox" id="cb_new" onChange={(e) => setNewItem(e.target.checked)} />
+            <label className="form-check-label" htmlFor="flexCheckDefault">
                 Nuevo Predio
             </label>
         </div>
@@ -381,7 +381,7 @@ export default function NORM_PREDIOS(props) {
                 {_COMPONENT_MANAGE("")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i class="fas fa-plus-circle"></i> AÑADIR ITEM </button>
+                        <button className="btn btn-success btn-sm" ><i className="fas fa-plus-circle"></i> AÑADIR ITEM </button>
                     </div>
                 </div>
             </form>
@@ -395,7 +395,7 @@ export default function NORM_PREDIOS(props) {
                 {_COMPONENT_MANAGE("_edit")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i class="fas fa-edit"></i> ACTUALIZAR ITEM </button>
+                        <button className="btn btn-success btn-sm" ><i className="fas fa-edit"></i> ACTUALIZAR ITEM </button>
                     </div>
                 </div>
             </form>
@@ -405,7 +405,7 @@ export default function NORM_PREDIOS(props) {
     return (
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                <h3 class="text-uppercase pb-2">2. INFORMACIÓN PREDIO(S):</h3>
+                <h3 className="text-uppercase pb-2">2. INFORMACIÓN PREDIO(S):</h3>
                 {NEW_ITEM}
                 {TABLE}
                 {EDIT_ITEM}

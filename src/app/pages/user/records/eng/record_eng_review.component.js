@@ -468,7 +468,7 @@ function RECORD_ENG_REVIEW(props) {
                                 </div>
                                 <div className="col-3 text-center">
                                     {rewStates['REW' + i]
-                                        ? <input type="text" class="form-control me-1" id={"r_l_review_worker_" + i}
+                                        ? <input type="text" className="form-control me-1" id={"r_l_review_worker_" + i}
                                             defaultValue={iworker} disabled />
                                         : <label>{iworker}</label>
                                     }
@@ -478,18 +478,18 @@ function RECORD_ENG_REVIEW(props) {
                                 </div>
                                 <div className="col text-center">
                                     {rewStates['REW' + i]
-                                        ? <input type="date" class="form-control form-control-sm" id={"r_l_review_date_" + i} max="2100-01-01"
+                                        ? <input type="date" className="form-control form-control-sm" id={"r_l_review_date_" + i} max="2100-01-01"
                                             defaultValue={idate} />
                                         : <label>{idate ?? ''}</label>
                                     }
                                 </div>
                                 <div className="col-1">
                                     {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={rewStates['REW' + i]}
-                                        onClick={() => setRewStates(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i class="far fa-edit"></i></MDBBtn>
+                                        onClick={() => setRewStates(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></MDBBtn>
                                         : ''}
                                     {rewStates['REW' + i]
                                         ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
-                                            onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
+                                            onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></MDBBtn>
                                         : ""
                                     }
                                     {true ?
@@ -511,7 +511,7 @@ function RECORD_ENG_REVIEW(props) {
                                 </div>
                                 <div className="col-6">
                                     {rewStates['REW' + i]
-                                        ? <input type="text" class="form-control me-1" id={"r_l_review_40_" + i}
+                                        ? <input type="text" className="form-control me-1" id={"r_l_review_40_" + i}
                                             defaultValue={idesc1} />
                                         : <label>{idesc1}</label>
                                     }
@@ -533,7 +533,7 @@ function RECORD_ENG_REVIEW(props) {
                                 </div>
                                 <div className="col-6">
                                     {rewStates['REW' + i]
-                                        ? <input type="text" class="form-control me-1" id={"r_l_review_50_" + i}
+                                        ? <input type="text" className="form-control me-1" id={"r_l_review_50_" + i}
                                             defaultValue={idesc2} />
                                         : <label>{idesc2}</label>
                                     }
@@ -556,7 +556,7 @@ function RECORD_ENG_REVIEW(props) {
                                 </div>
                                 <div className="col-6">
                                     {rewStates['REW' + i]
-                                        ? <input type="text" class="form-control me-1" id={"r_l_review_60_" + i}
+                                        ? <input type="text" className="form-control me-1" id={"r_l_review_60_" + i}
                                             defaultValue={idesc3} />
                                         : <label>{idesc3}</label>
                                     }
@@ -592,7 +592,7 @@ function RECORD_ENG_REVIEW(props) {
                 </div>
                 <div className="row">
                     <div className="col-9 p-1">
-                        <input type="text" class="form-control me-1" id="r_l_review_40"
+                        <input type="text" className="form-control me-1" id="r_l_review_40"
                             defaultValue={_CHILD.check_context ?? ''} />
                     </div>
                     <div className="col-3 p-1">
@@ -606,7 +606,7 @@ function RECORD_ENG_REVIEW(props) {
 
                 <div className="row">
                     <div className="col-9 p-1">
-                        <input type="text" class="form-control me-1" id="r_l_review_50"
+                        <input type="text" className="form-control me-1" id="r_l_review_50"
                             defaultValue={_CHILD.check_2_cotext ?? ''} />
                     </div>
                     <div className="col-3 p-1">
@@ -698,24 +698,24 @@ function RECORD_ENG_REVIEW(props) {
                     <div className="row mb-3">
                         <div className="col">
                             <label>Autoridad Competente</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_1"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_1"}>
                                     {domains_number}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Ciudad</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"func_pdf_0_2"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"func_pdf_0_2"}>
                                     {cities}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Acta</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_version"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_version"}>
                                     <option value={1}>OBSERVACIONES</option>
                                     <option value={2}>CORRECCIONES</option>
                                 </select>
@@ -723,8 +723,8 @@ function RECORD_ENG_REVIEW(props) {
                         </div>
                         <div className="col">
                             <label>Cabecera</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_header"}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_header"}>
                                     <option value={1}>USAR CABECERA</option>
                                     <option value={0}>NO USAR CABECERA</option>
                                 </select>
@@ -734,29 +734,29 @@ function RECORD_ENG_REVIEW(props) {
                     <div className="row mb-3">
                         <div className="col">
                             <label>Revision</label>
-                            <div class="input-group my-1">
-                                <select class="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
+                            <div className="input-group my-1">
+                                <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
                                     {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
                                 </select>
                             </div>
                         </div>
                         <div className="col">
                             <label>Profesional</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_worker_name"} disabled defaultValue={reviews[0].worker} />
                             </div>
                         </div>
                         <div className="col">
                             <label>Fecha</label>
-                            <div class="input-group my-1">
+                            <div className="input-group my-1">
                                 <input className='form-control' id={"record_pdf_date"} disabled defaultValue={reviews[0].date} />
                             </div>
                         </div>
                         <div className="col-2">
                             <br />
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="record_eng_pending" />
-                                <label class="form-check-label" for="exampleCheck1">Pendiente</label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="record_eng_pending" />
+                                <label className="form-check-label" htmlFor="exampleCheck1">Pendiente</label>
                             </div>
                         </div>
                     </div>
@@ -788,10 +788,10 @@ function RECORD_ENG_REVIEW(props) {
                     </div>
                     <div className="row mb-3 text-center">
                         <div className="col">
-                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i class="far fa-file-pdf"></i> DESCARGAR INFORME</button>
+                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i className="far fa-file-pdf"></i> DESCARGAR INFORME</button>
                         </div>
                         <div className="col">
-                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i class="far fa-check-square"></i> DESCARGAR CHECKEO</button>
+                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i className="far fa-check-square"></i> DESCARGAR CHECKEO</button>
                         </div>
                     </div>
                 </div>
@@ -1240,7 +1240,7 @@ function RECORD_ENG_REVIEW(props) {
             for (let i = 0; i < currentItem.version; i++) {
                 _COMPONENT.push(<option value={i + 1}>Revision {i + 1}</option>)
             }
-            return <select class="form-select" id="record_version">{_COMPONENT}</select>
+            return <select className="form-select" id="record_version">{_COMPONENT}</select>
         }
         let CREATE_PDF_CHECK = () => {
             let CLOCK_3 = _GET_CLOCK_STATE(3, 1)

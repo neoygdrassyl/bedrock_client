@@ -418,7 +418,7 @@ export default function RECORD_LAW_FUN_2(props) {
 
     let _EDIT_BTN = () => {
         return <>
-            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal(!modal)}><i class="far fa-edit" style={{ fontSize: '150%' }}></i></button>
+            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal(!modal)}><i className="far fa-edit" style={{ fontSize: '150%' }}></i></button>
 
             <Modal contentLabel="EDIT FUN 1"
                 isOpen={modal}
@@ -426,7 +426,7 @@ export default function RECORD_LAW_FUN_2(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label className="fw-bold align-middle"> <i class="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
+                    <label className="fw-bold align-middle"> <i className="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
                     <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
                 </div>
 

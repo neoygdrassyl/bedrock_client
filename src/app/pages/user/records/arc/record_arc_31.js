@@ -73,7 +73,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
         let _SELECT_PROFESIONAL = () => {
             return <>
                 <label>TRAER PROFESIONAL DE LA SOLICITUD</label>
-                <select class="form-select" required id="r_a_31_select_profesional" onChange={(e) => updateWorker(e.target.value)} >
+                <select className="form-select" required id="r_a_31_select_profesional" onChange={(e) => updateWorker(e.target.value)} >
                     <option value="0">NUEVO PROFESIONAL</option>
                     {_SELECT_FUN_52_ID()}
                 </select>
@@ -83,43 +83,43 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
             return <>
                 <input type="hidden" name="s_31_values" defaultValue={value31[0]} />
                 <label >3.1.1 Arquitecto Responsable</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-user"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="far fa-user"></i>
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[1]} />
                 </div>
                 <label >3.1.2 Matricula Profesional</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-address-card"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="far fa-address-card"></i>
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[2]} />
                 </div>
                 <label >3.1.3 Teléfono Contacto</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-phone-alt"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="fas fa-phone-alt"></i>
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[3]} />
                 </div>
                 <label >3.1.4 Email contacto</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-envelope"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="far fa-envelope"></i>
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[4]} />
                 </div>
                 <label >3.1.5 Dirección Contacto</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-map-marked-alt"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="fas fa-map-marked-alt"></i>
                     </span>
-                    <input type="text" class="form-control" name="s_31_values"
+                    <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[5]} />
                 </div>
             </>
@@ -129,35 +129,35 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
             let _CLOCK_11 = _GET_CLOCK_STATE_V(11, currentVersionR)
             return <>
                 <label >Fecha de Inicio</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-calendar-times"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="far fa-calendar-times"></i>
                     </span>
-                    <input type="text" class="form-control" id="r_a_31_date_1" disabled
+                    <input type="text" className="form-control" id="r_a_31_date_1" disabled
                         defaultValue={dateParser(currentItem.date)} />
                 </div>
                 <label >Fecha de Radicado</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-calendar-times"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="far fa-calendar-times"></i>
                     </span>
-                    <input type="text" class="form-control" id="r_a_31_date_2" disabled
+                    <input type="text" className="form-control" id="r_a_31_date_2" disabled
                         defaultValue={dateParser(_CLOCK_3.date_start)} />
                 </div>
                 <label >Fecha de Revision: {currentVersionR}</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-calendar-times"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="far fa-calendar-times"></i>
                     </span>
-                    <input type="text" class="form-control" id="r_a_31_date_2" disabled
+                    <input type="text" className="form-control" id="r_a_31_date_2" disabled
                         defaultValue={dateParser(_CLOCK_11.date_start)} />
                 </div>
                 <label >Fecha de Desistimiento</label>
-                <div class="input-group mb-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-calendar-times"></i>
+                <div className="input-group mb-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="far fa-calendar-times"></i>
                     </span>
-                    <input type="text" class="form-control" id="r_a_31_date_2" disabled
+                    <input type="text" className="form-control" id="r_a_31_date_2" disabled
                         defaultValue={dateParser(dateParser_finalDate(_CLOCK_3.date_start, 45))} />
                 </div>
             </>
@@ -287,7 +287,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT()}
                         <div className="text-center">
                             <MDBBtn className="btn btn-success my-3" onClick={() => save_ra_31()}>
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
                             </MDBBtn>
                         </div>
                     </div>

@@ -577,12 +577,12 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 <div className="col-12 d-flex justify-content-start p-0">
                     <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                         </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u7}</label></MDBBreadcrumbItem>
+                        <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u7}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
                 </div>
 
@@ -609,7 +609,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         openModal={openModal} />
 
                     <MDBRow>
-                        <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
+                        <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
                         <MDBCol md="6">
                             <MDBCard className="bg-card mb-3">
                                 <MDBCardBody>
@@ -617,20 +617,20 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                     <form onSubmit={loadMacro} id="fun_form_macro_table">
                                         <div className='row'>
                                             <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-calendar-alt"></i>
+                                                <div className="input-group">
+                                                    <span className="input-group-text bg-info text-white">
+                                                        <i className="far fa-calendar-alt"></i>
                                                     </span>
-                                                    <input type="date" class="form-control" id="load_macro_date_1" required
+                                                    <input type="date" className="form-control" id="load_macro_date_1" required
                                                         defaultValue={moment().subtract(12, 'months').format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
                                             <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-calendar-alt"></i>
+                                                <div className="input-group">
+                                                    <span className="input-group-text bg-info text-white">
+                                                        <i className="far fa-calendar-alt"></i>
                                                     </span>
-                                                    <input type="date" class="form-control" id="load_macro_date_2" required
+                                                    <input type="date" className="form-control" id="load_macro_date_2" required
                                                         defaultValue={moment().format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
@@ -638,7 +638,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
 
                                         <div className="text-center">
-                                            <button className="btn btn-danger mt-1"><i class="fas fa-th"></i> CARGAR </button>
+                                            <button className="btn btn-danger mt-1"><i className="fas fa-th"></i> CARGAR </button>
                                         </div>
                                     </form>
                                 </MDBCardBody>
@@ -651,26 +651,26 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                     <form onSubmit={openReport} id="fun_form_macro_table">
                                         <div className='row'>
                                             <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-calendar-alt"></i>
+                                                <div className="input-group">
+                                                    <span className="input-group-text bg-info text-white">
+                                                        <i className="far fa-calendar-alt"></i>
                                                     </span>
-                                                    <input type="date" class="form-control" id="load_macro_date_1_s" required
+                                                    <input type="date" className="form-control" id="load_macro_date_1_s" required
                                                         defaultValue={moment().startOf('month').format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
                                             <div className='col'>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-calendar-alt"></i>
+                                                <div className="input-group">
+                                                    <span className="input-group-text bg-info text-white">
+                                                        <i className="far fa-calendar-alt"></i>
                                                     </span>
-                                                    <input type="date" class="form-control" id="load_macro_date_2_s" required
+                                                    <input type="date" className="form-control" id="load_macro_date_2_s" required
                                                         defaultValue={moment().endOf('month').format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="text-center">
-                                            <button className="btn btn-primary mt-1"><i class="fas fa-file-alt"></i> CARGAR </button>
+                                            <button className="btn btn-primary mt-1"><i className="fas fa-file-alt"></i> CARGAR </button>
                                         </div>
                                     </form>
                                 </MDBCardBody>
@@ -733,7 +733,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
 
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {currentPublic} </label>
+                        <label><i className="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -748,7 +748,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>}
 
@@ -758,7 +758,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {currentPublic}</label>
+                        <label><i className="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {currentPublic}</label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_c()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -775,7 +775,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_c}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -786,7 +786,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {currentPublic} </label>
+                        <label><i className="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_n()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -801,7 +801,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_n}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -812,7 +812,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {currentPublic} </label>
+                        <label><i className="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_d()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -826,7 +826,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_d}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -837,7 +837,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {currentPublic} </label>
+                        <label><i className="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_alert()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -852,7 +852,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_alert}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -863,7 +863,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {currentPublic} </label>
+                        <label><i className="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_clock()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -877,7 +877,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_clock}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -888,7 +888,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {currentPublic} </label>
+                        <label><i className="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordArc()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -904,7 +904,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordArc}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -915,7 +915,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {currentPublic} </label>
+                        <label><i className="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordLaw()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -930,7 +930,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordLaw}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -941,7 +941,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {currentPublic} </label>
+                        <label><i className="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordPH()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -957,7 +957,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordPH}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -968,7 +968,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {currentPublic} </label>
+                        <label><i className="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordEng()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -983,7 +983,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordEng}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -994,7 +994,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {currentPublic} </label>
+                        <label><i className="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordReview()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1008,7 +1008,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordReview}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -1019,7 +1019,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {currentPublic} </label>
+                        <label><i className="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_exp()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1033,7 +1033,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_exp}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>}
@@ -1046,7 +1046,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     overlayClassName="macro-modal-overlay"
                 >
                     <div className="my-1 d-flex justify-content-between">
-                        <label><i class="fas fa-th"></i> Macro tabla de seguimiento: Desde {date_start} hasta {date_end}</label>
+                        <label><i className="fas fa-th"></i> Macro tabla de seguimiento: Desde {date_start} hasta {date_end}</label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_macro()}></MDBBtn>
                     </div>
 
@@ -1079,20 +1079,20 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         </div>
 
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group row">
-                                <label className='col-form-label col-3'><i class="fas fa-file-alt"></i> REPORTE GENERAL DE SOLICITUDES </label>
+                    <div className="row">
+                        <div className="col">
+                            <div className="form-group row">
+                                <label className='col-form-label col-3'><i className="fas fa-file-alt"></i> REPORTE GENERAL DE SOLICITUDES </label>
                                 <label className='col-form-label col-1 text-end'>FECHAS: </label>
-                                <div class="col">
+                                <div className="col">
                                     <input type='date' max="2100-01-01" className='form-control form-control-sm mt-2' defaultValue={date_start} onBlur={(e) => setDate_start(e.target.value)} />
                                 </div>
-                                <div class="col">
+                                <div className="col">
                                     <input type='date' max="2100-01-01" className='form-control form-control-sm mt-2' defaultValue={date_end} onBlur={(e) => setDate_end(e.target.value)} />
                                 </div>
                             </div>
                         </div>
-                        <div class="col-1 text-end"><MDBBtn className='btn-close' color='none' onClick={() => toggle_report()}></MDBBtn></div>
+                        <div className="col-1 text-end"><MDBBtn className='btn-close' color='none' onClick={() => toggle_report()}></MDBBtn></div>
                     </div>
 
                     <hr />

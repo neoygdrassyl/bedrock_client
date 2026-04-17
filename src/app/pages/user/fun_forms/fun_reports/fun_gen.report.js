@@ -1864,9 +1864,9 @@ export default function FUN_REPORT_GEN(props) {
 
         return <>
             <h4 className='fw-bold'>NUEVAS SOLICITUDES: {list.length}</h4>
-            <div class="d-flex flex-wrap">
-                {list.map(value => <div class="input-group-prepend border border-primary">
-                    <div class="input-group-text">
+            <div className="d-flex flex-wrap">
+                {list.map(value => <div className="input-group-prepend border border-primary">
+                    <div className="input-group-text">
                         <label>{(value.id_public).slice(-7)} - {moment(value.clock_payment).format('MM-DD')}</label></div>
                 </div>)}
             </div>
@@ -1886,13 +1886,13 @@ export default function FUN_REPORT_GEN(props) {
 
         return <>
             <h4 className='fw-bold'>SOLICITUDES EXPEDIDAS : {list.length}</h4>
-            <div class="d-flex flex-wrap">
+            <div className="d-flex flex-wrap">
                 {list.map(value => {
                     let _CHILD_1 = { tipo: value.tipo, tramite: value.tramite, m_urb: value.m_urb, m_sub: value.m_sub, m_lic: value.m_lic };
                     let isPH = regexChecker_isPh(_CHILD_1, true);
 
-                    return <div class="input-group-prepend border border-success">
-                        <div class="input-group-text">
+                    return <div className="input-group-prepend border border-success">
+                        <div className="input-group-text">
                             <label>{isPH ? value.id_public_ph : (value.id_public ?? '').slice(-7)}</label></div>
                     </div>
                 }

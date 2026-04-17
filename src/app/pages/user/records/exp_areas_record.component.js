@@ -48,29 +48,29 @@ export default function EXP_AREAS_RECORD(props) {
             <div className="row mb-1">
                 <div className="col">
                     <label>Area</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-cube"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-cube"></i>
                         </span>
-                        <input type="number" min="0" step="0.01" class="form-control" id={"expedition_area_1" + edit} />
+                        <input type="number" min="0" step="0.01" className="form-control" id={"expedition_area_1" + edit} />
                     </div>
 
                 </div>
                 <div className="col">
                     <label>Unidades</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-cube"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-cube"></i>
                         </span>
-                        <input type="number" min="0" step="1" class="form-control" id={"expedition_area_5" + edit} />
+                        <input type="number" min="0" step="1" className="form-control" id={"expedition_area_5" + edit} />
                     </div>
 
                 </div>
                 <div className="col">
                     <label>Uso</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-home"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-home"></i>
                         </span>
                         <input list="exp_uses_datalist" className="form-select" id={"expedition_area_3" + edit} autoComplete="off" />
 
@@ -87,11 +87,11 @@ export default function EXP_AREAS_RECORD(props) {
                 </div>
                 <div className="col">
                     <label>Modalidad</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-question-circle"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-question-circle"></i>
                         </span>
-                        <input type="text" class="form-control" id={"expedition_area_4" + edit} />
+                        <input type="text" className="form-control" id={"expedition_area_4" + edit} />
                     </div>
                 </div>
             </div>
@@ -142,10 +142,10 @@ export default function EXP_AREAS_RECORD(props) {
                 maxWidth: '50px',
                 cell: row => <>
                     <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                        <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i class="far fa-edit"></i></MDBBtn>
+                        <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit"></i></MDBBtn>
                     </MDBTooltip>
                     <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                        <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                        <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
                     </MDBTooltip>
                 </>
             },
@@ -386,9 +386,9 @@ export default function EXP_AREAS_RECORD(props) {
 
                 </> :
                 <>
-                    <div class="form-check ms-5">
-                        <input class="form-check-input" type="checkbox" onChange={(e) => setNewA(!newA)} />
-                        <label class="form-check-label" for="flexCheckDefault">
+                    <div className="form-check ms-5">
+                        <input className="form-check-input" type="checkbox" onChange={(e) => setNewA(!newA)} />
+                        <label className="form-check-label" htmlFor="flexCheckDefault">
                             Nueva Área
                         </label>
                     </div>
@@ -398,7 +398,7 @@ export default function EXP_AREAS_RECORD(props) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col">
-                                        <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                                     </div>
                                 </div>
                             </form>
@@ -412,7 +412,7 @@ export default function EXP_AREAS_RECORD(props) {
                                 {_COMPONENT_MANAGE('_edit')}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                                     </div>
                                 </div>
                             </form>

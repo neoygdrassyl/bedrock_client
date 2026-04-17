@@ -408,10 +408,10 @@ export default function EXP_CLOCKS(props) {
       MySwal.fire({
         title: 'Detalle de desistimiento',
         html: `
-          <div class="text-start">
-            ${reason ? `<div class="mb-2"><strong>Motivo principal:</strong> ${reason}</div>` : ''}
-            <div class="table-responsive">
-              <table class="table table-sm">
+          <div className="text-start">
+            ${reason ? `<div className="mb-2"><strong>Motivo principal:</strong> ${reason}</div>` : ''}
+            <div className="table-responsive">
+              <table className="table table-sm">
                 <thead>
                   <tr>
                     <th>Motivo/Estado</th>
@@ -422,7 +422,7 @@ export default function EXP_CLOCKS(props) {
                 <tbody>${rows}</tbody>
               </table>
             </div>
-            <div class="small text-muted">Las acciones y métricas de tiempo se ocultan mientras el proceso esté desistido.</div>
+            <div className="small text-muted">Las acciones y métricas de tiempo se ocultan mientras el proceso esté desistido.</div>
           </div>
         `,
         icon: 'info',
@@ -445,11 +445,11 @@ export default function EXP_CLOCKS(props) {
     const handleShowCuraduriaDetails = () => {
       if (curDetails == null) return;
 
-      let stateChip = '<span class="badge bg-secondary">Sin estado</span>';
-      if (notStarted) stateChip = '<span class="badge bg-secondary">No iniciado</span>';
-      else if (paused) stateChip = '<span class="badge bg-warning text-dark">Pausado</span>';
-      else if (expired) stateChip = '<span class="badge bg-danger">Vencido</span>';
-      else if (inCourse) stateChip = '<span class="badge bg-primary">En curso</span>';
+      let stateChip = '<span className="badge bg-secondary">Sin estado</span>';
+      if (notStarted) stateChip = '<span className="badge bg-secondary">No iniciado</span>';
+      else if (paused) stateChip = '<span className="badge bg-warning text-dark">Pausado</span>';
+      else if (expired) stateChip = '<span className="badge bg-danger">Vencido</span>';
+      else if (inCourse) stateChip = '<span className="badge bg-primary">En curso</span>';
 
       const remainingClass = curDetails.remaining < 0 ? 'text-danger' : 'text-success';
       const fromText = FROM_LABEL[curDetails.from] || curDetails.from || '-';
@@ -457,25 +457,25 @@ export default function EXP_CLOCKS(props) {
       MySwal.fire({
         title: 'Detalle de Curaduría',
         html: `
-          <div class="text-start">
-            <div class="mb-2">${stateChip}</div>
-            <div class="row g-2">
-              <div class="col-12">
+          <div className="text-start">
+            <div className="mb-2">${stateChip}</div>
+            <div className="row g-2">
+              <div className="col-12">
                 <strong>Referencia:</strong> ${fromText}
-                <div class="small text-muted">Fecha referencia: ${curDetails.reference || '-'}</div>
+                <div className="small text-muted">Fecha referencia: ${curDetails.reference || '-'}</div>
               </div>
-              <div class="col-12">
+              <div className="col-12">
                 <strong>Fecha de corte:</strong> ${curDetails.today || '-'}
-                <div class="small text-muted">Cálculo relativo a hoy (días hábiles)</div>
+                <div className="small text-muted">Cálculo relativo a hoy (días hábiles)</div>
               </div>
-              <hr class="my-2" />
-              <div class="col-6"><strong>Base:</strong> ${curDetails.total - curDetails.suspensions - curDetails.extension}</div>
-              <div class="col-6"><strong>Usados pre-Acta (5→30):</strong> ${curDetails.preActaUsed ?? 0}</div>
-              <div class="col-6"><strong>Usados desde ref.:</strong> ${Math.max((curDetails.used ?? 0) - (curDetails.preActaUsed ?? 0), 0)}</div>
-              <div class="col-6"><strong>Suspensiones:</strong> ${curDetails.suspensions}</div>
-              <div class="col-6"><strong>Prórroga:</strong> ${curDetails.extension}</div>
-              <div class="col-6"><strong>Total:</strong> ${curDetails.total}</div>
-              <div class="col-6"><strong>Restantes:</strong> <span class="${remainingClass}">${curDetails.remaining}</span></div>
+              <hr className="my-2" />
+              <div className="col-6"><strong>Base:</strong> ${curDetails.total - curDetails.suspensions - curDetails.extension}</div>
+              <div className="col-6"><strong>Usados pre-Acta (5→30):</strong> ${curDetails.preActaUsed ?? 0}</div>
+              <div className="col-6"><strong>Usados desde ref.:</strong> ${Math.max((curDetails.used ?? 0) - (curDetails.preActaUsed ?? 0), 0)}</div>
+              <div className="col-6"><strong>Suspensiones:</strong> ${curDetails.suspensions}</div>
+              <div className="col-6"><strong>Prórroga:</strong> ${curDetails.extension}</div>
+              <div className="col-6"><strong>Total:</strong> ${curDetails.total}</div>
+              <div className="col-6"><strong>Restantes:</strong> <span className="${remainingClass}">${curDetails.remaining}</span></div>
             </div>
           </div>
         `,
@@ -613,7 +613,7 @@ export default function EXP_CLOCKS(props) {
     MySwal.fire({
       title: `Suspensión ${typeText}`,
       html: `
-        <div class="text-start">
+        <div className="text-start">
           <p><strong>Ubicación:</strong> ${typeText}</p>
           <p><strong>Fecha de Inicio:</strong> ${suspensionData.start?.date_start || 'No definida'}</p>
           <p><strong>Fecha de Fin:</strong> ${suspensionData.end?.date_start || 'Pendiente por definir'}</p>
@@ -638,9 +638,9 @@ export default function EXP_CLOCKS(props) {
       let typeSelectHtml = '';
       if (availableTypes.length > 1) {
         typeSelectHtml = `
-          <div class="col-12">
-            <label class="form-label">Ubicación de la Suspensión</label>
-            <select id="susp_type" class="form-select">
+          <div className="col-12">
+            <label className="form-label">Ubicación de la Suspensión</label>
+            <select id="susp_type" className="form-select">
               ${availableTypes.map(type => `<option value="${type.value}">${type.label}</option>`).join('')}
             </select>
           </div>
@@ -651,21 +651,21 @@ export default function EXP_CLOCKS(props) {
       MySwal.fire({
         title: 'Nueva Suspensión de Términos',
         html: `
-          <div class="row g-3">
-            <div class="col-12">
-              <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
+          <div className="row g-3">
+            <div className="col-12">
+              <div className="alert alert-info">
+                <i className="fas fa-info-circle me-2"></i>
                 Días disponibles para suspensión: <strong>${availableDays}</strong>
               </div>
             </div>
             ${typeSelectHtml}
-            <div class="col-12">
-              <label class="form-label">Fecha de Inicio</label>
-              <input type="date" id="susp_start" class="form-control"/>
+            <div className="col-12">
+              <label className="form-label">Fecha de Inicio</label>
+              <input type="date" id="susp_start" className="form-control"/>
             </div>
-            <div class="col-12">
-              <label class="form-label">Información Adicional</label>
-              <textarea id="susp_info" class="form-control" rows="3" placeholder="Detalles sobre la suspensión..."></textarea>
+            <div className="col-12">
+              <label className="form-label">Información Adicional</label>
+              <textarea id="susp_info" className="form-control" rows="3" placeholder="Detalles sobre la suspensión..."></textarea>
             </div>
           </div>
         `,
@@ -711,16 +711,16 @@ export default function EXP_CLOCKS(props) {
       MySwal.fire({
         title: 'Nueva Prórroga por Complejidad',
         html: `
-          <div class="row g-3">
-            <div class="col-12">
-              <div class="alert alert-info">
-                <i class="fas fa-clock me-2"></i>
+          <div className="row g-3">
+            <div className="col-12">
+              <div className="alert alert-info">
+                <i className="fas fa-clock me-2"></i>
                 La prórroga por complejidad otorga <strong>22 días hábiles</strong> adicionales
               </div>
             </div>
-            <div class="col-12">
-              <label class="form-label">Fecha de Inicio</label>
-              <input type="date" id="ext_start" class="form-control"/>
+            <div className="col-12">
+              <label className="form-label">Fecha de Inicio</label>
+              <input type="date" id="ext_start" className="form-control"/>
             </div>
           </div>
         `,

@@ -103,40 +103,40 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         return <form id="form_fun6" onSubmit={addDocument} enctype="multipart/form-data">
             <div className="row">
                 <div className="col-12">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                        <input type="file" class="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])} />
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                        <input type="file" className="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])} />
                     </div>
-                    <div class="input-group">
-                        <input id={'fun6_description'} class="form-control" value={VERSION_DESC[id6] || 'Documento de Evaluación'} hidden />
+                    <div className="input-group">
+                        <input id={'fun6_description'} className="form-control" value={VERSION_DESC[id6] || 'Documento de Evaluación'} hidden />
                     </div>
                 </div>
             </div>
             <div className="row d-flex justify-content-start">
                 <div className="col-3">
-                    <div class="input-group">
-                        <input type="text" class="form-control" id={'fun6_code'} value={id6} hidden />
+                    <div className="input-group">
+                        <input type="text" className="form-control" id={'fun6_code'} value={id6} hidden />
                     </div>
                 </div>
                 <div className="col-3">
-                    <div class="input-group">
-                        <input type="number" class="form-control" step="1" min="0" id={'fun6_page'} hidden />
+                    <div className="input-group">
+                        <input type="number" className="form-control" step="1" min="0" id={'fun6_page'} hidden />
                     </div>
                 </div>
                 <div className="col">
-                    <div class="input-group">
-                        <input type="date" class="form-control" id={'fun6_date'} defaultValue={moment().format('YYYY-MM-DD')} hidden />
+                    <div className="input-group">
+                        <input type="date" className="form-control" id={'fun6_date'} defaultValue={moment().format('YYYY-MM-DD')} hidden />
                     </div>
                 </div>
             </div>
 
             <div className="text-end py-2">
-                <button className="btn btn-sm btn-primary" type='submit'><i class="fas fa-times-circle"></i> SUBIR</button>
+                <button className="btn btn-sm btn-primary" type='submit'><i className="fas fa-times-circle"></i> SUBIR</button>
             </div>
         </form>
     }
 
-    let BTN_DOWN = <MDBBtn floating tag='a' size='sm' color='primary' className='ms-1'><i class="fas fa-download"></i></MDBBtn>
+    let BTN_DOWN = <MDBBtn floating tag='a' size='sm' color='primary' className='ms-1'><i className="fas fa-download"></i></MDBBtn>
     let BTN_VIEW = (API, params) => <VIEWER API={API} params={params} ></VIEWER>
     // ******************* APIS ******************* //
     let addDocument = (e) => {
@@ -215,7 +215,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
     }
     return (
         <>
-            {!_FIND_6_ID_REPLACE(id6) ? <MDBBtn floating tag='a' size='sm' color='danger' className='ms-1' onClick={() => setModal(true)}><i class="fas fa-upload"></i></MDBBtn> : null}
+            {!_FIND_6_ID_REPLACE(id6) ? <MDBBtn floating tag='a' size='sm' color='danger' className='ms-1' onClick={() => setModal(true)}><i className="fas fa-upload"></i></MDBBtn> : null}
             {_FIND_6_ID_REPLACE(id6) ? BTN_VIEW(getF6Document, [_FIND_6_ID_REPLACE(id6)]) : null}
 
             <Modal contentLabel="UPLOAD RECORD DOC"
@@ -224,7 +224,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label><i class="fas fa-file-upload"></i> SUBIR DOCUMENTO DE EVALUACIÓN: {VERSION_DESC[id6] || 'Documento de Evaluación'}</label>
+                    <label><i className="fas fa-file-upload"></i> SUBIR DOCUMENTO DE EVALUACIÓN: {VERSION_DESC[id6] || 'Documento de Evaluación'}</label>
                     <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
                 </div>
                 <hr />
@@ -233,7 +233,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(false)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(false)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                 </div>
             </Modal>
         </>

@@ -154,10 +154,10 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
 
     let _GET_REVIEW = (_REVIEW) => {
         let res = {
-            '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-            '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-            '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-            '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+            '-1': <label className=" me-1"><i className="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
+            '0': <label className="fw-bold text-danger me-1"><i className="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
+            '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
+            '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
         }
 
         return res[_REVIEW] ?? res['-1']
@@ -165,10 +165,10 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     let _GET_REVIEW_ENG = (_REVIEW) => {
         let revies = _REVIEW ? Array.isArray(_REVIEW) ? _REVIEW : _REVIEW.split(',') : ['-1', '-1'];
         let res = {
-            '-1': <label className=" me-1"><i class="far fa-dot-circle"></i></label>,
-            '0': <label className="fw-bold text-danger  me-1"><i class="far fa-times-circle"></i></label>,
-            '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle"></i></label>,
-            '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle"></i></label>,
+            '-1': <label className=" me-1"><i className="far fa-dot-circle"></i></label>,
+            '0': <label className="fw-bold text-danger  me-1"><i className="far fa-times-circle"></i></label>,
+            '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle"></i></label>,
+            '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle"></i></label>,
         }
         return revies.map((value, index) => <label>R. {index + 1}: {res[value] ?? res['-1']}</label>)
 
@@ -283,7 +283,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                     <h5 className=''>{title}:</h5>
                 </div>
                 <div className='col'>
-                    <div class="input-group input-group-sm">
+                    <div className="input-group input-group-sm">
                         {state ? _WORKERS_SELECT(_TABLE_GET_ASIGN_ID(loadItem, state), state, loadItem, roleFilter) : ''}
                     </div>
                 </div>
@@ -331,8 +331,8 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                     <div className='col border'><h6 className='py-1 fw-normal'> {value} </h6></div>
                     <div className='col border'><h6 className='py-1 fw-normal'> {prof(state, regexChecker_isPh(row, true))}</h6></div>
                     <div className='col border'><h6 className='py-1 fw-normal'>{editDate[index + '_' + state] ?
-                        <div class="input-group input-group-sm">
-                            <input type="date" class="form-control input-sm" id={'new_asign_date_' + state} defaultValue={asignDate}
+                        <div className="input-group input-group-sm">
+                            <input type="date" className="form-control input-sm" id={'new_asign_date_' + state} defaultValue={asignDate}
                                 onBlur={(e) => edit_clock(state, asigns, e.target.value, index, 100)} />
                         </div>
                         : asignDate}</h6></div>
@@ -344,14 +344,14 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                             ? _GET_REVIEW_ENG(index == 0 ? defaultRevew ?? reviews_check[index] : reviews_check[index])
                             : _GET_REVIEW(index == 0 ? defaultRevew ?? reviews_check[index] : reviews_check[index])}</h6></div>
                     <div className='col border'><h6 className='py-1 fw-normal'>{editDate[index + '_' + state] ?
-                        <div class="input-group input-group-sm">
-                            <input type="date" class="form-control input-sm" id={'new_inform_date_' + state} defaultValue={inforDate}
+                        <div className="input-group input-group-sm">
+                            <input type="date" className="form-control input-sm" id={'new_inform_date_' + state} defaultValue={inforDate}
                                 onBlur={(e) => edit_clock(state, informs, e.target.value, index, 300)} />
                         </div>
                         : inforDate}</h6></div>
                     <div className='col-1 border'>
                         <MDBBtn floating tag='a' size='sm' className='me-1' color='secondary' outline={editDate[index + '_' + state]}
-                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><i class="far fa-edit"></i></MDBBtn>
+                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><i className="far fa-edit"></i></MDBBtn>
                     </div>
                 </div>
             })}
@@ -366,15 +366,15 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         if (state == 11) setncl(!ncl);
                         if (state == 12) setnce(!nce);
                         if (state == 13) setnca(!nca);
-                    }}><label><i class="fas fa-plus-circle"></i> NUEVA</label></button>
+                    }}><label><i className="fas fa-plus-circle"></i> NUEVA</label></button>
                 </div>
                 <div className='col-4'>
                     {(state == 11 && ncl) || (state == 12 && nce) || (state == 13 && nca) ?
                         <div className='row text-center py-2'>
                             <div className='col'>
-                                <div class="input-group input-group-sm"> <div class="input-group-prepend">
-                                    <span class="input-group-text">Fecha Asignación</span>
-                                </div><input type="date" class="form-control input-sm" id={'asign_date_' + state} /></div>
+                                <div className="input-group input-group-sm"> <div className="input-group-prepend">
+                                    <span className="input-group-text">Fecha Asignación</span>
+                                </div><input type="date" className="form-control input-sm" id={'asign_date_' + state} /></div>
                             </div>
                         </div>
                         : ''}
@@ -385,7 +385,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                             var date = document.getElementById('asign_date_' + state).value;
                             if (!date) return;
                             save_clock(state, date)
-                        }}><label><i class="fas fa-life-ring"></i> ASIGNAR</label></button>
+                        }}><label><i className="fas fa-life-ring"></i> ASIGNAR</label></button>
                         : ''}
 
                 </div>
@@ -395,7 +395,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                             if (state == 11) setncl(false);
                             if (state == 12) setnce(false);
                             if (state == 13) setnca(false);
-                        }}><label><i class="fas fa-times-circle"></i> CANCELAR</label></button>
+                        }}><label><i className="fas fa-times-circle"></i> CANCELAR</label></button>
                         : ''}
 
                 </div>

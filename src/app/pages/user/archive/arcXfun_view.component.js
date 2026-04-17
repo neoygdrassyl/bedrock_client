@@ -35,19 +35,19 @@ export default function ARCHIVE_FUN_VIEW(props) {
                 <div className='row border py-1'>
                     <div className='row'>
                         <div className='col'>
-                            <label><i class="fas fa-border-all"></i> Estante: <label className='fw-bold'>{box.column}</label></label>
+                            <label><i className="fas fa-border-all"></i> Estante: <label className='fw-bold'>{box.column}</label></label>
                         </div>
                         <div className='col'>
-                            <label><i class="fas fa-inbox"></i> Entrepaño: <label className='fw-bold'>{box.row}</label></label>
+                            <label><i className="fas fa-inbox"></i> Entrepaño: <label className='fw-bold'>{box.row}</label></label>
                         </div>
                         <div className='col'>
-                            <label><i class="fas fa-archive"></i> Caja: <label className='fw-bold'>{box.box}</label></label>
+                            <label><i className="fas fa-archive"></i> Caja: <label className='fw-bold'>{box.box}</label></label>
                         </div>
                         <div className='col'>
-                            <label><i class="far fa-folder"></i> Carpeta: <label className='fw-bold'>{li.folder}</label></label>
+                            <label><i className="far fa-folder"></i> Carpeta: <label className='fw-bold'>{li.folder}</label></label>
                         </div>
                         <div className='col'>
-                            <label><i class="far fa-file-alt"></i> Folios: <label className='fw-bold'>{li.pages}</label></label>
+                            <label><i className="far fa-file-alt"></i> Folios: <label className='fw-bold'>{li.pages}</label></label>
                         </div>
                     </div>
                 </div>

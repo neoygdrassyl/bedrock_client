@@ -134,7 +134,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                 button: true,
                 minWidth: '100px',
                 cell: row =>
-                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><i class="fas fa-file-alt"></i> Ver</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><i className="fas fa-file-alt"></i> Ver</button>
                 ,
             },
         ]
@@ -356,12 +356,12 @@ function Seals({ translation, swaMsg, breadCrums }) {
                     <div className="col-12 d-flex justify-content-start p-0">
                         <MDBBreadcrumb className="mx-5">
                             <MDBBreadcrumbItem>
-                                <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                                <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                             </MDBBreadcrumbItem>
                             <MDBBreadcrumbItem>
-                                <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                                <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                             </MDBBreadcrumbItem>
-                            <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u4}</label></MDBBreadcrumbItem>
+                            <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u4}</label></MDBBreadcrumbItem>
                         </MDBBreadcrumb>
                     </div>
                     <div className="col-lg-11 col-md-12">
@@ -376,66 +376,66 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                         <form onSubmit={handleSubmit} id="app-form">
                                             <input type="hidden" id="f_0" />
                                             <input type="hidden" id="s_1" />
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="fas fa-hashtag"></i>
+                                            <div className="input-group mb-3">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="fas fa-hashtag"></i>
                                                 </span>
-                                                <input type="text" class="form-control" defaultValue="68001-1-" id="f_02"
+                                                <input type="text" className="form-control" defaultValue="68001-1-" id="f_02"
                                                     onChange={() => loadParent()} />
                                             </div>
                                             <div className="fw-normal lead"><ul>{helpText}</ul></div>
 
-                                            <div class="input-group mb-1">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="far fa-check-circle"></i>
+                                            <div className="input-group mb-1">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="far fa-check-circle"></i>
                                                 </span>
-                                                <input type="text" class="form-control" value="Modalidad" disabled />
+                                                <input type="text" className="form-control" value="Modalidad" disabled />
                                             </div>
-                                            <textarea class="form-control mb-3" rows="3" id="f_11" ></textarea>
+                                            <textarea className="form-control mb-3" rows="3" id="f_11" ></textarea>
 
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="far fa-calendar-alt"></i>
+                                            <div className="input-group mb-3">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="far fa-calendar-alt"></i>
                                                 </span>
-                                                <input type="date" class="form-control" placeholder="Fecha de Expedicion" id="f_03"
+                                                <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="f_03"
                                                     onChange={(e) => formData.set('date', e.target.value)} />
                                             </div>
 
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="fas fa-cube"></i>
+                                            <div className="input-group mb-3">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="fas fa-cube"></i>
                                                 </span>
-                                                <input type="number" min="1" step="0.01" class="form-control" placeholder="Area Total" id="s_4"
+                                                <input type="number" min="1" step="0.01" className="form-control" placeholder="Area Total" id="s_4"
                                                     required onChange={(e) => formData.set('area', e.target.value)} />
                                             </div>
 
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="fas fa-hashtag"></i>
+                                            <div className="input-group mb-3">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="fas fa-hashtag"></i>
                                                 </span>
-                                                <input type="text" class="form-control" placeholder="Consecutivo Sello" id="s_0"
+                                                <input type="text" className="form-control" placeholder="Consecutivo Sello" id="s_0"
                                                     required onChange={(e) => formData.set('id_public', e.target.value)} />
                                             </div>
                                             <hr />
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="fas fa-ruler-combined"></i>
+                                            <div className="input-group mb-3">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="fas fa-ruler-combined"></i>
                                                 </span>
-                                                <input type="number" min="0" step="1" class="form-control" placeholder="Planos" id="blueprints"
+                                                <input type="number" min="0" step="1" className="form-control" placeholder="Planos" id="blueprints"
                                                     required onChange={(e) => { formData.set('blueprints', e.target.value) }} />
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="fas fa-database"></i>
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="fas fa-database"></i>
                                                 </span>
-                                                <input type="number" min="0" step="1" class="form-control" placeholder="Memorias" id="drives"
+                                                <input type="number" min="0" step="1" className="form-control" placeholder="Memorias" id="drives"
                                                     required onChange={(e) => formData.set('drives', e.target.value)} />
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="fas fa-file-invoice"></i>
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="fas fa-file-invoice"></i>
                                                 </span>
-                                                <input type="number" min="0" step="1" class="form-control" placeholder="Estudios" id="folders"
+                                                <input type="number" min="0" step="1" className="form-control" placeholder="Estudios" id="folders"
                                                     required onChange={(e) => formData.set('folders', e.target.value)} />
                                             </div>
                                             <div className="text-center py-4 mt-3">
-                                                <button className="btn btn-lg btn-info"><i class="fas fa-file-import"></i> CREAR </button>
+                                                <button className="btn btn-lg btn-info"><i className="fas fa-file-import"></i> CREAR </button>
                                             </div>
 
                                         </form>
@@ -446,23 +446,23 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     <MDBCardTitle><h2 className="text-center my-4">Buscar Sellos</h2></MDBCardTitle>
                                     <MDBCardBody>
                                         <form onSubmit={search} id="app-form">
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="fas fa-info-circle"></i>
+                                            <div className="input-group mb-3">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="fas fa-info-circle"></i>
                                                 </span>
-                                                <select class="form-select" id="search_0" required>
+                                                <select className="form-select" id="search_0" required>
                                                     <option value="1">Numero de Radicado</option>
                                                     <option value="2">Consecutivo Sello</option>
                                                 </select>
                                             </div>
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="far fa-comment-dots"></i>
+                                            <div className="input-group mb-3">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="far fa-comment-dots"></i>
                                                 </span>
-                                                <input type="text" class="form-control" id="search_1" required />
+                                                <input type="text" className="form-control" id="search_1" required />
                                             </div>
                                             <div className="text-center py-4 mt-3">
-                                                <button className="btn btn-lg btn-secondary"><i class="fas fa-search-plus"></i> CONSULTAR </button>
+                                                <button className="btn btn-lg btn-secondary"><i className="fas fa-search-plus"></i> CONSULTAR </button>
                                             </div>
                                         </form>
                                     </MDBCardBody>
@@ -498,7 +498,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                     <MDBModalDialog size="md">
                         <MDBModalContent className="container-primary">
                             <MDBModalHeader>
-                                <MDBModalTitle><h2 className="text-center"><i class="far fa-file-alt"></i> DETALLES DE EL SELLO: {currentItem ? currentItem.id_public : ''} </h2></MDBModalTitle>
+                                <MDBModalTitle><h2 className="text-center"><i className="far fa-file-alt"></i> DETALLES DE EL SELLO: {currentItem ? currentItem.id_public : ''} </h2></MDBModalTitle>
                                 <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                             </MDBModalHeader>
                             <MDBModalBody>
@@ -520,7 +520,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                                     </tr>
                                                     <tr>
                                                         <td colSpan="2">
-                                                            <textarea class="form-control mb-3" rows="3" id="t_11"></textarea>
+                                                            <textarea className="form-control mb-3" rows="3" id="t_11"></textarea>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -530,7 +530,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                                     <tr>
                                                         <td><label>Fecha</label></td>
                                                         <td><label className="fw-bold">
-                                                        <input type="date" class="form-control" placeholder="Fecha de Expedicion" id="gen_03"
+                                                        <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="gen_03"
                                                          defaultValue={currentItem.fun_0.date} /></label></td>
                                                     </tr>
                                                     <tr>
@@ -553,13 +553,13 @@ function Seals({ translation, swaMsg, breadCrums }) {
                             </MDBModalBody>
                             <MDBModalFooter>
                                 <MDBBtn color='success' onClick={() => generate(1)}>
-                                    <h4 className="pt-2"><i class="far fa-file"></i> GENERAR ORIGINAL</h4>
+                                    <h4 className="pt-2"><i className="far fa-file"></i> GENERAR ORIGINAL</h4>
                                 </MDBBtn>
                                 <MDBBtn color='success' onClick={() => generate(0)}>
-                                    <h4 className="pt-2"><i class="far fa-file"></i> GENERAR TITULAR</h4>
+                                    <h4 className="pt-2"><i className="far fa-file"></i> GENERAR TITULAR</h4>
                                 </MDBBtn>
                                 <MDBBtn color='info' onClick={toggle}>
-                                    <h4 className="pt-2"><i class="fas fa-times-circle"></i> Cerrar</h4>
+                                    <h4 className="pt-2"><i className="fas fa-times-circle"></i> Cerrar</h4>
                                 </MDBBtn>
                             </MDBModalFooter>
                         </MDBModalContent>

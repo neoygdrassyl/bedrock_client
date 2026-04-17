@@ -204,24 +204,24 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     name: <label className="text-center">División</label>,
                     center: true,
                     compact: true,
-                    cell: row => <ul class="list-group list-group-flush">{_DISPLAY_DIVISION(row.division)}</ul>
+                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division)}</ul>
                 },
                 {
                     name: <label className="text-center">Área Privada Construida</label>,
                     center: true,
                     compact: true,
-                    cell: row => <ul class="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_build)}</ul>
+                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_build)}</ul>
                 },
                 {
                     name: <label className="text-center">Área Privada Libre</label>,
                     center: true,
                     compact: true,
-                    cell: row => <ul class="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_free)}</ul>
+                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_free)}</ul>
                 },
                 {
                     name: <label className="text-center">Área Total Privada</label>,
                     center: true,
-                    cell: row => <ul class="list-group list-group-flush">{_DISPLAY_DIVISION_TOTAL(row)}</ul>
+                    cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION_TOTAL(row)}</ul>
                 },
                 {
                     name: <label className="text-center">Área Común Construida</label>,
@@ -277,10 +277,10 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     minWidth: '120px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => _SET_EDIT(row)}><i class="far fa-edit fa-2x"></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => _SET_EDIT(row)}><i className="far fa-edit fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
                         </MDBTooltip>
                     </>
                 },
@@ -303,11 +303,11 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                 <div className="row mb-1">
                     <div className="col-3">
                         <label>Piso</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" id={"r_ph_fl_1" + editSuffix} required />
+                            <input type="text" className="form-control" id={"r_ph_fl_1" + editSuffix} required />
                         </div>
                     </div>
                 </div>
@@ -322,7 +322,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             <>
                                 {divisionsEdit > 1
                                     ? <>
-                                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                     </>
                                     : ""}
                             </>
@@ -330,12 +330,12 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             : <>
                                 {divisions > 1
                                     ? <>
-                                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                     </>
                                     : ""}
                             </>}
 
-                        <MDBBtn className="btn btn-sm btn-secondary" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit + 1) : setDivisions(divisions + 1)}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                        <MDBBtn className="btn btn-sm btn-secondary" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit + 1) : setDivisions(divisions + 1)}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                     </div>
                 </div>
 
@@ -346,14 +346,14 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                         <div className="row ">
                             <div className="col">
                                 <label>Construida</label>
-                                <div class="input-group my-1">
-                                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_fl_common" + editSuffix} />
+                                <div className="input-group my-1">
+                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
                                 </div>
                             </div>
                             <div className="col">
                                 <label>Libre</label>
-                                <div class="input-group my-1">
-                                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_fl_common" + editSuffix} />
+                                <div className="input-group my-1">
+                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
                                 </div>
                             </div>
                         </div>
@@ -363,25 +363,25 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                         <div className="row ">
                             <div className="col">
                                 <label>Construida</label>
-                                <div class="input-group my-1">
-                                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_fl_common" + editSuffix} />
+                                <div className="input-group my-1">
+                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
                                 </div>
                             </div>
                             <div className="col">
                                 <label>Libre</label>
-                                <div class="input-group my-1">
-                                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_fl_common" + editSuffix} />
+                                <div className="input-group my-1">
+                                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_fl_common" + editSuffix} />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-check ms-5 my-3">
+                <div className="form-check ms-5 my-3">
                     {editSuffix ?
-                        <input class="form-check-input" type="checkbox" id="cb_fixed_edit" onChange={(e) => setFixedEdit(e.target.checked)} />
-                        : <input class="form-check-input" type="checkbox" onChange={(e) => setFixed(e.target.checked)} />}
-                    <label class="form-check-label" for="flexCheckDefault">
+                        <input className="form-check-input" type="checkbox" id="cb_fixed_edit" onChange={(e) => setFixedEdit(e.target.checked)} />
+                        : <input className="form-check-input" type="checkbox" onChange={(e) => setFixed(e.target.checked)} />}
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Área no modificable
                     </label>
                 </div>
@@ -673,9 +673,9 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
             <div className="record_law_gen_11 container my-2">
                 <label className="app-p lead fw-bold">AREAS COMUNES Y PRIVADAS</label>
 
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Nuevo Área
                     </label>
                 </div>
@@ -685,7 +685,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             {_COMPONENT_MANAGE()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                                 </div>
                             </div>
                         </form>
@@ -700,7 +700,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             {_COMPONENT_MANAGE('_edit')}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                                 </div>
                             </div>
                         </form>
@@ -723,20 +723,20 @@ const PH_DIVISIONS = (edit, LENGTH = 1, object) => {
         _COMPONEN_DIV.push(<div className="row">
             <div className="col">
                 <label>Unidad {i + 1}</label>
-                <div class="input-group my-1">
-                    <input type="text" class="form-control" name={"r_ph_floor_division" + edit} />
+                <div className="input-group my-1">
+                    <input type="text" className="form-control" name={"r_ph_floor_division" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Área Priv. Construida</label>
-                <div class="input-group my-1">
-                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_floor_division_common" + edit} />
+                <div className="input-group my-1">
+                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_floor_division_common" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Área Priv. Libre</label>
-                <div class="input-group my-1">
-                    <input type="number" min="0" step="0.01" class="form-control" name={"r_ph_floor_division_free" + edit} />
+                <div className="input-group my-1">
+                    <input type="number" min="0" step="0.01" className="form-control" name={"r_ph_floor_division_free" + edit} />
                 </div>
             </div>
         </div>)
@@ -750,26 +750,26 @@ const PH_FIXED_AREA = (edit) => {
         <div className="row">
             <div className="col">
                 <label>Escritura</label>
-                <div class="input-group my-1">
-                    <input type="text" class="form-control" id={"r_ph_floor_fixed_3" + edit} />
+                <div className="input-group my-1">
+                    <input type="text" className="form-control" id={"r_ph_floor_fixed_3" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Fecha</label>
-                <div class="input-group my-1">
-                    <input type="date" max="2100-01-01" class="form-control" id={"r_ph_floor_fixed_4" + edit} />
+                <div className="input-group my-1">
+                    <input type="date" max="2100-01-01" className="form-control" id={"r_ph_floor_fixed_4" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Notaria</label>
-                <div class="input-group my-1">
-                    <input type="number" min="0" step="1" class="form-control" id={"r_ph_floor_fixed_5" + edit} />
+                <div className="input-group my-1">
+                    <input type="number" min="0" step="1" className="form-control" id={"r_ph_floor_fixed_5" + edit} />
                 </div>
             </div>
             <div className="col">
                 <label>Ciudad</label>
-                <div class="input-group my-1">
-                    <input type="text" class="form-control" id={"r_ph_floor_fixed_6" + edit} />
+                <div className="input-group my-1">
+                    <input type="text" className="form-control" id={"r_ph_floor_fixed_6" + edit} />
                 </div>
             </div>
         </div>

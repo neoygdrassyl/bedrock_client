@@ -132,16 +132,16 @@ export const PQRS_ID_CONFIRM = (props) => {
     return (
         <div className="text-center">
             <label className="mt-0 center-text"> {infoCud.serials.end}</label>
-            <div class="input-group my-1">
-                <span class="input-group-text bg-info text-white">
-                    <i class="fas fa-hashtag"></i>
+            <div className="input-group my-1">
+                <span className="input-group-text bg-info text-white">
+                    <i className="fas fa-hashtag"></i>
                 </span>
-                <input type="text" class="form-control" defaultValue={currentItem.id_confirm}
+                <input type="text" className="form-control" defaultValue={currentItem.id_confirm}
                     id="pqrs_master_id_confirm" require />
-                <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
             </div>
-            <div class="d-flex justify-content-center">
-                <button type="button" class="btn btn-success btn-lg shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
+            <div className="d-flex justify-content-center">
+                <button type="button" className="btn btn-success btn-lg shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
                     GUARDAR
                 </button>
             </div>

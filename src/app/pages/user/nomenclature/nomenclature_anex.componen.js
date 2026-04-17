@@ -196,45 +196,45 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
 
                     <div className="col-3">
                         <label>Fecha del Documento</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="nomen_pdf_date" required
+                            <input type="date" max="2100-01-01" className="form-control" id="nomen_pdf_date" required
                                 defaultValue={moment().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Tamaño letra 14.</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-text-height"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-text-height"></i>
                             </span>
-                            <input type="number" max="14" min="8" step="1" class="form-control" id="nomen_pdf_fontsize" required
+                            <input type="number" max="14" min="8" step="1" className="form-control" id="nomen_pdf_fontsize" required
                                 defaultValue={12} />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Ciudad</label>
-                        <div class="input-group">
-                            <select class="form-select me-1" id={"nomen_pdf_city"}>
+                        <div className="input-group">
+                            <select className="form-select me-1" id={"nomen_pdf_city"}>
                                 {cities}
                             </select>
                         </div>
                     </div>
                 </div>
-                <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen()}><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
                 <hr className="my-3" />
                 <label className="fw-bold my-2">ANEXAR DOCUMENTO</label>
                 <br />
                 {_GET_DOC().id
                     ? <>
-                        <i class="text-success fas fa-check"></i> <label>Documento Anexado {_GET_DOC().id
+                        <i className="text-success fas fa-check"></i> <label>Documento Anexado {_GET_DOC().id
                             ? <VIZUALIZER url={_GET_CURATED_URL()} apipath={'/files/nomen/'} />
                             : ""}</label>
                     </>
                     : <>
-                        <label><i class="text-danger fas fa-times"></i> No hay documento anexo</label>
+                        <label><i className="text-danger fas fa-times"></i> No hay documento anexo</label>
                     </>}
 
 
@@ -244,32 +244,32 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
 
                         <div className="col-6">
                             <label >Documento</label>
-                            <div class="input-group mb-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-paperclip"></i>
+                            <div className="input-group mb-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-paperclip"></i>
                                 </span>
-                                <input type="file" class="form-control" id="file_nomen" accept="image/png, image/jpeg application/pdf" />
+                                <input type="file" className="form-control" id="file_nomen" accept="image/png, image/jpeg application/pdf" />
                             </div>
                         </div>
 
                         <div className="col-4">
                             <label >Consecutivo</label>
-                            <div class="input-group mb-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-hashtag"></i>
                                 </span>
-                                <input type="text" class="form-control" id="nomen_anex_2" required
+                                <input type="text" className="form-control" id="nomen_anex_2" required
                                     defaultValue={_GET_DOC().id_public} />
                             </div>
                         </div>
 
                         <div className="col-2">
                             <label ># Folios</label>
-                            <div class="input-group mb-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-file"></i>
+                            <div className="input-group mb-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-file"></i>
                                 </span>
-                                <input type="number" min="1" step="1" class="form-control" id="nomen_anex_3" required
+                                <input type="number" min="1" step="1" className="form-control" id="nomen_anex_3" required
                                     defaultValue={_GET_DOC().pages} />
                             </div>
                         </div>
@@ -278,7 +278,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                     <div className="row mb-3 text-center">
 
                         <div className="col-12">
-                            <button className="btn btn-success my-3"><i class="far fa-edit"></i> ANEXAR DOCUMENTO </button>
+                            <button className="btn btn-success my-3"><i className="far fa-edit"></i> ANEXAR DOCUMENTO </button>
                         </div>
                     </div>
 

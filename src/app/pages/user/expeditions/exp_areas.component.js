@@ -150,10 +150,10 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     maxWidth: '50px',
                     cell: row => <>
                         <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i class="far fa-edit"></i></MDBBtn>
+                            <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit"></i></MDBBtn>
                         </MDBTooltip>
                         <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                            <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                            <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
                         </MDBTooltip>
                     </>
                 },
@@ -173,14 +173,14 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                 <div className="row mb-1">
                     <div className="col">
                         <label>Área</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" step="0.01" class="form-control" id={"expedition_area_1" + edit} required />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" step="0.01" className="form-control" id={"expedition_area_1" + edit} required />
                         </div>
                     </div>
                     <div className="col">
                         <label>Unidades</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="0" step="1" class="form-control" id={"expedition_area_6" + edit} required />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" step="1" className="form-control" id={"expedition_area_6" + edit} required />
                         </div>
                     </div>
                     <div className="col-2">
@@ -189,13 +189,13 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                             : <label>Cobro (COP) Total</label>
                         }
 
-                        <div class="input-group my-1">
-                            <input type="number" min="0" step="0.0001" class="form-control" id={"expedition_area_2" + edit} required />
+                        <div className="input-group my-1">
+                            <input type="number" min="0" step="0.0001" className="form-control" id={"expedition_area_2" + edit} required />
                         </div>
                     </div>
                     <div className="col">
                         <label>Uso</label>
-                        <div class="input-group my-1">
+                        <div className="input-group my-1">
                             <input list="exp_uses_datalist" className="form-select" id={"expedition_area_3" + edit} required />
 
                             <datalist id="exp_uses_datalist">
@@ -212,13 +212,13 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     </div>
                     <div className="col">
                         <label>Tipo de Actuación</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id={"expedition_area_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id={"expedition_area_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Destino</label>
-                        <div class="input-group my-1">
+                        <div className="input-group my-1">
                             <select className="form-select" id={"expedition_area_5" + edit} required >
                                 {rules_opt}
                             </select>
@@ -416,9 +416,9 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
 
 
                 <hr />
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Nueva Área
                     </label>
                 </div>
@@ -428,7 +428,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                             {_COMPONENT_MANAGE()}
                             <div className="row my-3 text-center">
                                 <div className="col">
-                                    <button className="btn btn-success btn-sm" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <button className="btn btn-success btn-sm" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                                 </div>
                                 <div className='col'>
                                     <EXP_CALC
@@ -451,7 +451,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                             {_COMPONENT_MANAGE('_edit')}
                             <div className="row my-2 text-center">
                                 <div className="col">
-                                    <button className="btn btn-success btn-sm" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-success btn-sm" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                                 </div>
                                 <div className='col'>
                                     <EXP_CALC

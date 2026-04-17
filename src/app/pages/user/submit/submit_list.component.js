@@ -86,7 +86,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     </div>
                     {!isExtra
                         ? <div className="col-4">
-                            <input type="text" class="form-control" id={"save_list_title_" + ID}
+                            <input type="text" className="form-control" id={"save_list_title_" + ID}
                                 placeholder="Titulo..." defaultValue={row.list_title} />
                         </div>
                         : <div className="col-4">
@@ -106,7 +106,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                 _COMPONENT.push(<>
                     <div className="row border border-info py-1 text-center">
                         <div className="col-2">
-                            <select class="form-select" name={"submit_list_category_" + ID}
+                            <select className="form-select" name={"submit_list_category_" + ID}
                                 defaultValue={category[i]}>
                                 <option >DC</option>
                                 <option>DA-OA</option>
@@ -120,25 +120,25 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                             </select>
                         </div>
                         <div className="col-2">
-                            <input type="text" class="form-control" name={"submit_list_code_" + ID} id={'edit_list_code_' + ID + "_" + i}
+                            <input type="text" className="form-control" name={"submit_list_code_" + ID} id={'edit_list_code_' + ID + "_" + i}
                                 defaultValue={code[i]} disabled={isExtra} />
                             {!isExtra ? <DOCS_LIST idRef={ID + "_" + i} setValues={setValuesEdit} text={"VER LISTA"} />
                                 : ""}
                         </div>
                         <div className="col-4 text-start">
-                            <textarea rows="2" class="form-control" name={"submit_list_name_" + ID} id={'edit_list_name_' + ID + "_" + i}
+                            <textarea rows="2" className="form-control" name={"submit_list_name_" + ID} id={'edit_list_name_' + ID + "_" + i}
                                 defaultValue={name[i]} disabled={isExtra} >
                             </textarea>
                         </div>
                         <div className="col-2">
-                            <select class="form-select" name={"submit_list_review_" + ID}
+                            <select className="form-select" name={"submit_list_review_" + ID}
                                 defaultValue={review[i]}>
                                 <option >NO</option>
                                 <option>SI</option>
                             </select>
                         </div>
                         <div className="col-2">
-                            <input type="number" min="0" step="1" class="form-control" name={"submit_list_pages_" + ID}
+                            <input type="number" min="0" step="1" className="form-control" name={"submit_list_pages_" + ID}
                                 defaultValue={page[i]} />
                         </div>
                     </div>
@@ -188,7 +188,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         id: value,
                         search_cod: value,
                         search_title: Fun6DocList[value],
-                        nome: <select class="form-select" name="submit_list_category" id={'select_' + value} onChange={(e) => _update_selected_list(e.target.value, 'select_' + value)}>
+                        nome: <select className="form-select" name="submit_list_category" id={'select_' + value} onChange={(e) => _update_selected_list(e.target.value, 'select_' + value)}>
                             <option >DC</option>
                             <option>DA-OA</option>
                             <option>DA-LC</option>
@@ -199,16 +199,16 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                             <option>DBU</option>
                             <option>CCP</option>
                         </select>,
-                        cod: <input type="text" class="form-control" name="submit_list_code"
+                        cod: <input type="text" className="form-control" name="submit_list_code"
                             value={value} readOnly disabled id={'cod_' + value} onChange={(e) => _update_selected_list(e.target.value, 'cod_' + value)} />,
-                        title: <textarea rows="2" class="form-control" name="submit_list_name"
+                        title: <textarea rows="2" className="form-control" name="submit_list_name"
                             value={Fun6DocList[value]} readOnly disabled id={'title_' + value} onChange={(e) => _update_selected_list(e.target.value, 'title_' + value)} >
                         </textarea>,
-                        review: <select class="form-select" name="submit_list_review" id={'review_' + value} onChange={(e) => _update_selected_list(e.target.value, 'review_' + value)} >
+                        review: <select className="form-select" name="submit_list_review" id={'review_' + value} onChange={(e) => _update_selected_list(e.target.value, 'review_' + value)} >
                             <option >NO</option>
                             <option>SI</option>
                         </select>,
-                        pages: <input type="number" min="0" step="1" class="form-control" name="submit_list_pages" id={'pages_' + value} onChange={(e) => _update_selected_list(e.target.value, 'pages_' + value)} />,
+                        pages: <input type="number" min="0" step="1" className="form-control" name="submit_list_pages" id={'pages_' + value} onChange={(e) => _update_selected_list(e.target.value, 'pages_' + value)} />,
                     }
                 })
             }
@@ -251,7 +251,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     </div>
                     <div className="text-end col-6">
                         <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => setIsNew(true)}>
-                            <i class="fas fa-plus-circle"></i> NUEVA LISTA </MDBBtn>
+                            <i className="fas fa-plus-circle"></i> NUEVA LISTA </MDBBtn>
                     </div>
                 </div>
             </>
@@ -276,10 +276,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     cell: row => <>
                         <MDBTooltip title='Guardar Cambios' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                             <button onClick={() => save_list(row.id)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i class="far fa-save fa-2x" ></i></button></MDBTooltip>
+                                <i className="far fa-save fa-2x" ></i></button></MDBTooltip>
                         <MDBTooltip title='Eliminar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                             <button onClick={() => delete_list(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                                <i class="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
+                                <i className="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
                     </>,
                 },
             ]
@@ -306,16 +306,16 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                 <div className="row">
                     <div className="text-start col-6 my-3">
                         <label>NUEVA LISTA</label>
-                        <select class="form-select" required id={"submit_list_type"}
+                        <select className="form-select" required id={"submit_list_type"}
                             onChange={(e) => _SET_LIST(e)} >
                             {_LIST_COMPONENT()}
                         </select>
                     </div>
                     <div className="text-end col-6 my-3">
                         <MDBBtn className="btn btn-info my-3 me-2" onClick={() => setIsNew(false)}>
-                            <i class="fas fa-times-circle"></i>  CANCELAR </MDBBtn>
+                            <i className="fas fa-times-circle"></i>  CANCELAR </MDBBtn>
                         <MDBBtn className="btn btn-success my-3" onClick={() => new_list()}>
-                            <i class="far fa-edit"></i> GUARDAR LISTA </MDBBtn>
+                            <i className="far fa-edit"></i> GUARDAR LISTA </MDBBtn>
                     </div>
                 </div></>)
 
@@ -362,7 +362,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         <label className="fw-bold">COD</label>
                     </div>
                     <div className="col-4">
-                        <input type="text" class="form-control" id="new_list_title"
+                        <input type="text" className="form-control" id="new_list_title"
                             placeholder="Titulo..." />
                     </div>
                     <div className="col-2">
@@ -379,7 +379,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                 _COMPONENT.push(<>
                     <div className="row border border-secondary py-1 text-center">
                         <div className="col-2">
-                            <select class="form-select" name="submit_list_category" >
+                            <select className="form-select" name="submit_list_category" >
                                 <option >DC</option>
                                 <option>DA-OA</option>
                                 <option>DA-LC</option>
@@ -392,23 +392,23 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                             </select>
                         </div>
                         <div className="col-2">
-                            <input type="text" class="form-control" name="submit_list_code"
+                            <input type="text" className="form-control" name="submit_list_code"
                                 id={"new_list_code_" + i} />
                             <DOCS_LIST idRef={i} setValues={setValues} text={"VER LISTA"} />
                         </div>
                         <div className="col-4 text-start">
-                            <textarea rows="2" class="form-control" name="submit_list_name"
+                            <textarea rows="2" className="form-control" name="submit_list_name"
                                 id={"new_list_name_" + i} >
                             </textarea>
                         </div>
                         <div className="col-2">
-                            <select class="form-select" name="submit_list_review" >
+                            <select className="form-select" name="submit_list_review" >
                                 <option >NO</option>
                                 <option>SI</option>
                             </select>
                         </div>
                         <div className="col-2">
-                            <input type="number" min="0" step="1" class="form-control" name="submit_list_pages" />
+                            <input type="number" min="0" step="1" className="form-control" name="submit_list_pages" />
                         </div>
                     </div>
                 </>)
@@ -424,10 +424,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     <div className="col-6 text-end">
                         {extra_items > 0
                             ? <MDBBtn className="btn btn-sm btn-secondary my-3 me-1" onClick={() => setExtraItems(extra_items - 1)}>
-                                <i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                <i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                             : ""}
                         <MDBBtn className="btn btn-sm btn-secondary my-3" onClick={() => setExtraItems(extra_items + 1)}>
-                            <i class="fas fa-plus-circle"></i> AÑADIR ITEM </MDBBtn>
+                            <i className="fas fa-plus-circle"></i> AÑADIR ITEM </MDBBtn>
                     </div>
                 </div>
             </>)

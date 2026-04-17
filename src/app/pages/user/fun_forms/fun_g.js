@@ -295,57 +295,57 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 <div className="row">
                     <div className="col-6">
                         <label>1.1 Tipo de Solicitud</label>
-                        <textarea class="form-control mb-3" rows="3" value={_CHILD_VARS.item_1} disabled></textarea>
+                        <textarea className="form-control mb-3" rows="3" value={_CHILD_VARS.item_1} disabled></textarea>
                     </div>
                     <div className="col-6">
                         <label>1.2 Objeto del Trámite</label>
-                        <input type="text" class="form-control" value={_CHILD_VARS.item_2} disabled />
+                        <input type="text" className="form-control" value={_CHILD_VARS.item_2} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.3 Modalidad Licencia de Urbanización</label>
-                        <input type="text" class="form-control" value={_CHILD_VARS.item_3} disabled />
+                        <input type="text" className="form-control" value={_CHILD_VARS.item_3} disabled />
                     </div>
                     <div className="col-6">
                         <label >1.4 Modalidad Licencia de Subdivisión</label>
-                        <input type="text" class="form-control" value={_CHILD_VARS.item_4} disabled />
+                        <input type="text" className="form-control" value={_CHILD_VARS.item_4} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.5 Modalidad Licencia de Construcción</label>
-                        <textarea class="form-control mb-3" rows="3" value={_CHILD_VARS.item_5} disabled></textarea>
+                        <textarea className="form-control mb-3" rows="3" value={_CHILD_VARS.item_5} disabled></textarea>
                     </div>
                     <div className="col-6">
                         <label>1.6 Usos</label>
-                        <textarea class="form-control mb-3" rows="3" value={_CHILD_VARS.item_6} disabled></textarea>
+                        <textarea className="form-control mb-3" rows="3" value={_CHILD_VARS.item_6} disabled></textarea>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.7 Área Construida</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_7} disabled />
+                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_7} disabled />
                     </div>
                     <div className="col-6">
                         <label>1.8 Tipo de Vivienda</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_8} disabled />
+                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_8} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>1.9  Bien de Interés Cultural</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_9} disabled />
+                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_9} disabled />
                     </div>
                     <div className="col-6">
                         <label>1.10.2  Zonificación Climática</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_101} disabled />
+                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_101} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-12">
                         <label>1.10.1  Declaración de medidas de construcción sostenible</label>
-                        <input type="text" class="form-control  mb-3" value={_CHILD_VARS.item_102} disabled />
+                        <input type="text" className="form-control  mb-3" value={_CHILD_VARS.item_102} disabled />
                     </div>
                 </div>
             </>
@@ -389,31 +389,31 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 <div className="row">
                     <div className="col-6">
                         <label>2.1 Dirección o Nomenclatura actual</label>
-                        <textarea type="text" class="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_211} disabled ></textarea>
+                        <textarea type="text" className="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_211} disabled ></textarea>
                     </div>
                     <div className="col-6">
                         <label>2.1 Dirección(es) Anterior(es)</label>
-                        <textarea type="text" class="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_212} disabled ></textarea>
+                        <textarea type="text" className="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_212} disabled ></textarea>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>2.2 No. Matrícula Inmobiliaria</label>
-                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_22} disabled />
+                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_22} disabled />
                     </div>
                     <div className="col-6">
                         <label>2.3 Identificación Catastral</label>
-                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_232 || _CHILD_VARS.item_23} disabled />
+                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_232 || _CHILD_VARS.item_23} disabled />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>2.4 Clasificación del Suelo</label>
-                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_24} id="p_24" disabled />
+                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_24} id="p_24" disabled />
                     </div>
                     <div className="col-6">
                         <label>2.5 Planimetria del Lote</label>
-                        <input type="text" class="form-control mb-3" defaultValue={_CHILD_VARS.item_25} id="p_25" disabled />
+                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_25} id="p_25" disabled />
                     </div>
                 </div>
                 <div className="row">
@@ -423,56 +423,56 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 </div>
                 <div className="row">
                     <div className="col-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Barrio o Urbanización
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Barrio o Urbanización
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_261} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_261} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Comuna
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Comuna
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_263} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_263} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Estrato
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Estrato
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_267} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_267} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Manzana No.
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Manzana No.
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_268} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_268} disabled />
                         </div>
                     </div>
 
                     <div className="col-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Vereda
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Vereda
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_262} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_262} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Sector
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Sector
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_264} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_264} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Corregimiento
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Corregimiento
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_265} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_265} disabled />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Lote No.
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Lote No.
                             </span>
-                            <input type="text" class="form-control" defaultValue={_CHILD_VARS.item_266} disabled />
+                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_266} disabled />
                         </div>
                     </div>
                 </div>
@@ -817,19 +817,19 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 <div className="row">
                     <div className="col-6">
                         <label>Nombre Encargado de Revision</label>
-                        <input type="text" class="form-control mb-3" id="c_31" disabled
+                        <input type="text" className="form-control mb-3" id="c_31" disabled
                             value={_CHILD_VARS.item_c1} />
                     </div>
                     <div className="col-6">
                         <label>No. Radicado</label>
-                        <input type="text" class="form-control mb-3" id="c_33" disabled
+                        <input type="text" className="form-control mb-3" id="c_33" disabled
                             value={currentItem.id_public} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>Fecha de Revision</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="c_32" disabled
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="c_32" disabled
                             value={_CHILD_VARS.item_c2} />
                     </div>
                 </div>
@@ -839,41 +839,41 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 <legend className="my-2 px-3 text-uppercase bg-light" id="fung_c2"><h4 className="mt-2">C.2 CONDICIÓN DE LA RADICACIÓN</h4></legend>
                 <div className="row  mb-3">
                     <div className="col-6">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="1" name="c_41" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="1" name="c_41" readOnly
                                 checked={_CHILD_VARS.item_c3 == '1' ? true : false} />
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label className="form-check-label" htmlFor="flexCheckDefault">
                                 RADICACIÓN EN LEGAL Y DEBIDA FORA
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="0" name="c_41" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="0" name="c_41" readOnly
                                 checked={_CHILD_VARS.item_c3 == '0' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 RADICACIÓN INCOMPLETA
                             </label>
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Actuador</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="A" name="c_42" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="A" name="c_42" readOnly
                                 checked={_CHILD_VARS.item_c8 == 'A' ? true : false} />
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label className="form-check-label" htmlFor="flexCheckDefault">
                                 SOLICITANTE
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="B" name="c_42" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="B" name="c_42" readOnly
                                 checked={_CHILD_VARS.item_c8 == 'B' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 APODERADO
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="C" name="c_42" readOnly
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="C" name="c_42" readOnly
                                 checked={_CHILD_VARS.item_c8 == 'C' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 MANDATARIO
                             </label>
                         </div>
@@ -882,29 +882,29 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 <div className="row">
                     <div className="col-6">
                         <label>Nombre</label>
-                        <input type="text" class="form-control mb-3" id="c_43" disabled
+                        <input type="text" className="form-control mb-3" id="c_43" disabled
                             value={_CHILD_VARS.item_c5} />
                     </div>
                     <div className="col-6">
                         <label>Fecha incompleto</label>
-                        <input type="date" class="form-control mb-3" id="c_44" max='2100-01-01' disabled
+                        <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01' disabled
                             value={_CHILD_VARS.item_c6} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-6">
                         <label>CC/NIT</label>
-                        <input type="text" class="form-control mb-3" id="c_45" disabled
+                        <input type="text" className="form-control mb-3" id="c_45" disabled
                             value={_CHILD_VARS.item_c7} />
                     </div>
                     <div className="col-6">
                         <label>Fecha legal y debida forma</label>
-                        <input type="date" class="form-control mb-3" id="c_44" max='2100-01-01' disabled
+                        <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01' disabled
                             value={_CHILD_VARS.item_c9} />
                     </div>
                     <div className="col-12">
                         <label>Observaciones</label>
-                        <textarea class="form-control mb-3" rows="3" id="c_46" disabled
+                        <textarea className="form-control mb-3" rows="3" id="c_46" disabled
                             value={_CHILD_VARS.item_c4}></textarea>
                     </div>
                 </div>
@@ -970,8 +970,8 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         {_SET_CHILD_51()}
                         <div className="border p-2 m-2">
                             <label className="me-2">LEYENDA:</label>
-                            <label className="me-2"><i class="far fa-id-card fa-2x" style={{ color: "DeepSkyBlue" }}></i> : Documento de Identidad,</label>
-                            <label className="me-2"><i class="far fa-id-badge fa-2x" style={{ color: 'DarkOrchid' }}></i>: Certificado de Existencia y Representación Legal</label>
+                            <label className="me-2"><i className="far fa-id-card fa-2x" style={{ color: "DeepSkyBlue" }}></i> : Documento de Identidad,</label>
+                            <label className="me-2"><i className="far fa-id-badge fa-2x" style={{ color: 'DarkOrchid' }}></i>: Certificado de Existencia y Representación Legal</label>
                         </div>
                     </fieldset>
                     <fieldset className="p-3" id="fung_52">
@@ -981,11 +981,11 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         {_SET_CHILD_52()}
                         <div className="border p-2 m-2">
                             <label className="me-2">LEYENDA:</label>
-                            <label className="me-2"><a><i class="far fa-id-card fa-2x" style={{ "color": "DeepSkyBlue" }}></i></a> : C.C.,</label>
-                            <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "DarkOrchid" }}></i></a> : Matrícula,</label>
-                            <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "GoldenRod" }}></i></a> : Vigencia Matricular,</label>
-                            <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida y Certificados</label>
-                            <label className="me-2"><a><i class="far fa-file-alt fa-2x" style={{ "color": "tomato" }}></i></a> : Estudios de postgrado</label>
+                            <label className="me-2"><a><i className="far fa-id-card fa-2x" style={{ "color": "DeepSkyBlue" }}></i></a> : C.C.,</label>
+                            <label className="me-2"><a><i className="far fa-file-alt fa-2x" style={{ "color": "DarkOrchid" }}></i></a> : Matrícula,</label>
+                            <label className="me-2"><a><i className="far fa-file-alt fa-2x" style={{ "color": "GoldenRod" }}></i></a> : Vigencia Matricular,</label>
+                            <label className="me-2"><a><i className="far fa-file-alt fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida y Certificados</label>
+                            <label className="me-2"><a><i className="far fa-file-alt fa-2x" style={{ "color": "tomato" }}></i></a> : Estudios de postgrado</label>
                         </div>
                     </fieldset>
                     <fieldset className="p-3" id="fung_53">

@@ -59,9 +59,9 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
         // COMPONENTS JSX 
         let _SAVING_STATE = (state) => {
             if(!state) return '';
-            if(state == 1) return <label className='text-warning fw-bold'><i class="fas fa-save"></i></label>;
-            if(state == 2) return <label className='text-success fw-bold'><i class="fas fa-save"></i></label>;
-            if(state == 3) return <label className='text-danger fw-bold'><i class="fas fa-save"></i></label>;
+            if(state == 1) return <label className='text-warning fw-bold'><i className="fas fa-save"></i></label>;
+            if(state == 2) return <label className='text-success fw-bold'><i className="fas fa-save"></i></label>;
+            if(state == 3) return <label className='text-danger fw-bold'><i className="fas fa-save"></i></label>;
         }
 
 

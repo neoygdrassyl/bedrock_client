@@ -292,7 +292,7 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="text" class="form-control" id="fun_archive_1"
+                                ? <input type="text" className="form-control" id="fun_archive_1"
                                     defaultValue={_GET_ARCHIVE().resolution} />
                                 : <label className="fw-bold" id="archive_label_6">{_GET_ARCHIVE().resolution}</label>}
                         </div>
@@ -313,11 +313,11 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                         </div>
                         <div className="col-10">
                             {isEdit
-                                ? <><div class="input-group my-1">
-                                    <input type="date" max="2100-01-01" class="form-control me-2" id="fun_archive_2"
+                                ? <><div className="input-group my-1">
+                                    <input type="date" max="2100-01-01" className="form-control me-2" id="fun_archive_2"
                                         defaultValue={_GET_ARCHIVE().date_1} />
                                     a
-                                    <input type="date" max="2100-01-01" class="form-control ms-2" id="fun_archive_3"
+                                    <input type="date" max="2100-01-01" className="form-control ms-2" id="fun_archive_3"
                                         defaultValue={_GET_ARCHIVE().date_2} />
                                 </div>
                                 </>
@@ -336,7 +336,7 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_4"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_4"
                                     defaultValue={_GET_ARCHIVE().folder} />
                                 : <label className="fw-bold" id="archive_label_10">{_GET_ARCHIVE().folder}</label>}
                         </div>
@@ -345,7 +345,7 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_5"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_5"
                                     defaultValue={_GET_ARCHIVE().pages} />
                                 : <label className="fw-bold" id="archive_label_11">{_GET_ARCHIVE().pages}</label>}
                         </div>
@@ -354,7 +354,7 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_6"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_6"
                                     defaultValue={_GET_ARCHIVE().box} />
                                 : <label className="fw-bold" id="archive_label_12">{_GET_ARCHIVE().box}</label>}
                         </div>
@@ -372,7 +372,7 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_7"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_7"
                                     defaultValue={_GET_ARCHIVE().row} />
                                 : <label className="fw-bold" id="archive_label_13">{_GET_ARCHIVE().row}</label>}
                         </div>
@@ -384,7 +384,7 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                         </div>
                         <div className="col-2">
                             {isEdit
-                                ? <input type="number" step="1" min="0" class="form-control" id="fun_archive_8"
+                                ? <input type="number" step="1" min="0" className="form-control" id="fun_archive_8"
                                     defaultValue={_GET_ARCHIVE().column} />
                                 : <label className="fw-bold" id="archive_label_14">{_GET_ARCHIVE().column}</label>}
                         </div>
@@ -392,11 +392,11 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                     <div className="row">
                         {isEdit
                             ? <div className="col  text-center">
-                                <button className="btn btn-success my-3" ><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success my-3" ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
                             </div>
                             : ""}
                         <div className="col  text-center">
-                            <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i class="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                            <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
                         </div>
                     </div>
 

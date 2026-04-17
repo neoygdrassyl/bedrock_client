@@ -68,8 +68,8 @@ export default function EMAILS_COMPONENT(props) {
 
     // **************** COMPONENTS  **************** //
     let CheckMark = (bool) => {
-        if (bool) return <i class="fas fa-check text-success"></i>
-        else return <i class="fas fa-times text-danger"></i>
+        if (bool) return <i className="fas fa-check text-success"></i>
+        else return <i className="fas fa-times text-danger"></i>
     }
 
     function loadEmals() {
@@ -89,9 +89,9 @@ export default function EMAILS_COMPONENT(props) {
             <form onSubmit={onEmailSent} enctype="multipart/form-data">
                 <div className='row'>
                     <div className='col'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="far fa-envelope"></i> Para:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><i className="far fa-envelope"></i> Para:</label>
                             </span>
                             <input className='form-control' id="to_email" defaultValue={""} required />
                             <button className='btn btn-sm btn-primary' type='button' onClick={() => loadEmals()}>CARGAR EMAILS</button>
@@ -100,17 +100,17 @@ export default function EMAILS_COMPONENT(props) {
                 </div>
                 <div className='row'>
                     <div className='col'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="far fa-envelope"></i> CC:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><i className="far fa-envelope"></i> CC:</label>
                             </span>
                             <input className='form-control' id="cc" defaultValue={""} />
                         </div>
                     </div>
                     <div className='col'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="far fa-envelope"></i> BCC:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><i className="far fa-envelope"></i> BCC:</label>
                             </span>
                             <input className='form-control' id="bcc" defaultValue={""} />
                         </div>
@@ -118,9 +118,9 @@ export default function EMAILS_COMPONENT(props) {
                 </div>
                 <div className='row'>
                     <div className='col'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="fas fa-star-of-life"></i> Asunto:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><i className="fas fa-star-of-life"></i> Asunto:</label>
                             </span>
                             <input className='form-control' id="subject" defaultValue={""} required />
                         </div>
@@ -128,9 +128,9 @@ export default function EMAILS_COMPONENT(props) {
                 </div>
                 <div className='row'>
                     <div className='col-6'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="fas fa-ellipsis-v"></i> Motivo:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><i className="fas fa-ellipsis-v"></i> Motivo:</label>
                             </span>
                             <select className='form-select' id="subprocess">
                                 {EMAIL_TPES.map(item => <option value={item.value}>{item.label}</option>)}
@@ -139,9 +139,9 @@ export default function EMAILS_COMPONENT(props) {
                     </div>
 
                     <div className='col-6'>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <label><i class="far fa-calendar-check"></i> Programar:</label>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <label><i className="far fa-calendar-check"></i> Programar:</label>
                             </span>
                             <input className='form-control' id="schedule_date" defaultValue={''} type="datetime-local" />
                         </div>
@@ -180,7 +180,7 @@ export default function EMAILS_COMPONENT(props) {
 
                 <div className='row mt-2'>
                     <div className='col'>
-                        <button className='btn btn-sm btn-success' type='submit'><i class="far fa-paper-plane"></i> ENVIAR</button>
+                        <button className='btn btn-sm btn-success' type='submit'><i className="far fa-paper-plane"></i> ENVIAR</button>
                     </div>
                 </div>
 
@@ -230,7 +230,7 @@ export default function EMAILS_COMPONENT(props) {
                 cell: row => !row.send ?
                     <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                         <MDBBtn className="btn btn-danger btn-sm m-0 p-1 shadow-none" onClick={() => delete_email(row.id)}>
-                            <i class="far fa-trash-alt"></i></MDBBtn>
+                            <i className="far fa-trash-alt"></i></MDBBtn>
                     </MDBTooltip>
                     : null
             },
@@ -452,7 +452,7 @@ export default function EMAILS_COMPONENT(props) {
                 <label className="app-p lead text-center fw-normal text-uppercase">Herramienta de correos electrónicos</label>
             </legend>
 
-            <MDBBtn rounded outline={!newEmail} color="success" sise="sm" onClick={() => setNewEmail(!newEmail)}><i class="fas fa-plus-circle"></i> NUEVO CORREO</MDBBtn>
+            <MDBBtn rounded outline={!newEmail} color="success" sise="sm" onClick={() => setNewEmail(!newEmail)}><i className="fas fa-plus-circle"></i> NUEVO CORREO</MDBBtn>
             {newEmail ? EMAIL_FORM() : null}
 
             {EMAIL_LIST()}

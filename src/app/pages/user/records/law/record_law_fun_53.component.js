@@ -230,7 +230,7 @@ export default function RECORD_LAW_FUN_53(props) {
                 <div className='row'>
                     <div className="col-8 py-0"><label> <label className='fw-bold'>{i + 1}. </label>{value.desc}</label> </div>
                     <div className="col-4 py-0 ">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
 
                             <select className={value.className ?? _GET_SELECT_COLOR_VALUE(_VALUE_ARRAY[value.ind])} name="s_f53_checks"
                                 defaultValue={_VALUE_ARRAY[value.ind]} onChange={() => manage_rl_f53(false)} id={'s_f53_checks_' + value.ind}>
@@ -274,7 +274,7 @@ export default function RECORD_LAW_FUN_53(props) {
     }
     let _EDIT_BTN = () => {
         return <>
-            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal(!modal)}><i class="far fa-edit" style={{ fontSize: '150%' }}></i></button>
+            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal(!modal)}><i className="far fa-edit" style={{ fontSize: '150%' }}></i></button>
 
             <Modal contentLabel="EDIT FUN 1"
                 isOpen={modal}
@@ -282,7 +282,7 @@ export default function RECORD_LAW_FUN_53(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label className="fw-bold align-middle"> <i class="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
+                    <label className="fw-bold align-middle"> <i className="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
                     <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
                 </div>
 

@@ -322,7 +322,7 @@ function RECORD_LAW_EVALUATION(props) {
                             </div>
                             <div className="col-3 text-center">
                                 {dynState['REW' + i]
-                                    ? <input type="text" class="form-control me-1" id={"r_l_review_1_" + i}
+                                    ? <input type="text" className="form-control me-1" id={"r_l_review_1_" + i}
                                         defaultValue={iworker} disabled />
                                     : <label>{iworker}</label>
                                 }
@@ -341,18 +341,18 @@ function RECORD_LAW_EVALUATION(props) {
                             </div>
                             <div className="col text-center">
                                 {dynState['REW' + i]
-                                    ? <input type="date" class="form-control form-control-sm" id={"r_l_review_3_" + i} max="2100-01-01"
+                                    ? <input type="date" className="form-control form-control-sm" id={"r_l_review_3_" + i} max="2100-01-01"
                                         defaultValue={idate} />
                                     : <label>{idate ?? ''}</label>
                                 }
                             </div>
                             <div className="col-1">
                                 {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={dynState['REW' + i]}
-                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i class="far fa-edit"></i></MDBBtn>
+                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></MDBBtn>
                                     : ''}
                                 {dynState['REW' + i]
                                     ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
-                                        onClick={() => review_r(isPrimal, i, iasing)}><i class="fas fa-check"></i></MDBBtn>
+                                        onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></MDBBtn>
                                     : ""
                                 }
                                 {true ?

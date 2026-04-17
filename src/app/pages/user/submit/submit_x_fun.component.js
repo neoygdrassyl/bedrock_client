@@ -261,7 +261,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
             ))
             vrItem.sort((a, b) => new Date(b.screated) - new Date(a.screated));
             return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: '600px', minWidth: '600px' }}
-                btnChildren={<i class="fas fa-file-import"></i>}
+                btnChildren={<i className="fas fa-file-import"></i>}
                 btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
                 <MDBPopoverHeader>Ventanilla Única</MDBPopoverHeader>
                 <MDBPopoverBody>{vrItem.map(value => listVR(value))}</MDBPopoverBody>
@@ -290,7 +290,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
 
 
             return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: '800px', minWidth: '800px' }}
-                btnChildren={<i class="fas fa-file-import"></i>}
+                btnChildren={<i className="fas fa-file-import"></i>}
                 btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
                 <MDBPopoverHeader>Documentos aportados</MDBPopoverHeader>
                 <MDBPopoverBody>
@@ -302,7 +302,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                             if (inChecked.includes(code) && !submited.includes(code)) classColor = "text-warning"
                             if (inChecked.includes(code) && submited.includes(code)) classColor = "text-success"
                             return <li className={classColor}>
-                                <label> <label className='fw-bold'>{code}</label> - {Codes[code]}  {inChecked.includes(code) ? <i class="fas fa-check-square text-dark"></i> : ''} {submited.includes(code) ? <i class="fas fa-file-import text-dark"></i> : ''}</label>
+                                <label> <label className='fw-bold'>{code}</label> - {Codes[code]}  {inChecked.includes(code) ? <i className="fas fa-check-square text-dark"></i> : ''} {submited.includes(code) ? <i className="fas fa-file-import text-dark"></i> : ''}</label>
                             </li>
                         })}
                     </ul></MDBPopoverBody>
@@ -351,8 +351,8 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     maxWidth: '150px',
                     cell: row => {
                         const { completed, toSubmit, inChecked, allCheckedCounter } = processCodes(row)
-                        if (completed == toSubmit.length && completed != 0 && allCheckedCounter < toSubmit.length) return <div className='d-flex'><label>{row.id_public} <i class="fas fa-star text-muted"></i> </label></div>;
-                        else if (completed == toSubmit.length && completed != 0 && allCheckedCounter >= toSubmit.length) return <div className='d-flex'><label>{row.id_public} <i class="fas fa-star text-warning"></i> </label></div>;
+                        if (completed == toSubmit.length && completed != 0 && allCheckedCounter < toSubmit.length) return <div className='d-flex'><label>{row.id_public} <i className="fas fa-star text-muted"></i> </label></div>;
+                        else if (completed == toSubmit.length && completed != 0 && allCheckedCounter >= toSubmit.length) return <div className='d-flex'><label>{row.id_public} <i className="fas fa-star text-warning"></i> </label></div>;
                         else return <label>{row.id_public}</label>;
                     }
                 },
@@ -411,7 +411,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                             <button
                                 onClick={() => openModal({ ...row, version: 1 }, 'archive')}
                                 className="px-1 btn-sm btn-secondary btn"
-                            ><i class="fas fa-archive"></i>
+                            ><i className="fas fa-archive"></i>
                             </button>
                         </MDBTooltip>
                     </>,
@@ -491,14 +491,14 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                             <button
                                 onClick={() => openModal(row, 'general')}
                                 className="px-1 btn-sm btn-info btn"
-                            > <i class="far fa-folder-open" ></i>
+                            > <i className="far fa-folder-open" ></i>
                             </button>
                         </MDBTooltip>
                         <MDBTooltip title='Asignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                             <button
                                 onClick={() => { setModal(true); setSelectedItem(row); }}
                                 className="px-1 btn-sm btn-warning btn"
-                            > <i class="fas fa-user-clock"></i>
+                            > <i className="fas fa-user-clock"></i>
                             </button>
                         </MDBTooltip>
                     </>,
@@ -539,13 +539,13 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                                 size="sm"
                                 onClick={() => setLicList(prev => !prev)}
                                 className="px-2"
-                            > <i class="fas fa-info-circle fa-2x"></i>
+                            > <i className="fas fa-info-circle fa-2x"></i>
                             </MDBBtn>
                         </MDBTooltip>
                     </div>
                 </div>
                 {lic_list && (
-                    <ul class="list-group mx-2">
+                    <ul className="list-group mx-2">
                         {type == "LIC" ? _COMPONENT_LIST_DOCS_CHECK(simple) : ''}
                     </ul>
                 )}
@@ -576,7 +576,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {selectedItem ? selectedItem.id_public : ''} </label>
+                        <label><i className="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {selectedItem ? selectedItem.id_public : ''} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
                     </div>
 
@@ -593,7 +593,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={() => setModal(false)}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>

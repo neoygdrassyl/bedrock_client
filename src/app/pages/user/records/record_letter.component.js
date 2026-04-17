@@ -157,28 +157,28 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                 <div className="row mb-3">
                     <div className="col">
                         <label>Fecha del documento</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="gena_date_doc" required
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena_date_doc" required
                             defaultValue={_JSON.date_doc || moment().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>Número de Radicación</label>
-                        <input type="text" class="form-control mb-3" id="gena_id_public" disabled
+                        <input type="text" className="form-control mb-3" id="gena_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
                     <div></div>
                     <div className="col">
                         <label className="mt-1">{infoCud.serials.end} Carta Acta de Obs.</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="gena_cub_act"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="gena_cub_act"
                                 defaultValue={_GET_CHILD_LAW().cub_act || cubSelected || ""} />
-                            {edit  ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act')}>GENERAR</button>
+                            {edit  ? <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('gena_cub_act')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col  mb-auto" >
                         <label className="mt-1">{infoCud.serials.start}</label>
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected" defaultValue={vrSelected || ""}>
+                        <div className="input-group">
+                            <select className="form-select" id="vr_selected" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -192,37 +192,37 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.4 Ciudad</label>
-                        <input type="text" class="form-control mb-3" id="gena_city"
+                        <input type="text" className="form-control mb-3" id="gena_city"
                             defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
                     </div>
                     <div className="col">
                         <label>5.5. Fecha LyDF</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="gena_date" required
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena_date" required
                             defaultValue={_JSON.date || _GET_CLOCK_STATE(5).date_start} />
                     </div>
                     <div className="col">
                         <label>5.6. Fecha Limite</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="gena_date_limit" required
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena_date_limit" required
                             defaultValue={_JSON.date_limit || dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, 30)} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.7 Responsable</label>
-                        <input type="text" class="form-control mb-3" id="gena_name"
+                        <input type="text" className="form-control mb-3" id="gena_name"
                             defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col">
                         <label>5.8 Dirección</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="gena_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="gena_address"
                                 defaultValue={_JSON.address || _CHILD_53.item_536} />
                         </div>
                     </div>
                     <div className="col">
                         <label>5.9 Email</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="gena_email"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="gena_email"
                                 defaultValue={_JSON.email || _CHILD_53.item_535} />
                         </div>
                     </div>
@@ -469,11 +469,11 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                 <div className="row text-center">
                     {edit ?
                         <div className="col">
-                            <button className="btn btn-success my-3"><i class="fas fa-share-square"></i> GUARDAR DATOS</button>
+                            <button className="btn btn-success my-3"><i className="fas fa-share-square"></i> GUARDAR DATOS</button>
                         </div>
                         : ''}
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i class="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
+                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
                     </div>
                 </div>
             </form>

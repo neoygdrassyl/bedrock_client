@@ -230,9 +230,9 @@ export const PQRS_ACTION_REVIEW = (props) => {
         let solicitors = currentItem.pqrs_solocitors || [];
         let contacts = currentItem.pqrs_contacts || [];
         return <>
-            <div class="card border border-dark mb-3">
-                <div class="card-header text-uppercase">  1. DATOS PETICIONARIO</div>
-                <div class="card-body text-dark">
+            <div className="card border border-dark mb-3">
+                <div className="card-header text-uppercase">  1. DATOS PETICIONARIO</div>
+                <div className="card-body text-dark">
                     <div className='row'>
                         <div className='col'>
                             {solicitors.map(s => <>
@@ -270,9 +270,9 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     const DESC_COMMPONENT = () => {
         return <>
-            <div class="card border border-dark mb-3">
-                <div class="card-header text-uppercase">2.DESCRIPCIÓN DEL ASUNTO DE LA SOLICITUD</div>
-                <div class="card-body text-dark text-justify">
+            <div className="card border border-dark mb-3">
+                <div className="card-header text-uppercase">2.DESCRIPCIÓN DEL ASUNTO DE LA SOLICITUD</div>
+                <div className="card-body text-dark text-justify">
                     <label className='fw-bold'>Hechos:</label>  {currentItem.content}
                 </div>
             </div>
@@ -281,9 +281,9 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     const STUDY_COMMPONENT = () => {
         return <>
-            <div class="card border border-dark mb-3">
-                <div class="card-header text-uppercase">3. VALORACIÓN DE LA SOLICITUD Y DEFINICIÓN DE COMPETENCIA</div>
-                <div class="card-body text-dark">
+            <div className="card border border-dark mb-3">
+                <div className="card-header text-uppercase">3. VALORACIÓN DE LA SOLICITUD Y DEFINICIÓN DE COMPETENCIA</div>
+                <div className="card-body text-dark">
                     {REW_DATA.map(rew => {
                         if (rew.title) return <>
                             <br />
@@ -454,9 +454,9 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     const RESOLVE_COMMPONENT = () => {
         return <>
-            <div class="card border border-dark mb-3">
-                <div class="card-header text-uppercase">4. CLASIFICACIÓN Y TERMINO PARA RESOLUCIÓN DE LA PQRS</div>
-                <div class="card-body text-dark">
+            <div className="card border border-dark mb-3">
+                <div className="card-header text-uppercase">4. CLASIFICACIÓN Y TERMINO PARA RESOLUCIÓN DE LA PQRS</div>
+                <div className="card-body text-dark">
                     <div className='row'><label className='fw-bold'>Programación y control de proceso de Respuesta. Se programa para un ciclo de 10 días hábiles</label></div>
 
                     {OFICE_COMPONENT()}
@@ -511,7 +511,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
             <MDBTooltip title='Control administrativo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                 <button className="btn btn-sm btn-warning m-0 px-2 shadow-none"
                     onClick={() => loadData(currentItemId)}>
-                    <i class="fas fa-clipboard-check"></i></button></MDBTooltip>
+                    <i className="fas fa-clipboard-check"></i></button></MDBTooltip>
 
             <Modal contentLabel="REVIEW ACTION"
                 isOpen={review_modal}
@@ -520,7 +520,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
             >
                 {currentItem ? <>
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-th"></i> Control Administrativo {currentItem.id_global}</label>
+                        <label><i className="fas fa-th"></i> Control Administrativo {currentItem.id_global}</label>
                         <MDBBtn className='btn-close' color='none' onClick={() => setModal(prev => !prev)}></MDBBtn>
                     </div>
                     <hr />
@@ -535,7 +535,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
                 <div className="text-end py-4 mt-3">
                     <button className="btn btn-lg btn-info" onClick={() => setModal(prev => !prev)}>
-                        <i class="fas fa-times-circle"></i> CERRAR </button>
+                        <i className="fas fa-times-circle"></i> CERRAR </button>
                 </div>
             </Modal>
         </div>

@@ -311,23 +311,23 @@ export const PQRS_SET_REPLY1 = (props) => {
                 <div className="row">
                     <div className="col-5">
                         <label className='text-start'>Consecutivo de Salida</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" defaultValue={currentItem.id_reply}
+                            <input type="text" className="form-control" defaultValue={currentItem.id_reply}
                                 id="pqrs_master_idreply" require />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                         </div>
                     </div>
 
                     <div className="col-3">
                         <label>Fecha creación documento</label>
-                        <div class="input-group my-1 ">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group my-1 ">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control"
+                            <input type="date" max="2100-01-01" className="form-control"
                                 defaultValue={validar ?? moment().format('YYYY-MM-DD')}
                                 id="pqrs_reply_time_formalReply" require />
                         </div>
@@ -343,22 +343,22 @@ export const PQRS_SET_REPLY1 = (props) => {
                     tabIndex={1} // tabIndex of textarea
                     onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                     onChange={newContent => { }}
-                    class="form-control mb-3"
+                    className="form-control mb-3"
                     rows="5"
                     maxlength="4096"
                     id="pqrs_info_reply"
                 />
 
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-3">
+                <div className="container">
+                    <div className="row justify-content-center">
+                        <div className="col-3">
                             <div className="text-center m-3">
-                                <button type="button" class="btn btn-sm btn-info" onClick={funcion5}><i class="fas fa-exchange-alt"></i> CARGAR INFORMACIÓN</button>
+                                <button type="button" className="btn btn-sm btn-info" onClick={funcion5}><i className="fas fa-exchange-alt"></i> CARGAR INFORMACIÓN</button>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div className="col-3">
                             <div className="text-center m-3">
-                                <button className="btn btn-sm btn-success" ><i class="fas fa-edit"></i> GUARDAR RESPUESTA </button>
+                                <button className="btn btn-sm btn-success" ><i className="fas fa-edit"></i> GUARDAR RESPUESTA </button>
                             </div>
                         </div>
                     </div>

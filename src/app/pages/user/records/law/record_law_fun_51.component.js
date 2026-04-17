@@ -257,7 +257,7 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className='row'>
                     <div className="col-8 py-0"><label> <label className='fw-bold'>{i + 1}. </label>{value.desc}</label> </div>
                     <div className="col-4 py-0 ">
-                        <div class="input-group input-group-sm">
+                        <div className="input-group input-group-sm">
 
                             <select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[ci])} name="s_f51_checks"
                                 defaultValue={_CHECK_ARRAY[ci]} onChange={() => manage_rl_sf51(false)}>
@@ -280,7 +280,7 @@ export default function RECORD_LAW_FUN_51(props) {
     }
     let _EDIT_BTN = (item) => {
         return <>
-            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal({ [item.id]: true })}><i class="far fa-edit" style={{ fontSize: '150%' }}></i></button>
+            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal({ [item.id]: true })}><i className="far fa-edit" style={{ fontSize: '150%' }}></i></button>
 
             <Modal contentLabel="EDIT FUN 1"
                 isOpen={modal[item.id]}
@@ -288,7 +288,7 @@ export default function RECORD_LAW_FUN_51(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label className="fw-bold align-middle"> <i class="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
+                    <label className="fw-bold align-middle"> <i className="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
                     <MDBBtn className='btn-close' color='none' onClick={() => setModal({ [item.id]: false })}></MDBBtn>
                 </div>
                 {_EDIT_COMPONENT(item)}
@@ -310,9 +310,9 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.0 Tipo de Persona</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
                             <select className='form-select' id="f_51_type" defaultValue={item.type}
                                 onChange={(e) => {
@@ -336,20 +336,20 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.0.1 Nombre y Apellidos (Representante Legal)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_name" disabled={!isLegalPerson} defaultValue={item.rep_name} />
+                            <input type="text" className="form-control" id="f_51_rep_name" disabled={!isLegalPerson} defaultValue={item.rep_name} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.0.2 Cédula (Representante Legal)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_idnumber" disabled={!isLegalPerson} defaultValue={item.rep_id_number}
+                            <input type="text" className="form-control" id="f_51_rep_idnumber" disabled={!isLegalPerson} defaultValue={item.rep_id_number}
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
@@ -358,20 +358,20 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.1 Nombre</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_5111" defaultValue={item.name} />
+                            <input type="text" className="form-control" id="f_5111" defaultValue={item.name} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.1 Apellido(s)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_5112" defaultValue={item.surname} />
+                            <input type="text" className="form-control" id="f_5112" defaultValue={item.surname} />
                         </div>
                     </div>
                 </div>
@@ -379,39 +379,39 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.2 CC o NIT</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-id-card"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-id-card"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_512" defaultValue={item.id_number}
+                            <input type="text" className="form-control" id="f_512" defaultValue={item.id_number}
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.3 Correo Electrónico</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_513" defaultValue={item.email} />
+                            <input type="text" className="form-control" id="f_513" defaultValue={item.email} />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.4 Teléfono de Contacto</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-phone-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_514" defaultValue={item.nunber} />
+                            <input type="text" className="form-control" id="f_514" defaultValue={item.nunber} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.5 Tipo de Titular</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-phone-alt"></i>
                             </span>
                             <select className='form-select' id="f_515" defaultValue={item.role}>
                                 <option>PROPIETARIO</option>
@@ -429,9 +429,9 @@ export default function RECORD_LAW_FUN_51(props) {
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.6 Relacionar Documento: Documento de Identidad</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file"></i>
                             </span>
                             <select className='form-select' id="f_51_doc1" defaultValue={docs[0]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -442,9 +442,9 @@ export default function RECORD_LAW_FUN_51(props) {
                     </div>
                     <div className="col-6">
                         <label>5.1.7 Relacionar Documento: Certificado de Existencia y Representación Legal </label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file"></i>
                             </span>
                             <select className='form-select' id="f_51_doc2" disabled={!isLegalPerson} defaultValue={docs[1]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -456,7 +456,7 @@ export default function RECORD_LAW_FUN_51(props) {
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button className="btn btn-success my-3" onClick={() => edit_51(item)} ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                        <button className="btn btn-success my-3" onClick={() => edit_51(item)} ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                     </div>
                 </div>
             </fieldset>

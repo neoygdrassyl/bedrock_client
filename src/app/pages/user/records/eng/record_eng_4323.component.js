@@ -266,7 +266,7 @@ function RECORD_ENG_STEP_4323(props) {
             let list = list_159 ?? [];
             return <>
                 {list.map((value, i) => (
-                    <li class="list-group-item">{value}</li>
+                    <li className="list-group-item">{value}</li>
                 ))}
             </>
         }
@@ -983,7 +983,7 @@ function RECORD_ENG_STEP_4323(props) {
                 </div>
                 <div className="row mb-1">
                     <div className="col-10">
-                        <ul class="list-group" id="f159_list">
+                        <ul className="list-group" id="f159_list">
                             {_LIST_F159()}
                         </ul>
                     </div>

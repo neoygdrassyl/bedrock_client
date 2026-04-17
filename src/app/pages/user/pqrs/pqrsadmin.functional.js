@@ -425,20 +425,20 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         }
     }
     let _GET_STOPLIGHT_COLOR = (row) => {
-        if (!row) return <i class="fas fa-lightbulb fa-2x text-muted"></i>;
+        if (!row) return <i className="fas fa-lightbulb fa-2x text-muted"></i>;
         let time = row.pqrs_time ? row.pqrs_time.time : 0;
         let legal = row.pqrs_time ? row.pqrs_time.legal : 0
         let ext = row.pqrs_law ? row.pqrs_law.extension ? 2 : 1 : 1;
         let days = dateParser_timeLeft(legal, time * (ext));
-        if (days <= 0) return <i class="fas fa-lightbulb fa-2x text-danger"></i>
-        if (days > 0 && days < 7) return <i class="fas fa-lightbulb fa-2x text-warning"></i>
-        if (days >= 7) return <i class="fas fa-lightbulb fa-2x text-success"></i>
+        if (days <= 0) return <i className="fas fa-lightbulb fa-2x text-danger"></i>
+        if (days > 0 && days < 7) return <i className="fas fa-lightbulb fa-2x text-warning"></i>
+        if (days >= 7) return <i className="fas fa-lightbulb fa-2x text-success"></i>
     }
     let _GET_STOPLIGHT_COLOR_ASSIGNED = (row) => {
         let days = dateParser_timeLeft(row.legal, row.time / 2);
-        if (days <= 0) return <i class="fas fa-lightbulb fa-2x text-danger"></i>
-        if (days > 0 && days < 7) return <i class="fas fa-lightbulb fa-2x text-warning"></i>
-        if (days >= 7) return <i class="fas fa-lightbulb fa-2x text-success"></i>
+        if (days <= 0) return <i className="fas fa-lightbulb fa-2x text-danger"></i>
+        if (days > 0 && days < 7) return <i className="fas fa-lightbulb fa-2x text-warning"></i>
+        if (days >= 7) return <i className="fas fa-lightbulb fa-2x text-success"></i>
     }
     let _CHECK_FOR_REVIEWS = (row) => {
         let _woerker_list = row.pqrs_workers;
@@ -517,7 +517,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                 size="sm"
                                 onClick={() => setPending_open(prev => !prev)}
                                 className="px-2"
-                            > <i class="fas fa-info-circle fa-2x"></i>
+                            > <i className="fas fa-info-circle fa-2x"></i>
                             </MDBBtn>
                         </MDBTooltip>
                     </div>
@@ -619,12 +619,12 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             minWidth: '150px',
             cell: row => <>
                 <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                    <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i class="far fa-eye"></i></button>
+                    <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye"></i></button>
                 </MDBTooltip>
                 {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                     ? <>
                         <MDBTooltip title='Gestionar peticion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => toggleManage(row)}><i class="fas fa-cog"></i></button>
+                            <button className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => toggleManage(row)}><i className="fas fa-cog"></i></button>
                         </MDBTooltip>
                     </> : ""}
             </>,
@@ -685,7 +685,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             center: true,
             cell: row => <>
                 <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                    <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i class="far fa-eye"></i></button>
+                    <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye"></i></button>
                 </MDBTooltip>
                 {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                     ?
@@ -740,7 +740,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             button: true,
             minWidth: '150px',
             cell: row => <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i class="far fa-eye "></i></button>
+                <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye "></i></button>
 
             </MDBTooltip>,
 
@@ -862,12 +862,12 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             <div className="col-12 d-flex justify-content-start p-0">
                 <MDBBreadcrumb className="mb-0 p-0 ms-0">
                     <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                        <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                     </MDBBreadcrumbItem>
                     <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                        <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                     </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u7}</label></MDBBreadcrumbItem>
+                    <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u7}</label></MDBBreadcrumbItem>
                 </MDBBreadcrumb>
             </div>
             
@@ -879,14 +879,14 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     <h1 className="text-center my-4">GESTIÓN DE PQRS Y SOLICITUDES</h1>
                     <hr />
                     <MDBRow>
-                        <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
+                        <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
                         <MDBCol md="4">
                             <MDBCard className="bg-card mb-3">
                                 <MDBCardBody>
                                     <MDBCardTitle className="text-center"> <h4>GENERAR PQRS</h4></MDBCardTitle>
                                     <p className="app-text-primary text-justify"> Permite la digitalización de una solicitud PQRS</p>
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-success" onClick={() => toggle()}><i class="fas fa-folder-plus"></i> NUEVA SOLICITUD </button>
+                                        <button className="btn btn-lg btn-success" onClick={() => toggle()}><i className="fas fa-folder-plus"></i> NUEVA SOLICITUD </button>
                                     </div>
                                 </MDBCardBody>
                             </MDBCard>
@@ -896,11 +896,11 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                 <MDBCardBody>
                                     <MDBCardTitle className="text-center"> <h4>CONSULTAR PQRS</h4></MDBCardTitle>
                                     <form onSubmit={search} id="app-form">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-info-circle"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="fas fa-info-circle"></i>
                                             </span>
-                                            <select class="form-select" id="search_0" required>
+                                            <select className="form-select" id="search_0" required>
                                                 <option value="1">Consecutivo de Entrada</option>
                                                 <option value="2">Consecutivo de Salida</option>
                                                 <option value="3">Numero de radicación de Licencia</option>
@@ -909,14 +909,14 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                                 <option value="6">Profesional Asignado</option>
                                             </select>
                                         </div>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-comment-dots"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="far fa-comment-dots"></i>
                                             </span>
-                                            <input type="text" class="form-control" id="search_1" />
+                                            <input type="text" className="form-control" id="search_1" />
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-secondary"><i class="fas fa-search-plus"></i> CONSULTAR </button>
+                                            <button className="btn btn-lg btn-secondary"><i className="fas fa-search-plus"></i> CONSULTAR </button>
                                         </div>
                                     </form>
                                 </MDBCardBody>
@@ -927,22 +927,22 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                 <MDBCardBody>
                                     <MDBCardTitle className="text-center"> <h4>MACRO TABLA</h4></MDBCardTitle>
                                     <form onSubmit={loadMacro} id="fun_form_macro_table_pqrs">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-calendar-alt"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="far fa-calendar-alt"></i>
                                             </span>
-                                            <input type="date" class="form-control" id="load_macro_date_1" required
+                                            <input type="date" className="form-control" id="load_macro_date_1" required
                                                 defaultValue={moment().subtract(6, 'months').format('YYYY-MM-DD')} />
                                         </div>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-calendar-alt"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="far fa-calendar-alt"></i>
                                             </span>
-                                            <input type="date" class="form-control" id="load_macro_date_2" required
+                                            <input type="date" className="form-control" id="load_macro_date_2" required
                                                 defaultValue={moment().format('YYYY-MM-DD')} />
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-danger"><i class="fas fa-th"></i> CARGAR </button>
+                                            <button className="btn btn-lg btn-danger"><i className="fas fa-th"></i> CARGAR </button>
                                         </div>
                                     </form>
                                 </MDBCardBody>
@@ -957,7 +957,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 <div className="row d-flex justify-content-center">
                     <div className="col-11">
                         {isloadedSearch ? (<>
-                            <h2 class="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} class="" height="75px" alt="..." /></h2>
+                            <h2 className="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} className="" height="75px" alt="..." /></h2>
 
                             <DataTable
                                 title="TABLA DE BÚSQUEDA"
@@ -996,7 +996,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 <MDBTabsContent>
                     <MDBTabsPane show={fillActive === '1'}>
                         {isLoaded ? <>
-                            <div class="row">
+                            <div className="row">
                                 <div className='col ms-5 mb-3'>
                                     <MDBBtnGroup >
                                         <MDBBtn outline={!filterreply} onClick={() => setFilterreply(prev => !prev)} size='sm'>VER POR RESPONDER: {dataFilter(items, true, false).length}</MDBBtn>
@@ -1078,7 +1078,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         refreshRequested={refreshRequested} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1101,7 +1101,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleInfo()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleInfo()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1125,7 +1125,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleAsign()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleAsign()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1151,7 +1151,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         closeModal={() => toggleInformal()} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleInformal()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleInformal()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1176,7 +1176,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         closeModal={() => toggleReply()} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleReply()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleReply()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1200,7 +1200,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleLock()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleLock()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1224,7 +1224,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleEdit()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleEdit()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
                 <Modal contentLabel="MANAGE PQRS"
@@ -1250,7 +1250,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
                 <Modal contentLabel="EDIT PQRS"
@@ -1284,7 +1284,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         />
                     }
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleEditable()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleEditable()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1294,7 +1294,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-th"></i> Macro tabla de seguimiento: Desde {dateParser(date_start)} hasta {dateParser(date_end)}</label>
+                        <label><i className="fas fa-th"></i> Macro tabla de seguimiento: Desde {dateParser(date_start)} hasta {dateParser(date_end)}</label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_macro()}></MDBBtn>
                     </div>
 

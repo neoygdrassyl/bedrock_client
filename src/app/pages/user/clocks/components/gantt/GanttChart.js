@@ -629,7 +629,7 @@ export const GanttChart = ({
       <>
         <div className="gantt-suspension-track">
           <div className="gantt-suspension-bar" style={{ left: `${leftPx}px`, width: `${widthPx}px` }} onMouseMove={(e) => handleMouseMove(e, tooltipContent)} onMouseLeave={handleMouseLeave} >
-            {!compactMode && <strong class="gantt-extension-label">SUSPENSIÓN</strong>}
+            {!compactMode && <strong className="gantt-extension-label">SUSPENSIÓN</strong>}
           </div>
         </div>
         <div className="gantt-suspension-guideline" style={{ left: `${leftPx}px` }} />

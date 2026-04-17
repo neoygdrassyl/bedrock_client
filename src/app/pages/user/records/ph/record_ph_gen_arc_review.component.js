@@ -88,7 +88,7 @@ export default function RECORD_PH_GEN_REVIEW(props) {
                                             <label className={it.className ?? ''}>{it.name}</label>
                                             {_check[it.c] == 0
                                                 ? <input type="text" defaultValue={_context[it.v]} name={'rar_context_' + re.pid} id={'rar_context_' + re.pid + '_' + it.v}
-                                                    class="form-control form-control-sm" onBlur={() => manage_rar_context()} style={{backgroundColor: 'LightPink'}} />
+                                                    className="form-control form-control-sm" onBlur={() => manage_rar_context()} style={{backgroundColor: 'LightPink'}} />
                                                 : <input type='hidden' value={''} name={'rar_context_' + re.pid} id={'rar_context_' + re.pid + '_' + it.v} />
                                             }
                                         </div>

@@ -113,7 +113,7 @@ export default function PROFESIONALS(props) {
     {
       name: 'TRATO DE DATOS',
       center: true,
-      cell: row => row.concent ? <i class="fas fa-check text-success"></i>: <i class="fas fa-times text-danger"></i>,
+      cell: row => row.concent ? <i className="fas fa-check text-success"></i>: <i className="fas fa-times text-danger"></i>,
     },
     {
       name: 'ACCIÓN',
@@ -121,11 +121,11 @@ export default function PROFESIONALS(props) {
       omit: window.user.id != 1 && window.user.roleId != 3 || window.user.roleId != 2,
       cell: row => <>
         <MDBTooltip title='Modificar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-          <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => { setId(row.id); setModal(true) }}><i class="fas fa-edit"></i></MDBBtn>
+          <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => { setId(row.id); setModal(true) }}><i className="fas fa-edit"></i></MDBBtn>
         </MDBTooltip>
         {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
           <MDBTooltip title='Eliminar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-            <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => { eliminate(row.id); }}><i class="far fa-trash-alt"></i></MDBBtn>
+            <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => { eliminate(row.id); }}><i className="far fa-trash-alt"></i></MDBBtn>
           </MDBTooltip>
           : null}
       </>,
@@ -188,15 +188,15 @@ export default function PROFESIONALS(props) {
     return <>
       <div className='row'>
         <div className='col-3'>
-          { window.user.id == 1 || window.user.roleId == 3 ? <MDBBtn color='success' onClick={() => { setId(false); setModal(!modal) }}><i class="fas fa-plus-circle"></i> NUEVO PROFESIONAL</MDBBtn> : null }
+          { window.user.id == 1 || window.user.roleId == 3 ? <MDBBtn color='success' onClick={() => { setId(false); setModal(!modal) }}><i className="fas fa-plus-circle"></i> NUEVO PROFESIONAL</MDBBtn> : null }
         </div>
         <div className='col'>
-          <div class="row">
+          <div className="row">
             <div className='col px-0'>
-              <div class="input-group row">
-                <MDBBtn color='primary' className='col-2' onClick={() => search()}><i class="fas fa-search"></i> BUSCAR</MDBBtn>
-                <input type="text" class="form-control col" id="search_text" placeholder="Buscar..." onKeyPress={(e) => e.key === 'Enter' ? search() : ''}></input>
-                {clearBtn ? <MDBBtn color='danger' className='col-1' onClick={() => clear()}><i class="fas fa-times"></i> </MDBBtn> : ''}
+              <div className="input-group row">
+                <MDBBtn color='primary' className='col-2' onClick={() => search()}><i className="fas fa-search"></i> BUSCAR</MDBBtn>
+                <input type="text" className="form-control col" id="search_text" placeholder="Buscar..." onKeyPress={(e) => e.key === 'Enter' ? search() : ''}></input>
+                {clearBtn ? <MDBBtn color='danger' className='col-1' onClick={() => clear()}><i className="fas fa-times"></i> </MDBBtn> : ''}
               </div>
             </div>
           </div>
@@ -273,12 +273,12 @@ export default function PROFESIONALS(props) {
       <div className="col-12 d-flex justify-content-start p-0">
         <MDBBreadcrumb className="mb-0 p-0 ms-0">
           <MDBBreadcrumbItem>
-            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
           </MDBBreadcrumbItem>
           <MDBBreadcrumbItem>
-            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
           </MDBBreadcrumbItem>
-          <MDBBreadcrumbItem active><i class="fas fa-hard-hat"></i>  <label className="text-uppercase">{'Profesionals'}</label></MDBBreadcrumbItem>
+          <MDBBreadcrumbItem active><i className="fas fa-hard-hat"></i>  <label className="text-uppercase">{'Profesionals'}</label></MDBBreadcrumbItem>
         </MDBBreadcrumb>
       </div>
       
@@ -300,7 +300,7 @@ export default function PROFESIONALS(props) {
         data={data}
         highlightOnHover
         dense
-        title={<>LISTADO DE PROFESIONALES <i class="fas fa-hard-hat"></i></>}
+        title={<>LISTADO DE PROFESIONALES <i className="fas fa-hard-hat"></i></>}
 
         progressPending={!load}
         progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
@@ -315,8 +315,8 @@ export default function PROFESIONALS(props) {
       >
         <div className="my-2 d-flex justify-content-between ">
           <div className='row'>
-            <div class="input-group">
-              <label className=''><i class="fas fa-hard-hat"></i> PROFESIONALES</label>
+            <div className="input-group">
+              <label className=''><i className="fas fa-hard-hat"></i> PROFESIONALES</label>
             </div>
           </div>
 
@@ -335,7 +335,7 @@ export default function PROFESIONALS(props) {
         />
         <hr />
         <div className="text-end py-2">
-          <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+          <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
         </div>
       </Modal>
 

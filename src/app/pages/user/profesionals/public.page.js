@@ -144,9 +144,9 @@ export default function PROFESIONALS_PUBLIC(props) {
         <div>
             <MDBBreadcrumb className="mx-5 my-2">
                 <MDBBreadcrumbItem>
-                    <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">Inicio</label></Link>
+                    <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">Inicio</label></Link>
                 </MDBBreadcrumbItem>
-                <MDBBreadcrumbItem active><i class="fas fa-hard-hat"></i>  <label className="text-uppercase">HOJA DE VIDA PROFESIONALES</label></MDBBreadcrumbItem>
+                <MDBBreadcrumbItem active><i className="fas fa-hard-hat"></i>  <label className="text-uppercase">HOJA DE VIDA PROFESIONALES</label></MDBBreadcrumbItem>
             </MDBBreadcrumb>
 
             <h2 className="text-center my-4">ACTUALIZACIÓN DE HOJA DE VIDA DE PROFESIONALES</h2>
@@ -156,52 +156,52 @@ export default function PROFESIONALS_PUBLIC(props) {
                     <Divider >INFORMACIÓN GENEAL</Divider>
                     <div className='row'>
                         <div className='col'>
-                            <label for="name" class="form-label"><label className='text-danger'>*</label> Nombre</label>
-                            <div class="input-group">
-                                <span class="input-group-text text-white bg-info">
-                                    <i class="fas fa-user"></i>
+                            <label htmlFor="name" className="form-label"><label className='text-danger'>*</label> Nombre</label>
+                            <div className="input-group">
+                                <span className="input-group-text text-white bg-info">
+                                    <i className="fas fa-user"></i>
                                 </span>
-                                <input type="text" class="form-control" id="name" required />
+                                <input type="text" className="form-control" id="name" required />
                             </div>
 
                         </div>
                         <div className='col'>
-                            <label for="surname" class="form-label"><label className='text-danger'>*</label> Apellidos</label>
-                            <div class="input-group">
-                                <span class="input-group-text text-white bg-info">
-                                    <i class="fas fa-user"></i>
+                            <label htmlFor="surname" className="form-label"><label className='text-danger'>*</label> Apellidos</label>
+                            <div className="input-group">
+                                <span className="input-group-text text-white bg-info">
+                                    <i className="fas fa-user"></i>
                                 </span>
-                                <input type="text" class="form-control" id="surname" required />
+                                <input type="text" className="form-control" id="surname" required />
                             </div>
 
                         </div>
                         <div className='col'>
-                            <label for="id_number" class="form-label"><label className='text-danger'>*</label> Nro. Documento</label>
-                            <div class="input-group">
-                                <span class="input-group-text text-white bg-info">
-                                    <i class="far fa-id-card"></i>
+                            <label htmlFor="id_number" className="form-label"><label className='text-danger'>*</label> Nro. Documento</label>
+                            <div className="input-group">
+                                <span className="input-group-text text-white bg-info">
+                                    <i className="far fa-id-card"></i>
                                 </span>
-                                <input type="text" class="form-control" id="id_number" onBlur={(e) => _REGEX_IDNUMBER(e)} required />
+                                <input type="text" className="form-control" id="id_number" onBlur={(e) => _REGEX_IDNUMBER(e)} required />
                             </div>
                         </div>
                         <div className='col'>
-                            <label for="reg_number" class="form-label"><label className='text-danger'>*</label> Nro. matricula/tarjeta</label>
-                            <div class="input-group">
-                                <span class="input-group-text text-white bg-info">
-                                    <i class="far fa-id-card"></i>
+                            <label htmlFor="reg_number" className="form-label"><label className='text-danger'>*</label> Nro. matricula/tarjeta</label>
+                            <div className="input-group">
+                                <span className="input-group-text text-white bg-info">
+                                    <i className="far fa-id-card"></i>
                                 </span>
-                                <input type="text" class="form-control" id="reg_number" required />
+                                <input type="text" className="form-control" id="reg_number" required />
                             </div>
                         </div>
                     </div>
                     <div className='row mt-3'>
                         <div className='col'>
-                            <label for="title" class="form-label"><label className='text-danger'>*</label> Titulo</label>
-                            <div class="input-group">
-                                <span class="input-group-text text-white bg-info">
-                                    <i class="fas fa-hard-hat"></i>
+                            <label htmlFor="title" className="form-label"><label className='text-danger'>*</label> Titulo</label>
+                            <div className="input-group">
+                                <span className="input-group-text text-white bg-info">
+                                    <i className="fas fa-hard-hat"></i>
                                 </span>
-                                <select class="form-select" id={"title"}>
+                                <select className="form-select" id={"title"}>
                                     <option value="arq">ARQUITECTO</option>
                                     <option value="eng">INGENIERO</option>
                                     <option value="law">ABOGADO</option>
@@ -210,30 +210,30 @@ export default function PROFESIONALS_PUBLIC(props) {
                             </div>
                         </div>
                         <div className='col'>
-                            <label for="email" class="form-label"><label className='text-danger'>*</label> Correo de Contacto</label>
-                            <div class="input-group">
-                                <span class="input-group-text text-white bg-info">
-                                    <i class="fas fa-envelope"></i>
+                            <label htmlFor="email" className="form-label"><label className='text-danger'>*</label> Correo de Contacto</label>
+                            <div className="input-group">
+                                <span className="input-group-text text-white bg-info">
+                                    <i className="fas fa-envelope"></i>
                                 </span>
-                                <input type="text" class="form-control" id="email" />
+                                <input type="text" className="form-control" id="email" />
                             </div>
                         </div>
                         <div className='col'>
-                            <label for="number" class="form-label"><label className='text-danger'>*</label> Número de Contacto</label>
-                            <div class="input-group">
-                                <span class="input-group-text text-white bg-info">
-                                    <i class="fas fa-phone-alt"></i>
+                            <label htmlFor="number" className="form-label"><label className='text-danger'>*</label> Número de Contacto</label>
+                            <div className="input-group">
+                                <span className="input-group-text text-white bg-info">
+                                    <i className="fas fa-phone-alt"></i>
                                 </span>
-                                <input type="text" class="form-control" id="number" />
+                                <input type="text" className="form-control" id="number" />
                             </div>
                         </div>
                         <div className='col'>
-                            <label for="date" class="form-label"><label className='text-danger'>*</label> Fecha de matricula/tarjeta</label>
-                            <div class="input-group">
-                                <span class="input-group-text text-white bg-info">
-                                    <i class="fas fa-calendar-check"></i>
+                            <label htmlFor="date" className="form-label"><label className='text-danger'>*</label> Fecha de matricula/tarjeta</label>
+                            <div className="input-group">
+                                <span className="input-group-text text-white bg-info">
+                                    <i className="fas fa-calendar-check"></i>
                                 </span>
-                                <input type="date" class="form-control" id="date" required />
+                                <input type="date" className="form-control" id="date" required />
                             </div>
                         </div>
                     </div>
@@ -242,31 +242,31 @@ export default function PROFESIONALS_PUBLIC(props) {
                     <div className="row mb-2">
                         <div className="col">
                             <label>Hoja de Vida y Certificados</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-file"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-file"></i>
                                 </span>
-                                <input type="file" class="form-control" id="attach_cv" accept="image/png, image/jpeg image/pjg application/pdf" />
+                                <input type="file" className="form-control" id="attach_cv" accept="image/png, image/jpeg image/pjg application/pdf" />
                             </div>
                         </div>
                         <div className="col">
                             <label>Documento de Identidad</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-file"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-file"></i>
                                 </span>
-                                <input type="file" class="form-control" id="attach_id" accept="image/png, image/jpeg image/pjg application/pdf" />
+                                <input type="file" className="form-control" id="attach_id" accept="image/png, image/jpeg image/pjg application/pdf" />
                             </div>
                         </div>
                     </div>
                     <div className="row mb-2">
                         <div className="col">
                             <label>Matricula</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-file"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-file"></i>
                                 </span>
-                                <input type="file" class="form-control" id="attach_reg" accept="image/png, image/jpeg image/pjg application/pdf" />
+                                <input type="file" className="form-control" id="attach_reg" accept="image/png, image/jpeg image/pjg application/pdf" />
                             </div>
                         </div>
                         <div className="col"></div>
@@ -275,8 +275,8 @@ export default function PROFESIONALS_PUBLIC(props) {
                     <Divider >TÉRMINOS Y CONDICIONES</Divider>
                     <div className="row text-center">
                         <div className="col-12">
-                            <div class="form-check mx-5 my-3">
-                                <input class="form-check-input" type="checkbox" value="" name="concent" required />
+                            <div className="form-check mx-5 my-3">
+                                <input className="form-check-input" type="checkbox" value="" name="concent" required />
                                 <p className="app-p mb-2 text-justify" ><small> <label className='text-danger'>*</label> Acepto los Términos y Condiciones de tratamiento de datos  basada en Ley Estatutaria del Habeas Data (Ley 1581 del 2012)</small></p>
                             </div>
                         </div>
@@ -292,7 +292,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                         <div className='col'></div>
                     </div>
                     <div className="text-center py-4 mt-3">
-                        <button type="submit" class="btn btn-primary ">ENVIAR</button>
+                        <button type="submit" className="btn btn-primary ">ENVIAR</button>
                     </div>
                 </form>
             </div>

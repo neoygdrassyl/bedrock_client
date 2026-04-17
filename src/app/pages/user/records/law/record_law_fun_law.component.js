@@ -147,7 +147,7 @@ export default function RECORD_LAW_FUN_LAW(props) {
                             <label>Radicación Fotografiá</label>
                         </div>
                         <div className='col'>
-                            <input type="date" class="form-control form-control-sm" max="2100-01-01" id="alert_sign_date_rl" defaultValue={FunLaw.sign[1]} onBlur={() => uploadSign()} />
+                            <input type="date" className="form-control form-control-sm" max="2100-01-01" id="alert_sign_date_rl" defaultValue={FunLaw.sign[1]} onBlur={() => uploadSign()} />
                         </div>
                     </div>
                     <div className='row'>
@@ -192,7 +192,7 @@ export default function RECORD_LAW_FUN_LAW(props) {
 
             <div className='row  border py-0'>
                 <div className='col-5'>
-                    <select class="form-select form-control form-control-sm" required id="alert_sign_select_rl" defaultValue={FunLaw.sign[0]} onChange={() => uploadSign()} >
+                    <select className="form-select form-control form-control-sm" required id="alert_sign_select_rl" defaultValue={FunLaw.sign[0]} onChange={() => uploadSign()} >
                         <option value="-1">APORTADO FISICAMENTE</option>
                         <option value="0">SIN DOCUMENTO</option>
                         {_CHILD_6_SELECT()}

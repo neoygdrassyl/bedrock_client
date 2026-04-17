@@ -83,13 +83,13 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="text" class="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
                 </div>)
@@ -124,8 +124,8 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
-                        <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                        <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i className="fas fa-cloud-download-alt fa-2x"></i></a>
+                        <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
                     </>,
                 },
             ]
@@ -495,22 +495,22 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                                         <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
                                         <div className="text-end m-3">
                                             {attachs > 0
-                                                ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                                 : ""}
-                                            <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
                                         {
                                             /**
                                              * 
                                              *    <div className="text-center m-3">
-                                            {attachs > 0 ? <MDBBtn className="btn btn-lg btn-warning my-2" onClick={() => addAttachsClose()}><i class="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </MDBBtn> : ""}
+                                            {attachs > 0 ? <MDBBtn className="btn btn-lg btn-warning my-2" onClick={() => addAttachsClose()}><i className="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </MDBBtn> : ""}
                                         </div>
                                              */
                                         }
                                         <hr />
                                         <div className="text-center m-3">
-                                            <button className="btn btn-lg btn-success" ><i class="fas fa-lock"></i> CERRAR PETICIÓN</button>
+                                            <button className="btn btn-lg btn-success" ><i className="fas fa-lock"></i> CERRAR PETICIÓN</button>
                                         </div>
 
                                     </form> </>

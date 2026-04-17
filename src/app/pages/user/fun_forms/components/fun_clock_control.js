@@ -44,14 +44,14 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
             return false;
         }
         let _GET_ICON_CONTEXT = (_clock) => {
-            if (_clock.state == -1) return <i class="far fa-times-circle" style={{ color: 'Red' }}></i>
-            if (_clock.state < -1) return <i class="far fa-times-circle" style={{ color: 'Red' }}></i>
-            if (_clock.state == 3) return <i class="far fa-check-circle" style={{ color: 'DarkBlue' }}></i>
-            if (_clock.state == 5) return <i class="far fa-check-circle" style={{ color: 'Green' }}></i>
-            if (_clock.state > 10 && _clock.state < 15) return <i class="far fa-dot-circle" style={{ color: 'Teal' }}></i>
-            if (_clock.state == 30 || _clock.state == 50 || _clock.state == 49) return <i class="far fa-check-circle" style={{ color: 'MidnightBlue' }}></i>
-            if (_clock.state >= 31 || _clock.state < 49) return <i class="far fa-dot-circle" style={{ color: 'MidnightBlue' }}></i>
-            if (_clock.state == 100) return <i class="far fa-pause-circle" style={{ color: 'var(--bs-body-color)' }}></i>
+            if (_clock.state == -1) return <i className="far fa-times-circle" style={{ color: 'Red' }}></i>
+            if (_clock.state < -1) return <i className="far fa-times-circle" style={{ color: 'Red' }}></i>
+            if (_clock.state == 3) return <i className="far fa-check-circle" style={{ color: 'DarkBlue' }}></i>
+            if (_clock.state == 5) return <i className="far fa-check-circle" style={{ color: 'Green' }}></i>
+            if (_clock.state > 10 && _clock.state < 15) return <i className="far fa-dot-circle" style={{ color: 'Teal' }}></i>
+            if (_clock.state == 30 || _clock.state == 50 || _clock.state == 49) return <i className="far fa-check-circle" style={{ color: 'MidnightBlue' }}></i>
+            if (_clock.state >= 31 || _clock.state < 49) return <i className="far fa-dot-circle" style={{ color: 'MidnightBlue' }}></i>
+            if (_clock.state == 100) return <i className="far fa-pause-circle" style={{ color: 'var(--bs-body-color)' }}></i>
             return ""
         }
         let _GET_TIME_FOR_CLOCK_STATE = (_state) => {
@@ -145,7 +145,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
             _COMPONENT.push(<>
                 <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                     <div className="col-3 border border-primary">
-                        <label><i class="far fa-check-circle" style={{ color: 'DarkBlue' }}></i> Radicacion virtual</label>
+                        <label><i className="far fa-check-circle" style={{ color: 'DarkBlue' }}></i> Radicacion virtual</label>
                     </div>
                     <div className="col-5 border border-primary">
                         <label >Momento en que la radicacion fue añadida al sistema</label>
@@ -203,7 +203,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                     if (_sign[1]) _COMPONENT.push(<>
                         <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                             <div className="col-3" style={{ borderColor: 'Purple', borderStyle: 'solid', borderWidth: '0.5px' }}>
-                                <label> <i class="far fa-dot-circle" style={{ color: 'Purple' }}></i> Radicacion de Valla</label>
+                                <label> <i className="far fa-dot-circle" style={{ color: 'Purple' }}></i> Radicacion de Valla</label>
                             </div>
                             <div className="col-5" style={{ borderColor: 'Purple', borderStyle: 'solid', borderWidth: '0.5px' }}>
                                 <label></label>
@@ -222,7 +222,7 @@ function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentV
                 if (_neighbours[i].alerted) _COMPONENT.push(<>
                     <div className="row ms-0 mb-1" style={{ fontSize: '0.95rem' }}>
                         <div className="col-3" style={{ borderColor: 'Orchid', borderStyle: 'solid', borderWidth: '0.5px' }}>
-                            <label> <i class="far fa-dot-circle" style={{ color: 'Orchid' }}></i> Vecino Notificado</label>
+                            <label> <i className="far fa-dot-circle" style={{ color: 'Orchid' }}></i> Vecino Notificado</label>
                         </div>
                         <div className="col-5" style={{ borderColor: 'Orchid', borderStyle: 'solid', borderWidth: '0.5px' }}>
                             <label></label>

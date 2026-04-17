@@ -101,41 +101,41 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.1 Dirección o Nomenclatura actual</label>
-                        <textarea class="form-control mb-3" rows="3" id="f_211"
+                        <textarea className="form-control mb-3" rows="3" id="f_211"
                             defaultValue={_CHILD_VARS.item_211}></textarea>
                     </div>
                     <div className="col-6">
                         <label>2.1 Dirección(es) Anterior(es)</label>
-                        <textarea class="form-control mb-3" rows="3" id="f_212"
+                        <textarea className="form-control mb-3" rows="3" id="f_212"
                             defaultValue={_CHILD_VARS.item_212}></textarea>
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">
                         <label >2.2 No. Matrícula Inmobiliaria</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_22"
+                            <input type="text" className="form-control" id="f_22"
                                 defaultValue={_CHILD_VARS.item_22} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>2.3.1 Identificación Catastral (Viejo)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file-alt"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="No. Catastral" id="f_23"
+                            <input type="text" className="form-control" placeholder="No. Catastral" id="f_23"
                                 defaultValue={_CHILD_VARS.item_23} />
                         </div>
                         <label>2.3.2 Identificación Catastral (Nuevo, 30 dígitos)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file-alt"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="No. Catastral nuevo" id="f_232"
+                            <input type="text" className="form-control" placeholder="No. Catastral nuevo" id="f_232"
                                 defaultValue={_CHILD_VARS.item_232} />
                         </div>
                     </div>
@@ -143,49 +143,49 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.4 Clasificación del Suelo</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="A" name="f_24"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="A" name="f_24"
                                 defaultChecked={_CHILD_VARS.item_24 == 'A' ? true : false} />
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label className="form-check-label" htmlFor="flexCheckDefault">
                                 A. Urbano
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="B" name="f_24"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="B" name="f_24"
                                 defaultChecked={_CHILD_VARS.item_24 == 'B' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 B. Rural
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="C" name="f_24"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="C" name="f_24"
                                 defaultChecked={_CHILD_VARS.item_24 == 'C' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 C. De Expansión
                             </label>
                         </div>
                     </div>
                     <div className="col-6">
                         <label>2.5 Planimetría del Lote</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="A" name="f_25"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="A" name="f_25"
                                 defaultChecked={_CHILD_VARS.item_25 == 'A' ? true : false} />
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label className="form-check-label" htmlFor="flexCheckDefault">
                                 A. Plano del Lote
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" value="B" name="f_25"
+                        <div className="form-check">
+                            <input className="form-check-input" type="radio" value="B" name="f_25"
                                 defaultChecked={_CHILD_VARS.item_25 == 'B' ? true : false} />
-                            <label class="form-check-label" for="flexCheckChecked">
+                            <label className="form-check-label" htmlFor="flexCheckChecked">
                                 B. Plano Topográfico
                             </label>
                         </div>
-                        <div class="input-group my-3">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-question-circle"></i>
+                        <div className="input-group my-3">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-question-circle"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Otro, ¿Cual?"
+                            <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                                 id="f_25_o" defaultChecked={_CHILD_VARS.item_25 != 'A' && _CHILD_VARS.item_25 != 'B' ? _CHILD_VARS.item_25 : ""} />
                         </div>
 
@@ -195,55 +195,55 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 <label>2.6 Información General</label>
                 <div className="row mb-3">
                     <div className="col-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Barrio o Urbanzación
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Barrio o Urbanzación
                             </span>
-                            <input type="text" class="form-control" id="f_261" defaultValue={_CHILD_VARS.item_261} />
+                            <input type="text" className="form-control" id="f_261" defaultValue={_CHILD_VARS.item_261} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Comuna
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Comuna
                             </span>
-                            <input type="text" class="form-control" id="f_263" defaultValue={_CHILD_VARS.item_263} />
+                            <input type="text" className="form-control" id="f_263" defaultValue={_CHILD_VARS.item_263} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Estrato
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Estrato
                             </span>
-                            <input type="number" min="1" max="6" step="1" class="form-control" id="f_267" defaultValue={_CHILD_VARS.item_267} />
+                            <input type="number" min="1" max="6" step="1" className="form-control" id="f_267" defaultValue={_CHILD_VARS.item_267} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Manzana No.
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Manzana No.
                             </span>
-                            <input type="text" class="form-control" id="f_268" defaultValue={_CHILD_VARS.item_268} />
+                            <input type="text" className="form-control" id="f_268" defaultValue={_CHILD_VARS.item_268} />
                         </div>
                     </div>
                     <div className="col-6">
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Vereda
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Vereda
                             </span>
-                            <input type="text" class="form-control" id="f_262" defaultValue={_CHILD_VARS.item_262} />
+                            <input type="text" className="form-control" id="f_262" defaultValue={_CHILD_VARS.item_262} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Sector
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Sector
                             </span>
-                            <input type="text" class="form-control" id="f_264" defaultValue={_CHILD_VARS.item_264} />
+                            <input type="text" className="form-control" id="f_264" defaultValue={_CHILD_VARS.item_264} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Corregimiento
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Corregimiento
                             </span>
-                            <input type="text" class="form-control" id="f_265" defaultValue={_CHILD_VARS.item_265} />
+                            <input type="text" className="form-control" id="f_265" defaultValue={_CHILD_VARS.item_265} />
                         </div>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>&nbsp;Lote No.
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>&nbsp;Lote No.
                             </span>
-                            <input type="text" class="form-control" id="f_266" defaultValue={_CHILD_VARS.item_266} />
+                            <input type="text" className="form-control" id="f_266" defaultValue={_CHILD_VARS.item_266} />
                         </div>
                     </div>
                 </div>
@@ -393,10 +393,10 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 {_CHILD_2_COMPONENT()}
                 <div className="row mb-3 text-center">
                     <div className="col-6">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => new_2()}><i class="far fa-file-alt"></i> ACTUALIZAR </MDBBtn>
+                        <MDBBtn className="btn btn-success my-3" onClick={() => new_2()}><i className="far fa-file-alt"></i> ACTUALIZAR </MDBBtn>
                     </div>
                     <div className="col-6">
-                            <MDBBtn className="btn btn-warning my-3" onClick={() => _RESET_FORM_2()}><i class="fas fa-eraser"></i> LIMPIAR (2.4 y 2.5) </MDBBtn>
+                            <MDBBtn className="btn btn-warning my-3" onClick={() => _RESET_FORM_2()}><i className="fas fa-eraser"></i> LIMPIAR (2.4 y 2.5) </MDBBtn>
                         </div>
                 </div>
             </fieldset>

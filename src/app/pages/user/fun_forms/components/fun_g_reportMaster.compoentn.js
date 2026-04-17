@@ -59,37 +59,37 @@ function FUN_G_REPORT_MASTER({ translation, swaMsg, globals, currentItem, curren
             return <>
                 <div className="row mb-2">
                     <div className="col-6">
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id="r_l_review_1"
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" id="r_l_review_1"
                                 defaultValue={'Acta de Observaciones'} disabled />
                         </div>
                     </div>
                     <div className="col-3">
-                        <input type="text" class="form-control me-1" id="r_l_review_1"
+                        <input type="text" className="form-control me-1" id="r_l_review_1"
                             defaultValue={_GET_CLOCK_STATE(30).desc ? _GET_CLOCK_STATE(30).desc.includes('NO CUMPLE')
                             ? 'NO CUMPLE' : _GET_CLOCK_STATE(30).desc.includes('CUMPLE')
                                 ? 'CUMPLE' : '': ''} disabled />
                     </div>
                     <div className="col-3">
-                        <input type="date" class="form-control me-1" id="r_l_review_3" max="2100-01-01" disabled
+                        <input type="date" className="form-control me-1" id="r_l_review_3" max="2100-01-01" disabled
                             defaultValue={_GET_CLOCK_STATE(30).date_start ?? ''} />
                     </div>
                 </div>
                 <div className="row mb-2">
                     <div className="col-6">
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id="r_l_review_1"
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" id="r_l_review_1"
                                 defaultValue={'Acta de Correciones'} disabled />
                         </div>
                     </div>
                     <div className="col-3">
-                        <input type="text" class="form-control me-1" id="r_l_review_1"
+                        <input type="text" className="form-control me-1" id="r_l_review_1"
                             defaultValue={_GET_CLOCK_STATE(49).desc ? _GET_CLOCK_STATE(49).desc.includes('NO CUMPLE')
                                 ? 'NO CUMPLE' : _GET_CLOCK_STATE(49).desc.includes('CUMPLE')
                                     ? 'CUMPLE' : '': ''} disabled />
                     </div>
                     <div className="col-3">
-                        <input type="date" class="form-control me-1" id="r_l_review_3" max="2100-01-01" disabled
+                        <input type="date" className="form-control me-1" id="r_l_review_3" max="2100-01-01" disabled
                             defaultValue={_GET_CLOCK_STATE(49).date_start ?? ''} />
                     </div>
                 </div>
@@ -99,7 +99,7 @@ function FUN_G_REPORT_MASTER({ translation, swaMsg, globals, currentItem, curren
             <div className="fun_g_mix">
 
                 <legend className="my-2 px-3 text-uppercase Collapsible" id="fung_report_master">
-                    <label className="app-p lead text-center fw-normal text-uppercase">10. ACTA <i class="fas fa-file-contract me-2"></i></label>
+                    <label className="app-p lead text-center fw-normal text-uppercase">10. ACTA <i className="fas fa-file-contract me-2"></i></label>
                 </legend>
 
                 {_COMPONENT_REPORT_MASTER()}

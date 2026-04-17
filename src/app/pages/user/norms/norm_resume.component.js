@@ -464,10 +464,10 @@ export default function NORM_RESUME(props) {
     return (
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                <h3 class="text-uppercase pb-2">5. RESUMEN DE INFORMACIÓN:</h3>
+                <h3 className="text-uppercase pb-2">5. RESUMEN DE INFORMACIÓN:</h3>
                 {RESUME}
                 <div className='row text-center'>
-                    <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-danger my-1" type='submit'><i class="far fa-file-pdf"></i> GENERAR PDF </button></div>
+                    <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-danger my-1" type='submit'><i className="far fa-file-pdf"></i> GENERAR PDF </button></div>
                 </div>
                 <hr />
             </Suspense>

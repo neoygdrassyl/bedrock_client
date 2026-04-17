@@ -228,8 +228,8 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                 {_COMPONENT_6_FUN_51()}
                 <div className="border p-2 m-2">
                     <label className="me-2">LEYENDA:</label>
-                    <label className="me-2"><i class="far fa-id-card fa-2x" style={{color: "DeepSkyBlue"}}></i> : Documento de Identidad,</label>
-                    <label className="me-2"><i class="far fa-id-badge fa-2x" style={{color: 'DarkOrchid'}}></i>: Certificado de Existencia y Representación Legal</label>
+                    <label className="me-2"><i className="far fa-id-card fa-2x" style={{color: "DeepSkyBlue"}}></i> : Documento de Identidad,</label>
+                    <label className="me-2"><i className="far fa-id-badge fa-2x" style={{color: 'DarkOrchid'}}></i>: Certificado de Existencia y Representación Legal</label>
                 </div>
             </div >
         );

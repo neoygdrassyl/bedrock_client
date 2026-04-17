@@ -556,7 +556,7 @@ export const ClockRow = memo((props) => {
                         <div class="tdm-card-header"><i class="fas fa-calendar-check text-primary"></i> Fecha Real</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${currentDate}</div>
-                            ${legalData.baseDate ? `<div class="tdm-sub-value">Calculado desde: ${formatDate(legalData.baseDate)}</div>` : ''}
+                            ${legalData.baseDate ? `<div className="tdm-sub-value">Calculado desde: ${formatDate(legalData.baseDate)}</div>` : ''}
                         </div>
                     </div>
 
@@ -578,9 +578,9 @@ export const ClockRow = memo((props) => {
                 </div>
 
                 ${value.legalSupport ? `
-                <div class="tdm-section">
-                    <div class="tdm-section-title"><i class="fas fa-balance-scale"></i> Soporte Legal</div>
-                    <div class="tdm-legal-text">
+                <div className="tdm-section">
+                    <div className="tdm-section-title"><i className="fas fa-balance-scale"></i> Soporte Legal</div>
+                    <div className="tdm-legal-text">
                         ${value.legalSupport}
                     </div>
                 </div>
@@ -594,7 +594,7 @@ export const ClockRow = memo((props) => {
             `,
             showCloseButton: true,
             showCancelButton: true,
-            confirmButtonText: '<i class="fas fa-save me-2"></i>Guardar Observación',
+            confirmButtonText: '<i className="fas fa-save me-2"></i>Guardar Observación',
             confirmButtonColor: '#1971c2',
             cancelButtonText: 'Cerrar',
             customClass: {

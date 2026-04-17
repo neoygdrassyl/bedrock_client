@@ -100,7 +100,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
                 if (_DOCS.length > 0) {
                     return _DOCS.map((object, index) =>{
                         return <>
-                        <li class="list-group-item">
+                        <li className="list-group-item">
                             <div className="row">
                                 <div className="col">
                                     <label><MDBBadge color='success'>ANEXADO</MDBBadge> {object.description} </label>
@@ -109,7 +109,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
                                     <VIZUALIZER url={object.path + "/" + object.filename} apipath={'/files/'} />
                                 </div>
                                 <div className="col">
-                                    <input type="text" class="form-control" name="sdocs" placeholder="Observaciónes"
+                                    <input type="text" className="form-control" name="sdocs" placeholder="Observaciónes"
                                         defaultValue={_GET_STEP_TYPE_INDEX('sdocs', 'value', index) ?? ''} />
                                 </div>
                             </div>
@@ -118,7 +118,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
                     })
                 } else {
                     _COMPONENT.push(<>
-                        <li class="list-group-item">
+                        <li className="list-group-item">
                             <MDBBadge color='danger'>SIN ANEXAR</MDBBadge> {CodesJson[_codes[i]]}
                         </li>
                     </>)
@@ -223,11 +223,11 @@ function RECORD_ENG_DOCS_CHECK(props) {
         return (
             <div className="record_ph_profesional_evaluation container">
                 <form id="form_manage_ph_gen" onSubmit={manage_step_docs}>
-                    <li class="list-group-item"><label className="fw-bold">DOCUMENTOS ANEXOS</label></li>
+                    <li className="list-group-item"><label className="fw-bold">DOCUMENTOS ANEXOS</label></li>
                     {COMPONENT_DOCS_CHECK(_DOCS)}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <button className="btn btn-success my-3" ><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                            <button className="btn btn-success my-3" ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
                         </div>
                     </div>
                 </form>

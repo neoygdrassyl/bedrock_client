@@ -260,43 +260,43 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                     <div className="row">
                         <div className=" col-12">
                             <label>No. Radicación</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-hashtag"></i>
                                 </span>
-                                <input type="text" class="form-control" defaultValue={sael_name} id="seal_1" />
+                                <input type="text" className="form-control" defaultValue={sael_name} id="seal_1" />
                             </div>
                         </div>
                     </div>
 
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-check-circle"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-check-circle"></i>
                         </span>
-                        <input type="text" class="form-control" value="Modalidad" disabled />
+                        <input type="text" className="form-control" value="Modalidad" disabled />
                     </div>
-                    <textarea class="form-control mb-3" rows="3" id="seal_2"  defaultValue={formsParser1(_GET_CHILD_1())} ></textarea>
+                    <textarea className="form-control mb-3" rows="3" id="seal_2"  defaultValue={formsParser1(_GET_CHILD_1())} ></textarea>
                     <div className="row">
                         <div className=" col-4">
                             <label>Consecutivo Sello</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-hashtag"></i>
                                 </span>
-                                <input type="text" class="form-control" placeholder="Consecutivo Sello" id="seal_3" 
+                                <input type="text" className="form-control" placeholder="Consecutivo Sello" id="seal_3" 
                                  defaultValue={_CHILD_SEAL.id_public} />
                             </div>
                         </div>
                         <div className=" col-2 me-0">
                             <label>Área total</label>
-                            <div class="input-group mb-3 me-0">
-                                <input type="number" min="1" step="0.01" class="form-control" placeholder="Area Total" id="seal_4" 
+                            <div className="input-group mb-3 me-0">
+                                <input type="number" min="1" step="0.01" className="form-control" placeholder="Area Total" id="seal_4" 
                                 defaultValue={_CHILD_SEAL.area}/>
                             </div>
                         </div>
                         <div className=" col-2 ms-0">
                             <label></label>
-                            <div class="input-group mb-3 ms-0">
+                            <div className="input-group mb-3 ms-0">
                             <select className='form-select' id="seal_4_m"> 
                                 <option>m</option>
                                 <option>m2</option>
@@ -306,42 +306,42 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         </div>
                         <div className=" col-4">
                             <label>Fecha</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-calendar-alt"></i>
                                 </span>
-                                <input type="date" class="form-control" placeholder="Fecha de Expedicion" id="seal_5" />
+                                <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="seal_5" />
                             </div>
                         </div>
                     </div>
                     <div className="row">
                         <div className=" col-4">
                             <label>Planos</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-ruler-combined"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-ruler-combined"></i>
                                 </span>
-                                <input type="number" min="0" step="1" class="form-control" placeholder="Planos" id="seal_6"
+                                <input type="number" min="0" step="1" className="form-control" placeholder="Planos" id="seal_6"
                                 defaultValue={_CHILD_SEAL.blueprints} />
                             </div>
                         </div>
                         <div className=" col-4">
                             <label>Memorias</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-database"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-database"></i>
                                 </span>
-                                <input type="number" min="0" step="1" class="form-control" placeholder="Memorias" id="seal_7"
+                                <input type="number" min="0" step="1" className="form-control" placeholder="Memorias" id="seal_7"
                                 defaultValue={_CHILD_SEAL.drives} />
                             </div>
                         </div>
                         <div className=" col-4">
                             <label>Estudios</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-file-invoice"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-file-invoice"></i>
                                 </span>
-                                <input type="number" min="0" step="1" class="form-control" placeholder="Estudios" id="seal_8"
+                                <input type="number" min="0" step="1" className="form-control" placeholder="Estudios" id="seal_8"
                                 defaultValue={_CHILD_SEAL.folders} />
                             </div>
                         </div>
@@ -350,11 +350,11 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                     <div className="row">
                         <div className=" col">
                             <label>Aprobación personalizada</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-ruler-combined"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-ruler-combined"></i>
                                 </span>
-                                <input type="text" class="form-control" placeholder="Con este plano se aprueban..." id="seal_custom_text"
+                                <input type="text" className="form-control" placeholder="Con este plano se aprueban..." id="seal_custom_text"
                                 defaultValue={''} />
                             </div>
                         </div>
@@ -363,17 +363,17 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                     <div className="row">
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <button className="btn btn-success"><i class="fas fa-file-import"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success"><i className="fas fa-file-import"></i> GUARDAR CAMBIOS </button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <MDBBtn className="btn btn-warning" onClick={() => generate_pdf(1)}><i class="far fa-file"></i> GENERAR ORIGINAL </MDBBtn>
+                                <MDBBtn className="btn btn-warning" onClick={() => generate_pdf(1)}><i className="far fa-file"></i> GENERAR ORIGINAL </MDBBtn>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <MDBBtn className="btn btn-warning" onClick={() => generate_pdf(0)}><i class="far fa-file"></i> GENERAR TITULAR </MDBBtn>
+                                <MDBBtn className="btn btn-warning" onClick={() => generate_pdf(0)}><i className="far fa-file"></i> GENERAR TITULAR </MDBBtn>
                             </div>
                         </div>
                     </div>

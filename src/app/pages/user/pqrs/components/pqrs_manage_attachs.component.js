@@ -48,10 +48,10 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
                         <VIZUALIZER url={row.name} apipath={row.class == 0 ?  '/files/pqrsa/': '/files/pqrs/'}/>
                         <MDBTooltip title='Modificar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                             <button onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i class="far fa-edit "></i></button></MDBTooltip>
+                                <i className="far fa-edit "></i></button></MDBTooltip>
                         <MDBTooltip title='Eliminar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                             <button onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
-                                <i class="far fa-trash-alt"></i></button></MDBTooltip>
+                                <i className="far fa-trash-alt"></i></button></MDBTooltip>
                     </>,
                 },
             ]
@@ -71,15 +71,15 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
             var _COMPONENT = [];
             _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                 <div className="col-6">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                        <input type="text" class="form-control" id={"file_name" + _edit} placeholder="Nombre documento (nombre o corta descripcion)" required />
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                        <input type="text" className="form-control" id={"file_name" + _edit} placeholder="Nombre documento (nombre o corta descripcion)" required />
                     </div>
                 </div>
                 <div className="col-6 ">
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                        <input type="file" class="form-control" id={"file" + _edit} accept="image/png, image/jpeg application/pdf" required={_edit ? false: true} />
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                        <input type="file" className="form-control" id={"file" + _edit} accept="image/png, image/jpeg application/pdf" required={_edit ? false: true} />
                     </div>
                     {_edit
                         ? <label className="text-secondary fw-bold">Si el campo de anexo se deja vacío, el sistema no reemplazara ningún documento</label>
@@ -242,9 +242,9 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
         }
         return (
             <div>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Anexo
                     </label>
                 </div>
@@ -253,7 +253,7 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
                         {_COMPONENT_MANAGE("")}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i class="far fa-share-square"></i> AÑADIR ITEM
+                                <i className="far fa-share-square"></i> AÑADIR ITEM
                             </button>
                         </div>
                     </form>
@@ -267,7 +267,7 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
                         {_COMPONENT_MANAGE("_edit")}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </form>

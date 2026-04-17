@@ -103,10 +103,10 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
     }
     let _GET_REVIEW = (_REVIEW) => {
         let res = {
-            '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-            '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-            '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-            '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+            '-1': <label className=" me-1"><i className="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
+            '0': <label className="fw-bold text-danger me-1"><i className="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
+            '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
+            '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
         }
         return res[_REVIEW || 0]
     }
@@ -209,14 +209,14 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
             <div className='row'>
                 <div className='col'></div>
                 <div className='col'>
-                    <div class="input-group">
+                    <div className="input-group">
                         <input className='form-control' id="search_bar" placeholder='Buscar...'
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyPress={(e) => { if (e.key === 'Enter') FILTER() }} />
-                        <div class="input-group-append">
-                            {search ? <button class="btn btn-danger" type="button"
+                        <div className="input-group-append">
+                            {search ? <button className="btn btn-danger" type="button"
                                 onClick={() => { setSearch(''); document.getElementById('search_bar').value = ''; FILTER() }}>X</button> : null}
-                            <button class="btn btn-primary" type="button" onClick={() => FILTER()}>BUSCAR</button>
+                            <button className="btn btn-primary" type="button" onClick={() => FILTER()}>BUSCAR</button>
                         </div>
                     </div>
 

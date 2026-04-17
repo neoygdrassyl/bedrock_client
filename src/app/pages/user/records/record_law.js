@@ -452,10 +452,10 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                 <div className="row border my-2 py-4 border border-warning bg-body-secondary" style={{ borderWidth: '3px' }}>
                                     <div className="col-4"></div>
                                     <div className="col-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="1" id="fun_0_rules" defaultChecked={rules[0] == 1} 
+                                        <div className="form-check">
+                                            <input className="form-check-input" type="checkbox" value="1" id="fun_0_rules" defaultChecked={rules[0] == 1} 
                                             onChange={() => save_fun0()}/>
-                                            <h2 class="form-check-label">No usar Publicidad</h2>
+                                            <h2 className="form-check-label">No usar Publicidad</h2>
                                         </div>
                                     </div>
                                 </div>

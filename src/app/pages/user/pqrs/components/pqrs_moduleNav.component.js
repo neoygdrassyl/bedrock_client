@@ -34,11 +34,11 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                         {FROM == "informal"
                             ? <div className="row mx-2 mb-1">
                                 <button className="btn btn-sm btn-light m-0 p-2 shadow-none">
-                                    <i class="far fa-comment-dots fa-2x" ></i> <label className="fs-6 align-top">RTA. {_WORKERS[i].name}</label></button>
+                                    <i className="far fa-comment-dots fa-2x" ></i> <label className="fs-6 align-top">RTA. {_WORKERS[i].name}</label></button>
                             </div>
                             : <div className="row mx-2 mb-1">
                                 <button className="btn btn-sm btn-secondary m-0 p-2 shadow-none" onClick={() => NAVIGATION(_GET_WORKER_VAR(window.user.id), "informal", FROM)}>
-                                    <i class="far fa-comment-dots fa-2x" ></i> <label className="fs-6 align-top">RTA. {_WORKERS[i].name}</label></button>
+                                    <i className="far fa-comment-dots fa-2x" ></i> <label className="fs-6 align-top">RTA. {_WORKERS[i].name}</label></button>
                             </div>}
                     </>)
                 }
@@ -58,7 +58,7 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
 
                                     <div className="row mx-2 mb-1">
                                         <a onClick={() => NAVIGATION(currentItem, "close", FROM)} className="btn btn-info m-0 p-2 shadow-none">
-                                            <i class="fas fa-times-circle fa-2x" ></i> <label className="fs-6 align-top">CERRAR</label>
+                                            <i className="fas fa-times-circle fa-2x" ></i> <label className="fs-6 align-top">CERRAR</label>
                                         </a>
                                     </div>
 
@@ -66,11 +66,11 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                         ?
                                         <div className="row mx-2 mb-1">
                                             <button className="btn btn-light m-0 p-2 shadow-none">
-                                                <i class="far fa-eye fa-2x fa-2x" ></i> <label className="fs-6 align-top">DETALLES</label></button>
+                                                <i className="far fa-eye fa-2x fa-2x" ></i> <label className="fs-6 align-top">DETALLES</label></button>
                                         </div>
                                         : <div className="row mx-2 mb-1">
                                             <button className="btn btn-info m-0 p-2 shadow-none" onClick={() => NAVIGATION(currentItem, "general", FROM)}>
-                                                <i class="far fa-eye fa-2x fa-2x" ></i> <label className="fs-6 align-top">DETALLES</label></button>
+                                                <i className="far fa-eye fa-2x fa-2x" ></i> <label className="fs-6 align-top">DETALLES</label></button>
                                         </div>}
 
 
@@ -81,11 +81,11 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                                 ?
                                                 <div className="row mx-2 mb-1">
                                                     <button className="btn btn-light m-0 p-2 shadow-none">
-                                                        <i class="fas fa-edit fa-2x fa-2x"></i> <label className="fs-6 align-top">EDITAR</label></button>
+                                                        <i className="fas fa-edit fa-2x fa-2x"></i> <label className="fs-6 align-top">EDITAR</label></button>
                                                 </div>
                                                 : <div className="row mx-2 mb-1">
                                                     <button className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => NAVIGATION(currentItem, "editable", FROM)}>
-                                                        <i class="fas fa-edit fa-2x fa-2x"></i> <label className="fs-6 align-top">EDITAR</label></button>
+                                                        <i className="fas fa-edit fa-2x fa-2x"></i> <label className="fs-6 align-top">EDITAR</label></button>
                                                 </div>} </> : ""
                                     }
                                     {currentItem.status == 0
@@ -95,11 +95,11 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                                     {FROM == "manage"
                                                         ? <div className="row mx-2 mb-1">
                                                             <button className="btn btn-sm btn-light m-0 p-2 shadow-none">
-                                                                <i class="fas fa-cog fa-2x" ></i> <label className="fs-6 align-top">GESTIONAR</label></button>
+                                                                <i className="fas fa-cog fa-2x" ></i> <label className="fs-6 align-top">GESTIONAR</label></button>
                                                         </div>
                                                         : <div className="row mx-2 mb-1">
                                                             <button className="btn btn-sm btn-success m-0 p-2 shadow-none" onClick={() => NAVIGATION(currentItem, "manage", FROM)}>
-                                                                <i class="fas fa-cog fa-2x" ></i> <label className="fs-6 align-top">GESTIONAR</label></button>
+                                                                <i className="fas fa-cog fa-2x" ></i> <label className="fs-6 align-top">GESTIONAR</label></button>
                                                         </div>}
                                                 </> : ""}
                                         </>

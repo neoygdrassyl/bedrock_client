@@ -464,31 +464,31 @@ function FUN_CHART_TIME(props) {
         return <>
             <div className='row text-center my-1'>
             <div className='col'>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">FECHAS</span>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="basic-addon1">FECHAS</span>
                         </div>
-                        <input type="date" class="form-control text-end" id="date_1" defaultValue={date_1} />
-                        <input type="date" class="form-control text-end" id="date_2" defaultValue={date_2} />
+                        <input type="date" className="form-control text-end" id="date_1" defaultValue={date_1} />
+                        <input type="date" className="form-control text-end" id="date_2" defaultValue={date_2} />
                     </div>
                 </div>
                 <div className='col'>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">RADICADOS</span>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="basic-addon1">RADICADOS</span>
                         </div>
-                        <input type="text" class="form-control text-end" id="ids_1" defaultValue={filterId[0]} />
-                        <input type="text" class="form-control text-end" id="ids_2" defaultValue={filterId[1]} />
+                        <input type="text" className="form-control text-end" id="ids_1" defaultValue={filterId[0]} />
+                        <input type="text" className="form-control text-end" id="ids_2" defaultValue={filterId[1]} />
                     </div>
                 </div>
 
                 <div className='col'>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">RANGO DE DÍAS</span>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="basic-addon1">RANGO DE DÍAS</span>
                         </div>
-                        <input type="text" class="form-control text-end" id="d_1" defaultValue={filterD[0]} />
-                        <input type="text" class="form-control text-end" id="d_2" defaultValue={filterD[1]} />
+                        <input type="text" className="form-control text-end" id="d_1" defaultValue={filterD[0]} />
+                        <input type="text" className="form-control text-end" id="d_2" defaultValue={filterD[1]} />
                     </div>
                 </div>
 
@@ -663,9 +663,9 @@ function FUN_CHART_TIME(props) {
             {seeValid1 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div class="d-flex flex-wrap">
-                            {(Array.isArray(data) ? data : []).map(value => <div class="input-group-prepend border border-success">
-                                <div class="input-group-text">
+                        <div className="d-flex flex-wrap">
+                            {(Array.isArray(data) ? data : []).map(value => <div className="input-group-prepend border border-success">
+                                <div className="input-group-text">
                                     <label>{(value.name.slice(-7))}</label></div>
                             </div>)}
                         </div>
@@ -679,9 +679,9 @@ function FUN_CHART_TIME(props) {
                         <div className='fw-bold'> NO VALIDOS: {datano.length} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeNotValid1} onClick={() => setNotValid1(!seeNotValid1)} >
                             <MDBIcon fas icon='eye' /></MDBBtn></div>
                         {seeNotValid1 ?
-                            <div class="d-flex flex-wrap">
-                                {(Array.isArray(datano) ? datano : []).map(value => <div class="input-group-prepend border border-primary">
-                                    <div class="input-group-text">
+                            <div className="d-flex flex-wrap">
+                                {(Array.isArray(datano) ? datano : []).map(value => <div className="input-group-prepend border border-primary">
+                                    <div className="input-group-text">
                                         <label>{(value.slice(-7))}</label></div>
                                 </div>)}
                             </div>
@@ -883,9 +883,9 @@ function FUN_CHART_TIME(props) {
             {seeValid2 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div class="d-flex flex-wrap">
-                            {(Array.isArray(data2) ? data2 : []).map(value => <div class="input-group-prepend border border-success">
-                                <div class="input-group-text">
+                        <div className="d-flex flex-wrap">
+                            {(Array.isArray(data2) ? data2 : []).map(value => <div className="input-group-prepend border border-success">
+                                <div className="input-group-text">
                                     <label>{(value.name.slice(-7))}</label></div>
                             </div>)}
                         </div>
@@ -899,9 +899,9 @@ function FUN_CHART_TIME(props) {
                         <div className='fw-bold'> NO VALIDOS: {datano2.length} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeNotValid2} onClick={() => setNotValid2(!seeNotValid2)} >
                             <MDBIcon fas icon='eye' /></MDBBtn></div>
                         {seeNotValid2 ?
-                            <div class="d-flex flex-wrap">
-                                {(Array.isArray(datano2) ? datano2 : []).map(value => <div class="input-group-prepend border border-primary">
-                                    <div class="input-group-text">
+                            <div className="d-flex flex-wrap">
+                                {(Array.isArray(datano2) ? datano2 : []).map(value => <div className="input-group-prepend border border-primary">
+                                    <div className="input-group-text">
                                         <label>{(value.slice(-7))}</label></div>
                                 </div>)}
                             </div>

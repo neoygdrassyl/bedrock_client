@@ -174,38 +174,38 @@ export default function ZONE_USE_COMPONENT(props) {
             <div className="row">
                 <div className="col-3">
                     <label >1.1 Nr. Radicación</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-hashtag"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-hashtag"></i>
                         </span>
-                        <input type="text" class="form-control" id="zone_use_id_in" required disabled defaultValue={item.id_in} />
+                        <input type="text" className="form-control" id="zone_use_id_in" required disabled defaultValue={item.id_in} />
                     </div>
                 </div>
                 <div className="col-3">
                     <label >1.2 Nr. Expedición</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-hashtag"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-hashtag"></i>
                         </span>
-                        <input type="text" class="form-control" id="zone_use_id_out" defaultValue={item.id_out} />
+                        <input type="text" className="form-control" id="zone_use_id_out" defaultValue={item.id_out} />
                     </div>
                 </div>
                 <div className="col-3">
                     <label >1.3 Solicitante</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-user"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-user"></i>
                         </span>
-                        <input type="text" class="form-control" id="zone_use_solicitor" defaultValue={item.solicitor} />
+                        <input type="text" className="form-control" id="zone_use_solicitor" defaultValue={item.solicitor} />
                     </div>
                 </div>
                 <div className="col-3">
                     <label >1.4 Fecha</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-calendar-alt"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-calendar-alt"></i>
                         </span>
-                        <input type="date" class="form-control" max="2100-01-01" id="zone_use_date" defaultValue={item.date} />
+                        <input type="date" className="form-control" max="2100-01-01" id="zone_use_date" defaultValue={item.date} />
                     </div>
                 </div>
             </div>
@@ -213,9 +213,9 @@ export default function ZONE_USE_COMPONENT(props) {
             <div className="row">
                 <div className="col-3">
                     <label >1.5 Clasificación Suelo</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-star-of-life"></i>
                         </span>
                         <select className="form-select" id="zone_use_cla_suelo" defaultValue={item.cla_suelo}>
                             <option>Urbano</option>
@@ -226,9 +226,9 @@ export default function ZONE_USE_COMPONENT(props) {
                 </div>
                 <div className="col-3">
                     <label >1.6 Área de actividad</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-star-of-life"></i>
                         </span>
                         <select className="form-select" id="zone_use_area_act" defaultValue={item.area_act} >
                             {SUBMIT_ARC_AREA_ACTIVIDAD.map(op => <option>{op}</option>)}
@@ -237,9 +237,9 @@ export default function ZONE_USE_COMPONENT(props) {
                 </div>
                 <div className="col-3">
                     <label >1.7 Tratamiento Urbanístico</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-star-of-life"></i>
                         </span>
                         <select className="form-select" id="zone_use_trat_urb" defaultValue={item.trat_urb} >
                             {SUBMIT_ARC_TRATAMIENTO_URBANISTICO.map(op => <option>{op}</option>)}
@@ -248,9 +248,9 @@ export default function ZONE_USE_COMPONENT(props) {
                 </div>
                 <div className="col-3">
                     <label >1.8 Zonif. Restricción Ocupación</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-star-of-life"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-star-of-life"></i>
                         </span>
                         <select className="form-select" id="zone_use_zon_rest" defaultValue={item.zon_rest} >
                             {SUBMIT_ARC_ZONS_RESTRICCION.map(op => <option>{op}</option>)}
@@ -262,29 +262,29 @@ export default function ZONE_USE_COMPONENT(props) {
             <div className="row">
                 <div className="col-3">
                     <label >1.9 Doc. Solicitud</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-calendar-alt"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-calendar-alt"></i>
                         </span>
-                        <input type="date" class="form-control" max="2100-01-01" id="zone_use_doc_1_date" defaultValue={item.doc_1_date} />
+                        <input type="date" className="form-control" max="2100-01-01" id="zone_use_doc_1_date" defaultValue={item.doc_1_date} />
                     </div>
                 </div>
                 <div className="col-3">
                     <label >1.10 Doc. Certificación de tradición</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-calendar-alt"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-calendar-alt"></i>
                         </span>
-                        <input type="date" class="form-control" max="2100-01-01" id="zone_use_doc_2_date" defaultValue={item.doc_2_date} />
+                        <input type="date" className="form-control" max="2100-01-01" id="zone_use_doc_2_date" defaultValue={item.doc_2_date} />
                     </div>
                 </div>
                 <div className="col-3">
                     <label >1.11 Doc. Copia Impuesto Predial</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-calendar-alt"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-calendar-alt"></i>
                         </span>
-                        <input type="date" class="form-control" max="2100-01-01" id="zone_use_doc_3_date" defaultValue={item.doc_3_date} />
+                        <input type="date" className="form-control" max="2100-01-01" id="zone_use_doc_3_date" defaultValue={item.doc_3_date} />
                     </div>
                 </div>
             </div>
@@ -297,29 +297,29 @@ export default function ZONE_USE_COMPONENT(props) {
             <div className="row">
                 <div className="col-4">
                     <label >2.1 Numero Predial</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-home"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-home"></i>
                         </span>
-                        <input type="text" class="form-control" id="zone_use_predial" defaultValue={item.predial} />
+                        <input type="text" className="form-control" id="zone_use_predial" defaultValue={item.predial} />
                     </div>
                 </div>
                 <div className="col-4">
                     <label >2.2 Dirección</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-home"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-home"></i>
                         </span>
-                        <input type="text" class="form-control" id="zone_use_dir" defaultValue={item.dir} />
+                        <input type="text" className="form-control" id="zone_use_dir" defaultValue={item.dir} />
                     </div>
                 </div>
                 <div className="col-4">
                     <label >2.3 Barrio</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-home"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-home"></i>
                         </span>
-                        <input type="text" class="form-control" id="zone_use_neighbour" defaultValue={item.neighbour} />
+                        <input type="text" className="form-control" id="zone_use_neighbour" defaultValue={item.neighbour} />
                     </div>
                 </div>
             </div>
@@ -327,29 +327,29 @@ export default function ZONE_USE_COMPONENT(props) {
             <div className="row">
                 <div className="col-4">
                     <label >2.4 Área</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-cube"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-cube"></i>
                         </span>
-                        <input type="text" class="form-control" id="zone_use_area" defaultValue={item.area} />
+                        <input type="text" className="form-control" id="zone_use_area" defaultValue={item.area} />
                     </div>
                 </div>
                 <div className="col-4">
                     <label >2.4 Frente</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-cube"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-cube"></i>
                         </span>
-                        <input type="text" class="form-control" id="zone_use_front" defaultValue={item.front} />
+                        <input type="text" className="form-control" id="zone_use_front" defaultValue={item.front} />
                     </div>
                 </div>
                 <div className="col-4">
                     <label >2.4 Fondo</label>
-                    <div class="input-group mb-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-cube"></i>
+                    <div className="input-group mb-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-cube"></i>
                         </span>
-                        <input type="text" class="form-control" id="zone_use_deep" defaultValue={item.deep} />
+                        <input type="text" className="form-control" id="zone_use_deep" defaultValue={item.deep} />
                     </div>
                 </div>
 
@@ -435,37 +435,37 @@ export default function ZONE_USE_COMPONENT(props) {
         <>
             {item ? <>
                 <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                    <h3 class="text-uppercase pb-2">1. INFORMACIÓN GENERAL</h3>
+                    <h3 className="text-uppercase pb-2">1. INFORMACIÓN GENERAL</h3>
                     {PART_1(item)}
 
-                    <h3 class="text-uppercase py-2">2. INFORMACIÓN PREDIO</h3>
+                    <h3 className="text-uppercase py-2">2. INFORMACIÓN PREDIO</h3>
                     {PART_2(item)}
 
-                    <h3 class="text-uppercase py-2">3. CONSULTA</h3>
+                    <h3 className="text-uppercase py-2">3. CONSULTA</h3>
                     <div className="row">
                         <div className="col-12">
-                            <div class="input-group mb-1">
-                                <textarea rows={4} class="input-group" id="zone_use_consulta" defaultValue={item.consulta} />
+                            <div className="input-group mb-1">
+                                <textarea rows={4} className="input-group" id="zone_use_consulta" defaultValue={item.consulta} />
                             </div>
                         </div>
                     </div>
 
-                    <h3 class="text-uppercase py-2">4. CATEGORÍAS DE USOS Y UNIDADES DE USO PERMITIDOS</h3>
+                    <h3 className="text-uppercase py-2">4. CATEGORÍAS DE USOS Y UNIDADES DE USO PERMITIDOS</h3>
                     {R_4_USES(item)}
 
-                    <h3 class="text-uppercase py-2">5. CONCEPTO DE USO DEL SUELO</h3>
+                    <h3 className="text-uppercase py-2">5. CONCEPTO DE USO DEL SUELO</h3>
                     <div className="row">
                         <div className="col-12">
-                            <div class="input-group mb-1">
-                                <textarea rows={4} class="input-group" id="zone_use_concepto" defaultValue={item.concepto} />
+                            <div className="input-group mb-1">
+                                <textarea rows={4} className="input-group" id="zone_use_concepto" defaultValue={item.concepto} />
                             </div>
                         </div>
                     </div>
 
 
                     <div className='row text-center'>
-                        <div className='col'><button onClick={() => save()} className="btn btn-sm btn-success my-1" type='submit'><i class="far fa-save"></i> GUARDAR </button></div>
-                        <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-danger my-1" type='submit'><i class="far fa-file-pdf"></i> GENERAR PDF </button></div>
+                        <div className='col'><button onClick={() => save()} className="btn btn-sm btn-success my-1" type='submit'><i className="far fa-save"></i> GUARDAR </button></div>
+                        <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-danger my-1" type='submit'><i className="far fa-file-pdf"></i> GENERAR PDF </button></div>
                     </div>
                     <hr />
                 </Suspense>

@@ -231,28 +231,28 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                 <button
                     onClick={() => openModal(item, 'record_ph')}
                     className="px-2 btn-sm btn-warning btn"
-                > <i class="fas fa-pencil-ruler fa-2x" ></i>
+                > <i className="fas fa-pencil-ruler fa-2x" ></i>
                 </button> </MDBTooltip>
 
             if (type == 'law') return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                 <button
                     onClick={() => openModal(item, 'record_law')}
                     className="px-2 btn-sm btn-warning btn"
-                > <i class="fas fa-balance-scale fa-2x" ></i>
+                > <i className="fas fa-balance-scale fa-2x" ></i>
                 </button>
             </MDBTooltip>
             if (type == 'arc') return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                 <button
                     onClick={() => openModal(item, 'record_arc')}
                     className="px-2 btn-sm btn-warning btn"
-                > <i class="far fa-building fa-2x" ></i>
+                > <i className="far fa-building fa-2x" ></i>
                 </button>
             </MDBTooltip>
             if (type == 'eng') return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                 <button
                     onClick={() => openModal(item, 'record_eng')}
                     className="px-2 btn-sm btn-warning btn"
-                > <i class="fas fa-cogs fa-2x" ></i>
+                > <i className="fas fa-cogs fa-2x" ></i>
                 </button>
             </MDBTooltip>
             return '';
@@ -277,7 +277,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                                 size="sm"
                                 onClick={() => setLicList(!licList)}
                                 className="px-2"
-                            > <i class="fas fa-info-circle fa-2x"></i>
+                            > <i className="fas fa-info-circle fa-2x"></i>
                             </MDBBtn>
                         </MDBTooltip>
                     </div>
@@ -286,7 +286,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
 
 
                 {licList && (
-                    <ul class="list-group mx-2">
+                    <ul className="list-group mx-2">
                         {listMap(currentItems)}
                     </ul>
                 )}
@@ -370,7 +370,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                             <button
                                 onClick={() => openModal(row, 'general')}
                                 className="px-2 btn-sm btn-info btn"
-                            > <i class="far fa-folder-open fa-2x" ></i>
+                            > <i className="far fa-folder-open fa-2x" ></i>
                             </button>
                         </MDBTooltip>
                         {get_reportBtn(row)}
@@ -411,7 +411,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
             ))
             vrItem = [...vrItem].sort((a, b) => new Date(b.screated) - new Date(a.screated));
             return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: 400 }}
-                btnChildren={<i class="fas fa-file-import fa-2x"></i>}
+                btnChildren={<i className="fas fa-file-import fa-2x"></i>}
                 btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
                 <MDBPopoverHeader>Ventanilla Única</MDBPopoverHeader>
                 <MDBPopoverBody>{vrItem.map(value => listVR(value))}</MDBPopoverBody>

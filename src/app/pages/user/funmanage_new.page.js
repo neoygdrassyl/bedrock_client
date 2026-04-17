@@ -147,7 +147,17 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
       {/* ---- Title ---- */}
       <div className="row mb-3 d-flex justify-content-center">
         <div className="col-lg-11 col-md-12">
-          <h1 className="text-center my-3">CENTRO DE OPERACIONES DE LICENCIAS</h1>
+          <div className="d-flex justify-content-between align-items-center my-3">
+            <h1 className="mb-0">CENTRO DE OPERACIONES DE LICENCIAS</h1>
+            <button
+              className="btn btn-outline-primary btn-sm"
+              onClick={() => window.open('/legal-flow-guide', '_blank')}
+              title="Abrir guía del flujo jurídico en nueva ventana"
+            >
+              <i className="fas fa-project-diagram me-1"></i>
+              Ver Guía Legal
+            </button>
+          </div>
           <hr />
         </div>
 

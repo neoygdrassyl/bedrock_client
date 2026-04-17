@@ -116,9 +116,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.0 Tipo de Persona</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
                             <select className='form-select' id="f_51_type"
                                 onChange={(e) => {
@@ -142,20 +142,20 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.0.1 Nombre y Apellidos (Representante Legal)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_name" disabled />
+                            <input type="text" className="form-control" id="f_51_rep_name" disabled />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.0.2 Cédula (Representante Legal)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_idnumber" disabled
+                            <input type="text" className="form-control" id="f_51_rep_idnumber" disabled
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
@@ -164,20 +164,20 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.1 Nombre</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_5111" />
+                            <input type="text" className="form-control" id="f_5111" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.1 Apellido(s)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_5112" />
+                            <input type="text" className="form-control" id="f_5112" />
                         </div>
                     </div>
                 </div>
@@ -185,38 +185,38 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.2 CC o NIT</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-id-card"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-id-card"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_512" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
+                            <input type="text" className="form-control" id="f_512" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.3 Correo Electrónico</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_513" />
+                            <input type="text" className="form-control" id="f_513" />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.4 Teléfono de Contacto</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-phone-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_514" />
+                            <input type="text" className="form-control" id="f_514" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.5 Tipo de Titular</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-phone-alt"></i>
                             </span>
                             <select className='form-select' id="f_515">
                                 <option>PROPIETARIO</option>
@@ -234,9 +234,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.6 Relacionar Documento: Documento de Identidad</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file"></i>
                             </span>
                             <select className='form-select' id="f_51_doc1">
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -247,9 +247,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     </div>
                     <div className="col-6">
                         <label>5.1.7 Relacionar Documento: Certificado de Existencia y Representación Legal </label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file"></i>
                             </span>
                             <select className='form-select' id="f_51_doc2" disabled defaultValue={0}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -266,9 +266,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.0 Tipo de Personar</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
                             <select className='form-select' id="f_51_type_edit"
                                 onChange={(e) => {
@@ -293,20 +293,20 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-1">
                     <div className="col-6">
                         <label>5.1.0.1 Nombre y Apellidos (Representante Legal)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_name_edit" />
+                            <input type="text" className="form-control" id="f_51_rep_name_edit" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.0.2 Cédula (Representante Lega)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_51_rep_idnumber_edit" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
+                            <input type="text" className="form-control" id="f_51_rep_idnumber_edit" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
                 </div>
@@ -314,20 +314,20 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.1.1 Nombre</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_5111_edit" />
+                            <input type="text" className="form-control" id="f_5111_edit" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.1 Apellido(s)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_5112_edit" />
+                            <input type="text" className="form-control" id="f_5112_edit" />
                         </div>
                     </div>
                 </div>
@@ -335,38 +335,38 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.1.2 CC o NIT</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-id-card"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-id-card"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_512_edit" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
+                            <input type="text" className="form-control" id="f_512_edit" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.3 Correo Electrónico</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_513_edit" />
+                            <input type="text" className="form-control" id="f_513_edit" />
                         </div>
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.1.4 Teléfono  de Contacto</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-phone-alt"></i>
                             </span>
-                            <input type="text" class="form-control" id="f_514_edit" />
+                            <input type="text" className="form-control" id="f_514_edit" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.1.5 Tipo de Titular</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-phone-alt"></i>
                             </span>
                             <select className='form-select' id="f_515_edit">
                                 <option>PROPIETARIO</option>
@@ -384,9 +384,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.1.6 Relacionar Documento: Documento de Identidad</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file"></i>
                             </span>
                             <select className='form-select' id="f_51_doc1_edit">
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -397,9 +397,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     </div>
                     <div className="col-6">
                         <label>5.1.7 Relacionar Documento: Certificado de Existencia y Representación Legal </label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file"></i>
                             </span>
                             <select className='form-select' id="f_51_doc2_edit" disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -487,8 +487,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     name: <label>ESTADO</label>,
                     button: true,
                     cell: row =>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_51(row)} />
+                        <div className="form-check form-switch">
+                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_51(row)} />
                         </div>
                 },
                 {
@@ -764,9 +764,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <legend className="my-2 px-3 text-uppercase Collapsible" id="funn_51">
                     <label className="app-p lead text-center fw-normal text-uppercase">5.1 Titular(es) de la Licencia</label>
                 </legend>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Titular
                     </label>
                 </div>
@@ -776,7 +776,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             {_COMPONENT_NEW()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                                 </div>
                             </div>
                         </form>
@@ -786,8 +786,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 {_CHILD_51_LIST()}
                 <div className="border p-2 m-2">
                     <label className="me-2">LEYENDA:</label>
-                    <label className="me-2"><i class="far fa-id-card fa-2x" style={{ color: "DeepSkyBlue" }}></i> : Documento de Identidad,</label>
-                    <label className="me-2"><i class="far fa-id-badge fa-2x" style={{ color: 'DarkOrchid' }}></i>: Certificado de Existencia y Representación Legal</label>
+                    <label className="me-2"><i className="far fa-id-card fa-2x" style={{ color: "DeepSkyBlue" }}></i> : Documento de Identidad,</label>
+                    <label className="me-2"><i className="far fa-id-badge fa-2x" style={{ color: 'DarkOrchid' }}></i>: Certificado de Existencia y Representación Legal</label>
                 </div>
                 {edit
                     ? <>
@@ -796,7 +796,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             {_COMPONENT_EDIT()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                                 </div>
                             </div>
                         </form>

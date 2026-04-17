@@ -109,15 +109,15 @@ function OSHA({ translation, swaMsg, breadCrums }) {
         let _GET_EXT_ICON = (_ext) => {
             switch (_ext) {
                 case "docx":
-                    return <><i class="far fa-file-word fa-2x" style={{ "color": "DodgerBlue" }}></i></>
+                    return <><i className="far fa-file-word fa-2x" style={{ "color": "DodgerBlue" }}></i></>
                 case "doc":
-                    return <><i class="far fa-file-word fa-2x" style={{ "color": "DeepSkyBlue" }}></i></>
+                    return <><i className="far fa-file-word fa-2x" style={{ "color": "DeepSkyBlue" }}></i></>
                 case "xls":
-                    return <><i class="far fa-file-excel fa-2x" style={{ "color": "ForestGreen" }}></i></>
+                    return <><i className="far fa-file-excel fa-2x" style={{ "color": "ForestGreen" }}></i></>
                 case "xlsx":
-                    return <><i class="far fa-file-excel fa-2x" style={{ "color": "DarkGreen" }}></i></>
+                    return <><i className="far fa-file-excel fa-2x" style={{ "color": "DarkGreen" }}></i></>
                 case "pdf":
-                    return <><i class="far fa-file-pdf fa-2x" style={{ "color": "Crimson" }}></i></>
+                    return <><i className="far fa-file-pdf fa-2x" style={{ "color": "Crimson" }}></i></>
                 default:
                     return "";
             }
@@ -164,12 +164,12 @@ function OSHA({ translation, swaMsg, breadCrums }) {
                 <div className="col-12 d-flex justify-content-start p-0">
                     <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                         </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u8}</label></MDBBreadcrumbItem>
+                        <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u8}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
                 </div>
                 <div className="row mb-4 d-flex justify-content-center">

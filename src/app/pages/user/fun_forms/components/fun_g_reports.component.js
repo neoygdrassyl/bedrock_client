@@ -105,10 +105,10 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
         }
         let _GET_REVIEW = (_REVIEW, _REVIEW_CLOCK, REVIEWS) => {
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle" style={{ fontSize: '125%' }}></i></label>,
-                '0': <label className="fw-bold text-danger me-1"><i class="far fa-times-circle" style={{ fontSize: '125%' }}></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle" style={{ fontSize: '125%' }}></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle" style={{ fontSize: '125%' }}></i></label>,
+                '-1': <label className=" me-1"><i className="far fa-dot-circle" style={{ fontSize: '125%' }}></i></label>,
+                '0': <label className="fw-bold text-danger me-1"><i className="far fa-times-circle" style={{ fontSize: '125%' }}></i></label>,
+                '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle" style={{ fontSize: '125%' }}></i></label>,
+                '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle" style={{ fontSize: '125%' }}></i></label>,
             }
 
             if (REVIEWS) {
@@ -120,10 +120,10 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
         let _GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS) => {
             let revies = _REVIEW ?? [-1, -1]
             let res = {
-                '-1': <label className=" me-1"><i class="far fa-dot-circle"></i></label>,
-                '0': <label className="fw-bold text-danger  me-1"><i class="far fa-times-circle"></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i class="far fa-check-circle"></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i class="far fa-stop-circle"></i></label>,
+                '-1': <label className=" me-1"><i className="far fa-dot-circle"></i></label>,
+                '0': <label className="fw-bold text-danger  me-1"><i className="far fa-times-circle"></i></label>,
+                '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle"></i></label>,
+                '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle"></i></label>,
             }
             if (REVIEWS) {
                 let asigns = REVIEWS.split(';');
@@ -156,7 +156,7 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                         worker: review.worker_law_name,
                         review: review.check_law,
                         date: review.date_law_review,
-                        icon: <i class="fas fa-balance-scale me-2"></i>,
+                        icon: <i className="fas fa-balance-scale me-2"></i>,
                         type: 'JUR.',
                         process: 'Acta Observaciones',
                     })
@@ -209,7 +209,7 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                             worker: review.worker_name,
                             review: revc_f[i],
                             date: review_f[i],
-                            icon: <i class="fas fa-balance-scale me-2"></i>,
+                            icon: <i className="fas fa-balance-scale me-2"></i>,
                             type: 'JUR.',
                             process: value,
                         })
@@ -229,7 +229,7 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                         worker: review.worker_arc_name,
                         review: review.check,
                         version: review.version,
-                        icon: <i class="far fa-building me-2"></i>,
+                        icon: <i className="far fa-building me-2"></i>,
                         type: 'AEQ.',
                         process: 'Acta Observaciones',
                     })
@@ -281,7 +281,7 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                         worker: review.worker_name,
                         review: revc_f[i],
                         date: review_f[i],
-                        icon: <i class="far fa-building me-2"></i>,
+                        icon: <i className="far fa-building me-2"></i>,
                         type: 'ARQ.',
                         process: value,
                     }))
@@ -334,7 +334,7 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
                         worker: review.worker_name,
                         review: revc_f[i],
                         date: review_f[i],
-                        icon: <i class="fas fa-cogs me-2"></i>,
+                        icon: <i className="fas fa-cogs me-2"></i>,
                         type: 'EST.',
                         class: 'eng',
                         process: value,

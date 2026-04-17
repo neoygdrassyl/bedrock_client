@@ -85,15 +85,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="611" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="611" value="1"
                             checked={_CHECK_INDEXVALUE('611', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="611" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="611" value="0"
                             checked={_CHECK_INDEXVALUE('611', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="611" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="611" value="2"
                             checked={_CHECK_INDEXVALUE('611', 2)} />
                     </div>
                 </div>
@@ -104,15 +104,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="612" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="612" value="1"
                             checked={_CHECK_INDEXVALUE('612', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="612" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="612" value="0"
                             checked={_CHECK_INDEXVALUE('612', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="612" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="612" value="2"
                             checked={_CHECK_INDEXVALUE('612', 2)} />
                     </div>
                 </div>
@@ -123,15 +123,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="613" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="613" value="1"
                             checked={_CHECK_INDEXVALUE('613', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="613" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="613" value="0"
                             checked={_CHECK_INDEXVALUE('613', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="613" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="613" value="2"
                             checked={_CHECK_INDEXVALUE('613', 2)} />
                     </div>
                 </div>
@@ -142,15 +142,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="614" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="614" value="1"
                             checked={_CHECK_INDEXVALUE('614', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="614" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="614" value="0"
                             checked={_CHECK_INDEXVALUE('614', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="614" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="614" value="2"
                             checked={_CHECK_INDEXVALUE('614', 2)} />
                     </div>
                 </div>
@@ -161,15 +161,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="615" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="615" value="1"
                             checked={_CHECK_INDEXVALUE('615', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="615" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="615" value="0"
                             checked={_CHECK_INDEXVALUE('615', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="615" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="615" value="2"
                             checked={_CHECK_INDEXVALUE('615', 2)} />
                     </div>
                 </div>
@@ -180,15 +180,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="616" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="616" value="1"
                             checked={_CHECK_INDEXVALUE('616', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="616" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="616" value="0"
                             checked={_CHECK_INDEXVALUE('616', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="616" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="616" value="2"
                             checked={_CHECK_INDEXVALUE('616', 2)} />
                     </div>
                 </div>
@@ -199,15 +199,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="617" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="617" value="1"
                             checked={_CHECK_INDEXVALUE('617', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="617" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="617" value="0"
                             checked={_CHECK_INDEXVALUE('617', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="617" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="617" value="2"
                             checked={_CHECK_INDEXVALUE('617', 2)} />
                     </div>
                 </div>
@@ -254,15 +254,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="621" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="621" value="1"
                                 checked={_CHECK_INDEXVALUE('621', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="621" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="621" value="0"
                                 checked={_CHECK_INDEXVALUE('621', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="621" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="621" value="2"
                                 checked={_CHECK_INDEXVALUE('621', 2)} />
                         </div>
                     </div>
@@ -273,15 +273,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601a" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="601a" value="1"
                                 checked={_CHECK_INDEXVALUE('601a', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601a" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="601a" value="0"
                                 checked={_CHECK_INDEXVALUE('601a', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601a" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="601a" value="2"
                                 checked={_CHECK_INDEXVALUE('601a', 2)} />
                         </div>
                     </div>
@@ -292,15 +292,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="622" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="622" value="1"
                                 checked={_CHECK_INDEXVALUE('622', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="622" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="622" value="0"
                                 checked={_CHECK_INDEXVALUE('622', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="622" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="622" value="2"
                                 checked={_CHECK_INDEXVALUE('622', 2)} />
                         </div>
                     </div>
@@ -311,15 +311,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602a" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="602a" value="1"
                                 checked={_CHECK_INDEXVALUE('602a', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602a" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="602a" value="0"
                                 checked={_CHECK_INDEXVALUE('602a', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602a" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="602a" value="2"
                                 checked={_CHECK_INDEXVALUE('602a', 2)} />
                         </div>
                     </div>
@@ -342,15 +342,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="623" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="623" value="1"
                                 checked={_CHECK_INDEXVALUE('623', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="623" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="623" value="0"
                                 checked={_CHECK_INDEXVALUE('623', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="623" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="623" value="2"
                                 checked={_CHECK_INDEXVALUE('623', 2)} />
                         </div>
                     </div>
@@ -361,15 +361,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601b" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="601b" value="1"
                                 checked={_CHECK_INDEXVALUE('601b', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601b" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="601b" value="0"
                                 checked={_CHECK_INDEXVALUE('601b', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601b" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="601b" value="2"
                                 checked={_CHECK_INDEXVALUE('601b', 2)} />
                         </div>
                     </div>
@@ -380,15 +380,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602b" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="602b" value="1"
                                 checked={_CHECK_INDEXVALUE('602b', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602b" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="602b" value="0"
                                 checked={_CHECK_INDEXVALUE('602b', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602b" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="602b" value="2"
                                 checked={_CHECK_INDEXVALUE('602b', 2)} />
                         </div>
                     </div>
@@ -399,15 +399,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="624" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="624" value="1"
                                 checked={_CHECK_INDEXVALUE('624', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="624" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="624" value="0"
                                 checked={_CHECK_INDEXVALUE('624', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="624" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="624" value="2"
                                 checked={_CHECK_INDEXVALUE('624', 2)} />
                         </div>
                     </div>
@@ -418,15 +418,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="625" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="625" value="1"
                                 checked={_CHECK_INDEXVALUE('625', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="625" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="625" value="0"
                                 checked={_CHECK_INDEXVALUE('625', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="625" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="625" value="2"
                                 checked={_CHECK_INDEXVALUE('625', 2)} />
                         </div>
                     </div>
@@ -449,15 +449,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="626" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="626" value="1"
                                 checked={_CHECK_INDEXVALUE('626', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="626" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="626" value="0"
                                 checked={_CHECK_INDEXVALUE('626', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="626" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="626" value="2"
                                 checked={_CHECK_INDEXVALUE('626', 2)} />
                         </div>
                     </div>
@@ -468,15 +468,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="627" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="627" value="1"
                                 checked={_CHECK_INDEXVALUE('627', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="627" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="627" value="0"
                                 checked={_CHECK_INDEXVALUE('627', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="627" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="627" value="2"
                                 checked={_CHECK_INDEXVALUE('627', 2)} />
                         </div>
                     </div>
@@ -487,15 +487,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601c" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="601c" value="1"
                                 checked={_CHECK_INDEXVALUE('601c', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601c" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="601c" value="0"
                                 checked={_CHECK_INDEXVALUE('601c', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="601c" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="601c" value="2"
                                 checked={_CHECK_INDEXVALUE('601c', 2)} />
                         </div>
                     </div>
@@ -506,15 +506,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602c" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="602c" value="1"
                                 checked={_CHECK_INDEXVALUE('602c', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602c" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="602c" value="0"
                                 checked={_CHECK_INDEXVALUE('602c', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="602c" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="602c" value="2"
                                 checked={_CHECK_INDEXVALUE('602c', 2)} />
                         </div>
                     </div>
@@ -554,15 +554,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="631" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="631" value="1"
                             checked={_CHECK_INDEXVALUE('631', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="631" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="631" value="0"
                             checked={_CHECK_INDEXVALUE('631', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="631" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="631" value="2"
                             checked={_CHECK_INDEXVALUE('631', 2)} />
                     </div>
                 </div>
@@ -573,15 +573,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="632" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="632" value="1"
                             checked={_CHECK_INDEXVALUE('632', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="632" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="632" value="0"
                             checked={_CHECK_INDEXVALUE('632', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="632" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="632" value="2"
                             checked={_CHECK_INDEXVALUE('632', 2)} />
                     </div>
                 </div>
@@ -592,15 +592,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="633" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="633" value="1"
                             checked={_CHECK_INDEXVALUE('633', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="633" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="633" value="0"
                             checked={_CHECK_INDEXVALUE('633', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="633" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="633" value="2"
                             checked={_CHECK_INDEXVALUE('633', 2)} />
                     </div>
                 </div>
@@ -611,15 +611,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6023" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6023" value="1"
                             checked={_CHECK_INDEXVALUE('6023', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6023" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6023" value="0"
                             checked={_CHECK_INDEXVALUE('6023', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6023" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6023" value="2"
                             checked={_CHECK_INDEXVALUE('6023', 2)} />
                     </div>
                 </div>
@@ -639,15 +639,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="634" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="634" value="1"
                             checked={_CHECK_INDEXVALUE('634', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="634" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="634" value="0"
                             checked={_CHECK_INDEXVALUE('634', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="634" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="634" value="2"
                             checked={_CHECK_INDEXVALUE('634', 2)} />
                     </div>
                 </div>
@@ -658,15 +658,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="635" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="635" value="1"
                             checked={_CHECK_INDEXVALUE('635', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="635" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="635" value="0"
                             checked={_CHECK_INDEXVALUE('635', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="635" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="635" value="2"
                             checked={_CHECK_INDEXVALUE('635', 2)} />
                     </div>
                 </div>
@@ -677,15 +677,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="636" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="636" value="1"
                             checked={_CHECK_INDEXVALUE('636', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="636" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="636" value="0"
                             checked={_CHECK_INDEXVALUE('636', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="636" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="636" value="2"
                             checked={_CHECK_INDEXVALUE('636', 2)} />
                     </div>
                 </div>
@@ -722,15 +722,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="641" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="641" value="1"
                                 checked={_CHECK_INDEXVALUE('641', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="641" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="641" value="0"
                                 checked={_CHECK_INDEXVALUE('641', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="641" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="641" value="2"
                                 checked={_CHECK_INDEXVALUE('641', 2)} />
                         </div>
                     </div>
@@ -746,15 +746,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="642" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="642" value="1"
                                 checked={_CHECK_INDEXVALUE('642', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="642" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="642" value="0"
                                 checked={_CHECK_INDEXVALUE('642', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="642" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="642" value="2"
                                 checked={_CHECK_INDEXVALUE('642', 2)} />
                         </div>
                     </div>
@@ -765,15 +765,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="643" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="643" value="1"
                                 checked={_CHECK_INDEXVALUE('643', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="643" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="643" value="0"
                                 checked={_CHECK_INDEXVALUE('643', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="643" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="643" value="2"
                                 checked={_CHECK_INDEXVALUE('643', 2)} />
                         </div>
                     </div>
@@ -806,15 +806,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="651" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="651" value="1"
                                 checked={_CHECK_INDEXVALUE('651', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="651" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="651" value="0"
                                 checked={_CHECK_INDEXVALUE('651', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="651" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="651" value="2"
                                 checked={_CHECK_INDEXVALUE('651', 2)} />
                         </div>
                     </div>
@@ -825,15 +825,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="652" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="652" value="1"
                                 checked={_CHECK_INDEXVALUE('652', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="652" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="652" value="0"
                                 checked={_CHECK_INDEXVALUE('652', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="652" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="652" value="2"
                                 checked={_CHECK_INDEXVALUE('652', 2)} />
                         </div>
                     </div>
@@ -844,15 +844,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="653" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="653" value="1"
                                 checked={_CHECK_INDEXVALUE('653', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="653" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="653" value="0"
                                 checked={_CHECK_INDEXVALUE('653', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="653" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="653" value="2"
                                 checked={_CHECK_INDEXVALUE('653', 2)} />
                         </div>
                     </div>
@@ -898,15 +898,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6601" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6601" value="1"
                             checked={_CHECK_INDEXVALUE('6601', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6601" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6601" value="0"
                             checked={_CHECK_INDEXVALUE('6601', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6601" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6601" value="2"
                             checked={_CHECK_INDEXVALUE('6601', 2)} />
                     </div>
                 </div>
@@ -917,15 +917,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6602" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6602" value="1"
                             checked={_CHECK_INDEXVALUE('6602', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6602" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6602" value="0"
                             checked={_CHECK_INDEXVALUE('6602', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6602" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6602" value="2"
                             checked={_CHECK_INDEXVALUE('6602', 2)} />
                     </div>
                 </div>
@@ -936,15 +936,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6603" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6603" value="1"
                             checked={_CHECK_INDEXVALUE('6603', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6603" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6603" value="0"
                             checked={_CHECK_INDEXVALUE('6603', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6603" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6603" value="2"
                             checked={_CHECK_INDEXVALUE('6603', 2)} />
                     </div>
                 </div>
@@ -955,15 +955,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6604" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6604" value="1"
                             checked={_CHECK_INDEXVALUE('6604', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6604" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6604" value="0"
                             checked={_CHECK_INDEXVALUE('6604', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6604" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6604" value="2"
                             checked={_CHECK_INDEXVALUE('6604', 2)} />
                     </div>
                 </div>
@@ -974,15 +974,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6605" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6605" value="1"
                             checked={_CHECK_INDEXVALUE('6605', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6605" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6605" value="0"
                             checked={_CHECK_INDEXVALUE('6605', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6605" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6605" value="2"
                             checked={_CHECK_INDEXVALUE('6605', 2)} />
                     </div>
                 </div>
@@ -1007,15 +1007,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6606" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6606" value="1"
                             checked={_CHECK_INDEXVALUE('6606', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6606" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6606" value="0"
                             checked={_CHECK_INDEXVALUE('6606', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6606" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6606" value="2"
                             checked={_CHECK_INDEXVALUE('6606', 2)} />
                     </div>
                 </div>
@@ -1026,15 +1026,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6607" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6607" value="1"
                             checked={_CHECK_INDEXVALUE('6607', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6607" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6607" value="0"
                             checked={_CHECK_INDEXVALUE('6607', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6607" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6607" value="2"
                             checked={_CHECK_INDEXVALUE('6607', 2)} />
                     </div>
                 </div>
@@ -1045,15 +1045,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6608" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6608" value="1"
                             checked={_CHECK_INDEXVALUE('6608', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6608" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6608" value="0"
                             checked={_CHECK_INDEXVALUE('6608', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6608" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6608" value="2"
                             checked={_CHECK_INDEXVALUE('6608', 2)} />
                     </div>
                 </div>
@@ -1064,15 +1064,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6609" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6609" value="1"
                             checked={_CHECK_INDEXVALUE('6609', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6609" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6609" value="0"
                             checked={_CHECK_INDEXVALUE('6609', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6609" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6609" value="2"
                             checked={_CHECK_INDEXVALUE('6609', 2)} />
                     </div>
                 </div>
@@ -1083,15 +1083,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6610" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6610" value="1"
                             checked={_CHECK_INDEXVALUE('6610', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6610" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6610" value="0"
                             checked={_CHECK_INDEXVALUE('6610', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6610" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6610" value="2"
                             checked={_CHECK_INDEXVALUE('6610', 2)} />
                     </div>
                 </div>
@@ -1107,15 +1107,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6611" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6611" value="1"
                             checked={_CHECK_INDEXVALUE('6611', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6611" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6611" value="0"
                             checked={_CHECK_INDEXVALUE('6611', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6611" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6611" value="2"
                             checked={_CHECK_INDEXVALUE('6611', 2)} />
                     </div>
                 </div>
@@ -1126,15 +1126,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6612" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6612" value="1"
                             checked={_CHECK_INDEXVALUE('6612', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6612" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6612" value="0"
                             checked={_CHECK_INDEXVALUE('6612', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6612" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6612" value="2"
                             checked={_CHECK_INDEXVALUE('6612', 2)} />
                     </div>
                 </div>
@@ -1154,15 +1154,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6613" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6613" value="1"
                             checked={_CHECK_INDEXVALUE('6613', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6613" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6613" value="0"
                             checked={_CHECK_INDEXVALUE('6613', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6613" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6613" value="2"
                             checked={_CHECK_INDEXVALUE('6613', 2)} />
                     </div>
                 </div>
@@ -1178,15 +1178,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6614" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6614" value="1"
                             checked={_CHECK_INDEXVALUE('6614', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6614" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6614" value="0"
                             checked={_CHECK_INDEXVALUE('6614', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6614" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6614" value="2"
                             checked={_CHECK_INDEXVALUE('6614', 2)} />
                     </div>
                 </div>
@@ -1202,15 +1202,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6615" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6615" value="1"
                             checked={_CHECK_INDEXVALUE('6615', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6615" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6615" value="0"
                             checked={_CHECK_INDEXVALUE('6615', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6615" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6615" value="2"
                             checked={_CHECK_INDEXVALUE('6615', 2)} />
                     </div>
                 </div>
@@ -1226,15 +1226,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6616" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6616" value="1"
                             checked={_CHECK_INDEXVALUE('6616', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6616" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6616" value="0"
                             checked={_CHECK_INDEXVALUE('6616', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6616" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6616" value="2"
                             checked={_CHECK_INDEXVALUE('6616', 2)} />
                     </div>
                 </div>
@@ -1245,15 +1245,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6617" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6617" value="1"
                             checked={_CHECK_INDEXVALUE('6617', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6617" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6617" value="0"
                             checked={_CHECK_INDEXVALUE('6617', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6617" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6617" value="2"
                             checked={_CHECK_INDEXVALUE('6617', 2)} />
                     </div>
                 </div>
@@ -1269,15 +1269,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6618" value="1"
+                        <input className="form-check-input" readOnly type="radio" name="6618" value="1"
                             checked={_CHECK_INDEXVALUE('6618', 1)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6618" value="0"
+                        <input className="form-check-input" readOnly type="radio" name="6618" value="0"
                             checked={_CHECK_INDEXVALUE('6618', 0)} />
                     </div>
                     <div className="col-1">
-                        <input class="form-check-input" readOnly type="radio" name="6618" value="2"
+                        <input className="form-check-input" readOnly type="radio" name="6618" value="2"
                             checked={_CHECK_INDEXVALUE('6618', 2)} />
                     </div>
                 </div>
@@ -1314,15 +1314,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="671" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="671" value="1"
                                 checked={_CHECK_INDEXVALUE('671', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="671" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="671" value="0"
                                 checked={_CHECK_INDEXVALUE('671', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="671" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="671" value="2"
                                 checked={_CHECK_INDEXVALUE('671', 2)} />
                         </div>
                     </div>
@@ -1333,15 +1333,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="672" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="672" value="1"
                                 checked={_CHECK_INDEXVALUE('672', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="672" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="672" value="0"
                                 checked={_CHECK_INDEXVALUE('672', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="672" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="672" value="2"
                                 checked={_CHECK_INDEXVALUE('672', 2)} />
                         </div>
                     </div>
@@ -1384,15 +1384,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="681" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="681" value="1"
                                 checked={_CHECK_INDEXVALUE('681', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="681" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="681" value="0"
                                 checked={_CHECK_INDEXVALUE('681', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="681" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="681" value="2"
                                 checked={_CHECK_INDEXVALUE('681', 2)} />
                         </div>
                     </div>
@@ -1408,15 +1408,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="682" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="682" value="1"
                                 checked={_CHECK_INDEXVALUE('682', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="682" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="682" value="0"
                                 checked={_CHECK_INDEXVALUE('682', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="682" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="682" value="2"
                                 checked={_CHECK_INDEXVALUE('682', 2)} />
                         </div>
                     </div>
@@ -1427,15 +1427,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="683" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="683" value="1"
                                 checked={_CHECK_INDEXVALUE('683', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="683" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="683" value="0"
                                 checked={_CHECK_INDEXVALUE('683', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="683" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="683" value="2"
                                 checked={_CHECK_INDEXVALUE('683', 2)} />
                         </div>
                     </div>
@@ -1446,15 +1446,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="684" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="684" value="1"
                                 checked={_CHECK_INDEXVALUE('684', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="684" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="684" value="0"
                                 checked={_CHECK_INDEXVALUE('684', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="684" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="684" value="2"
                                 checked={_CHECK_INDEXVALUE('684', 2)} />
                         </div>
                     </div>
@@ -1465,15 +1465,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="685" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="685" value="1"
                                 checked={_CHECK_INDEXVALUE('685', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="685" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="685" value="0"
                                 checked={_CHECK_INDEXVALUE('685', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="685" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="685" value="2"
                                 checked={_CHECK_INDEXVALUE('685', 2)} />
                         </div>
                     </div>
@@ -1489,15 +1489,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6861" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="6861" value="1"
                                 checked={_CHECK_INDEXVALUE('6861', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6861" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="6861" value="0"
                                 checked={_CHECK_INDEXVALUE('6861', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6861" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="6861" value="2"
                                 checked={_CHECK_INDEXVALUE('6861', 2)} />
                         </div>
                     </div>
@@ -1513,15 +1513,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="687" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="687" value="1"
                                 checked={_CHECK_INDEXVALUE('687', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="687" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="687" value="0"
                                 checked={_CHECK_INDEXVALUE('687', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="687" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="687" value="2"
                                 checked={_CHECK_INDEXVALUE('687', 2)} />
                         </div>
                     </div>
@@ -1532,15 +1532,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6862" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="6862" value="1"
                                 checked={_CHECK_INDEXVALUE('6862', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6862" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="6862" value="0"
                                 checked={_CHECK_INDEXVALUE('6862', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="6862" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="6862" value="2"
                                 checked={_CHECK_INDEXVALUE('6862', 2)} />
                         </div>
                     </div>
@@ -1556,15 +1556,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="688" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="688" value="1"
                                 checked={_CHECK_INDEXVALUE('688', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="688" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="688" value="0"
                                 checked={_CHECK_INDEXVALUE('688', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="688" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="688" value="2"
                                 checked={_CHECK_INDEXVALUE('688', 2)} />
                         </div>
                     </div>
@@ -1575,15 +1575,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="689" value="1"
+                            <input className="form-check-input" readOnly type="radio" name="689" value="1"
                                 checked={_CHECK_INDEXVALUE('689', 1)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="689" value="0"
+                            <input className="form-check-input" readOnly type="radio" name="689" value="0"
                                 checked={_CHECK_INDEXVALUE('689', 0)} />
                         </div>
                         <div className="col-1">
-                            <input class="form-check-input" readOnly type="radio" name="689" value="2"
+                            <input className="form-check-input" readOnly type="radio" name="689" value="2"
                                 checked={_CHECK_INDEXVALUE('689', 2)} />
                         </div>
                     </div>
