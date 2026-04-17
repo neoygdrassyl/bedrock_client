@@ -146,7 +146,7 @@ function RECORD_ENG_DESC(props) {
                         <div className="row">
                             <div className="col-3">
                                 <label className="mt-1">N° Folios Certificación</label>
-                                <input type="number" class="form-control" id="record_eng_detail_4_2" min="0" step="1"
+                                <input type="number" className="form-control" id="record_eng_detail_4_2" min="0" step="1"
                                     defaultValue={values2} onBlur={() => manage_step()} />
                             </div>
                         </div>

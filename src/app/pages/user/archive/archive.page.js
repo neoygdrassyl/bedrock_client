@@ -130,12 +130,12 @@ export default function ARCHIVE(props) {
             <div className="col-12 d-flex justify-content-start p-0">
                 <MDBBreadcrumb className="mb-0 p-0 ms-0">
                     <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                        <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                     </MDBBreadcrumbItem>
                     <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                        <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                     </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u12}</label></MDBBreadcrumbItem>
+                    <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u12}</label></MDBBreadcrumbItem>
                 </MDBBreadcrumb>
             </div>
             <div className="row my-4 d-flex justify-content-center">
@@ -151,26 +151,26 @@ export default function ARCHIVE(props) {
         return <>
             <div className='row'>
                 <div className='col-2'>
-                    {window.user.roleId != 1 && window.user.roleId != 3 ? '' : <MDBBtn color='success' onClick={() => setModal(!modal)}><i class="fas fa-plus-circle"></i> NUEVA CAJA</MDBBtn>}
+                    {window.user.roleId != 1 && window.user.roleId != 3 ? '' : <MDBBtn color='success' onClick={() => setModal(!modal)}><i className="fas fa-plus-circle"></i> NUEVA CAJA</MDBBtn>}
                 </div>
                 <div className='col'>
-                    <div class="row">
+                    <div className="row">
                         <div className='col px-0'>
-                            <div class="input-group row">
-                                <select class="form-select col-2" id="search_param" style={{ height: '35px' }}>
+                            <div className="input-group row">
+                                <select className="form-select col-2" id="search_param" style={{ height: '35px' }}>
                                     <option value="box">Nr Caja</option>
                                     <option value="id_public">Nr Radicado</option>
                                     <option value="exp_id">Nr Resolución</option>
                                     <option value="date">Fecha expedición</option>
                                 </select>
-                                <input type="text" class="form-control col" id="search_text" placeholder="Buscar..."></input>
-                                <MDBBtn color='secondary' className='col-2' onClick={() => filter_list()} onKeyPress={(e) => e.key === 'Enter' ? filter_list() : console.log(e)}><i class="fas fa-search"></i> BUSCAR</MDBBtn>
+                                <input type="text" className="form-control col" id="search_text" placeholder="Buscar..."></input>
+                                <MDBBtn color='secondary' className='col-2' onClick={() => filter_list()} onKeyPress={(e) => e.key === 'Enter' ? filter_list() : console.log(e)}><i className="fas fa-search"></i> BUSCAR</MDBBtn>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className='col-2 text-end'>
-                    <MDBBtn color='primary' tag='a' href={pptsLink} target="_blank" ><i class="fas fa-cloud-download-alt"></i> INFORMACIÓN</MDBBtn>
+                    <MDBBtn color='primary' tag='a' href={pptsLink} target="_blank" ><i className="fas fa-cloud-download-alt"></i> INFORMACIÓN</MDBBtn>
                 </div>
             </div>
 
@@ -242,13 +242,13 @@ export default function ARCHIVE(props) {
             maxWidth: '120px',
             cell: row => <>
                 <MDBTooltip title='Modificar Items en caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                    <MDBBtn color='primary' size='sm' className='px-1 py-1' onClick={() => { setItem(row); setModalAdd(!modalAdd) }}><i class="fas fa-file-import"></i></MDBBtn>
+                    <MDBBtn color='primary' size='sm' className='px-1 py-1' onClick={() => { setItem(row); setModalAdd(!modalAdd) }}><i className="fas fa-file-import"></i></MDBBtn>
                 </MDBTooltip>
                 <MDBTooltip title='Modificar caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                    <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => { setItem(row); setModale(!modal) }}><i class="far fa-edit"></i></MDBBtn>
+                    <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => { setItem(row); setModale(!modal) }}><i className="far fa-edit"></i></MDBBtn>
                 </MDBTooltip>
                 <MDBTooltip title='Eliminar caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                    <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => { delete_arch(row.id); }}><i class="far fa-trash-alt"></i></MDBBtn>
+                    <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => { delete_arch(row.id); }}><i className="far fa-trash-alt"></i></MDBBtn>
                 </MDBTooltip>
             </>,
         },
@@ -261,23 +261,23 @@ export default function ARCHIVE(props) {
                 let json = getJSONFull(it.json);
                 return <div className='row border'>
                     <div className='col'>
-                        <i class="fas fa-hashtag"></i> <label className='fw-bold'>{json.id_public}</label>
+                        <i className="fas fa-hashtag"></i> <label className='fw-bold'>{json.id_public}</label>
                     </div>
                     <div className='col-2'>
-                        <i class="fas fa-file-signature"></i> Resolución <label className='fw-bold'>{json.exp_id}</label>
+                        <i className="fas fa-file-signature"></i> Resolución <label className='fw-bold'>{json.exp_id}</label>
                     </div>
                     <div className='col-2'>
-                        <i class="far fa-folder"></i> Carpeta: <label className='fw-bold'>{it.folder}</label>
+                        <i className="far fa-folder"></i> Carpeta: <label className='fw-bold'>{it.folder}</label>
                     </div>
                     <div className='col-2'>
-                        <i class="far fa-file-alt"></i> Folios: <label className='fw-bold'>{it.pages}</label>
+                        <i className="far fa-file-alt"></i> Folios: <label className='fw-bold'>{it.pages}</label>
                     </div>
                     <div className='col'>
-                        <h5><i class="far fa-calendar-alt"></i> Fechas: <label className='fw-bold'>{(json.clocks_start).slice(-8)} - {(json.clocks_end).slice(-8)}</label></h5>
+                        <h5><i className="far fa-calendar-alt"></i> Fechas: <label className='fw-bold'>{(json.clocks_start).slice(-8)} - {(json.clocks_end).slice(-8)}</label></h5>
                     </div>
                     <div className='col-1'>
                         <MDBTooltip title='Ver documentos item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='info' size='sm' className='px-1 py-1' onClick={() => { setAnex(json); setModal_d(!modal_d) }}><i class="far fa-folder-open"></i></MDBBtn>
+                            <MDBBtn color='info' size='sm' className='px-1 py-1' onClick={() => { setAnex(json); setModal_d(!modal_d) }}><i className="far fa-folder-open"></i></MDBBtn>
                         </MDBTooltip>
                     </div>
                 </div>
@@ -299,7 +299,7 @@ export default function ARCHIVE(props) {
             data={LIST_A}
             highlightOnHover
             dense
-            title={<>LISTADO DE CAJAS  <i class="fas fa-archive"></i></>}
+            title={<>LISTADO DE CAJAS  <i className="fas fa-archive"></i></>}
 
             progressPending={!load}
             progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
@@ -396,8 +396,8 @@ export default function ARCHIVE(props) {
             >
                 <div className="my-2 d-flex justify-content-between ">
                     <div className='row'>
-                        <div class="input-group">
-                            <label className=''><i class="far fa-folder-open"></i> NUEVA CAJA DE ARCHIVO</label>
+                        <div className="input-group">
+                            <label className=''><i className="far fa-folder-open"></i> NUEVA CAJA DE ARCHIVO</label>
                         </div>
                     </div>
 
@@ -417,7 +417,7 @@ export default function ARCHIVE(props) {
                 <hr className='bg-success' style={{ height: '4px' }} />
 
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                 </div>
             </Modal>
 
@@ -428,8 +428,8 @@ export default function ARCHIVE(props) {
             >
                 <div className="my-2 d-flex justify-content-between">
                     <div className='row'>
-                        <div class="input-group">
-                            <label className=''><i class="far fa-folder-open"></i> EDITAR CAJA: {currentItem ? currentItem.box : ''}</label>
+                        <div className="input-group">
+                            <label className=''><i className="far fa-folder-open"></i> EDITAR CAJA: {currentItem ? currentItem.box : ''}</label>
                         </div>
                     </div>
 
@@ -448,7 +448,7 @@ export default function ARCHIVE(props) {
 
                 <hr className='bg-secondary' style={{ height: '4px' }} />
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModale(!modale)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModale(!modale)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                 </div>
             </Modal>
 
@@ -459,8 +459,8 @@ export default function ARCHIVE(props) {
             >
                 <div className="my-2 d-flex justify-content-between ">
                     <div className='row'>
-                        <div class="input-group">
-                            <label className=''><i class="fas fa-archive"></i> MODIFICAR ITEMS DE CAJA: {currentItem ? currentItem.box : ''}</label>
+                        <div className="input-group">
+                            <label className=''><i className="fas fa-archive"></i> MODIFICAR ITEMS DE CAJA: {currentItem ? currentItem.box : ''}</label>
                         </div>
                     </div>
 
@@ -481,7 +481,7 @@ export default function ARCHIVE(props) {
                 <hr className='bg-primary' style={{ height: '4px' }} />
 
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModalAdd(!modalAdd)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModalAdd(!modalAdd)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                 </div>
             </Modal>
 
@@ -491,7 +491,7 @@ export default function ARCHIVE(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label><i class="fas fa-archive"></i> VISTA DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
+                    <label><i className="fas fa-archive"></i> VISTA DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
                     <MDBBtn className='btn-close' color='none' onClick={() => setModal_d(!modal_d)}></MDBBtn>
                 </div>
                 <hr className='bg-info' style={{ height: '4px' }} />
@@ -509,7 +509,7 @@ export default function ARCHIVE(props) {
                 <hr className='bg-info' style={{ height: '4px' }} />
                 <div className="text-end">
                     <MDBBtn color='info' size='sm' onClick={() => setModal_d(!modal_d)}>
-                        <label ><i class="fas fa-times-circle"></i> CERRAR</label>
+                        <label ><i className="fas fa-times-circle"></i> CERRAR</label>
                     </MDBBtn>
                 </div>
             </Modal>

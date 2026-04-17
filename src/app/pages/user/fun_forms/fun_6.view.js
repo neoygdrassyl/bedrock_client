@@ -145,8 +145,8 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     maxWidth: '50px',
                     omit: readOnly ? true : false,
                     cell: row =>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setChecked6(row)} />
+                        <div className="form-check form-switch">
+                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setChecked6(row)} />
                         </div>
                 },
                  * 
@@ -169,11 +169,11 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                                 <>
                                     <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 ms-1">
                                         <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => set_edit_6(row)}>
-                                            <i class="far fa-edit" style={{ fontSize: '150%' }}></i></MDBBtn>
+                                            <i className="far fa-edit" style={{ fontSize: '150%' }}></i></MDBBtn>
                                     </MDBTooltip>
                                     <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 ms-1">
                                         <MDBBtn className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => delete_6(row.id)}>
-                                            <i class="far fa-trash-alt" style={{ fontSize: '150%' }}></i></MDBBtn>
+                                            <i className="far fa-trash-alt" style={{ fontSize: '150%' }}></i></MDBBtn>
                                     </MDBTooltip>
                                 </>
                                 : ''
@@ -209,37 +209,37 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
             document.getElementById('fun6_descriptions_edit').value = values[1];
         }
         let _EDIT_COMPONENT = () => {
-            return <><h3 class="text-uppercase text-center py-3" id="fund_edit">ACTUALIZAR DOCUMENTO</h3>
+            return <><h3 className="text-uppercase text-center py-3" id="fund_edit">ACTUALIZAR DOCUMENTO</h3>
                 <div className="row">
                     <div className="col-12">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" id="file_fun6s_edit" accept="image/png, image/jpeg application/pdf" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                            <input type="file" className="form-control" id="file_fun6s_edit" accept="image/png, image/jpeg application/pdf" />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="fas fa-paperclip"></i></span>
-                            <input list="fun_6_docs_list" id="fun6_descriptions_edit" class="form-control" required />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                            <input list="fun_6_docs_list" id="fun6_descriptions_edit" className="form-control" required />
                             <DOCS_LIST idRef={''} setValues={setValues_edit} text={'VER LISTA'} />
                         </div>
                     </div>
                 </div>
                 <div className="row d-flex justify-content-start mb-3">
                     <div className="col-3">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="fas fa-hashtag"></i></span>
-                            <input type="text" class="form-control" id="fun6_codes_edit" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="fas fa-hashtag"></i></span>
+                            <input type="text" className="form-control" id="fun6_codes_edit" />
                         </div>
                     </div>
                     <div className="col-3">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="far fa-sticky-note"></i></span>
-                            <input type="number" class="form-control" step="1" min="0" id="fun6_pages_edit" required />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="far fa-sticky-note"></i></span>
+                            <input type="number" className="form-control" step="1" min="0" id="fun6_pages_edit" required />
                         </div>
                     </div>
                     <div className="col-5">
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white"><i class="far fa-calendar-alt"></i>&nbsp;Fecha Anexo</span>
-                            <input type="date" class="form-control" max="2100-01-01" id="fun6_dates_edit" required />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white"><i className="far fa-calendar-alt"></i>&nbsp;Fecha Anexo</span>
+                            <input type="date" className="form-control" max="2100-01-01" id="fun6_dates_edit" required />
                         </div>
                     </div>
                 </div>
@@ -406,7 +406,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                             {_EDIT_COMPONENT()}
                             <div className="row text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-lg btn-success"><i class="fas fa-archive"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-lg btn-success"><i className="fas fa-archive"></i> GUARDAR CAMBIOS </button>
                                 </div>
                             </div>
                         </form></> : ""}

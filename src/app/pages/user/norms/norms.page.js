@@ -195,17 +195,17 @@ export default function NORMS(props) {
 
                 <div className='row'>
                     <div className='col-12'>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"> <label>Radicación: </label></i>
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"> <label>Radicación: </label></i>
                             </span>
-                            <input type="text" class="form-control" defaultValue={""} id="id_in" required />
+                            <input type="text" className="form-control" defaultValue={""} id="id_in" required />
                         </div>
                     </div>
                 </div>
 
                 <div className="text-center">
-                    <button className="btn btn btn-success my-1"><i class="fas fa-folder-plus"></i> CREAR </button>
+                    <button className="btn btn btn-success my-1"><i className="fas fa-folder-plus"></i> CREAR </button>
                 </div>
             </form>
         </MDBCardBody>
@@ -218,17 +218,17 @@ export default function NORMS(props) {
 
                 <div className='row'>
                     <div className='col-12'>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fa fa-search"> <label>Buscar</label></i>
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fa fa-search"> <label>Buscar</label></i>
                             </span>
-                            <input type="text" class="form-control" defaultValue={""} id="search" />
+                            <input type="text" className="form-control" defaultValue={""} id="search" />
                         </div>
                     </div>
                 </div>
 
                 <div className="text-center">
-                    <button className="btn btn btn-secondary my-1"><i class="fa fa-search"></i> BUSCAR </button>
+                    <button className="btn btn btn-secondary my-1"><i className="fa fa-search"></i> BUSCAR </button>
                 </div>
             </form>
         </MDBCardBody>
@@ -262,11 +262,11 @@ export default function NORMS(props) {
                         setSelectedId(row.id);
                         setSelectedIdPublic(row.id_in);
                         setModal(!modal);
-                    }}><i class="far fa-edit"></i></MDBBtn>
+                    }}><i className="far fa-edit"></i></MDBBtn>
                 </MDBTooltip>
                 {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
                     <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                        <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                        <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
                     </MDBTooltip>
                     : null}
             </>,
@@ -297,12 +297,12 @@ export default function NORMS(props) {
                 <div className="col-12 d-flex justify-content-start p-0">
                     <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                         </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-home"></i>  <label className="text-uppercase">NORMAS URBANAS</label></MDBBreadcrumbItem>
+                        <MDBBreadcrumbItem active><i className="fas fa-home"></i>  <label className="text-uppercase">NORMAS URBANAS</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
                 </div>
                 <div className="row my-4 d-flex justify-content-center">
@@ -317,7 +317,7 @@ export default function NORMS(props) {
                         {/* <MDBCol md="4"></MDBCol> */}
                     </MDBRow>
 
-                    <h2 class="text-uppercase text-center pb-2">LISTADO DE NORMAS</h2>
+                    <h2 className="text-uppercase text-center pb-2">LISTADO DE NORMAS</h2>
 
                     {TABLE}
                 </div>
@@ -329,7 +329,7 @@ export default function NORMS(props) {
                 ariaHideApp={false}
             >
                 <div className="my-2 d-flex justify-content-between">
-                    <h2 class="text-uppercase text-center">NORMA URBANA: {selectedIdPublic}</h2>
+                    <h2 className="text-uppercase text-center">NORMA URBANA: {selectedIdPublic}</h2>
                     <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
                 </div>
 
@@ -370,7 +370,7 @@ export default function NORMS(props) {
 
 
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                 </div>
             </Modal>
         </>

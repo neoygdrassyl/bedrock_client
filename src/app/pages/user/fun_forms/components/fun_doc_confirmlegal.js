@@ -298,33 +298,33 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.1. Fecha del documento</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="geng_date_doc" required
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geng_date_doc" required
                             defaultValue={_JSON.date_doc ?? moment().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>5.2. Fecha LyDF</label>
-                        <input type="date" class="form-control mb-3" max='2100-01-01' id="geng_date" required disabled
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geng_date" required disabled
                             value={_CHILD_C.item_c9} />
                     </div>
                     <div className="col">
                         <label>5.3 Número de Radicación</label>
-                        <input type="text" class="form-control mb-3" id="geng_id_public" disabled
+                        <input type="text" className="form-control mb-3" id="geng_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
                     <div></div>
                     <div className="col">
                         <label className="mt-1">5.4.1 {infoCud.serials.end} Carta LyDF</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geng_cub_ldf"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geng_cub_ldf"
                                 defaultValue={_GET_CHILD_LAW().cub_ldf || cubSelected || ""} />
-                            {edit ? <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
+                            {edit ? <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">5.4.2 {infoCud.serials.start}</label>
-                        <div class="input-group">
-                            <select class="form-select" id="vr_selected" defaultValue={vrSelected || ""}>
+                        <div className="input-group">
+                            <select className="form-select" id="vr_selected" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
                                 {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -347,27 +347,27 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                     </div>
                     <div className="col-4">
                         <label>5.6 Responsable</label>
-                        <input type="text" class="form-control mb-3" id="geng_name"
+                        <input type="text" className="form-control mb-3" id="geng_name"
                             defaultValue={_JSON.name ?? _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col-4">
                         <label>5.7 Documento Responsable</label>
-                        <input type="text" class="form-control mb-3" id="geng_id_number"
+                        <input type="text" className="form-control mb-3" id="geng_id_number"
                             defaultValue={_JSON.id_number ?? _CHILD_53.item_532} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.8 Dirección Responsable</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geng_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geng_address"
                                 defaultValue={_JSON.address ?? _CHILD_53.item_536} />
                         </div>
                     </div>
                     <div className="col">
                         <label>5.9 Email Responsable</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="geng_email"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geng_email"
                                 defaultValue={_JSON.email || _CHILD_53.item_535} />
                         </div>
                     </div>
@@ -376,17 +376,17 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.10 Dirección Predio</label>
-                        <input type="text" class="form-control mb-3" id="geng_address_2"
+                        <input type="text" className="form-control mb-3" id="geng_address_2"
                             defaultValue={_JSON.address_2 ?? _CHILD_2.item_211} />
                     </div>
                     <div className="col">
                         <label>5.11 Número Predial/Catastral</label>
-                        <input type="text" class="form-control mb-3" id="geng_predial"
+                        <input type="text" className="form-control mb-3" id="geng_predial"
                             defaultValue={_JSON.predial ?? _CHILD_2.item_23} />
                     </div>
                     <div className="col">
                         <label>5.12 Ciudad Predio</label>
-                        <input type="text" class="form-control mb-3" id="geng_city"
+                        <input type="text" className="form-control mb-3" id="geng_city"
                             defaultValue={_JSON.city ?? capitalize(infoCud.city.toLowerCase())} />
                     </div>
                 </div>
@@ -394,7 +394,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.13 Tipo de Solicitud</label>
-                        <textarea rows="2" class="form-control mb-3" id="geng_type" defaultValue={_JSON.type ?? formsParser1(_CHILD_1)}></textarea>
+                        <textarea rows="2" className="form-control mb-3" id="geng_type" defaultValue={_JSON.type ?? formsParser1(_CHILD_1)}></textarea>
                     </div>
                 </div>
             </>
@@ -435,51 +435,51 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                 <strong>CONTROL DE CALIDAD: SNR</strong>
                 <hr />
                 <div className='mx-5'>
-                    <div class="form-check">
+                    <div className="form-check">
                         <label>
                             <a href='https://sisg.supernotariado.gov.co/siteminderagent/forms/loginsnr.fcc?TYPE=33554433&REALMOID=06-18e70428-379e-45d6-85a6-4095a9982c2e&GUID=&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-PKnunRcJfp7c%2fiHfQBdxBnPiyhxa2OCzryG6HgblD42T09D171jXVqmTby6FXFtO&TARGET=-SM-http%3a%2f%2fsisg%2esupernotariado%2egov%2eco%2f'
                                 target='_blank'>Link de la Super Intendencia</a>
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="control_func_1"
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="" id="control_func_1"
                             defaultChecked={fun_c_control[0] == 1} />
-                        <label class="form-check-label" for="control_func_1">
+                        <label className="form-check-label" htmlFor="control_func_1">
                             Toda la documentación esta completa según lo requiere el tipo de actuación, siendo la constancia del ultimo radicado VR: {last_vr.vr}
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="control_func_2"
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="" id="control_func_2"
                             defaultChecked={fun_c_control[1] == 1} />
-                        <label class="form-check-label" for="control_func_2">
+                        <label className="form-check-label" htmlFor="control_func_2">
                             Se actualizo en el mismo dia en el modulo de radicación de la SNR
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="control_func_3"
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="" id="control_func_3"
                             defaultChecked={fun_c_control[2] == 1} />
-                        <label class="form-check-label" for="control_func_3">
+                        <label className="form-check-label" htmlFor="control_func_3">
                             Se radicó en LyDF de manera extemporánea
                         </label>
                     </div>
                     <div className="row m-2">
                         <div className="col">
                             <label>De:</label>
-                            <input type="text" class="form-control form-control-sm" id="clock_event_1" disabled defaultValue={name_1} />
+                            <input type="text" className="form-control form-control-sm" id="clock_event_1" disabled defaultValue={name_1} />
                         </div>
                         <div className="col">
                             <label>Para:</label>
-                            <input class="form-control form-control-sm" id="clock_event_2" defaultValue={name_2} />
+                            <input className="form-control form-control-sm" id="clock_event_2" defaultValue={name_2} />
                         </div>
                         <div className="col">
                             <label>Fecha</label>
-                            <input type="date" class="form-control form-control-sm" id="clock_event_3" max="2100-01-01" disabled
+                            <input type="date" className="form-control form-control-sm" id="clock_event_3" max="2100-01-01" disabled
                                 defaultValue={date} />
 
                         </div>
                         <div className="col-6">
                             <label>Mensaje</label>
-                            <input list="option_workers" class="form-select form-select-sm" id="clock_event_4" autoComplete='off'
+                            <input list="option_workers" className="form-select form-select-sm" id="clock_event_4" autoComplete='off'
                                 defaultValue={desc}></input>
                             <datalist id="option_workers">
                                 <option>Fallo / error del sistema de reporte o comunicación curaduria / SNR</option>
@@ -511,13 +511,13 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                     {tn == 4 ?
                         <>
                          <div className="col-4">
-                                <div class="input-group my-1">
+                                <div className="input-group my-1">
                                     <label>Fecha Comunicación: </label>
                                 </div>
                             </div>
                             <div className="col-4">
-                                <div class="input-group my-1">
-                                    <input type="date" class="form-control" id="type_not_name" placeholder='Fecha' />
+                                <div className="input-group my-1">
+                                    <input type="date" className="form-control" id="type_not_name" placeholder='Fecha' />
                                 </div>
                             </div>
                         </>
@@ -911,11 +911,11 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
 
                     {edit ?
                         <div className="col">
-                            <button className="btn btn-success my-3"><i class="fas fa-share-square"></i> GUARDAR DATOS</button>
+                            <button className="btn btn-success my-3"><i className="fas fa-share-square"></i> GUARDAR DATOS</button>
                         </div>
                         : ''}
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i class="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
+                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
                     </div>
                 </div>
             </form>

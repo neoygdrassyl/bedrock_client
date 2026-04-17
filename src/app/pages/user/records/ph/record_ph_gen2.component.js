@@ -234,7 +234,7 @@ function RECORD_PH_GEN_2(props) {
                         {_COMPONENT_DETAILS_1()}
                         <div className="row mb-3 text-center">
                             <div className="col-12">
-                                <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                             </div>
                         </div>
                     </div>

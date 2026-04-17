@@ -177,8 +177,8 @@ export default function RECORD_ARC_36_TABLE(props) {
             button: true,
             center: true,
             cell: row =>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_36_info(row)} />
+                <div className="form-check form-switch">
+                    <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_36_info(row)} />
                 </div>
         },
          */
@@ -189,8 +189,8 @@ export default function RECORD_ARC_36_TABLE(props) {
             center: true,
             minWidth: '110px',
             cell: row => <>
-                <MDBBtn className="btn btn-secondary btn-sm px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><i class="far fa-edit"></i></MDBBtn>
-                <MDBBtn className="btn btn-danger btn-sm px-2" onClick={() => delete_36_info(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                <MDBBtn className="btn btn-secondary btn-sm px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><i className="far fa-edit"></i></MDBBtn>
+                <MDBBtn className="btn btn-danger btn-sm px-2" onClick={() => delete_36_info(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
             </>,
         },
     ]
@@ -206,28 +206,28 @@ export default function RECORD_ARC_36_TABLE(props) {
 
             <div className='row border'>
                 <div className='col-3'>
-                    <h5 className='fw-bold'><i class="fas fa-road"></i> PERFIL</h5>
+                    <h5 className='fw-bold'><i className="fas fa-road"></i> PERFIL</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-cube"></i> LADO</h5>
+                    <h5 className='fw-bold'><i className="fas fa-cube"></i> LADO</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-vector-square"></i> RELACION</h5>
+                    <h5 className='fw-bold'><i className="fas fa-vector-square"></i> RELACION</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-hashtag"></i> NORMA</h5>
+                    <h5 className='fw-bold'><i className="fas fa-hashtag"></i> NORMA</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-hashtag"></i> PROY.</h5>
+                    <h5 className='fw-bold'><i className="fas fa-hashtag"></i> PROY.</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-greater-than-equal"></i> DIF.</h5>
+                    <h5 className='fw-bold'><i className="fas fa-greater-than-equal"></i> DIF.</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="fas fa-greater-than-equal"></i> OBS.</h5>
+                    <h5 className='fw-bold'><i className="fas fa-greater-than-equal"></i> OBS.</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i class="far fa-check-square"></i> EVA.</h5>
+                    <h5 className='fw-bold'><i className="far fa-check-square"></i> EVA.</h5>
                 </div>
                 <div className='col-1'></div>
 
@@ -310,7 +310,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <MDBBtn color="danger" rounded outline size='sm' className='px-2' onClick={() => del_grp_37(data.id)}> <i class="fas fa-minus text-danger"></i></MDBBtn>
+                                <MDBBtn color="danger" rounded outline size='sm' className='px-2' onClick={() => del_grp_37(data.id)}> <i className="fas fa-minus text-danger"></i></MDBBtn>
                             }
                         </div>
                     </div>
@@ -351,7 +351,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <MDBBtn color="success" rounded outline size='sm' className='px-2' onClick={() => add_perfil(data.id)}> <i class="fas fa-plus text-success"></i></MDBBtn> : ''}
+                            <MDBBtn color="success" rounded outline size='sm' className='px-2' onClick={() => add_perfil(data.id)}> <i className="fas fa-plus text-success"></i></MDBBtn> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -363,7 +363,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                 <input type="hidden" id="r_a_34_" />
                 <div className="col-3 p-1">
                     <label>Dirección</label>
-                    <input type="text" class="form-control form-control-sm" id={"r_a_36_info_5" + edit} defaultValue={edit36.address}/>
+                    <input type="text" className="form-control form-control-sm" id={"r_a_36_info_5" + edit} defaultValue={edit36.address}/>
                 </div>
                 {edit ? '' :
                     <>
@@ -375,8 +375,8 @@ export default function RECORD_ARC_36_TABLE(props) {
                             </select>
                         </div>
                         <div className="col-1 p-1">
-                            <div class="input-group">
-                                <a className="btn btn-info btn-sm p-2 ms-2 mt-3" target="_blank" href="http://www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/perfil_10.00_m_tipo_a.png" id={"r_a_36_imglink" + edit}><i class="far fa-image fa-2x"></i></a>
+                            <div className="input-group">
+                                <a className="btn btn-info btn-sm p-2 ms-2 mt-3" target="_blank" href="http://www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/perfil_10.00_m_tipo_a.png" id={"r_a_36_imglink" + edit}><i className="far fa-image fa-2x"></i></a>
                             </div>
                         </div>
                         <div className="col p-1">
@@ -393,12 +393,12 @@ export default function RECORD_ARC_36_TABLE(props) {
                         </div>
                         <div className="col-1 p-1">
                             <label>Norma</label>
-                            <input type="number" min="0" step="0.01" class="form-control form-control-sm" id={"r_a_36_info_3" + edit} />
+                            <input type="number" min="0" step="0.01" className="form-control form-control-sm" id={"r_a_36_info_3" + edit} />
                         </div>
 
                         <div className="col-1 p-1">
                             <label>Proyecto</label>
-                            <input type="number" min="0" step="0.01" class="form-control form-control-sm" id={"r_a_36_info_4" + edit} />
+                            <input type="number" min="0" step="0.01" className="form-control form-control-sm" id={"r_a_36_info_4" + edit} />
                         </div>
                     </>}
 
@@ -784,9 +784,9 @@ export default function RECORD_ARC_36_TABLE(props) {
     return (
         <div className='row my-2'>
 
-            <div class="form-check ms-5 my-2">
-                <input class="form-check-input" type="checkbox" onChange={(e) => setNew(!new36)} />
-                <label class="form-check-label" for="flexCheckDefault">
+            <div className="form-check ms-5 my-2">
+                <input className="form-check-input" type="checkbox" onChange={(e) => setNew(!new36)} />
+                <label className="form-check-label" htmlFor="flexCheckDefault">
                     Añadir nuevo elemento de perfil
                 </label>
             </div>
@@ -796,7 +796,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     {_COMPONENT_1('')}
                     <div className="text-center">
                         <button className="btn btn-success btn-sm my-2">
-                            <i class="far fa-share-square"></i> AÑADIR ELEMENTOS
+                            <i className="far fa-share-square"></i> AÑADIR ELEMENTOS
                         </button>
                     </div>
                 </form>
@@ -808,7 +808,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     {_COMPONENT_1('_edit')}
                     <div className="text-center">
                         <button className="btn btn-success btn-sm  my-2">
-                            <i class="far fa-share-square"></i> GUARDAR CAMBIOS
+                            <i className="far fa-share-square"></i> GUARDAR CAMBIOS
                         </button>
                     </div>
                 </form>

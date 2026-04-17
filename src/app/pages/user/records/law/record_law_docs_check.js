@@ -287,7 +287,7 @@ function RECORD_LAW_DOCSCHECK(props) {
         {
             name: <label className="text-center">EVALUACION</label>,
             minWidth: '150px',
-            cell: row => _GET_EVA_VAKUE(row) ? <div class="input-group input-group-sm">
+            cell: row => _GET_EVA_VAKUE(row) ? <div className="input-group input-group-sm">
                 <input type="hidden" value={row.doc} name={'r_l_g2_doc_code'} />
                 <select className={_GET_SELECT_COLOR_VALUE(_GET_REVIEW(row.code))} name="r_l_g2_doc_review"
                     defaultValue={_GET_REVIEW(row.code)} onChange={() => save_fun_r(row)} disabled={readOnly ? true : !_GET_EDIT_POWERS(row)}>
@@ -299,7 +299,7 @@ function RECORD_LAW_DOCSCHECK(props) {
             name: <label className="text-center">ANEXO</label>,
             center: true,
             minWidth: '150px',
-            cell: row => <div class="input-group input-group-sm"><select className='form-select' name="r_l_g2_doc_id6" disabled={readOnly ? true : !_GET_EDIT_POWERS(row)}
+            cell: row => <div className="input-group input-group-sm"><select className='form-select' name="r_l_g2_doc_id6" disabled={readOnly ? true : !_GET_EDIT_POWERS(row)}
                 defaultValue={_GET_ID6(row.doc) || _GET_ID6_NAME(row.doc)} onChange={() => save_fun_r()}>
                 <option value="-1">APORTADO FISICAMENTE</option>
                 <option value="0">SIN DOCUMENTO</option>

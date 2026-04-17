@@ -460,7 +460,7 @@ function RECORD_ENG_STEP_432(props) {
                 {step_01_option.map((value, i) => (
                     <div className="row py-0">
                         <div className="col-10">
-                            <div class="input-group">
+                            <div className="input-group">
                                 <label>{value}</label>
                             </div>
                         </div>
@@ -1082,13 +1082,13 @@ function RECORD_ENG_STEP_432(props) {
                 </div>
 
                 <div className="row  my-2">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="inputGroupSelect01" hidden={version >= 2}>Es cubierta Ligera</label>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <label className="input-group-text" htmlFor="inputGroupSelect01" hidden={version >= 2}>Es cubierta Ligera</label>
                         </div>
                         {version >= 2
                             ? <input type="hidden" id='lcs' name="recprd_eng_s4322" defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 37) ?? 0} />
-                            : <select class="form-select" id="lcs" name="recprd_eng_s4322" onChange={() => update_values()} onBlur={() => manage_step_432()}
+                            : <select className="form-select" id="lcs" name="recprd_eng_s4322" onChange={() => update_values()} onBlur={() => manage_step_432()}
                                 defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 37) ?? 0} >
                                 <option value="0">NO</option>
                                 <option value="1">SI</option>
@@ -1109,11 +1109,11 @@ function RECORD_ENG_STEP_432(props) {
                     {CARGA_VIVA.map(i => <div className='col-4'>
 
                         <div className="row  my-2">
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <label class="input-group-text" for="inputGroupSelect01" >USO {i + 1}</label>
+                            <div className="input-group mb-3">
+                                <div className="input-group-prepend">
+                                    <label className="input-group-text" htmlFor="inputGroupSelect01" >USO {i + 1}</label>
                                 </div>
-                                <select class="form-select" id={"carga_vida_use_" + i} name="carga_vida_use" onChange={() => set_carga_vida_use()}
+                                <select className="form-select" id={"carga_vida_use_" + i} name="carga_vida_use" onChange={() => set_carga_vida_use()}
                                     defaultValue={_GET_STEP_TYPE_INDEX('carga_vida_use', 'value', i) ?? 0} >
                                     {CARGA_VIVA_USOS.map(carga => <option value={carga.i}>{carga.name}</option>)}
                                 </select>
@@ -1153,11 +1153,11 @@ function RECORD_ENG_STEP_432(props) {
             return <>
 
                 <div className="row  my-2">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="inputGroupSelect01" >Usar Steel Deck</label>
+                    <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                            <label className="input-group-text" htmlFor="inputGroupSelect01" >Usar Steel Deck</label>
                         </div>
-                        <select class="form-select" id="steel_deck_use" name="steel_deck_use" onChange={() => set_steel_deck_use()}
+                        <select className="form-select" id="steel_deck_use" name="steel_deck_use" onChange={() => set_steel_deck_use()}
                             defaultValue={_GET_STEP_TYPE_INDEX('steel_deck', 'check', 0) ?? 0} >
                             <option value="0">NO</option>
                             <option value="1">SI</option>

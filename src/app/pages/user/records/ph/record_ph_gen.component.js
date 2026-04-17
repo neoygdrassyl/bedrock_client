@@ -98,8 +98,8 @@ function RECORD_PH_GEN(props) {
                         <label>LICENCIA DE CONSTRUCCIÓN</label>
                     </div>
                     <div className="col-2">
-                        <div class="form-check ms-5">
-                            <input class="form-check-input" type="radio" name="review_rb" value="1"
+                        <div className="form-check ms-5">
+                            <input className="form-check-input" type="radio" name="review_rb" value="1"
                                 defaultChecked={_CHILD[14] == 1 ? true : false} />
                         </div>
                     </div>
@@ -107,7 +107,7 @@ function RECORD_PH_GEN(props) {
                         <label>Número:</label>
                     </div>
                     <div className="col-3">
-                        <input type="text" class="form-control" name="review_check"
+                        <input type="text" className="form-control" name="review_check"
                             defaultValue={_CHILD[1]} />
                     </div>
                 </div>
@@ -116,8 +116,8 @@ function RECORD_PH_GEN(props) {
                         <label>LICENCIA DE PARCELACION</label>
                     </div>
                     <div className="col-2">
-                        <div class="form-check ms-5">
-                            <input class="form-check-input" type="radio" name="review_rb" value="2"
+                        <div className="form-check ms-5">
+                            <input className="form-check-input" type="radio" name="review_rb" value="2"
                                 defaultChecked={_CHILD[14] == 2 ? true : false} />
                         </div>
                     </div>
@@ -125,7 +125,7 @@ function RECORD_PH_GEN(props) {
                         <label>Expedida:</label>
                     </div>
                     <div className="col-3">
-                        <input type="date" max="2100-01-01" class="form-control" name="review_check"
+                        <input type="date" max="2100-01-01" className="form-control" name="review_check"
                             defaultValue={_CHILD[2]} />
                     </div>
                 </div>
@@ -134,8 +134,8 @@ function RECORD_PH_GEN(props) {
                         <label>LICENCIA DE URBANISMO</label>
                     </div>
                     <div className="col-2">
-                        <div class="form-check ms-5">
-                            <input class="form-check-input" type="radio" name="review_rb" value="3"
+                        <div className="form-check ms-5">
+                            <input className="form-check-input" type="radio" name="review_rb" value="3"
                                 defaultChecked={_CHILD[14] == 3 ? true : false} />
                         </div>
                     </div>
@@ -154,8 +154,8 @@ function RECORD_PH_GEN(props) {
                         <label>ACTO DE RECONOCIMIENTO</label>
                     </div>
                     <div className="col-2">
-                        <div class="form-check ms-5">
-                            <input class="form-check-input" type="radio" name="review_rb" value="4"
+                        <div className="form-check ms-5">
+                            <input className="form-check-input" type="radio" name="review_rb" value="4"
                                 defaultChecked={_CHILD[14] == 4 ? true : false} />
                         </div>
                     </div>
@@ -205,7 +205,7 @@ function RECORD_PH_GEN(props) {
                                 <label>Área Total Construida (m2)</label>
                             </div>
                             <div className="col-6">
-                                <input type="number" min="0" step="0.01" class="form-control" name="review_check" defaultValue={_CHILD[6]} />
+                                <input type="number" min="0" step="0.01" className="form-control" name="review_check" defaultValue={_CHILD[6]} />
                             </div>
                         </div>
                         <div className="row border p-2 ms-2">
@@ -213,7 +213,7 @@ function RECORD_PH_GEN(props) {
                                 <label>Destinación:</label>
                             </div>
                             <div className="col-6">
-                                <input type="text" class="form-control" name="review_check" defaultValue={_CHILD[7]} />
+                                <input type="text" className="form-control" name="review_check" defaultValue={_CHILD[7]} />
                             </div>
                         </div>
                         <div className="row border p-2 ms-2">
@@ -285,7 +285,7 @@ function RECORD_PH_GEN(props) {
                                 <label>Valor (COP):</label>
                             </div>
                             <div className="col-6">
-                                <input type="number" min="0" step="0.01" class="form-control" name="review_check" id="duty_1"
+                                <input type="number" min="0" step="0.01" className="form-control" name="review_check" id="duty_1"
                                     defaultValue={_CHILD[11]} />
                             </div>
                         </div>
@@ -294,7 +294,7 @@ function RECORD_PH_GEN(props) {
                                 <label>Recibo de pago numero:</label>
                             </div>
                             <div className="col-6">
-                                <input type="text" class="form-control" name="review_check" id="duty_2" defaultValue={_CHILD[12]} />
+                                <input type="text" className="form-control" name="review_check" id="duty_2" defaultValue={_CHILD[12]} />
                             </div>
                         </div>
                         <div className="row border p-2 ms-2">
@@ -401,7 +401,7 @@ function RECORD_PH_GEN(props) {
                 <form id="form_manage_ph_gen" onSubmit={manage_item}>
                     <div className="row">
                         <label className="app-p lead fw-bold my-2">AREA Y LINDEROS DE PREDIO(S)</label>
-                        <input type="text" class="form-control" name="review_check"
+                        <input type="text" className="form-control" name="review_check"
                             defaultValue={_GET_CHILD_REVIEW_GEN()[0]} />
                         <label className="app-p lead fw-bold my-2">PROPIETARIOS</label>
                         {_COMPONENT_0()}
@@ -411,7 +411,7 @@ function RECORD_PH_GEN(props) {
                         {_COMPONENT_2()}
                         <div className="row mb-3 text-center">
                             <div className="col-12">
-                                <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                             </div>
                         </div>
                     </div>

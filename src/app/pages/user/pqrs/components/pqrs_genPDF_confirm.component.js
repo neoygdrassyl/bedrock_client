@@ -63,28 +63,28 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                     <div className="row">
                         <div className="col-4">
                             <label>Fecha Documento</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-calendar-alt"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-calendar-alt"></i>
                                 </span>
-                                <input type="date" max="2100-01-01" class="form-control" id="pqrs_confirmation_date"
+                                <input type="date" max="2100-01-01" className="form-control" id="pqrs_confirmation_date"
                                     defaultValue={moment().format('YYYY-MM-DD')} required />
                             </div>
                         </div>
                         <div className="col-4">
                             <label>Consecutivo</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-hashtag"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-hashtag"></i>
                                 </span>
-                                <input type="text" class="form-control" id="pqrs_confirmation_id_public"
+                                <input type="text" className="form-control" id="pqrs_confirmation_id_public"
                                     defaultValue={currentItem.id_publico} disabled />
                             </div>
                         </div>
                         <div className="col">
                             <label className="mt-1">Ciudad</label>
-                            <div class="input-group">
-                                <select class="form-select me-1" id={"pqrs_confirmation_city"}>
+                            <div className="input-group">
+                                <select className="form-select me-1" id={"pqrs_confirmation_city"}>
                                     {cities}
                                 </select>
                             </div>
@@ -94,11 +94,11 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                     <div className="row">
                         <div className="col-4">
                             <label>Titulo referido</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-user"></i>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-user"></i>
                                 </span>
-                                <input list="titles" class="form-select" id="pqrs_confirmation_titles" />
+                                <input list="titles" className="form-select" id="pqrs_confirmation_titles" />
                                 <datalist id="titles">
                                     <option value="Señor" />
                                     <option value="Señora" />
@@ -118,11 +118,11 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                     <div className="row">
                         <div className="col-12">
                             <label>Lista de Solicitantes</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-user"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-user"></i>
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Solicitantes"
+                                <input type="text" className="form-control" placeholder="Lista de Solicitantes"
                                     defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
                             </div>
                         </div>
@@ -131,11 +131,11 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                     <div className="row">
                         <div className="col-12">
                             <label>Lista de Correos</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="far fa-envelope"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="far fa-envelope"></i>
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Correos"
+                                <input type="text" className="form-control" placeholder="Lista de Correos"
                                     defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
                             </div>
                         </div>
@@ -144,25 +144,25 @@ function PQRS_PDFGEN_CONFIRM({ translation, swaMsg, globals, currentItem }) {
                     <div className="row">
                         <div className="col-12">
                             <label>Lista de Direcciones</label>
-                            <div class="input-group my-1">
-                                <span class="input-group-text bg-info text-white">
-                                    <i class="fas fa-home"></i>
+                            <div className="input-group my-1">
+                                <span className="input-group-text bg-info text-white">
+                                    <i className="fas fa-home"></i>
                                 </span>
-                                <input type="text" class="form-control" placeholder="Lista de Correos"
+                                <input type="text" className="form-control" placeholder="Lista de Correos"
                                     defaultValue={_getAdresslList()} id="pqrs_confirmation_address_list" />
                             </div>
                         </div>
                     </div>
 
                     <label>Cuerpo del Documento</label>
-                    <textarea class="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
+                    <textarea className="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
                         defaultValue={_GET_DOC_BODY()}></textarea>
                     <table className="table table-sm table-hover table-bordered">
                         <tbody>
                             <tr>
                                 <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
                                 <td>
-                                    <i class="fas fa-cloud-download-alt fa-2x" onClick={() => request_dpfConfirmation()} style={{ color: "Crimson" }}></i>
+                                    <i className="fas fa-cloud-download-alt fa-2x" onClick={() => request_dpfConfirmation()} style={{ color: "Crimson" }}></i>
                                 </td>
                             </tr>
                         </tbody>

@@ -93,9 +93,9 @@ function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, curr
         // DATA CONVERTERS
         let _SAVING_STATE = (state) => {
             if (!state) return '';
-            if (state == 1) return <label className='text-warning fw-bold'><i class="fas fa-save"></i></label>;
-            if (state == 2) return <label className='text-success fw-bold'><i class="fas fa-save"></i></label>;
-            if (state == 3) return <label className='text-danger fw-bold'><i class="fas fa-save"></i></label>;
+            if (state == 1) return <label className='text-warning fw-bold'><i className="fas fa-save"></i></label>;
+            if (state == 2) return <label className='text-success fw-bold'><i className="fas fa-save"></i></label>;
+            if (state == 3) return <label className='text-danger fw-bold'><i className="fas fa-save"></i></label>;
         }
         // COMPONENT JSX
         let _COMPONENT_GENERAL = () => {
@@ -157,7 +157,7 @@ function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
                         <div className="col-md-3">
                             <label className="mt-1">Número de Subdivisión</label>
-                            <input type="number" class="form-control form-control-sm" id="ra_control_data_3"
+                            <input type="number" className="form-control form-control-sm" id="ra_control_data_3"
                                 defaultValue={controlArc.n_sub} onBlur={() => manage_ra_33_control('pym')} />
                         </div>
                     </div>
@@ -195,26 +195,26 @@ function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
                     <div className='col'>
                         <label className='fw-bold'>Ministerio de vivienda</label>
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Bruta m2</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_4" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Bruta m2</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_4" min="0" step="0.01"
                                     defaultValue={control.m2_brute} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Neta m2</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_5" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Neta m2</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_5" min="0" step="0.01"
                                     defaultValue={control.m2_net} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util m2</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_6" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util m2</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_6" min="0" step="0.01"
                                     defaultValue={control.m2_useful} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
@@ -222,26 +222,26 @@ function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, curr
                     </div>
                     <div className='col'>
                         <label className='fw-bold'>Ministerio de vivienda, Modalidad Urbanización</label>
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util VIS</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_7" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util VIS</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_7" min="0" step="0.01"
                                     defaultValue={control.m2_vis} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util VIP</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_8" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util VIP</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_8" min="0" step="0.01"
                                     defaultValue={control.m2_vip} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util NO VIS</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_9" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util NO VIS</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_9" min="0" step="0.01"
                                     defaultValue={control.m2_novis} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
@@ -249,26 +249,26 @@ function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
                     <div className='col'>
                         <label className='fw-bold'>Ministerio de vivienda, Modalidad Urbanización  y Parcelación</label>
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util Industrial</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_10" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util Industrial</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_10" min="0" step="0.01"
                                     defaultValue={control.m2_ind} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util Com./Serv.</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_11" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util Com./Serv.</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_11" min="0" step="0.01"
                                     defaultValue={control.m2_com} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-8 col-form-label">Área Util Dotacional</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control form-control-sm" id="ra_control_data_12" min="0" step="0.01"
+                        <div className="form-group row">
+                            <label htmlFor="staticEmail" className="col-sm-8 col-form-label">Área Util Dotacional</label>
+                            <div className="col-sm-4">
+                                <input type="number" className="form-control form-control-sm" id="ra_control_data_12" min="0" step="0.01"
                                     defaultValue={control.m2_dot} onBlur={() => manage_ra_33_control('pym')} />
                             </div>
                         </div>

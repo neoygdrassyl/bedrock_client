@@ -48,8 +48,8 @@ function RECORD_ENG_STEP_44(props) {
         // COMPONENT JSX
         let COMPONENT = () => {
             return <>
-                <ul class="list-group my-0 py-0">
-                    <li class="list-group-item py-0">
+                <ul className="list-group my-0 py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Los documentos aportados están firmados por los profesionales responsables de su elaboración</label>
@@ -64,7 +64,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Los profesionales cumplen con la experiencia mínima establecida en la ley 400 de 1997</label>
@@ -79,7 +79,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">El proyecto estructural coincide con el diseño arquitectónico</label>
@@ -94,7 +94,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿La cimentación y propuesta estructural recogen las recomendaciones del estudio de suelos?</label>
@@ -109,7 +109,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">El sistema estructural propuesto se enmarca dentro de los tipos admitidos por la NSR-10</label>
@@ -124,7 +124,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿Los sótanos o estructuras de cimentación invaden el antejardín y/o predios vecinos?</label>
@@ -139,7 +139,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿La información estructural es suficiente para entender y construir el proyecto?</label>
@@ -154,7 +154,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿De acuerdo con las áreas de construcción y/o altura de la edificación se requiere instrumentación sísmica?</label>
@@ -169,7 +169,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿De requerirse instrumentación sísmica, el proyecto ha dispuesto los espacios arquitectónicos requeridos?</label>
@@ -184,7 +184,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿El proyecto tiene sótanos o requiere realizar excavaciones y/o movimientos de tierra que generen taludes?</label>
@@ -199,7 +199,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿El proyecto cumple con la separación sísmica mínima requerida?</label>
@@ -214,7 +214,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿El proyecto requiere supervisión técnica estructural?</label>
@@ -229,7 +229,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿El proyecto requiere supervisión Geotécnico?</label>
@@ -244,7 +244,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿Durante el proceso de revisión hubo cambios frente al proyecto inicial en materia de geometría, uso, alturas, etc?</label>
@@ -259,7 +259,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">¿Estos cambios fueron notificados al asesor arquitectónico y jurídico?</label>
@@ -274,7 +274,7 @@ function RECORD_ENG_STEP_44(props) {
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item py-0">
+                    <li className="list-group-item py-0">
                         <div className="row">
                             <div className="col-10">
                                 <label className="">Visualización de planos y detalles claros (no borrosos) para verificar su cumplimiento</label>

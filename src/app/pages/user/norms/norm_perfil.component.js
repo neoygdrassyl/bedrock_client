@@ -247,10 +247,10 @@ export default function NORM_PERFIL(props) {
             minWidth: '80px',
             cell: row => <>
                 <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                    <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i class="far fa-edit"></i></MDBBtn>
+                    <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i className="far fa-edit"></i></MDBBtn>
                 </MDBTooltip>
                 <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                    <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i class="far fa-trash-alt"></i></MDBBtn>
+                    <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
                 </MDBTooltip>
             </>,
         },
@@ -280,36 +280,36 @@ export default function NORM_PERFIL(props) {
             <div className="row">
                 <div className="col">
                     <label>Codigo</label>
-                    <div class="input-group my-1">
-                        <input type="number" min={1} max={200} step={1} class="form-control" defaultValue={editItem ? editItem.code : ""} id={"perfil_code" + edit} />
+                    <div className="input-group my-1">
+                        <input type="number" min={1} max={200} step={1} className="form-control" defaultValue={editItem ? editItem.code : ""} id={"perfil_code" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Perfil</label>
-                    <div class="input-group my-1">
-                        <select class="form-select" id={"perfil_perfil" + edit} defaultValue={editItem ? editItem.perfil : ""}>
+                    <div className="input-group my-1">
+                        <select className="form-select" id={"perfil_perfil" + edit} defaultValue={editItem ? editItem.perfil : ""}>
                             {PERFILES.map(perfil => <option>{perfil.name}</option>)}
                         </select>
                     </div>
                 </div>
                 <div className="col">
                     <label>Cardinalidad</label>
-                    <div class="input-group my-1">
-                        <select class="form-select" id={"perfil_card" + edit} defaultValue={editItem ? editItem.card : ""}>
+                    <div className="input-group my-1">
+                        <select className="form-select" id={"perfil_card" + edit} defaultValue={editItem ? editItem.card : ""}>
                             {CARDS.map(card => <option value={card.value}>{card.name}</option>)}
                         </select>
                     </div>
                 </div>
                 <div className="col">
                     <label>Antejardin Proyecto</label>
-                    <div class="input-group my-1">
-                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.antejardin_n : ""} class="form-control" id={"perfil_antejardin_n" + edit} />
+                    <div className="input-group my-1">
+                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.antejardin_n : ""} className="form-control" id={"perfil_antejardin_n" + edit} />
                     </div>
                 </div>
                 <div className="col">
                     <label>Antejardin Sitio</label>
-                    <div class="input-group my-1">
-                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.antejardin_p : ""} class="form-control" id={"perfil_antejardin_p" + edit} />
+                    <div className="input-group my-1">
+                        <input type="number" min="0" step="0.01" defaultValue={editItem ? editItem.antejardin_p : ""} className="form-control" id={"perfil_antejardin_p" + edit} />
                     </div>
                 </div>
             </div>
@@ -318,9 +318,9 @@ export default function NORM_PERFIL(props) {
     }
 
     const NEW_ITEM = <>
-        <div class="form-check ms-5">
-            <input class="form-check-input" type="checkbox" id="cb_new_perfil" onChange={(e) => setNewItem(e.target.checked)} />
-            <label class="form-check-label" for="flexCheckDefault">
+        <div className="form-check ms-5">
+            <input className="form-check-input" type="checkbox" id="cb_new_perfil" onChange={(e) => setNewItem(e.target.checked)} />
+            <label className="form-check-label" htmlFor="flexCheckDefault">
                 Nuevo Perfil
             </label>
         </div>
@@ -329,7 +329,7 @@ export default function NORM_PERFIL(props) {
                 {_COMPONENT_MANAGE("")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i class="fas fa-plus-circle"></i> AÑADIR ITEM </button>
+                        <button className="btn btn-success btn-sm" ><i className="fas fa-plus-circle"></i> AÑADIR ITEM </button>
                     </div>
                 </div>
             </form>
@@ -343,7 +343,7 @@ export default function NORM_PERFIL(props) {
                 {_COMPONENT_MANAGE("_edit")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i class="fas fa-edit"></i> ACTUALIZAR ITEM </button>
+                        <button className="btn btn-success btn-sm" ><i className="fas fa-edit"></i> ACTUALIZAR ITEM </button>
                     </div>
                 </div>
             </form>
@@ -353,7 +353,7 @@ export default function NORM_PERFIL(props) {
     return (
         <>
             <Suspense fallback={<label className='fw-normal lead text-muted'>CARGANDO...</label>}>
-                <h3 class="text-uppercase pb-2">4. INFORMACIÓN PERFILES:</h3>
+                <h3 className="text-uppercase pb-2">4. INFORMACIÓN PERFILES:</h3>
                 {NEW_ITEM}
                 {TABLE}
                 {EDIT_ITEM}

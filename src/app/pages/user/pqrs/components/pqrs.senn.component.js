@@ -79,11 +79,11 @@ export const SEEN_COMPONENT_FORM = (props) => {
         <div className="row">
             <div className="col-6">
                 <label>VISTO BUENO</label>
-                <div class="input-group my-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="far fa-envelope"></i>
+                <div className="input-group my-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="far fa-envelope"></i>
                     </span>
-                    <select class="form-control" id="pqrs_visto_worker_1" defaultValue={worker.feedback}>
+                    <select className="form-control" id="pqrs_visto_worker_1" defaultValue={worker.feedback}>
                         <option value={1}>SI</option>
                         <option value={0}>NO</option>
                     </select>
@@ -91,22 +91,22 @@ export const SEEN_COMPONENT_FORM = (props) => {
             </div>
             <div className="col-6">
                 <label>FECHA CONFIRMACION</label>
-                <div class="input-group my-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-calendar-alt"></i>
+                <div className="input-group my-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="fas fa-calendar-alt"></i>
                     </span>
-                    <input type='date' class="form-control mb-" rows="3" id="pqrs_visto_worker_2" defaultValue={worker.feedback_date ?? moment().format('YYYY-MM-DD')} required></input>
+                    <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_2" defaultValue={worker.feedback_date ?? moment().format('YYYY-MM-DD')} required></input>
                 </div>
             </div>
         </div>
         <div className="row">
             <div className="col">
                 <label>ARGUMENTO</label>
-                <textarea class="form-control mb-3" rows="3" id="pqrs_visto_worker_3" defaultValue={worker.feedback_argument}></textarea>
+                <textarea className="form-control mb-3" rows="3" id="pqrs_visto_worker_3" defaultValue={worker.feedback_argument}></textarea>
             </div>
         </div>
         <div className='text-center'>
-            <button type="button" class="btn btn-sm btn-success" onClick={update}>Confirmar <i class="fas fa-check"></i></button>
+            <button type="button" className="btn btn-sm btn-success" onClick={update}>Confirmar <i className="fas fa-check"></i></button>
         </div>
 
 

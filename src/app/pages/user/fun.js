@@ -1323,7 +1323,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         openModal={openModal} />
                     <div style={{ paddingLeft: '175px', paddingRight: '175px' }}>
                         <MDBRow>
-                            <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
+                            <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
                             <MDBCol md="6">
                                 <MDBCard className="bg-card mb-3">
                                     <MDBCardBody>
@@ -1332,27 +1332,27 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                                             <div className='row'>
                                                 <div className='col'>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-info text-white">
-                                                            <i class="far fa-calendar-alt"></i>
+                                                    <div className="input-group">
+                                                        <span className="input-group-text bg-info text-white">
+                                                            <i className="far fa-calendar-alt"></i>
                                                         </span>
-                                                        <input type="date" class="form-control" id="f_01" required />
+                                                        <input type="date" className="form-control" id="f_01" required />
                                                     </div>
                                                 </div>
                                                 <div className='col-7'>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-info text-white">
-                                                            <i class="fas fa-hashtag"></i>
+                                                    <div className="input-group">
+                                                        <span className="input-group-text bg-info text-white">
+                                                            <i className="fas fa-hashtag"></i>
                                                         </span>
-                                                        <input type="text" class="form-control" defaultValue={nomens} id="f_02" required />
-                                                        <MDBBtn class="btn btn-sm btn-info shadow-none m-1"
+                                                        <input type="text" className="form-control" defaultValue={nomens} id="f_02" required />
+                                                        <MDBBtn className="btn btn-sm btn-info shadow-none m-1"
                                                             onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</MDBBtn>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className="text-center">
-                                                <button className="btn btn btn-success my-1"><i class="fas fa-folder-plus"></i> CREAR </button>
+                                                <button className="btn btn btn-success my-1"><i className="fas fa-folder-plus"></i> CREAR </button>
                                             </div>
                                         </form>
                                     </MDBCardBody>
@@ -1365,11 +1365,11 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                         <form onSubmit={search} id="app-form">
                                             <div className='row'>
                                                 <div className='col'>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-info text-white">
-                                                            <i class="fas fa-info-circle"></i>
+                                                    <div className="input-group">
+                                                        <span className="input-group-text bg-info text-white">
+                                                            <i className="fas fa-info-circle"></i>
                                                         </span>
-                                                        <select class="form-select" id="search_0" required>
+                                                        <select className="form-select" id="search_0" required>
                                                             <option value="1">Número de Radicado</option>
                                                             <option value="2">Número de Matricula Inmobiliaria</option>
                                                             <option value="3">Número de Indentificacion Predial/Catastral</option>
@@ -1380,16 +1380,16 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                     </div>
                                                 </div>
                                                 <div className='col'>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-info text-white">
-                                                            <i class="far fa-comment-dots"></i>
+                                                    <div className="input-group">
+                                                        <span className="input-group-text bg-info text-white">
+                                                            <i className="far fa-comment-dots"></i>
                                                         </span>
-                                                        <input type="text" class="form-control" id="search_1" />
+                                                        <input type="text" className="form-control" id="search_1" />
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="text-center">
-                                                <button className="btn btn-secondary mt-1"><i class="fas fa-search-plus"></i> CONSULTAR </button>
+                                                <button className="btn btn-secondary mt-1"><i className="fas fa-search-plus"></i> CONSULTAR </button>
                                             </div>
                                         </form>
                                     </MDBCardBody>
@@ -1402,7 +1402,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         <div className="row d-flex justify-content-center">
                             <div className="col-12">
 
-                                <h2 class="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} class="" height="75px" alt="..." /></h2>
+                                <h2 className="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} className="" height="75px" alt="..." /></h2>
 
                                 <DataTable
                                     conditionalRowStyles={rowSelectedStyle}
@@ -1579,7 +1579,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         <MDBTabsPane show={state.fillActive === '100'}>
 
                             <div className='my-2'><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(state.list_archive, "LICENCIAS ARCHIVADAS") }}
-                            ><i class="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                            ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
 
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
@@ -1613,7 +1613,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
 
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {state.currentPublic} </label>
+                        <label><i className="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1628,7 +1628,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1638,7 +1638,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {state.currentPublic}</label>
+                        <label><i className="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {state.currentPublic}</label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_c()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1655,7 +1655,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_c}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1666,7 +1666,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {state.currentPublic} </label>
+                        <label><i className="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_n()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1681,7 +1681,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_n}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1692,7 +1692,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {state.currentPublic} </label>
+                        <label><i className="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_d()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1706,7 +1706,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_d}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1717,7 +1717,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {state.currentPublic} </label>
+                        <label><i className="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_alert()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1732,7 +1732,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_alert}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1743,7 +1743,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {state.currentPublic} </label>
+                        <label><i className="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_clock()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1757,7 +1757,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_clock}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1768,7 +1768,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {state.currentPublic} </label>
+                        <label><i className="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordArc()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1784,7 +1784,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordArc}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1795,7 +1795,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {state.currentPublic} </label>
+                        <label><i className="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordLaw()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1810,7 +1810,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordLaw}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1821,7 +1821,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {state.currentPublic} </label>
+                        <label><i className="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordPH()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1837,7 +1837,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordPH}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1848,7 +1848,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {state.currentPublic} </label>
+                        <label><i className="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordEng()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1863,7 +1863,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordEng}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1874,7 +1874,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {state.currentPublic} </label>
+                        <label><i className="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordReview()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1888,7 +1888,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_recordReview}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1899,7 +1899,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {state.currentPublic} </label>
+                        <label><i className="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_exp()}></MDBBtn>
                     </div>
                     {modalHeader}
@@ -1913,7 +1913,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={toggle_exp}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>
@@ -1924,7 +1924,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i class="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {state.currentPublic} </label>
+                        <label><i className="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {state.currentPublic} </label>
                         <MDBBtn className='btn-close' color='none' onClick={() => setState({ modal_asign_prof: false })}></MDBBtn>
                     </div>
 
@@ -1938,7 +1938,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <MDBBtn color='info' onClick={() => setState({ modal_asign_prof: false })}>
-                            <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
                         </MDBBtn>
                     </div>
                 </Modal>

@@ -227,10 +227,10 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             // '-6': 'NEGADA',
         }
         const resolveStatusIcon = {
-            '-1': <i class="far fa-dot-circle text-muted" style={{ fontSize: '150%' }}></i>,
-            '0': <i class="far fa-times-circle text-danger" style={{ fontSize: '150%' }}></i>,
-            '1': <i class="far fa-check-circle text-success" style={{ fontSize: '150%' }}></i>,
-            '2': <i class="fas fa-clock text-primary" style={{ fontSize: '150%' }}></i>,
+            '-1': <i className="far fa-dot-circle text-muted" style={{ fontSize: '150%' }}></i>,
+            '0': <i className="far fa-times-circle text-danger" style={{ fontSize: '150%' }}></i>,
+            '1': <i className="far fa-check-circle text-success" style={{ fontSize: '150%' }}></i>,
+            '2': <i className="fas fa-clock text-primary" style={{ fontSize: '150%' }}></i>,
         }
 
         // DATA GETTERS
@@ -396,18 +396,18 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         </div>
                         <div className="col">
                             Fecha de Evento
-                            <input type="date" class="form-control" max="2100-01-01" id="fun_cloclneg_2"
+                            <input type="date" className="form-control" max="2100-01-01" id="fun_cloclneg_2"
                                 defaultValue={moment().format('YYYY-MM-DD')} required />
                         </div>
                         <div className="col">
                             Profesional que abre proceso
-                            <input type="text" class="form-control" id="fun_cloclneg_3" disabled
+                            <input type="text" className="form-control" id="fun_cloclneg_3" disabled
                                 defaultValue={window.user.name + " " + window.user.surname} />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <button className="btn btn-danger" ><i class="far fa-times-circle"></i> ABRIR PROCESO </button>
+                            <button className="btn btn-danger" ><i className="far fa-times-circle"></i> ABRIR PROCESO </button>
                         </div>
                     </div>
                 </form>
@@ -426,18 +426,18 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         </div>
                         <div className="col">
                             Fecha de Evento
-                            <input type="date" class="form-control" max="2100-01-01" id="fun_clock_cancel_2"
+                            <input type="date" className="form-control" max="2100-01-01" id="fun_clock_cancel_2"
                                 defaultValue={moment().format('YYYY-MM-DD')} required />
                         </div>
                         <div className="col">
                             Profesional realiza cambio
-                            <input type="text" class="form-control" id="fun_clock_cancel_3" disabled
+                            <input type="text" className="form-control" id="fun_clock_cancel_3" disabled
                                 defaultValue={window.user.name + " " + window.user.surname} />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <button className="btn btn-info" ><i class="far fa-times-circle"></i> CANCELAR PROCESO </button>
+                            <button className="btn btn-info" ><i className="far fa-times-circle"></i> CANCELAR PROCESO </button>
                         </div>
                     </div>
                 </form>
@@ -450,19 +450,19 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 <div className="row mb-1">
                     <div className="col">
                         <label>Evento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
-                            <input type="text" class="form-control" disabled
+                            <input type="text" className="form-control" disabled
                                 defaultValue={data.name} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Resultado evento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
                             <select className='form-select' id={"f_clock_next_1_" + state} defaultValue={data.resolver_sattus} >
                                 <option value="-1">SIN DEFINIR</option>
@@ -474,19 +474,19 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     </div>
                     <div className="col">
                         <label>Fecha Evento</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" class="form-control" max="2100-01-01" id={"f_clock_next_2_" + state}
+                            <input type="date" className="form-control" max="2100-01-01" id={"f_clock_next_2_" + state}
                                 defaultValue={data.date_start ?? moment().format('YYYY-MM-DD')} required />
                         </div>
                     </div>
                     <div className="col">
                         <label>Soporte: Relacionar Documento </label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file"></i>
                             </span>
                             <select className='form-select' id={"f_clock_next_3_" + state} defaultValue={data.resolver_id6}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -499,19 +499,19 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 <div className="row mb-1">
                     <div className="col-12">
                         <label>Contexto u Observaciones al resultado de la acción</label>
-                        <textarea class="form-control" id={"f_clock_next_4_" + state} rows="2"
+                        <textarea className="form-control" id={"f_clock_next_4_" + state} rows="2"
                             defaultValue={data.desc}></textarea>
                     </div>
                 </div>
 
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3" onClick={() => save_clock(data)}><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                        <button className="btn btn-success my-3" onClick={() => save_clock(data)}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                     </div>
                     {data.end && data.id ?
                        !_GET_CLOCK_STATE_VERSION(200, data.version) ?
                         <div className="col">
-                            <button className="btn btn-primary my-3" onClick={() => update_fun_0_atFinalProcess(true, data.version)}><i class="fas fa-angle-double-right"></i> SALVAR PROCESO </button>
+                            <button className="btn btn-primary my-3" onClick={() => update_fun_0_atFinalProcess(true, data.version)}><i className="fas fa-angle-double-right"></i> SALVAR PROCESO </button>
                             <p>El proceso continua su curso normal</p>
                         </div>
                         : ''
@@ -522,7 +522,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                             {!_GET_CLOCK_STATE_VERSION(200, data.version)
                                 ?
                                 <div className="col">
-                                    <button className="btn btn-danger my-3" onClick={() => close(data.version)}><i class="fas fa-times"></i> CERRAR PROCESO </button>
+                                    <button className="btn btn-danger my-3" onClick={() => close(data.version)}><i className="fas fa-times"></i> CERRAR PROCESO </button>
                                     <p>El proceso NO fue subsanado y se finaliza</p>
                                 </div>
                                 : ''
@@ -531,7 +531,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                             {_GET_CLOCK_STATE_VERSION(200, data.version)
                                 ?
                                 <div className="col">
-                                    <button className="btn btn-danger my-3" onClick={() => archive(data.version)}><i class="fas fa-times"></i> ARCHIVAR PROCESO </button>
+                                    <button className="btn btn-danger my-3" onClick={() => archive(data.version)}><i className="fas fa-times"></i> ARCHIVAR PROCESO </button>
                                     <p>El proceso NO fue subsanado y se archiva (no se podrá editar)</p>
                                 </div>
                                 : ''

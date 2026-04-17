@@ -111,9 +111,9 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>Copiar Titular o Profesional</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-success text-white">
-                                <i class="far fa-copy"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-success text-white">
+                                <i className="far fa-copy"></i>
                             </span>
                             {_COMPY_COMPONENT()}
                         </div>
@@ -123,21 +123,21 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.3.1 Nombre</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Nombre" id="f_531"
+                            <input type="text" className="form-control" placeholder="Nombre" id="f_531"
                                 defaultValue={_CHILD_VARS.item_5311} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.3.1 Apellido(s)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Apellido(s)" id="f_5312"
+                            <input type="text" className="form-control" placeholder="Apellido(s)" id="f_5312"
                                 defaultValue={_CHILD_VARS.item_5312} />
                         </div>
                     </div>
@@ -146,19 +146,19 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.3.2 Número de Identificación (C.C.)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Numero de Identificación" id="f_532"
+                            <input type="text" className="form-control" placeholder="Numero de Identificación" id="f_532"
                                 defaultValue={_CHILD_VARS.item_532} onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.3.3 En calidad de:</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-user"></i>
                             </span>
                             <input className='form-select' list="f53_roles" id="f_533" defaultValue={_CHILD_VARS.item_533} required />
 
@@ -184,21 +184,21 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.3.4 Teléfono de Contacto</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-phone-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-phone-alt"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Teléfono" id="f_534"
+                            <input type="text" className="form-control" placeholder="Teléfono" id="f_534"
                                 defaultValue={_CHILD_VARS.item_534} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>5.3.5 Correo Electrónico</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Correo Electrónico" id="f_535"
+                            <input type="text" className="form-control" placeholder="Correo Electrónico" id="f_535"
                                 defaultValue={_CHILD_VARS.item_535} />
                         </div>
                     </div>
@@ -207,19 +207,19 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>5.3.6 Dirección para correspondencia</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-map-marked-alt"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-map-marked-alt"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Dirección para correspondencia" id="f_536"
+                            <input type="text" className="form-control" placeholder="Dirección para correspondencia" id="f_536"
                                 defaultValue={_CHILD_VARS.item_536} />
                         </div>
                     </div>
                     <div className="col-5">
                         <label>5.3.7 Relacionar Documento: Doc. de Identidad</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file"></i>
                             </span>
                             <select className='form-select' id="f_53_doc1" defaultValue={_GET_DOC_VALUE(0)}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -240,9 +240,9 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <div className="row mb-2">
                     <div className="col-5">
                         <label>5.3.8 Poder, mandato o autorización debidamente otorgado</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-file"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-file"></i>
                             </span>
                             <select className='form-select' id="f_53_doc2" defaultValue={_GET_DOC_VALUE(1)}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -425,7 +425,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     {_CHILD_53_COMPONENT()}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <button className="btn btn-success my-3"><i class="far fa-file-alt"></i> ACTUALIZAR ITEM </button>
+                            <button className="btn btn-success my-3"><i className="far fa-file-alt"></i> ACTUALIZAR ITEM </button>
                         </div>
                     </div>
                 </form>

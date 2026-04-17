@@ -605,9 +605,9 @@ export default function EXP_CLOCKS(props) {
       width: '90vw', // Usamos un ancho relativo al viewport para mayor espacio
       showCancelButton: true,
       showDenyButton: hasSchedule,
-      confirmButtonText: '<i class="fas fa-save me-2"></i>Guardar Programación',
+      confirmButtonText: '<i className="fas fa-save me-2"></i>Guardar Programación',
       cancelButtonText: 'Cancelar',
-      denyButtonText: '<i class="fas fa-trash me-2"></i>Eliminar Programación',
+      denyButtonText: '<i className="fas fa-trash me-2"></i>Eliminar Programación',
       customClass: {
         popup: 'schedule-modal-popup', // Clase para control de altura y scroll
       },

@@ -60,10 +60,10 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                     cell: row => <>
                         <MDBTooltip title='Modificar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                             <button onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i class="far fa-edit "></i></button></MDBTooltip>
+                                <i className="far fa-edit "></i></button></MDBTooltip>
                         <MDBTooltip title='Eliminar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                             <button onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
-                                <i class="far fa-trash-alt "></i></button></MDBTooltip>
+                                <i className="far fa-trash-alt "></i></button></MDBTooltip>
                     </>,
                 },
             ]
@@ -82,18 +82,18 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
             var _COMPONENT = [];
             _COMPONENT.push(<div className="row">
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-user"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-user"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Nombre Completo" id={"pqrs_edit_solicitor_1"+_edit} />
+                        <input type="text" className="form-control" placeholder="Nombre Completo" id={"pqrs_edit_solicitor_1"+_edit} />
                     </div>
 
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-user"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-user"></i>
                         </span>
-                        <select class="form-select" id={"pqrs_edit_solicitor_2"+_edit}>
+                        <select className="form-select" id={"pqrs_edit_solicitor_2"+_edit}>
                             <option>NATURAL</option>
                             <option>JURIDICO</option>
                             <option>ESTABLECIMIENTO DE COMERCIO</option>
@@ -102,18 +102,18 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                     </div>
                 </div>
                 <div className="col-lg-6 col-md-6">
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-id-card"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-id-card"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Numero de Documento" id={"pqrs_edit_solicitor_3"+_edit} />
+                        <input type="text" className="form-control" placeholder="Numero de Documento" id={"pqrs_edit_solicitor_3"+_edit} />
                     </div>
 
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-id-card"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-id-card"></i>
                         </span>
-                        <select class="form-select" id={"pqrs_edit_solicitor_4"+_edit}>
+                        <select className="form-select" id={"pqrs_edit_solicitor_4"+_edit}>
                             <option>CEDULA DE CIUDADANIA</option>
                             <option>NIT</option>
                             <option>CEDULA DE EXTRANJERIA</option>
@@ -283,9 +283,9 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
         }
         return (
             <div>
-                <div class="form-check ms-5">
-                    <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label class="form-check-label" for="flexCheckDefault">
+                <div className="form-check ms-5">
+                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir Peticionario
                     </label>
                 </div>
@@ -294,7 +294,7 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                         {_COMPONENT_MANAGE("")}
                         <div className="text-center">
                             <button className="btn btn-sm btn-success my-3">
-                                <i class="far fa-share-square"></i> AÑADIR ITEM
+                                <i className="far fa-share-square"></i> AÑADIR ITEM
                             </button>
                         </div>
                     </form>
@@ -308,7 +308,7 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                         {_COMPONENT_MANAGE("_edit")}
                         <div className="text-center">
                             <button className="btn btn-sm btn-success my-3">
-                                <i class="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </form>

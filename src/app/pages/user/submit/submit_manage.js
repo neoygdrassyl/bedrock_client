@@ -106,25 +106,25 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
 
         }
         let _VERIFY_RELATED_ID = () => {
-            setVerifyMSG(<label className="fw-bold"><i class="fas fa-search-location text-info"></i> Buscando...</label>)
+            setVerifyMSG(<label className="fw-bold"><i className="fas fa-search-location text-info"></i> Buscando...</label>)
             var id = document.getElementById('submit_2').value;
             if (id.length) {
                 _GET_TYPE(id)
                 SubmitService.verifyid(id)
                     .then(response => {
                         if (response.data.length) {
-                            setVerifyMSG(<label className="fw-bold"><i class="fas fa-check text-success"></i> Se encontro consecutivo</label>)
+                            setVerifyMSG(<label className="fw-bold"><i className="fas fa-check text-success"></i> Se encontro consecutivo</label>)
                         } else {
-                            setVerifyMSG(<label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> No se encontro consecutivo</label>)
+                            setVerifyMSG(<label className="fw-bold"><i className="fas fa-exclamation text-warning"></i> No se encontro consecutivo</label>)
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        setVerifyMSG(<label className="fw-bold"><i class="fas fa-exclamation text-warning"></i> Se encontraron errores en el Codigo a buscar</label>)
+                        setVerifyMSG(<label className="fw-bold"><i className="fas fa-exclamation text-warning"></i> Se encontraron errores en el Codigo a buscar</label>)
                     });
             } else {
                 document.getElementById('submit_4').value = ""
-                setVerifyMSG(<label className="fw-bold"><i class="fas fa-times text-danger"></i> Debe especificar un consecutivo de Licencia o JUR.</label>)
+                setVerifyMSG(<label className="fw-bold"><i className="fas fa-times text-danger"></i> Debe especificar un consecutivo de Licencia o JUR.</label>)
             }
         }
         let _GET_TYPE = (id_public) => {
@@ -226,24 +226,24 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 <div className="row">
                     <div className="col-4">
                         <label >1. Número de radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" id="submit_1" required
+                            <input type="text" className="form-control" id="submit_1" required
                                 defaultValue={_CHILD.id_public} />
-                            <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                         </div>
                     </div>
                     <div className="col-5">
                         <label >2. Número de solicitud</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" id="submit_2"
+                            <input type="text" className="form-control" id="submit_2"
                                 defaultValue={_CHILD.id_related} />
-                            <button type="button" class="btn btn-warning shadow-none"
+                            <button type="button" className="btn btn-warning shadow-none"
                                 onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</button>
                         </div>
                         {verifyMSG}
@@ -252,11 +252,11 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         {payment
                             ? <>
                                 <label >2.1 Consecutivo Pago</label>
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text bg-info text-white">
-                                        <i class="fas fa-hashtag"></i>
+                                <div className="input-group mb-1">
+                                    <span className="input-group-text bg-info text-white">
+                                        <i className="fas fa-hashtag"></i>
                                     </span>
-                                    <input type="text" class="form-control" id="submit_21" required
+                                    <input type="text" className="form-control" id="submit_21" required
                                         defaultValue={_CHILD.id_related} />
                                 </div>
                             </>
@@ -266,17 +266,17 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 {!edit
                     ? <div className="row text-end">
                         <div className="col-8">
-                            <div class="form-check my-3 px-5">
-                                <input class="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
-                                <p class="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
+                            <div className="form-check my-3 px-5">
+                                <input className="form-check-input" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
+                                <p className="form-check-label text-start" >SE ENTREGA PAGO DE EXPENSAS FIJAS Y GENERAR SOLICITUD</p>
                             </div>
                         </div>
                         <div className="col-4">
                             {payment
                                 ? <>
-                                    <button type="button" class="btn btn-info shadow-none me-1"
+                                    <button type="button" className="btn btn-info shadow-none me-1"
                                         onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</button>
-                                    <button type="button" class="btn btn-info shadow-none"
+                                    <button type="button" className="btn btn-info shadow-none"
                                         onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</button>
                                 </>
                                 : ""}
@@ -292,11 +292,11 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 <div className="row">
                     <div className="col-12">
                         <label >3.1 Tipo</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
-                            <input list="submit_type" class="form-control" id="submit_4"
+                            <input list="submit_type" className="form-control" id="submit_4"
                                 defaultValue={_CHILD.type} utocomplete="off" maxLength={250} />
                             <datalist id="submit_type">
                                 <option value="LICENCIA" />
@@ -316,18 +316,18 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 <div className="row">
                     <div className="col-6">
                         <label >3.2 Estado</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="fas fa-hashtag"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="fas fa-hashtag"></i>
                             </span>
-                            <input type="text" class="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
+                            <input type="text" className="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
                         </div>
                     </div>
                     <div className="col-6">
                         <label >3.3 Tipo de Radicación</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-check-square"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-check-square"></i>
                             </span>
                             <select className='form-select' id="submit_41" defaultValue={_CHILD.list_type}>
                                 <option value={1} selected={_CHILD.list_type == 1}>RADICACIÓN SOLICITUD</option>
@@ -359,24 +359,24 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 <div className="row">
                     <div className="col-6">
                         <label >4 Fecha y hora ingreso</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-calendar-alt"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" max="2100-01-01" class="form-control" id="submit_3" required
+                            <input type="date" max="2100-01-01" className="form-control" id="submit_3" required
                                 defaultValue={_CHILD.date} />
-                            <input type="time" class="form-control" id="submit_32"
+                            <input type="time" className="form-control" id="submit_32"
                                 defaultValue={_CHILD.time} />
                         </div>
                     </div>
 
                     <div className="col-6">
                         <label >5. Propietarios</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="submit_5" maxLength={250}
+                            <input type="text" className="form-control" id="submit_5" maxLength={250}
                                 defaultValue={_CHILD.owner} />
                         </div>
                     </div>
@@ -385,31 +385,31 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 <div className="row">
                     <div className="col-4">
                         <label >7. Funcionario que recibe</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="submit_7" disabled
+                            <input type="text" className="form-control" id="submit_7" disabled
                                 defaultValue={_CHILD.worker_reciever} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label >8. Persona que entrega</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="submit_8" maxLength={250}
+                            <input type="text" className="form-control" id="submit_8" maxLength={250}
                                 defaultValue={_CHILD.name_retriever} />
                         </div>
                     </div>
                     <div className="col-4">
                         <label >8.1 C.C. Persona</label>
-                        <div class="input-group mb-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="submit_81" maxLength={250}
+                            <input type="text" className="form-control" id="submit_81" maxLength={250}
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
                                 defaultValue={_CHILD.id_number_retriever} />
                         </div>
@@ -419,7 +419,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 <div className="row mt-2">
                     <div className="col-12">
                         <label >9. Observaciones y detalles (Maximo 2000 Caracteres)</label>
-                        <textarea class="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
+                        <textarea className="form-control mb-3" rows="3" maxLength="2000" id="submit_9"
                             defaultValue={_CHILD.details}></textarea>
                     </div>
                 </div>
@@ -585,8 +585,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
                                     {currentItem
-                                        ? <button className="btn btn-success my-3"><i class="far fa-edit"></i> GUARDAR CAMBIOS </button>
-                                        : <button className="btn btn-success my-3"><i class="fas fa-plus-circle"></i> CREAR </button>}
+                                        ? <button className="btn btn-success my-3"><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                                        : <button className="btn btn-success my-3"><i className="fas fa-plus-circle"></i> CREAR </button>}
 
                                 </div>
                             </div>

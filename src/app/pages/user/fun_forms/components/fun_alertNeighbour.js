@@ -170,35 +170,35 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 <div className="row mb-3">
                     <div className="col">
                         <label>2.1.1. Fecha de documento</label>
-                        <input type="date" class="form-control" max='2100-01-01' id="gen_alert_date" required
+                        <input type="date" className="form-control" max='2100-01-01' id="gen_alert_date" required
                             defaultValue={moment().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>2.1.2 Fecha de Pago</label>
-                        <div class="input-group my-1">
-                            <input type="date" class="form-control" max='2100-01-01' id="gen_pay_date"
+                        <div className="input-group my-1">
+                            <input type="date" className="form-control" max='2100-01-01' id="gen_pay_date"
                                 defaultValue={_GET_CLOCK_STATE(3).date_start} />
                         </div>
                     </div>
                     <div className="col">
                         <label>2.1.3 Consecutivo de Salida</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id="gen_alert_id_cub"
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id="gen_alert_id_cub"
                                 defaultValue={_GET_CHILD_3_IDCUB_DEFAULT() || cubSelected || ""} />
                         </div>
                     </div>
                     <div></div>
                     <div className="col">
                         <label>2.1.4 Consecutivo Radicado</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id="gen_alert_id_public" disabled
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id="gen_alert_id_public" disabled
                                 defaultValue={currentItem.id_public} />
                         </div>
                     </div>
                     <div className="col ms-auto" >
                         <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
-                        <div class="input-group ">
-                            <select class="form-select" id="vr_selected" defaultValue={vr || ""} onChange={(e) => { setVr(e.target.value) }}>
+                        <div className="input-group ">
+                            <select className="form-select" id="vr_selected" defaultValue={vr || ""} onChange={(e) => { setVr(e.target.value) }}>
                                 <option value=''>Seleccione una opción</option>
                                 {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
@@ -212,15 +212,15 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.1.5 Dirección</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="gen_alert_address"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="gen_alert_address"
                                 defaultValue={_CHILD_2.item_211} />
                             <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("gen_alert_address", _CHILD_2)}>DIRECCIÓN COMPLETA</button>
                         </div>
                     </div>
                     <div className="col-6">
                         <label>2.1.6 Ciudad</label>
-                        <input type="text" class="form-control" id="gen_alert_city"
+                        <input type="text" className="form-control" id="gen_alert_city"
                             defaultValue={infoCud.city} />
                     </div>
                 </div>
@@ -228,17 +228,17 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 <div className="row mb-3">
                     <div className="col-4">
                         <label>2.1.7 Número Predial/Catastral</label>
-                        <input type="text" class="form-control" id="gen_alert_predial"
+                        <input type="text" className="form-control" id="gen_alert_predial"
                             defaultValue={(_CHILD_2.item_23).replaceAll('-', '')} />
                     </div>
                     <div className="col-4">
                         <label>2.1.8 Número de Matricula</label>
-                        <input type="text" class="form-control" id="gen_alert_matricula"
+                        <input type="text" className="form-control" id="gen_alert_matricula"
                             defaultValue={(_CHILD_2.item_22).replaceAll('-', ' ')} />
                     </div>
                     <div className="col-4">
                         <label>2.1.9 Propietario Predio</label>
-                        <input type="text" class="form-control" id="gen_alert_owner"
+                        <input type="text" className="form-control" id="gen_alert_owner"
                             defaultValue={_CHILD_51_OWNERS()} />
                     </div>
                 </div>
@@ -246,13 +246,13 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.1.10 Descripción del Proyecto</label>
-                        <textarea rows="3" class="form-control" id="gen_alert_description"
+                        <textarea rows="3" className="form-control" id="gen_alert_description"
                             defaultValue={_CHILD_1.description}
                         />
                     </div>
                     <div className="col-6">
                         <label>2.1.11 Tipo de Solicitud</label>
-                        <textarea rows="3" class="form-control" id="gen_alert_type"
+                        <textarea rows="3" className="form-control" id="gen_alert_type"
                             defaultValue={formsParser1(_CHILD_1)} />
                     </div>
                 </div>
@@ -260,16 +260,16 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 <div className="row mb-3">
                     <div className="col-6">
                         <label>2.1.12 Vecino Colindante</label>
-                        <select class="form-select" required id="gen_alert_address_n"
+                        <select className="form-select" required id="gen_alert_address_n"
                             onChange={(e) => _GET_CHILD_3_IDCUB(e.target.value)}>
                             {_CHILD_3_SELECT()}
                         </select>
                     </div>
                     <div className="col-6">
                         <br />
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="digital_firm" />
-                            <label class="form-check-label" for="digital_firm">
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" value="" id="digital_firm" />
+                            <label className="form-check-label" htmlFor="digital_firm">
                                 Usar firma digital
                             </label>
                         </div>
@@ -277,13 +277,13 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 </div>
                 <div className="row text-center">
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(false)}><i class="fas fa-file-download"></i> GENERAR CARTA</button>
+                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(false)}><i className="fas fa-file-download"></i> GENERAR CARTA</button>
                     </div>
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(true)}><i class="fas fa-file-download"></i> GENERAR CARTA Y LISTA</button>
+                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(true)}><i className="fas fa-file-download"></i> GENERAR CARTA Y LISTA</button>
                     </div>
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_npublish()}><i class="fas fa-file-download"></i> GENERAR PUBLICACIÓN</button>
+                        <button className="btn btn-danger my-3" onClick={() => gen_doc_npublish()}><i className="fas fa-file-download"></i> GENERAR PUBLICACIÓN</button>
                     </div>
                 </div>
             </>

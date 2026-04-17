@@ -58,7 +58,7 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
                     minWidth: '150px',
                     cell: row => <>
                         <VIZUALIZER url={row.name} apipath={row.path.includes('input') ? '/files/pqrsa/' : '/files/pqrs/'} />
-                        {add ? <MDBBtn className="btn btn-sm btn-danger mx-1 p-2" onClick={() => deteleAttach(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn> : ''}
+                        {add ? <MDBBtn className="btn btn-sm btn-danger mx-1 p-2" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn> : ''}
                     </>,
                 },
             ]
@@ -80,14 +80,14 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="text" class="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
-                            <select class="form-select"  name="files_class">
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                            <select className="form-select"  name="files_class">
                                 <option value={'0'}>DOCUMENTO DE ENTRADA / ANEXO</option>
                                 <option value={'2'}>DOCUMENTO DE RESPUESTA / SALIDA</option>
                             </select>
@@ -99,11 +99,11 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
             return <div>
                 <p className="lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO</p>
                 <div className="text-end m-3">
-                    {attachs > 0 ? <MDBBtn className="btn btn-sm btn-success" onClick={() => addAttachsClose()}><i class="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </MDBBtn> : ""}
+                    {attachs > 0 ? <MDBBtn className="btn btn-sm btn-success" onClick={() => addAttachsClose()}><i className="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </MDBBtn> : ""}
                     {attachs > 0
-                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                         : ""}
-                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                 </div>
                 {_COMPONENT}
 

@@ -120,7 +120,7 @@ export default function VIEWER(props) {
     return (
         <>
         <MDBBtn className="btn btn-sm btn-info px-2 ms-2" onClick={() => setModalV(!modalViwewer)} >
-            <i class="fas fa-search"></i>
+            <i className="fas fa-search"></i>
         </MDBBtn>
 
             <Modal
@@ -131,8 +131,8 @@ export default function VIEWER(props) {
             >
                 <div className="my-2 d-flex justify-content-between ">
                     <div className='row'>
-                        <div class="input-group">
-                            <label className=''><i class="fas fa-hard-hat"></i> DOCUMENTO</label>
+                        <div className="input-group">
+                            <label className=''><i className="fas fa-hard-hat"></i> DOCUMENTO</label>
                         </div>
                     </div>
 
@@ -142,7 +142,7 @@ export default function VIEWER(props) {
 
                 <div className='row my-1'>
                     <div className='col-3'>
-                        <select class="form-select" defaultValue={scale} onChange={(e) => setScale(e.target.value)}>
+                        <select className="form-select" defaultValue={scale} onChange={(e) => setScale(e.target.value)}>
                             <option value={0.75}>Zoom x0.75</option>
                             <option value={1}>Zoom x1</option>
                             <option value={1.5}>Zoom x1.5</option>
@@ -178,8 +178,8 @@ export default function VIEWER(props) {
                 </div>
                 <hr />
                 <div className="text-end py-2">
-                    <a className="btn btn-sm btn-danger me-2" href={urlImg || urlFile} target='_blank'><i class="fas fa-cloud-download-alt"></i> DESCARGA</a>
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModalV(!modalViwewer)}><i class="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <a className="btn btn-sm btn-danger me-2" href={urlImg || urlFile} target='_blank'><i className="fas fa-cloud-download-alt"></i> DESCARGA</a>
+                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModalV(!modalViwewer)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
                 </div>
             </Modal>
         </>

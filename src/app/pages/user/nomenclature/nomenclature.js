@@ -121,8 +121,8 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 filterable: true,
                 center: true,
                 cell: row => <label>{row.nome_doc
-                    ? <i class="text-success fas fa-check fa-2x"></i>
-                    : <i class="text-danger fas fa-times fa-2x"></i>}</label>
+                    ? <i className="text-success fas fa-check fa-2x"></i>
+                    : <i className="text-danger fas fa-times fa-2x"></i>}</label>
             },
             {
                 name: <label>ACCIÓN</label>,
@@ -131,11 +131,11 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 cell: row => <>
                     <MDBTooltip title='Ver detalles' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
                         <button onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <i class="far fa-folder-open fa-2x" ></i></button></MDBTooltip>
+                            <i className="far fa-folder-open fa-2x" ></i></button></MDBTooltip>
 
                     <MDBTooltip title='Eliminar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                         <button onClick={() => delete_nomenclature(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                            <i class="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
+                            <i className="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
                 </>,
             },
         ]
@@ -329,12 +329,12 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 <div className="col-12 d-flex justify-content-start p-0">
                     <MDBBreadcrumb className="mb-0 p-0 ms-0">
                         <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
                         </MDBBreadcrumbItem>
                         <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
                         </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i class="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u9}</label></MDBBreadcrumbItem>
+                        <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u9}</label></MDBBreadcrumbItem>
                     </MDBBreadcrumb>
                 </div>
 
@@ -343,22 +343,22 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         <h1 className="text-center my-4">GESTIÓN DE NOMENCLATURAS</h1>
                         <hr />
 
-                        <h2 class="text-uppercase text-center pb-2">ACCIONES</h2>
+                        <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
                         <div className="row">
                             <div className="col-4">
-                                <div class="text-center py-4 mt-3">
-                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><i class="fas fa-plus-circle"></i> CREAR NOMENCLATURA </button>
+                                <div className="text-center py-4 mt-3">
+                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><i className="fas fa-plus-circle"></i> CREAR NOMENCLATURA </button>
                                 </div>
                             </div>
                             <div className="col-4">
                                 <MDBCard className="bg-card mb-3">
                                     <MDBCardBody>
                                         <MDBCardTitle className="text-center"> <h4>CONSULTAR NOMENCLATURA</h4></MDBCardTitle>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="fas fa-info-circle"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="fas fa-info-circle"></i>
                                             </span>
-                                            <select class="form-select" id="nomen_search_0" required>
+                                            <select className="form-select" id="nomen_search_0" required>
                                                 <option value="1">Número de Radicado</option>
                                                 <option value="2">Número de Matricula Inmobiliaria</option>
                                                 <option value="3">Número de Identificación Predial/Catastral</option>
@@ -367,14 +367,14 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                                 <option value="6">Nombre Solicitante</option>
                                             </select>
                                         </div>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-comment-dots"></i>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="far fa-comment-dots"></i>
                                             </span>
-                                            <input type="text" class="form-control" id="nomen_search_1" placeholder="Buscar..." />
+                                            <input type="text" className="form-control" id="nomen_search_1" placeholder="Buscar..." />
                                         </div>
                                         <div className="text-center py-2">
-                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><i class="fas fa-search-plus"></i> CONSULTAR </button>
+                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><i className="fas fa-search-plus"></i> CONSULTAR </button>
                                         </div>
                                     </MDBCardBody>
                                 </MDBCard>
@@ -384,22 +384,22 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                     <MDBCardBody>
                                         <MDBCardTitle className="text-center"> <h4>GENERAR EXCEL</h4></MDBCardTitle>
                                         <form onSubmit={get_cvs} id="fun_form_nomenclature_cvs_gen">
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="far fa-calendar-alt"></i>
+                                            <div className="input-group mb-3">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="far fa-calendar-alt"></i>
                                                 </span>
-                                                <input type="date" class="form-control" id="nomenclature_cvs_gen_1" required
+                                                <input type="date" className="form-control" id="nomenclature_cvs_gen_1" required
                                                     defaultValue={moment().subtract(8, 'days').format('YYYY-MM-DD')} />
                                             </div>
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text bg-info text-white">
-                                                    <i class="far fa-calendar-alt"></i>
+                                            <div className="input-group mb-3">
+                                                <span className="input-group-text bg-info text-white">
+                                                    <i className="far fa-calendar-alt"></i>
                                                 </span>
-                                                <input type="date" class="form-control" id="nomenclature_cvs_gen_2" required
+                                                <input type="date" className="form-control" id="nomenclature_cvs_gen_2" required
                                                     defaultValue={moment().format('YYYY-MM-DD')} />
                                             </div>
                                             <div className="text-center py-2">
-                                                <button className="btn btn-success"><i class="far fa-file-excel"></i> DESCARGAR </button>
+                                                <button className="btn btn-success"><i className="far fa-file-excel"></i> DESCARGAR </button>
                                             </div>
                                         </form>
                                     </MDBCardBody>
@@ -411,7 +411,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
 
                 <div className="row d-flex justify-content-center">
                     <div className="col-10">
-                        <h2 class="text-uppercase text-center pb-2">Lista de Nomenclaturas</h2>
+                        <h2 className="text-uppercase text-center pb-2">Lista de Nomenclaturas</h2>
                         <div className="text-center">
                             {isLoaded ? (
                                 <DataTable
@@ -444,7 +444,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i class="far fa-edit"></i> ACTUALIZAR NOMENCLATURA: {currentId} </h3>
+                        <h3><i className="far fa-edit"></i> ACTUALIZAR NOMENCLATURA: {currentId} </h3>
                         <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
                     </div>
                     <NOMENCLATURE_NEW
@@ -454,7 +454,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         currentItem={currentItem} />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -464,7 +464,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i class="fas fa-plus-circle"></i> NUEVA NOMENCLATURA </h3>
+                        <h3><i className="fas fa-plus-circle"></i> NUEVA NOMENCLATURA </h3>
                         <MDBBtn className='btn-close' color='none' onClick={() => toggle_new()}></MDBBtn>
                     </div>
                     <NOMENCLATURE_NEW
@@ -472,7 +472,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         refreshList={refreshList}
                         closeModal={toggle_new} />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><i class="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><i className="fas fa-times-circle"></i> CERRAR </button>
                     </div>
                 </Modal>
 

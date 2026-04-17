@@ -84,8 +84,8 @@ export default function FUN_C_CLOCKS(props) {
     }
     let get_clockExistIcon = (state) => {
         var _CHILD = _GET_CLOCK_STATE(state);
-        if (_CHILD) return <i class="far fa-check-circle text-success"></i>
-        return <i class="far fa-dot-circle"></i>
+        if (_CHILD) return <i className="far fa-check-circle text-success"></i>
+        return <i className="far fa-dot-circle"></i>
     }
 
     let get_map_clock = (_array) => {
@@ -120,7 +120,7 @@ export default function FUN_C_CLOCKS(props) {
                     </div>
                     <div className="col border py-1">
                         {value.state ?
-                            <input type="date" class="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
+                            <input type="date" className="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
                                 defaultValue={_GET_CLOCK_STATE(value.state).date_start ?? ''} onBlur={(e) => save_clock2(value, i)} />
                             : ''}
                     </div>
@@ -166,7 +166,7 @@ export default function FUN_C_CLOCKS(props) {
             <label className="fw-bold mt-2">{get_clockExistIcon(4)} Vencimiento Licencia Inicial</label>
         </div>
         <div className="col border py-1">
-        <input type="date" class="form-control" id={'clock_acta_date_' + 'pro'} max="2100-01-01"
+        <input type="date" className="form-control" id={'clock_acta_date_' + 'pro'} max="2100-01-01"
                     defaultValue={_GET_CLOCK_STATE(4).date_start ?? ''} onBlur={(e) => save_clock2(PRO_CLOCK, 'pro')} />
         </div>
         <div className="col text-center border py-1">

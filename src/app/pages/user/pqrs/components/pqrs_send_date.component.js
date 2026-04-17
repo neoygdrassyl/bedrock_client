@@ -58,11 +58,11 @@ export const PQRS_SEND_DATE = (props) => {
         <div className="row">
             <div className="col-">
                 <label>Fecha envio respuesta</label>
-                <div class="input-group my-1">
-                    <span class="input-group-text bg-info text-white">
-                        <i class="fas fa-calendar-alt"></i>
+                <div className="input-group my-1">
+                    <span className="input-group-text bg-info text-white">
+                        <i className="fas fa-calendar-alt"></i>
                     </span>
-                    <input type='date' class="form-control mb-" rows="3" id="pqrs_visto_worker_1" defaultValue={validations ?? moment().format('YYYY-MM-DD')} onBlur={crearteReply} required></input>
+                    <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_1" defaultValue={validations ?? moment().format('YYYY-MM-DD')} onBlur={crearteReply} required></input>
                 </div>
             </div>
         </div>

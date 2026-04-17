@@ -365,15 +365,15 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                     let cbdv = SUBCATEGORIES[index] == '1' ?? true;
                     return <div className="row border">
                         <div className="col-1">
-                            <div class="custom-control custom-switch">
-                                <div class="form-check form-switch text-end">
-                                    <input class="form-check-input" type="checkbox" defaultChecked={cbdv}
+                            <div className="custom-control custom-switch">
+                                <div className="form-check form-switch text-end">
+                                    <input className="form-check-input" type="checkbox" defaultChecked={cbdv}
                                         name={'subcategory_check'} onChange={() => selectSubCategory(false)} />
                                 </div>
                             </div>
                         </div>
                         <div className="col">
-                            <div class="input-group">
+                            <div className="input-group">
                                 <label className="fw-bold">{Object.keys(value)}</label>
                             </div>
                         </div>

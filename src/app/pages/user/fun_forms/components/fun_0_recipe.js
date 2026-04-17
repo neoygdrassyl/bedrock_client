@@ -114,15 +114,15 @@ function FUN_0_RECIPE(props) {
                     </div>
                     <div className="col-3">
                         <label>consecutivo de Recibo</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control me-1" id="fun_c_payment_2"
+                        <div className="input-group">
+                            <input type="text" className="form-control me-1" id="fun_c_payment_2"
                                 defaultValue={currentItem.id_payment} />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Fecha de Recibo</label>
-                        <div class="input-group">
-                            <input type="date" max="2100-01-01" class="form-control me-1" id="fun_c_payment_1"
+                        <div className="input-group">
+                            <input type="date" max="2100-01-01" className="form-control me-1" id="fun_c_payment_1"
                                 defaultValue={_CHILD_CLOCK.date_start} />
                         </div>
                     </div>
@@ -147,7 +147,7 @@ function FUN_0_RECIPE(props) {
                         : <>
                             <div className="col-6">
                                 <label>Categorización de la Solicitud {currentItem.type ? "" : <label className="text-danger fw-bold">NO ESTA CATEGORIZADO</label>}</label>
-                                <select class="form-select" id="fun_0_cats" defaultValue={currentItem.type}>
+                                <select className="form-select" id="fun_0_cats" defaultValue={currentItem.type}>
                                     <option value="0">Sin Categorizar</option>
                                     <option value="i">Categoria I</option>
                                     <option value="ii">Categoria II</option>
@@ -161,7 +161,7 @@ function FUN_0_RECIPE(props) {
 
                     <div className="col-6">
                         <label>Modelo de Solicitud</label>
-                        <select class="form-select" id="fun_0_model" defaultValue={currentItem.model ?? 2023}>
+                        <select className="form-select" id="fun_0_model" defaultValue={currentItem.model ?? 2023}>
                             <option value="0">Sin modelo</option>
                             <option value={2021}>Res. 463 / 17</option>
                             <option value={2022}>Res. 1026 / 21 (2022)</option>
@@ -189,15 +189,15 @@ function FUN_0_RECIPE(props) {
                 <div className="row my-2">
                     <label className='fw-bold'>Reglas adicionales</label>
                     <div className="col">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[0] == 1} />
-                            <label class="form-check-label">No usar Publicidad</label>
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[0] == 1} />
+                            <label className="form-check-label">No usar Publicidad</label>
                         </div>
                     </div>
                     <div className="col">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[1] == 1} />
-                            <label class="form-check-label" >No usar informe Estructural</label>
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[1] == 1} />
+                            <label className="form-check-label" >No usar informe Estructural</label>
                         </div>
                         <h6><b>Valido para:</b></h6>
                         <ul>
@@ -531,7 +531,7 @@ function FUN_0_RECIPE(props) {
                     {_COMPONENT_PAYMENT()}
                     {_COMPONENT_DESC()}
                     <div className="col-12 text-center">
-                        <button className="btn btn-success btn-lg my-3" id="btn-review"><i class="far fa-share-square"></i> GUARDAR CAMBIOS</button>
+                        <button className="btn btn-success btn-lg my-3" id="btn-review"><i className="far fa-share-square"></i> GUARDAR CAMBIOS</button>
                     </div>
                 </form>
 

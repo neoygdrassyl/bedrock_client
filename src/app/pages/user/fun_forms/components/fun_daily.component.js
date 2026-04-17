@@ -935,14 +935,14 @@ export default function FUN_DAILY_COMPONENT(props) {
     // ******************************* JSX ***************************** // 
     const subHeaderComponentMemo = () => {
         return (
-            <div class="input-group mb-2">
-                <span class="input-group-text bg-light">
-                    <i class="fas fa-search"></i>
+            <div className="input-group mb-2">
+                <span className="input-group-text bg-light">
+                    <i className="fas fa-search"></i>
                 </span>
                 <input type='text' className='form-control' placeholder='Busqueda...' id="ti-search"
                     onChange={(e) => setFilter(e.target.value)} defaultValue={filter} />
                 {filter ?
-                    <MDBBtn link color="danger" size="sm" onClick={() => { setFilter(''); document.getElementById('ti-search').value = '' }}><i class="fas fa-times"></i> </MDBBtn>
+                    <MDBBtn link color="danger" size="sm" onClick={() => { setFilter(''); document.getElementById('ti-search').value = '' }}><i className="fas fa-times"></i> </MDBBtn>
                     : ''}
 
             </div>
@@ -950,9 +950,9 @@ export default function FUN_DAILY_COMPONENT(props) {
     }
     const idHeaderComponent = () => {
         return (
-            <div class="input-group mb-2">
-                <span class="input-group-text bg-light">
-                    <i class="fas fa-hashtag"></i>
+            <div className="input-group mb-2">
+                <span className="input-group-text bg-light">
+                    <i className="fas fa-hashtag"></i>
                 </span>
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
@@ -987,36 +987,36 @@ export default function FUN_DAILY_COMPONENT(props) {
         return <MDBPopoverBody>
             <>
                 {row.priority_index ?
-                    <div class="list-group list-group-flush">
+                    <div className="list-group list-group-flush">
                         <label>INDICE DE PRIORIDAD: {row.priority_index}</label>
                     </div>
                     : ' '}
 
-                <div class="list-group list-group-flush">
-                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-info" ></i> DETALLES</button>
-                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} class="list-group-item list-group-item-action p-1 m-0 " ><i class="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
+                <div className="list-group list-group-flush">
+                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-info" ></i> DETALLES</button>
+                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} className="list-group-item list-group-item-action p-1 m-0 " ><i className="far fa-clock text-secondary" ></i> TIEMPOS</button>
+                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
                     {row.state < 101 ?
                         <>
-                            <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                            <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-check-square text-warning" ></i> CHECKEO</button>
+                            <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
+                            <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-check-square text-warning" ></i> CHECKEO</button>
                             {regexChecker_isPh(row, true) ?
                                 <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>
                                 :
                                 <>
                                     {!isOA && rules[0] != 1 ? <>
-                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
+                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
                                     {!isOA ? <>
-                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
-                                        {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="fas fa-file-contract text-warning" ></i> ACTA</button>
+                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
+                                        {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
+                                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-file-contract text-warning" ></i> ACTA</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} class="list-group-item list-group-item-action p-1 m-0" ><i class="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
                                 </>}
                         </> : <></>}
                 </div>

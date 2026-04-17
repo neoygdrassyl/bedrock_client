@@ -180,9 +180,9 @@ function RECORD_ENG_PROFESIONALS(props) {
                     if (roles.length > 1) {
                         let role = roles[0];
                         roles.map(r => { if (_FIND_PROFESIOANL(r)) role = r });
-                        return <li class="list-group-item">{_PROFESIONAL_JSX(role, i)}</li>
+                        return <li className="list-group-item">{_PROFESIONAL_JSX(role, i)}</li>
                     } else {
-                        return <li class="list-group-item">{_PROFESIONAL_JSX(roles[0], i)}</li>
+                        return <li className="list-group-item">{_PROFESIONAL_JSX(roles[0], i)}</li>
                     }
                 })}
             </>
@@ -192,7 +192,7 @@ function RECORD_ENG_PROFESIONALS(props) {
             let CHECKS = _GET_STEP_TYPE('cb_profs', 'check');
             let dc = CHECKS[i] == 1 ? true : false;
             return <>
-                {useCB ? <input class="form-check-input mx-2" type="checkbox" value={_role} name="cb_profs" defaultChecked={dc || false}
+                {useCB ? <input className="form-check-input mx-2" type="checkbox" value={_role} name="cb_profs" defaultChecked={dc || false}
                     onChange={() => manage_step()} /> : ''}
                 {_FIND_PROFESIOANL(_role)
                     ? <MDBBadge color='success'>DILIGENCIADO</MDBBadge>
@@ -300,7 +300,7 @@ function RECORD_ENG_PROFESIONALS(props) {
         }
         return (
             <div className="record_ph_profesional_evaluation container">
-                <li class="list-group-item"><label className="fw-bold">PROFESIONALES</label></li>
+                <li className="list-group-item"><label className="fw-bold">PROFESIONALES</label></li>
                 {COMPONENT_PROFESIONAL_RULES(profs)}
                 {_PROFESIOAL_INFO_COMPONENT()}
             </div >

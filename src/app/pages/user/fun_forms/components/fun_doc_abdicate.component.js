@@ -170,24 +170,24 @@ export default function FUN_D_ABDICATE(props) {
             <div className="row m-2">
                 <div className="col mx-1">
                     <label>Fecha</label>
-                    <div class="row">
-                        <div class="col mx-0 px-0">
-                            <input type="date" class="form-control form-control-sm" id="fda_date_1" max="2100-01-01" defaultValue={moment().format('YYYY-MM-DD')} />
+                    <div className="row">
+                        <div className="col mx-0 px-0">
+                            <input type="date" className="form-control form-control-sm" id="fda_date_1" max="2100-01-01" defaultValue={moment().format('YYYY-MM-DD')} />
                         </div>
-                        <div class="col mx-0 px-0">
-                            <input type="text" class="form-control form-control-sm" id="fda_date_2" max="2100-01-01" defaultValue={date_1} />
+                        <div className="col mx-0 px-0">
+                            <input type="text" className="form-control form-control-sm" id="fda_date_2" max="2100-01-01" defaultValue={date_1} />
 
                         </div>
                     </div>
                 </div>
                 <div className="col mx-1">
                     <label>Hora</label>
-                    <div class="row">
-                        <div class="col mx-0 px-0">
-                            <input type="time" class="form-control form-control-sm mx-0" id="fda_time_n" defaultValue={moment().format('HH:mm')} />
+                    <div className="row">
+                        <div className="col mx-0 px-0">
+                            <input type="time" className="form-control form-control-sm mx-0" id="fda_time_n" defaultValue={moment().format('HH:mm')} />
                         </div>
-                        <div class="col mx-0 px-0">
-                            <input type="text" class="form-control form-control-sm mx-0" id="fda_time_t" defaultValue={''} />
+                        <div className="col mx-0 px-0">
+                            <input type="text" className="form-control form-control-sm mx-0" id="fda_time_t" defaultValue={''} />
                         </div>
                     </div>
                 </div>
@@ -195,20 +195,20 @@ export default function FUN_D_ABDICATE(props) {
             <div className="row m-2">
                 <div className="col">
                     <label>Radicación</label>
-                    <input type="text" class="form-control form-control-sm" id="fda_id" disabled defaultValue={currentItem.id_public} />
+                    <input type="text" className="form-control form-control-sm" id="fda_id" disabled defaultValue={currentItem.id_public} />
                 </div>
                 <div className="col">
                     <label>Resolución</label>
-                    <input type="text" class="form-control form-control-sm" id="fda_res_id" defaultValue={RES_DATA_MAIN.id_public} />
+                    <input type="text" className="form-control form-control-sm" id="fda_res_id" defaultValue={RES_DATA_MAIN.id_public} />
                 </div>
                 <div className="col-6">
                     <label>Resolución Fecha</label>
-                    <div class="row">
-                        <div class="col mx-0 px-0">
-                            <input type="date" class="form-control form-control-sm" id="fda_res_date_1" max="2100-01-01" defaultValue={RES_DATA.date} />
+                    <div className="row">
+                        <div className="col mx-0 px-0">
+                            <input type="date" className="form-control form-control-sm" id="fda_res_date_1" max="2100-01-01" defaultValue={RES_DATA.date} />
                         </div>
-                        <div class="col mx-0 px-0">
-                            <input type="text" class="form-control form-control-sm" id="fda_res_date_2" defaultValue={date_2} />
+                        <div className="col mx-0 px-0">
+                            <input type="text" className="form-control form-control-sm" id="fda_res_date_2" defaultValue={date_2} />
                         </div>
                     </div>
                 </div>
@@ -217,21 +217,21 @@ export default function FUN_D_ABDICATE(props) {
                 <input type='hidden' id="fda_change" />
                 <div className="col">
                     <label>Titular</label>
-                    <input list="fda_f51_list" class="form-control form-control-sm" id="fda_f51" onChange={(e) => _SET_F51(e.target.value, false, false)} />
+                    <input list="fda_f51_list" className="form-control form-control-sm" id="fda_f51" onChange={(e) => _SET_F51(e.target.value, false, false)} />
                     <datalist id="fda_f51_list" >
                         {f51x3().map((f, i) => <option key={i} value={f.name} />)}
                     </datalist>
                 </div>
                 <div className="col">
                     <label>Documento</label>
-                    <input list="fda_f51_id_list" class="form-control form-control-sm" id="fda_f51_id" onChange={(e) => _SET_F51(false, e.target.value, false)} />
+                    <input list="fda_f51_id_list" className="form-control form-control-sm" id="fda_f51_id" onChange={(e) => _SET_F51(false, e.target.value, false)} />
                     <datalist id="fda_f51_id_list">
                         {f51x3().map((f, i) => <option key={i} value={f.id_number}>{f.name}: {f.id_number}</option>)}
                     </datalist>
                 </div>
                 <div className="col">
                     <label>Calidad</label>
-                    <input list="fda_f51_role_list" class="form-control form-control-sm" id="fda_f51_role" onChange={(e) => _SET_F51(false, false, e.target.value)} />
+                    <input list="fda_f51_role_list" className="form-control form-control-sm" id="fda_f51_role" onChange={(e) => _SET_F51(false, false, e.target.value)} />
                     <datalist id="fda_f51_role_list">
                         {f51x3().map((f, i) => <option key={i} value={f.role} >{f.name}: {f.role}</option>)}
                     </datalist>
@@ -244,11 +244,11 @@ export default function FUN_D_ABDICATE(props) {
                     <div className="row m-2">
                         <div className="col-4">
                             <label>Nombre Notificador(a)</label>
-                            <input class="form-control form-control-sm" id="fda_name_not" />
+                            <input className="form-control form-control-sm" id="fda_name_not" />
                         </div>
                         <div className="col-4">
                             <label>Cargo Notificador(a)</label>
-                            <input class="form-control form-control-sm" id="fda_role_not" />
+                            <input className="form-control form-control-sm" id="fda_role_not" />
                         </div>
                     </div>
 
@@ -256,15 +256,15 @@ export default function FUN_D_ABDICATE(props) {
                         <label>Recursos</label>
 
                         <div className="col-12 d-flex justify-content-start">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" name="fda_res" />
-                                <label class="form-check-label">REPOSICIÓN ANTE LA CURADORA URBANA N° 1 DE PIEDECUESTA </label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" name="fda_res" />
+                                <label className="form-check-label">REPOSICIÓN ANTE LA CURADORA URBANA N° 1 DE PIEDECUESTA </label>
                             </div>
                         </div>
                         <div className="col-12 d-flex justify-content-start">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" name="fda_res" />
-                                <label class="form-check-label">APELACIÓN ANTE LA OFICINA ASESORA DE PLANEACIÓN DE PIEDECUESTA O EN SU DEFECTO ANTE EL ALCALDE MUNICIPAL  </label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" name="fda_res" />
+                                <label className="form-check-label">APELACIÓN ANTE LA OFICINA ASESORA DE PLANEACIÓN DE PIEDECUESTA O EN SU DEFECTO ANTE EL ALCALDE MUNICIPAL  </label>
                             </div>
                         </div>
                     </div>
@@ -273,9 +273,9 @@ export default function FUN_D_ABDICATE(props) {
                         <label>Renuncia a términos</label>
 
                         <div className="col-12 d-flex justify-content-start">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="fda_adbdicate" />
-                                <label class="form-check-label">SI </label>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="fda_adbdicate" />
+                                <label className="form-check-label">SI </label>
                             </div>
                         </div>
                     </div>
@@ -359,7 +359,7 @@ export default function FUN_D_ABDICATE(props) {
             <div className='border p-2'>
                 {_COMPONENT()}
                 <div className='text-center my-2'>
-                    <MDBBtn className="btn btn-danger my-3" onClick={(e) => get_pdf(e)}><i class="far fa-file-pdf"></i> GENERAR PDF</MDBBtn>
+                    <MDBBtn className="btn btn-danger my-3" onClick={(e) => get_pdf(e)}><i className="far fa-file-pdf"></i> GENERAR PDF</MDBBtn>
                 </div>
             </div>
         </>

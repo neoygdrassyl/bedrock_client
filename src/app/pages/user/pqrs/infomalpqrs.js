@@ -61,13 +61,13 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_informal" accept="image/png, image/jpeg application/pdf" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <input type="file" className="form-control" name="files_informal" accept="image/png, image/jpeg application/pdf" />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="text" class="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <input type="text" className="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
                 </div>)
@@ -195,15 +195,15 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                     <li>Si la CUB1 no es competente orientar al peticionario y recomendar el traslado de la PQRS.</li>
                                 </ul>
                                 <div className="text-center m-3">
-                                    <textarea class="form-control m-3" rows="5" maxlength="4096" id="pqrs_informal_reply"></textarea>
+                                    <textarea className="form-control m-3" rows="5" maxlength="4096" id="pqrs_informal_reply"></textarea>
                                 </div>
                                 <hr className="my-3" />
                                 <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
                                 <div className="text-end m-3">
                                     {attachs > 0
-                                        ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                        ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
                                         : ""}
-                                    <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                                    <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
                                 </div>
                                 {_ATTACHS_COMPONENT()}
 
@@ -211,17 +211,17 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                 <div className="row">
 
                                     <div className="col-lg-6 col-md-6">
-                                        <input type="text" class="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text bg-info text-white">
-                                                <i class="far fa-calendar-alt"></i>
+                                        <input type="text" className="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-info text-white">
+                                                <i className="far fa-calendar-alt"></i>
                                             </span>
-                                            <input type="date" max="2100-01-01" class="form-control" id="pqrs_informal_time" defaultValue={moment().format('YYYY-MM-DD')} required />
+                                            <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={moment().format('YYYY-MM-DD')} required />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="text-center py-4 mt-3">
-                                    <button className="btn btn-lg btn-success"><i class="fas fa-reply"></i> RESPONDER </button>
+                                    <button className="btn btn-lg btn-success"><i className="fas fa-reply"></i> RESPONDER </button>
                                 </div>
                             </form></> : <fieldset className="p-3" id="fung_0">
                             <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORMACIÓN, INTÉNTELO NUEVAMENTE</h3></div>

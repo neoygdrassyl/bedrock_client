@@ -220,11 +220,11 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <input type="hidden" id="pqrs_worker_0" defaultValue={_GET_USERS()[0].id} />
                 <div className="col-4">
                     <label>Profesional</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-user-circle"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-user-circle"></i>
                         </span>
-                        <select class="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
+                        <select className="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
                             {_array_workers_names.map(function (name) {
                                 return <option>{name}</option>;
                             })}
@@ -233,20 +233,20 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 </div>
                 <div className="col-4">
                     <label>Fecha Asignación</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="far fa-calendar-alt"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="far fa-calendar-alt"></i>
                         </span>
-                        <input id="pqrs_worker_1" class="form-control" type="date" required />
+                        <input id="pqrs_worker_1" className="form-control" type="date" required />
                     </div>
                 </div>
                 <div className="col-4">
                     <label>Competencia</label>
-                    <div class="input-group my-1">
-                        <span class="input-group-text bg-info text-white">
-                            <i class="fas fa-briefcase"></i>
+                    <div className="input-group my-1">
+                        <span className="input-group-text bg-info text-white">
+                            <i className="fas fa-briefcase"></i>
                         </span>
-                        <input class="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
+                        <input className="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
                     </div>
                 </div>
             </div>
@@ -320,11 +320,11 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 cell: row => <>
                     <MDBTooltip title='Desasignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                         <button className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
-                            <i class="fas fa-user-minus"></i></button>
+                            <i className="fas fa-user-minus"></i></button>
                     </MDBTooltip>
                     <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                         <button className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setCurrentItemAsign(row)}>
-                            <i class="far fa-paper-plane"></i></button>
+                            <i className="far fa-paper-plane"></i></button>
                     </MDBTooltip>
                 </>,
             },
@@ -391,7 +391,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 cell: row => <>
                     <MDBTooltip title='Confirmar visto bueno' wrapperProps={{ center: true, color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
                         <button hidden={window.user.id != row.worker_id} onClick={() => setViewform(row)} className="btn btn-info btn-sm mx-0 px-2 shadow-none">
-                            <i class="fas fa-check-square"></i></button>
+                            <i className="fas fa-check-square"></i></button>
                     </MDBTooltip>
                 </>,
             },
@@ -401,7 +401,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             var Array = [...JSON.parse(data.history) ?? ''];
             return <>
                 <fieldset className="p-3 border border-success mb-2">
-                    <table class="table table-sm table-hover">
+                    <table className="table table-sm table-hover">
                         <thead>
                             <tr className='table-success'>
                                 <th scope="col">Fecha y hora</th>
@@ -450,31 +450,31 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="row">
                     <div className="col-6">
                         <label>Lista de Correos</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
+                            <input type="text" className="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Lista de Solicitantes</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-user"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
+                            <input type="text" className="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
                         </div>
                     </div>
                 </div>
                 <label>Cuerpo del Documento</label>
-                <textarea class="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
+                <textarea className="form-control mb-3" rows="3" maxlength="1024" id="pqrs_confirmation_doc_body"
                     defaultValue={_GET_DOC_BODY()}></textarea>
                 <table className="table table-sm table-hover table-bordered">
                     <tbody>
                         <tr>
                             <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                            <td><MDBBtn className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i class="fas fa-cloud-download-alt fa-2x"></i></MDBBtn></td>
+                            <td><MDBBtn className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i className="fas fa-cloud-download-alt fa-2x"></i></MDBBtn></td>
                         </tr>
                     </tbody>
                 </table>
@@ -757,13 +757,13 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                 <div className="col-lg-8 col-md-8 ">
                     <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                        <input type="file" class="form-control" name="files_informal" accept="application/pdf, image/png, image/jpeg" />
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                        <input type="file" className="form-control" name="files_informal" accept="application/pdf, image/png, image/jpeg" />
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                        <input type="text" class="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                        <input type="text" className="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                     </div>
                 </div>
             </div>)
@@ -873,8 +873,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i class="fas fa-cloud-download-alt fa-2x"></i></a>
-                    <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i class="far fa-trash-alt fa-2x"></i></MDBBtn>
+                    <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i className="fas fa-cloud-download-alt fa-2x"></i></a>
+                    <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
                 </>,
             },
         ]
@@ -901,13 +901,13 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                 <div className="col-lg-8 col-md-8 ">
                     <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                        <input type="file" class="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                        <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                        <input type="text" class="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
+                    <div className="input-group">
+                        <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                        <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                     </div>
                 </div>
             </div>)
@@ -952,7 +952,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>1.DOCUMENTOS SOPORTE INGRESO <i class="fas fa-folder"></i></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>1.DOCUMENTOS SOPORTE INGRESO <i className="fas fa-folder"></i></b></h2>
                         <PQRS_EDIT_ATTACH
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -966,7 +966,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <fieldset className="p-3 border border-info mb-2">
                         <div>
 
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>2. CONFIRMAR A PETICIONARIO <i class="fas fa-check-circle"></i></b></label>
+                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>2. CONFIRMAR A PETICIONARIO <i className="fas fa-check-circle"></i></b></label>
                             <br></br>
                             <br></br>
                             <h5 className="px-2"><b>GUÍA PARA ENVIAR LA CONFIRMACIÓN POR EMAIL</b></h5>
@@ -1015,7 +1015,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                     <fieldset className="p-3 border border-info mb-2">
 
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>3. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <i class="fas fa-info-circle"></i> </b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>3. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <i className="fas fa-info-circle"></i> </b></h2>
 
                         <PQRS_EDIT_SOLICITORS
                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1024,7 +1024,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         />
                         <br></br>
                         <hr></hr>
-                        <h5 className=" px-4"><b>CONTACTO DE PETICIONARIO(S) <i class="fas fa-address-card"></i> </b> </h5>
+                        <h5 className=" px-4"><b>CONTACTO DE PETICIONARIO(S) <i className="fas fa-address-card"></i> </b> </h5>
                         <PQRS_EDIT_CONTACT
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -1032,7 +1032,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         />
                         <br></br>
                         <hr></hr>
-                        <h5 className=" px-4"><b>LA PQRS ESTÁ RELACIONADA CON ALGUNA ACTUACIÓN Y/O SOLICITUD URBANÍSTICA <i class="fas fa-bookmark"></i></b></h5>
+                        <h5 className=" px-4"><b>LA PQRS ESTÁ RELACIONADA CON ALGUNA ACTUACIÓN Y/O SOLICITUD URBANÍSTICA <i className="fas fa-bookmark"></i></b></h5>
                         <PQRS_EDIT_FUN
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -1048,7 +1048,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>4. DESCRIPCIÓN DE LA SOLICITUD <i class="fas fa-prescription-bottle"></i></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>4. DESCRIPCIÓN DE LA SOLICITUD <i className="fas fa-prescription-bottle"></i></b></h2>
                         <Collapsible className='bg-warning  border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">DESCRIPCIÓN</label></>}>
                             <div className="pb-2 text-start">
                                 <PQRS_EDIT_INFO
@@ -1064,7 +1064,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>5. CONTROL DE TIEMPOS <i class="fas fa-calendar-check"></i></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>5. CONTROL DE TIEMPOS <i className="fas fa-calendar-check"></i></b></h2>
                         <div className='px-4'>
                             <PQRS_COMPONENT_CLOCKS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1076,11 +1076,11 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <fieldset className="p-3 border border-info mb-2">
                         <form onSubmit={asignPQRS} id="app-formAsign">
 
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>6. ASIGNAR PROFESIONALES </b> <i class="fas fa-user-plus"></i></label>
+                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>6. ASIGNAR PROFESIONALES </b> <i className="fas fa-user-plus"></i></label>
 
-                            <div class="form-check ms-5">
-                                <input class="form-check-input" type="checkbox" onChange={(e) => setnewAsign(e.target.checked)} />
-                                <label class="form-check-label" for="flexCheckDefault">
+                            <div className="form-check ms-5">
+                                <input className="form-check-input" type="checkbox" onChange={(e) => setnewAsign(e.target.checked)} />
+                                <label className="form-check-label" htmlFor="flexCheckDefault">
                                     Asignar Profesional
                                 </label>
                             </div>
@@ -1088,7 +1088,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 ? <>
                                     {_WORKERS_COMPONENT()}
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-warning"><i class="fas fa-user-plus"></i> ASIGNAR </button>
+                                        <button className="btn btn-lg btn-warning"><i className="fas fa-user-plus"></i> ASIGNAR </button>
                                     </div>
                                 </> : ""}
                         </form>
@@ -1102,7 +1102,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         </div>
                         {currentItemAsign
                             ? <>
-                                <label class="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
+                                <label className="text-center py-2 fw-bold">Enviar Correo a Profesional</label>
                                 <PQRS_WORKERS_EMAILS
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
@@ -1125,7 +1125,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                     <fieldset className="p-3 border border-info mb-2">
 
-                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>7. RESPUESTA DE LOS PROFESIONALES ASIGNADOS <i class="fas fa-comment-medical"></i> </b></label>
+                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>7. RESPUESTA DE LOS PROFESIONALES ASIGNADOS <i className="fas fa-comment-medical"></i> </b></label>
 
                         <h5 className="px-4">Instrucciones para dar respuesta a la solicitud: </h5>
                         <ul>
@@ -1153,7 +1153,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                             return <>
 
-                                <label className="px-4 app-p lead fw-normal text-uppercase"><i class="fas fa-arrow-right"></i> {+i} {value.name}</label>
+                                <label className="px-4 app-p lead fw-normal text-uppercase"><i className="fas fa-arrow-right"></i> {+i} {value.name}</label>
                                 <div className="text-center m-3">
                                     <JoditEditor
                                         ref={editor}
@@ -1164,7 +1164,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         tabIndex={1} // tabIndex of textarea
                                         onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                                         onChange={newContent => { }}
-                                        class="form-control mb-3"
+                                        className="form-control mb-3"
                                         rows="5"
                                         maxlength="409675"
 
@@ -1177,9 +1177,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
                                         <div className="text-end m-3" >
                                             {stateadd > 0
-                                                ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                                 : ""}
-                                            <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i class="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                                            <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
 
@@ -1187,17 +1187,17 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         <div className="row" hidden={funcion1(window.user.id, value.worker_id)}>
 
                                             <div className="col-lg-6 col-md-6">
-                                                <input type="text" class="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text bg-info text-white">
-                                                        <i class="far fa-calendar-alt"></i>
+                                                <input type="text" className="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
+                                                <div className="input-group mb-3">
+                                                    <span className="input-group-text bg-info text-white">
+                                                        <i className="far fa-calendar-alt"></i>
                                                     </span>
-                                                    <input type="date" max="2100-01-01" class="form-control" id="pqrs_informal_time" defaultValue={value.date_reply ?? moment().format('YYYY-MM-DD')} required />
+                                                    <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={value.date_reply ?? moment().format('YYYY-MM-DD')} required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-sm btn-success" onClick={() => informalReplyPQRS(i, value.id)}><i class="fas fa-reply"></i> RESPONDER </button>
+                                            <button className="btn btn-sm btn-success" onClick={() => informalReplyPQRS(i, value.id)}><i className="fas fa-reply"></i> RESPONDER </button>
 
                                         </div>
                                         <hr></hr>
@@ -1207,7 +1207,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         })}
                     </fieldset>
                     <fieldset className="p-3 border border-info mb-2">
-                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>8. RESPUESTA FORMAL DE LA PETICION <i class="fas fa-envelope-open-text"></i></b></label>
+                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>8. RESPUESTA FORMAL DE LA PETICION <i className="fas fa-envelope-open-text"></i></b></label>
                         <Collapsible className='bg-warning  border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">RESPONDER PETICION</label></>}>
                             <div className='text-start'>
                                 <PQRS_SET_REPLY1
@@ -1228,7 +1228,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                                 {viewform
                                     ? <>
-                                        <label class="text-center py-2 fw-bold">CONFIRMACION VISTO BUENO</label>
+                                        <label className="text-center py-2 fw-bold">CONFIRMACION VISTO BUENO</label>
                                         <SEEN_COMPONENT_FORM
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
@@ -1261,7 +1261,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
                     <fieldset className="p-3 border border-info mb-2">
                         <form onSubmit={lockPQRS} id="app-formReply">
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>9. CERRAR PETICIÓN <i class="fab fa-expeditedssl"></i></b></label><br></br>
+                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>9. CERRAR PETICIÓN <i className="fab fa-expeditedssl"></i></b></label><br></br>
                             <label className="px-4"><span className="h5">GUIÁ PARA EL CIERRE DE LA PETICIÓN</span></label>
                             <ul>
                                 <li className="app-p"><strong>Asegurar envío con copia del email o guiá de envío de recibido por parte del peticionario, digitalizar y anexar.</strong></li>
@@ -1281,15 +1281,15 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
                             <div className="text-end m-3">
                                 {stateadd2 > 0
-                                    ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach2()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                    ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach2()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                     : ""}
-                                <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach2()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach2()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                             </div>
                             {_ATTACHS_COMPONENT2()}
 
                             <hr />
                             <div className="text-center m-3">
-                                <button className="btn btn-sm btn-success" ><i class="fas fa-lock"></i> CERRAR PETICIÓN</button>
+                                <button className="btn btn-sm btn-success" ><i className="fas fa-lock"></i> CERRAR PETICIÓN</button>
                             </div>
 
                         </form>

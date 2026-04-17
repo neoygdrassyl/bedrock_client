@@ -153,7 +153,7 @@ function RECORD_PH_PROFESIONALS(props) {
             let _COMPONENT = [];
             for (var i = 0; i < _roles.length; i++) {
                 _COMPONENT.push(<>
-                    <li class="list-group-item">{_PROFESIONAL_JSX(_roles[i])}</li>
+                    <li className="list-group-item">{_PROFESIONAL_JSX(_roles[i])}</li>
                 </>)
             }
             return <>{_COMPONENT}</>
@@ -168,7 +168,7 @@ function RECORD_PH_PROFESIONALS(props) {
 
         return (
             <div className="record_ph_profesional_evaluation container">
-                <li class="list-group-item"><label className="fw-bold">PROFESIONAL RESPONSABLE DE LOS PLANOS</label></li>
+                <li className="list-group-item"><label className="fw-bold">PROFESIONAL RESPONSABLE DE LOS PLANOS</label></li>
                 {COMPONENT_PROFESIONAL_RULES(['ARQUITECTO PROYECTISTA'])}
                 {_PROFESIOAL_INFO_COMPONENT()}
             </div >

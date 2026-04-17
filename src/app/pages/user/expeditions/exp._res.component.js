@@ -285,7 +285,7 @@ export default function EXP_RES(props) {
         for (let i = 0; i < currentItem.version; i++) {
             _COMPONENT.push(<option value={i + 1}>Revision {i + 1}</option>)
         }
-        return <select class="form-select" id="exp_pdf_reso_record_version">{_COMPONENT}</select>
+        return <select className="form-select" id="exp_pdf_reso_record_version">{_COMPONENT}</select>
     }
     let _RES_PARSER_1 = (fun_1) => {
         let parse = [];
@@ -568,7 +568,7 @@ export default function EXP_RES(props) {
                         <label className="mt-4 fw-bold">PRIMERO</label>
                     </div>
                     <div className="col text-start">
-                        <textarea id="expedition_doc_res_primero" class="form-control" rows={7}>{primero || p_text}</textarea>
+                        <textarea id="expedition_doc_res_primero" className="form-control" rows={7}>{primero || p_text}</textarea>
                     </div>
                 </div>
             </>
@@ -593,20 +593,20 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={segundo_cb[0] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={segundo_cb[0] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
                             <label>A.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" rows={3} id="expedition_doc_res_segundo_a">{segundo_a}</textarea>
+                        <textarea className="form-control" rows={3} id="expedition_doc_res_segundo_a">{segundo_a}</textarea>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={segundo_cb[1] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={segundo_cb[1] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
                             <label>B.</label>
                         </div>
                     </div>
@@ -618,8 +618,8 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={segundo_cb[2] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={segundo_cb[2] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
                             <label>C.</label>
                         </div>
                     </div>
@@ -631,8 +631,8 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={segundo_cb[3] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={segundo_cb[3] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
                             <label>D.</label>
                         </div>
                     </div>
@@ -648,16 +648,16 @@ export default function EXP_RES(props) {
                     </div>
                     <div className="col">
                         <label className="mt-1">Declaracion</label>
-                        <input type="text" class="form-control forn-control-sm" id="expedition_doc_res_segundo_1" defaultValue={segundo_1_dv} />
+                        <input type="text" className="form-control forn-control-sm" id="expedition_doc_res_segundo_1" defaultValue={segundo_1_dv} />
                         <label className="mt-1">Cumplimiento</label>
-                        <input type="text" class="form-control forn-control-sm" id="expedition_doc_res_segundo_2" defaultValue={segundo_2_dv} />
+                        <input type="text" className="form-control forn-control-sm" id="expedition_doc_res_segundo_2" defaultValue={segundo_2_dv} />
                     </div>
                 </div>
                 <div className="row mb-1 mt-2">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={segundo_cb[4] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={segundo_cb[4] == 1 ? true : false} name="expedition_doc_res_segundo_cb" />
                             <label>E.</label>
                         </div>
                     </div>
@@ -675,8 +675,8 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"><label className="mt-4 fw-bold">TERCERO</label></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={tercero_cb[0] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={tercero_cb[0] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
                         </div>
                     </div>
                     <div className="col text-start">
@@ -689,35 +689,35 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={tercero_cb[1] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={tercero_cb[1] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
                             <label>A.</label>
                         </div>
                     </div>
                     <div className="col text-start">
                         <p></p>
                         <div className="col text-start">
-                            <textarea class="form-control" id="expedition_doc_res_tercero_3" rows={'8'} defaultValue={tercero_3_dv}></textarea>
+                            <textarea className="form-control" id="expedition_doc_res_tercero_3" rows={'8'} defaultValue={tercero_3_dv}></textarea>
                         </div>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={tercero_cb[2] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={tercero_cb[2] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
                             <label>B.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_tercero_2" rows={'4'} defaultValue={tercero_2_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_tercero_2" rows={'4'} defaultValue={tercero_2_dv}></textarea>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={tercero_cb[3] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={tercero_cb[3] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
                             <label>C. </label>
                         </div>
                     </div>
@@ -731,8 +731,8 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={tercero_cb[4] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={tercero_cb[4] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
                             <label>D. </label>
                         </div>
                     </div>
@@ -752,8 +752,8 @@ export default function EXP_RES(props) {
                         <label className="mt-4 fw-bold">CUARTO</label>
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={cuarto_cb == 1 ? true : false} id="expedition_doc_res_cuarto_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={cuarto_cb == 1 ? true : false} id="expedition_doc_res_cuarto_cb" />
                         </div>
                     </div>
                     <div className="col text-start">
@@ -764,8 +764,8 @@ export default function EXP_RES(props) {
                             así mismo el/la curador(a) citó a los vecinos
                             colindantes del predio objeto de la solicitud, para que tuvieran la oportunidad de hacerse parte y pudieran hacer valer sus
                             derechos... </p>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="expedition_doc_res_cuarto_1"
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="expedition_doc_res_cuarto_1"
                                 defaultValue={cuarto_1_dv} />
                         </div>
                     </div>
@@ -779,12 +779,12 @@ export default function EXP_RES(props) {
                         <label className="mt-4 fw-bold">QUINTO</label>
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={quinto_cb_dv == 1 ? true : false} id="expedition_doc_res_quinto" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={quinto_cb_dv == 1 ? true : false} id="expedition_doc_res_quinto" />
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <label>Que el proyecto objeto de la solicitud fue revisado y aprobado de acuerdo con la normatividad vigente,
                                 por la División Técnica y Jurídica de esta Curaduría.</label>
                         </div>
@@ -800,8 +800,8 @@ export default function EXP_RES(props) {
                     </div>
                     <div className="col-1">
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" defaultChecked={sexto_cb[0] == 1 ? true : false} name="expedition_doc_res_sexto_cb" />
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" defaultChecked={sexto_cb[0] == 1 ? true : false} name="expedition_doc_res_sexto_cb" />
                             <label>A.</label>
                         </div>
                     </div>
@@ -813,18 +813,18 @@ export default function EXP_RES(props) {
                             <p className='text-primary fw-bold'>A.1, A.2 | ACTUALIZAR -{'>'} 0. Metadatos de la Solicitud </p>
                             {_GLOBAL_ID == 'cb1' ? <p className='text-primary fw-bold'>A. 3 | EXPEDICION -{'>'} Informacion General -{'>'} Deberes Urbanísticos -{'>'} Valor ZGU m2  </p> : ''}
                         </div>
-                        <div class="row">
-                            <div class="form-group col">
-                                <label for="inputCity">A.1 Número</label>
-                                <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_a1_dv} />
+                        <div className="row">
+                            <div className="form-group col">
+                                <label htmlFor="inputCity">A.1 Número</label>
+                                <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_a1_dv} />
                             </div>
-                            <div class="form-group col">
-                                <label for="inputState">A.2 Fecha</label>
-                                <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_a2_dv} />
+                            <div className="form-group col">
+                                <label htmlFor="inputState">A.2 Fecha</label>
+                                <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_a2_dv} />
                             </div>
-                            <div class="form-group col">
-                                <label for="inputZip">A.3 Suma</label>
-                                <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_a3_dv} />
+                            <div className="form-group col">
+                                <label htmlFor="inputZip">A.3 Suma</label>
+                                <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_a3_dv} />
                             </div>
                         </div>
                     </div>
@@ -834,8 +834,8 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" defaultChecked={sexto_cb[1] == 1 ? true : false} name="expedition_doc_res_sexto_cb" />
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" defaultChecked={sexto_cb[1] == 1 ? true : false} name="expedition_doc_res_sexto_cb" />
                             <label> B. </label>
                         </div>
                     </div>
@@ -843,7 +843,7 @@ export default function EXP_RES(props) {
                         <div className='row text-start'>
                             <label>Deber de provisión de cupos de parqueo: </label>
                         </div>
-                        <textarea class="form-control" id="expedition_doc_res_sexto_b" rows={'4'} defaultValue={sexto_b_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_sexto_b" rows={'4'} defaultValue={sexto_b_dv}></textarea>
                     </div>
                 </div>
 
@@ -852,8 +852,8 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" defaultChecked={sexto_cb[2] == 1 ? true : false} name="expedition_doc_res_sexto_cb" />
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" defaultChecked={sexto_cb[2] == 1 ? true : false} name="expedition_doc_res_sexto_cb" />
                             <label> C. </label>
                         </div>
                     </div>
@@ -865,49 +865,49 @@ export default function EXP_RES(props) {
                             <p className='text-primary fw-bold'>Procedencia de los datos: </p>
                             <p className='text-primary fw-bold'>EXPEDICIÓN -{'>'} INFORMACION GENERAL </p>
                         </div>
-                        <div class="row">
+                        <div className="row">
                             <div className="col-1">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" defaultChecked={sexto_v_cb[0] == 1 ? true : false} name="expedition_doc_res_sexto_v_cb" />
+                                <div className="form-check">
+                                    <input className="form-check-input" type="checkbox" defaultChecked={sexto_v_cb[0] == 1 ? true : false} name="expedition_doc_res_sexto_v_cb" />
                                 </div>
                             </div>
-                            <div class="form-group col">
-                                <label for="inputCity">C.1 Factura Fija (Nr Factura)</label>
-                                <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
+                            <div className="form-group col">
+                                <label htmlFor="inputCity">C.1 Factura Fija (Nr Factura)</label>
+                                <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
                             </div>
-                            <div class="form-group col">
-                                <label for="inputState">C.2 Factura Variable (Nr Factura)</label>
-                                <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
+                            <div className="form-group col">
+                                <label htmlFor="inputState">C.2 Factura Variable (Nr Factura)</label>
+                                <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
                             </div>
                         </div>
-                        <div class="row">
+                        <div className="row">
                             <div className="col-1">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" defaultChecked={sexto_v_cb[1] == 1 ? true : false} name="expedition_doc_res_sexto_v_cb" />
+                                <div className="form-check">
+                                    <input className="form-check-input" type="checkbox" defaultChecked={sexto_v_cb[1] == 1 ? true : false} name="expedition_doc_res_sexto_v_cb" />
                                 </div>
                             </div>
-                            <div class="form-group col">
-                                <label for="inputZip">C.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
-                                <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
+                            <div className="form-group col">
+                                <label htmlFor="inputZip">C.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
+                                <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
                             </div>
-                            <div class="form-group col">
-                                <label for="inputCity">C.4 Impuesto Delineación y Urbanismo (Nr Factura)</label>
-                                <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
+                            <div className="form-group col">
+                                <label htmlFor="inputCity">C.4 Impuesto Delineación y Urbanismo (Nr Factura)</label>
+                                <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
                             </div>
                         </div>
-                        <div class="row">
+                        <div className="row">
                             <div className="col-1">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" defaultChecked={sexto_v_cb[2] == 1 ? true : false} name="expedition_doc_res_sexto_v_cb" />
+                                <div className="form-check">
+                                    <input className="form-check-input" type="checkbox" defaultChecked={sexto_v_cb[2] == 1 ? true : false} name="expedition_doc_res_sexto_v_cb" />
                                 </div>
                             </div>
-                            <div class="form-group col">
-                                <label for="inputState">C.5 PRO-UIS (Valor Factura)</label>
-                                <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
+                            <div className="form-group col">
+                                <label htmlFor="inputState">C.5 PRO-UIS (Valor Factura)</label>
+                                <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
                             </div>
-                            <div class="form-group col">
-                                <label for="inputZip">C.6 PROS-UIS (Nr Factura)</label>
-                                <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
+                            <div className="form-group col">
+                                <label htmlFor="inputZip">C.6 PROS-UIS (Nr Factura)</label>
+                                <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
                             </div>
                         </div>
                     </div>
@@ -922,13 +922,13 @@ export default function EXP_RES(props) {
                     </div>
                     <div className="col-1">
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" defaultChecked={open_cb[0] == 1 ? true : false} name="expedition_doc_reso_open_cb" />
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" defaultChecked={open_cb[0] == 1 ? true : false} name="expedition_doc_reso_open_cb" />
                             <label>1.</label>
                         </div>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_res_open_1" rows={'4'} defaultValue={open_1}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_open_1" rows={'4'} defaultValue={open_1}></textarea>
                     </div>
                 </div>
 
@@ -936,13 +936,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" defaultChecked={open_cb[1] == 1 ? true : false} name="expedition_doc_reso_open_cb" />
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" defaultChecked={open_cb[1] == 1 ? true : false} name="expedition_doc_reso_open_cb" />
                             <label> 2. </label>
                         </div>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_res_open_2" rows={'4'} defaultValue={open_2}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_open_2" rows={'4'} defaultValue={open_2}></textarea>
                     </div>
                 </div>
 
@@ -951,13 +951,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" defaultChecked={open_cb[2] == 1 ? true : false} name="expedition_doc_reso_open_cb" />
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" defaultChecked={open_cb[2] == 1 ? true : false} name="expedition_doc_reso_open_cb" />
                             <label> 3. </label>
                         </div>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_res_open_3" rows={'4'} defaultValue={open_3}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_open_3" rows={'4'} defaultValue={open_3}></textarea>
                     </div>
                 </div>
             </>
@@ -970,13 +970,13 @@ export default function EXP_RES(props) {
                         <label className="mt-4 fw-bold">OBLIGACIONES TITULAR</label>
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[0] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[0] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>1.</label>
                         </div>
                     </div>
                     <div className="col v">
-                        <div class="input-group text-start">
+                        <div className="input-group text-start">
                             <p>Ejecutar las obras de forma tal que se garantice la salubridad y seguridad de las personas, así como la estabilidad de los terrenos y edificaciones vecinas y de
                                 los elementos constitutivos del espacio público.</p>
                         </div>
@@ -987,13 +987,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[1] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[1] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>2.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_duty_2" rows={'4'} defaultValue={duty_2_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_duty_2" rows={'4'} defaultValue={duty_2_dv}></textarea>
                     </div>
                 </div>
 
@@ -1001,13 +1001,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[2] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[2] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>3.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Mantener en la obra la licencia y los planos aprobados, y exhibirlos cuando sean requeridos por la autoridad competente.</p>
                         </div>
                     </div>
@@ -1017,13 +1017,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[3] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[3] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>4.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Cumplir con el programa de manejo ambiental de materiales y elementos a los que hace referencia la Resolución 541 de 1994 del Ministerio del Medio
                                 Ambiente, o el acto que la modifique o sustituya, para aquellos proyectos que no requieren licencia ambiental, o planes de manejo, recuperación o
                                 restauración ambiental, de conformidad con el decreto único del sector ambiente y desarrollo sostenible en materia de licenciamiento ambiental.</p>
@@ -1035,13 +1035,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[4] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[4] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>5.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Cuando se trate de licencias de construcción, solicitar la Autorización de Ocupación de Inmuebles al concluir las obras de edificación en los términos que
                                 establece el artículo 2.2.6.1.4.1 del presente decreto.</p>
                         </div>
@@ -1052,13 +1052,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[5] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[5] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>6.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_duty_6" rows={'2'} defaultValue={duty_6_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_duty_6" rows={'2'} defaultValue={duty_6_dv}></textarea>
                     </div>
                 </div>
 
@@ -1066,13 +1066,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[6] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[6] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>7.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Garantizar durante el desarrollo de la obra la participación del diseñador estructural del proyecto y del ingeniero geotecnista responsables de los planos y
                                 estudios aprobados, con el fin de que atiendan las consultas y aclaraciones que solicite el constructor y/o supervisor técnico independiente. Las consultas y
                                 aclaraciones deberán incorporarse en la bitácora del proyecto y/o en las actas de supervisión.</p>
@@ -1084,13 +1084,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[7] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[7] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>8.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Designar en un término máximo de 15 días hábiles al profesional que remplazará a aquel que se desvinculó de la ejecución de los diseños o de la ejecución
                                 de la obra. Hasta tanto se designe el nuevo profesional, el que asumirá la obligación del profesional saliente será el titular de la licencia.</p>
                         </div>
@@ -1101,13 +1101,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[8] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[8] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>9.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_duty_9" rows={'3'} defaultValue={duty_9_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_duty_9" rows={'3'} defaultValue={duty_9_dv}></textarea>
                     </div>
                 </div>
 
@@ -1115,13 +1115,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[9] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[9] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>10.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_duty_10" rows={'7'} defaultValue={duty_10_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_duty_10" rows={'7'} defaultValue={duty_10_dv}></textarea>
                     </div>
                 </div>
 
@@ -1129,13 +1129,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[10] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[10] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>11.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Realizar los controles de calidad para los diferentes materiales y elementos que señalen las normas de construcción Sismo Resistentes.</p>
                         </div>
                     </div>
@@ -1145,13 +1145,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[11] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[11] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>12.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Instalar los equipos, sistemas e implementos de bajo consumo de agua, establecidos en la Ley 373 de 1997 o la norma que la adicione, modifique o sustituya.</p>
                         </div>
                     </div>
@@ -1161,13 +1161,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[12] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[12] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>13.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Cumplir con las normas vigentes de carácter nacional, municipal o distrital sobre eliminación de barreras arquitectónicas para personas en situación de
                                 discapacidad.</p>
                         </div>
@@ -1178,13 +1178,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[13] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[13] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>14.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Cumplir con las disposiciones contenidas en las normas de construcción sismo resistente vigente.</p>
                         </div>
                     </div>
@@ -1194,13 +1194,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[14] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[14] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>15.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Dar cumplimiento a las disposiciones sobre construcción sostenible que adopte el Ministerio de Vivienda, Ciudad y Territorio o los municipios o distritos en
                                 ejercicio de sus competencias.</p>
                         </div>
@@ -1211,13 +1211,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[15] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[15] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>16.</label>
                         </div>
                     </div>
                     <div className="col">
-                        <div class="input-group text-start">
+                        <div className="input-group text-start">
                             <p>Realizar la publicación establecida en el artículo 2.2.6.1.2.3.8 del presente decreto en un diario de amplia circulación en el municipio o distrito donde se
                                 encuentren ubicados los inmuebles.</p>
                         </div>
@@ -1228,13 +1228,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[16] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[16] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>17.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_duty_17" rows={'2'} defaultValue={duty_17_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_duty_17" rows={'2'} defaultValue={duty_17_dv}></textarea>
                     </div>
                 </div>
 
@@ -1242,13 +1242,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[17] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[17] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>18.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_duty_18" rows={'2'} defaultValue={duty_18_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_duty_18" rows={'2'} defaultValue={duty_18_dv}></textarea>
                     </div>
                 </div>
 
@@ -1256,13 +1256,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[18] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[18] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>19.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_duty_19" rows={'2'} defaultValue={duty_19_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_duty_19" rows={'2'} defaultValue={duty_19_dv}></textarea>
                     </div>
                 </div>
 
@@ -1270,13 +1270,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[19] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[19] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>20.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_duty_20" rows={'2'} defaultValue={duty_20_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_duty_20" rows={'2'} defaultValue={duty_20_dv}></textarea>
                     </div>
                 </div>
 
@@ -1285,12 +1285,12 @@ export default function EXP_RES(props) {
                         <label className="mt-4 fw-bold">ADICIONAL</label>
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[17] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[17] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                         </div>
                     </div>
                     <div className="col v">
-                        <div class="input-group text-start">
+                        <div className="input-group text-start">
                             <p>Adicionalmente para el caso del reconocimiento debe dar alcance al contenido del numeral 2 del artículo 2.2.6.1.4.1 del Decreto
                                 1077 de 2015 que reza: Las obras de adecuación a las normas de sismo resistencia y/o a las normas urbanísticas y
                                 arquitectónicas contempladas en el acto de reconocimiento de la edificación, en los términos de que trata el presente decreto.
@@ -1304,7 +1304,7 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col v">
-                        <div class="input-group text-start">
+                        <div className="input-group text-start">
                             <p>Así mismo, se recalca que el titular de la licencia será el responsable de todas las obligaciones urbanísticas y arquitectónicas
                                 adquiridas con ocasión de su expedición y extracontractualmente por los perjuicios que se causaren a terceros en desarrollo de
                                 la misma</p>
@@ -1316,14 +1316,14 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[18] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[18] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>2.1</label>
                         </div>
                     </div>
                     <div className="col v">
-                        <textarea class="form-control" id="expedition_doc_res_duty_21" rows={'4'} defaultValue={duty_21_dv}></textarea>
-                        <div class="input-group text-start">
+                        <textarea className="form-control" id="expedition_doc_res_duty_21" rows={'4'} defaultValue={duty_21_dv}></textarea>
+                        <div className="input-group text-start">
                             <p></p>
                         </div>
                     </div>
@@ -1333,13 +1333,13 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={duty_cb[19] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={duty_cb[19] == 1 ? true : false} name="expedition_doc_res_duty_cb" />
                             <label>2.2</label>
                         </div>
                     </div>
                     <div className="col v">
-                        <div class="input-group text-start">
+                        <div className="input-group text-start">
                             <p>Resolución 190708 de 2013 por medio de la cual se expide el Reglamento Técnico de Instalaciones Eléctricas –
                                 RETIE. El titular de la actuación urbanística y el constructor deben dar cumplimiento integral a este reglamento y en
                                 particular guardar las distancias de aislamiento a las redes eléctricas según su capacidad y atender las
@@ -1357,25 +1357,25 @@ export default function EXP_RES(props) {
                         <label className="mt-4 fw-bold">ARTICULO 1</label>
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={art_1_cb_tb} id="expedition_doc_res_art_1_cb_tb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={art_1_cb_tb} id="expedition_doc_res_art_1_cb_tb" />
                             <label>Tabla</label>
                         </div>
                     </div>
                     <div className="col">
-                        <textarea rows={'4'} id="expedition_doc_res_art_1_text_tb" class="form-control">{art_1_txt_tb}</textarea>
+                        <textarea rows={'4'} id="expedition_doc_res_art_1_text_tb" className="form-control">{art_1_txt_tb}</textarea>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={art_1_cb[0] == 1 ? true : false} name="expedition_doc_res_art_1_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={art_1_cb[0] == 1 ? true : false} name="expedition_doc_res_art_1_cb" />
                             <label> a.</label>
                         </div>
                     </div>
                     <div className="col">
-                        <textarea rows={'7'} id="expedition_doc_res_art_1_text" class="form-control">{art_1_txt}</textarea>
+                        <textarea rows={'7'} id="expedition_doc_res_art_1_text" className="form-control">{art_1_txt}</textarea>
                     </div>
                 </div>
             </>
@@ -1398,13 +1398,13 @@ export default function EXP_RES(props) {
 
                     </div>
                     <div className="col-2">
-                        <div class="form-check form-check-inline mt-5">
+                        <div className="form-check form-check-inline mt-5">
                             <label> 1. Antecedentes</label>
-                            <input class="form-check-input" type="checkbox" defaultChecked={arts_cb[0] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
+                            <input className="form-check-input" type="checkbox" defaultChecked={arts_cb[0] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
                         </div>
                     </div>
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_res_art_4_1_dv" rows={'3'} defaultValue={art_4_1_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_art_4_1_dv" rows={'3'} defaultValue={art_4_1_dv}></textarea>
                     </div>
                 </div>
 
@@ -1412,27 +1412,27 @@ export default function EXP_RES(props) {
                     <div className="col-2">
                     </div>
                     <div className="col-2">
-                        <div class="form-check form-check-inline mt-5">
+                        <div className="form-check form-check-inline mt-5">
                             <label> 2. Descripción</label>
-                            <input class="form-check-input" type="checkbox" defaultChecked={arts_cb[1] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
+                            <input className="form-check-input" type="checkbox" defaultChecked={arts_cb[1] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
                         </div>
                     </div>
 
                     <div className="col">
-                        <textarea class="form-control" id="expedition_doc_res_art_4_2_dv" rows={'4'} defaultValue={art_4_2_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_art_4_2_dv" rows={'4'} defaultValue={art_4_2_dv}></textarea>
                     </div>
                 </div>
 
                 <div className="row my-2">
                     <div className="col-2"></div>
                     <div className="col-2">
-                        <div class="form-check form-check-inline">
+                        <div className="form-check form-check-inline">
                             <label> Cuadro Areas Paragrafo</label>
                         </div>
                     </div>
 
                     <div className="col">
-                        <input class="form-control" id="expedition_doc_res_art_4_p" defaultValue={art_4_p_dv} />
+                        <input className="form-control" id="expedition_doc_res_art_4_p" defaultValue={art_4_p_dv} />
                     </div>
                 </div>
             </>
@@ -1448,9 +1448,9 @@ export default function EXP_RES(props) {
                         <p className='text-primary fw-bold'>Procedencia de los datos: </p>
                         <p className='text-primary fw-bold'>INFO. ARQ. -{'>'} 3.3.2 Planos aportados</p>
                         <p className='text-primary fw-bold'>INFO. ESTRUC.. -{'>'} 4.1.4 Revision de planos, estudio y memorias</p>
-                        <div class="input-group">
+                        <div className="input-group">
                             <div className="col text-start">
-                                <textarea class="form-control" id="expedition_doc_res_art_5" rows={'3'} defaultValue={art_5_1_dv}></textarea>
+                                <textarea className="form-control" id="expedition_doc_res_art_5" rows={'3'} defaultValue={art_5_1_dv}></textarea>
                             </div>
                         </div>
                     </div>
@@ -1464,7 +1464,7 @@ export default function EXP_RES(props) {
                         <label className="mt-4 fw-bold">ARTICULO 7</label>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Librar las siguientes notificaciones personales</p>
                         </div>
                     </div>
@@ -1473,13 +1473,13 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={septimo_cb[0] == 1 ? true : false} name="expedition_doc_res_septimo_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={septimo_cb[0] == 1 ? true : false} name="expedition_doc_res_septimo_cb" />
                             <label>1.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Notificar personalmente a los titulares, del contenido de la presente resolución en los términos del Decreto 1077 de
                                 2015 y Ley 1437 de 2011.</p>
                         </div>
@@ -1489,13 +1489,13 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={septimo_cb[1] == 1 ? true : false} name="expedition_doc_res_septimo_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={septimo_cb[1] == 1 ? true : false} name="expedition_doc_res_septimo_cb" />
                             <label>2.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <div class="input-group">
+                        <div className="input-group">
                             <p>Notificar personalmente a cualquier persona que se hubiere hecho parte dentro del trámite, en los términos del
                                 Decreto ibidem</p>
                         </div>
@@ -1505,13 +1505,13 @@ export default function EXP_RES(props) {
                 <div className="row mb-1">
                     <div className="col-2"></div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" defaultChecked={septimo_cb[2] == 1 ? true : false} name="expedition_doc_res_septimo_cb" />
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="checkbox" defaultChecked={septimo_cb[2] == 1 ? true : false} name="expedition_doc_res_septimo_cb" />
                             <label>3.</label>
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea class="form-control" id="expedition_doc_res_art_7" rows={'3'} defaultValue={art_7_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_art_7" rows={'3'} defaultValue={art_7_dv}></textarea>
                     </div>
                 </div>
             </>
@@ -1524,33 +1524,33 @@ export default function EXP_RES(props) {
                     </div>
                     <div className="col text-start">
                         <label className="mt-1">Vigencia</label>
-                        <textarea class="form-control" id="expedition_doc_res_art_8" rows={'5'} defaultValue={art_8_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_art_8" rows={'5'} defaultValue={art_8_dv}></textarea>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline mt-5">
-                            <input class="form-check-input" type="checkbox" defaultChecked={arts_cb[2] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
+                        <div className="form-check form-check-inline mt-5">
+                            <input className="form-check-input" type="checkbox" defaultChecked={arts_cb[2] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Paragrafo 1</label>
-                        <textarea class="form-control" id="expedition_doc_res_art_8p1" rows={'5'} defaultValue={art_8p_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_art_8p1" rows={'5'} defaultValue={art_8p_dv}></textarea>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-2">
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline mt-5">
-                            <input class="form-check-input" type="checkbox" defaultChecked={arts_cb[3] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
+                        <div className="form-check form-check-inline mt-5">
+                            <input className="form-check-input" type="checkbox" defaultChecked={arts_cb[3] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">Paragrafo 2</label>
-                        <textarea class="form-control" id="expedition_doc_res_art_8p" rows={'6'} defaultValue={art_8p1_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_art_8p" rows={'6'} defaultValue={art_8p1_dv}></textarea>
                     </div>
                 </div>
             </>
@@ -1562,15 +1562,15 @@ export default function EXP_RES(props) {
                         <label className="mt-4 fw-bold">ARTICULO 9</label>
                     </div>
                     <div className="col-1">
-                        <div class="form-check form-check-inline mt-5">
-                            <input class="form-check-input" type="checkbox" defaultChecked={arts_cb[4] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
+                        <div className="form-check form-check-inline mt-5">
+                            <input className="form-check-input" type="checkbox" defaultChecked={arts_cb[4] == 1 ? true : false} name="expedition_doc_res_arts_cb" />
                         </div>
                     </div>
                     <div className="col text-start">
                         <p>Ordénese publicar el contenido resolutorio del presente acto administrativo en la página web corporativa
                             de la Curaduría Urbana N. º {infoCud.nomens} de {infoCud.city} {infoCud.web}, con el objeto de darse a conocer a terceros
                             que no hayan intervenido en la actuación.</p>
-                        <textarea class="form-control" id="expedition_doc_res_art_9" rows={'2'} defaultValue={art_9_dv}></textarea>
+                        <textarea className="form-control" id="expedition_doc_res_art_9" rows={'2'} defaultValue={art_9_dv}></textarea>
                     </div>
                 </div>
             </>
@@ -1593,15 +1593,15 @@ export default function EXP_RES(props) {
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Acuerdo</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="expedition_doc_res_primero_1"
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="expedition_doc_res_primero_1"
                                             defaultValue={primero_1_dv} />
                                     </div>
                                 </div>
                                 <div className="col-2">
                                     <label className="mt-1">Municipio</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="expedition_doc_res_primero_2"
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="expedition_doc_res_primero_2"
                                             defaultValue={primero_2_dv} />
                                     </div>
                                 </div>
@@ -1611,29 +1611,29 @@ export default function EXP_RES(props) {
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Predial</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="expedition_doc_res_primero_3"
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="expedition_doc_res_primero_3"
                                             value={(_CHILD_2.item_23 ?? '').replaceAll('-', '')} disabled readOnly />
                                     </div>
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Matrícula</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="expedition_doc_res_primero_4"
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="expedition_doc_res_primero_4"
                                             value={_CHILD_2.item_22} disabled readOnly />
                                     </div>
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Nomenclatura</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="expedition_doc_res_primero_5"
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="expedition_doc_res_primero_5"
                                             value={_CHILD_2.item_211} disabled readOnly />
                                     </div>
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Barrio</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="expedition_doc_res_primero_6"
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" id="expedition_doc_res_primero_6"
                                             value={(_CHILD_2.item_261 ?? '').toUpperCase()} disabled readOnly />
                                     </div>
                                 </div>
@@ -1681,8 +1681,8 @@ export default function EXP_RES(props) {
                             </div>
                             <div className="col">
                                 <label className="mt-1">Uso Principal</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="expedition_doc_res_primero_5"
+                                <div className="input-group">
+                                    <input type="text" className="form-control" id="expedition_doc_res_primero_5"
                                         defaultValue={primero_5_dv} />
                                 </div>
                             </div>
@@ -1693,7 +1693,7 @@ export default function EXP_RES(props) {
                             </div>
                             <div className="col">
                                 <label className="mt-1">Art 1. Paragrafo</label>
-                                <textarea class="form-control" id="expedition_doc_res_art_1p" rows={'7'} defaultValue={art_1p_dv}></textarea>
+                                <textarea className="form-control" id="expedition_doc_res_art_1p" rows={'7'} defaultValue={art_1p_dv}></textarea>
                             </div>
                         </div>
                     </> : ''}
@@ -1797,29 +1797,29 @@ export default function EXP_RES(props) {
                 </div>
                 <div className="col">
                     <label className="mt-1">Titular</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_primero_1"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_primero_1"
                             defaultValue={_CHILD_53.item_5311 + ' ' + _CHILD_53.item_5312} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">Cédul o NIT</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_primero_7"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_primero_7"
                             defaultValue={_CHILD_53.item_532} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">En calidad de:</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_primero_8"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_primero_8"
                             defaultValue={_CHILD_53.item_533} />
                     </div>
                 </div>
                 <div className="col-2">
                     <label className="mt-1">Municipio</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_primero_2"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_primero_2"
                             defaultValue={primero_2_dv} />
                     </div>
                 </div>
@@ -1829,29 +1829,29 @@ export default function EXP_RES(props) {
                 </div>
                 <div className="col">
                     <label className="mt-1">Predial</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_primero_3"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_primero_3"
                             defaultValue={(_CHILD_2.item_23 ?? '').replaceAll('-', '')} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">Matrícula</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_primero_4"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_primero_4"
                             defaultValue={_CHILD_2.item_22} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">Nomenclatura</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_primero_5"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_primero_5"
                             defaultValue={_CHILD_2.item_211} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">Barrio</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_primero_6"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_primero_6"
                             defaultValue={(_CHILD_2.item_261 ?? '').toUpperCase()} />
                     </div>
                 </div>
@@ -1861,7 +1861,7 @@ export default function EXP_RES(props) {
                 <div className="col-2"></div>
                 <div className="col">
                     <label className="pt-2 fw-bold">MOTIVO DE DESISTIMIENTO</label>
-                    <div class="input-group">
+                    <div className="input-group">
                         <select className="form-select" id="expedition_doc_res_negative_id" defaultValue={primero_3_dv} required>
                             <option value={'102'}>POR NO RADICAR EL REGISTRO FOTOGRÁFICO DE LA VALLA O POR NO RADICARLO EN DEBIDA FORMA</option>
                             <option value={'101'}>POR RADICACION INCOMPLETA – NO QUEDÓ EN LYDF</option>
@@ -1880,7 +1880,7 @@ export default function EXP_RES(props) {
                             <label className="mt-4 fw-bold">{value.title}</label>
                         </div>
                         <div className="col">
-                            <div class="input-group">
+                            <div className="input-group">
                                 {value.edit ?
                                     editNeg(value)
                                     : <textarea className="input-group" id={value.id}
@@ -1895,8 +1895,8 @@ export default function EXP_RES(props) {
                 <div className="col-2"></div>
                 <div className="col-10">
                     <label className="mY-2 fw-bold" >ABOGADO REVISOR</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_negative_user"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_negative_user"
                             defaultValue={primero_32_dv} />
                     </div>
                 </div>
@@ -1932,9 +1932,9 @@ export default function EXP_RES(props) {
                     <div className='row text-start'>
                         <p>Vecinos que hicieron parte </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <input type="text" class="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <input type="text" className="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
                         </div>
                     </div>
                 </div>
@@ -1948,32 +1948,32 @@ export default function EXP_RES(props) {
                         <p>2- Impuesto de delineación y urbanismo por la suma de A.3 según recibo A.4.  </p>
                         <p>3- Estampilla PRO-UIS por la suma de A.5 según recibo A.6. </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputZip">A.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputZip">A.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.4 Impuesto Delineación y Urbanismo (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.4 Impuesto Delineación y Urbanismo (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.5 PRO-UIS (Valor Factura)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.5 PRO-UIS (Valor Factura)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputZip">A.6 PROS-UIS (Nr Factura)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputZip">A.6 PROS-UIS (Nr Factura)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
                         </div>
                     </div>
                 </div>
@@ -2008,9 +2008,9 @@ export default function EXP_RES(props) {
                     <div className='row text-start'>
                         <p>Vecinos que hicieron parte </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <input type="text" class="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <input type="text" className="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
                         </div>
                     </div>
                 </div>
@@ -2024,32 +2024,32 @@ export default function EXP_RES(props) {
                         <p>2- Impuesto de delineación y urbanismo por la suma de A.3 según recibo A.4.  </p>
                         <p>3- Estampilla PRO-UIS por la suma de A.5 según recibo A.6. </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputZip">A.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputZip">A.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.4 Impuesto Delineación y Urbanismo (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.4 Impuesto Delineación y Urbanismo (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.5 PRO-UIS (Valor Factura)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.5 PRO-UIS (Valor Factura)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputZip">A.6 PROS-UIS (Nr Factura)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputZip">A.6 PROS-UIS (Nr Factura)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
                         </div>
                     </div>
                 </div>
@@ -2085,9 +2085,9 @@ export default function EXP_RES(props) {
                     <div className='row text-start'>
                         <p>Vecinos que hicieron parte </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <input type="text" class="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <input type="text" className="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
                         </div>
                     </div>
                 </div>
@@ -2098,14 +2098,14 @@ export default function EXP_RES(props) {
                     <div className='row text-start'>
                         <p>1- Expensas fijas y variables mediante las facturas A.1 y A.2. </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
                         </div>
                     </div>
                 </div>
@@ -2216,32 +2216,32 @@ export default function EXP_RES(props) {
                         <p>2- Impuesto de delineación y urbanismo por la suma de A.3 según recibo A.4.  </p>
                         <p>3- Estampilla PRO-UIS por la suma de A.5 según recibo A.6. </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputZip">A.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputZip">A.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.4 Impuesto Delineación y Urbanismo (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.4 Impuesto Delineación y Urbanismo (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.5 PRO-UIS (Valor Factura)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.5 PRO-UIS (Valor Factura)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputZip">A.6 PROS-UIS (Nr Factura)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputZip">A.6 PROS-UIS (Nr Factura)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
                         </div>
                     </div>
                 </div>
@@ -2291,15 +2291,15 @@ export default function EXP_RES(props) {
                         <p>2- Impuesto de delineación y urbanismo por la suma de A.3 según recibo A.4.  </p>
                         <p>3- Estampilla PRO-UIS por la suma de A.5 según recibo A.6. </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
                         </div>
-                        <div class="form-group col">
+                        <div className="form-group col">
 
                         </div>
-                        <div class="form-group col">
+                        <div className="form-group col">
 
                         </div>
                     </div>
@@ -2346,14 +2346,14 @@ export default function EXP_RES(props) {
                     <div className='row text-start'>
                         <p>1- Expensas fijas y variables mediante las facturas A.1 y A.2. </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
                         </div>
                     </div>
                 </div>
@@ -2400,32 +2400,32 @@ export default function EXP_RES(props) {
                         <p>2- Impuesto de delineación y urbanismo por la suma de A.3 según recibo A.4.  </p>
                         <p>3- Estampilla PRO-UIS por la suma de A.5 según recibo A.6. </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputZip">A.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputZip">A.3 Impuesto Delineación y Urbanismo (Valor Factura) </label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c3_dv} />
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.4 Impuesto Delineación y Urbanismo (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.4 Impuesto Delineación y Urbanismo (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c4_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.5 PRO-UIS (Valor Factura)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.5 PRO-UIS (Valor Factura)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c5_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputZip">A.6 PROS-UIS (Nr Factura)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputZip">A.6 PROS-UIS (Nr Factura)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c6_dv} />
                         </div>
                     </div>
                 </div>
@@ -2452,9 +2452,9 @@ export default function EXP_RES(props) {
                     <div className='row text-start'>
                         <p>VR y fecha de manifiesto de desitimiento </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <input type="text" class="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <input type="text" className="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
                         </div>
                     </div>
                 </div>
@@ -2481,9 +2481,9 @@ export default function EXP_RES(props) {
                     <div className='row text-start'>
                         <p>VR y fecha de manifiesto de desitimiento </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <input type="text" class="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <input type="text" className="form-control" id="expedition_doc_res_old_lic" defaultValue={sexto_c7_dv} />
                         </div>
                     </div>
                 </div>
@@ -2616,8 +2616,8 @@ export default function EXP_RES(props) {
             <div className="row my-2">
                 <div className="col">
                     <label className='fw-bold'>CONSIDERATIVA 4</label>
-                    <div class="row">
-                        <div class="form-group col">
+                    <div className="row">
+                        <div className="form-group col">
                             <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_3 || ''} />
                         </div>
                     </div>
@@ -2627,8 +2627,8 @@ export default function EXP_RES(props) {
             <div className="row">
                 <div className="col">
                     <label className='fw-bold'>ARTICULO 1</label>
-                    <div class="row">
-                        <div class="form-group col">
+                    <div className="row">
+                        <div className="form-group col">
                             <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_4 || ''} />
                         </div>
                     </div>
@@ -2637,8 +2637,8 @@ export default function EXP_RES(props) {
             <div className="row my-2">
                 <div className="col text-start">
                     <label>Correcion:</label>
-                    <div class="row">
-                        <div class="form-group col">
+                    <div className="row">
+                        <div className="form-group col">
                             <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_5 || ''} />
                         </div>
                     </div>
@@ -3017,14 +3017,14 @@ export default function EXP_RES(props) {
                     <div className='row text-start'>
                         <p>1- Expensas fijas y variables mediante las facturas A.1 y A.2. </p>
                     </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
+                    <div className="row">
+                        <div className="form-group col">
+                            <label htmlFor="inputCity">A.1 Factura Fija (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c1_dv} />
                         </div>
-                        <div class="form-group col">
-                            <label for="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
-                            <input type="text" class="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
+                        <div className="form-group col">
+                            <label htmlFor="inputState">A.2 Factura Variable (Nr Factura y Fecha)</label>
+                            <input type="text" className="form-control" name="expedition_doc_res_sexto_v" defaultValue={sexto_c2_dv} />
                         </div>
                     </div>
                 </div>
@@ -3132,36 +3132,36 @@ export default function EXP_RES(props) {
             <div className="row">
                 <div className="col">
                     <label className="mt-2">Modalidad</label>
-                    <input type="text" class="form-control" id="expedition_doc_res_1"
+                    <input type="text" className="form-control" id="expedition_doc_res_1"
                         defaultValue={type} />
                 </div>
             </div>
             <div className="row">
                 <div className="col">
                     <label className="mt-1">Fecha</label>
-                    <div class="input-group">
-                        <input type="date" class="form-control" id="expedition_doc_res_2"
+                    <div className="input-group">
+                        <input type="date" className="form-control" id="expedition_doc_res_2"
                             defaultValue={reso_date_dv} required />
                     </div>
                 </div>
                 <div className="col-3">
                     <label className="mt-1">Consecutivo</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_id"
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_id"
                             defaultValue={currentRecord.id_public} />
-                        <button type="button" class="btn btn-info shadow-none" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</button>
+                        <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</button>
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">POT</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_pot" required
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_pot" required
                             defaultValue={reso_pot_dv} />
                     </div>
                 </div>
                 <div className="col">
                     <label className="mt-1">Estado</label>
-                    <div class="input-group">
+                    <div className="input-group">
                         <select className="form-select" id="expedition_doc_res_state" defaultValue={reso_state_dv} required>
                             {getOptions(model)}
                         </select>
@@ -3169,8 +3169,8 @@ export default function EXP_RES(props) {
                 </div>
                 <div className="col">
                     <label className="mt-1"># Radicacion</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="expedition_doc_res_3" disabled
+                    <div className="input-group">
+                        <input type="text" className="form-control" id="expedition_doc_res_3" disabled
                             value={currentItem.id_public} readOnly />
                     </div>
                 </div>
@@ -3181,7 +3181,7 @@ export default function EXP_RES(props) {
             {canSave ?
                 <div className="row text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3"><i class="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                        <button className="btn btn-success my-3"><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                     </div>
                 </div>
                 : ''}
@@ -3206,8 +3206,8 @@ export default function EXP_RES(props) {
 
                 <div className="col">
                     <label>Alineción firma curador</label>
-                    <div class="input-group my-1">
-                        <select class="form-select me-1" id={"exp_pdf_reso_1"}>
+                    <div className="input-group my-1">
+                        <select className="form-select me-1" id={"exp_pdf_reso_1"}>
                             <option value={'center'}>CENTRO</option>
                             <option value={'left'}>IZQUIERDA</option>
                             <option value={'right'}>DERECHA</option>
@@ -3217,8 +3217,8 @@ export default function EXP_RES(props) {
 
                 <div className="col">
                     <label>Vigencia</label>
-                    <div class="input-group my-1">
-                        <select class="form-select" id="exp_pdf_reso_record_version" defaultValue={reso.eje || 0}>
+                    <div className="input-group my-1">
+                        <select className="form-select" id="exp_pdf_reso_record_version" defaultValue={reso.eje || 0}>
                             <option value={0}>NO USAR EJECUTORIA Y FECHA</option>
                             <option value={1}>NO USAR FECHA</option>
                             <option>DOCE (12) MESES</option>
@@ -3230,8 +3230,8 @@ export default function EXP_RES(props) {
                 </div>
                 <div className="col">
                     <label>Logo</label>
-                    <div class="input-group my-1">
-                        <select class="form-select me-1" id={"exp_pdf_reso_logo"}>
+                    <div className="input-group my-1">
+                        <select className="form-select me-1" id={"exp_pdf_reso_logo"}>
                             <option value={'no'}>SIN LOGO</option>
                             <option value={'left'}>IZQUIERDA</option>
                             <option value={'left2'}>IZQUIERDA ENTRESALTO</option>
@@ -3245,44 +3245,44 @@ export default function EXP_RES(props) {
             <div className="row">
                 <div className="col-4">
                     <label className="mt-2">Texto de cabezera</label>
-                    <input class="form-control" id="expedition_doc_header_text" defaultValue={reso_header_text} />
+                    <input className="form-control" id="expedition_doc_header_text" defaultValue={reso_header_text} />
                 </div>
             </div>
             <div className="row m-3">
                 <div className="col d-flex justify-content-center">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="record_rew_simple" />
-                        <label class="form-check-label">Usar nombre revisor</label>
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="record_rew_simple" />
+                        <label className="form-check-label">Usar nombre revisor</label>
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="record_rew_signs" />
-                        <label class="form-check-label">Usar firma profesionales</label>
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="record_rew_signs" />
+                        <label className="form-check-label">Usar firma profesionales</label>
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="record_rew_pagesi" />
-                        <label class="form-check-label">Usar pie de pagina</label>
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="record_rew_pagesi" />
+                        <label className="form-check-label">Usar pie de pagina</label>
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="record_rew_pagesn" defaultChecked="true" />
-                        <label class="form-check-label">Usar paginación</label>
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="record_rew_pagesn" defaultChecked="true" />
+                        <label className="form-check-label">Usar paginación</label>
                     </div>
                 </div>
 
             </div>
             <div className="row m-3">
                 <div className="col d-flex justify-content-center">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="record_rew_pagesx" defaultChecked={false} />
-                        <label class="form-check-label">Paginacion Arriba</label>
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="record_rew_pagesx" defaultChecked={false} />
+                        <label className="form-check-label">Paginacion Arriba</label>
                     </div>
                 </div>
             </div>
@@ -3291,30 +3291,30 @@ export default function EXP_RES(props) {
             <div className="row mb-2 text-center">
 
                 <div className="col ">
-                    <div class="input-group-sm my-1">
-                        <label class="form-check-label">Margen Superior (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_top" defaultValue={1.2} />
+                    <div className="input-group-sm my-1">
+                        <label className="form-check-label">Margen Superior (cm)</label>
+                        <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_top" defaultValue={1.2} />
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
-                    <div class="input-group-sm my-1">
-                        <label class="form-check-label">Margen Inferior (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_bot" defaultValue={1.5} />
+                    <div className="input-group-sm my-1">
+                        <label className="form-check-label">Margen Inferior (cm)</label>
+                        <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_bot" defaultValue={1.5} />
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
-                    <div class="input-group-sm my-1">
-                        <label class="form-check-label">Margen Izquierdo (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_left" defaultValue={1.9} />
+                    <div className="input-group-sm my-1">
+                        <label className="form-check-label">Margen Izquierdo (cm)</label>
+                        <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_left" defaultValue={1.9} />
                     </div>
                 </div>
 
                 <div className="col d-flex justify-content-center">
-                    <div class="input-group-sm my-1">
-                        <label class="form-check-label">Margen Derecho (cm)</label>
-                        <input type="number" min={0} step={0.01} class="form-control-sm" id="record_maring_right" defaultValue={1.9} />
+                    <div className="input-group-sm my-1">
+                        <label className="form-check-label">Margen Derecho (cm)</label>
+                        <input type="number" min={0} step={0.01} className="form-control-sm" id="record_maring_right" defaultValue={1.9} />
                     </div>
                 </div>
                 {import.meta.env.VITE_GLOBAL_ID == 'cb1' ? (
@@ -3449,7 +3449,7 @@ export default function EXP_RES(props) {
             <div className="row">
                 <div className="col">
                     <label className="mt-2">MODELO DE RESOLUCIÓN</label>
-                    <div class="input-group">
+                    <div className="input-group">
                         <select className="form-select" id="expedition_doc_res_model" defaultValue={default_model} onChange={(e) => update_model(e.target.value)}>
                             {models.map(model => {
                                 if (model.omit) return ''

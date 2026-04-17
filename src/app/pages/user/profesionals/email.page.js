@@ -63,9 +63,9 @@ export default function PROFESIONALS_EMAIL(props) {
         <div className='my-3'>
             <MDBBreadcrumb className="mx-5 my-2">
                 <MDBBreadcrumbItem>
-                    <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">Inicio</label></Link>
+                    <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">Inicio</label></Link>
                 </MDBBreadcrumbItem>
-                <MDBBreadcrumbItem active><i class="fas fa-hard-hat"></i>  <label className="text-uppercase">HOJA DE VIDA PROFESIONALES</label></MDBBreadcrumbItem>
+                <MDBBreadcrumbItem active><i className="fas fa-hard-hat"></i>  <label className="text-uppercase">HOJA DE VIDA PROFESIONALES</label></MDBBreadcrumbItem>
             </MDBBreadcrumb>
 
             <h2 className="text-center my-4">ACTUALIZACIÓN DE HOJA DE VIDA DE PROFESIONALES</h2>
@@ -74,12 +74,12 @@ export default function PROFESIONALS_EMAIL(props) {
 
             <div className="d-flex justify-content-center">
                 <div className="bg-card w-25">
-                    <div class="card-body">
+                    <div className="card-body">
                         <form onSubmit={sendEmail}>
                             <div className='row'>
                                 <div className='col'>
-                                    <label for="name" class="form-label">Email</label>
-                                    <input type="text" class="form-control" id="email" required />
+                                    <label htmlFor="name" className="form-label">Email</label>
+                                    <input type="text" className="form-control" id="email" required />
                                 </div>
                             </div>
                             <div className="row d-flex justify-content-center my-2">
@@ -89,7 +89,7 @@ export default function PROFESIONALS_EMAIL(props) {
                                 />
                             </div>
                             <div className="text-center my-2">
-                                <button type="submit" class="btn btn-info ">ENVIAR</button>
+                                <button type="submit" className="btn btn-info ">ENVIAR</button>
                             </div>
                         </form>
                     </div>

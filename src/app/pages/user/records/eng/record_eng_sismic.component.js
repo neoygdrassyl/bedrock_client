@@ -600,17 +600,17 @@ function RECORD_ENG_SISMIC(props) {
         let popBtn = (row) => {
             return <>
                 {qedit[row.id]
-                    ? <button type="button" onClick={() => manage_edit_item(row.id)} class="btn btn-sm btn-success">Guardar</button>
+                    ? <button type="button" onClick={() => manage_edit_item(row.id)} className="btn btn-sm btn-success">Guardar</button>
                     : <MDBPopover size='sm' color='info' btnChildren={'OPCIONES'} placement='left' dismiss>
                         <MDBPopoverBody>
-                            <div class="list-group list-group-flush">
-                                <button type="button" onClick={() => setQedit(prev => ({ ...prev, [row.id]: true }))} class="list-group-item list-group-item-action" ><i class="fas fa-pencil-alt"></i> Edición Rapida</button>
-                                <button type="button" onClick={() => setEdit(row)} class="list-group-item list-group-item-action"><i class="fas fa-pencil-alt"></i> Edición Completa</button>
-                                <button type="button" onClick={() => delete_item(row.id)} class="list-group-item list-group-item-action list-group-item-danger"><i class="fas fa-trash-alt"></i> Eliminar</button>
-                                <button type="button" onClick={() => new_x('up', row.pos)} class="list-group-item list-group-item-action"><i class="fas fa-plus"></i> Añadir Arriba</button>
-                                <button type="button" onClick={() => new_x('dw', row.pos)} class="list-group-item list-group-item-action"><i class="fas fa-plus"></i> Añadir Abajo</button>
-                                <button type="button" onClick={() => new_x('up', row.pos, true)} class="list-group-item list-group-item-action"><i class="fas fa-copy"></i> Copiar Arriba</button>
-                                <button type="button" onClick={() => new_x('dw', row.pos, true)} class="list-group-item list-group-item-action"><i class="fas fa-copy"></i> Copiar Abajo</button>
+                            <div className="list-group list-group-flush">
+                                <button type="button" onClick={() => setQedit(prev => ({ ...prev, [row.id]: true }))} className="list-group-item list-group-item-action" ><i className="fas fa-pencil-alt"></i> Edición Rapida</button>
+                                <button type="button" onClick={() => setEdit(row)} className="list-group-item list-group-item-action"><i className="fas fa-pencil-alt"></i> Edición Completa</button>
+                                <button type="button" onClick={() => delete_item(row.id)} className="list-group-item list-group-item-action list-group-item-danger"><i className="fas fa-trash-alt"></i> Eliminar</button>
+                                <button type="button" onClick={() => new_x('up', row.pos)} className="list-group-item list-group-item-action"><i className="fas fa-plus"></i> Añadir Arriba</button>
+                                <button type="button" onClick={() => new_x('dw', row.pos)} className="list-group-item list-group-item-action"><i className="fas fa-plus"></i> Añadir Abajo</button>
+                                <button type="button" onClick={() => new_x('up', row.pos, true)} className="list-group-item list-group-item-action"><i className="fas fa-copy"></i> Copiar Arriba</button>
+                                <button type="button" onClick={() => new_x('dw', row.pos, true)} className="list-group-item list-group-item-action"><i className="fas fa-copy"></i> Copiar Abajo</button>
                             </div>
                         </MDBPopoverBody>
                     </MDBPopover>
@@ -643,8 +643,8 @@ function RECORD_ENG_SISMIC(props) {
                     center: true,
                     cell: row => <>{
                         qedit[row.id]
-                            ? <div class="input-group input-group-sm">
-                                <input type="number" step="1" class="form-control me-1" id={"r_eng_sismic_5_edit_" + row.id} defaultValue={row.pos} />
+                            ? <div className="input-group input-group-sm">
+                                <input type="number" step="1" className="form-control me-1" id={"r_eng_sismic_5_edit_" + row.id} defaultValue={row.pos} />
                             </div>
                             : <label>{row.pos}</label>
                     }</>
@@ -654,8 +654,8 @@ function RECORD_ENG_SISMIC(props) {
                     center: true,
                     cell: row => <>{
                         qedit[row.id]
-                            ? <div class="input-group input-group-sm">
-                                <input type="text" class="form-control me-1" id={"r_eng_sismic_1_edit_" + row.id} defaultValue={row.name} />
+                            ? <div className="input-group input-group-sm">
+                                <input type="text" className="form-control me-1" id={"r_eng_sismic_1_edit_" + row.id} defaultValue={row.name} />
                             </div>
                             : <label>{alert_icon(row)} {row.name}</label>
                     }</>
@@ -670,8 +670,8 @@ function RECORD_ENG_SISMIC(props) {
                     center: true,
                     cell: row => <>{
                         qedit[row.id]
-                            ? <div class="input-group input-group-sm">
-                                <input type="number" step="0.01" class="form-control me-1" id={"r_eng_sismic_2_edit_" + row.id} defaultValue={row.height} />
+                            ? <div className="input-group input-group-sm">
+                                <input type="number" step="0.01" className="form-control me-1" id={"r_eng_sismic_2_edit_" + row.id} defaultValue={row.height} />
                             </div>
                             : <label>{row.height}</label>
                     }</>
@@ -681,8 +681,8 @@ function RECORD_ENG_SISMIC(props) {
                     center: true,
                     cell: row => <>{
                         qedit[row.id]
-                            ? <div class="input-group input-group-sm">
-                                <input type="number" step="0.01" class="form-control me-1" id={"r_eng_sismic_3_edit_" + row.id} defaultValue={row.area} />
+                            ? <div className="input-group input-group-sm">
+                                <input type="number" step="0.01" className="form-control me-1" id={"r_eng_sismic_3_edit_" + row.id} defaultValue={row.area} />
                             </div>
                             : <label>{row.pos <= 1 ? '' : row.area}</label>
                     }</>
@@ -694,8 +694,8 @@ function RECORD_ENG_SISMIC(props) {
                     compact: true,
                     cell: row => <>{
                         qedit[row.id]
-                            ? <div class="input-group input-group-sm">
-                                <input type="number" step="0.01" class="form-control me-1" id={"r_eng_sismic_6_edit_" + row.id} defaultValue={row.denplac} />
+                            ? <div className="input-group input-group-sm">
+                                <input type="number" step="0.01" className="form-control me-1" id={"r_eng_sismic_6_edit_" + row.id} defaultValue={row.denplac} />
                             </div>
                             : <label>{row.pos <= 1 ? '' : row.denplac}</label>
                     }</>
@@ -728,8 +728,8 @@ function RECORD_ENG_SISMIC(props) {
                     compact: true,
                     cell: row => <>{
                         qedit[row.id]
-                            ? <div class="input-group input-group-sm">
-                                <input type="number" step="0.01" class="form-control me-1" id={"r_eng_sismic_4_edit_" + row.id} defaultValue={row.esca} />
+                            ? <div className="input-group input-group-sm">
+                                <input type="number" step="0.01" className="form-control me-1" id={"r_eng_sismic_4_edit_" + row.id} defaultValue={row.esca} />
                             </div>
                             : <label>{row.pos <= 1 ? '' : row.esca}</label>
                     }</>
@@ -846,38 +846,38 @@ function RECORD_ENG_SISMIC(props) {
                 <div className="row mb-1">
                     <div className="col">
                         <label>Nivel</label>
-                        <div class="input-group my-1">
-                            <input type="number" min="1" step="1" class="form-control" id={"r_eng_sismic_5" + edit} defaultValue={_GET_CHILD_SISMIC().length + 1} required />
+                        <div className="input-group my-1">
+                            <input type="number" min="1" step="1" className="form-control" id={"r_eng_sismic_5" + edit} defaultValue={_GET_CHILD_SISMIC().length + 1} required />
                         </div>
                     </div>
                     <div className="col-3">
                         <label>Descripcin</label>
-                        <div class="input-group my-1">
-                            <input type="text" class="form-control" id={"r_eng_sismic_1" + edit} />
+                        <div className="input-group my-1">
+                            <input type="text" className="form-control" id={"r_eng_sismic_1" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>h Piso [m]</label>
-                        <div class="input-group my-1">
-                            <input type="number" step="0.01" class="form-control" id={"r_eng_sismic_2" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" step="0.01" className="form-control" id={"r_eng_sismic_2" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Área Placa [m2]</label>
-                        <div class="input-group my-1">
-                            <input type="number" step="0.01" class="form-control" id={"r_eng_sismic_3" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" step="0.01" className="form-control" id={"r_eng_sismic_3" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Esca [kN]</label>
-                        <div class="input-group my-1">
-                            <input type="number" step="0.01" class="form-control" id={"r_eng_sismic_4" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" step="0.01" className="form-control" id={"r_eng_sismic_4" + edit} />
                         </div>
                     </div>
                     <div className="col">
                         <label>Den Planc [kN/m2]</label>
-                        <div class="input-group my-1">
-                            <input type="number" step="0.01" class="form-control" id={"r_eng_sismic_6" + edit}
+                        <div className="input-group my-1">
+                            <input type="number" step="0.01" className="form-control" id={"r_eng_sismic_6" + edit}
                                 defaultValue={_GET_DENPLAC_VALUE()} />
                         </div>
                     </div>
@@ -888,20 +888,20 @@ function RECORD_ENG_SISMIC(props) {
                     </div>
                     <div className="col-2">
                         <label>Número </label>
-                        <div class="input-group my-1">
-                            <input type="number" step="1" min={1} defaultValue={9} class="form-control" id={"r_eng_sismic_column_1" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" step="1" min={1} defaultValue={9} className="form-control" id={"r_eng_sismic_column_1" + edit} />
                         </div>
                     </div>
                     <div className="col-2">
                         <label>Promedio C1 (m)</label>
-                        <div class="input-group my-1">
-                            <input type="number" step="0.01" defaultValue={0.3} class="form-control" id={"r_eng_sismic_column_2" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" step="0.01" defaultValue={0.3} className="form-control" id={"r_eng_sismic_column_2" + edit} />
                         </div>
                     </div>
                     <div className="col-2">
                         <label>Promedio C2 (m)</label>
-                        <div class="input-group my-1">
-                            <input type="number" step="0.01" defaultValue={0.3} class="form-control" id={"r_eng_sismic_column_3" + edit} />
+                        <div className="input-group my-1">
+                            <input type="number" step="0.01" defaultValue={0.3} className="form-control" id={"r_eng_sismic_column_3" + edit} />
                         </div>
                     </div>
 
@@ -1483,9 +1483,9 @@ function RECORD_ENG_SISMIC(props) {
                     <hr />
                     <label className="app-p fw-bold text-uppercase my-2">Paso 8, Análisis sísmico de la estructura. Aplicación de los movimientos sísmicos de diseño (Cap. A.3) este análisis se realiza sin ser dividido por el coeficiente de capacidad de disipación de energía, R, según los resultados del paso 6, se determinan los desplazamientos máximos de diseño y las fuerzas internas que se derivan de ellos. Desplazamiento máximo corresponde al 1% de la altura de entrepisos.</label>
                     {_CONCRETE_VAR()}
-                    <div class="form-check ms-5">
-                        <input class="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                        <label class="form-check-label" for="flexCheckDefault">
+                    <div className="form-check ms-5">
+                        <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                        <label className="form-check-label" htmlFor="flexCheckDefault">
                             Nuevo Piso
                         </label>
                     </div>
@@ -1496,7 +1496,7 @@ function RECORD_ENG_SISMIC(props) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                                     </div>
                                 </div>
                             </form>
@@ -1515,7 +1515,7 @@ function RECORD_ENG_SISMIC(props) {
                                 {_COMPONENT_MANAGE('_edit')}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><i class="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                                     </div>
                                 </div>
                             </form>

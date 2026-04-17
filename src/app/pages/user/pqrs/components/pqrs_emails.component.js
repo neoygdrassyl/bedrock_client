@@ -196,22 +196,22 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                 <div className="row">
                     <div className="col-6">
                         <label>Lista de Correos (Separados por coma)</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-envelope"></i>
                             </span>
-                            <input type="text" class="form-control" id="pqrs_email_1"
+                            <input type="text" className="form-control" id="pqrs_email_1"
                                 defaultValue={_EMAILS} required />
-                            <button type="submit" class="btn btn-warning shadow-none" disabled>ENVIAR CORREO</button>
+                            <button type="submit" className="btn btn-warning shadow-none" disabled>ENVIAR CORREO</button>
                         </div>
                     </div>
                     <div className="col-6">
                         <label>Tipo de Correo</label>
-                        <div class="input-group my-1">
-                            <span class="input-group-text bg-info text-white">
-                                <i class="far fa-envelope"></i>
+                        <div className="input-group my-1">
+                            <span className="input-group-text bg-info text-white">
+                                <i className="far fa-envelope"></i>
                             </span>
-                            <select class="form-control" id="pqrs_email_3" onChange={(e) => _GET_EMAIL_BODY(e.target.value)}>
+                            <select className="form-control" id="pqrs_email_3" onChange={(e) => _GET_EMAIL_BODY(e.target.value)}>
                                 {_GET_EMAIL_TYPES()}
                             </select>
                         </div>
@@ -220,7 +220,7 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                 <div className="row">
                     <div className="col">
                         <label>Cuerpo del Email (Modifique este texto debidamente)</label>
-                        <textarea class="form-control mb-3" rows="3" id="pqrs_email_2"></textarea>
+                        <textarea className="form-control mb-3" rows="3" id="pqrs_email_2"></textarea>
                     </div>
                 </div>
 
@@ -232,9 +232,9 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                 _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white" id="name"><i class="fas fa-paperclip"></i></span>
-                            <input type="file" class="form-control" name="files_foremail" accept="image/png, image/jpeg application/pdf" />
+                        <div className="input-group">
+                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <input type="file" className="form-control" name="files_foremail" accept="image/png, image/jpeg application/pdf" />
                         </div>
                     </div>
                 </div>)
@@ -441,9 +441,9 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                                         <div className="text-end m-3">
                                             <p className="lead text-end fw-bold text-uppercase">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <MDBBtn className="btn btn-secondary btn-sm mx-3" onClick={() => minusAttachEmail()}><i class="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <MDBBtn className="btn btn-secondary btn-sm mx-3" onClick={() => minusAttachEmail()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
                                                 : ""}
-                                            <MDBBtn className="btn btn-secondary btn-sm" onClick={() => addAttachEmail()}><i class="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <MDBBtn className="btn btn-secondary btn-sm" onClick={() => addAttachEmail()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>
