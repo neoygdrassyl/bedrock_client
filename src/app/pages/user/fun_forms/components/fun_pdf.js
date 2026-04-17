@@ -150,7 +150,6 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
     const getPdfForm = useCallback(async () => {
         // NOTE: Direct DOM queries (document.getElementById) are kept for this PDF generator
         // to handle the uncontrolled inputs without adding excessive state management overhead for these specific fields.
-        let swaMsg = swaMsg;
         let model = currentItem.model
         if (!model) return MySwal.fire({
             title: 'SOLICITUD SIN MODELO',
@@ -176,7 +175,7 @@ function FUN_PDF({ currentItem, currentVersion, swaMsg }) {
 
         var _child = null;
         var _array = null;
-        const currentItem = currentItem;
+
 
         let page = pdfDoc.getPage(0)
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)

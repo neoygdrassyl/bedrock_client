@@ -123,7 +123,7 @@ describe('FUN_PDF download flow', () => {
       }),
     });
 
-    const button = renderFunPdf({ model: 2024 });
+    const button = renderFunPdf({ model: 2026 });
     const clickHandler = getReactClickHandler(button);
 
     await expect(clickHandler()).rejects.toBe(stopAfterContextSetup);
