@@ -257,7 +257,7 @@ export default function ARCHIVE(props) {
     const ExpandedComponent = ({ data }) => {
         let _x = data.process_x_archives;
         return <>
-            {_x.sort((p, n) => Number(p.folder) - Number(n.folder)).map(it => {
+            {[..._x].sort((p, n) => Number(p.folder) - Number(n.folder)).map(it => {
                 let json = getJSONFull(it.json);
                 return <div className='row border'>
                     <div className='col'>
