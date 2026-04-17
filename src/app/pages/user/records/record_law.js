@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MDBCard, MDBCardBody } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -43,7 +43,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
     const [pqrsxfun, setPqrsxfun] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
 
-    const retrievePQRSxFUN = (id_public) => {
+    const retrievePQRSxFUN = useCallback((id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
                 setPqrsxfun(response.data);
@@ -51,9 +51,9 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
             .catch(e => {
                 console.log(e);
             });
-    };
+    }, []);
 
-    const retrieveItem = (id) => {
+    const retrieveItem = useCallback((id) => {
         FUN_SERVICE.get(id)
             .then(response => {
                 setCurrentItem(response.data);
@@ -68,9 +68,9 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                     confirmButtonText: swaMsg.text_btn,
                 });
             });
-    };
+    }, [swaMsg, retrievePQRSxFUN]);
 
-    const setItem_RecordArc = () => {
+    const setItem_RecordArc = useCallback(() => {
         RECORD_LAW_SERVICE.getRecord(currentId)
             .then(response => {
                 if (response.data.length < 1) {
@@ -92,7 +92,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                     confirmButtonText: swaMsg.text_btn,
                 });
             });
-    };
+    }, [currentId, swaMsg]);
 
     const requestUpdateRecord = (id) => {
         RECORD_LAW_SERVICE.getRecord(id)
@@ -124,7 +124,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
     useEffect(() => {
         setItem_RecordArc();
         retrieveItem(currentId);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [currentId, setItem_RecordArc, retrieveItem]);
         const rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
         var formData = new FormData();
         const quickModalStyle = {

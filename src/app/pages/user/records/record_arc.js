@@ -122,7 +122,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
     useEffect(() => {
         setItem_RecordArc();
         retrieveItem(currentId);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [currentId, setItem_RecordArc, retrieveItem]);
 
         var formData = new FormData();
         let subc = currentRecord ? currentRecord.subcategory ? currentRecord.subcategory.split(',') : [0, 0, 0, 0] : [0, 0, 0, 0]

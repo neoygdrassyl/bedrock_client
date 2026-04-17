@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MDBBtn, MDBCard, MDBCardBody, MDBTypography } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -47,7 +47,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
     const [arcSteps, setArcSteps] = useState([]);
     const [currentItem, setCurrentItem] = useState(null);
 
-    const retrievePQRSxFUN = (id_public) => {
+    const retrievePQRSxFUN = useCallback((id_public) => {
         FUN_SERVICE.loadPQRSxFUN(id_public)
             .then(response => {
                 setPqrsxfun(response.data);
@@ -55,9 +55,9 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
             .catch(e => {
                 console.log(e);
             });
-    };
+    }, []);
 
-    const retrieveItem = (id) => {
+    const retrieveItem = useCallback((id) => {
         FUN_SERVICE.get(id)
             .then(response => {
                 setCurrentItem(response.data);
@@ -72,9 +72,9 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                     confirmButtonText: swaMsg.text_btn,
                 });
             });
-    };
+    }, [swaMsg, retrievePQRSxFUN]);
 
-    const loadArcSteps = (id) => {
+    const loadArcSteps = useCallback((id) => {
         RECORD_ARCSERVICE.getSteps(id)
             .then(response => {
                 if (response.data.length < 1) {
@@ -86,9 +86,9 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
             .catch(e => {
                 console.log(e);
             });
-    };
+    }, []);
 
-    const setItem_RecordArc = () => {
+    const setItem_RecordArc = useCallback(() => {
         RECORD_ENG_SERVICE.findIdRelated(currentId)
             .then(response => {
                 if (response.data.length < 1) {
@@ -110,7 +110,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                     confirmButtonText: swaMsg.text_btn,
                 });
             });
-    };
+    }, [currentId, swaMsg]);
 
     const requestUpdateRecord = (id) => {
         RECORD_ENG_SERVICE.findIdRelated(id)
@@ -143,7 +143,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
         setItem_RecordArc();
         retrieveItem(currentId);
         loadArcSteps(currentId);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [currentId, setItem_RecordArc, retrieveItem, loadArcSteps]);
         const title = { 0: '', 1: 'ESTUDIO', 2: 'CERTIFICACIÓN' }
         var formData = new FormData();
         const STEP_PROVIDER = () => {
