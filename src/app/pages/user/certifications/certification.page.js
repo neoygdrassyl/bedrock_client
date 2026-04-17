@@ -3,7 +3,7 @@ import { addDecimalPoints, formsParser1 } from '../../../components/customClasse
 import UsersService from '../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ export default function CERTIFICATE_WORKER(props) {
             setNumber(data[0].id_number);
             setRegistration(data[0].registration);
             var rad = document.getElementById('id_number').value
-            setId(moment(`20${rad[0]}${rad[1]}-${rad[3]}${rad[4]}-${rad[5]}${rad[6]}`))
+            setId(dayjs(`20${rad[0]}${rad[1]}-${rad[3]}${rad[4]}-${rad[5]}${rad[6]}`))
             setLoadTable(true);
         }
         if (data.length == 0) setLoadTable(false)

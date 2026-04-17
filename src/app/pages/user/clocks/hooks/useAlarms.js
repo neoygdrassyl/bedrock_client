@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { calculateLegalLimit, calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
 import { ALARM_SUGGESTIONS, ALARM_THRESHOLD_DAYS } from '../config/alarms.definitions';
 import { calcularDiasHabiles } from '../hooks/useClocksManager';
@@ -17,7 +17,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
     const alarms = useMemo(() => {
         const allAlarms = [];
-        const today = moment(systemDate);
+        const today = dayjs(systemDate);
 
         // --- CONFIGURACIÓN DE NOTIFICACIÓN ---
         const estudioOptions = phaseOptions?.phase_estudio || { notificationType: 'notificar', byAviso: false };
@@ -59,7 +59,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
             const id = `${type}-${state}`;
             if (allAlarms.some(a => a.id === id)) return;
 
-            const limitMoment = moment(alarmData.limitDate);
+            const limitMoment = dayjs(alarmData.limitDate);
             if (!limitMoment.isValid()) return;
 
             const remainingDays = alarmData.remainingDays;
@@ -140,7 +140,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                         return;
                     }
                     // No hay fecha límite legal. Usar una fecha derivada del sistema para que el formato sea válido.
-                    const pseudoLimit = moment(systemDate).add(ALARM_THRESHOLD_DAYS.legal, 'days').toISOString();
+                    const pseudoLimit = dayjs(systemDate).add(ALARM_THRESHOLD_DAYS.legal, 'days').toISOString();
 
                     addAlarm({
                         state: 504,
@@ -179,11 +179,11 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
                 if (!legalLimit) return;
                 
-                const limitMoment = moment(legalLimit);
+                const limitMoment = dayjs(legalLimit);
 
                 if (clock && clock.date_start) {
                     // --- EVENTO COMPLETADO: VERIFICAR SI HUBO RETRASO ---
-                    const completionDate = moment(clock.date_start);
+                    const completionDate = dayjs(clock.date_start);
                     if (completionDate.isAfter(limitMoment, 'day')) {
                         // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
                         const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
@@ -246,7 +246,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                     
                     if (scheduledData && scheduledData.limitDate) {
                         // CORRECCIÓN: Usar calcularDiasHabiles para consistencia con días hábiles
-                        const limitMoment = moment(scheduledData.limitDate);
+                        const limitMoment = dayjs(scheduledData.limitDate);
                         const remaining = today.isAfter(limitMoment, 'day') 
                             ? -calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'))
                             : calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
@@ -280,7 +280,7 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                 eventName: activePhaseName,
                 state: 'process',
                 remainingDays: remaining,
-                limitDate: moment(systemDate).add(remaining, 'days').format('DD/MM/YYYY'),
+                limitDate: dayjs(systemDate).add(remaining, 'days').format('DD/MM/YYYY'),
                 suggestion: suggestionDef.suggestion,
                 severity: isOverdue ? 'danger' : 'warning',
             });

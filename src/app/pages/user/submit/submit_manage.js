@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -46,8 +46,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                 type: _CHILD ? _CHILD.type : null,
                 list_type: _CHILD ? _CHILD.list_type : null,
                 list_type_str: _CHILD ? _CHILD.list_type_str : null,
-                date: _CHILD ? _CHILD.date : moment().format('YYYY-MM-DD'),
-                time: _CHILD ? _CHILD.time : moment().format('HH:mm'),
+                date: _CHILD ? _CHILD.date : dayjs().format('YYYY-MM-DD'),
+                time: _CHILD ? _CHILD.time : dayjs().format('HH:mm'),
                 owner: _CHILD ? _CHILD.owner : null,
                 worker_reciever: _CHILD ? _CHILD.worker_reciever : window.user.name + " " + window.user.surname,
                 name_retriever: _CHILD ? _CHILD.name_retriever : null,
@@ -91,8 +91,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = new_id.split('-')[0] + "-" + concecutive
                             document.getElementById(htmlId).value = new_id;
-                        } else document.getElementById(htmlId).value = "VR" + moment().format('YY') + "-0001";
-                    } else document.getElementById(htmlId).value = "VR" + moment().format('YY') + "-0001";
+                        } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
+                    } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
@@ -176,8 +176,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${_id[1]}-${_id[2]}-${concecutive}`
                             document.getElementById('submit_2').value = new_id;
-                        } else document.getElementById('submit_2').value = "68001-1-" + moment().format('YY') + "-0001";
-                    } else document.getElementById('submit_2').value = "68001-1-" + moment().format('YY') + "-0001";
+                        } else document.getElementById('submit_2').value = "68001-1-" + dayjs().format('YY') + "-0001";
+                    } else document.getElementById('submit_2').value = "68001-1-" + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);
@@ -205,8 +205,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${concecutive}`
                             document.getElementById('submit_2').value = new_id;
-                        } else document.getElementById('submit_2').value = "OA" + moment().format('YYYY') + "-0001";
-                    } else document.getElementById('submit_2').value = "OA" + moment().format('YYYY') + "-0001";
+                        } else document.getElementById('submit_2').value = "OA" + dayjs().format('YYYY') + "-0001";
+                    } else document.getElementById('submit_2').value = "OA" + dayjs().format('YYYY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);

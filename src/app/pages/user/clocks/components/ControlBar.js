@@ -1,8 +1,8 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 export const ControlBar = ({ timeTravel, onClose }) => {
   const { systemDate, onDateChange, onDateShift, onDateReset } = timeTravel;
-  const isToday = moment(systemDate).isSame(moment(), 'day');
+  const isToday = dayjs(systemDate).isSame(dayjs(), 'day');
 
   return (
     <div className="control-bar">
@@ -79,7 +79,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
        {!isToday && (
         <div className="time-travel-banner">
           <i className="fas fa-exclamation-triangle me-2"></i>
-          Estás viendo el expediente a fecha de <strong>{moment(systemDate).format('DD MMMM YYYY')}</strong>. Los cálculos reflejan esta fecha.
+          Estás viendo el expediente a fecha de <strong>{dayjs(systemDate).format('DD MMMM YYYY')}</strong>. Los cálculos reflejan esta fecha.
         </div>
       )}
     </div>

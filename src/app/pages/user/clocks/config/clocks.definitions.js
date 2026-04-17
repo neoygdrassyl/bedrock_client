@@ -1,6 +1,6 @@
 import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import { NEGATIVE_PROCESS_TITLE } from '../hooks/useClocksManager';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const DESIST_CLOCKS = {
     '-50': { name: 'Inicio del proceso de desistimiento', desc: 'Inicio formal del proceso de desistimiento.' },
@@ -163,9 +163,9 @@ const extraClocks = (props) => {
     const postActaSusp = getSuspensionClocks(suspensionPostActa, 'post');
     
     // La prórroga se muestra donde esté ubicada temporalmente
-    const preActaExt = !acta1 || (extension.exists && extension.start?.date_start && (!acta1.date_start || moment(extension.start.date_start).isBefore(acta1.date_start)))
+    const preActaExt = !acta1 || (extension.exists && extension.start?.date_start && (!acta1.date_start || dayjs(extension.start.date_start).isBefore(acta1.date_start)))
         ? getExtensionClocks(extension) : [];
-    const postActaExt = acta1 && extension.exists && extension.start?.date_start && moment(extension.start.date_start).isSameOrAfter(acta1.date_start)
+    const postActaExt = acta1 && extension.exists && extension.start?.date_start && dayjs(extension.start.date_start).isSameOrAfter(acta1.date_start)
         ? getExtensionClocks(extension) : [];
 
     return [

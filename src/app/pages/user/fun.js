@@ -21,6 +21,7 @@ import FUN_ALERT from './fun_forms/fun_alertn';
 import FUNCLOCK from './fun_forms/fun_clock';
 
 import { dateParser, dateParser_finalDate, dateParser_timePassed, dateParser_timeLeft, formsParser1, regexChecker_isPh, regexChecker_isOA, regexChecker_isOA_2 } from '../../components/customClasses/typeParse';
+import { DiasHabilesColombia } from '../../utils/BusinessDaysCol';
 
 // RECORDS
 import RECORD_ARC from './records/record_arc';
@@ -38,8 +39,7 @@ import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/ta
 
 
 // JSONS
-const moment = require('moment');
-const momentB = require('moment-business-days');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 
 function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
@@ -526,8 +526,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 break;
             case "macro":
                 setState({
-                    date_start: moment(document.getElementById('load_macro_date_1').value).format('YYYY-MM-DD'),
-                    date_end: moment(document.getElementById('load_macro_date_2').value).format('YYYY-MM-DD'),
+                    date_start: dayjs(document.getElementById('load_macro_date_1').value).format('YYYY-MM-DD'),
+                    date_end: dayjs(document.getElementById('load_macro_date_2').value).format('YYYY-MM-DD'),
                 })
                 toggle_macro(item)
                 break;
@@ -579,9 +579,9 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
     }
     // HELPER FUNCTIONS
     function setSubtmitRows() {
-        var end_date = moment().format('YYYY-MM-DD');
-        var start_date = momentB(end_date, 'YYYY-MM-DD').businessSubtract(15)._d;
-        start_date = moment(start_date).format('YYYY-MM-DD');
+        var end_date = dayjs().format('YYYY-MM-DD');
+        const _bd = new DiasHabilesColombia();
+        var start_date = _bd.restarDiasHabiles(end_date, 15);
 
         FUNService.loadSubmit2(start_date, end_date)
             .then(response => {
@@ -1108,8 +1108,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                             if (concecutive < 10) concecutive = "0" + concecutive
                             new_id = `${_id[0]}-${_id[1]}-${_id[2]}-${concecutive}`
                             document.getElementById('f_02').value = new_id;
-                        } else document.getElementById('f_02').value = nomens + moment().format('YY') + "-0001";
-                    } else document.getElementById('f_02').value = nomens + moment().format('YY') + "-0001";
+                        } else document.getElementById('f_02').value = nomens + dayjs().format('YY') + "-0001";
+                    } else document.getElementById('f_02').value = nomens + dayjs().format('YY') + "-0001";
                 })
                 .catch(e => {
                     console.log(e);

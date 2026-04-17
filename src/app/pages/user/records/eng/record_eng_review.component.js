@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import FUN_SERVICE from '../../../../services/fun.service'
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { handleEnghCheck } from '../../../../components/customClasses/pdfCheckHandler';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
@@ -175,7 +175,7 @@ function RECORD_ENG_REVIEW(props) {
         }
 
         pdfDoc.setAuthor("CURADURIA URBANA 1 DE BUCARAMANGA");
-        pdfDoc.setCreationDate(moment().toDate());
+        pdfDoc.setCreationDate(dayjs().toDate());
         pdfDoc.setCreator('NESTOR TRIANA - MORE INFO AT: http://devnatriana.com/ ');
         pdfDoc.setKeywords(['formulario', 'unico', 'nacional', 'curaduria', 'planeacion', 'construccion', 'obra', 'proyecto', 'informe', 'acta', 'estructural', 'ingenieria']);
         pdfDoc.setLanguage('es-co');

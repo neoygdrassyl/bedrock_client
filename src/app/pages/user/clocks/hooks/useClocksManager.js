@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol.js';
 import { useProcessPhases } from './useProcessPhases';
 
@@ -9,9 +9,9 @@ const businessDaysCalculator = new DiasHabilesColombia();
 export const calcularDiasHabiles = (fechaInicio, fechaFin, include=false) => {
   if (!fechaInicio || !fechaFin) return 0;
   try {
-    let inicio = moment(fechaInicio).format('YYYY-MM-DD');
-    const fin = moment(fechaFin).format('YYYY-MM-DD');
-    if (moment(fin).isBefore(inicio)) return 0;
+    let inicio = dayjs(fechaInicio).format('YYYY-MM-DD');
+    const fin = dayjs(fechaFin).format('YYYY-MM-DD');
+    if (dayjs(fin).isBefore(inicio)) return 0;
     return businessDaysCalculator.contarDiasHabiles(inicio, fin, include);
   } catch (e) { return 0; }
 };
@@ -19,9 +19,9 @@ export const calcularDiasHabiles = (fechaInicio, fechaFin, include=false) => {
 export const sumarDiasHabiles = (fechaInicio, dias) => {
     if (!fechaInicio || dias === undefined || dias === null) return fechaInicio;
     try {
-      const inicio = moment(fechaInicio).format('YYYY-MM-DD');
+      const inicio = dayjs(fechaInicio).format('YYYY-MM-DD');
       return businessDaysCalculator.sumarDiasHabiles(inicio, dias);
-    } catch (e) { return moment(fechaInicio).format('YYYY-MM-DD'); }
+    } catch (e) { return dayjs(fechaInicio).format('YYYY-MM-DD'); }
 };
 
 // --- CONSTANTES ---
@@ -62,7 +62,7 @@ export const useScheduleConfig = (expedienteId) => {
 export const useClocksManager = (currentItem, clocksData, currentVersion, systemDate, phaseOptions = {}) => {
 
   // AQUÍ ESTÁ LA CLAVE: 'today' cambia cuando mueves el emulador.
-  const today = useMemo(() => moment(systemDate).format('YYYY-MM-DD'), [systemDate]);
+  const today = useMemo(() => dayjs(systemDate).format('YYYY-MM-DD'), [systemDate]);
 
   // --- HELPERS BÁSICOS ---
   const getClock = (state) => (clocksData || []).find(c => String(c.state) === String(state)) || null;
@@ -71,7 +71,7 @@ export const useClocksManager = (currentItem, clocksData, currentVersion, system
     let newestDate = null;
     states.forEach((state) => {
       const date = getClock(state)?.date_start;
-      if (date && (!newestDate || moment(date).isAfter(newestDate))) {
+      if (date && (!newestDate || dayjs(date).isAfter(newestDate))) {
         newestDate = date;
       }
     });

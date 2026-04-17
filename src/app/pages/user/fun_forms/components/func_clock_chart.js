@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, formsParser1 } from '../../../../components/customClasses/typeParse';
 import {
     ScatterChart, Scatter, XAxis, YAxis, CartesianGrid,
@@ -23,9 +23,9 @@ function FUN_CLOCK_CHART({ currentItem }) {
     const setCalendarData = () => {
         var calendar_clocks = [];
         var dates_bundle = {
-            today: moment().format('YYYY/MM/DD'),
+            today: dayjs().format('YYYY/MM/DD'),
 
-            creation: moment(currentItem.date),
+            creation: dayjs(currentItem.date),
             payment: _GET_CLOCKS_STATE(3).date_start,
             legal: _GET_CLOCK_STATE_VERSION(5, currentItem.version).date_start,
             archive: _GET_CLOCKS_STATE(100).date_start,
@@ -110,20 +110,20 @@ function FUN_CLOCK_CHART({ currentItem }) {
                     if (diff > 31) diff = 31
                     end = dateParser_finalDate(start, diff);
                 }
-                diff = moment(end).diff(start, 'days');
+                diff = dayjs(end).diff(start, 'days');
                 for (var i = 1; i < diff; i++) {
-                    let next_day = moment(start).add(i, 'days')
+                    let next_day = dayjs(start).add(i, 'days')
                     calendar_clocks.push({ date: next_day, state: 4 })
                 }
 
-                calendar_clocks = addClock(calendar_clocks, moment(dates_bundle.incomplete_1), -1, ', DECLARADO INCOMPLETO')
+                calendar_clocks = addClock(calendar_clocks, dayjs(dates_bundle.incomplete_1), -1, ', DECLARADO INCOMPLETO')
             }
             if (next_Step == 'legal') {
-                let diff = moment(dates_bundle.legal).diff(start, 'days');
+                let diff = dayjs(dates_bundle.legal).diff(start, 'days');
                 if (diff > 0) {
                     if (diff > 46) diff = 46
                     for (var i = 1; i < diff; i++) {
-                        let next_day = moment(start).add(i, 'days')
+                        let next_day = dayjs(start).add(i, 'days')
                         calendar_clocks.push({ date: next_day, state: 4 })
                     }
                 }
@@ -151,13 +151,13 @@ function FUN_CLOCK_CHART({ currentItem }) {
                 end = dateParser_finalDate(start, diff);
                 daysPassed = diff;
             }
-            diff = moment(end).diff(start, 'days');
+            diff = dayjs(end).diff(start, 'days');
 
             for (var i = 1; i < diff; i++) {
-                let next_day = moment(start).add(i, 'days')
+                let next_day = dayjs(start).add(i, 'days')
                 calendar_clocks.push({ date: next_day, state: 6 })
             }
-            calendar_clocks = addClock(calendar_clocks, moment(dates_bundle.legal), 5, ', LYDF')
+            calendar_clocks = addClock(calendar_clocks, dayjs(dates_bundle.legal), 5, ', LYDF')
         }
 
         if (_clock_stepper.includes('incomplete_2') && finishedNegative && !isArchived) {
@@ -179,9 +179,9 @@ function FUN_CLOCK_CHART({ currentItem }) {
                 end = dateParser_finalDate(start, diff);
                 daysPassed += diff;
             }
-            diff = moment(end).diff(start, 'days');
+            diff = dayjs(end).diff(start, 'days');
             for (var i = 1; i < diff; i++) {
-                let next_day = moment(start).add(i, 'days')
+                let next_day = dayjs(start).add(i, 'days')
                 calendar_clocks.push({ date: next_day, state: 6 })
             }
         }
@@ -203,9 +203,9 @@ function FUN_CLOCK_CHART({ currentItem }) {
                 if (diff > 46 - daysPassed) diff = 46 - daysPassed;
                 end = dateParser_finalDate(start, diff);
             }
-            diff = moment(end).diff(start, 'days');
+            diff = dayjs(end).diff(start, 'days');
             for (var i = 1; i < diff; i++) {
-                let next_day = moment(start).add(i, 'days')
+                let next_day = dayjs(start).add(i, 'days')
                 calendar_clocks.push({ date: next_day, state: 6 })
             }
         }
@@ -216,43 +216,43 @@ function FUN_CLOCK_CHART({ currentItem }) {
         if (currentItem.fun_law) {
             if (currentItem.fun_law.sign) {
                 let _sign = currentItem.fun_law.sign.split(',')
-                if (_sign[1]) calendar_clocks = addClock(calendar_clocks, moment(_sign[1]).format('YYYY/MM/DD'), 7, ', nRADICACION VALLA')
+                if (_sign[1]) calendar_clocks = addClock(calendar_clocks, dayjs(_sign[1]).format('YYYY/MM/DD'), 7, ', nRADICACION VALLA')
             }
         }
 
         // NEIGHBOURS
         let _neighbours = currentItem.fun_3s;
         for (var i = 0; i < _neighbours.length; i++) {
-            if (_neighbours[i].alerted) calendar_clocks = addClock(calendar_clocks, moment(_neighbours[i].alerted), 8, ', VECINO ALERTADO')
+            if (_neighbours[i].alerted) calendar_clocks = addClock(calendar_clocks, dayjs(_neighbours[i].alerted), 8, ', VECINO ALERTADO')
         }
 
         if (isPH) {
             let ph = currentItem.record_ph;
             if (ph) {
-                //calendar_clocks.push({ date: moment(ph.createdAt), state: 14, event: '\nINICIO REVISION P.H.' })
-                if (ph.date_law_review) calendar_clocks = addClock(calendar_clocks, moment(ph.date_law_review), 14, ', REVISION JUR. P.H.')
-                if (ph.date_arc_review) calendar_clocks = addClock(calendar_clocks, moment(ph.date_arc_review), 14, ', REVISION ARQ. P.H.')
+                //calendar_clocks.push({ date: dayjs(ph.createdAt), state: 14, event: '\nINICIO REVISION P.H.' })
+                if (ph.date_law_review) calendar_clocks = addClock(calendar_clocks, dayjs(ph.date_law_review), 14, ', REVISION JUR. P.H.')
+                if (ph.date_arc_review) calendar_clocks = addClock(calendar_clocks, dayjs(ph.date_arc_review), 14, ', REVISION ARQ. P.H.')
             }
         } else {
             let law = currentItem.record_law;
             if (law) {
                 let law_review = law.record_law_reviews[law.version - 1];
-                if (law_review) calendar_clocks = addClock(calendar_clocks, moment(law_review.date), 14, ', REVISION JURIDICA')
+                if (law_review) calendar_clocks = addClock(calendar_clocks, dayjs(law_review.date), 14, ', REVISION JURIDICA')
             }
             let arc = currentItem.record_arc;
             if (arc) {
                 let arc_review = arc.record_arc_38s[arc.version - 1];
-                if (arc_review) calendar_clocks = addClock(calendar_clocks, moment(arc_review.date), 14, ', REVISION ARQUITECTONICA')
+                if (arc_review) calendar_clocks = addClock(calendar_clocks, dayjs(arc_review.date), 14, ', REVISION ARQUITECTONICA')
             }
         }
 
         if (dates_bundle.creation) calendar_clocks = addClock(calendar_clocks, dates_bundle.creation, 1, ', CREACION VIRTUAL')
-        if (dates_bundle.payment) calendar_clocks = addClock(calendar_clocks, moment(dates_bundle.payment), 3, ', PAGO EXPENSAS FIJAS')
-        if (dates_bundle.archive) calendar_clocks = addClock(calendar_clocks, moment(dates_bundle.archive), 100, ', ARCHIVADO')
+        if (dates_bundle.payment) calendar_clocks = addClock(calendar_clocks, dayjs(dates_bundle.payment), 3, ', PAGO EXPENSAS FIJAS')
+        if (dates_bundle.archive) calendar_clocks = addClock(calendar_clocks, dayjs(dates_bundle.archive), 100, ', ARCHIVADO')
         calendar_clocks = addClock(calendar_clocks, dates_bundle.today, 99, ', HOY')
 
         let _startDate = dates_bundle.payment ? dates_bundle.payment : dates_bundle.creation;
-        let _endDate = dates_bundle.payment ? moment(dates_bundle.payment, 'YYYY-MM-DD').add(1, 'years') : moment(currentItem.date, 'YYYY-MM-DD').add(1, 'years')
+        let _endDate = dates_bundle.payment ? dayjs(dates_bundle.payment, 'YYYY-MM-DD').add(1, 'years') : dayjs(currentItem.date, 'YYYY-MM-DD').add(1, 'years')
         setEndDate(_endDate);
         setStartDate(_startDate);
         setCalendar_Data(calendar_clocks)
@@ -284,9 +284,9 @@ function FUN_CLOCK_CHART({ currentItem }) {
                 let diff = dateParser_dateDiff(start, end);
                 if (diff > 5) diff = 5
                 end = dateParser_finalDate(start, diff);
-                diff = moment(end).diff(start, 'days');
+                diff = dayjs(end).diff(start, 'days');
                 for (var i = 1; i < diff; i++) {
-                    let next_day = moment(start).add(i, 'days')
+                    let next_day = dayjs(start).add(i, 'days')
                     _clocks.push({ date: next_day, state: 69 })
                 }
             }
@@ -304,9 +304,9 @@ function FUN_CLOCK_CHART({ currentItem }) {
                 let diff = dateParser_dateDiff(start, end);
                 if (diff > 10) diff = 10
                 end = dateParser_finalDate(start, diff);
-                diff = moment(end).diff(start, 'days');
+                diff = dayjs(end).diff(start, 'days');
                 for (var i = 1; i < diff; i++) {
-                    let next_day = moment(start).add(i, 'days')
+                    let next_day = dayjs(start).add(i, 'days')
                     _clocks.push({ date: next_day, state: 69 })
                 }
             }
@@ -323,9 +323,9 @@ function FUN_CLOCK_CHART({ currentItem }) {
                 let diff = dateParser_dateDiff(start, end);
                 if (diff > 45) diff = 45
                 end = dateParser_finalDate(start, diff);
-                diff = moment(end).diff(start, 'days');
+                diff = dayjs(end).diff(start, 'days');
                 for (var i = 1; i < diff; i++) {
-                    let next_day = moment(start).add(i, 'days')
+                    let next_day = dayjs(start).add(i, 'days')
                     _clocks.push({ date: next_day, state: -2 })
                 }
             }
@@ -340,10 +340,10 @@ function FUN_CLOCK_CHART({ currentItem }) {
             if (index_2 > 0) {
                 let start = _check_clocks[index].date_start;
                 let end = _check_clocks[index_2].date_start;
-                let diff = moment(end).diff(start, 'days');
+                let diff = dayjs(end).diff(start, 'days');
                 if (diff > 0) {
                     for (var i = 1; i < diff; i++) {
-                        let next_day = moment(start).add(i, 'days')
+                        let next_day = dayjs(start).add(i, 'days')
                         _clocks.push({ date: next_day, state: -2 })
                     }
                 }
@@ -362,9 +362,9 @@ function FUN_CLOCK_CHART({ currentItem }) {
                     //let diff = dateParser_dateDiff(start, end);
                     //if (diff > 5) diff = 5
                     //end = momentB(start).businessAdd(diff).format('YYYY-MM-DD')
-                    let diff = moment(end).diff(start, 'days');
+                    let diff = dayjs(end).diff(start, 'days');
                     for (var i = 1; i < diff; i++) {
-                        let next_day = moment(start).add(i, 'days')
+                        let next_day = dayjs(start).add(i, 'days')
                         _clocks.push({ date: next_day, state: -2 })
                     }
                 }
@@ -383,9 +383,9 @@ function FUN_CLOCK_CHART({ currentItem }) {
                     let diff = dateParser_dateDiff(start, end);
                     if (diff > 6) diff = 6
                     end = dateParser_finalDate(start, diff);
-                    diff = moment(end).diff(start, 'days');
+                    diff = dayjs(end).diff(start, 'days');
                     for (var i = 1; i < diff; i++) {
-                        let next_day = moment(start).add(i, 'days')
+                        let next_day = dayjs(start).add(i, 'days')
                         _clocks.push({ date: next_day, state: 69 })
                     }
                 }
@@ -410,7 +410,7 @@ function FUN_CLOCK_CHART({ currentItem }) {
             if (_check_clocks[i].state == -22) text = ', EL SOLICITANTE SE PRESENTA (2 Vez)';
             if (_check_clocks[i].state == -30) text = ', FINALIZACION';
 
-            if (text) _clocks = addClock(_clocks, moment(_check_clocks[i].date_start), -1, text);
+            if (text) _clocks = addClock(_clocks, dayjs(_check_clocks[i].date_start), -1, text);
         }
 
         return _clocks;
@@ -420,7 +420,7 @@ function FUN_CLOCK_CHART({ currentItem }) {
     const addClock = (clocks, _date, _state, _text) => {
         var _clocks = clocks;
         for (var i = 0; i < _clocks.length; i++) {
-            if (moment(_clocks[i].date).isSame(_date)) {
+            if (dayjs(_clocks[i].date).isSame(_date)) {
                 let old_text = _clocks[i].event ? _clocks[i].event : "";
                 _clocks[i] = { date: _date, state: _state, event: old_text + _text };
                 return _clocks;
@@ -472,7 +472,7 @@ function FUN_CLOCK_CHART({ currentItem }) {
 
         // Props already destructured in function signature
         // State already available via useState hooks
-        const date_start = _GET_CLOCKS_STATE(3) ? _GET_CLOCKS_STATE(3).date_start : moment(currentItem.date);
+        const date_start = _GET_CLOCKS_STATE(3) ? _GET_CLOCKS_STATE(3).date_start : dayjs(currentItem.date);
         const stepsToCheck = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
         const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
         const _fun_0_type_text = { 'i': 'I', 'ii': 'II', 'iii': 'III', 'iv': 'IV', 'oa': 'OA' };
@@ -928,7 +928,7 @@ function FUN_CLOCK_CHART({ currentItem }) {
         const _tickValuesLocal = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200];
         const _tickValuesLocal_2 = [0, 50, 100, 150, 200];
         const YtickValuesLocal = [0, 1, 2, 3, 4];
-        const _today = dateParser_dateDiff(date_start, moment().format('YYYY-MM-DD'));
+        const _today = dateParser_dateDiff(date_start, dayjs().format('YYYY-MM-DD'));
 
         const blueMarksData = _blueMarks(1.5);
         const greenMarksData = _GreenMarks(2);
@@ -1042,8 +1042,8 @@ function FUN_CLOCK_CHART({ currentItem }) {
                                         ticks={_tickValuesLocal}
                                         tickFormatter={(value) => {
                                             const date = dateParser_finalDate(date_start, value);
-                                            if (value == 0) return moment(date_start, 'YYYY-MM-DD').format('MM-DD');
-                                            return moment(date, 'YYYY-MM-DD').format('MM-DD');
+                                            if (value == 0) return dayjs(date_start, 'YYYY-MM-DD').format('MM-DD');
+                                            return dayjs(date, 'YYYY-MM-DD').format('MM-DD');
                                         }}
                                         angle={-15}
                                         style={{ fontSize: 12 }}

@@ -12,7 +12,7 @@ import { MDBBtn } from '../../../components/ui';
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
-import moment from "moment";
+import dayjs from "dayjs";
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -3539,14 +3539,14 @@ export default function EXP_RES(props) {
             formData.set('f53_calidad', f53.item_533);
 
             formData.set('exp_fijas_id', currentItem.id_payment);
-            formData.set('exp_fijas_date', moment(_GET_CLOCK_STATE(3, 1).date_start).format('DD/MM/YYYY'));
+            formData.set('exp_fijas_date', dayjs(_GET_CLOCK_STATE(3, 1).date_start).format('DD/MM/YYYY'));
             formData.set('exp_variable_id', taxes.id_payment_1);
-            formData.set('exp_variable_date', moment(taxes.id_payment_1_date).format('DD/MM/YYYY'));
+            formData.set('exp_variable_date', dayjs(taxes.id_payment_1_date).format('DD/MM/YYYY'));
             formData.set('exp_delineacion_id', taxes.del_number);
-            formData.set('exp_delineacion_date', moment(taxes.del_date).format('DD/MM/YYYY'));
+            formData.set('exp_delineacion_date', dayjs(taxes.del_date).format('DD/MM/YYYY'));
             formData.set('exp_delineacion_n', addDecimalPoints(taxes.del_pay));
             formData.set('exp_uis_id', taxes.id_payment_2);
-            formData.set('exp_uis_date', moment(taxes.uis_date).format('DD/MM/YYYY'));
+            formData.set('exp_uis_date', dayjs(taxes.uis_date).format('DD/MM/YYYY'));
             formData.set('exp_uis_n', addDecimalPoints(Number(taxes.uis) + Number(taxes.id_payment_2_p)));
 
             formData.set('text_arq', text_arq);
@@ -3567,7 +3567,7 @@ export default function EXP_RES(props) {
             formData.set('f53_calidad', f53.item_533);
 
             formData.set('exp_fijas_id', currentItem.id_payment);
-            formData.set('exp_fijas_date', moment(_GET_CLOCK_STATE(3, 1).date_start).format('DD/MM/YYYY'));
+            formData.set('exp_fijas_date', dayjs(_GET_CLOCK_STATE(3, 1).date_start).format('DD/MM/YYYY'));
 
             formData.set('f51_names', f51.map(i => (`${i.name} ${i.surname}`)).join(','));
             formData.set('f51_ids', f51.map(i => (i.id_number)).join(','));
@@ -3596,11 +3596,11 @@ export default function EXP_RES(props) {
             formData.set('f53_calidad', f53.item_533);
 
             formData.set('exp_fijas_id', currentItem.id_payment);
-            formData.set('exp_fijas_date', moment(_GET_CLOCK_STATE(3, 1).date_start).format('DD/MM/YYYY'));
+            formData.set('exp_fijas_date', dayjs(_GET_CLOCK_STATE(3, 1).date_start).format('DD/MM/YYYY'));
             formData.set('exp_variable_id', taxes.id_payment_1);
-            formData.set('exp_variable_date', moment(taxes.id_payment_1_date).format('DD/MM/YYYY'));
+            formData.set('exp_variable_date', dayjs(taxes.id_payment_1_date).format('DD/MM/YYYY'));
             formData.set('exp_uis_id', taxes.id_payment_2);
-            formData.set('exp_uis_date', moment(taxes.uis_date).format('DD/MM/YYYY'));
+            formData.set('exp_uis_date', dayjs(taxes.uis_date).format('DD/MM/YYYY'));
             formData.set('exp_uis_n', addDecimalPoints(Number(taxes.uis) + Number(taxes.id_payment_2_p)));
 
             formData.set('f1_tipo', _FUN_6_PARSER(f1.item_6, true));

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import DataTable from 'react-data-table-component';
 import { useState, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2'
@@ -23,7 +23,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             document.getElementById("f_clock_edit_1") && (document.getElementById("f_clock_edit_1").value = _ITEM.resolver_sattus ? _ITEM.resolver_sattus : 0);
             document.getElementById("f_clock_edit_2") && (document.getElementById("f_clock_edit_2").value = _ITEM.resolver_id6 ? _ITEM.resolver_id6 : 0);
             document.getElementById("f_clock_edit_3") && (document.getElementById("f_clock_edit_3").value = _ITEM.resolver_context);
-            document.getElementById("f_clock_edit_4") && (document.getElementById("f_clock_edit_4").value = _ITEM.date_start ? _ITEM.date_start : moment().format('YYYY-MM-DD'));
+            document.getElementById("f_clock_edit_4") && (document.getElementById("f_clock_edit_4").value = _ITEM.date_start ? _ITEM.date_start : dayjs().format('YYYY-MM-DD'));
         }
         autoSaveMissingStartClock();
 
@@ -397,7 +397,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         <div className="col">
                             Fecha de Evento
                             <input type="date" className="form-control" max="2100-01-01" id="fun_cloclneg_2"
-                                defaultValue={moment().format('YYYY-MM-DD')} required />
+                                defaultValue={dayjs().format('YYYY-MM-DD')} required />
                         </div>
                         <div className="col">
                             Profesional que abre proceso
@@ -427,7 +427,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         <div className="col">
                             Fecha de Evento
                             <input type="date" className="form-control" max="2100-01-01" id="fun_clock_cancel_2"
-                                defaultValue={moment().format('YYYY-MM-DD')} required />
+                                defaultValue={dayjs().format('YYYY-MM-DD')} required />
                         </div>
                         <div className="col">
                             Profesional realiza cambio
@@ -479,7 +479,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                                 <i className="far fa-calendar-alt"></i>
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id={"f_clock_next_2_" + state}
-                                defaultValue={data.date_start ?? moment().format('YYYY-MM-DD')} required />
+                                defaultValue={data.date_start ?? dayjs().format('YYYY-MM-DD')} required />
                         </div>
                     </div>
                     <div className="col">
@@ -763,7 +763,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             let state = 200 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
 
             let worker = window.user.name + " " + window.user.surname;
-            let date = moment().format('YYYY-MM-DD');
+            let date = dayjs().format('YYYY-MM-DD');
 
             formDataClock.set('date_start', date);
             formDataClock.set('name', "CERRADOC");
@@ -781,7 +781,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             let state = 101 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
 
             let worker = window.user.name + " " + window.user.surname;
-            let date = moment().format('YYYY-MM-DD');
+            let date = dayjs().format('YYYY-MM-DD');
 
             formDataClock.set('date_start', date);
             formDataClock.set('name', "ARCHIVACIÓN");
@@ -798,7 +798,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
 
             let state = -30 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
             let OngoingProcess = _GET_ONGOING_PROCESS();
-            let date = moment().format('YYYY-MM-DD');
+            let date = dayjs().format('YYYY-MM-DD');
             let defaultProcess = _GET_DEFAULT_PROCESS();
             let processToCheck = defaultProcess[state];
 

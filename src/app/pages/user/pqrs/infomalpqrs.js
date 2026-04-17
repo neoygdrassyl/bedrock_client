@@ -8,7 +8,7 @@ import PQRS_COMPONENT_CLOCKS from './components/pqrs_clock.component';
 import PQRS_COMPONENT_LICENCE from './components/pqrs_licence.component';
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 
 function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentId, currentItemAsign, refreshList: refreshListProp, closeModal, NAVIGATION }) {
@@ -216,7 +216,7 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                             <span className="input-group-text bg-info text-white">
                                                 <i className="far fa-calendar-alt"></i>
                                             </span>
-                                            <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={moment().format('YYYY-MM-DD')} required />
+                                            <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={dayjs().format('YYYY-MM-DD')} required />
                                         </div>
                                     </div>
                                 </div>

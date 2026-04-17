@@ -1,5 +1,5 @@
 import { MDBBtn, MDBIcon } from '../../../../../components/ui';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useEffect, useState, memo } from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 import Swal from 'sweetalert2'
@@ -15,10 +15,10 @@ const BUILD_AREAS = ['OBRA NUEVA', 'AMPLIADA', 'ADECUADA', 'MODIFICADA', 'RESTAU
 function FUN_CHART_TIME(props) {
     var [hovered, setHovered] = useState(false);
 
-    var [filterId, SetFilterId] = useState([`${infoCud.nomen}${moment().subtract(1, 'year').format('YY')}-0000`, `${infoCud.nomen}${moment().format('YY')}-9999`]);
+    var [filterId, SetFilterId] = useState([`${infoCud.nomen}${dayjs().subtract(1, 'year').format('YY')}-0000`, `${infoCud.nomen}${dayjs().format('YY')}-9999`]);
     var [filterD, SetFilterD] = useState([0, 200]);
-    var [date_1, SetDate_1] = useState(moment().subtract(1, 'y').startOf('year').format('YYYY-MM-DD'));
-    var [date_2, SetDate_2] = useState(moment().format('YYYY-MM-DD'));
+    var [date_1, SetDate_1] = useState(dayjs().subtract(1, 'y').startOf('year').format('YYYY-MM-DD'));
+    var [date_2, SetDate_2] = useState(dayjs().format('YYYY-MM-DD'));
 
     var [items, setItems] = useState([]);
 
@@ -140,7 +140,7 @@ function FUN_CHART_TIME(props) {
                     newDatano.push(row.id_public);
                     return;
                 };
-                if (!moment(row.clock_license).isBetween(date_1, date_2, undefined, '[]')) return;
+                if (!dayjs(row.clock_license).isBetween(date_1, date_2, undefined, '[]')) return;
 
                 let time_process = dateParser_dateDiff(row.clock_license, row.clock_date);
                 let _x = time_process > 200 ? 200 : time_process;
@@ -324,7 +324,7 @@ function FUN_CHART_TIME(props) {
                     newDatano.push(row.id_public);
                     return;
                 };
-                if (!moment(row.clock_acto).isBetween(date_1, date_2, undefined, '[]')) return;
+                if (!dayjs(row.clock_acto).isBetween(date_1, date_2, undefined, '[]')) return;
 
                 let time_process = dateParser_dateDiff(row.clock_acto, row.clock_date);
                 let _x = time_process > 200 ? 200 : time_process;

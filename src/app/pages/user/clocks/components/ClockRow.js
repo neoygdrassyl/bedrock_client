@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, memo } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
@@ -128,7 +128,7 @@ export const ClockRow = memo((props) => {
     }, [localDateValue, clock?.date_start, value, i, onSave]);
 
     // Formateador textual MODIFICADO para usar formato de fecha corta (L)
-    const formatDate = (dateStr) => dateStr ? moment(dateStr).format('DD/MM/YYYY') : '- -';
+    const formatDate = (dateStr) => dateStr ? dayjs(dateStr).format('DD/MM/YYYY') : '- -';
 
     // =====================================================
     // CÁLCULO DE ICONOS Y ESTADOS (SEMÁFORO)
@@ -206,7 +206,7 @@ export const ClockRow = memo((props) => {
                 if (suspensionPreActa.exists && suspensionPreActa.end?.date_start) totalDays += suspensionPreActa.days;
                 if (extension.exists && extension.end?.date_start && !extension.isActive) {
                     const acta1Date = getClockScoped(30)?.date_start;
-                    if (!acta1Date || moment(extension.start.date_start).isBefore(acta1Date)) totalDays += extension.days;
+                    if (!acta1Date || dayjs(extension.start.date_start).isBefore(acta1Date)) totalDays += extension.days;
                 }
                 limitDate = sumarDiasHabiles(ldf, totalDays);
                 tooltip = `Acta 1: ${totalDays} días hábiles desde LDF`;
@@ -284,9 +284,9 @@ export const ClockRow = memo((props) => {
     const getAlarmInfo = () => {
         if (!legalData || !legalData.limitDate) return null;
         const { limitDate } = legalData;
-        const limitMoment = moment(limitDate);
+        const limitMoment = dayjs(limitDate);
         const isCompleted = !!clock?.date_start;
-        const today = moment(systemDate);
+        const today = dayjs(systemDate);
         const state = value.state;
 
 
@@ -325,7 +325,7 @@ export const ClockRow = memo((props) => {
         let icon = null;
 
         if (isCompleted) {
-            const completionDate = moment(clock.date_start);
+            const completionDate = dayjs(clock.date_start);
             
             if (completionDate.isAfter(limitMoment, 'day')) {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
@@ -381,16 +381,16 @@ export const ClockRow = memo((props) => {
     const getScheduledAlarmInfo = () => {
         if (!scheduledData || !scheduledData.limitDate) return null;
         
-        const limitMoment = moment(scheduledData.limitDate);
+        const limitMoment = dayjs(scheduledData.limitDate);
         const isCompleted = !!clock?.date_start;
-        const today = moment(systemDate);
+        const today = dayjs(systemDate);
 
         let text = '';
         let color = '';
         let icon = null;
 
         if (isCompleted) {
-            const completionDate = moment(clock.date_start);
+            const completionDate = dayjs(clock.date_start);
             
             if (completionDate.isAfter(limitMoment, 'day')) {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone

@@ -4,7 +4,7 @@ import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../services/fun.service';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import DOCS_LIST from './components/docs_list.component';
@@ -322,7 +322,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
             e.preventDefault();
             formData = new FormData();
             // FILE DATA
-            let _creationYear = moment(currentItem.createdAt).format('YY');
+            let _creationYear = dayjs(currentItem.createdAt).format('YY');
             let _folder = currentItem.id_public;
             let file = document.getElementById('file_fun6s_edit').files[0];
             if (file) {

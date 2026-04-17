@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import writtenNumber from 'written-number';
@@ -402,7 +402,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
 
             size == '1' ? size = "1m x 70cm" : size = "50cm x 30cm";
 
-            let between_months = moment(res_exp_date_1).diff(moment(res_exp_date_2), 'months', false);
+            let between_months = dayjs(res_exp_date_1).diff(dayjs(res_exp_date_2), 'months', false);
             between_months = Math.abs(between_months);
             
             writtenNumber.defaults.lang = 'es';

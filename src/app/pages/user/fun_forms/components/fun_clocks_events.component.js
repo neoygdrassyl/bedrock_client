@@ -1,5 +1,5 @@
 import { MDBBtn, MDBTooltip } from '../../../../components/ui';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import DATATABLE from 'react-data-table-component';
 import Swal from 'sweetalert2'
@@ -149,7 +149,7 @@ export default function FUN_CLOCK_EVENTS(props) {
                 <div className="col">
                     <label>Fecha</label>
                     <input type="date" className="form-control form-control-sm" id="clock_event_3" max="2100-01-01" disabled
-                        defaultValue={moment().format('YYYY-MM-DD')} />
+                        defaultValue={dayjs().format('YYYY-MM-DD')} />
 
                 </div>
                 <div className="col-6">

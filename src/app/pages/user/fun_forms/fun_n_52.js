@@ -12,7 +12,7 @@ import profesionalsService from '../../../services/profesionals.service';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
-const moment = require('moment');
+import dayjs from 'dayjs';
 
 function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
     const [isNew, setIsNew] = useState(false);
@@ -159,9 +159,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
         }
         let _GET_YEARS_EXPERIENCE = (id) => {
             let idate = document.getElementById('f_527' + id).value;
-            let date = moment(idate).format('YYYY-MM-DD');
-            let today = moment().format('YYYY-MM-DD');
-            let timePassed = moment(today).diff(date, 'months');
+            let date = dayjs(idate).format('YYYY-MM-DD');
+            let today = dayjs().format('YYYY-MM-DD');
+            let timePassed = dayjs(today).diff(date, 'months');
             let years = Math.trunc(timePassed / 12);
             let months = Math.trunc(timePassed % 12);
             document.getElementById('f_529' + id).value = years;

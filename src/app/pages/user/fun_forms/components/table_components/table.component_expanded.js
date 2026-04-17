@@ -13,7 +13,7 @@ import { MDBBtn } from '../../../../../components/ui';
 
 
 const MySwal = withReactContent(Swal);
-const moment = require('moment')
+import dayjs from 'dayjs';
 
 export default function TABLE_COMPONENT_EXPANDED(props) {
     const { currentItem, swaMsg, worker_list, lenghtL, dataL, date_start, date_end } = props;
@@ -405,7 +405,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
         </>
     }
     let INFO = () => {
-        let daysActa = dateParser_dateDiff(loadItem.clock_date, loadItem.clock_not_1 ?? loadItem.clock_not_2 ?? moment().format('YYYY-MM-DD'));
+        let daysActa = dateParser_dateDiff(loadItem.clock_date, loadItem.clock_not_1 ?? loadItem.clock_not_2 ?? dayjs().format('YYYY-MM-DD'));
         let daysRev = _fun_0_type_time[loadItem.type] ?? 45
         return <>
             {REVIEW_HEADER('INFORMACIÓN GENERAL ' + loadItem.id_public, { backgroundColor: 'Gainsboro' })}

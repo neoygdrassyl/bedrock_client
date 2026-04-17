@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -189,8 +189,8 @@ const ExpandedAlarmsModal = ({ alarms }) => {
             let valB = b[sort.key];
             
             if (sort.key === 'limitDate') {
-                valA = moment(a.limitDate, 'DD/MM/YYYY');
-                valB = moment(b.limitDate, 'DD/MM/YYYY');
+                valA = dayjs(a.limitDate, 'DD/MM/YYYY');
+                valB = dayjs(b.limitDate, 'DD/MM/YYYY');
             }
             
             if (valA < valB) return sort.order === 'asc' ? -1 : 1;

@@ -1,5 +1,5 @@
 import { MDBBtn } from '../../../../../components/ui';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useState, useEffect, useRef, memo } from 'react';
 
 import {
@@ -164,7 +164,7 @@ function FUN_CHART_MACRO_GRANTT(props) {
         }
         items.map(row => {
             if (row.clock_payment) {
-                let _x = dateParser_dateDiff(row.clock_payment, moment().format('YYYY-MM-DD')) > 200 ? 200 : dateParser_dateDiff(row.clock_payment, moment().format('YYYY-MM-DD'))
+                let _x = dateParser_dateDiff(row.clock_payment, dayjs().format('YYYY-MM-DD')) > 200 ? 200 : dateParser_dateDiff(row.clock_payment, dayjs().format('YYYY-MM-DD'))
 
                 let _y = 0;
                 if (row.type == 'iii' && row.state > -100) _y += 1;
@@ -173,7 +173,7 @@ function FUN_CHART_MACRO_GRANTT(props) {
 
                 if (row.state == -1 || row.state == 1) {
                     let conOA = regexChecker_isOA_2(row)
-                    let days_rad = conOA ? dateParser_dateDiff(dateParser_finalDate(row.clock_prorroga, -30), moment().format('YYYY-MM-DD'), true) : 30 - dateParser_timePassed(row.clock_payment);
+                    let days_rad = conOA ? dateParser_dateDiff(dateParser_finalDate(row.clock_prorroga, -30), dayjs().format('YYYY-MM-DD'), true) : 30 - dateParser_timePassed(row.clock_payment);
                     if (days_rad >= 0) _ADD_MARK('rad', {
                         x: _x,
                         y: _y + 0.2,
@@ -201,20 +201,20 @@ function FUN_CHART_MACRO_GRANTT(props) {
                     let con72 = rowCon.rec == 0 && (rowCon.rec2 == 1);
                     let con73 = rowCon.rec == null && (rowCon.rec2 == 1);
                     let con7 = con71 || con72 || con73
-                    rowCon = dateParser_dateDiff(row.clock_not_1 || row.clock_not_2 || row.clock_date || row.clock_payment, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                    rowCon = dateParser_dateDiff(row.clock_not_1 || row.clock_not_2 || row.clock_date || row.clock_payment, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
                     let clock_ext = row.clock_record_postpone
                     let limit_part_1 = TYPE_TIME[row.type || 'iii'];
                     let limit_part_2 = row.clock_corrections ? (clock_ext ? 45 : 30) : 0;
 
-                    let dayEva = dateParser_timeLeft(row.clock_not_1 || row.clock_not_2 || row.clock_date || row.clock_payment, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                    let dayEva = dateParser_timeLeft(row.clock_not_1 || row.clock_not_2 || row.clock_date || row.clock_payment, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
                     let limitDate = dateParser_finalDate(row.clock_not_1 || row.clock_not_2, clock_ext ? 45 : 30)
-                    let dayEva2 = dateParser_timeLeft(limitDate, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                    let dayEva2 = dateParser_timeLeft(limitDate, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
 
                     let limit = con22 ? limit_part_1 : clock_ext ? 45 : 30;
                     let con8 = rowCon || _x;
                     let acta2Time = (limit_part_1) + (30) + (row.clock_corrections ? 15 : 0) + (5)
                     let limit_2 = dateParser_finalDate(row.clock_date, acta2Time)
-                    let con9 = dateParser_dateDiff(limit_2, row.rec_review_2 || moment().format('YYYY-MM-DD'), true)
+                    let con9 = dateParser_dateDiff(limit_2, row.rec_review_2 || dayjs().format('YYYY-MM-DD'), true)
 
                     if (rowCon) {
                         if (con9 > 0) _ADD_MARK('eva', {
@@ -262,7 +262,7 @@ function FUN_CHART_MACRO_GRANTT(props) {
                             titleHint: 'EXPEDIDA',
                         })
                     } else {
-                        let paymentTime = dateParser_dateDiff(row.clock_pay_not_1 || row.clock_pay_not_2, moment().format('YYYY-MM-DD'));
+                        let paymentTime = dateParser_dateDiff(row.clock_pay_not_1 || row.clock_pay_not_2, dayjs().format('YYYY-MM-DD'));
                         if ((row.clock_pay_not_1 || row.clock_pay_not_2) && !row.clock_pay_69) {
                             if ((paymentTime > 30)) _ADD_MARK('neg4', {
                                 x: _x,
@@ -301,14 +301,14 @@ function FUN_CHART_MACRO_GRANTT(props) {
                                 let con72 = rowCon.rec == 0 && (rowCon.rec2 == 1);
                                 let con73 = rowCon.rec == null && (rowCon.rec2 == 1);
                                 let con7 = con71 || con72 || con73
-                                rowCon = dateParser_dateDiff(row.clock_not_1 || row.clock_not_2 || row.clock_date || row.clock_payment, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                                rowCon = dateParser_dateDiff(row.clock_not_1 || row.clock_not_2 || row.clock_date || row.clock_payment, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
                                 let clock_ext = row.clock_record_postpone
                                 let limit_part_1 = TYPE_TIME[row.type || 'iii'];
                                 let limit_part_2 = row.clock_corrections ? (clock_ext ? 45 : 30) : 0;
 
-                                let dayEva = dateParser_timeLeft(row.clock_not_1 || row.clock_not_2 || row.clock_date || row.clock_payment, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                                let dayEva = dateParser_timeLeft(row.clock_not_1 || row.clock_not_2 || row.clock_date || row.clock_payment, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
                                 let limitDate = dateParser_finalDate(row.clock_not_1 || row.clock_not_2, clock_ext ? 45 : 30)
-                                let dayEva2 = dateParser_timeLeft(limitDate, row.clock_corrections || moment().format('YYYY-MM-DD'));
+                                let dayEva2 = dateParser_timeLeft(limitDate, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
 
                                 let limit = con22 ? limit_part_1 : clock_ext ? 45 : 30;
                                 let con8 = rowCon || _x;

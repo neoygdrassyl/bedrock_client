@@ -8,7 +8,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import SUBTMIT_MANAGE from './submit_manage'
 import Modal from 'react-modal';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import ListsCodes from '../../../components/jsons/fun6DocsList.json'
 
 const MySwal = withReactContent(Swal);
@@ -386,14 +386,14 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                                                 <i className="fas fa-hashtag"></i>
                                             </span>
                                             <input type="text" className="form-control" id="csv_limit_1" placeholder="Limite inferior"
-                                                defaultValue={`VR${moment().format('YY')}-0001`} />
+                                                defaultValue={`VR${dayjs().format('YY')}-0001`} />
                                         </div>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
                                                 <i className="fas fa-hashtag"></i>
                                             </span>
                                             <input type="text" className="form-control" id="csv_limit_2" placeholder="Limite superior"
-                                                defaultValue={`VR${moment().format('YY')}-9999`} />
+                                                defaultValue={`VR${dayjs().format('YY')}-9999`} />
                                         </div>
                                         <div className="text-center py-2">
                                             <button type="button" className="btn btn-success shadow-none" onClick={() => generateCVS()}><i className="fas fa-table"></i> GENERAR CSV </button>

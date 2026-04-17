@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import FUNService from '../../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { formsParser1, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
@@ -171,7 +171,7 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                     <div className="col">
                         <label>2.1.1. Fecha de documento</label>
                         <input type="date" className="form-control" max='2100-01-01' id="gen_alert_date" required
-                            defaultValue={moment().format('YYYY-MM-DD')} />
+                            defaultValue={dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>2.1.2 Fecha de Pago</label>

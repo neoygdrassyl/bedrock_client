@@ -1,7 +1,5 @@
-import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse'
+import { dateParser, dateParser_finalDate, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 
-const moment = require('moment');
-const momentB = require('moment-business-days');
 function PQRS_COMPONENT_REPLIES_PROFESIONAL({ translation, swaMsg, globals, currentItem }) {
 
         // COMPONENTS JSX
@@ -57,7 +55,7 @@ function PQRS_COMPONENT_REPLIES_PROFESIONAL({ translation, swaMsg, globals, curr
                                         <lavel>Tiempo de Respuesta</lavel>
                                     </div>
                                     <div className="col-6">
-                                        <label className="fw-bold">{momentB(currentItem.pqrs_workers[i].asign, 'YYYY-MM-DD').businessDiff(moment(currentItem.pqrs_workers[i].date_reply, 'YYYY-MM-DD')) + " dia(s) habiles"}</label>
+                                        <label className="fw-bold">{dateParser_dateDiff(currentItem.pqrs_workers[i].asign, currentItem.pqrs_workers[i].date_reply, true) + " dia(s) habiles"}</label>
                                     </div>
                                 </div>
                                 

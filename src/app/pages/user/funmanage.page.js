@@ -34,7 +34,7 @@ import FUN_DAILY_COMPONENT from './fun_forms/components/fun_daily.component';
 import FUN_ASIGNS_COMPONENT from './fun_forms/components/fun_asign.component';
 
 // JSONS
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 
 function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
@@ -416,8 +416,8 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 toggle_exp(item)
                 break;
             case "macro":
-                setDate_start(moment(document.getElementById('load_macro_date_1').value).format('YYYY-MM-DD'));
-                setDate_end(moment(document.getElementById('load_macro_date_2').value).format('YYYY-MM-DD'));
+                setDate_start(dayjs(document.getElementById('load_macro_date_1').value).format('YYYY-MM-DD'));
+                setDate_end(dayjs(document.getElementById('load_macro_date_2').value).format('YYYY-MM-DD'));
                 toggle_macro(item)
                 break;
         }
@@ -547,7 +547,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
             let date_b = document.getElementById("load_macro_date_2").value;
             var date_start_val = date_a;
             var date_end_val = date_b;
-            if (moment(date_a).diff(date_b) >= 0) {
+            if (dayjs(date_a).diff(date_b) >= 0) {
                 date_start_val = date_b;
                 date_end_val = date_a;
             }
@@ -564,7 +564,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
             let date_b = document.getElementById("load_macro_date_2_s").value;
             var date_start = date_a;
             var date_end = date_b;
-            if (moment(date_a).diff(date_b) >= 0) {
+            if (dayjs(date_a).diff(date_b) >= 0) {
                 date_start = date_b;
                 date_end = date_a;
             }
@@ -622,7 +622,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                         <i className="far fa-calendar-alt"></i>
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_1" required
-                                                        defaultValue={moment().subtract(12, 'months').format('YYYY-MM-DD')} />
+                                                        defaultValue={dayjs().subtract(12, 'months').format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
                                             <div className='col'>
@@ -631,7 +631,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                         <i className="far fa-calendar-alt"></i>
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_2" required
-                                                        defaultValue={moment().format('YYYY-MM-DD')} />
+                                                        defaultValue={dayjs().format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
                                         </div>
@@ -656,7 +656,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                         <i className="far fa-calendar-alt"></i>
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_1_s" required
-                                                        defaultValue={moment().startOf('month').format('YYYY-MM-DD')} />
+                                                        defaultValue={dayjs().startOf('month').format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
                                             <div className='col'>
@@ -665,7 +665,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                                         <i className="far fa-calendar-alt"></i>
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_2_s" required
-                                                        defaultValue={moment().endOf('month').format('YYYY-MM-DD')} />
+                                                        defaultValue={dayjs().endOf('month').format('YYYY-MM-DD')} />
                                                 </div>
                                             </div>
                                         </div>

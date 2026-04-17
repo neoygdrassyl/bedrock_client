@@ -3,7 +3,7 @@ import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { NORM_GEN_DATA } from './norm.vars'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import VIEWER from '../../../components/viewer.component';
 import FICHA_NORM from "../../../components/jsons/FICHA_NORM_1.json"
 import { EJES, SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
@@ -158,7 +158,7 @@ export default function NORM_GENERAL(props) {
         let eje = document.getElementById("norm_eje").value;
         formData.set('eje', eje);
 
-        let _creationYear = moment(item.createdAt).format('YY');
+        let _creationYear = dayjs(item.createdAt).format('YY');
         let _folder = item.id_in;
         let file = document.getElementById("norm_fun6id");
         if (file.files[0]) {

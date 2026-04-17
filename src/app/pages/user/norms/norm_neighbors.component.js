@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { MDBBtn, MDBTooltip } from '../../../components/ui';
 import DataTable from 'react-data-table-component';
 import VIEWER from '../../../components/viewer.component';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const MySwal = withReactContent(Swal);
 export default function NORM_NEIGHBORS(props) {
@@ -58,7 +58,7 @@ export default function NORM_NEIGHBORS(props) {
         let material = document.getElementById("predio_material").value;
         formData.set('material', material);
 
-        let _creationYear = moment().format('YY');
+        let _creationYear = dayjs().format('YY');
         let _folder = id_in;
         let file = document.getElementById("predio_fun6id");
         if (file.files[0]) {
@@ -120,7 +120,7 @@ export default function NORM_NEIGHBORS(props) {
         formData.set('material', material);
 
         
-        let _creationYear = moment(editItem.createdAt).format('YY');
+        let _creationYear = dayjs(editItem.createdAt).format('YY');
         let _folder = id_in;
         let file = document.getElementById("predio_fun6id_edit");
         if (file.files[0]) {

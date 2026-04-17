@@ -8,7 +8,7 @@ import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoC
 import { MDBBtn, MDBCollapse } from '../../../components/ui';
 import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import EXP_RES from './exp._res.component';
 import EXP_ACT_DESIST from './exp_act_desist.component';
 import EXP_RES_2 from './exp_res_2.component';
@@ -1589,7 +1589,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     <div className="col">
                         <label>Fecha del documento</label>
                         <input type="date" className="form-control mb-3" max='2100-01-01' id="exodfb_date_doc" required
-                            defaultValue={_JSON.date_doc || moment().format('YYYY-MM-DD')} />
+                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
 
                     <div className="col">

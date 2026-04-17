@@ -3,7 +3,7 @@ import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MA
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { infoCud } from '../../../components/jsons/vars';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import { MDBBtn } from '../../../components/ui';
@@ -161,7 +161,7 @@ function RECORD_DOC_LETTER_2({ translation, swaMsg, globals, currentItem, curren
                     <div className="col">
                         <label>Fecha del documento</label>
                         <input type="date" className="form-control mb-3" max='2100-01-01' id="gena2_date_doc" required
-                            defaultValue={_JSON.date_doc || moment().format('YYYY-MM-DD')} />
+                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>Número de Radicación</label>

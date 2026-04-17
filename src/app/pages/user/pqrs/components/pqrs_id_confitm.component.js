@@ -1,11 +1,9 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import CubXVrDataService from '../../../../services/cubXvr.service'
-
-//const moment = require('moment');
 
 const MySwal = withReactContent(Swal);
 export const PQRS_ID_CONFIRM = (props) => {
@@ -23,7 +21,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                     if (concecutive < 1000) concecutive = "0" + concecutive
                     if (concecutive < 100) concecutive = "0" + concecutive
                     if (concecutive < 10) concecutive = "0" + concecutive
-                    new_id = res1 + (moment().format('YY')).split('-')[0] + "-" + concecutive
+                    new_id = res1 + (dayjs().format('YY')).split('-')[0] + "-" + concecutive
                     document.getElementById('pqrs_master_id_confirm').value = new_id;
                 } else {
                     concecutive = new_id.split('-')[1];

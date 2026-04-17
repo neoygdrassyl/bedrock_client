@@ -1,7 +1,5 @@
 import { dateParser_dateDiff, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 
-var momentB = require('moment-business-days');
-
 function FUN_CLOCK_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion }) {
 
         // DATA GETTERS

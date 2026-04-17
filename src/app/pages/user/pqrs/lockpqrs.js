@@ -19,7 +19,7 @@ import PQRS_PDFGEN_REPLY from './components/pqrs_genPDF_reply.component';
 import RTE_PQRS from './components/pqrs_rteReply.component';
 import Collapsible from '../../../components/Collapsible';
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 
 function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, refreshList: propRefreshList, NAVIGATION }) {

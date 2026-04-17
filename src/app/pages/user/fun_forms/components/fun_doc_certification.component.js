@@ -9,7 +9,7 @@ import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { cities, states } from '../../../../components/jsons/vars';
 
 
@@ -129,7 +129,7 @@ export default function FUN_CERTIFICATION(props) {
                 <div className="col">
                     <label>Fecha del documento</label>
                     <input type="date" className="form-control" max='2100-01-01' id="genc_date_doc" required
-                        defaultValue={moment().format('YYYY-MM-DD')} />
+                        defaultValue={dayjs().format('YYYY-MM-DD')} />
                 </div>
 
                 <div className="col">
@@ -239,7 +239,7 @@ export default function FUN_CERTIFICATION(props) {
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => <h6 className='fw-normal'>{moment(row.createdAt).format('YYYY-MM-DD HH:mm')}</h6>
+            cell: row => <h6 className='fw-normal'>{dayjs(row.createdAt).format('YYYY-MM-DD HH:mm')}</h6>
 
         },
         {
@@ -264,7 +264,7 @@ export default function FUN_CERTIFICATION(props) {
                     </div>
                     <div className='row'>
                         <div className='col'><label>Fecha y hora creación: </label></div>
-                        <div className='col'><label className='fw-bold'>{moment(data.createdAt).format('YYYY-MM-DD HH:mm')}</label></div>
+                        <div className='col'><label className='fw-bold'>{dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}</label></div>
                     </div>
                     <div className='row'>
                         <div className='col'><label>Fecha documento: </label></div>

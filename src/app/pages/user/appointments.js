@@ -21,7 +21,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { dateParser } from '../../components/customClasses/typeParse'
 
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal)
 
 function Appointments({ translation, globals, breadCrums, swaMsg }) {
@@ -54,14 +54,14 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 let list_2 = [];
                 let list_3 = [];
                 response.data.map((item, i) => {
-                    let today = moment().format("YYYY-MM-DD")
-                    if (moment(today).diff(item.date, 'days') < 0) {
+                    let today = dayjs().format("YYYY-MM-DD")
+                    if (dayjs(today).diff(item.date, 'days') < 0) {
                         list.push(item);
                     }
-                    if (moment(today).diff(item.date, 'days') == 0) {
+                    if (dayjs(today).diff(item.date, 'days') == 0) {
                         list_2.push(item);
                     }
-                    if (moment(today).diff(item.date, 'days') > 0) {
+                    if (dayjs(today).diff(item.date, 'days') > 0) {
                         list_3.push(item);
                     }
                 });
@@ -149,7 +149,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 minWidth: '120px',
                 ignoreCSV: true,
                 cell: row => <>
-                    {moment().diff(row.date, 'days') <= 0
+                    {dayjs().diff(row.date, 'days') <= 0
                         ? <button className="btn btn-secondary btn-sm me-1" onClick={() => setItem_edit(row)}><i className="far fa-edit fa-2x"></i></button>
                         : ""}
                     <button className="btn btn-info btn-sm" onClick={() => setItemFn(row)}><i className="fas fa-info-circle fa-2x"></i></button>
@@ -545,7 +545,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                                 <td><label>Hora</label></td>
                                                 <td>
                                                     <input type="time" className="form-control" id="app_time"
-                                                        defaultValue={moment(currentItem.time, 'hh:mm').format("HH:mm")} />
+                                                        defaultValue={dayjs(currentItem.time, 'hh:mm').format("HH:mm")} />
                                                 </td>
                                             </tr>
                                             <tr>

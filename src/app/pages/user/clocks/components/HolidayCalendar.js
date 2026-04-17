@@ -1,10 +1,8 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import moment from 'moment';
-import 'moment/locale/es';
+import dayjs from 'dayjs';
 import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol.js';
 
-moment.locale('es');
 const businessDaysCalculator = new DiasHabilesColombia();
 
 /**
@@ -61,7 +59,7 @@ const CalendarContentInternal = React.memo(({
                 else if (allHolidays.has(fDate)) dayClass += ' holiday';
                 else if (day.isoWeekday() >= 6) dayClass += ' weekend';
                 
-                if (day.isSame(moment(), 'day')) dayClass += ' today';
+                if (day.isSame(dayjs(), 'day')) dayClass += ' today';
 
                 daysInWeek.push(
                     <div className={dayClass} key={fDate} title={fDate}>
@@ -196,7 +194,7 @@ export const HolidayCalendar = React.memo(({ isFloating = false, onClose }) => {
     }, [onClose]);
 
     // Estado del calendario
-    const [currentDate, setCurrentDate] = useState(() => moment());
+    const [currentDate, setCurrentDate] = useState(() => dayjs());
     
     // Estado de la calculadora
     const [calcMode, setCalcMode] = useState('range');
@@ -217,14 +215,14 @@ export const HolidayCalendar = React.memo(({ isFloating = false, onClose }) => {
     }, []);
 
     const handleCalculate = useCallback(() => {
-        const startMoment = moment(startDate);
+        const startMoment = dayjs(startDate);
         if (!startMoment.isValid()) {
             return setResult({ text: 'Inicio inválido', isError: true });
         }
         const startDateStr = startMoment.format('YYYY-MM-DD');
 
         if (calcMode === 'range') {
-            const endMoment = moment(endDate);
+            const endMoment = dayjs(endDate);
             if (!endMoment.isValid() || endMoment.isBefore(startMoment)) {
                 return setResult({ text: 'Fin inválido', isError: true });
             }
@@ -234,7 +232,7 @@ export const HolidayCalendar = React.memo(({ isFloating = false, onClose }) => {
             const numDays = parseInt(daysToAdd, 10);
             if (!numDays || numDays <= 0) return setResult({ text: 'Días inválidos', isError: true });
             const finalDate = businessDaysCalculator.sumarDiasHabiles(startDateStr, numDays);
-            setResult({ text: moment(finalDate).format('DD MMM YY'), isError: false });
+            setResult({ text: dayjs(finalDate).format('DD MMM YY'), isError: false });
         }
     }, [calcMode, startDate, endDate, daysToAdd]);
 

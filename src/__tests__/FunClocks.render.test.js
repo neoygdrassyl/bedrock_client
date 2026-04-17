@@ -63,31 +63,27 @@ vi.mock('react-modal', () => ({
   },
 }));
 
-vi.mock('moment', () => {
-  const momentFn = (val) => ({
+vi.mock('dayjs', () => {
+  const dayjsFn = (val) => ({
     format: (fmt) => '2024-01-01',
-    subtract: () => momentFn(val),
-    add: () => momentFn(val),
+    subtract: () => dayjsFn(val),
+    add: () => dayjsFn(val),
     diff: () => 0,
     isBefore: () => false,
     isAfter: () => false,
+    isSameOrBefore: () => false,
+    isSameOrAfter: () => false,
     isValid: () => true,
     toDate: () => new Date(),
     valueOf: () => 0,
+    startOf: () => dayjsFn(val),
+    endOf: () => dayjsFn(val),
+    clone: () => dayjsFn(val),
   });
-  momentFn.isMoment = () => false;
-  return { default: momentFn, __esModule: true };
-});
-
-// moment-business-days — used by fun_clock_control
-vi.mock('moment-business-days', () => {
-  const momentBD = (val) => ({
-    format: () => '2024-01-01',
-    businessAdd: (n) => momentBD(val),
-    businessDiff: () => 0,
-    isValid: () => true,
-  });
-  return { default: momentBD, __esModule: true };
+  dayjsFn.extend = () => {};
+  dayjsFn.locale = () => {};
+  dayjsFn.isDayjs = () => false;
+  return { default: dayjsFn, __esModule: true };
 });
 
 // ─── Service mocks ───────────────────────────────────────────────────────────

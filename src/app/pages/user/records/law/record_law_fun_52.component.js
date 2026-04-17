@@ -8,7 +8,7 @@ import Record_lawService from '../../../../services/record_law.service';
 import Modal from 'react-modal';
 import { MDBBtn } from '../../../../components/ui';
 import FUNService from '../../../../services/fun.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;;
 
 export default function RECORD_LAW_FUN_52(props) {
@@ -169,9 +169,9 @@ export default function RECORD_LAW_FUN_52(props) {
     }
     let _GET_YEARS_EXPERIENCE = (id) => {
         let idate = document.getElementById('f_527' + id).value;
-        let date = moment(idate).format('YYYY-MM-DD');
-        let today = moment().format('YYYY-MM-DD');
-        let timePassed = moment(today).diff(date, 'months');
+        let date = dayjs(idate).format('YYYY-MM-DD');
+        let today = dayjs().format('YYYY-MM-DD');
+        let timePassed = dayjs(today).diff(date, 'months');
         let years = Math.trunc(timePassed / 12);
         let months = Math.trunc(timePassed % 12);
         document.getElementById('f_529' + id).value = years;

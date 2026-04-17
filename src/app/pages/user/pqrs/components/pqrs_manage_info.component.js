@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import HolyDays from '../../../../components/holydays.list.json'
+import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol';
 import PQRS_EMAILS from './pqrs_emails.component';
 //import PQRS_SET_REPLY from './pqrs_setReply.component';
 import { dateParser_finalDate } from '../../../../components/customClasses/typeParse'
 
-const moment = require('moment');
-const momentB = require('moment-business-days');
+import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
 function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, currentItem, refreshCurrentItem: propRefreshCurrentItem, refreshList: propRefreshList }) {
     const [email, setEmail] = useState(false);
@@ -97,28 +96,20 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                 });
 
         }
+        const _bd = new DiasHabilesColombia();
         let _SET_LEGAL_TIME = () => {
             console.log(Number('JUR21-0287'.split('-')[1]))
             let _date = document.getElementById('pqrs_edit_info_61').value;
             let _legal_date = _date;
             let _time = document.getElementById('pqrs_edit_info_62').value;
 
-            let _now = moment().format('YYYY-MM-DD');
+            let _now = dayjs().format('YYYY-MM-DD');
             _now = _now + " " + _time;
-            let _hour = moment(_now).format('HH');
-            if (momentB(_date).isBusinessDay()) {
+            let _hour = dayjs(_now).format('HH');
+            if (_bd.esHabil(_date)) {
                 if (_hour < 17) document.getElementById('pqrs_edit_info_7').value = _legal_date;
-                else document.getElementById('pqrs_edit_info_7').value = _GET_NEXT_BUSSINESS_DAY(_date)
-            } else document.getElementById('pqrs_edit_info_7').value = _GET_NEXT_BUSSINESS_DAY(_date)
-        }
-        let _GET_NEXT_BUSSINESS_DAY = (_date) => {
-            let date = _date;
-            date = momentB(date).nextBusinessDay();
-            let _year = moment(date).format('YYYY');
-            let _month = moment(date).format('MM') - 1;
-            let _day = moment(date).format('D');
-            if (HolyDays[_year][_month][_day]) return _GET_NEXT_BUSSINESS_DAY(date)
-            return moment(date).format('YYYY-MM-DD');
+                else document.getElementById('pqrs_edit_info_7').value = _bd.siguienteDiaHabil(_date)
+            } else document.getElementById('pqrs_edit_info_7').value = _bd.siguienteDiaHabil(_date)
         }
         let _SET_REPLY_TIME = () => {
             let type = document.getElementById('pqrs_edit_info_2').value;
@@ -313,7 +304,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                             <span className="input-group-text bg-info text-white">
                                 <i className="far fa-calendar-alt"></i>
                             </span>
-                            <input type="date" className="form-control" id="pqrs_extension_date1" defaultValue={_CHILD.extension ? _CHILD.extension_date : moment().format('YYYY-MM-DD')} disabled={_CHILD.extension ? false : true} />
+                            <input type="date" className="form-control" id="pqrs_extension_date1" defaultValue={_CHILD.extension ? _CHILD.extension_date : dayjs().format('YYYY-MM-DD')} disabled={_CHILD.extension ? false : true} />
                         </div>
                     </div>
                 </div>

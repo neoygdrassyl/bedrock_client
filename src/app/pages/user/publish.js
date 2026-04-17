@@ -21,7 +21,7 @@ import Modal from 'react-modal';
 import publishService from '../../services/publish.service';
 
 
-const moment = require('moment');
+import dayjs from 'dayjs';
 
 
 function Publish({ translation, swaMsg, breadCrums }) {

@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'
-import moment from 'moment';
+import dayjs from 'dayjs';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import { MDBBtn } from '../../../components/ui';
 import { cities } from '../../../components/jsons/vars';
@@ -39,7 +39,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
             formData = new FormData();
             formData.set('nomenclatureId', currentItem.id);
 
-            let _creationYear = moment(currentItem.createdAt).format('YY');
+            let _creationYear = dayjs(currentItem.createdAt).format('YY');
             let _folder = currentItem.id_public;
 
             // GET DATA OF ATTACHS
@@ -201,7 +201,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                                 <i className="far fa-calendar-alt"></i>
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="nomen_pdf_date" required
-                                defaultValue={moment().format('YYYY-MM-DD')} />
+                                defaultValue={dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
                     <div className="col-3">

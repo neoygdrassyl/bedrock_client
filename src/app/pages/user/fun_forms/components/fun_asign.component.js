@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service';
 import Swal from 'sweetalert2'
@@ -70,7 +71,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     const { swaMsg, translation, globals } = props;
 
     const MySwal = withReactContent(Swal);
-    const moment = require('moment');
     const Colors = ['#ffc38f', '#ff8f93', '#c38fff', '#8f93ff', '#8ffffb', '#8fffc3', '#cbf071', '#fffb8f']
     const matrixLoad = {
         'i': { law: 1, arc: 2, eng: 2 },
@@ -85,8 +85,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     const LoadTypeShort = { 'i': 'I', 'ii': 'II', 'iii': 'III', 'iv': 'IV', 'oa': 'OA', '0': 'III' }
 
 
-    var [id1, setId1] = useState(`${nomens}${moment().subtract(1, 'year').format('YY')}-0000`);
-    var [id2, setId2] = useState(`${nomens}${moment().format('YY')}-9999`);
+    var [id1, setId1] = useState(`${nomens}${dayjs().subtract(1, 'year').format('YY')}-0000`);
+    var [id2, setId2] = useState(`${nomens}${dayjs().format('YY')}-9999`);
     var [data, setData] = useState([])
     var [dataW, setDataW] = useState([])
     var [dataHM, setDataHM] = useState([])
@@ -471,7 +471,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
         newDoc = vrDocs.some(vr => {
             let codes = vr.codes ? vr.codes : [];
 
-            let con_1 = dateReview[wType] ? moment(vr.date).isSameOrAfter(dateReview[wType]) : false;
+            let con_1 = dateReview[wType] ? dayjs(vr.date).isSameOrAfter(dateReview[wType]) : false;
             let con_2 = codes.some(doc => requiredDocs.includes(doc))
 
             return con_1 && con_2;
@@ -760,7 +760,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
     let CALENDAR = () => {
         function getTodoList(_date) {
-            const date = moment(_date).format('YYYY-MM-DD');
+            const date = dayjs(_date).format('YYYY-MM-DD');
 
             let dates = [];
 
@@ -795,8 +795,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
         function renderCell(date) {
             const list = getTodoList(date);
-            const dateFormat = moment(date).format('YYYY-MM-DD');
-            const dayOff = moment(date).weekday();
+            const dateFormat = dayjs(date).format('YYYY-MM-DD');
+            const dayOff = dayjs(date).day();
             const dayOffTag = <Tag color="blue">FESTIVO</Tag>;
             const holyDays = require('../../../../components/jsons/holydaysmoment.json');
             const isDayOff = dayOff === 0 || dayOff === 6 || holyDays.holidays.includes(dateFormat);

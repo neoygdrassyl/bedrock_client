@@ -12,7 +12,7 @@ import { dateParser } from '../../../components/customClasses/typeParse'
 
 // COMPONENT
 import NOMENCLATURE_NEW from './new_nomenclature';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const MySwal = withReactContent(Swal);
 
@@ -241,7 +241,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
             let date_b = document.getElementById("nomenclature_cvs_gen_2").value;
             var date_start = date_a;
             var date_end = date_b;
-            if (moment(date_a).diff(date_b) >= 0) {
+            if (dayjs(date_a).diff(date_b) >= 0) {
                 date_start = date_b;
                 date_end = date_a;
             }
@@ -389,14 +389,14 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                                     <i className="far fa-calendar-alt"></i>
                                                 </span>
                                                 <input type="date" className="form-control" id="nomenclature_cvs_gen_1" required
-                                                    defaultValue={moment().subtract(8, 'days').format('YYYY-MM-DD')} />
+                                                    defaultValue={dayjs().subtract(8, 'days').format('YYYY-MM-DD')} />
                                             </div>
                                             <div className="input-group mb-3">
                                                 <span className="input-group-text bg-info text-white">
                                                     <i className="far fa-calendar-alt"></i>
                                                 </span>
                                                 <input type="date" className="form-control" id="nomenclature_cvs_gen_2" required
-                                                    defaultValue={moment().format('YYYY-MM-DD')} />
+                                                    defaultValue={dayjs().format('YYYY-MM-DD')} />
                                             </div>
                                             <div className="text-center py-2">
                                                 <button className="btn btn-success"><i className="far fa-file-excel"></i> DESCARGAR </button>

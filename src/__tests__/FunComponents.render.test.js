@@ -80,19 +80,27 @@ vi.mock('rsuite', () => {
   return { Nav, Navbar, Tag, TagGroup, Divider, Badge, Calendar, Popover, Whisper };
 });
 
-vi.mock('moment', () => {
-  const momentFn = (val) => ({
+vi.mock('dayjs', () => {
+  const dayjsFn = (val) => ({
     format: () => '2024-01-01',
-    subtract: () => momentFn(val),
-    add: () => momentFn(val),
+    subtract: () => dayjsFn(val),
+    add: () => dayjsFn(val),
     diff: () => 0,
+    day: () => 1,
     isBefore: () => false,
     isAfter: () => false,
+    isSameOrBefore: () => false,
+    isSameOrAfter: () => false,
     isValid: () => true,
     toDate: () => new Date(),
+    startOf: () => dayjsFn(val),
+    endOf: () => dayjsFn(val),
+    clone: () => dayjsFn(val),
   });
-  momentFn.isMoment = () => false;
-  return { default: momentFn, __esModule: true };
+  dayjsFn.extend = () => {};
+  dayjsFn.locale = () => {};
+  dayjsFn.isDayjs = () => false;
+  return { default: dayjsFn, __esModule: true };
 });
 
 // ─── Service mocks ───────────────────────────────────────────────────────────
