@@ -383,7 +383,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                                 <input type="text" class="form-control" defaultValue="68001-1-" id="f_02"
                                                     onChange={() => loadParent()} />
                                             </div>
-                                            <p className="fw-normal lead"><ul>{helpText}</ul></p>
+                                            <div className="fw-normal lead"><ul>{helpText}</ul></div>
 
                                             <div class="input-group mb-1">
                                                 <span class="input-group-text bg-info text-white">

@@ -1262,10 +1262,10 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <fieldset className="p-3 border border-info mb-2">
                         <form onSubmit={lockPQRS} id="app-formReply">
                             <label className="px-4 app-p lead fw-normal text-uppercase"><b>9. CERRAR PETICIÓN <i class="fab fa-expeditedssl"></i></b></label><br></br>
-                            <label className="px-4"><h5><p>GUIÁ PARA EL CIERRE DE LA PETICIÓN</p></h5></label>
+                            <label className="px-4"><span className="h5">GUIÁ PARA EL CIERRE DE LA PETICIÓN</span></label>
                             <ul>
-                                <li className="app-p"><h5>Asegurar envío con copia del email o guiá de envío de recibido por parte del peticionario, digitalizar y anexar.</h5></li>
-                                <li className="app-p"><h5>Digitalizar Copias de los correos y anexos enviados al documento de respuesta.</h5></li>
+                                <li className="app-p"><strong>Asegurar envío con copia del email o guiá de envío de recibido por parte del peticionario, digitalizar y anexar.</strong></li>
+                                <li className="app-p"><strong>Digitalizar Copias de los correos y anexos enviados al documento de respuesta.</strong></li>
                             </ul>
                             {_checkForOutputDocsClass2()
                                 ? <table className="table table-sm table-hover table-bordered">
