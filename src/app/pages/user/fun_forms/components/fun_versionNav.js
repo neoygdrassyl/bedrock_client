@@ -12,7 +12,7 @@ function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD
                                         {ON
                                             ? <>
                                                 {currentVersion > 1
-                                                    ? <a className="btn btn-sm btn-info p-1" onClick={() => NAVIGATION_VERSION("minus")}><i className="fas fa-chevron-circle-left fa-2x"></i></a>
+                                                    ? <button type="button" className="btn btn-sm btn-info p-1" onClick={() => NAVIGATION_VERSION("minus")}><i className="fas fa-chevron-circle-left fa-2x"></i></button>
                                                     : <a className="btn btn-sm btn-light p-1"><i className="fas fa-chevron-circle-left fa-2x"></i></a>}
                                             </> : ""}
 
@@ -21,7 +21,7 @@ function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD
                                             ? <>
                                                 {currentVersion >= currentItem.version
                                                     ? <a className="btn btn-sm light-info p-1"><i className="fas fa-chevron-circle-right fa-2x"></i></a>
-                                                    : <a className="btn btn-sm btn-info p-1" onClick={() => NAVIGATION_VERSION("plus")}><i className="fas fa-chevron-circle-right fa-2x"></i></a>}
+                                                    : <button type="button" className="btn btn-sm btn-info p-1" onClick={() => NAVIGATION_VERSION("plus")}><i className="fas fa-chevron-circle-right fa-2x"></i></button>}
                                             </> : ""}
                                     </div>
                                 </MDBCardBody>
