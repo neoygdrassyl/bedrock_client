@@ -1855,9 +1855,9 @@ export default function FUN_REPORT_GEN(props) {
     // ******************************* JSX ***************************** // 
     let _LIST_NEW = () => {
         var list = [];
-        data.sort((a, b) => new Date(b.clock_payment) - new Date(a.clock_payment));
+        const sortedData = [...data].sort((a, b) => new Date(b.clock_payment) - new Date(a.clock_payment));
 
-        data.map(value => {
+        sortedData.map(value => {
             var condition = moment(value.clock_payment).isBetween(date_i, date_f);
             if (condition) list.push(value);
         })
