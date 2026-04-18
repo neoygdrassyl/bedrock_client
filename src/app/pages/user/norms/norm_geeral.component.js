@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import VIEWER from '../../../components/viewer.component';
 import FICHA_NORM from "../../../components/jsons/FICHA_NORM_1.json"
 import { EJES, SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const default_Item = {
@@ -259,7 +260,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.1 Nr. Radicación</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-hashtag"></i>
+                            <Icon name="hashtag" size={16} />
                         </span>
                         <input type="text" className="form-control" id="norm_id_in" required disabled defaultValue={item.id_in} />
                     </div>
@@ -268,7 +269,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.2 Nr. Expedición</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-hashtag"></i>
+                            <Icon name="hashtag" size={16} />
                         </span>
                         <input type="text" className="form-control" id="norm_id_out" defaultValue={item.id_out} />
                     </div>
@@ -280,7 +281,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.3 Solicitante</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-user"></i>
+                            <Icon name="user" size={16} />
                         </span>
                         <input type="text" className="form-control" id="norm_solicitor" defaultValue={item.solicitor} />
                     </div>
@@ -289,7 +290,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.4 Utilidad Publica</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-home"></i>
+                            <Icon name="home" size={16} />
                         </span>
                         <select className="form-select" id="norm_public_utility" defaultValue={item.public_utility}>
                             <option>SI</option>
@@ -301,7 +302,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.5 Eje</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-home"></i>
+                            <Icon name="home" size={16} />
                         </span>
                         <select className="form-select" id="norm_eje" defaultValue={item.eje}>
                         <option>NO APLICA</option>
@@ -313,7 +314,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.6 Imagen </label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-home"></i>
+                            <Icon name="home" size={16} />
                         </span>
                         <input type="file" className="form-control" id="norm_fun6id" accept="image/png, image/jpeg" />
                         {item.fun6id ? <div><VIEWER API={getImage} params={[item.fun6id]} /></div> : null}
@@ -326,7 +327,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.7 Ficha</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_ficha" defaultValue={item.ficha} onChange={(e) => setFicha(e.target.value)}>
                             {fichas.map(ficha => <option>{ficha.ficha}</option>)}
@@ -337,7 +338,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.8 Sector</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_sector" defaultValue={item.sector} onChange={(e) => setSector(e.target.value)}>
                             {sectors.map(sector => <option>{sector.sector}</option>)}
@@ -348,7 +349,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.9 Subsector</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_subsector" defaultValue={item.subsector} onChange={(e) => setSubsector(e.target.value)}>
                             {subsectors.map(subsector => <option>{subsector.subsector}</option>)}
@@ -359,7 +360,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.10 Frente Normativo</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_front" defaultValue={item.front}>
                             {fronts.map(front => <option>{front.front}</option>)}
@@ -373,7 +374,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.11 Tipo de frente</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_front_type" defaultValue={item.front_type} required>
                             <option>Esquinero</option>
@@ -386,7 +387,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.12 Numero de frentes</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_front_n" defaultValue={item.front_n} required>
                             <option value={1}>1 frente</option>
@@ -400,7 +401,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.13 Georefenciación</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-map-marker-alt"></i>
+                            <Icon name="map-marker-alt" size={16} />
                         </span>
                         <input type="text" className="form-control" id="norm_geo_n" defaultValue={item.geo_n} placeholder='Norte' />
                         <input type="text" className="form-control" id="norm_geo_e" defaultValue={item.geo_e} placeholder='Este' />
@@ -413,7 +414,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.14 Comuna</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <input type="text" className="form-control" id="norm_comuna" defaultValue={item.comuna} />
                     </div>
@@ -422,7 +423,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.15 Barrio</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <input type="text" className="form-control" id="norm_barrio" defaultValue={item.barrio} />
                     </div>
@@ -431,7 +432,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.16 Estrato</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_estrato" defaultValue={item.estrato} required>
                             <option value={1}>Estrato 1</option>
@@ -447,7 +448,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.17 Clasificación Suelo</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_cla_suelo" defaultValue={item.cla_suelo}>
                             <option>Urbano</option>
@@ -463,7 +464,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.18 Área de actividad</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_area_act" defaultValue={item.area_act} >
                             {SUBMIT_ARC_AREA_ACTIVIDAD.map(op => <option>{op}</option>)}
@@ -474,7 +475,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.19 Tratamiento Urbanístico</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_trat_urb" defaultValue={item.trat_urb} >
                             {SUBMIT_ARC_TRATAMIENTO_URBANISTICO.map(op => <option>{op}</option>)}
@@ -485,7 +486,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.20 Zonif. Restricción Ocupación</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_zon_rest" defaultValue={item.zon_rest} >
                             {SUBMIT_ARC_ZONS_RESTRICCION.map(op => <option>{op}</option>)}
@@ -496,7 +497,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.21 Amenaza y Riesgo</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <select className="form-select" id="norm_amenaza" defaultValue={item.amenaza} >
                             {SUBMIT_ARC_AMENAZA.map(op => <option>{op}</option>)}
@@ -507,7 +508,7 @@ export default function NORM_GENERAL(props) {
                     <label >1.22 Zona Normativa</label>
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-star-of-life"></i>
+                            <Icon name="star-of-life" size={16} />
                         </span>
                         <input type="text" className="form-control" id="norm_zon_norm" defaultValue={item.zon_norm} disabled />
                     </div>
@@ -550,7 +551,7 @@ export default function NORM_GENERAL(props) {
             </div>
 
             <div className="text-center my-2">
-                <button className="btn btn-sm btn-success my-1" type='submit'><i className="fas fa-edit"></i> ACTUALIZAR </button>
+                <button className="btn btn-sm btn-success my-1" type='submit'><Icon name="edit" size={16} /> ACTUALIZAR </button>
             </div>
 
         </form>

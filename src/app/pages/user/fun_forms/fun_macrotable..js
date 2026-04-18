@@ -11,6 +11,7 @@ import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
     _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER, _FUN_101_PARSER, _FUN_102_PARSER, _FUN_24_PARSER, _FUN_25_PARSER
 } from '../../../components/customClasses/funCustomArrays'
+import { Icon } from '@/components/icon';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import USER_SERVICE from '../../../services/users.service';
@@ -1154,7 +1155,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cvsCB: row => row.state == 1 || row.state == -1 ? dateParser_finalDate(row.clock_payment, 30) : '-',
                 cell: row => row.state == 1 || row.state == -1 ?
                     <label>{dateParser_finalDate(row.clock_payment, 30)}</label>
-                    : <i className="fas fa-minus"></i>
+                    : <Icon name="minus" size={16} />
             },
             {
                 name: <label className="text-center">DIAS LyDF</label>,
@@ -1170,7 +1171,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     <label>{dateParser_timePassed(row.clock_payment) > 30 ?
                         <label className='text-danger'>{dateParser_timePassed(row.clock_payment)}</label>
                         : <label>{dateParser_timePassed(row.clock_payment)}</label>} / 30</label>
-                    : <i className="fas fa-minus"></i>
+                    : <Icon name="minus" size={16} />
             },
             {
                 name: <label className="fw-bold text-primary text-center">LYDF</label>,
@@ -1190,7 +1191,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => row.clock_record_p1 == null ? <>
                     <label>{dateParser_finalDate(row.clock_date, _fun_0_type_time[row.type] ?? 45)}</label>
                     {ci(row)}</>
-                    : <i className="fas fa-minus"></i>
+                    : <Icon name="minus" size={16} />
             },
             {
                 name: <label className="text-center">T. ACTA</label>,
@@ -1951,10 +1952,10 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         //DATA CONVERTERS
         let _GET_REVIEW = (_REVIEW, _REVIEW_CLOCK, REVIEWS, _SIMPLE) => {
             let res = {
-                '-1': <label className=" me-1"><i className="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-                '0': <label className="fw-bold text-danger me-1"><i className="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} style={{ fontSize: '150%' }} /></label>,
             }
             let res_simple = { '-1': '', '0': 'NO', '1': 'SI', '2': 'SI', }
 
@@ -1978,10 +1979,10 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         }
         let _GET_REVIEW_RECORD = (_REVIEW, _SIMPLE) => {
             let res = {
-                '-1': <label className=" me-1"><i className="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-                '0': <label className="fw-bold text-danger me-1"><i className="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} style={{ fontSize: '150%' }} /></label>,
             }
             let res_simple = { '-1': '', '0': 'NO', '1': 'SI', '2': 'SI', }
             return _SIMPLE ? res_simple[_REVIEW] ?? res_simple['-1'] : res[_REVIEW] ?? res['-1']
@@ -1989,10 +1990,10 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         let GET_REVIEW_ENG = (_REVIEW, _REVIEW_CLOCK, REVIEWS, _SIMPLE) => {
             let revies = _REVIEW ?? [-1, -1]
             let res = {
-                '-1': <label className=" me-1"><i className="far fa-dot-circle"></i></label>,
-                '0': <label className="fw-bold text-danger  me-1"><i className="far fa-times-circle"></i></label>,
-                '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle"></i></label>,
-                '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle"></i></label>,
+                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} /></label>,
+                '0': <label className="fw-bold text-danger  me-1"><Icon name="times-circle" size={16} /></label>,
+                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} /></label>,
+                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} /></label>,
             }
             let res_simple = { '-1': '', '0': 'NO', '1': 'SI', '2': 'SI', }
             if (REVIEWS) {
@@ -2187,30 +2188,30 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             let rules = row.rules ? row.rules.split(';') : [];
             return <MDBPopoverBody>
                 <div className="list-group list-group-flush">
-                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'general', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-info" ></i> DETALLES</button>
-                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'clock', 'macro')} className="list-group-item list-group-item-action p-1 m-0 " ><i className="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'archive', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
+                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'general', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="folder-open" size={16} className="text-info" /> DETALLES</button>
+                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'clock', 'macro')} className="list-group-item list-group-item-action p-1 m-0 " ><Icon name="clock" size={16} className="text-secondary" /> TIEMPOS</button>
+                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'archive', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="archive" size={16} className="text-secondary" /> DOCUMENTOS</button>
                     {row.state != 101 && row.state <= 200 ?
                         <>
-                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'edit', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'check', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-check-square text-warning" ></i> CHECKEO</button>
+                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'edit', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="folder-open" size={16} className="text-secondary" /> ACTUALIZAR</button>
+                            <button type="button" onClick={() => NAVIGATION_GEN(row, 'check', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="check-square" size={16} className="text-warning" /> CHECKEO</button>
                             {regexChecker_isPh(row, true) ?
                                 <>
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_ph', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_ph', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="pencil-ruler" size={16} className="text-warning" />  INF. P.H.</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-alt" size={16} className="text-warning" /> EXPEDICION</button>
                                 </>
                                 :
                                 <>
                                     {!isOA && rules[0] != 1 ? <>
-                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'alert', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
+                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'alert', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="sign" size={16} className="text-warning" />  PUBLICIDAD</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_law', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_law', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="balance-scale" size={16} className="text-warning" /> INF. JURIDICO</button>
                                     {!isOA ? <>
-                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_arc', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
-                                        {rules[1] != 1 ? <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_review', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-file-contract text-warning" ></i> ACTA</button>
+                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_arc', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="building" size={16} className="text-warning" /> INF. ARQUITECTONICO</button>
+                                        {rules[1] != 1 ? <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_eng', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="cogs" size={16} className="text-warning" /> INF. ESTRUCTURAL</button> : ''}
+                                        <button type="button" onClick={() => NAVIGATION_GEN(row, 'record_review', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-contract" size={16} className="text-warning" /> ACTA</button>
                                     </> : ''}
-                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                    <button type="button" onClick={() => NAVIGATION_GEN(row, 'expedition', 'macro')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-alt" size={16} className="text-warning" /> EXPEDICION</button>
                                 </>}
                         </> : <></>}
                 </div>
@@ -2227,7 +2228,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                 <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i className="far fa-chart-bar"></i> GRAFICAS GENERALES
+                        <Icon name="chart-bar" size={16} /> GRAFICAS GENERALES
                     </label>
                 </button>}>
                     <div>
@@ -2275,7 +2276,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                 <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i className="far fa-chart-bar"></i> GRAFICA DE ASIGNACION
+                        <Icon name="chart-bar" size={16} /> GRAFICA DE ASIGNACION
                     </label>
                 </button>}>
                     <div>
@@ -2304,7 +2305,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                 <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i className="far fa-chart-bar"></i> GRAFICAS DE EVALUACION
+                        <Icon name="chart-bar" size={16} /> GRAFICAS DE EVALUACION
                     </label>
                 </button>}>
                     <div>
@@ -2350,7 +2351,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                 <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
-                        <i className="far fa-chart-bar"></i> GRAFICA DE LICENCIAS EXPEDIDAS
+                        <Icon name="chart-bar" size={16} /> GRAFICA DE LICENCIAS EXPEDIDAS
                     </label>
                 </button>}>
                     <div>
@@ -2384,11 +2385,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             <label>{`Numero de Solicitudes Filtradas: ${state.data_macro_filter.length}`} </label>
                         </div>
                         <div className="input-group-prepend">
-                            <button className="btn btn-secondary" onClick={() => _FILTER_LIST([])}><i className="far fa-window-close"></i> LIMPIAR FILTROS</button>
+                            <button className="btn btn-secondary" onClick={() => _FILTER_LIST([])}><Icon name="window-close" size={16} /> LIMPIAR FILTROS</button>
                         </div>
                         <FUN_MACROTABLE_FILTERLIST idRef={'btn-filter'} setValues={(newTags) => _UPDATE_FILTERS(newTags)} text={'LISTA DE FILTROS'} />
                         <div className="input-group-prepend">
-                            <button type="button" className={`btn ${state.includeEx ? "btn-outline-secondary" : "btn-secondary"}`} onClick={(e) => changeList(!state.includeEx)}><i className="fas fa-database"></i> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</button>
+                            <button type="button" className={`btn ${state.includeEx ? "btn-outline-secondary" : "btn-secondary"}`} onClick={(e) => changeList(!state.includeEx)}><Icon name="database" size={16} /> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</button>
                         </div>
                     </div>
                 </div>
@@ -2821,7 +2822,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                     <div className="d-flex justify-content-between">
                                         <div><h5>LICENCIAS URBANISTICAS</h5></div>
                                         <div><button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVS(state.data_macro_filter) }}
-                                        ><i className="fas fa-file-csv"></i> DESCARGAR CSV</button></div>
+                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</button></div>
                                     </div>
                                 }
                                 dense
@@ -2865,7 +2866,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                     <div className="d-flex justify-content-between">
                                         <div><h5>OTRAS ACTUACIONES</h5></div>
                                         <div><button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVS(state.data_oa, "OTRAS ACTUACIONES") }}
-                                        ><i className="fas fa-file-csv"></i> DESCARGAR CSV</button></div>
+                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</button></div>
                                     </div>
                                 }
                                 progressPending={!load}
@@ -2917,7 +2918,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                         <div className="d-flex justify-content-between">
                                             <div><h5>DESISTIDOS / DESISTENDO</h5></div>
                                             <div><button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVSNegative(state.data_negative, "DESISTIDOS") }}
-                                            ><i className="fas fa-file-csv"></i> DESCARGAR CSV</button></div>
+                                            ><Icon name="file-csv" size={16} /> DESCARGAR CSV</button></div>
                                         </div>
                                     }
                                     dense

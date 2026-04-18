@@ -125,7 +125,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                 button: true,
                 minWidth: '100px',
                 cell: row =>
-                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><i className="fas fa-file-alt"></i> Ver</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><Icon name="file-alt" size={16} /> Ver</button>
                 ,
             },
         ]
@@ -360,7 +360,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     <input type="hidden" id="s_1" />
                                     <div className="input-group mb-3">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-hashtag"></i>
+                                            <Icon name="hashtag" size={16} />
                                         </span>
                                         <input type="text" className="form-control" defaultValue="68001-1-" id="f_02"
                                             onChange={() => loadParent()} />
@@ -369,7 +369,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
 
                                     <div className="input-group mb-1">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="far fa-check-circle"></i>
+                                            <Icon name="check-circle" size={16} />
                                         </span>
                                         <input type="text" className="form-control" value="Modalidad" disabled />
                                     </div>
@@ -377,7 +377,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
 
                                     <div className="input-group mb-3">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="far fa-calendar-alt"></i>
+                                            <Icon name="calendar-alt" size={16} />
                                         </span>
                                         <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="f_03"
                                             onChange={(e) => formData.set('date', e.target.value)} />
@@ -385,7 +385,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
 
                                     <div className="input-group mb-3">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-cube"></i>
+                                            <Icon name="cube" size={16} />
                                         </span>
                                         <input type="number" min="1" step="0.01" className="form-control" placeholder="Area Total" id="s_4"
                                             required onChange={(e) => formData.set('area', e.target.value)} />
@@ -393,7 +393,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
 
                                     <div className="input-group mb-3">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-hashtag"></i>
+                                            <Icon name="hashtag" size={16} />
                                         </span>
                                         <input type="text" className="form-control" placeholder="Consecutivo Sello" id="s_0"
                                             required onChange={(e) => formData.set('id_public', e.target.value)} />
@@ -401,23 +401,23 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     <hr />
                                     <div className="input-group mb-3">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-ruler-combined"></i>
+                                            <Icon name="ruler-combined" size={16} />
                                         </span>
                                         <input type="number" min="0" step="1" className="form-control" placeholder="Planos" id="blueprints"
                                             required onChange={(e) => { formData.set('blueprints', e.target.value) }} />
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-database"></i>
+                                            <Icon name="database" size={16} />
                                         </span>
                                         <input type="number" min="0" step="1" className="form-control" placeholder="Memorias" id="drives"
                                             required onChange={(e) => formData.set('drives', e.target.value)} />
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-file-invoice"></i>
+                                            <Icon name="file-invoice" size={16} />
                                         </span>
                                         <input type="number" min="0" step="1" className="form-control" placeholder="Estudios" id="folders"
                                             required onChange={(e) => formData.set('folders', e.target.value)} />
                                     </div>
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-info"><i className="fas fa-file-import"></i> CREAR </button>
+                                        <button className="btn btn-lg btn-info"><Icon name="file-import" size={16} /> CREAR </button>
                                     </div>
                                 </form>
                             </CardContent>
@@ -431,7 +431,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                 <form onSubmit={search} id="app-form">
                                     <div className="input-group mb-3">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-info-circle"></i>
+                                            <Icon name="info-circle" size={16} />
                                         </span>
                                         <select className="form-select" id="search_0" required>
                                             <option value="1">Numero de Radicado</option>
@@ -440,12 +440,12 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                     </div>
                                     <div className="input-group mb-3">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="far fa-comment-dots"></i>
+                                            <Icon name="comment-dots" size={16} />
                                         </span>
                                         <input type="text" className="form-control" id="search_1" required />
                                     </div>
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-secondary"><i className="fas fa-search-plus"></i> CONSULTAR </button>
+                                        <button className="btn btn-lg btn-secondary"><Icon name="search-plus" size={16} /> CONSULTAR </button>
                                     </div>
                                 </form>
                             </CardContent>

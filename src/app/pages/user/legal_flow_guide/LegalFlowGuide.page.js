@@ -3,6 +3,7 @@ import FlowFilters from './components/FlowFilters';
 import FlowDiagram from './components/FlowDiagram';
 import FlowRouteSummary from './components/FlowRouteSummary';
 import './LegalFlowGuide.css';
+import { Icon } from '@/components/icon';
 
 const DEFAULT_FILTERS = {
   projectType: 'I',
@@ -37,7 +38,7 @@ function LegalFlowGuidePage() {
         <div>
           <h4 className="legal-flow__title">
             <span className="legal-flow__title-icon">
-              <i className="fas fa-balance-scale"></i>
+              <Icon name="balance-scale" size={16} />
             </span>
             Flujo Juridico
           </h4>

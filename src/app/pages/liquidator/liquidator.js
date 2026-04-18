@@ -5,6 +5,7 @@ import Collapsible from '../../components/Collapsible';
 import dayjs from 'dayjs';
 import { infoCud } from '../../components/jsons/vars';
 import { Button_navigation } from '../../components/button.component';
+import { Icon } from '@/components/icon';
 
 function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
     const [subtotal_cf, setSubtotalCf] = useState(0);
@@ -554,12 +555,12 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb mb-0 p-0 ms-0">
               <li className="breadcrumb-item">
-                <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+                <Link to={'/home'}><Icon name="home" size={16} /> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
               </li>
               <li className="breadcrumb-item">
-                <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+                <Link to={'/dashboard'}><Icon name="bookmark" size={16} /> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
               </li>
-              <li className="breadcrumb-item active"><i className="fas fa-calculator"></i>  <label className="text-uppercase">{breadCrums.bc_u11}</label></li>
+              <li className="breadcrumb-item active"><Icon name="calculator" size={16} />  <label className="text-uppercase">{breadCrums.bc_u11}</label></li>
             </ol>
           </nav>
         </div>

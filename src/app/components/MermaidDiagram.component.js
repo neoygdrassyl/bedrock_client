@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { Icon } from '@/components/icon';
 
 // Contador global para IDs únicos
 let mermaidIdCounter = 0;
@@ -221,7 +222,7 @@ const DiagramModal = ({ isOpen, onClose, svg, chart }) => {
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                     <span style={{ color: '#fff', fontWeight: '600', fontSize: '1.1rem' }}>
-                        <i className="fas fa-project-diagram me-2"></i>
+                        <Icon name="project-diagram" size={16} className="me-2" />
                         Visor de Diagrama
                     </span>
                     <span style={{ 
@@ -242,7 +243,7 @@ const DiagramModal = ({ isOpen, onClose, svg, chart }) => {
                         style={controlButtonStyle}
                         title="Alejar"
                     >
-                        <i className="fas fa-search-minus"></i>
+                        <Icon name="search-minus" size={16} />
                     </button>
                     <input
                         type="range"
@@ -257,7 +258,7 @@ const DiagramModal = ({ isOpen, onClose, svg, chart }) => {
                         style={controlButtonStyle}
                         title="Acercar"
                     >
-                        <i className="fas fa-search-plus"></i>
+                        <Icon name="search-plus" size={16} />
                     </button>
                     <div style={{ width: '1px', height: '24px', backgroundColor: '#444', margin: '0 8px' }}></div>
                     <button
@@ -265,14 +266,14 @@ const DiagramModal = ({ isOpen, onClose, svg, chart }) => {
                         style={controlButtonStyle}
                         title="Ajustar a pantalla"
                     >
-                        <i className="fas fa-compress-arrows-alt"></i>
+                        <Icon name="compress-arrows-alt" size={16} />
                     </button>
                     <button
                         onClick={resetView}
                         style={controlButtonStyle}
                         title="Restablecer vista"
                     >
-                        <i className="fas fa-undo"></i>
+                        <Icon name="undo" size={16} />
                     </button>
                     <div style={{ width: '1px', height: '24px', backgroundColor: '#444', margin: '0 8px' }}></div>
                     <button
@@ -284,7 +285,7 @@ const DiagramModal = ({ isOpen, onClose, svg, chart }) => {
                         }}
                         title="Cerrar (Esc)"
                     >
-                        <i className="fas fa-times"></i>
+                        <Icon name="times" size={16} />
                     </button>
                 </div>
             </div>
@@ -334,8 +335,8 @@ const DiagramModal = ({ isOpen, onClose, svg, chart }) => {
                 color: '#aaa',
                 flexWrap: 'wrap'
             }}>
-                <span><i className="fas fa-mouse me-2"></i>Rueda del mouse para zoom</span>
-                <span><i className="fas fa-hand-paper me-2"></i>Arrastrar para mover</span>
+                <span><Icon name="mouse" size={16} className="me-2" />Rueda del mouse para zoom</span>
+                <span><Icon name="hand-paper" size={16} className="me-2" />Arrastrar para mover</span>
                 <span><kbd style={kbdStyle}>Esc</kbd> para cerrar</span>
             </div>
         </div>
@@ -451,7 +452,7 @@ const MermaidDiagram = ({ chart, className = '' }) => {
             <div style={containerStyle} className={className}>
                 <div style={headerStyle}>
                     <span style={{ color: '#dc3545', fontWeight: 'bold' }}>
-                        <i className="fas fa-exclamation-triangle me-2"></i>
+                        <Icon name="exclamation-triangle" size={16} className="me-2" />
                         Error en Diagrama Mermaid
                     </span>
                 </div>
@@ -477,7 +478,7 @@ const MermaidDiagram = ({ chart, className = '' }) => {
             <div style={containerStyle} className={className} ref={containerRef}>
                 <div style={headerStyle}>
                     <span style={{ fontWeight: '500', color: '#6c757d' }}>
-                        <i className="fas fa-project-diagram me-2"></i>
+                        <Icon name="project-diagram" size={16} className="me-2" />
                         Diagrama Mermaid
                     </span>
                     <div>
@@ -494,7 +495,7 @@ const MermaidDiagram = ({ chart, className = '' }) => {
                             onClick={() => setIsModalOpen(true)}
                             title="Abrir en visor expandido con zoom"
                         >
-                            <i className="fas fa-expand-arrows-alt me-1"></i>
+                            <Icon name="expand-arrows-alt" size={16} className="me-1" />
                             Expandir
                         </button>
                     </div>

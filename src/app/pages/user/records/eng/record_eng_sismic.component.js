@@ -4,6 +4,7 @@ import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -601,13 +602,13 @@ function RECORD_ENG_SISMIC(props) {
                     : <MDBPopover size='sm' color='info' btnChildren={'OPCIONES'} placement='left' dismiss>
                         <MDBPopoverBody>
                             <div className="list-group list-group-flush">
-                                <button type="button" onClick={() => setQedit(prev => ({ ...prev, [row.id]: true }))} className="list-group-item list-group-item-action" ><i className="fas fa-pencil-alt"></i> Edición Rapida</button>
-                                <button type="button" onClick={() => setEdit(row)} className="list-group-item list-group-item-action"><i className="fas fa-pencil-alt"></i> Edición Completa</button>
-                                <button type="button" onClick={() => delete_item(row.id)} className="list-group-item list-group-item-action list-group-item-danger"><i className="fas fa-trash-alt"></i> Eliminar</button>
-                                <button type="button" onClick={() => new_x('up', row.pos)} className="list-group-item list-group-item-action"><i className="fas fa-plus"></i> Añadir Arriba</button>
-                                <button type="button" onClick={() => new_x('dw', row.pos)} className="list-group-item list-group-item-action"><i className="fas fa-plus"></i> Añadir Abajo</button>
-                                <button type="button" onClick={() => new_x('up', row.pos, true)} className="list-group-item list-group-item-action"><i className="fas fa-copy"></i> Copiar Arriba</button>
-                                <button type="button" onClick={() => new_x('dw', row.pos, true)} className="list-group-item list-group-item-action"><i className="fas fa-copy"></i> Copiar Abajo</button>
+                                <button type="button" onClick={() => setQedit(prev => ({ ...prev, [row.id]: true }))} className="list-group-item list-group-item-action" ><Icon name="pencil-alt" size={16} /> Edición Rapida</button>
+                                <button type="button" onClick={() => setEdit(row)} className="list-group-item list-group-item-action"><Icon name="pencil-alt" size={16} /> Edición Completa</button>
+                                <button type="button" onClick={() => delete_item(row.id)} className="list-group-item list-group-item-action list-group-item-danger"><Icon name="trash-alt" size={16} /> Eliminar</button>
+                                <button type="button" onClick={() => new_x('up', row.pos)} className="list-group-item list-group-item-action"><Icon name="plus" size={16} /> Añadir Arriba</button>
+                                <button type="button" onClick={() => new_x('dw', row.pos)} className="list-group-item list-group-item-action"><Icon name="plus" size={16} /> Añadir Abajo</button>
+                                <button type="button" onClick={() => new_x('up', row.pos, true)} className="list-group-item list-group-item-action"><Icon name="copy" size={16} /> Copiar Arriba</button>
+                                <button type="button" onClick={() => new_x('dw', row.pos, true)} className="list-group-item list-group-item-action"><Icon name="copy" size={16} /> Copiar Abajo</button>
                             </div>
                         </MDBPopoverBody>
                     </MDBPopover>
@@ -1492,7 +1493,7 @@ function RECORD_ENG_SISMIC(props) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
                                     </div>
                                 </div>
                             </form>
@@ -1511,7 +1512,7 @@ function RECORD_ENG_SISMIC(props) {
                                 {_COMPONENT_MANAGE('_edit')}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
                                     </div>
                                 </div>
                             </form>

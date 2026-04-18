@@ -7,6 +7,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { dateParser_dateDiff, formsParser1, formsParser1_exlucde2, regexChecker_isOA } from '../../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../../components/jsons/vars';
 import SERVICE_FUN from '../../../../../services/fun.service'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _tickValues = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200];
@@ -648,7 +649,7 @@ function FUN_CHART_TIME(props) {
             </div>
             <div className='row text-center my-1'>
                 <div className='col fw-bold'> VALIDOS: {valid}  <button type="button" className={`btn btn-sm ${!!seeValid1 ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setSeeValid1(!seeValid1)} >
-                    <i className="fas fa-eye"></i></button></div>
+                    <Icon name="eye" size={16} /></button></div>
             </div>
             {seeValid1 ?
                 <div className='row text-center my-1'>
@@ -667,7 +668,7 @@ function FUN_CHART_TIME(props) {
                 <div className='row text-center my-1'>
                     <div className='col'>
                         <div className='fw-bold'> NO VALIDOS: {datano.length} <button type="button" className="btn btn-primary btn-sm" outline={!seeNotValid1} onClick={() => setNotValid1(!seeNotValid1)} >
-                            <i className="fas fa-eye"></i></button></div>
+                            <Icon name="eye" size={16} /></button></div>
                         {seeNotValid1 ?
                             <div className="d-flex flex-wrap">
                                 {(Array.isArray(datano) ? datano : []).map(value => <div className="input-group-prepend border border-primary">
@@ -868,7 +869,7 @@ function FUN_CHART_TIME(props) {
             </div>
             <div className='row text-center my-1'>
                 <div className='col fw-bold'> VALIDOS: {valid2} <button type="button" className="btn btn-primary btn-sm" outline={!seeValid2} onClick={() => setSeeValid2(!seeValid2)} >
-                    <i className="fas fa-eye"></i></button></div>
+                    <Icon name="eye" size={16} /></button></div>
             </div>
             {seeValid2 ?
                 <div className='row text-center my-1'>
@@ -887,7 +888,7 @@ function FUN_CHART_TIME(props) {
                 <div className='row text-center my-1'>
                     <div className='col'>
                         <div className='fw-bold'> NO VALIDOS: {datano2.length} <button type="button" className="btn btn-primary btn-sm" outline={!seeNotValid2} onClick={() => setNotValid2(!seeNotValid2)} >
-                            <i className="fas fa-eye"></i></button></div>
+                            <Icon name="eye" size={16} /></button></div>
                         {seeNotValid2 ?
                             <div className="d-flex flex-wrap">
                                 {(Array.isArray(datano2) ? datano2 : []).map(value => <div className="input-group-prepend border border-primary">

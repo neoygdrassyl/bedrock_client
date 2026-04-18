@@ -9,6 +9,7 @@ import FunService from '../../../services/fun.service';
 import SUBMIT_ANEX from './submit_anex.component';
 import SUBMIT_LIST from './submit_list.component';
 import { formsParser1 } from '../../../components/customClasses/typeParse';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -106,25 +107,25 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
 
         }
         let _VERIFY_RELATED_ID = () => {
-            setVerifyMSG(<label className="fw-bold"><i className="fas fa-search-location text-info"></i> Buscando...</label>)
+            setVerifyMSG(<label className="fw-bold"><Icon name="search-location" size={16} className="text-info" /> Buscando...</label>)
             var id = document.getElementById('submit_2').value;
             if (id.length) {
                 _GET_TYPE(id)
                 SubmitService.verifyid(id)
                     .then(response => {
                         if (response.data.length) {
-                            setVerifyMSG(<label className="fw-bold"><i className="fas fa-check text-success"></i> Se encontro consecutivo</label>)
+                            setVerifyMSG(<label className="fw-bold"><Icon name="check" size={16} className="text-success" /> Se encontro consecutivo</label>)
                         } else {
-                            setVerifyMSG(<label className="fw-bold"><i className="fas fa-exclamation text-warning"></i> No se encontro consecutivo</label>)
+                            setVerifyMSG(<label className="fw-bold"><Icon name="exclamation" size={16} className="text-warning" /> No se encontro consecutivo</label>)
                         }
                     })
                     .catch(e => {
                         console.log(e);
-                        setVerifyMSG(<label className="fw-bold"><i className="fas fa-exclamation text-warning"></i> Se encontraron errores en el Codigo a buscar</label>)
+                        setVerifyMSG(<label className="fw-bold"><Icon name="exclamation" size={16} className="text-warning" /> Se encontraron errores en el Codigo a buscar</label>)
                     });
             } else {
                 document.getElementById('submit_4').value = ""
-                setVerifyMSG(<label className="fw-bold"><i className="fas fa-times text-danger"></i> Debe especificar un consecutivo de Licencia o JUR.</label>)
+                setVerifyMSG(<label className="fw-bold"><Icon name="times" size={16} className="text-danger" /> Debe especificar un consecutivo de Licencia o JUR.</label>)
             }
         }
         let _GET_TYPE = (id_public) => {
@@ -228,7 +229,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >1. Número de radicación</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_1" required
                                 defaultValue={_CHILD.id_public} />
@@ -239,7 +240,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >2. Número de solicitud</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_2"
                                 defaultValue={_CHILD.id_related} />
@@ -254,7 +255,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                                 <label >2.1 Consecutivo Pago</label>
                                 <div className="input-group mb-1">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="fas fa-hashtag"></i>
+                                        <Icon name="hashtag" size={16} />
                                     </span>
                                     <input type="text" className="form-control" id="submit_21" required
                                         defaultValue={_CHILD.id_related} />
@@ -294,7 +295,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >3.1 Tipo</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <input list="submit_type" className="form-control" id="submit_4"
                                 defaultValue={_CHILD.type} utocomplete="off" maxLength={250} />
@@ -318,7 +319,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >3.2 Estado</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
                         </div>
@@ -327,7 +328,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >3.3 Tipo de Radicación</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className='form-select' id="submit_41" defaultValue={_CHILD.list_type}>
                                 <option value={1} selected={_CHILD.list_type == 1}>RADICACIÓN SOLICITUD</option>
@@ -361,7 +362,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >4 Fecha y hora ingreso</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="submit_3" required
                                 defaultValue={_CHILD.date} />
@@ -374,7 +375,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >5. Propietarios</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_5" maxLength={250}
                                 defaultValue={_CHILD.owner} />
@@ -387,7 +388,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >7. Funcionario que recibe</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_7" disabled
                                 defaultValue={_CHILD.worker_reciever} />
@@ -397,7 +398,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >8. Persona que entrega</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_8" maxLength={250}
                                 defaultValue={_CHILD.name_retriever} />
@@ -407,7 +408,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         <label >8.1 C.C. Persona</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="submit_81" maxLength={250}
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
@@ -585,8 +586,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
                                     {currentItem
-                                        ? <button className="btn btn-success my-3"><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
-                                        : <button className="btn btn-success my-3"><i className="fas fa-plus-circle"></i> CREAR </button>}
+                                        ? <button className="btn btn-success my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
+                                        : <button className="btn btn-success my-3"><Icon name="plus-circle" size={16} /> CREAR </button>}
 
                                 </div>
                             </div>

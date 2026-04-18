@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import dayjs from 'dayjs';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -146,14 +147,14 @@ export const AlarmsWidget = ({ alarms, onClose }) => {
     return (
         <div className="alarms-widget-preview">
             <div className="widget-preview-header">
-                <i className="fas fa-bell-on"></i>
+                <Icon name="bell-on" size={16} />
                 <h5>Alertas ({alarms.length})</h5>
                 <div className="widget-preview-actions">
                     <button onClick={openExpandedModal} className="btn-expand" title="Ver todas las alertas">
-                        <i className="fas fa-expand-alt me-1"></i> Expandir
+                        <Icon name="expand-alt" size={16} className="me-1" /> Expandir
                     </button>
                     <button onClick={onClose} className="btn-close-widget" title="Cerrar">
-                        <i className="fas fa-times"></i>
+                        <Icon name="times" size={16} />
                     </button>
                 </div>
             </div>
@@ -162,7 +163,7 @@ export const AlarmsWidget = ({ alarms, onClose }) => {
                     alarms.map(alarm => <AlarmPreviewCard key={alarm.id} alarm={alarm} />)
                 ) : (
                     <div className="widget-preview-empty">
-                        <i className="fas fa-check-circle"></i>
+                        <Icon name="check-circle" size={16} />
                         <p>¡Todo en orden!</p>
                         <span>No hay alertas activas.</span>
                     </div>
@@ -209,9 +210,9 @@ const ExpandedAlarmsModal = ({ alarms }) => {
     };
 
     const getSortIcon = (key) => {
-        if (sort.key !== key) return <i className="fas fa-sort text-muted"></i>;
-        if (sort.order === 'asc') return <i className="fas fa-sort-up"></i>;
-        return <i className="fas fa-sort-down"></i>;
+        if (sort.key !== key) return <Icon name="sort" size={16} className="text-muted" />;
+        if (sort.order === 'asc') return <Icon name="sort-up" size={16} />;
+        return <Icon name="sort-down" size={16} />;
     };
 
     return (

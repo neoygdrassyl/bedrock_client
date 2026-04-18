@@ -3,6 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
+import { Icon } from '@/components/icon';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -35,19 +36,19 @@ export default function ARCHIVE_FUN_VIEW(props) {
                 <div className='row border py-1'>
                     <div className='row'>
                         <div className='col'>
-                            <label><i className="fas fa-border-all"></i> Estante: <label className='fw-bold'>{box.column}</label></label>
+                            <label><Icon name="border-all" size={16} /> Estante: <label className='fw-bold'>{box.column}</label></label>
                         </div>
                         <div className='col'>
-                            <label><i className="fas fa-inbox"></i> Entrepaño: <label className='fw-bold'>{box.row}</label></label>
+                            <label><Icon name="inbox" size={16} /> Entrepaño: <label className='fw-bold'>{box.row}</label></label>
                         </div>
                         <div className='col'>
-                            <label><i className="fas fa-archive"></i> Caja: <label className='fw-bold'>{box.box}</label></label>
+                            <label><Icon name="archive" size={16} /> Caja: <label className='fw-bold'>{box.box}</label></label>
                         </div>
                         <div className='col'>
-                            <label><i className="far fa-folder"></i> Carpeta: <label className='fw-bold'>{li.folder}</label></label>
+                            <label><Icon name="folder" size={16} /> Carpeta: <label className='fw-bold'>{li.folder}</label></label>
                         </div>
                         <div className='col'>
-                            <label><i className="far fa-file-alt"></i> Folios: <label className='fw-bold'>{li.pages}</label></label>
+                            <label><Icon name="file-alt" size={16} /> Folios: <label className='fw-bold'>{li.pages}</label></label>
                         </div>
                     </div>
                 </div>

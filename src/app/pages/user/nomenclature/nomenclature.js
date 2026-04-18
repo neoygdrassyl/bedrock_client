@@ -13,6 +13,7 @@ import { dateParser } from '../../../components/customClasses/typeParse'
 // COMPONENT
 import NOMENCLATURE_NEW from './new_nomenclature';
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -130,10 +131,10 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 minWidth: '100px',
                 cell: row => <>
                         <button title="Ver detalles" onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <i className="far fa-folder-open fa-2x" ></i></button>
+                            <Icon name="folder-open" size={16} /></button>
 
                         <button title="Eliminar" onClick={() => delete_nomenclature(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                            <i className="far fa-trash-alt fa-2x"></i></button>
+                            <Icon name="trash-alt" size={16} /></button>
                 </>,
             },
         ]
@@ -335,7 +336,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         <div className="row">
                             <div className="col-4">
                                 <div className="text-center py-4 mt-3">
-                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><i className="fas fa-plus-circle"></i> CREAR NOMENCLATURA </button>
+                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><Icon name="plus-circle" size={16} /> CREAR NOMENCLATURA </button>
                                 </div>
                             </div>
                             <div className="col-4">
@@ -344,7 +345,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                         <h4 className="text-center font-semibold mb-3">CONSULTAR NOMENCLATURA</h4>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="fas fa-info-circle"></i>
+                                                <Icon name="info-circle" size={16} />
                                             </span>
                                             <select className="form-select" id="nomen_search_0" required>
                                                 <option value="1">Número de Radicado</option>
@@ -357,12 +358,12 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                         </div>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="far fa-comment-dots"></i>
+                                                <Icon name="comment-dots" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="nomen_search_1" placeholder="Buscar..." />
                                         </div>
                                         <div className="text-center py-2">
-                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><i className="fas fa-search-plus"></i> CONSULTAR </button>
+                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><Icon name="search-plus" size={16} /> CONSULTAR </button>
                                         </div>
                                     </div>
                                 </div>
@@ -374,20 +375,20 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                         <form onSubmit={get_cvs} id="fun_form_nomenclature_cvs_gen">
                                             <div className="input-group mb-3">
                                                 <span className="input-group-text bg-info text-white">
-                                                    <i className="far fa-calendar-alt"></i>
+                                                    <Icon name="calendar-alt" size={16} />
                                                 </span>
                                                 <input type="date" className="form-control" id="nomenclature_cvs_gen_1" required
                                                     defaultValue={dayjs().subtract(8, 'days').format('YYYY-MM-DD')} />
                                             </div>
                                             <div className="input-group mb-3">
                                                 <span className="input-group-text bg-info text-white">
-                                                    <i className="far fa-calendar-alt"></i>
+                                                    <Icon name="calendar-alt" size={16} />
                                                 </span>
                                                 <input type="date" className="form-control" id="nomenclature_cvs_gen_2" required
                                                     defaultValue={dayjs().format('YYYY-MM-DD')} />
                                             </div>
                                             <div className="text-center py-2">
-                                                <button className="btn btn-success"><i className="far fa-file-excel"></i> DESCARGAR </button>
+                                                <button className="btn btn-success"><Icon name="file-excel" size={16} /> DESCARGAR </button>
                                             </div>
                                         </form>
                                     </div>
@@ -432,7 +433,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i className="far fa-edit"></i> ACTUALIZAR NOMENCLATURA: {currentId} </h3>
+                        <h3><Icon name="edit" size={16} /> ACTUALIZAR NOMENCLATURA: {currentId} </h3>
                         <button type="button" className="btn-close" onClick={toggle} />
                     </div>
                     <NOMENCLATURE_NEW
@@ -442,7 +443,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         currentItem={currentItem} />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -452,7 +453,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i className="fas fa-plus-circle"></i> NUEVA NOMENCLATURA </h3>
+                        <h3><Icon name="plus-circle" size={16} /> NUEVA NOMENCLATURA </h3>
                         <button type="button" className="btn-close" onClick={() => toggle_new()} />
                     </div>
                     <NOMENCLATURE_NEW
@@ -460,7 +461,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                         refreshList={refreshList}
                         closeModal={toggle_new} />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 

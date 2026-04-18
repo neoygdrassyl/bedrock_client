@@ -5,6 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -85,7 +86,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <label >3.1.1 Arquitecto Responsable</label>
                 <div className="input-group mb-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-user"></i>
+                        <Icon name="user" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[1]} />
@@ -93,7 +94,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <label >3.1.2 Matricula Profesional</label>
                 <div className="input-group mb-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-address-card"></i>
+                        <Icon name="address-card" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[2]} />
@@ -101,7 +102,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <label >3.1.3 Teléfono Contacto</label>
                 <div className="input-group mb-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="fas fa-phone-alt"></i>
+                        <Icon name="phone-alt" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[3]} />
@@ -109,7 +110,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <label >3.1.4 Email contacto</label>
                 <div className="input-group mb-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-envelope"></i>
+                        <Icon name="envelope" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[4]} />
@@ -117,7 +118,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <label >3.1.5 Dirección Contacto</label>
                 <div className="input-group mb-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="fas fa-map-marked-alt"></i>
+                        <Icon name="map-marked-alt" size={16} />
                     </span>
                     <input type="text" className="form-control" name="s_31_values"
                         defaultValue={value31[5]} />
@@ -131,7 +132,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <label >Fecha de Inicio</label>
                 <div className="input-group mb-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-calendar-times"></i>
+                        <Icon name="calendar-times" size={16} />
                     </span>
                     <input type="text" className="form-control" id="r_a_31_date_1" disabled
                         defaultValue={dateParser(currentItem.date)} />
@@ -139,7 +140,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <label >Fecha de Radicado</label>
                 <div className="input-group mb-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-calendar-times"></i>
+                        <Icon name="calendar-times" size={16} />
                     </span>
                     <input type="text" className="form-control" id="r_a_31_date_2" disabled
                         defaultValue={dateParser(_CLOCK_3.date_start)} />
@@ -147,7 +148,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <label >Fecha de Revision: {currentVersionR}</label>
                 <div className="input-group mb-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-calendar-times"></i>
+                        <Icon name="calendar-times" size={16} />
                     </span>
                     <input type="text" className="form-control" id="r_a_31_date_2" disabled
                         defaultValue={dateParser(_CLOCK_11.date_start)} />
@@ -155,7 +156,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                 <label >Fecha de Desistimiento</label>
                 <div className="input-group mb-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-calendar-times"></i>
+                        <Icon name="calendar-times" size={16} />
                     </span>
                     <input type="text" className="form-control" id="r_a_31_date_2" disabled
                         defaultValue={dateParser(dateParser_finalDate(_CLOCK_3.date_start, 45))} />
@@ -287,7 +288,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT()}
                         <div className="text-center">
                             <button type="button" className="btn btn-success my-3" onClick={() => save_ra_31()}>
-                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </div>

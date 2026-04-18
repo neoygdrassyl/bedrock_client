@@ -4,6 +4,7 @@ import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -274,8 +275,8 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => _SET_EDIT(row)}><i className="far fa-edit fa-2x"></i></button></span>
-                        <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt fa-2x"></i></button></span>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => _SET_EDIT(row)}><Icon name="edit" size={16} /></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></button></span>
                     </>
                 },
             ]
@@ -299,7 +300,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                         <label>Piso</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id={"r_ph_fl_1" + editSuffix} required />
                         </div>
@@ -316,7 +317,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             <>
                                 {divisionsEdit > 1
                                     ? <>
-                                        <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                                        <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                                     </>
                                     : ""}
                             </>
@@ -324,12 +325,12 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             : <>
                                 {divisions > 1
                                     ? <>
-                                        <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                                        <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                                     </>
                                     : ""}
                             </>}
 
-                        <button type="button" className="btn btn-sm btn-secondary" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit + 1) : setDivisions(divisions + 1)}><i className="fas fa-plus-circle"></i> AÑADIR </button>
+                        <button type="button" className="btn btn-sm btn-secondary" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit + 1) : setDivisions(divisions + 1)}><Icon name="plus-circle" size={16} /> AÑADIR </button>
                     </div>
                 </div>
 
@@ -677,7 +678,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             {_COMPONENT_MANAGE()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
                                 </div>
                             </div>
                         </form>
@@ -692,7 +693,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             {_COMPONENT_MANAGE('_edit')}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
                                 </div>
                             </div>
                         </form>

@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
@@ -25,14 +26,14 @@ function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurre
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-map-signs"></i>
+                            <Icon name="map-signs" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1_edit"
                             defaultValue={_CHILD.id_public} />
                     </div>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-map-marked-alt"></i>
+                            <Icon name="map-marked-alt" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2_edit"
                             defaultValue={_CHILD.catastral} />
@@ -43,7 +44,7 @@ function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurre
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-user"></i>
+                            <Icon name="user" size={16} />
                         </span>
                         <select className="form-select" id="pqrs_fun_3_edit" defaultValue={_CHILD.person}>
                             <option>TITULAR DE LA ACTUACIÓN</option>
@@ -152,7 +153,7 @@ function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurre
                     {_FUN_COMPONENT()}
                     <div className="text-center">
                         <button className="btn btn-sm btn-success my-3">
-                            <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                            <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                         </button>
                     </div>
                 </form>

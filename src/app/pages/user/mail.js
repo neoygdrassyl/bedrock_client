@@ -78,7 +78,7 @@ function Mail({ translation, globals, breadCrums }) {
                 name: <h3>ACCIÓN</h3>,
                 button: true,
                 cell: row =>
-                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><i className="fas fa-file-alt"></i> Ver</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><Icon name="file-alt" size={16} /> Ver</button>
                 ,
             },
         ]

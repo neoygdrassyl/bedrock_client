@@ -1,3 +1,5 @@
+import { Icon } from '@/components/icon';
+
 export const Button_navigation = (props) => {
     const { Idup, Iddown } = props
     const _Redirec = (id) => {
@@ -7,12 +9,12 @@ export const Button_navigation = (props) => {
     return <>
         {Iddown == null ? '' : (
             <button type="button" className="btn btn-sm btn-link p-0 ms-1" onClick={() => _Redirec(Iddown)} aria-label="Ir abajo">
-                <i className="fas fa-arrow-circle-down" />
+                <Icon name="arrow-circle-down" size={16} />
             </button>
         )}
         {Idup == null ? '' : (
             <button type="button" className="btn btn-sm btn-link p-0 ms-1" onClick={() => _Redirec(Idup)} aria-label="Ir arriba">
-                <i className="fas fa-arrow-circle-up" />
+                <Icon name="arrow-circle-up" size={16} />
             </button>
         )}
     </>

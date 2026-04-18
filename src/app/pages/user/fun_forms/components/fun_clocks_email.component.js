@@ -7,6 +7,7 @@ import FUN_SERVICE from '../../../../services/fun.service'
 import USERS_Service from '../../../../services/users.service';
 
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 function FUN_CLOCKS_EMAILS(props) {
     const [users_list, setUsers_list] = useState([]);
@@ -273,7 +274,7 @@ function FUN_CLOCKS_EMAILS(props) {
                         <label>Lista de Correos (Separados por coma)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-envelope"></i>
+                                <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" id="fun_email_1"
                                 defaultValue={_EMAILS} required />
@@ -284,7 +285,7 @@ function FUN_CLOCKS_EMAILS(props) {
                         <label>Tipo de Correo</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-envelope"></i>
+                                <Icon name="envelope" size={16} />
                             </span>
                             <select className="form-control" id="fun_email_3" onChange={(e) => _GET_EMAIL_BODY(e.target.value)}>
                                 {_GET_EMAIL_TYPES()}
@@ -308,7 +309,7 @@ function FUN_CLOCKS_EMAILS(props) {
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files_foremail" accept="image/png, image/jpeg application/pdf" />
                         </div>
                     </div>
@@ -420,9 +421,9 @@ function FUN_CLOCKS_EMAILS(props) {
                                         <div className="text-end m-3">
                                             <p className="lead text-end fw-bold text-uppercase">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <button type="button" className="btn btn-secondary mx-3" onClick={() => this.minusAttachEmail()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                                                ? <button type="button" className="btn btn-secondary mx-3" onClick={() => this.minusAttachEmail()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                                                 : ""}
-                                            <button type="button" className="btn btn-secondary" onClick={() => this.addAttachEmail()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
+                                            <button type="button" className="btn btn-secondary" onClick={() => this.addAttachEmail()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>

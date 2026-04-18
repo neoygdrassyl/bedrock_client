@@ -12,6 +12,7 @@ import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDec
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
 import dayjs from "dayjs";
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -3160,7 +3161,7 @@ export default function EXP_RES(props) {
             {canSave ?
                 <div className="row text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3"><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                        <button className="btn btn-success my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
                     </div>
                 </div>
                 : ''}
@@ -3329,11 +3330,11 @@ export default function EXP_RES(props) {
                 <div className="col d-flex justify-content-center">
                     <div className="d-flex gap-3"> {/* Espaciado entre botones */}
                         <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
-                            <i className="far fa-file-pdf"></i> GENERAR PDF
+                            <Icon name="file-pdf" size={16} /> GENERAR PDF
                         </button>
                         {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
                             <button type="button" className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
-                                <i className="fas fa-edit"></i> EDITAR PDF
+                                <Icon name="edit" size={16} /> EDITAR PDF
                             </button>
                         )}
                     </div>

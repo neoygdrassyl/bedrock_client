@@ -7,13 +7,14 @@ import REPARTO from '../../img/Reparto.png'
 
 import { Link } from 'react-router-dom'
 import { Button_navigation } from '../button.component'
+import { Icon } from '@/components/icon';
 
 export const _news = [
     {
         id: 'news7',
         title: 'AVISO IMPORTANTE',
-        icon_folder: <i className="fas fa-folder " style={{ color: '#107ABC' }}></i>,
-        icon_date: <i className="fas fa-clock " style={{ color: '#107ABC' }}></i>,
+        icon_folder: <Icon name="folder" size={16} style={{ color: '#107ABC' }} />,
+        icon_date: <Icon name="clock" size={16} style={{ color: '#107ABC' }} />,
         category: 'Aviso',
         date: '19/12/2022',
         summary: 'Modificación del horario para el dia 23 y 30 de diciembre por las festividades.',
@@ -27,7 +28,7 @@ export const _news = [
                         <div className="px-4 py-1">
                             <h3 className="text-center" id='news7'>AVISO IMPORTANTE {<Button_navigation Iddown={'news6'} Idup={null} />}</h3>
                             <div className="py-1">
-                                <label><label className="px-1" style={{ color: 'gray' }}><i className="fas fa-clock text-info"></i> 19/12/2022 </label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-user text-info"></i> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-folder text-info"></i> Noticias</label>   </label>
+                                <label><label className="px-1" style={{ color: 'gray' }}><Icon name="clock" size={16} className="text-info" /> 19/12/2022 </label> <label className="px-1" style={{ color: 'gray' }}><Icon name="user" size={16} className="text-info" /> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><Icon name="folder" size={16} className="text-info" /> Noticias</label>   </label>
                             </div>
                             <div className='container'>
                                 <div className="row justify-content-start">
@@ -49,8 +50,8 @@ export const _news = [
     {
         id: 'news6',
         title: 'Reparto de proyectos 2022',
-        icon_folder: <i className="fas fa-folder " style={{ color: '#107ABC' }}></i>,
-        icon_date: <i className="fas fa-clock " style={{ color: '#107ABC' }}></i>,
+        icon_folder: <Icon name="folder" size={16} style={{ color: '#107ABC' }} />,
+        icon_date: <Icon name="clock" size={16} style={{ color: '#107ABC' }} />,
         category: 'Noticias',
         date: '20/09/2022',
         summary: 'Durante el año 2022 la curaduría urbana 1 de Bucaramanga está encargada hacer el reparto.',
@@ -64,7 +65,7 @@ export const _news = [
                         <div className="px-4 py-1">
                             <h3 className="text-center" id='news6'>Reparto de proyectos 2022 {<Button_navigation Iddown={'news5'} Idup={'news7'} />}</h3>
                             <div className="py-1">
-                                <label><label className="px-1" style={{ color: 'gray' }}><i className="fas fa-clock text-info"></i> 20/09/2022 </label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-user text-info"></i> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-folder text-info"></i> Noticias</label>   </label>
+                                <label><label className="px-1" style={{ color: 'gray' }}><Icon name="clock" size={16} className="text-info" /> 20/09/2022 </label> <label className="px-1" style={{ color: 'gray' }}><Icon name="user" size={16} className="text-info" /> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><Icon name="folder" size={16} className="text-info" /> Noticias</label>   </label>
                             </div>
                             <div className='container'>
                                 <div className="row justify-content-start">
@@ -90,8 +91,8 @@ export const _news = [
     {
         id: 'news5',
         title: 'Modificación horario general',
-        icon_folder: <i className="fas fa-folder " style={{ color: '#107ABC' }}></i>,
-        icon_date: <i className="fas fa-clock " style={{ color: '#107ABC' }}></i>,
+        icon_folder: <Icon name="folder" size={16} style={{ color: '#107ABC' }} />,
+        icon_date: <Icon name="clock" size={16} style={{ color: '#107ABC' }} />,
         category: 'Aviso',
         date: '6/06/2022',
         summary: 'El horario general de atención al público del despacho del curador urbano uno de Bucaramanga',
@@ -105,7 +106,7 @@ export const _news = [
                         <div className="px-4 py-1">
                             <h3 className="text-center" id='news5'>¡ Aviso importante, Mediante la resolución 0172 del 06 de junio de 2022 se modifica el horario general de atención! {<Button_navigation Iddown={'news1'} Idup={'news6'} />}</h3>
                             <div className="py-1">
-                                <label><label className="px-1" style={{ color: 'gray' }}><i className="fas fa-clock text-info"></i> 6/06/2022 </label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-user text-info"></i> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-folder text-info"></i> Avisos</label>   </label>
+                                <label><label className="px-1" style={{ color: 'gray' }}><Icon name="clock" size={16} className="text-info" /> 6/06/2022 </label> <label className="px-1" style={{ color: 'gray' }}><Icon name="user" size={16} className="text-info" /> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><Icon name="folder" size={16} className="text-info" /> Avisos</label>   </label>
                             </div>
                             <p className="text-justify fw-normal ">
                                 El horario general de atención al público del despacho del curador urbano uno de Bucaramanga, será de (07:00 am) a doce y media de la tarde (12:30pm) y de una de la tarde (1:00 pm) a cuatro de la tarde (4:00 pm).<br></br>
@@ -134,8 +135,8 @@ export const _news = [
     {
         id: 'news1',
         title: 'Prórroga de licencias y revalidaciones',
-        icon_folder: <i className="fas fa-folder " style={{ color: '#107ABC' }}></i>,
-        icon_date: <i className="fas fa-clock " style={{ color: '#107ABC' }}></i>,
+        icon_folder: <Icon name="folder" size={16} style={{ color: '#107ABC' }} />,
+        icon_date: <Icon name="clock" size={16} style={{ color: '#107ABC' }} />,
         category: 'Aviso',
         date: '12/05/2022',
         summary: 'El Decreto 1783 De 2021 que modificó el Decreto 1077 de 2015 en el artículo 2.2.6.1.2.4.1.',
@@ -149,7 +150,7 @@ export const _news = [
                         <div className="px-4 py-1">
                             <h3 className="text-center" id='news1'>¡Aviso importante prórroga de las licencias y revalidaciones! {<Button_navigation Iddown={'news2'} Idup={'news5'} />}</h3>
                             <div className="py-1">
-                                <label><label className="px-1" style={{ color: 'gray' }}><i className="fas fa-clock text-info"></i> 12/05/2022 </label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-user text-info"></i> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-folder text-info"></i> Avisos</label>   </label>
+                                <label><label className="px-1" style={{ color: 'gray' }}><Icon name="clock" size={16} className="text-info" /> 12/05/2022 </label> <label className="px-1" style={{ color: 'gray' }}><Icon name="user" size={16} className="text-info" /> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><Icon name="folder" size={16} className="text-info" /> Avisos</label>   </label>
                             </div>
                             <p className="text-justify fw-normal ">El Decreto 1783 De 2021 que modificó el Decreto 1077 de 2015 en el artículo 2.2.6.1.2.4.1. contempla (…) La solicitud de prórroga de una licencia urbanística deberá radicarse con la documentación completa a más tardar treinta (30) días hábiles antes del vencimiento de la respectiva licencia. <br></br>
                                 La solicitud deberá acompañarse de la manifestación bajo la gravedad del juramento de la iniciación de obra por parte del urbanizador o constructor responsable.<br></br>
@@ -167,8 +168,8 @@ export const _news = [
     {
         id: 'news2',
         title: 'Certificación para profesionales',
-        icon_folder: <i className="fas fa-folder " style={{ color: '#107ABC' }}></i>,
-        icon_date: <i className="fas fa-clock " style={{ color: '#107ABC' }}></i>,
+        icon_folder: <Icon name="folder" size={16} style={{ color: '#107ABC' }} />,
+        icon_date: <Icon name="clock" size={16} style={{ color: '#107ABC' }} />,
         category: 'Noticia',
         date: '15/12/2021',
         summary: 'La Curaduria Urbana N°1 de Bucaramanga ofrece a los profesionales que figuran en las',
@@ -182,7 +183,7 @@ export const _news = [
                         <div className="px-4 py-1">
                             <h3 className="text-center" id='news2'>Certificación para profesionales que actúan ante la Curaduría {<Button_navigation Iddown={'news3'} Idup={'news1'} />}</h3>
                             <div className="py-1">
-                                <label><label className="px-1" style={{ color: 'gray' }}><i className="fas fa-clock text-info"></i> 15/12/2022 </label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-user text-info"></i> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-folder text-info"></i> Noticias</label>   </label>
+                                <label><label className="px-1" style={{ color: 'gray' }}><Icon name="clock" size={16} className="text-info" /> 15/12/2022 </label> <label className="px-1" style={{ color: 'gray' }}><Icon name="user" size={16} className="text-info" /> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><Icon name="folder" size={16} className="text-info" /> Noticias</label>   </label>
                             </div>
                             <div className='container'>
                                 <div className="row justify-content-start">
@@ -202,8 +203,8 @@ export const _news = [
     {
         id: 'news3',
         title: 'Curaduría Inclusiva - Ley 982 de 2005',
-        icon_folder: <i className="fas fa-folder " style={{ color: '#107ABC' }}></i>,
-        icon_date: <i className="fas fa-clock " style={{ color: '#107ABC' }}></i>,
+        icon_folder: <Icon name="folder" size={16} style={{ color: '#107ABC' }} />,
+        icon_date: <Icon name="clock" size={16} style={{ color: '#107ABC' }} />,
         category: 'Noticia',
         date: '6/12/2021',
         summary: 'La Curaduria N° 1 de Bucaramanga usa la ayuda de las TIC para ofrecer un mejor',
@@ -217,7 +218,7 @@ export const _news = [
                         <div className="px-4 py-1">
                             <h3 className="text-center" id='news3'>Curaduría Inclusiva - Ley 982 de 2005 {<Button_navigation Iddown={'news4'} Idup={'news2'} />}</h3>
                             <div className="py-1">
-                                <label><label className="px-1" style={{ color: 'gray' }}><i className="fas fa-clock text-info"></i> 6/12/2021 </label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-user text-info"></i> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-folder text-info"></i> Noticias</label>   </label>
+                                <label><label className="px-1" style={{ color: 'gray' }}><Icon name="clock" size={16} className="text-info" /> 6/12/2021 </label> <label className="px-1" style={{ color: 'gray' }}><Icon name="user" size={16} className="text-info" /> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><Icon name="folder" size={16} className="text-info" /> Noticias</label>   </label>
                             </div>
                             <div className='container'>
                                 <div className="row justify-content-start">
@@ -237,8 +238,8 @@ export const _news = [
     {
         id: 'news4',
         title: 'Nuestro Nuevo Punto de Atención',
-        icon_folder: <i className="fas fa-folder" style={{ color: '#107ABC' }}></i>,
-        icon_date: <i className="fas fa-clock " style={{ color: '#107ABC' }}></i>,
+        icon_folder: <Icon name="folder" size={16} style={{ color: '#107ABC' }} />,
+        icon_date: <Icon name="clock" size={16} style={{ color: '#107ABC' }} />,
         category: 'Noticia',
         date: '15/06/2021',
         summary: 'Ya se encuentra en funcionamiento nuestro nuevo punto de atención. Nuestra nueva ubicación',
@@ -252,7 +253,7 @@ export const _news = [
                         <div className="px-4 py-1">
                             <h3 className="text-center" id='news4'>Punto de atención {<Button_navigation Iddown={null} Idup={'news3'} />}</h3>
                             <div className="py-1">
-                                <label><label className="px-1" style={{ color: 'gray' }}><i className="fas fa-clock text-info"></i> 15/06/2021 </label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-user text-info"></i> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><i className="fas fa-folder text-info"></i> Noticias</label>   </label>
+                                <label><label className="px-1" style={{ color: 'gray' }}><Icon name="clock" size={16} className="text-info" /> 15/06/2021 </label> <label className="px-1" style={{ color: 'gray' }}><Icon name="user" size={16} className="text-info" /> Curaduria 1 de Bucaramanga</label> <label className="px-1" style={{ color: 'gray' }}><Icon name="folder" size={16} className="text-info" /> Noticias</label>   </label>
                             </div>
                             <div className='container'>
                                 <div className="row justify-content-start">

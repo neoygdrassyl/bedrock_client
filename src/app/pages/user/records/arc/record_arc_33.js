@@ -12,6 +12,7 @@ import RECORD_ARC_DESC from './record_arc_desc';
 import { getJSONFull } from '../../../../components/customClasses/typeParse';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 import RECORD_ARC_AREAS_2 from './record_arc_areas_2.component.js';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -134,9 +135,9 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
         }
         let _SAVING_STATE = (state) => {
             if (!state) return '';
-            if (state == 1) return <label className='text-warning fw-bold'><i className="fas fa-save"></i></label>;
-            if (state == 2) return <label className='text-success fw-bold'><i className="fas fa-save"></i></label>;
-            if (state == 3) return <label className='text-danger fw-bold'><i className="fas fa-save"></i></label>;
+            if (state == 1) return <label className='text-warning fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 2) return <label className='text-success fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 3) return <label className='text-danger fw-bold'><Icon name="save" size={16} /></label>;
         }
         // COMPONENTS JSX 
 
@@ -231,8 +232,8 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                     minWidth: '120px',
                     cell: row => {
                         return <>
-                            <button type="button" onClick={() => setEditBlueprint(row)} className="btn btn-sm btn-secondary px-2 me-1"><i className="fas fa-edit"></i></button>
-                            <button type="button" onClick={() => delete_33_area(row.id, 'blueprint')} className="btn btn-sm btn-danger px-2"><i className="fas fa-trash-alt"></i></button>
+                            <button type="button" onClick={() => setEditBlueprint(row)} className="btn btn-sm btn-secondary px-2 me-1"><Icon name="edit" size={16} /></button>
+                            <button type="button" onClick={() => delete_33_area(row.id, 'blueprint')} className="btn btn-sm btn-danger px-2"><Icon name="trash-alt" size={16} /></button>
                         </>
                     },
                 },
@@ -1104,7 +1105,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                             {_COMPONENT_3()}
                             <div className="text-center">
                                 <button className="btn btn-success my-3">
-                                    <i className="far fa-share-square"></i> AÑADIR PLANO
+                                    <Icon name="share-square" size={16} /> AÑADIR PLANO
                                 </button>
                             </div>
                         </form>
@@ -1116,7 +1117,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                             {_COMPONENT_3('_edit')}
                             <div className="text-center">
                                 <button className="btn btn-success my-3">
-                                    <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                                    <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                                 </button>
                             </div>
                         </form>

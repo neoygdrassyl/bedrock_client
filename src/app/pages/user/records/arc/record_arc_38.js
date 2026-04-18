@@ -13,6 +13,7 @@ import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -463,11 +464,11 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                             </div>
                             <div className="col-1">
                                 {allowReview ? <button type="button" className={`btn btn-sm ${!rewState['REW' + i] ? "btn-outline-secondary" : "btn-secondary"}`}
-                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></button>
+                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></button>
                                     : ''}
                                 {rewState['REW' + i]
                                     ? <button type="button" className="btn btn-success btn-sm ms-1"
-                                        onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></button>
+                                        onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></button>
                                     : ""
                                 }
                                 {true ?
@@ -600,10 +601,10 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                     </div>
                     <div className="row mb-3 text-center">
                         <div className="col">
-                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i className="far fa-file-pdf"></i> DESCARGAR INFORME</button>
+                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</button>
                         </div>
                         <div className="col">
-                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i className="far fa-check-square"></i> DESCARGAR CHECKEO</button>
+                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</button>
                         </div>
                     </div>
                 </div>

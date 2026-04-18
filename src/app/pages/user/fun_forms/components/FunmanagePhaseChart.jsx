@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Icon } from '@/components/icon';
 import {
   BarChart,
   Bar,
@@ -133,7 +134,7 @@ export function FunmanagePhaseChart({ porFase, chartData, loading, dashboardFilt
   if (computedChartData.length === 0) {
     return (
       <div className="text-center text-muted py-4" style={{ fontSize: 13 }}>
-        <i className="fas fa-chart-bar me-2"></i>Sin datos disponibles.
+        <Icon name="chart-bar" size={16} className="me-2" />Sin datos disponibles.
       </div>
     );
   }

@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import FUNService from '../../../services/fun.service';
 import { PDFDocument } from 'pdf-lib';
 import VIEWER from '../../../components/viewer.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const customStylesForModal = {
@@ -104,7 +105,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
             <div className="row">
                 <div className="col-12">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                        <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
                         <input type="file" className="form-control" name="files_fun6s" accept="application/pdf" required onChange={(e) => readPDF(e.target.files[0])} />
                     </div>
                     <div className="input-group">
@@ -131,12 +132,12 @@ export default function RECORD_DOCUMENT_VERSION(props) {
             </div>
 
             <div className="text-end py-2">
-                <button className="btn btn-sm btn-primary" type='submit'><i className="fas fa-times-circle"></i> SUBIR</button>
+                <button className="btn btn-sm btn-primary" type='submit'><Icon name="times-circle" size={16} /> SUBIR</button>
             </div>
         </form>
     }
 
-    let BTN_DOWN = <button type="button" className="btn btn-primary btn-sm ms-1"><i className="fas fa-download"></i></button>
+    let BTN_DOWN = <button type="button" className="btn btn-primary btn-sm ms-1"><Icon name="download" size={16} /></button>
     let BTN_VIEW = (API, params) => <VIEWER API={API} params={params} ></VIEWER>
     // ******************* APIS ******************* //
     let addDocument = (e) => {
@@ -214,7 +215,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
     }
     return (
         <>
-            {!_FIND_6_ID_REPLACE(id6) ? <button type="button" className="btn btn-danger btn-sm ms-1" onClick={() => setModal(true)}><i className="fas fa-upload"></i></button> : null}
+            {!_FIND_6_ID_REPLACE(id6) ? <button type="button" className="btn btn-danger btn-sm ms-1" onClick={() => setModal(true)}><Icon name="upload" size={16} /></button> : null}
             {_FIND_6_ID_REPLACE(id6) ? BTN_VIEW(getF6Document, [_FIND_6_ID_REPLACE(id6)]) : null}
 
             <Modal contentLabel="UPLOAD RECORD DOC"
@@ -223,7 +224,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label><i className="fas fa-file-upload"></i> SUBIR DOCUMENTO DE EVALUACIÓN: {VERSION_DESC[id6] || 'Documento de Evaluación'}</label>
+                    <label><Icon name="file-upload" size={16} /> SUBIR DOCUMENTO DE EVALUACIÓN: {VERSION_DESC[id6] || 'Documento de Evaluación'}</label>
                     <button type="button" className="btn-close" onClick={() => setModal(false)} />
                 </div>
                 <hr />
@@ -232,7 +233,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <button type="button" className="btn btn-sm btn-info" onClick={() => setModal(false)}><i className="fas fa-times-circle"></i> CERRAR</button>
+                    <button type="button" className="btn btn-sm btn-info" onClick={() => setModal(false)}><Icon name="times-circle" size={16} /> CERRAR</button>
                 </div>
             </Modal>
         </>

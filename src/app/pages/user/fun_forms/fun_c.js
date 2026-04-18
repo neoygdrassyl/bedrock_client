@@ -18,6 +18,7 @@ import FUN_C_CLOCKS from './components/fun_c_clocks.component';
 import dayjs from 'dayjs';
 import submitService from '../../../services/submit.service';
 import { GEM_CODE_LIST } from '../../../components/customClasses/typeParse';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation, globals, currentVersion, NAVIGATION, NAVIGATION_VERSION, requesRefresh, closeModal }) {
@@ -837,10 +838,10 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         {_SET_CHILD_C_C()}
                         <div className="row text-center my-2">
                             <div className="col">
-                                <button className="btn btn-success btn-sm"><i className="far fa-share-square"></i> GUARDAR CAMBIOS</button>
+                                <button className="btn btn-success btn-sm"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</button>
                             </div>
                             <div className="col">
-                                <button type="button" className="btn btn-primary btn-sm" onClick={() => _SET_MISSING_FUN_R()}><i className="fas fa-tasks"></i> CARGAR FALTANTES</button>
+                                <button type="button" className="btn btn-primary btn-sm" onClick={() => _SET_MISSING_FUN_R()}><Icon name="tasks" size={16} /> CARGAR FALTANTES</button>
                             </div>
                         </div>
 

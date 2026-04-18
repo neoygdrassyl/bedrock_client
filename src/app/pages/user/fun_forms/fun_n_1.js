@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
@@ -157,7 +158,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 </div>
                 <div className="input-group my-3">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-question-circle"></i>
+                        <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otras Actuaciones, ¿Cual?"
                         defaultValue={_CHILD_VARS.item_2 != 'A' && _CHILD_VARS.item_2 != 'B' && _CHILD_VARS.item_2 != 'C'
@@ -353,7 +354,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 </div>
                 <div className="input-group my-3">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-question-circle"></i>
+                        <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                         id="f_16_o" defaultValue={_otherValue} />
@@ -514,7 +515,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 </div>
                 <div className="input-group my-3">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-question-circle"></i>
+                        <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otro clima, ¿Cual?" id="f_102_o"
                         defaultValue={_CHILD_VARS.item_102 != 'A' && _CHILD_VARS.item_102 != 'B' && _CHILD_VARS.item_102 != 'C'
@@ -838,10 +839,10 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-6">
-                        <button type="button" className="btn btn-success my-3" onClick={() => new_1()}><i className="far fa-file-alt"></i> ACTUALIZAR </button>
+                        <button type="button" className="btn btn-success my-3" onClick={() => new_1()}><Icon name="file-alt" size={16} /> ACTUALIZAR </button>
                     </div>
                     <div className="col-6">
-                        <button type="button" className="btn btn-warning my-3" onClick={() => _RESET_FORM_1()}><i className="fas fa-eraser"></i> LIMPIAR </button>
+                        <button type="button" className="btn btn-warning my-3" onClick={() => _RESET_FORM_1()}><Icon name="eraser" size={16} /> LIMPIAR </button>
                     </div>
                 </div>
             </fieldset>

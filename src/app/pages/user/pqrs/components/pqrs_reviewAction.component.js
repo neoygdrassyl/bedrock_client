@@ -5,6 +5,7 @@ import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars'
+import { Icon } from '@/components/icon';
 
 const customStyles = {
     overlay: {
@@ -436,7 +437,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
                     <div className='col-1 border'>
                         <div className='row text-center'>
                             <div className='col'>
-                                <i className="fas fa-trash text-danger" onClick={() => DELETE_STEP_JSON(i)} />
+                                <Icon name="trash" size={16} className="text-danger cursor-pointer" onClick={() => DELETE_STEP_JSON(i)} />
                             </div>
                         </div>
                     </div>
@@ -508,7 +509,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
         <div className="">
             <button title="Control administrativo" className="btn btn-sm btn-warning m-0 px-2 shadow-none"
                     onClick={() => loadData(currentItemId)}>
-                    <i className="fas fa-clipboard-check"></i></button>
+                    <Icon name="clipboard-check" size={16} /></button>
 
             <Modal contentLabel="REVIEW ACTION"
                 isOpen={review_modal}
@@ -517,7 +518,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
             >
                 {currentItem ? <>
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-th"></i> Control Administrativo {currentItem.id_global}</label>
+                        <label><Icon name="th" size={16} /> Control Administrativo {currentItem.id_global}</label>
                         <button type="button" className="btn-close" onClick={() => setModal(prev => !prev)} style={{cursor:"pointer"}} />
                     </div>
                     <hr />
@@ -531,7 +532,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
                 <div className="text-end py-4 mt-3">
                     <button className="btn btn-lg btn-info" onClick={() => setModal(prev => !prev)}>
-                        <i className="fas fa-times-circle"></i> CERRAR </button>
+                        <Icon name="times-circle" size={16} /> CERRAR </button>
                 </div>
             </Modal>
         </div>

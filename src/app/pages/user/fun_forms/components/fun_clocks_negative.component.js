@@ -9,6 +9,7 @@ import FUN_CLOCKS_EMAILS from './fun_clocks_email.component';
 import { dateParser_finalDate, dateParser_timePassed } from '../../../../components/customClasses/typeParse';
 import { MDBTabsContent, MDBTabsPane } from '../../../../components/ui';
 import VIZUALIZER from '../../../../components/vizualizer.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -227,10 +228,10 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             // '-6': 'NEGADA',
         }
         const resolveStatusIcon = {
-            '-1': <i className="far fa-dot-circle text-muted" style={{ fontSize: '150%' }}></i>,
-            '0': <i className="far fa-times-circle text-danger" style={{ fontSize: '150%' }}></i>,
-            '1': <i className="far fa-check-circle text-success" style={{ fontSize: '150%' }}></i>,
-            '2': <i className="fas fa-clock text-primary" style={{ fontSize: '150%' }}></i>,
+            '-1': <Icon name="dot-circle" size={16} style={{ fontSize: '150%' }} />,
+            '0': <Icon name="times-circle" size={16} style={{ fontSize: '150%' }} />,
+            '1': <Icon name="check-circle" size={16} style={{ fontSize: '150%' }} />,
+            '2': <Icon name="clock" size={16} style={{ fontSize: '150%' }} />,
         }
 
         // DATA GETTERS
@@ -407,7 +408,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <button className="btn btn-danger" ><i className="far fa-times-circle"></i> ABRIR PROCESO </button>
+                            <button className="btn btn-danger" ><Icon name="times-circle" size={16} /> ABRIR PROCESO </button>
                         </div>
                     </div>
                 </form>
@@ -437,7 +438,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <button className="btn btn-info" ><i className="far fa-times-circle"></i> CANCELAR PROCESO </button>
+                            <button className="btn btn-info" ><Icon name="times-circle" size={16} /> CANCELAR PROCESO </button>
                         </div>
                     </div>
                 </form>
@@ -452,7 +453,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         <label>Evento</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <input type="text" className="form-control" disabled
                                 defaultValue={data.name} />
@@ -462,7 +463,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         <label>Resultado evento</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className='form-select' id={"f_clock_next_1_" + state} defaultValue={data.resolver_sattus} >
                                 <option value="-1">SIN DEFINIR</option>
@@ -476,7 +477,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         <label>Fecha Evento</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id={"f_clock_next_2_" + state}
                                 defaultValue={data.date_start ?? dayjs().format('YYYY-MM-DD')} required />
@@ -486,7 +487,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         <label>Soporte: Relacionar Documento </label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file"></i>
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id={"f_clock_next_3_" + state} defaultValue={data.resolver_id6}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -506,12 +507,12 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
 
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3" onClick={() => save_clock(data)}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                        <button className="btn btn-success my-3" onClick={() => save_clock(data)}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
                     </div>
                     {data.end && data.id ?
                        !_GET_CLOCK_STATE_VERSION(200, data.version) ?
                         <div className="col">
-                            <button className="btn btn-primary my-3" onClick={() => update_fun_0_atFinalProcess(true, data.version)}><i className="fas fa-angle-double-right"></i> SALVAR PROCESO </button>
+                            <button className="btn btn-primary my-3" onClick={() => update_fun_0_atFinalProcess(true, data.version)}><Icon name="angle-double-right" size={16} /> SALVAR PROCESO </button>
                             <p>El proceso continua su curso normal</p>
                         </div>
                         : ''
@@ -522,7 +523,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                             {!_GET_CLOCK_STATE_VERSION(200, data.version)
                                 ?
                                 <div className="col">
-                                    <button className="btn btn-danger my-3" onClick={() => close(data.version)}><i className="fas fa-times"></i> CERRAR PROCESO </button>
+                                    <button className="btn btn-danger my-3" onClick={() => close(data.version)}><Icon name="times" size={16} /> CERRAR PROCESO </button>
                                     <p>El proceso NO fue subsanado y se finaliza</p>
                                 </div>
                                 : ''
@@ -531,7 +532,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                             {_GET_CLOCK_STATE_VERSION(200, data.version)
                                 ?
                                 <div className="col">
-                                    <button className="btn btn-danger my-3" onClick={() => archive(data.version)}><i className="fas fa-times"></i> ARCHIVAR PROCESO </button>
+                                    <button className="btn btn-danger my-3" onClick={() => archive(data.version)}><Icon name="times" size={16} /> ARCHIVAR PROCESO </button>
                                     <p>El proceso NO fue subsanado y se archiva (no se podrá editar)</p>
                                 </div>
                                 : ''

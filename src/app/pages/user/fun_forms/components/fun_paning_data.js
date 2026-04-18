@@ -1,4 +1,5 @@
 import { addDecimalPoints, dateParser } from '../../../../components/customClasses/typeParse';
+import { Icon } from '@/components/icon';
 
 
 function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
@@ -91,7 +92,7 @@ function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
                     <div className="col-6 p-1">
                         {_ARRAY[6] > 0
                             ? <a className="btn btn-sm btn-danger" target="_blank"
-                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[6]).path + "/" + _FIND_6(_ARRAY[6]).filename} ><i className="fas fa-cloud-download-alt fa-2x"></i></a>
+                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[6]).path + "/" + _FIND_6(_ARRAY[6]).filename} ><Icon name="cloud-download-alt" size={16} /></a>
                             : <label className="fw-bold">SIN DOCUMENTO</label>}
                     </div>
                 </div>
@@ -102,7 +103,7 @@ function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
                     <div className="col-6 p-1">
                         {_ARRAY[7] > 0
                             ? <a className="btn btn-sm btn-danger" target="_blank"
-                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[7]).path + "/" + _FIND_6(_ARRAY[7]).filename} ><i className="fas fa-cloud-download-alt fa-2x"></i></a>
+                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[7]).path + "/" + _FIND_6(_ARRAY[7]).filename} ><Icon name="cloud-download-alt" size={16} /></a>
                             : <label className="fw-bold">SIN DOCUMENTO</label>}
                     </div>
 
@@ -114,7 +115,7 @@ function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
                     <div className="col-6 p-1">
                         {_ARRAY[8] > 0
                             ? <a className="btn btn-sm btn-danger" target="_blank"
-                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[8]).path + "/" + _FIND_6(_ARRAY[8]).filename} ><i className="fas fa-cloud-download-alt fa-2x"></i></a>
+                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[8]).path + "/" + _FIND_6(_ARRAY[8]).filename} ><Icon name="cloud-download-alt" size={16} /></a>
                             : <label className="fw-bold">SIN DOCUMENTO</label>}
                     </div>
 

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import ReactDOM from 'react-dom';
 import dayjs from 'dayjs';
 import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol.js';
+import { Icon } from '@/components/icon';
 
 const businessDaysCalculator = new DiasHabilesColombia();
 
@@ -84,17 +85,17 @@ const CalendarContentInternal = React.memo(({
             {/* Header Rediseñado: Todo en una línea */}
             <div className="calendar-header-compact">
                 <div className="calendar-title-compact">
-                    <i className="fas fa-calendar-check text-primary"></i>
+                    <Icon name="calendar-check" size={16} className="text-primary" />
                     <span>Días Hábiles</span>
                 </div>
                 
                 <div className="calendar-nav-compact">
                     <button className="nav-btn-compact" onClick={() => onChangeMonth(-1)}>
-                        <i className="fas fa-chevron-left"></i>
+                        <Icon name="chevron-left" size={16} />
                     </button>
                     <span className="current-month-label-compact">{currentDate.format('MMM YYYY')}</span>
                     <button className="nav-btn-compact" onClick={() => onChangeMonth(1)}>
-                        <i className="fas fa-chevron-right"></i>
+                        <Icon name="chevron-right" size={16} />
                     </button>
                 </div>
 
@@ -104,7 +105,7 @@ const CalendarContentInternal = React.memo(({
                         onClick={handleClose}
                         title="Cerrar calendario"
                     >
-                        <i className="fas fa-times"></i>
+                        <Icon name="times" size={16} />
                     </button>
                 )}
             </div>
@@ -165,7 +166,7 @@ const CalendarContentInternal = React.memo(({
                         />
                     )}
                     <button className="btn-calc-go" onClick={onCalculate}>
-                        <i className="fas fa-equals"></i>
+                        <Icon name="equals" size={16} />
                     </button>
                 </div>
 

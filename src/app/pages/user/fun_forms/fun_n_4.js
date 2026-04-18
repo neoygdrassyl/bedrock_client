@@ -2,6 +2,7 @@ import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
@@ -41,7 +42,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 {
                     name: <label>ACCIÓN</label>,
                     button: true,
-                    cell: row => <button type="button" className="btn btn-sm btn-danger" onClick={() => delete_4(row.id)}><i className="far fa-trash-alt fa-2x"></i></button>
+                    cell: row => <button type="button" className="btn btn-sm btn-danger" onClick={() => delete_4(row.id)}><Icon name="trash-alt" size={16} /></button>
                 },
             ]
             return <DataTable
@@ -167,7 +168,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label>4.1 Linderos</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-compass"></i>
+                                <Icon name="compass" size={16} />
                             </span>
                             <select className="form-select" required id="f_41" >
                                 <option>NORTE</option>
@@ -181,7 +182,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label>4.2 Longitud (en m)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-ruler"></i>
+                                <Icon name="ruler" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_42" />
                         </div>
@@ -190,7 +191,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label>4.3 Colinda con </label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-home"></i>
+                                <Icon name="home" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_43" />
                         </div>
@@ -198,7 +199,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button type="button" className="btn btn-success my-3" onClick={() => new_4()}><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
+                        <button type="button" className="btn btn-success my-3" onClick={() => new_4()}><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
                     </div>
                 </div>
                 {_CHILD_4_LIST()}

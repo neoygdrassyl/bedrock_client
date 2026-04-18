@@ -1,3 +1,5 @@
+import { Icon } from '@/components/icon';
+
 function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, currentItem }) {
 
         // COMPONENTS JSX
@@ -32,7 +34,7 @@ function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, curre
                         <div className="col-2">
                             <label >
                                 <a className="btn btn-sm btn-danger" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + currentItem.pqrs_attaches[i].name}>
-                                    <i className="fas fa-cloud-download-alt"></i></a></label>
+                                    <Icon name="cloud-download-alt" size={16} /></a></label>
                         </div>
                     </div></div>)
                 }

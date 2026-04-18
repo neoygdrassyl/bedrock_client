@@ -31,6 +31,7 @@ import FUN_CERTIFICATION from './fun_doc_certification.component';
 import { PDFDocument } from 'pdf-lib'
 import FUN_D_ABDICATE from './fun_doc_abdicate.component';
 import FUN_D_CONTROL_2 from './fun_d_control.component_2';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -135,12 +136,12 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         <div className="col-12">
                             <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                                <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
                                 <input type="file" className="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf"
                                     required onChange={(e) => readPDF(e.target.files[0], i)} />
                             </div>
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                                <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
                                 <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} className="form-control" placeholder="Descripcion del documento" />
                                 <DOCS_LIST idRef={i} setValues={setValues} text={'VER LISTA'} />
                             </div>
@@ -149,20 +150,20 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     <div className="row d-flex justify-content-start">
                         <div className="col">
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><i className="fas fa-hashtag"></i></span>
+                                <span className="input-group-text bg-info text-white"><Icon name="hashtag" size={16} /></span>
                                 <input type="text" className="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
                             </div>
                         </div>
                         <div className="col">
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><i className="far fa-sticky-note"></i></span>
+                                <span className="input-group-text bg-info text-white"><Icon name="sticky-note" size={16} /></span>
                                 <input type="number" className="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages"
                                     id={'fun6_page_' + i} />
                             </div>
                         </div>
                         <div className="col-4">
                             <div className="input-group">
-                                <span className="input-group-text bg-info text-white"><i className="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
+                                <span className="input-group-text bg-info text-white"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Radicación</span>
                                 <input type="date" className="form-control" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} name="fun6_dates" />
                             </div>
                         </div>
@@ -312,7 +313,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             </div>
                             <div className='col text-end'>
                                 <button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
-                                <i className="fas fa-file-csv"></i> DESCARGAR CSV</button>
+                                <Icon name="file-csv" size={16} /> DESCARGAR CSV</button>
                             </div>
                         </div>
 
@@ -339,9 +340,9 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             <div className="col text-end m-3">
 
                                 {attachs > 0
-                                    ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                                    ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                                     : ""}
-                                <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
+                                <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
                             </div>
                         </div>
 
@@ -351,7 +352,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             {attachs > 0
                                 ? <div className="row text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-warning btn-lg my-3"><i className="far fa-file-alt"></i> AÑADIR {attachs} DOCUMENTO(S)</button>
+                                        <button className="btn btn-warning btn-lg my-3"><Icon name="file-alt" size={16} /> AÑADIR {attachs} DOCUMENTO(S)</button>
                                     </div>
                                 </div> : ""}
                         </form>

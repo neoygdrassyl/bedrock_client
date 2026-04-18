@@ -8,6 +8,7 @@ import PQRS_EMAILS from './pqrs_emails.component';
 import { dateParser_finalDate } from '../../../../components/customClasses/typeParse'
 
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, currentItem, refreshCurrentItem: propRefreshCurrentItem, refreshList: propRefreshList }) {
     const [email, setEmail] = useState(false);
@@ -145,7 +146,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Número de registro Ventanilla Única</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="pqrs_edit_info_9"
                                 defaultValue={_CHILD.id_global} />
@@ -155,7 +156,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Número de registro de caso(histórico año 2021)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="pqrs_edit_info_1"
                                 defaultValue={_CHILD.id_publico} />
@@ -171,7 +172,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Clasificación de la Petición</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <input list="browsers" id="pqrs_edit_info_2" className="form-control" onChange={() => _SET_REPLY_TIME()}
                                 autoComplete='false' defaultValue={_CHILD.type} />
@@ -188,7 +189,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Fecha de radicacion</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="pqrs_edit_info_61"
                                 defaultValue={_CHILD.creation.split(" ")[0]} onChange={() => _SET_LEGAL_TIME()} required />
@@ -205,7 +206,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Canal de Radicación original</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="pqrs_edit_info_3" defaultValue={_CHILD.radication_channel}>
                                 {selectTypeChannel}
@@ -217,7 +218,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label className='px-1'>Fecha inicio de términos  </label> <label className='px-4'></label><label className='px-4'>Fecha limite respuesta</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="pqrs_edit_info_7" defaultValue={_CHILD.legal} disabled />
                             <input type="date" max="2100-01-01" className="form-control" defaultValue={dateParser_finalDate(_CHILD.legal, _CHILD.time)} disabled />
@@ -232,7 +233,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Guia de Correspondencia</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="pqrs_edit_info_10"
                                 defaultValue={_CHILD.id_correspondency} />
@@ -244,7 +245,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Termino legal de respuesta</label> <label className='px-3'></label> <label className='px-4'>(Con prorroga)</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="number" step="1" min="1" className="form-control"
                                 id="pqrs_edit_info_8" defaultValue={_CHILD.time} />
@@ -259,7 +260,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Palabras Clave (Separadas por coma)</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-font"></i>
+                                <Icon name="font" size={16} />
                             </span>
                             <input type="text" className="form-control" maxLength="200" id="pqrs_edit_info_4"
                                 defaultValue={_CHILD.keywords} />
@@ -269,7 +270,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Fecha solicitud prorroga</label><label className='px-4'></label> <label className='px-4'>Fecha limite prorroga</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="" defaultValue={_CHILD.extension ? _CHILD.extension_date : ''} disabled />
                             <input type="date" className="form-control" id="" defaultValue={_CHILD.extension ? dateParser_finalDate(_CHILD.legal, _CHILD.time * 2) : ''} disabled />
@@ -302,7 +303,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                         <label>Fecha solicitud prorroga</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="pqrs_extension_date1" defaultValue={_CHILD.extension ? _CHILD.extension_date : dayjs().format('YYYY-MM-DD')} disabled={_CHILD.extension ? false : true} />
                         </div>
@@ -427,7 +428,7 @@ function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, curren
                     {_EXTENSION_COMPONENT()}
                     <div className="text-center">
                         <button className="btn btn-sm btn-success my-3">
-                            <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                            <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                         </button>
                     </div>
                 </form>

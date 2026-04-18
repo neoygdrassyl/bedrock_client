@@ -222,9 +222,9 @@ export default function ARCHIVE(props) {
             omit: window.user.roleId != 1 && window.user.roleId != 3,
             maxWidth: '120px',
             cell: row => <>
-                <button type="button" title="Modificar Items en caja" className="btn btn-primary btn-sm px-1 py-1" onClick={() => { setItem(row); setModalAdd(!modalAdd) }}><i className="fas fa-file-import"></i></button>
-                <button type="button" title="Modificar caja" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => { setItem(row); setModale(!modal) }}><i className="far fa-edit"></i></button>
-                <button type="button" title="Eliminar caja" className="btn btn-danger btn-sm px-1 py-1" onClick={() => { delete_arch(row.id); }}><i className="far fa-trash-alt"></i></button>
+                <button type="button" title="Modificar Items en caja" className="btn btn-primary btn-sm px-1 py-1" onClick={() => { setItem(row); setModalAdd(!modalAdd) }}><Icon name="file-import" size={16} /></button>
+                <button type="button" title="Modificar caja" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => { setItem(row); setModale(!modal) }}><Icon name="edit" size={16} /></button>
+                <button type="button" title="Eliminar caja" className="btn btn-danger btn-sm px-1 py-1" onClick={() => { delete_arch(row.id); }}><Icon name="trash-alt" size={16} /></button>
             </>,
         },
     ]
@@ -236,22 +236,22 @@ export default function ARCHIVE(props) {
                 let json = getJSONFull(it.json);
                 return <div className='row border'>
                     <div className='col'>
-                        <i className="fas fa-hashtag"></i> <label className='fw-bold'>{json.id_public}</label>
+                        <Icon name="hashtag" size={16} /> <label className='fw-bold'>{json.id_public}</label>
                     </div>
                     <div className='col-2'>
-                        <i className="fas fa-file-signature"></i> Resolución <label className='fw-bold'>{json.exp_id}</label>
+                        <Icon name="file-signature" size={16} /> Resolución <label className='fw-bold'>{json.exp_id}</label>
                     </div>
                     <div className='col-2'>
-                        <i className="far fa-folder"></i> Carpeta: <label className='fw-bold'>{it.folder}</label>
+                        <Icon name="folder" size={16} /> Carpeta: <label className='fw-bold'>{it.folder}</label>
                     </div>
                     <div className='col-2'>
-                        <i className="far fa-file-alt"></i> Folios: <label className='fw-bold'>{it.pages}</label>
+                        <Icon name="file-alt" size={16} /> Folios: <label className='fw-bold'>{it.pages}</label>
                     </div>
                     <div className='col'>
-                        <h5><i className="far fa-calendar-alt"></i> Fechas: <label className='fw-bold'>{(json.clocks_start).slice(-8)} - {(json.clocks_end).slice(-8)}</label></h5>
+                        <h5><Icon name="calendar-alt" size={16} /> Fechas: <label className='fw-bold'>{(json.clocks_start).slice(-8)} - {(json.clocks_end).slice(-8)}</label></h5>
                     </div>
                     <div className='col-1'>
-                        <button type="button" title="Ver documentos item" className="btn btn-info btn-sm px-1 py-1" onClick={() => { setAnex(json); setModal_d(!modal_d) }}><i className="far fa-folder-open"></i></button>
+                        <button type="button" title="Ver documentos item" className="btn btn-info btn-sm px-1 py-1" onClick={() => { setAnex(json); setModal_d(!modal_d) }}><Icon name="folder-open" size={16} /></button>
                     </div>
                 </div>
             })}
@@ -272,7 +272,7 @@ export default function ARCHIVE(props) {
             data={LIST_A}
             highlightOnHover
             dense
-            title={<>LISTADO DE CAJAS  <i className="fas fa-archive"></i></>}
+            title={<>LISTADO DE CAJAS  <Icon name="archive" size={16} /></>}
 
             progressPending={!load}
             progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
@@ -366,7 +366,7 @@ export default function ARCHIVE(props) {
                 <div className="my-2 d-flex justify-content-between ">
                     <div className='row'>
                         <div className="input-group">
-                            <label className=''><i className="far fa-folder-open"></i> NUEVA CAJA DE ARCHIVO</label>
+                            <label className=''><Icon name="folder-open" size={16} /> NUEVA CAJA DE ARCHIVO</label>
                         </div>
                     </div>
 
@@ -398,7 +398,7 @@ export default function ARCHIVE(props) {
                 <div className="my-2 d-flex justify-content-between">
                     <div className='row'>
                         <div className="input-group">
-                            <label className=''><i className="far fa-folder-open"></i> EDITAR CAJA: {currentItem ? currentItem.box : ''}</label>
+                            <label className=''><Icon name="folder-open" size={16} /> EDITAR CAJA: {currentItem ? currentItem.box : ''}</label>
                         </div>
                     </div>
 
@@ -429,7 +429,7 @@ export default function ARCHIVE(props) {
                 <div className="my-2 d-flex justify-content-between ">
                     <div className='row'>
                         <div className="input-group">
-                            <label className=''><i className="fas fa-archive"></i> MODIFICAR ITEMS DE CAJA: {currentItem ? currentItem.box : ''}</label>
+                            <label className=''><Icon name="archive" size={16} /> MODIFICAR ITEMS DE CAJA: {currentItem ? currentItem.box : ''}</label>
                         </div>
                     </div>
 
@@ -460,7 +460,7 @@ export default function ARCHIVE(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label><i className="fas fa-archive"></i> VISTA DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
+                    <label><Icon name="archive" size={16} /> VISTA DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
                     <button type="button" className="btn-close" onClick={() => setModal_d(!modal_d)} />
                 </div>
                 <hr className='bg-info' style={{ height: '4px' }} />

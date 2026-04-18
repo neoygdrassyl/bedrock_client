@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { Icon } from '@/components/icon';
 
 /**
  * ErrorBoundary para capturar errores de recharts y otras librerías de charts.
@@ -22,7 +23,7 @@ class ChartErrorBoundary extends Component {
         if (this.state.hasError) {
             return (
                 <div className="border p-3 text-center text-muted">
-                    <i className="fas fa-chart-bar me-2"></i>
+                    <Icon name="chart-bar" size={16} className="me-2" />
                     {this.props.fallbackMessage || 'No se pudo renderizar la gráfica. Verifique que existan datos.'}
                 </div>
             );

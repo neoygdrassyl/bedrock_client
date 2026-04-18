@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
 import { cities } from '../../../components/jsons/vars';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -194,7 +195,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                         <label>Fecha del Documento</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="nomen_pdf_date" required
                                 defaultValue={dayjs().format('YYYY-MM-DD')} />
@@ -204,7 +205,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                         <label>Tamaño letra 14.</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-text-height"></i>
+                                <Icon name="text-height" size={16} />
                             </span>
                             <input type="number" max="14" min="8" step="1" className="form-control" id="nomen_pdf_fontsize" required
                                 defaultValue={12} />
@@ -219,7 +220,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                         </div>
                     </div>
                 </div>
-                <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                 <hr className="my-3" />
                 <label className="fw-bold my-2">ANEXAR DOCUMENTO</label>
                 <br />
@@ -240,7 +241,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                             <label >Documento</label>
                             <div className="input-group mb-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-paperclip"></i>
+                                    <Icon name="paperclip" size={16} />
                                 </span>
                                 <input type="file" className="form-control" id="file_nomen" accept="image/png, image/jpeg application/pdf" />
                             </div>
@@ -250,7 +251,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                             <label >Consecutivo</label>
                             <div className="input-group mb-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-hashtag"></i>
+                                    <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="nomen_anex_2" required
                                     defaultValue={_GET_DOC().id_public} />
@@ -261,7 +262,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                             <label ># Folios</label>
                             <div className="input-group mb-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-file"></i>
+                                    <Icon name="file" size={16} />
                                 </span>
                                 <input type="number" min="1" step="1" className="form-control" id="nomen_anex_3" required
                                     defaultValue={_GET_DOC().pages} />
@@ -272,7 +273,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                     <div className="row mb-3 text-center">
 
                         <div className="col-12">
-                            <button className="btn btn-success my-3"><i className="far fa-edit"></i> ANEXAR DOCUMENTO </button>
+                            <button className="btn btn-success my-3"><Icon name="edit" size={16} /> ANEXAR DOCUMENTO </button>
                         </div>
                     </div>
 

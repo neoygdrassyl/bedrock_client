@@ -12,6 +12,7 @@ import SERIES_CB1 from '../../components/jsons/funcCodes.cb1.json'
 import DataTable from 'react-data-table-component';
 import VIZUALIZER from '../../components/vizualizer.component';
 import { infoCud } from '../../components/jsons/vars';
+import { Icon } from '@/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function DICTIONARY(props) {
@@ -176,14 +177,14 @@ export default function DICTIONARY(props) {
                     <nav className="m-3"><ul className="pagination">
                         <li className={`page-item${_page == 1 ? ' disabled' : ''}`} onClick={() => { if (_page != 1) _func(_page - 1) }}>
                             <a className="page-link" role="button" aria-label="Anterior">
-                                <i className="fas fa-chevron-left"></i>
+                                <Icon name="chevron-left" size={16} />
                                 <span className="sr-only">Anterior</span>
                             </a>
                         </li>
                         {PageNacITems}
                         <li className={`page-item${_page == limit || limit < 2 ? ' disabled' : ''}`} onClick={() => _func(_page + 1)}>
                             <a className="page-link" role="button" aria-label="Siguiente">
-                                <i className="fas fa-chevron-right"></i>
+                                <Icon name="chevron-right" size={16} />
                                 <span className="sr-only">Siguiente</span>
                             </a>
                         </li>
@@ -208,12 +209,12 @@ export default function DICTIONARY(props) {
         return <>
             <div className="input-group m-3 px-3 mx-0">
                 <span className="input-group-text bg-linght">
-                    <i className="fas fa-search"></i>
+                    <Icon name="search" size={16} />
                 </span>
                 <input type='text' className='form-control' placeholder='Busqueda...' id={_id} defaultValue={_filter}
                     onKeyPress={(e) => { if (e.key === 'Enter') setFilter() }} />
-                <Button variant="secondary" size="sm" onClick={() => setFilter()}><i className="fas fa-angle-double-right"></i> Buscar</Button>
-                {_filter ? <Button variant="ghost" size="sm" onClick={() => clearFilter()}><i className="fas fa-times"></i> </Button>
+                <Button variant="secondary" size="sm" onClick={() => setFilter()}><Icon name="angle-double-right" size={16} /> Buscar</Button>
+                {_filter ? <Button variant="ghost" size="sm" onClick={() => clearFilter()}><Icon name="times" size={16} /> </Button>
                     : ''}
             </div>
         </>
@@ -256,7 +257,7 @@ export default function DICTIONARY(props) {
                             id="dropdownMenuButton"
                             data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            <i className="fas fa-search"></i>
+                            <Icon name="search" size={16} />
                         </button>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             {filterOptions.map((filter) => (
@@ -291,11 +292,11 @@ export default function DICTIONARY(props) {
                     <Button variant="secondary" size="sm" onClick={() => {
                         setFilter()
                         setProccess(proccessSelected);
-                    }}><i className="fas fa-angle-double-right"></i> Buscar</Button>
+                    }}><Icon name="angle-double-right" size={16} /> Buscar</Button>
 
                     {/* Botón Limpiar */}
                     {_filter || process ? (
-                        <Button variant="ghost" size="sm" onClick={() => clearFilter()}><i className="fas fa-times"></i></Button>
+                        <Button variant="ghost" size="sm" onClick={() => clearFilter()}><Icon name="times" size={16} /></Button>
                     ) : (
                         ''
                     )}
@@ -438,12 +439,12 @@ export default function DICTIONARY(props) {
                 title={<>
                     <div className='row'>
                         <div className='col'>
-                            LISTADO DE PROFESIONALES  <i className="fas fa-user-circle"></i>
+                            LISTADO DE PROFESIONALES  <Icon name="user-circle" size={16} />
                         </div>
                         <div className='col-3 text-end'>
                             <Button variant="outline" size="sm" onClick={() => generateCVS(headers, LIST.map(row => [(row.name + ' ' + row.surname).toUpperCase(),
                             row.id_number, row.email, row.number, row.registration, row.registration_date, row.sanction ? 'SI' : 'NO']), 'LISTADO PROFESIONALES')}
-                                ><i className="fas fa-table"></i> Descargar CSV</Button>
+                                ><Icon name="table" size={16} /> Descargar CSV</Button>
                         </div>
                     </div>
                 </>}
@@ -468,10 +469,10 @@ export default function DICTIONARY(props) {
 
             <div className="border p-2 m-2">
                 <label className="me-2">LEYENDA:</label>
-                <label className="me-2"><a><i className="far fa-id-card fa-2x" style={{ "color": "DeepSkyBlue" }}></i></a> : C.C.,</label>
-                <label className="me-2"><a><i className="far fa-id-badge fa-2x" style={{ "color": "DarkOrchid" }}></i></a> : Matrícula,</label>
-                <label className="me-2"><a><i className="fas fa-book fa-2x" style={{ "color": "GoldenRod" }}></i></a> : Vigencia Matricular,</label>
-                <label className="me-2"><a><i className="fas fa-file-invoice fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida y Certificados</label>
+                <label className="me-2"><a><Icon name="id-card" size={16} style={{ "color": "DeepSkyBlue" }} /></a> : C.C.,</label>
+                <label className="me-2"><a><Icon name="id-badge" size={16} style={{ "color": "DarkOrchid" }} /></a> : Matrícula,</label>
+                <label className="me-2"><a><Icon name="book" size={16} style={{ "color": "GoldenRod" }} /></a> : Vigencia Matricular,</label>
+                <label className="me-2"><a><Icon name="file-invoice" size={16} style={{ "color": "LimeGreen" }} /></a> : Hoja de vida y Certificados</label>
             </div></>
     }
 
@@ -618,7 +619,7 @@ export default function DICTIONARY(props) {
                                 LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res}`, 
                                     i.res === 'Citacion Notificación Resolución' ? getJSONFull(i.date).date_doc :i.date])),
                                 'LISTADO CONSECUTIVOS DE SALIDA')}
-                                ><i className="fas fa-table"></i> Descargar CSV</Button>
+                                ><Icon name="table" size={16} /> Descargar CSV</Button>
                         </div>
                     </div>
                     {_COMPONENT_MAIN_LIST(LIST_D, filter_D, proccessToFilter, 'cub', limit_D, pag_D, _COMPONENT_POPC_D)}

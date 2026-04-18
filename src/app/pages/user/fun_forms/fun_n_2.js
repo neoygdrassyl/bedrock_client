@@ -1,6 +1,7 @@
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
@@ -114,7 +115,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label >2.2 No. Matrícula Inmobiliaria</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file-alt"></i>
+                                <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_22"
                                 defaultValue={_CHILD_VARS.item_22} />
@@ -124,7 +125,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label>2.3.1 Identificación Catastral (Viejo)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file-alt"></i>
+                                <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="No. Catastral" id="f_23"
                                 defaultValue={_CHILD_VARS.item_23} />
@@ -132,7 +133,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label>2.3.2 Identificación Catastral (Nuevo, 30 dígitos)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file-alt"></i>
+                                <Icon name="file-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="No. Catastral nuevo" id="f_232"
                                 defaultValue={_CHILD_VARS.item_232} />
@@ -182,7 +183,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         </div>
                         <div className="input-group my-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-question-circle"></i>
+                                <Icon name="question-circle" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                                 id="f_25_o" defaultChecked={_CHILD_VARS.item_25 != 'A' && _CHILD_VARS.item_25 != 'B' ? _CHILD_VARS.item_25 : ""} />
@@ -196,25 +197,25 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Barrio o Urbanzación
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Barrio o Urbanzación
                             </span>
                             <input type="text" className="form-control" id="f_261" defaultValue={_CHILD_VARS.item_261} />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Comuna
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Comuna
                             </span>
                             <input type="text" className="form-control" id="f_263" defaultValue={_CHILD_VARS.item_263} />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Estrato
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Estrato
                             </span>
                             <input type="number" min="1" max="6" step="1" className="form-control" id="f_267" defaultValue={_CHILD_VARS.item_267} />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Manzana No.
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Manzana No.
                             </span>
                             <input type="text" className="form-control" id="f_268" defaultValue={_CHILD_VARS.item_268} />
                         </div>
@@ -222,25 +223,25 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     <div className="col-6">
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Vereda
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Vereda
                             </span>
                             <input type="text" className="form-control" id="f_262" defaultValue={_CHILD_VARS.item_262} />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Sector
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Sector
                             </span>
                             <input type="text" className="form-control" id="f_264" defaultValue={_CHILD_VARS.item_264} />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Corregimiento
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Corregimiento
                             </span>
                             <input type="text" className="form-control" id="f_265" defaultValue={_CHILD_VARS.item_265} />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Lote No.
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Lote No.
                             </span>
                             <input type="text" className="form-control" id="f_266" defaultValue={_CHILD_VARS.item_266} />
                         </div>
@@ -392,10 +393,10 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 {_CHILD_2_COMPONENT()}
                 <div className="row mb-3 text-center">
                     <div className="col-6">
-                        <button type="button" className="btn btn-success my-3" onClick={() => new_2()}><i className="far fa-file-alt"></i> ACTUALIZAR </button>
+                        <button type="button" className="btn btn-success my-3" onClick={() => new_2()}><Icon name="file-alt" size={16} /> ACTUALIZAR </button>
                     </div>
                     <div className="col-6">
-                            <button type="button" className="btn btn-warning my-3" onClick={() => _RESET_FORM_2()}><i className="fas fa-eraser"></i> LIMPIAR (2.4 y 2.5) </button>
+                            <button type="button" className="btn btn-warning my-3" onClick={() => _RESET_FORM_2()}><Icon name="eraser" size={16} /> LIMPIAR (2.4 y 2.5) </button>
                         </div>
                 </div>
             </fieldset>

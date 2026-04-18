@@ -11,6 +11,7 @@ import RECORD_LAW_PDF from './record_law_pdf';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 
 function RECORD_LAW_EVALUATION(props) {
@@ -348,11 +349,11 @@ function RECORD_LAW_EVALUATION(props) {
                             </div>
                             <div className="col-1">
                                 {allowReview ? <button type="button" className={`btn btn-sm ${!dynState['REW' + i] ? "btn-outline-secondary" : "btn-secondary"}`}
-                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></button>
+                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></button>
                                     : ''}
                                 {dynState['REW' + i]
                                     ? <button type="button" className="btn btn-success btn-sm ms-1"
-                                        onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></button>
+                                        onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></button>
                                     : ""
                                 }
                                 {true ?

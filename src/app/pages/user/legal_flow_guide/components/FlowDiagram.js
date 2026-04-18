@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import MermaidDiagram from '../../../../components/MermaidDiagram.component';
 import { generateLegalFlowMermaid } from '../utils/mermaidFlowGenerator';
+import { Icon } from '@/components/icon';
 
 const LEGEND = [
   { label: 'Curaduria', cls: 'lf-legend-swatch--curaduria' },
@@ -30,7 +31,7 @@ function FlowDiagram({ filters }) {
       {/* Custom header with legend */}
       <div className="lf-diagram__header">
         <span className="lf-diagram__title">
-          <i className="fas fa-project-diagram"></i>
+          <Icon name="project-diagram" size={16} />
           Diagrama de Proceso
         </span>
         <div className="lf-diagram__legend">

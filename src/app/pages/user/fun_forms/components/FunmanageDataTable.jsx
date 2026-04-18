@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Icon } from '@/components/icon';
 import {
   useReactTable,
   getCoreRowModel,
@@ -116,7 +117,7 @@ function buildColumns(onViewDetail, onOpenWorkspace) {
               title="Ver detalles"
               onClick={() => onViewDetail?.(row)}
             >
-              <i className="fas fa-eye"></i>
+              <Icon name="eye" size={16} />
             </button>
             <button
               type="button"
@@ -125,7 +126,7 @@ function buildColumns(onViewDetail, onOpenWorkspace) {
               onClick={() => onOpenWorkspace?.(row)}
               disabled={row.id == null}
             >
-              <i className="fas fa-expand-alt"></i>
+              <Icon name="expand-alt" size={16} />
             </button>
           </div>
         );
@@ -136,9 +137,9 @@ function buildColumns(onViewDetail, onOpenWorkspace) {
 
 // ── Ícono de ordenamiento ─────────────────────────────────────────────────────
 function SortIcon({ direction }) {
-  if (direction === 'asc')  return <i className="fas fa-sort-up   text-blue-500 text-[10px]"></i>;
-  if (direction === 'desc') return <i className="fas fa-sort-down text-blue-500 text-[10px]"></i>;
-  return <i className="fas fa-sort text-slate-300 text-[10px]"></i>;
+  if (direction === 'asc')  return <Icon name="sort-up" size={16} className="text-blue-500 text-[10px]" />;
+  if (direction === 'desc') return <Icon name="sort-down" size={16} className="text-blue-500 text-[10px]" />;
+  return <Icon name="sort" size={16} className="text-slate-300 text-[10px]" />;
 }
 
 // ── Componente principal ──────────────────────────────────────────────────────
@@ -193,10 +194,7 @@ export function FunmanageDataTable({
       {/* Barra de búsqueda + contador */}
       <div className="flex flex-wrap gap-3 mb-3 items-center justify-between">
         <div className="relative flex-grow max-w-xs">
-          <i
-            className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            style={{ pointerEvents: 'none' }}
-          ></i>
+          <Icon name="search" size={16} style={{ pointerEvents: 'none' }} />
           <input
             type="search"
             className="form-control ps-5 py-1"
@@ -215,7 +213,7 @@ export function FunmanageDataTable({
       {/* Error */}
       {error && !loading && (
         <div className="alert alert-warning d-flex align-items-center py-2 mb-3" role="alert">
-          <i className="fas fa-exclamation-triangle me-2"></i>{error}
+          <Icon name="exclamation-triangle" size={16} className="me-2" />{error}
           <button className="btn btn-sm btn-link ms-auto" onClick={onRetry}>Reintentar</button>
         </div>
       )}
@@ -261,7 +259,7 @@ export function FunmanageDataTable({
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="text-center py-4 text-muted">
-                  <i className="fas fa-inbox me-2"></i>
+                  <Icon name="inbox" size={16} className="me-2" />
                   Sin resultados para los filtros aplicados.
                 </td>
               </tr>
@@ -300,7 +298,7 @@ export function FunmanageDataTable({
               onClick={() => onPageChange?.(Math.max(1, page - 1))}
               data-testid="pagination-prev"
             >
-              <i className="fas fa-chevron-left me-1"></i> Anterior
+              <Icon name="chevron-left" size={16} className="me-1" /> Anterior
             </button>
             <button
               className="btn btn-sm btn-outline-secondary"
@@ -308,7 +306,7 @@ export function FunmanageDataTable({
               onClick={() => onPageChange?.(Math.min(totalPages, page + 1))}
               data-testid="pagination-next"
             >
-              Siguiente <i className="fas fa-chevron-right ms-1"></i>
+              Siguiente <Icon name="chevron-right" size={16} className="ms-1" />
             </button>
           </div>
         </div>

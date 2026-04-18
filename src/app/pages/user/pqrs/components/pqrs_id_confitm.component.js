@@ -4,6 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import CubXVrDataService from '../../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 export const PQRS_ID_CONFIRM = (props) => {
@@ -132,7 +133,7 @@ export const PQRS_ID_CONFIRM = (props) => {
             <label className="mt-0 center-text"> {infoCud.serials.end}</label>
             <div className="input-group my-1">
                 <span className="input-group-text bg-info text-white">
-                    <i className="fas fa-hashtag"></i>
+                    <Icon name="hashtag" size={16} />
                 </span>
                 <input type="text" className="form-control" defaultValue={currentItem.id_confirm}
                     id="pqrs_master_id_confirm" require />

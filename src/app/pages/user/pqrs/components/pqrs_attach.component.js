@@ -5,6 +5,7 @@ import VIZUALIZER from '../../../../components/vizualizer.component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add, retrieveItem }) {
@@ -58,7 +59,7 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
                     minWidth: '150px',
                     cell: row => <>
                         <VIZUALIZER url={row.name} apipath={row.path.includes('input') ? '/files/pqrsa/' : '/files/pqrs/'} />
-                        {add ? <button type="button" className="btn btn-sm btn-danger mx-1 p-2" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></button> : ''}
+                        {add ? <button type="button" className="btn btn-sm btn-danger mx-1 p-2" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></button> : ''}
                     </>,
                 },
             ]
@@ -81,11 +82,11 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                             <select className="form-select"  name="files_class">
                                 <option value={'0'}>DOCUMENTO DE ENTRADA / ANEXO</option>
@@ -99,11 +100,11 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
             return <div>
                 <p className="lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO</p>
                 <div className="text-end m-3">
-                    {attachs > 0 ? <button type="button" className="btn btn-sm btn-success" onClick={() => addAttachsClose()}><i className="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </button> : ""}
+                    {attachs > 0 ? <button type="button" className="btn btn-sm btn-success" onClick={() => addAttachsClose()}><Icon name="paperclip" size={16} /> ANEXAR {attachs} DOCUMENTOS </button> : ""}
                     {attachs > 0
-                        ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                        ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                         : ""}
-                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
+                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
                 </div>
                 {_COMPONENT}
 

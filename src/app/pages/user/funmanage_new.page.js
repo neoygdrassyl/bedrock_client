@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/icon';
 
 // =============================================================================
 // Component
@@ -136,7 +137,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
               onClick={() => window.open('/legal-flow-guide', '_blank')}
               title="Abrir guía del flujo jurídico en nueva ventana"
             >
-              <i className="fas fa-project-diagram me-1"></i>
+              <Icon name="project-diagram" size={16} className="me-1" />
               Ver Guía Legal
             </button>
           </div>
@@ -154,7 +155,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
             data-testid="filter-bar"
           >
             <span className="text-sm font-semibold text-muted-foreground text-nowrap">
-              <i className="fas fa-filter me-1"></i> Filtros:
+              <Icon name="filter" size={16} className="me-1" /> Filtros:
             </span>
 
             <Select
@@ -213,7 +214,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                 onClick={clearDashboardFilter}
                 data-testid="filter-clear"
               >
-                <i className="fas fa-times me-1"></i> Limpiar filtros
+                <Icon name="times" size={16} className="me-1" /> Limpiar filtros
               </Button>
             )}
             {(dashboardFilter.status || dashboardFilter.fase || dashboardFilter.desistido || dashboardFilter.causal) && (
@@ -245,7 +246,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                     className="text-uppercase text-muted mb-0"
                     style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
                   >
-                    <i className="fas fa-table me-2"></i>Vista de Gestión
+                    <Icon name="table" size={16} className="me-2" />Vista de Gestión
                   </h6>
                 </div>
                 <FunmanageDataTable
@@ -280,7 +281,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                   className="text-uppercase text-muted mb-2"
                   style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
                 >
-                  <i className="fas fa-circle-nodes me-2"></i>Tiempo por Categoría
+                  <Icon name="circle-nodes" size={16} className="me-2" />Tiempo por Categoría
                 </h6>
                 <FunmanageScatterChart data={dashChartData} loading={dashLoading} />
               </div>
@@ -295,7 +296,7 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
                   className="text-uppercase text-muted mb-2"
                   style={{ fontSize: '0.78rem', letterSpacing: '0.05em' }}
                 >
-                  <i className="fas fa-chart-bar me-2"></i>Distribución de Fases
+                  <Icon name="chart-bar" size={16} className="me-2" />Distribución de Fases
                 </h6>
                 <FunmanagePhaseChart
                   porFase={dashKpis?.por_fase}

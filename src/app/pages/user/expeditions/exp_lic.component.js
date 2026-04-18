@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from '../../../services/fun.service';
+import { Icon } from '@/components/icon';
 
 export default function EXP_LIC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
@@ -44,7 +45,7 @@ export default function EXP_LIC(props) {
                         </div>
                         <div className="col border py-1 text-center">
                             {currentItem.state < 100 ?
-                                <button className='btn btn-danger' onClick={() => close()}><i className="fas fa-unlock-alt"></i> FINALIZAR PROCESO</button>
+                                <button className='btn btn-danger' onClick={() => close()}><Icon name="unlock-alt" size={16} /> FINALIZAR PROCESO</button>
                                 : ''}
                         </div>
                     </div>
@@ -61,7 +62,7 @@ export default function EXP_LIC(props) {
                             </div>
                             <div className="col border py-1 text-center">
                                 {currentItem.state == 100 ?
-                                    <button className='btn btn-primary' ><i className="far fa-file-archive"></i> ARCHIVAR SOLICITUD</button>
+                                    <button className='btn btn-primary' ><Icon name="file-archive" size={16} /> ARCHIVAR SOLICITUD</button>
                                     : ''}
 
                             </div>

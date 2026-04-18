@@ -7,6 +7,7 @@ import { LegacyModal as Modal } from '@/components/legacy-modal';
 import PROFESIONALS_MANAGE from './manage.component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { Icon } from '@/components/icon';
 
 const customStylesForModal = {
   overlay: {
@@ -113,16 +114,16 @@ export default function PROFESIONALS(props) {
     {
       name: 'TRATO DE DATOS',
       center: true,
-      cell: row => row.concent ? <i className="fas fa-check text-success"></i>: <i className="fas fa-times text-danger"></i>,
+      cell: row => row.concent ? <Icon name="check" size={16} className="text-success" />: <Icon name="times" size={16} className="text-danger" />,
     },
     {
       name: 'ACCIÓN',
       center: true,
       omit: window.user.id != 1 && window.user.roleId != 3 || window.user.roleId != 2,
       cell: row => <>
-        <button type="button" title="Modificar Profesional" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => { setId(row.id); setModal(true) }}><i className="fas fa-edit"></i></button>
+        <button type="button" title="Modificar Profesional" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => { setId(row.id); setModal(true) }}><Icon name="edit" size={16} /></button>
         {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
-          <button type="button" title="Eliminar Profesional" className="btn btn-danger btn-sm px-1 py-1" onClick={() => { eliminate(row.id); }}><i className="far fa-trash-alt"></i></button>
+          <button type="button" title="Eliminar Profesional" className="btn btn-danger btn-sm px-1 py-1" onClick={() => { eliminate(row.id); }}><Icon name="trash-alt" size={16} /></button>
           : null}
       </>,
     },
@@ -184,15 +185,15 @@ export default function PROFESIONALS(props) {
     return <>
       <div className='row'>
         <div className='col-3'>
-          { window.user.id == 1 || window.user.roleId == 3 ? <button type="button" className="btn btn-success" onClick={() => { setId(false); setModal(!modal) }}><i className="fas fa-plus-circle"></i> Nuevo Profesional</button> : null }
+          { window.user.id == 1 || window.user.roleId == 3 ? <button type="button" className="btn btn-success" onClick={() => { setId(false); setModal(!modal) }}><Icon name="plus-circle" size={16} /> Nuevo Profesional</button> : null }
         </div>
         <div className='col'>
           <div className="row">
             <div className='col px-0'>
               <div className="input-group row">
-                <button type="button" className="btn btn-primary col-2" onClick={() => search()}><i className="fas fa-search"></i> Buscar</button>
+                <button type="button" className="btn btn-primary col-2" onClick={() => search()}><Icon name="search" size={16} /> Buscar</button>
                 <input type="text" className="form-control col" id="search_text" placeholder="Buscar..." onKeyPress={(e) => e.key === 'Enter' ? search() : ''}></input>
-                {clearBtn ? <button type="button" className="btn btn-danger col-1" onClick={() => clear()}><i className="fas fa-times"></i></button> : ''}
+                {clearBtn ? <button type="button" className="btn btn-danger col-1" onClick={() => clear()}><Icon name="times" size={16} /></button> : ''}
               </div>
             </div>
           </div>
@@ -286,7 +287,7 @@ export default function PROFESIONALS(props) {
         data={data}
         highlightOnHover
         dense
-        title={<>LISTADO DE PROFESIONALES <i className="fas fa-hard-hat"></i></>}
+        title={<>LISTADO DE PROFESIONALES <Icon name="hard-hat" size={16} /></>}
 
         progressPending={!load}
         progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
@@ -302,7 +303,7 @@ export default function PROFESIONALS(props) {
         <div className="my-2 d-flex justify-content-between ">
           <div className='row'>
             <div className="input-group">
-              <label className=''><i className="fas fa-hard-hat"></i> PROFESIONALES</label>
+              <label className=''><Icon name="hard-hat" size={16} /> PROFESIONALES</label>
             </div>
           </div>
 
@@ -321,7 +322,7 @@ export default function PROFESIONALS(props) {
         />
         <hr />
         <div className="text-end py-2">
-          <button type="button" className="btn btn-info btn-sm" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> Cerrar</button>
+          <button type="button" className="btn btn-info btn-sm" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> Cerrar</button>
         </div>
       </Modal>
 

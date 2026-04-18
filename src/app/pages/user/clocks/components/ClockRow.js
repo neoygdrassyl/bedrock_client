@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
 import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -52,7 +53,7 @@ export const ClockTableHeader = () => {
                 flex: `0 0 ${COL_WIDTHS.EVENT}`, 
                 minWidth: COL_WIDTHS.EVENT 
             }}>
-                <i className="fas fa-list"></i> Evento
+                <Icon name="list" size={16} /> Evento
             </div>
             {/* Columna 2 Fija (Fecha Evento) */}
             <div style={{ 
@@ -62,24 +63,24 @@ export const ClockTableHeader = () => {
                 flex: `0 0 ${COL_WIDTHS.DATE}`, 
                 minWidth: COL_WIDTHS.DATE
             }}>
-                <i className="far fa-calendar"></i> Fecha evento
+                <Icon name="calendar" size={16} /> Fecha evento
             </div>
 
             {/* Columnas con scroll */}
             <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <i className="fas fa-gavel"></i> Límite legal
+                <Icon name="gavel" size={16} /> Límite legal
             </div>
             <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <i className="fas fa-exclamation-triangle"></i> Alarma legal
+                <Icon name="exclamation-triangle" size={16} /> Alarma legal
             </div>
             <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <i className="fas fa-calendar-check"></i> Límite programado
+                <Icon name="calendar-check" size={16} /> Límite programado
             </div>
             <div style={{ ...colStyle, flex: `0 0 ${COL_WIDTHS.OTHERS}`, minWidth: COL_WIDTHS.OTHERS }}>
-                <i className="far fa-bell"></i> Alarma programada
+                <Icon name="bell" size={16} /> Alarma programada
             </div>
             <div style={{ ...colStyle, flex: '1', minWidth: '220px' }}>
-                <i className="fas fa-arrow-right"></i> Siguiente paso
+                <Icon name="arrow-right" size={16} /> Siguiente paso
             </div>
         </div>
     );
@@ -137,14 +138,14 @@ export const ClockRow = memo((props) => {
         const currentDate = clock?.date_start ?? value.manualDate;
         
         if (currentDate) {
-            return <i className="fas fa-check-circle" style={{ color: '#2f9e44', fontSize: '0.9rem' }}></i>;
+            return <Icon name="check-circle" size={16} style={{ color: '#2f9e44', fontSize: '0.9rem' }} />;
         }
         
         if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) {
-             return <i className="fas fa-minus-circle" style={{ color: '#dee2e6', fontSize: '0.9rem' }}></i>;
+             return <Icon name="minus-circle" size={16} style={{ color: '#dee2e6', fontSize: '0.9rem' }} />;
         }
 
-        return <i className="fas fa-clock" style={{ color: '#fcc419', fontSize: '0.9rem' }}></i>;
+        return <Icon name="clock" size={16} style={{ color: '#fcc419', fontSize: '0.9rem' }} />;
     };
 
 
@@ -579,7 +580,7 @@ export const ClockRow = memo((props) => {
 
                 ${value.legalSupport ? `
                 <div className="tdm-section">
-                    <div className="tdm-section-title"><i className="fas fa-balance-scale"></i> Soporte Legal</div>
+                    <div className="tdm-section-title"><Icon name="balance-scale" size={16} /> Soporte Legal</div>
                     <div className="tdm-legal-text">
                         ${value.legalSupport}
                     </div>
@@ -594,7 +595,7 @@ export const ClockRow = memo((props) => {
             `,
             showCloseButton: true,
             showCancelButton: true,
-            confirmButtonText: '<i className="fas fa-save me-2"></i>Guardar Observación',
+            confirmButtonText: '<Icon name="save" size={16} className="me-2" />Guardar Observación',
             confirmButtonColor: '#1971c2',
             cancelButtonText: 'Cerrar',
             customClass: {
@@ -692,7 +693,7 @@ export const ClockRow = memo((props) => {
                 >
                     {eventName}
                     {clock?.desc && clock.desc.includes('|| OBS:') && (
-                        <i className="fas fa-comment-dots ms-2 text-info" title="Tiene observaciones" style={{fontSize: '0.75rem'}}></i>
+                        <Icon name="comment-dots" size={12} className="ms-2 text-info" title="Tiene observaciones" />
                     )}
                 </div>
             </div>
@@ -723,7 +724,7 @@ export const ClockRow = memo((props) => {
                                 onClick={() => onDelete(value)} 
                                 title="Eliminar fecha"
                             >
-                                <i className="fas fa-eraser fa-xs"></i>
+                                <Icon name="eraser" size={16} />
                             </button>
                         )}
                     </div>

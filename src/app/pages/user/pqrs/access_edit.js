@@ -3,6 +3,7 @@ import PQRS_SERVICES from '../../../services/pqrs_main.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component'
+import { Icon } from '@/components/icon';
 let sha256 = require('js-sha256');
 
 const MySwal = withReactContent(Swal);
@@ -48,14 +49,14 @@ export const ACESS_EDIT = (props) => {
                         <label>Contraseña</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-key"></i>
+                                <Icon name="key" size={16} />
                             </span>
                             <input type='password' className='form-control' id='user_password' required></input>
                         </div>
                     </div>
                 </div>
                 <div className='text-center py-3'>
-                    <button type="button" className="btn btn-sm btn-info" onClick={access}>ACCEDER <i className="fas fa-sign-in-alt"></i></button>
+                    <button type="button" className="btn btn-sm btn-info" onClick={access}>ACCEDER <Icon name="sign-in-alt" size={16} /></button>
                 </div>
             </div>
         </fieldset>

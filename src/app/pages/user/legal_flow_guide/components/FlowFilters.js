@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { PROCESS_DEFINITION } from '../utils/legalProcessDefinition';
+import { Icon } from '@/components/icon';
 
 const PROJECT_TYPES = ['I', 'II', 'III', 'IV'];
 
@@ -23,7 +24,7 @@ function FlowFilters({ filters, onChange }) {
       {/* Configuracion del Proyecto */}
       <div className="lf-filter-group">
         <div className="lf-section-title">
-          <i className="fas fa-cog"></i>
+          <Icon name="cog" size={16} />
           Proyecto
         </div>
 
@@ -80,7 +81,7 @@ function FlowFilters({ filters, onChange }) {
       {/* Resultado del Acta */}
       <div className="lf-filter-group">
         <div className="lf-section-title">
-          <i className="fas fa-clipboard-check"></i>
+          <Icon name="clipboard-check" size={16} />
           Resultado del Acta
         </div>
         <div className="lf-toggle-group">
@@ -104,7 +105,7 @@ function FlowFilters({ filters, onChange }) {
       {/* Desistimientos */}
       <div className="lf-filter-group">
         <div className="lf-section-title">
-          <i className="fas fa-exclamation-circle"></i>
+          <Icon name="exclamation-circle" size={16} />
           Desistimientos
         </div>
         {Object.entries(PROCESS_DEFINITION.desistimientos).map(([key, def]) => (
@@ -124,7 +125,7 @@ function FlowFilters({ filters, onChange }) {
       {/* Modificadores */}
       <div className="lf-filter-group">
         <div className="lf-section-title">
-          <i className="fas fa-sliders-h"></i>
+          <Icon name="sliders-h" size={16} />
           Modificadores
         </div>
         {[

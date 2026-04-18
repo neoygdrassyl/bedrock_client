@@ -8,6 +8,7 @@ import JSONObjectParser from '../../../components/jsons/jsonReplacer';
 import { axis, infoCud, zones } from '../../../components/jsons/vars'
 import { getJSONFull, regexChecker_isOA_2, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import EXP_CALC from './exp_calc.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -93,9 +94,9 @@ function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, curr
         // DATA CONVERTERS
         let _SAVING_STATE = (state) => {
             if (!state) return '';
-            if (state == 1) return <label className='text-warning fw-bold'><i className="fas fa-save"></i></label>;
-            if (state == 2) return <label className='text-success fw-bold'><i className="fas fa-save"></i></label>;
-            if (state == 3) return <label className='text-danger fw-bold'><i className="fas fa-save"></i></label>;
+            if (state == 1) return <label className='text-warning fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 2) return <label className='text-success fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 3) return <label className='text-danger fw-bold'><Icon name="save" size={16} /></label>;
         }
         // COMPONENT JSX
         let _COMPONENT_GENERAL = () => {

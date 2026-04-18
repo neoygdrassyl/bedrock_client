@@ -5,6 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import VIEWER from '../../../components/viewer.component';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import profesionalsService from '../../../services/profesionals.service';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -96,7 +97,7 @@ export default function PROFESIONALS_MANAGE(props) {
                 </div>
                 <div className='col-6'>
                     <div className='mt-4'>
-                    <label>Concentimiento de trato de datos: </label> {data.concent ? <i className="fas fa-check text-success"></i> : <i className="fas fa-times text-danger ms-2"></i>} 
+                    <label>Concentimiento de trato de datos: </label> {data.concent ? <Icon name="check" size={16} className="text-success" /> : <Icon name="times" size={16} className="text-danger ms-2" />} 
                     </div>
                 </div>
             </div>
@@ -104,15 +105,15 @@ export default function PROFESIONALS_MANAGE(props) {
             <div className='row my-1'>
                 <div className='col'>
                     <label>Hoja de Vida y Certificados</label>
-                    {data.attach_cv ? VIEWER_COMPONENT(data.id_number, `attach_cv.${data.attach_cv}`) : <i className="fas fa-times text-danger ms-2"></i>}
+                    {data.attach_cv ? VIEWER_COMPONENT(data.id_number, `attach_cv.${data.attach_cv}`) : <Icon name="times" size={16} className="text-danger ms-2" />}
                 </div>
                 <div className='col'>
                     <label>Documento de Identidad</label>
-                    {data.attach_id ? VIEWER_COMPONENT(data.id_number, `attach_id.${data.attach_id}`) : <i className="fas fa-times text-danger ms-2"></i>}
+                    {data.attach_id ? VIEWER_COMPONENT(data.id_number, `attach_id.${data.attach_id}`) : <Icon name="times" size={16} className="text-danger ms-2" />}
                 </div>
                 <div className='col'>
                     <label>Matricula</label>
-                    {data.attach_reg ? VIEWER_COMPONENT(data.id_number, `attach_reg.${data.attach_reg}`) : <i className="fas fa-times text-danger ms-2"></i>}
+                    {data.attach_reg ? VIEWER_COMPONENT(data.id_number, `attach_reg.${data.attach_reg}`) : <Icon name="times" size={16} className="text-danger ms-2" />}
                 </div>
             </div>
         </>
@@ -253,8 +254,8 @@ export default function PROFESIONALS_MANAGE(props) {
             <form onSubmit={manage} enctype="multipart/form-data">
                 {load == 1 ? FORM_COMPONENT() : ''}
                 <div className="text-start py-2">
-                    {id ? <button className="btn btn-sm btn-success" type='submit'><i className="fas fa-edit"></i>  GUARDAR</button>
-                        : <button className="btn btn-sm btn-success" type='submit'><i className="fas fa-plus-circle"></i> CREAR</button>}
+                    {id ? <button className="btn btn-sm btn-success" type='submit'><Icon name="edit" size={16} />  GUARDAR</button>
+                        : <button className="btn btn-sm btn-success" type='submit'><Icon name="plus-circle" size={16} /> CREAR</button>}
                 </div>
             </form>
 

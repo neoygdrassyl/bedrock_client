@@ -4,6 +4,7 @@ import withReactContent from 'sweetalert2-react-content';
 import dayjs from 'dayjs';
 import { GanttPreview } from './gantt/GanttPreview';
 import { GanttModal } from './gantt/GanttModal';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -109,7 +110,7 @@ const ActorCompactRow = ({ actor, onActorClick, dense = false }) => {
 
       {!!taskDescription && !dense && (
         <div className="actor-compact-task text-truncate">
-          <i className="fas fa-tasks" />
+          <Icon name="tasks" size={16} />
           <span>{taskDescription}</span>
         </div>
       )}
@@ -232,14 +233,14 @@ const PhaseCard = ({ phase, onPhaseClick, onActorClick, isActive }) => {
         <div className="phase-sub-row">
           <ResponsiblePill responsible={responsible} />
           <span className="phase-date-pill" title="Rango de fechas">
-            <i className="fas fa-calendar-alt" />
+            <Icon name="calendar-alt" size={16} />
             {formatShortDate(startDate)} <span className="sep">→</span> {endDate ? formatShortDate(endDate) : 'En progreso'}
           </span>
         </div>
 
         {!!daysContext && (
           <div className="phase-context-compact" title="Contexto de distribución de días">
-            <i className="fas fa-calculator" />
+            <Icon name="calculator" size={16} />
             <span className="text-truncate">
               {daysContext.totalCuraduria}d total · {daysContext.usedInPhase1}d F1 ·{' '}
               <strong>{daysContext.availableForPhase4}d</strong> para F4
@@ -515,7 +516,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
 
           ${actor.taskDescription ? `
             <div className="pdm-block">
-              <div className="pdm-block-title"><i className="fas fa-tasks"></i> Actividad</div>
+              <div className="pdm-block-title"><Icon name="tasks" size={16} /> Actividad</div>
               <div className="pdm-block-body">${escapeHtml(actor.taskDescription)}</div>
             </div>
           ` : ''}
@@ -617,7 +618,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
 
           ${phase.daysContext ? `
             <div className="pdm-block">
-              <div className="pdm-block-title"><i className="fas fa-calculator"></i> Contexto (F4)</div>
+              <div className="pdm-block-title"><Icon name="calculator" size={16} /> Contexto (F4)</div>
               <div className="pdm-block-body">
                 <div className="pdm-inline">
                   <span>Total Curaduría:</span> <b>${escapeHtml(phase.daysContext.totalCuraduria)} días</b>
@@ -634,7 +635,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
 
           ${actorsForModal.length ? `
             <div className="pdm-block">
-              <div className="pdm-block-title"><i className="fas fa-users"></i> Actores</div>
+              <div className="pdm-block-title"><Icon name="users" size={16} /> Actores</div>
               <div className="pdm-actors">
                 ${actorsForModal
                   .map((a) => {
@@ -691,7 +692,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
       <div className="sidebar-card phases-card">
         <div className="sidebar-card-header d-flex justify-content-between align-items-center">
           <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
-            <i className="fas fa-tasks me-2" />
+            <Icon name="tasks" size={16} className="me-2" />
             Fases del Proceso
           </h6>
 
@@ -703,7 +704,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
               title="Ver diagnóstico"
               style={{ padding: '0 6px' }}
             >
-              <i className="fas fa-bug" />
+              <Icon name="bug" size={16} />
             </button>
 
             <div className="phase-nav ms-1">
@@ -714,7 +715,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
                 disabled={currentPhaseIndex === 0}
                 title="Fase anterior"
               >
-                <i className="fas fa-chevron-left" />
+                <Icon name="chevron-left" size={16} />
               </button>
 
               <span className="phase-indicator">
@@ -728,7 +729,7 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
                 disabled={currentPhaseIndex === processPhases.length - 1}
                 title="Fase siguiente"
               >
-                <i className="fas fa-chevron-right" />
+                <Icon name="chevron-right" size={16} />
               </button>
             </div>
           </div>
@@ -750,12 +751,12 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
       <div className="sidebar-card mt-3">
         <div className="sidebar-card-header d-flex justify-content-between align-items-center">
           <h6 className="mb-0" style={{ fontSize: '0.85rem' }}>
-            <i className="fas fa-chart-gantt me-2" />
+            <Icon name="chart-gantt" size={16} className="me-2" />
             Diagrama de Gantt
           </h6>
           {/* ELIMINADO: El botón de expandir ahora está en el ToolsMenu */}
           <button className="gantt-expand-btn" onClick={onExpandGantt} title="Ver diagrama completo">
-            <i className="fas fa-expand-alt" />
+            <Icon name="expand-alt" size={16} />
             Expandir
           </button>
         </div>

@@ -7,6 +7,7 @@ import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
     _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER, _FUN_101_PARSER, _FUN_102_PARSER, _FUN_24_PARSER, _FUN_25_PARSER
 } from '../../../components/customClasses/funCustomArrays'
+import { Icon } from '@/components/icon';
 import { dateParser, dateParser_yearsPassed, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
 import FUNG_CHECKLIST from './fun_g_checklist';
 import FUNG_NAV from './components/fun_g_nav';
@@ -424,25 +425,25 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     <div className="col-6">
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Barrio o Urbanización
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Barrio o Urbanización
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_261} disabled />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Comuna
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Comuna
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_263} disabled />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Estrato
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Estrato
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_267} disabled />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Manzana No.
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Manzana No.
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_268} disabled />
                         </div>
@@ -451,25 +452,25 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     <div className="col-6">
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Vereda
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Vereda
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_262} disabled />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Sector
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Sector
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_264} disabled />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Corregimiento
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Corregimiento
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_265} disabled />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>&nbsp;Lote No.
+                                <Icon name="map-marked-alt" size={16} />&nbsp;Lote No.
                             </span>
                             <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_266} disabled />
                         </div>
@@ -967,8 +968,8 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         {_SET_CHILD_51()}
                         <div className="border p-2 m-2">
                             <label className="me-2">LEYENDA:</label>
-                            <label className="me-2"><i className="far fa-id-card fa-2x" style={{ color: "DeepSkyBlue" }}></i> : Documento de Identidad,</label>
-                            <label className="me-2"><i className="far fa-id-badge fa-2x" style={{ color: 'DarkOrchid' }}></i>: Certificado de Existencia y Representación Legal</label>
+                            <label className="me-2"><Icon name="id-card" size={16} style={{ color: "DeepSkyBlue" }} /> : Documento de Identidad,</label>
+                            <label className="me-2"><Icon name="id-badge" size={16} style={{ color: 'DarkOrchid' }} />: Certificado de Existencia y Representación Legal</label>
                         </div>
                     </fieldset>
                     <fieldset className="p-3" id="fung_52">
@@ -978,11 +979,11 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         {_SET_CHILD_52()}
                         <div className="border p-2 m-2">
                             <label className="me-2">LEYENDA:</label>
-                            <label className="me-2"><a><i className="far fa-id-card fa-2x" style={{ "color": "DeepSkyBlue" }}></i></a> : C.C.,</label>
-                            <label className="me-2"><a><i className="far fa-file-alt fa-2x" style={{ "color": "DarkOrchid" }}></i></a> : Matrícula,</label>
-                            <label className="me-2"><a><i className="far fa-file-alt fa-2x" style={{ "color": "GoldenRod" }}></i></a> : Vigencia Matricular,</label>
-                            <label className="me-2"><a><i className="far fa-file-alt fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida y Certificados</label>
-                            <label className="me-2"><a><i className="far fa-file-alt fa-2x" style={{ "color": "tomato" }}></i></a> : Estudios de postgrado</label>
+                            <label className="me-2"><a><Icon name="id-card" size={16} style={{ "color": "DeepSkyBlue" }} /></a> : C.C.,</label>
+                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "DarkOrchid" }} /></a> : Matrícula,</label>
+                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "GoldenRod" }} /></a> : Vigencia Matricular,</label>
+                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "LimeGreen" }} /></a> : Hoja de vida y Certificados</label>
+                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "tomato" }} /></a> : Estudios de postgrado</label>
                         </div>
                     </fieldset>
                     <fieldset className="p-3" id="fung_53">

@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
 import DataTable from 'react-data-table-component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -255,7 +256,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
             <div className="nomenclature_anex container">
                 <label className="fw-bold my-2">GENERAR DOCUMENTO</label>
                 <div className="col-3">
-                    <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                    <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                 </div>
                 <hr className="my-3" />
                 <label className="fw-bold my-2">ANEXAR DOCUMENTO</label>
@@ -277,7 +278,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                             <label >Documento</label>
                             <div className="input-group mb-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-paperclip"></i>
+                                    <Icon name="paperclip" size={16} />
                                 </span>
                                 <input type="file" className="form-control" id="file_nomen" accept="image/png, image/jpeg application/pdf" />
                             </div>
@@ -287,7 +288,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                             <label >Consecutivo</label>
                             <div className="input-group mb-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-hashtag"></i>
+                                    <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="submit_anex_2" required
                                     defaultValue={_GET_DOC().id_public} />
@@ -298,7 +299,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                             <label ># Folios</label>
                             <div className="input-group mb-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-file"></i>
+                                    <Icon name="file" size={16} />
                                 </span>
                                 <input type="number" min="1" step="1" className="form-control" id="submit_anex_3" required
                                     defaultValue={_GET_DOC().pages} />
@@ -309,7 +310,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                     <div className="row mb-3 text-center">
 
                         <div className="col-12">
-                            <button className="btn btn-success my-3"><i className="far fa-edit"></i> ANEXAR DOCUMENTO </button>
+                            <button className="btn btn-success my-3"><Icon name="edit" size={16} /> ANEXAR DOCUMENTO </button>
                         </div>
                     </div>
 

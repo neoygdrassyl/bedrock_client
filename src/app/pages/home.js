@@ -26,6 +26,7 @@ import Map from '../components/map';
 import { _news } from '../components/jsons/_news';
 
 import { Button_navigation } from '../components/button.component';
+import { Icon } from '@/components/icon';
 //import { useLocation } from 'react-router-dom';
 //const location = useLocation();
 
@@ -367,7 +368,7 @@ function Home({ translation, history }) {
                   </button></Link>
                 </div>
                 <div className="col-md-4">
-                  <i className="fas fa-file-invoice fa-4x"></i>
+                  <Icon name="file-invoice" size={16} />
                   <h3 className="display-6 fw-bold">Radicación de Licencias</h3>
                   <p className="lead">Inicie aquí su proceso para radicar una Licencia</p>
                   <Link to={'/file'}><button type="button" className="btn btn-info">

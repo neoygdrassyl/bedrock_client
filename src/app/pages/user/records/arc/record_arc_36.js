@@ -5,6 +5,7 @@ import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import perfilData from '../../../../components/jsons/perfilesData.json';
 import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import RECORD_ARC_36_TABLE from './record_arc_36.table';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -299,7 +300,7 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
                             <label>{con.p}</label>
                         </div>
                         <div className='col'>
-                            <label>{con.e && con.e != undefined ? <i className="fas fa-check text-success"></i> : <i className="fas fa-times text-danger"></i>}</label>
+                            <label>{con.e && con.e != undefined ? <Icon name="check" size={16} className="text-success" /> : <Icon name="times" size={16} className="text-danger" />}</label>
                         </div>
                     </div>
                 })}

@@ -8,6 +8,7 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import SubmitService from '../../../../services/submit.service'
 import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
+import { Icon } from '@/components/icon';
 
 
 const MySwal = withReactContent(Swal);
@@ -277,13 +278,13 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 </div>
                 <div className="row text-center">
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(false)}><i className="fas fa-file-download"></i> GENERAR CARTA</button>
+                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(false)}><Icon name="file-download" size={16} /> GENERAR CARTA</button>
                     </div>
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(true)}><i className="fas fa-file-download"></i> GENERAR CARTA Y LISTA</button>
+                        <button className="btn btn-danger my-3" onClick={() => gen_doc_nconfirm(true)}><Icon name="file-download" size={16} /> GENERAR CARTA Y LISTA</button>
                     </div>
                     <div className="col-4">
-                        <button className="btn btn-danger my-3" onClick={() => gen_doc_npublish()}><i className="fas fa-file-download"></i> GENERAR PUBLICACIÓN</button>
+                        <button className="btn btn-danger my-3" onClick={() => gen_doc_npublish()}><Icon name="file-download" size={16} /> GENERAR PUBLICACIÓN</button>
                     </div>
                 </div>
             </>

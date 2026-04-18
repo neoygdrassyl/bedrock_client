@@ -141,9 +141,9 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 ignoreCSV: true,
                 cell: row => <>
                     {dayjs().diff(row.date, 'days') <= 0
-                        ? <button className="btn btn-secondary btn-sm me-1" onClick={() => setItem_edit(row)}><i className="far fa-edit fa-2x"></i></button>
+                        ? <button className="btn btn-secondary btn-sm me-1" onClick={() => setItem_edit(row)}><Icon name="edit" size={16} /></button>
                         : ""}
-                    <button className="btn btn-info btn-sm" onClick={() => setItemFn(row)}><i className="fas fa-info-circle fa-2x"></i></button>
+                    <button className="btn btn-info btn-sm" onClick={() => setItemFn(row)}><Icon name="info-circle" size={16} /></button>
                 </>
                 ,
             },
@@ -326,7 +326,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                     </CardHeader>
                     <CardContent>
                         <Collapsible trigger={<><label className="m-2"> </label>
-                            <button className="btn btn-warning btn-sm my-2"><i className="fas fa-plus"></i> Ver Lista</button></>}>
+                            <button className="btn btn-warning btn-sm my-2"><Icon name="plus" size={16} /> Ver Lista</button></>}>
                             {isLoaded ? (
                                 <>
                                 <DataTable
@@ -575,7 +575,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                         </div>
 
                         <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-secondary me-1"><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                            <button className="btn btn-lg btn-secondary me-1"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
                             <Button variant="secondary" size="lg" onClick={() => toggle_edit()}><Icon name="XCircle" size={16} /> Cerrar</Button>
                         </div>
                     </form>

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import MermaidDiagram from '../../../../components/MermaidDiagram.component';
 import { generateProjectFlowMermaid } from '../utils/mermaidProjectFlow';
+import { Icon } from '@/components/icon';
 
 function ProjectFlowModal({ show, onClose, phases, expediente }) {
   const mermaidString = useMemo(() => {
@@ -43,7 +44,7 @@ function ProjectFlowModal({ show, onClose, phases, expediente }) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
-                <i className="fas fa-project-diagram me-2" style={{ opacity: 0.5 }}></i>
+                <Icon name="project-diagram" size={16} style={{ opacity: 0.5 }} />
                 Flujo del Expediente: {expediente?.radicado || '—'}
               </h5>
               <button type="button" className="btn-close" onClick={onClose} />

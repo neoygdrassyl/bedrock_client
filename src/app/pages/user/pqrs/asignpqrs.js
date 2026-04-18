@@ -14,6 +14,7 @@ import PQRS_PDFGEN_CONFIRM from './components/pqrs_genPDF_confirm.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 
 function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
@@ -131,7 +132,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                         <label>Profesional</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user-circle"></i>
+                                <Icon name="user-circle" size={16} />
                             </span>
                             <select className="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
                                 {_array_workers_names.map(function (name) {
@@ -144,7 +145,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                         <label>Fecha Asignación</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input id="pqrs_worker_1" className="form-control" type="date" required />
                         </div>
@@ -153,7 +154,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                         <label>Competencia</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-briefcase"></i>
+                                <Icon name="briefcase" size={16} />
                             </span>
                             <input className="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
                         </div>
@@ -198,9 +199,9 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     minWidth: '150px',
                     cell: row => <>
                         <button title="Desasignar Profesional" className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
-                                <i className="fas fa-user-minus fa-2x"></i></button>
+                                <Icon name="user-minus" size={16} /></button>
                         <button title="Enviar Correo" className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setWorker(row)}>
-                                <i className="far fa-paper-plane fa-2x"></i></button>
+                                <Icon name="paper-plane" size={16} /></button>
                     </>,
                 },
             ]
@@ -228,7 +229,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                             <label>Lista de Correos</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-envelope"></i>
+                                    <Icon name="envelope" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
                             </div>
@@ -237,7 +238,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                             <label>Lista de Solicitantes</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-user"></i>
+                                    <Icon name="user" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
                             </div>
@@ -250,7 +251,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                         <tbody>
                             <tr>
                                 <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                                <td><button type="button" className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i className="fas fa-cloud-download-alt fa-2x"></i></button></td>
+                                <td><button type="button" className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><Icon name="cloud-download-alt" size={16} /></button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -450,7 +451,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                                     ? <>
                                         {_WORKERS_COMPONENT()}
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-warning"><i className="fas fa-user-plus"></i> ASIGNAR </button>
+                                            <button className="btn btn-lg btn-warning"><Icon name="user-plus" size={16} /> ASIGNAR </button>
                                         </div>
                                     </> : ""}
                             </form>

@@ -11,6 +11,7 @@ import { Lists } from '../../../components/jsons/lists_submit'
 
 import DataTable from 'react-data-table-component';
 import DOCS_LIST from '../fun_forms/components/docs_list.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -250,7 +251,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     </div>
                     <div className="text-end col-6">
                         <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => setIsNew(true)}>
-                            <i className="fas fa-plus-circle"></i> NUEVA LISTA </button>
+                            <Icon name="plus-circle" size={16} /> NUEVA LISTA </button>
                     </div>
                 </div>
             </>
@@ -274,9 +275,9 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     minWidth: '100px',
                     cell: row => <>
                         <button title="Guardar Cambios" onClick={() => save_list(row.id)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i className="far fa-save fa-2x" ></i></button>
+                                <Icon name="save" size={16} /></button>
                         <button title="Eliminar" onClick={() => delete_list(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                                <i className="far fa-trash-alt fa-2x"></i></button>
+                                <Icon name="trash-alt" size={16} /></button>
                     </>,
                 },
             ]
@@ -310,9 +311,9 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     </div>
                     <div className="text-end col-6 my-3">
                         <button type="button" className="btn btn-info my-3 me-2" onClick={() => setIsNew(false)}>
-                            <i className="fas fa-times-circle"></i>  CANCELAR </button>
+                            <Icon name="times-circle" size={16} />  CANCELAR </button>
                         <button type="button" className="btn btn-success my-3" onClick={() => new_list()}>
-                            <i className="far fa-edit"></i> GUARDAR LISTA </button>
+                            <Icon name="edit" size={16} /> GUARDAR LISTA </button>
                     </div>
                 </div></>)
 
@@ -418,10 +419,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     <div className="col-6 text-end">
                         {extra_items > 0
                             ? <button type="button" className="btn btn-sm btn-secondary my-3 me-1" onClick={() => setExtraItems(extra_items - 1)}>
-                                <i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                                <Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                             : ""}
                         <button type="button" className="btn btn-sm btn-secondary my-3" onClick={() => setExtraItems(extra_items + 1)}>
-                            <i className="fas fa-plus-circle"></i> AÑADIR ITEM </button>
+                            <Icon name="plus-circle" size={16} /> AÑADIR ITEM </button>
                     </div>
                 </div>
             </>)

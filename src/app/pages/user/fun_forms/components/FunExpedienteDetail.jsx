@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProjectFlowModal from '../../legal_flow_guide/components/ProjectFlowModal';
+import { Icon } from '@/components/icon';
 
 // ── Status visual config ─────────────────────────────────────────────────────
 const STATUS_META = {
@@ -146,7 +147,7 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
               className="rounded px-3 py-2 mb-4 d-flex align-items-start gap-2"
               style={{ backgroundColor: s.bg, border: `1px solid ${s.color}22` }}
             >
-              <i className="fas fa-lightbulb mt-1" style={{ color: s.color, fontSize: '0.8rem' }} />
+              <Icon name="lightbulb" size={16} style={{ color: s.color, fontSize: '0.8rem' }} />
               <div>
                 <span className="d-block text-xs font-semibold" style={{ color: s.color }}>
                   Acción sugerida
@@ -264,11 +265,11 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
               </div>
               <div className="d-flex justify-content-between text-xs text-muted-foreground">
                 <span>
-                  <i className="fas fa-calendar-check me-1"></i>
+                  <Icon name="calendar-check" size={16} className="me-1" />
                   Inicio: {expediente.fecha_radicacion || '—'}
                 </span>
                 <span>
-                  <i className="fas fa-calendar-times me-1"></i>
+                  <Icon name="calendar-times" size={16} className="me-1" />
                   Vence: {expediente.fecha_limite || '—'}
                 </span>
               </div>
@@ -367,12 +368,12 @@ export function FunExpedienteDetail({ expediente, onClose, onOpenWorkspace }) {
             size="sm"
             onClick={() => setShowFlowModal(true)}
           >
-            <i className="fas fa-project-diagram me-1"></i>
+            <Icon name="project-diagram" size={16} className="me-1" />
             Ver flujo
           </Button>
           {onOpenWorkspace && (
             <Button size="sm" onClick={() => onOpenWorkspace(expediente)}>
-              <i className="fas fa-expand-alt me-1"></i>
+              <Icon name="expand-alt" size={16} className="me-1" />
               Abrir gestión completa
             </Button>
           )}

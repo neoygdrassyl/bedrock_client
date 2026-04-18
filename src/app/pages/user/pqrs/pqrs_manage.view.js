@@ -29,6 +29,7 @@ import { PQRS_ID_CONFIRM } from './components/pqrs_id_confitm.component';
 import cubXvrService from '../../../services/cubXvr.service';
 
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -220,7 +221,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <label>Profesional</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-user-circle"></i>
+                            <Icon name="user-circle" size={16} />
                         </span>
                         <select className="form-control" id="pqrs_worker_2" onChange={(e) => _SET_PROFESION(e.target.value)}>
                             {_array_workers_names.map(function (name) {
@@ -233,7 +234,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <label>Fecha Asignación</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-calendar-alt"></i>
+                            <Icon name="calendar-alt" size={16} />
                         </span>
                         <input id="pqrs_worker_1" className="form-control" type="date" required />
                     </div>
@@ -242,7 +243,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <label>Competencia</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-briefcase"></i>
+                            <Icon name="briefcase" size={16} />
                         </span>
                         <input className="form-control" id="pqrs_worker_3" autoComplete="false" defaultValue={_GET_USERS()[0].role_name} />
                     </div>
@@ -317,9 +318,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 minWidth: '150px',
                 cell: row => <>
                     <button title="Desasignar Profesional" className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
-                            <i className="fas fa-user-minus"></i></button>
+                            <Icon name="user-minus" size={16} /></button>
                     <button title="Enviar Correo" className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setCurrentItemAsign(row)}>
-                            <i className="far fa-paper-plane"></i></button>
+                            <Icon name="paper-plane" size={16} /></button>
                 </>,
             },
         ]
@@ -383,7 +384,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 minWidth: '150px',
                 cell: row => <>
                     <button title="Confirmar visto bueno" hidden={window.user.id != row.worker_id} onClick={() => setViewform(row)} className="btn btn-info btn-sm mx-0 px-2 shadow-none">
-                            <i className="fas fa-check-square"></i></button>
+                            <Icon name="check-square" size={16} /></button>
                 </>,
             },
         ];
@@ -442,7 +443,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         <label>Lista de Correos</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-envelope"></i>
+                                <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Lista de Correos" defaultValue={_getEmailList()} id="pqrs_confirmation_email_list" />
                         </div>
@@ -451,7 +452,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         <label>Lista de Solicitantes</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Lista de Solicitantes" defaultValue={_getSolicitorlList()} id="pqrs_confirmation_solicitor_list" />
                         </div>
@@ -464,7 +465,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <tbody>
                         <tr>
                             <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                            <td><button type="button" className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i className="fas fa-cloud-download-alt fa-2x"></i></button></td>
+                            <td><button type="button" className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><Icon name="cloud-download-alt" size={16} /></button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -746,11 +747,11 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="col-lg-8 col-md-8 ">
                     <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                        <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                         <input type="file" className="form-control" name="files_informal" accept="application/pdf, image/png, image/jpeg" />
                     </div>
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                        <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                         <input type="text" className="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                     </div>
                 </div>
@@ -859,8 +860,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i className="fas fa-cloud-download-alt fa-2x"></i></a>
-                    <button type="button" className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></button>
+                    <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><Icon name="cloud-download-alt" size={16} /></a>
+                    <button type="button" className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></button>
                 </>,
             },
         ]
@@ -887,11 +888,11 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 <div className="col-lg-8 col-md-8 ">
                     <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                        <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                         <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                     </div>
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                        <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                         <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                     </div>
                 </div>
@@ -931,7 +932,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 {load ? <>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>1.DOCUMENTOS SOPORTE INGRESO <i className="fas fa-folder"></i></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>1.DOCUMENTOS SOPORTE INGRESO <Icon name="folder" size={16} /></b></h2>
                         <PQRS_EDIT_ATTACH
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -943,7 +944,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <fieldset className="p-3 border border-info mb-2">
                         <div>
 
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>2. CONFIRMAR A PETICIONARIO <i className="fas fa-check-circle"></i></b></label>
+                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>2. CONFIRMAR A PETICIONARIO <Icon name="check-circle" size={16} /></b></label>
                             <br></br>
                             <br></br>
                             <h5 className="px-2"><b>GUÍA PARA ENVIAR LA CONFIRMACIÓN POR EMAIL</b></h5>
@@ -992,7 +993,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                     <fieldset className="p-3 border border-info mb-2">
 
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>3. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <i className="fas fa-info-circle"></i> </b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>3. CONTACTO DE PETICIONARIO(S) PARA NOTIFICACIONES <Icon name="info-circle" size={16} /> </b></h2>
 
                         <PQRS_EDIT_SOLICITORS
                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1001,7 +1002,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         />
                         <br></br>
                         <hr></hr>
-                        <h5 className=" px-4"><b>CONTACTO DE PETICIONARIO(S) <i className="fas fa-address-card"></i> </b> </h5>
+                        <h5 className=" px-4"><b>CONTACTO DE PETICIONARIO(S) <Icon name="address-card" size={16} /> </b> </h5>
                         <PQRS_EDIT_CONTACT
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -1009,7 +1010,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         />
                         <br></br>
                         <hr></hr>
-                        <h5 className=" px-4"><b>LA PQRS ESTÁ RELACIONADA CON ALGUNA ACTUACIÓN Y/O SOLICITUD URBANÍSTICA <i className="fas fa-bookmark"></i></b></h5>
+                        <h5 className=" px-4"><b>LA PQRS ESTÁ RELACIONADA CON ALGUNA ACTUACIÓN Y/O SOLICITUD URBANÍSTICA <Icon name="bookmark" size={16} /></b></h5>
                         <PQRS_EDIT_FUN
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -1025,7 +1026,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>4. DESCRIPCIÓN DE LA SOLICITUD <i className="fas fa-prescription-bottle"></i></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>4. DESCRIPCIÓN DE LA SOLICITUD <Icon name="prescription-bottle" size={16} /></b></h2>
                         <Collapsible className='bg-warning  border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">DESCRIPCIÓN</label></>}>
                             <div className="pb-2 text-start">
                                 <PQRS_EDIT_INFO
@@ -1041,7 +1042,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
 
                     <fieldset className="p-3 border border-info mb-2">
-                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>5. CONTROL DE TIEMPOS <i className="fas fa-calendar-check"></i></b></h2>
+                        <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>5. CONTROL DE TIEMPOS <Icon name="calendar-check" size={16} /></b></h2>
                         <div className='px-4'>
                             <PQRS_COMPONENT_CLOCKS
                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1053,7 +1054,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <fieldset className="p-3 border border-info mb-2">
                         <form onSubmit={asignPQRS} id="app-formAsign">
 
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>6. ASIGNAR PROFESIONALES </b> <i className="fas fa-user-plus"></i></label>
+                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>6. ASIGNAR PROFESIONALES </b> <Icon name="user-plus" size={16} /></label>
 
                             <div className="form-check ms-5">
                                 <input className="form-check-input" type="checkbox" onChange={(e) => setnewAsign(e.target.checked)} />
@@ -1065,7 +1066,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                 ? <>
                                     {_WORKERS_COMPONENT()}
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-warning"><i className="fas fa-user-plus"></i> ASIGNAR </button>
+                                        <button className="btn btn-lg btn-warning"><Icon name="user-plus" size={16} /> ASIGNAR </button>
                                     </div>
                                 </> : ""}
                         </form>
@@ -1098,7 +1099,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                     <fieldset className="p-3 border border-info mb-2">
 
-                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>7. RESPUESTA DE LOS PROFESIONALES ASIGNADOS <i className="fas fa-comment-medical"></i> </b></label>
+                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>7. RESPUESTA DE LOS PROFESIONALES ASIGNADOS <Icon name="comment-medical" size={16} /> </b></label>
 
                         <h5 className="px-4">Instrucciones para dar respuesta a la solicitud: </h5>
                         <ul>
@@ -1126,7 +1127,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
                             return <>
 
-                                <label className="px-4 app-p lead fw-normal text-uppercase"><i className="fas fa-arrow-right"></i> {+i} {value.name}</label>
+                                <label className="px-4 app-p lead fw-normal text-uppercase"><Icon name="arrow-right" size={16} /> {+i} {value.name}</label>
                                 <div className="text-center m-3">
                                     <JoditEditor
                                         ref={editor}
@@ -1150,9 +1151,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
                                         <div className="text-end m-3" >
                                             {stateadd > 0
-                                                ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                                                ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                                                 : ""}
-                                            <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button>
+                                            <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
 
@@ -1163,14 +1164,14 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                                 <input type="text" className="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
                                                 <div className="input-group mb-3">
                                                     <span className="input-group-text bg-info text-white">
-                                                        <i className="far fa-calendar-alt"></i>
+                                                        <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={value.date_reply ?? dayjs().format('YYYY-MM-DD')} required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-sm btn-success" onClick={() => informalReplyPQRS(i, value.id)}><i className="fas fa-reply"></i> RESPONDER </button>
+                                            <button className="btn btn-sm btn-success" onClick={() => informalReplyPQRS(i, value.id)}><Icon name="reply" size={16} /> RESPONDER </button>
 
                                         </div>
                                         <hr></hr>
@@ -1180,7 +1181,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         })}
                     </fieldset>
                     <fieldset className="p-3 border border-info mb-2">
-                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>8. RESPUESTA FORMAL DE LA PETICION <i className="fas fa-envelope-open-text"></i></b></label>
+                        <label className="px-4 app-p lead fw-normal text-uppercase"><b>8. RESPUESTA FORMAL DE LA PETICION <Icon name="envelope-open-text" size={16} /></b></label>
                         <Collapsible className='bg-warning  border border-info text-center' openedClassName='bg-light text-center' trigger={<><label className="fw-normal text-dark text-center">RESPONDER PETICION</label></>}>
                             <div className='text-start'>
                                 <PQRS_SET_REPLY1
@@ -1234,7 +1235,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     </fieldset>
                     <fieldset className="p-3 border border-info mb-2">
                         <form onSubmit={lockPQRS} id="app-formReply">
-                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>9. CERRAR PETICIÓN <i className="fab fa-expeditedssl"></i></b></label><br></br>
+                            <label className="px-4 app-p lead fw-normal text-uppercase"><b>9. CERRAR PETICIÓN <Icon name="expeditedssl" size={16} /></b></label><br></br>
                             <label className="px-4"><span className="h5">GUIÁ PARA EL CIERRE DE LA PETICIÓN</span></label>
                             <ul>
                                 <li className="app-p"><strong>Asegurar envío con copia del email o guiá de envío de recibido por parte del peticionario, digitalizar y anexar.</strong></li>
@@ -1254,15 +1255,15 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
                             <div className="text-end m-3">
                                 {stateadd2 > 0
-                                    ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach2()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                                    ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach2()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                                     : ""}
-                                <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach2()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
+                                <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach2()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
                             </div>
                             {_ATTACHS_COMPONENT2()}
 
                             <hr />
                             <div className="text-center m-3">
-                                <button className="btn btn-sm btn-success" ><i className="fas fa-lock"></i> CERRAR PETICIÓN</button>
+                                <button className="btn btn-sm btn-success" ><Icon name="lock" size={16} /> CERRAR PETICIÓN</button>
                             </div>
 
                         </form>

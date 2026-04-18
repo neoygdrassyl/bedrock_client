@@ -5,6 +5,7 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import DataTable from 'react-data-table-component';
 
 import VIZUALIZER from '../../../../components/vizualizer.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
@@ -47,9 +48,9 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
                     cell: row => <>
                         <VIZUALIZER url={row.name} apipath={row.class == 0 ?  '/files/pqrsa/': '/files/pqrs/'}/>
                         <button title="Modificar item" onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i className="far fa-edit "></i></button>
+                                <Icon name="edit" size={16} /></button>
                         <button title="Eliminar item" onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
-                                <i className="far fa-trash-alt"></i></button>
+                                <Icon name="trash-alt" size={16} /></button>
                     </>,
                 },
             ]
@@ -70,13 +71,13 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
             _COMPONENT.push(<div className="row d-flex justify-content-center my-2">
                 <div className="col-6">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                        <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
                         <input type="text" className="form-control" id={"file_name" + _edit} placeholder="Nombre documento (nombre o corta descripcion)" required />
                     </div>
                 </div>
                 <div className="col-6 ">
                     <div className="input-group">
-                        <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                        <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
                         <input type="file" className="form-control" id={"file" + _edit} accept="image/png, image/jpeg application/pdf" required={_edit ? false: true} />
                     </div>
                     {_edit
@@ -250,7 +251,7 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
                         {_COMPONENT_MANAGE("")}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i className="far fa-share-square"></i> AÑADIR ITEM
+                                <Icon name="share-square" size={16} /> AÑADIR ITEM
                             </button>
                         </div>
                     </form>
@@ -264,7 +265,7 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
                         {_COMPONENT_MANAGE("_edit")}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </form>

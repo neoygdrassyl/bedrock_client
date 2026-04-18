@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Title from './title';
 import { useTranslation } from 'react-i18next';
 import '../translation/i18n';
+import { Icon } from '@/components/icon';
 
 export default function Navbar1(props) {
   const {
@@ -259,7 +260,7 @@ export default function Navbar1(props) {
                 aria-label="WhatsApp soporte"
                 title={chatLabel}
               >
-                <i className="fab fa-whatsapp" />
+                <Icon name="whatsapp" size={16} />
               </a> */}
 
               <button
@@ -269,7 +270,7 @@ export default function Navbar1(props) {
                 aria-label="Cambiar tema"
                 title="Cambiar tema"
               >
-                <i className="fas fa-adjust" />
+                <Icon name="adjust" size={16} />
               </button>
 
               <button
@@ -279,7 +280,7 @@ export default function Navbar1(props) {
                 aria-label="Aumentar fuente"
                 title="Aumentar fuente"
               >
-                <i className="fas fa-plus" />
+                <Icon name="plus" size={16} />
               </button>
 
               <button
@@ -289,7 +290,7 @@ export default function Navbar1(props) {
                 aria-label="Disminuir fuente"
                 title="Disminuir fuente"
               >
-                <i className="fas fa-minus" />
+                <Icon name="minus" size={16} />
               </button>
             </div>
 

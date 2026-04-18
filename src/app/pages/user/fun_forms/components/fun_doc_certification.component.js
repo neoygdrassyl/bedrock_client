@@ -9,6 +9,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
 import { cities, states } from '../../../../components/jsons/vars';
+import { Icon } from '@/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -243,7 +244,7 @@ export default function FUN_CERTIFICATION(props) {
             center: true,
             maxWidth: '80px',
             cell: row => <button type="button" className="btn btn-primary" onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
-            color="danger" size="sm" className='m-0 p-1 px-2'><i className="fas fa-file-download"></i></button>
+            color="danger" size="sm" className='m-0 p-1 px-2'><Icon name="file-download" size={16} /></button>
 
         },
     ]
@@ -324,7 +325,7 @@ export default function FUN_CERTIFICATION(props) {
 
     let _ARCHIVE_LIST_COMPONENT = () => {
         return <DataTable
-            title={<>LISTADO DE CERTIFICACIONES  <i className="fas fa-file-signature"></i></>}
+            title={<>LISTADO DE CERTIFICACIONES  <Icon name="file-signature" size={16} /></>}
 
             pagination
             paginationPerPage={20}
@@ -477,14 +478,14 @@ export default function FUN_CERTIFICATION(props) {
         <>
             <div className='row'>
                 <div className='col'>
-                    <button type="button" className={`btn btn-sm rounded-pill ${!newItem ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setNewItem(!newItem)}><i className="fas fa-plus"></i> NUEVA CERTIFICACIÓN</button>
+                    <button type="button" className={`btn btn-sm rounded-pill ${!newItem ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setNewItem(!newItem)}><Icon name="plus" size={16} /> NUEVA CERTIFICACIÓN</button>
                 </div>
             </div>
             {newItem ? <>
                 <div className='border p-2'>
                     {_COMPONENT_NEW()}
                     <div className='text-center my-2'>
-                        <button type="button" className="btn btn-success btn-sm rounded-pill" onClick={() => createCert()}><i className="fas fa-plus"></i> CREAR</button>
+                        <button type="button" className="btn btn-success btn-sm rounded-pill" onClick={() => createCert()}><Icon name="plus" size={16} /> CREAR</button>
                     </div>
                 </div>
             </> : ''}

@@ -5,6 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { dateParser, formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
 import sealService from '../../../../services/seal.service';
 import CustomService from '../../../../services/custom.service';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion }) {
@@ -262,7 +263,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                             <label>No. Radicación</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-hashtag"></i>
+                                    <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={sael_name} id="seal_1" />
                             </div>
@@ -271,7 +272,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
 
                     <div className="input-group mb-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-check-circle"></i>
+                            <Icon name="check-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" value="Modalidad" disabled />
                     </div>
@@ -281,7 +282,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                             <label>Consecutivo Sello</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-hashtag"></i>
+                                    <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Consecutivo Sello" id="seal_3" 
                                  defaultValue={_CHILD_SEAL.id_public} />
@@ -308,7 +309,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                             <label>Fecha</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-calendar-alt"></i>
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
                                 <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="seal_5" />
                             </div>
@@ -319,7 +320,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                             <label>Planos</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-ruler-combined"></i>
+                                    <Icon name="ruler-combined" size={16} />
                                 </span>
                                 <input type="number" min="0" step="1" className="form-control" placeholder="Planos" id="seal_6"
                                 defaultValue={_CHILD_SEAL.blueprints} />
@@ -329,7 +330,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                             <label>Memorias</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-database"></i>
+                                    <Icon name="database" size={16} />
                                 </span>
                                 <input type="number" min="0" step="1" className="form-control" placeholder="Memorias" id="seal_7"
                                 defaultValue={_CHILD_SEAL.drives} />
@@ -339,7 +340,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                             <label>Estudios</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-file-invoice"></i>
+                                    <Icon name="file-invoice" size={16} />
                                 </span>
                                 <input type="number" min="0" step="1" className="form-control" placeholder="Estudios" id="seal_8"
                                 defaultValue={_CHILD_SEAL.folders} />
@@ -352,7 +353,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                             <label>Aprobación personalizada</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-ruler-combined"></i>
+                                    <Icon name="ruler-combined" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Con este plano se aprueban..." id="seal_custom_text"
                                 defaultValue={''} />
@@ -363,17 +364,17 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                     <div className="row">
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <button className="btn btn-success"><i className="fas fa-file-import"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success"><Icon name="file-import" size={16} /> GUARDAR CAMBIOS </button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <button type="button" className="btn btn-warning" onClick={() => generate_pdf(1)}><i className="far fa-file"></i> GENERAR ORIGINAL </button>
+                                <button type="button" className="btn btn-warning" onClick={() => generate_pdf(1)}><Icon name="file" size={16} /> GENERAR ORIGINAL </button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <button type="button" className="btn btn-warning" onClick={() => generate_pdf(0)}><i className="far fa-file"></i> GENERAR TITULAR </button>
+                                <button type="button" className="btn btn-warning" onClick={() => generate_pdf(0)}><Icon name="file" size={16} /> GENERAR TITULAR </button>
                             </div>
                         </div>
                     </div>

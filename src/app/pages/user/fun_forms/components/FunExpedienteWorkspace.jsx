@@ -16,6 +16,7 @@ import RECORD_ENG from '../../records/record_eng';
 import RECORD_PH from '../../records/record_ph';
 import RECORD_REVIEW from '../../records/record_review';
 import EXPEDITION from '../../expeditions/expedition.page';
+import { Icon } from '@/components/icon';
 
 const MODULE_META = {
   general: { icon: 'far fa-file-alt', label: 'Detalles de la Solicitud' },
@@ -298,7 +299,7 @@ export function FunExpedienteWorkspace({
           <div className="d-flex gap-2 align-items-center">
             {activeModule !== 'general' && (
               <Button variant="outline" size="sm" onClick={() => setActiveModule('general')}>
-                <i className="fas fa-arrow-left me-1"></i>
+                <Icon name="arrow-left" size={16} className="me-1" />
                 Volver al detalle
               </Button>
             )}
@@ -320,7 +321,7 @@ export function FunExpedienteWorkspace({
           )}
           {bootstrapping && (
             <span className="text-xs text-muted ms-auto">
-              <i className="fas fa-spinner fa-spin me-1"></i>
+              <Icon name="spinner" size={16} className="me-1" />
               Cargando contexto completo...
             </span>
           )}
@@ -329,7 +330,7 @@ export function FunExpedienteWorkspace({
         <div className="flex-grow-1 overflow-auto px-4 py-3" style={{ backgroundColor: '#fff' }}>
           {loadError ? (
             <div className="alert alert-warning d-flex align-items-center" role="alert">
-              <i className="fas fa-exclamation-triangle me-2"></i>
+              <Icon name="exclamation-triangle" size={16} className="me-2" />
               <span>{loadError}</span>
             </div>
           ) : bootstrapping ? (

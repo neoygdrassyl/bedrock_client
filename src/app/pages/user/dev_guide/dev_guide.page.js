@@ -15,6 +15,7 @@ import guide_dev_07 from './guide/guide_dev_07.md'
 import guide_dev_08 from './guide/guide_dev_08.md'
 import guide_dev_09 from './guide/guide_dev_09.md'
 import { PreBlock, CodeBlock } from '../../../components/MermaidDiagram.component'
+import { Icon } from '@/components/icon';
 
 export default function DEV_GUIDE(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
@@ -58,7 +59,7 @@ export default function DEV_GUIDE(props) {
             <div className="row mb-4 d-flex justify-content-center">
                 <div className="col-lg-11 col-md-12">
                     <h1 className="text-center my-4">
-                        <i className="fas fa-code me-2"></i>
+                        <Icon name="code" size={16} className="me-2" />
                         GUÍA DE DESARROLLO - DOVELA
                     </h1>
                     <p className="text-center text-muted lead">
@@ -102,7 +103,7 @@ export default function DEV_GUIDE(props) {
     let _INDEX_COMPONENT = () => {
         return (
             <div className='mx-3 p-3 bg-light rounded' style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                <h5 className="mb-3"><i className="fas fa-list me-2"></i>Índice de Contenidos</h5>
+                <h5 className="mb-3"><Icon name="list" size={16} className="me-2" />Índice de Contenidos</h5>
                 {indexArray.map((item, idx) => {
                     if (item.br) return <hr key={idx} className="my-2" />;
                     const isMainSection = !item.pre.includes('.');
@@ -130,7 +131,7 @@ export default function DEV_GUIDE(props) {
                 <div className="col-md-3 col-6 mb-2">
                     <div className="card bg-primary text-white">
                         <div className="card-body text-center py-3">
-                            <i className="fas fa-file-code fa-2x mb-2"></i>
+                            <Icon name="file-code" size={16} className="mb-2" />
                             <h5 className="mb-0">9</h5>
                             <small>Secciones</small>
                         </div>
@@ -139,7 +140,7 @@ export default function DEV_GUIDE(props) {
                 <div className="col-md-3 col-6 mb-2">
                     <div className="card bg-success text-white">
                         <div className="card-body text-center py-3">
-                            <i className="fas fa-laptop-code fa-2x mb-2"></i>
+                            <Icon name="laptop-code" size={16} className="mb-2" />
                             <h5 className="mb-0">React</h5>
                             <small>Frontend</small>
                         </div>
@@ -148,7 +149,7 @@ export default function DEV_GUIDE(props) {
                 <div className="col-md-3 col-6 mb-2">
                     <div className="card bg-warning text-dark">
                         <div className="card-body text-center py-3">
-                            <i className="fas fa-server fa-2x mb-2"></i>
+                            <Icon name="server" size={16} className="mb-2" />
                             <h5 className="mb-0">Express</h5>
                             <small>Backend</small>
                         </div>
@@ -157,7 +158,7 @@ export default function DEV_GUIDE(props) {
                 <div className="col-md-3 col-6 mb-2">
                     <div className="card bg-info text-white">
                         <div className="card-body text-center py-3">
-                            <i className="fas fa-database fa-2x mb-2"></i>
+                            <Icon name="database" size={16} className="mb-2" />
                             <h5 className="mb-0">MySQL</h5>
                             <small>Database</small>
                         </div>
