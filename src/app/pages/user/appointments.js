@@ -1,18 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import AppointmentService from '../../services/appointments.service'
 import UserslDataService from '../../services/users.service'
-import {
-    MDBRow, MDBCol, MDBCard, MDBCardBody,
-    MDBBtn,
-    MDBModal,
-    MDBModalDialog,
-    MDBModalContent,
-    MDBModalHeader,
-    MDBModalTitle,
-    MDBModalBody,
-    MDBModalFooter, MDBBreadcrumb, MDBBreadcrumbItem
-} from '../../components/ui';
-import { Link } from "react-router-dom";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Icon } from '@/components/icon';
 import DataTable from 'react-data-table-component';
 import Collapsible from '../../components/Collapsible';
 import Modal from 'react-modal';
@@ -273,223 +264,215 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
 
         return (
 
-            <div className="Publish container">
-                <div className="row mb-4 d-flex">
-                    <div className="col-12 d-flex justify-content-start p-0">
-                        <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                            <MDBBreadcrumbItem>
-                                <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                            </MDBBreadcrumbItem>
-                            <MDBBreadcrumbItem>
-                                <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                            </MDBBreadcrumbItem>
-                            <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u5}</label></MDBBreadcrumbItem>
-                        </MDBBreadcrumb>
-                    </div>
-                    <div className="col-lg-12 col-md-10">
-                        <h1 className="text-center my-4">CALENDARIO DE CITAS</h1>
-                        <hr />
-
-                        <div className="text-center">
-                            <h2 className="text-center my-4">Citas para hoy</h2>
-                            {isLoaded ? (
-                                <DataTable
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                    noDataComponent="No hay citas para este dia"
-                                    striped="true"
-                                    columns={columns}
-                                    data={items_2}
-                                    highlightOnHover
-                                    pagination
-                                    paginationPerPage={20}
-                                    paginationRowsPerPageOptions={[20, 50, 100]}
-                                    className="data-table-component"
-                                    noHeader
-                                   
-                                />
-                            ) : (
-                                <div>
-                                    <h4>No Data Retrieved</h4>
-                                </div>)}
-                        </div>
-                        <hr />
-                        <div className="text-center">
-                            <h2 className="text-center my-4">Citas en proximidad</h2>
-                            {isLoaded ? (
-                                <DataTable
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                    noDataComponent="No hay citas proximas"
-                                    striped="true"
-                                    columns={columns}
-                                    data={items}
-                                    highlightOnHover
-                                    pagination
-                                    paginationPerPage={20}
-                                    paginationRowsPerPageOptions={[20, 50, 100]}
-                                    className="data-table-component"
-                                    noHeader
-                                />
-                            ) : (
-                                <div>
-                                    <h4>No Data Retrieved</h4>
-                                </div>)}
-                        </div>
-                        <hr />
-                        <div className="text-center">
-                            <h2 className="text-center my-4">Citas pasadas</h2>
-                            <Collapsible trigger={<><label className="m-2"> </label>
-                                <button className="btn btn-warning btn-sm my-2"><i className="fas fa-plus"></i> Ver Lista</button></>}>
-                                {isLoaded ? (
-                                    <>
-                                    <DataTable
-                                        paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                        noDataComponent="No hay citas pasadas"
-                                        striped="true"
-                                        columns={columns}
-                                        data={items_3}
-                                        highlightOnHover
-                                        pagination
-                                        paginationPerPage={20}
-                                        paginationRowsPerPageOptions={[20, 50, 100]}
-                                        className="data-table-component"
-                                        defaultSortFieldId={1}
-                                        defaultSortAsc={false}
-                                        title={
-                                            <div className="d-flex justify-content-between">
-                                                <div><h5>CITAS PASADAS</h5></div>
-                                                <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(items_3, 'CITAS') }}
-                                                ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
-                                            </div>
-                                        }
-                                    />
-                                    </>
-                                ) : (
-                                    <div>
-                                        <h4>No Data Retrieved</h4>
-                                    </div>)}
-                            </Collapsible>
-                        </div>
-                    </div>
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-xl font-bold text-foreground">Calendario de Citas</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Gestión de citas y turnos programados</p>
                 </div>
-                <MDBModal show={modal} tabIndex='-2' staticBackdrop >
-                    <MDBModalDialog size="lg">
-                        <MDBModalContent className="container-primary">
-                            <MDBModalHeader>
-                                <MDBModalTitle><h2 className="text-center"><i className="far fa-file-alt"></i> DETALLES DE LA CITA {currentItem ? currentItem.id : ''} </h2></MDBModalTitle>
-                                <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
-                            </MDBModalHeader>
-                            <MDBModalBody>
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <MDBRow>
-                                            <MDBCol md="6">
-                                                <table className="table table-bordered table-sm table-hover  text-start table-light">
-                                                    <tbody>
-                                                        {currentItem ? <>
-                                                            <tr className="Collapsible text-center">
-                                                                <th colSpan="2" ><label>Información del Solicitante</label></th>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Nombre y Apellido(s)</label></td>
-                                                                <td><label className="fw-bold">{currentItem.name}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Tipo de Documentos</label></td>
-                                                                <td><label className="fw-bold">{globals.form_type_id[currentItem.type_id]}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Número de Documento</label></td>
-                                                                <td><label className="fw-bold">{currentItem.number_id}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Email de Contacto</label></td>
-                                                                <td><label className="fw-bold">{currentItem.email}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Número de Contacto</label></td>
-                                                                <td><label className="fw-bold">{currentItem.number_mobile}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Requiere asistencia por señas</label></td>
-                                                                <td><label className="fw-bold">{currentItem.accesibility == true ? <label className='text-success'>Si</label> : 'No'}</label></td>
-                                                            </tr>
-                                                        </> : ""}
-                                                    </tbody>
-                                                </table>
-                                            </MDBCol>
-                                            <MDBCol md="6">
-                                                <table className="table table-bordered table-sm table-hover  text-start table-light">
-                                                    <tbody>
-                                                        {currentItem ? <>
-                                                            <tr className="Collapsible text-center">
-                                                                <th colSpan="2" ><label>Información de la cita</label></th>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Nombre Profesional</label></td>
-                                                                <td><label className="fw-bold">{currentItem.profesional}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Fecha</label></td>
-                                                                <td><label className="fw-bold">{dateParser(currentItem.date)}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Hora</label></td>
-                                                                <td><label className="fw-bold">{currentItem.time}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Presentación</label></td>
-                                                                <td><label className="fw-bold">{currentItem.appointment_type ? "Presencial" : "Virtual"}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><label>Tipo de Cita</label></td>
-                                                                <td><label className="fw-bold">{currentItem.motive}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colSpan="2"><label>Descripción</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colSpan="2"><label className="fw-bold">{currentItem.content}</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colSpan="2"><label>Observaciones</label></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colSpan="2"><label className="fw-bold">{currentItem.details}</label></td>
-                                                            </tr>
-                                                        </> : ""}
-                                                    </tbody>
-                                                </table>
-                                            </MDBCol>
-                                        </MDBRow>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBModalBody>
-                            <MDBModalFooter>
-                                <MDBBtn color='info' onClick={toggle}>
-                                    <h4 className="pt-2"><i className="fas fa-times-circle"></i> Cerrar</h4>
-                                </MDBBtn>
-                            </MDBModalFooter>
-                        </MDBModalContent>
-                    </MDBModalDialog>
-                </MDBModal>
 
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-base"><Icon name="Calendar" size={16} className="inline mr-2" />Citas para hoy</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        {isLoaded ? (
+                            <DataTable
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="No hay citas para este dia"
+                                striped="true"
+                                columns={columns}
+                                data={items_2}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={20}
+                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                            />
+                        ) : (
+                            <div className="p-8 text-center text-muted-foreground text-sm">Cargando...</div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-base"><Icon name="Clock" size={16} className="inline mr-2" />Citas en proximidad</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        {isLoaded ? (
+                            <DataTable
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="No hay citas proximas"
+                                striped="true"
+                                columns={columns}
+                                data={items}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={20}
+                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                            />
+                        ) : (
+                            <div className="p-8 text-center text-muted-foreground text-sm">Cargando...</div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-base"><Icon name="Archive" size={16} className="inline mr-2" />Citas pasadas</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Collapsible trigger={<><label className="m-2"> </label>
+                            <button className="btn btn-warning btn-sm my-2"><i className="fas fa-plus"></i> Ver Lista</button></>}>
+                            {isLoaded ? (
+                                <>
+                                <DataTable
+                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                    noDataComponent="No hay citas pasadas"
+                                    striped="true"
+                                    columns={columns}
+                                    data={items_3}
+                                    highlightOnHover
+                                    pagination
+                                    paginationPerPage={20}
+                                    paginationRowsPerPageOptions={[20, 50, 100]}
+                                    className="data-table-component"
+                                    defaultSortFieldId={1}
+                                    defaultSortAsc={false}
+                                    title={
+                                        <div className="d-flex justify-content-between">
+                                            <div><h5>CITAS PASADAS</h5></div>
+                                            <div><Button variant="outline" size="sm" onClick={() => { generateCVS(items_3, 'CITAS') }}
+                                            ><Icon name="FileSpreadsheet" size={14} /> Descargar CSV</Button></div>
+                                        </div>
+                                    }
+                                />
+                                </>
+                            ) : (
+                                <div className="p-8 text-center text-muted-foreground text-sm">Cargando...</div>
+                            )}
+                        </Collapsible>
+                    </CardContent>
+                </Card>
+
+                {/* View Modal */}
+                {modal && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={toggle}>
+                        <Card className="w-full max-w-4xl max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
+                            <div className="flex items-center justify-between p-4 border-b border-border">
+                                <h2 className="text-lg font-semibold"><Icon name="Calendar" size={18} className="inline mr-2" />Detalles de la Cita {currentItem ? currentItem.id : ''}</h2>
+                                <button type="button" className="btn-close" onClick={toggle} />
+                            </div>
+                            <CardContent className="p-4">
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <table className="table table-bordered table-sm table-hover text-start table-light">
+                                            <tbody>
+                                                {currentItem ? <>
+                                                    <tr className="Collapsible text-center">
+                                                        <th colSpan="2"><label>Información del Solicitante</label></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Nombre y Apellido(s)</label></td>
+                                                        <td><label className="fw-bold">{currentItem.name}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Tipo de Documentos</label></td>
+                                                        <td><label className="fw-bold">{globals.form_type_id[currentItem.type_id]}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Número de Documento</label></td>
+                                                        <td><label className="fw-bold">{currentItem.number_id}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Email de Contacto</label></td>
+                                                        <td><label className="fw-bold">{currentItem.email}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Número de Contacto</label></td>
+                                                        <td><label className="fw-bold">{currentItem.number_mobile}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Requiere asistencia por señas</label></td>
+                                                        <td><label className="fw-bold">{currentItem.accesibility == true ? <label className='text-success'>Si</label> : 'No'}</label></td>
+                                                    </tr>
+                                                </> : ""}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <table className="table table-bordered table-sm table-hover text-start table-light">
+                                            <tbody>
+                                                {currentItem ? <>
+                                                    <tr className="Collapsible text-center">
+                                                        <th colSpan="2"><label>Información de la cita</label></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Nombre Profesional</label></td>
+                                                        <td><label className="fw-bold">{currentItem.profesional}</label></td>
+                                                            </tr>
+                                                    <tr>
+                                                        <td><label>Fecha</label></td>
+                                                        <td><label className="fw-bold">{dateParser(currentItem.date)}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Hora</label></td>
+                                                        <td><label className="fw-bold">{currentItem.time}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Presentación</label></td>
+                                                        <td><label className="fw-bold">{currentItem.appointment_type ? "Presencial" : "Virtual"}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><label>Tipo de Cita</label></td>
+                                                        <td><label className="fw-bold">{currentItem.motive}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colSpan="2"><label>Descripción</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colSpan="2"><label className="fw-bold">{currentItem.content}</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colSpan="2"><label>Observaciones</label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colSpan="2"><label className="fw-bold">{currentItem.details}</label></td>
+                                                    </tr>
+                                                </> : ""}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <div className="flex justify-end p-4 border-t border-border">
+                                <Button variant="secondary" onClick={toggle}><Icon name="XCircle" size={16} /> Cerrar</Button>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+
+                {/* Edit Modal (react-modal) */}
                 <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={modal_edit}
                     style={customStyles}
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-file-alt"></i>ACTUALIZAR LA CITA {currentItem ? currentItem.id : ''} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={toggle_edit}></MDBBtn>
+                        <label><Icon name="Pencil" size={16} className="inline mr-2" />Actualizar la Cita {currentItem ? currentItem.id : ''}</label>
+                        <button type="button" className="btn-close" onClick={toggle_edit} />
                     </div>
                     <form id="appointment_edit" onSubmit={app_edit}>
-                        <MDBRow>
-                            <MDBCol md="6">
-                                <table className="table table-bordered table-sm table-hover  text-start table-light">
+                        <div className="row">
+                            <div className="col-md-6">
+                                <table className="table table-bordered table-sm table-hover text-start table-light">
                                     <tbody>
                                         {currentItem ? <>
                                             <tr className="Collapsible text-center">
-                                                <th colSpan="2" ><label>Información del Solicitante</label></th>
+                                                <th colSpan="2"><label>Información del Solicitante</label></th>
                                             </tr>
                                             <tr>
                                                 <td><label>Nombre y Apellido(s)</label></td>
@@ -518,13 +501,13 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                         </> : ""}
                                     </tbody>
                                 </table>
-                            </MDBCol>
-                            <MDBCol md="6">
-                                <table className="table table-bordered table-sm table-hover  text-start table-light">
+                            </div>
+                            <div className="col-md-6">
+                                <table className="table table-bordered table-sm table-hover text-start table-light">
                                     <tbody>
                                         {currentItem ? <>
                                             <tr className="Collapsible text-center">
-                                                <th colSpan="2" ><label>Información de la cita</label></th>
+                                                <th colSpan="2"><label>Información de la cita</label></th>
                                             </tr>
                                             <tr>
                                                 <td><label>Nombre Profesional</label></td>
@@ -588,17 +571,17 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                         </> : ""}
                                     </tbody>
                                 </table>
-                            </MDBCol>
-                        </MDBRow>
+                            </div>
+                        </div>
 
                         <div className="text-end py-4 mt-3">
                             <button className="btn btn-lg btn-secondary me-1"><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
-                            <MDBBtn className="btn btn-lg btn-info" onClick={() => toggle_edit()}><i className="fas fa-times-circle"></i> CERRAR </MDBBtn>
+                            <Button variant="secondary" size="lg" onClick={() => toggle_edit()}><Icon name="XCircle" size={16} /> Cerrar</Button>
                         </div>
                     </form>
                 </Modal>
 
-            </div >
+            </div>
     );
 }
 

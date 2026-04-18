@@ -1,11 +1,11 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem } from '../../components/ui';
-import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Icon } from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 const MySwal = withReactContent(Swal);
 
-function OSHA({ translation, swaMsg, breadCrums }) {
+function OSHA({ translation, swaMsg }) {
         const HOMEPATH = '//www.curaduria1bucaramanga.com/public_docs/OTHERS/osha/';
         const HOMEPATH2 = '//www.curaduria1bucaramanga.com/public_docs/OTHERS/intranet/';
         const HOMEPATH3 = '//www.curaduria1bucaramanga.com/public_docs/OTHERS/tutorials/';
@@ -160,50 +160,51 @@ function OSHA({ translation, swaMsg, breadCrums }) {
 
         return (
 
-            <div className="osha container">
-                <div className="col-12 d-flex justify-content-start p-0">
-                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                        <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u8}</label></MDBBreadcrumbItem>
-                    </MDBBreadcrumb>
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-xl font-bold text-foreground">Documentación</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Intranet, manuales y salud ocupacional</p>
                 </div>
-                <div className="row mb-4 d-flex justify-content-center">
-                    <div className="col-lg-8 col-md-10">
-                        <h1 className="text-center my-4">DOCUMENTACION INTRANET</h1>
-                        <hr />
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg"><Icon name="FileText" size={18} className="inline mr-2" />Documentación Intranet</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
                         <table className="table table-bordered table-sm table-hover text-start">
                             <tbody>
                                 {_TABLE_COMPONENT_INTRANET()}
                             </tbody>
                         </table>
-                    </div>
+                    </CardContent>
+                </Card>
 
-                    <div className="col-lg-8 col-md-10">
-                        <h1 className="text-center my-4">DOCUMENTACION DE TUTORALES Y MANUALES</h1>
-                        <hr />
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg"><Icon name="Info" size={18} className="inline mr-2" />Tutoriales y Manuales</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
                         <table className="table table-bordered table-sm table-hover text-start">
                             <tbody>
                                 {_TABLE_COMPONENT_TUTORIALS()}
                             </tbody>
                         </table>
-                    </div>
+                    </CardContent>
+                </Card>
 
-                    <div className="col-lg-8 col-md-10">
-                        <h1 className="text-center my-4">DOCUMENTACION SALUD OCUPACIONAL</h1>
-                        <hr />
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg"><Icon name="ClipboardCheck" size={18} className="inline mr-2" />Salud Ocupacional (SST)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
                         <table className="table table-bordered table-sm table-hover text-start">
                             <tbody>
                                 {_TABLE_COMPONENT_OSHA()}
                             </tbody>
                         </table>
-                    </div>
-                </div>
-            </div >
+                    </CardContent>
+                </Card>
+            </div>
         );
 }
 

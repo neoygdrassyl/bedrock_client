@@ -1,18 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import SealsService from '../../services/seal.service'
 import CustomService from '../../services/custom.service'
-import {
-    MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle,
-    MDBBtn,
-    MDBModal,
-    MDBModalDialog,
-    MDBModalContent,
-    MDBModalHeader,
-    MDBModalTitle,
-    MDBModalBody,
-    MDBModalFooter, MDBBreadcrumb, MDBBreadcrumbItem
-} from '../../components/ui';
-import { Link } from "react-router-dom";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Icon } from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -351,221 +342,207 @@ function Seals({ translation, swaMsg, breadCrums }) {
         }
         return (
 
-            <div className="Publish container">
-                <div className="row mb-4 d-flex justify-content-center">
-                    <div className="col-12 d-flex justify-content-start p-0">
-                        <MDBBreadcrumb className="mx-5">
-                            <MDBBreadcrumbItem>
-                                <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                            </MDBBreadcrumbItem>
-                            <MDBBreadcrumbItem>
-                                <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                            </MDBBreadcrumbItem>
-                            <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u4}</label></MDBBreadcrumbItem>
-                        </MDBBreadcrumb>
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-xl font-bold text-foreground">Sellos</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Generación y consulta de sellos de licencias</p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div className="lg:col-span-5 space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-base"><Icon name="FilePlus" size={16} className="inline mr-2" />Generar Sellos</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={handleSubmit} id="app-form">
+                                    <input type="hidden" id="f_0" />
+                                    <input type="hidden" id="s_1" />
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="fas fa-hashtag"></i>
+                                        </span>
+                                        <input type="text" className="form-control" defaultValue="68001-1-" id="f_02"
+                                            onChange={() => loadParent()} />
+                                    </div>
+                                    <div className="fw-normal lead"><ul>{helpText}</ul></div>
+
+                                    <div className="input-group mb-1">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="far fa-check-circle"></i>
+                                        </span>
+                                        <input type="text" className="form-control" value="Modalidad" disabled />
+                                    </div>
+                                    <textarea className="form-control mb-3" rows="3" id="f_11" ></textarea>
+
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="far fa-calendar-alt"></i>
+                                        </span>
+                                        <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="f_03"
+                                            onChange={(e) => formData.set('date', e.target.value)} />
+                                    </div>
+
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="fas fa-cube"></i>
+                                        </span>
+                                        <input type="number" min="1" step="0.01" className="form-control" placeholder="Area Total" id="s_4"
+                                            required onChange={(e) => formData.set('area', e.target.value)} />
+                                    </div>
+
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="fas fa-hashtag"></i>
+                                        </span>
+                                        <input type="text" className="form-control" placeholder="Consecutivo Sello" id="s_0"
+                                            required onChange={(e) => formData.set('id_public', e.target.value)} />
+                                    </div>
+                                    <hr />
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="fas fa-ruler-combined"></i>
+                                        </span>
+                                        <input type="number" min="0" step="1" className="form-control" placeholder="Planos" id="blueprints"
+                                            required onChange={(e) => { formData.set('blueprints', e.target.value) }} />
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="fas fa-database"></i>
+                                        </span>
+                                        <input type="number" min="0" step="1" className="form-control" placeholder="Memorias" id="drives"
+                                            required onChange={(e) => formData.set('drives', e.target.value)} />
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="fas fa-file-invoice"></i>
+                                        </span>
+                                        <input type="number" min="0" step="1" className="form-control" placeholder="Estudios" id="folders"
+                                            required onChange={(e) => formData.set('folders', e.target.value)} />
+                                    </div>
+                                    <div className="text-center py-4 mt-3">
+                                        <button className="btn btn-lg btn-info"><i className="fas fa-file-import"></i> CREAR </button>
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-base"><Icon name="Search" size={16} className="inline mr-2" />Buscar Sellos</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={search} id="app-form">
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="fas fa-info-circle"></i>
+                                        </span>
+                                        <select className="form-select" id="search_0" required>
+                                            <option value="1">Numero de Radicado</option>
+                                            <option value="2">Consecutivo Sello</option>
+                                        </select>
+                                    </div>
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text bg-info text-white">
+                                            <i className="far fa-comment-dots"></i>
+                                        </span>
+                                        <input type="text" className="form-control" id="search_1" required />
+                                    </div>
+                                    <div className="text-center py-4 mt-3">
+                                        <button className="btn btn-lg btn-secondary"><i className="fas fa-search-plus"></i> CONSULTAR </button>
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </Card>
                     </div>
-                    <div className="col-lg-11 col-md-12">
-                        <h1 className="text-center my-4">SELLOS</h1>
-                        <hr />
-                        <MDBRow>
-                            <MDBCol md="5">
 
-                                <MDBCard className="bg-card">
-                                    <MDBCardTitle><h2 className="text-center my-4">Generar Sellos</h2></MDBCardTitle>
-                                    <MDBCardBody>
-                                        <form onSubmit={handleSubmit} id="app-form">
-                                            <input type="hidden" id="f_0" />
-                                            <input type="hidden" id="s_1" />
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="fas fa-hashtag"></i>
-                                                </span>
-                                                <input type="text" className="form-control" defaultValue="68001-1-" id="f_02"
-                                                    onChange={() => loadParent()} />
-                                            </div>
-                                            <div className="fw-normal lead"><ul>{helpText}</ul></div>
-
-                                            <div className="input-group mb-1">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="far fa-check-circle"></i>
-                                                </span>
-                                                <input type="text" className="form-control" value="Modalidad" disabled />
-                                            </div>
-                                            <textarea className="form-control mb-3" rows="3" id="f_11" ></textarea>
-
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="far fa-calendar-alt"></i>
-                                                </span>
-                                                <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="f_03"
-                                                    onChange={(e) => formData.set('date', e.target.value)} />
-                                            </div>
-
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="fas fa-cube"></i>
-                                                </span>
-                                                <input type="number" min="1" step="0.01" className="form-control" placeholder="Area Total" id="s_4"
-                                                    required onChange={(e) => formData.set('area', e.target.value)} />
-                                            </div>
-
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="fas fa-hashtag"></i>
-                                                </span>
-                                                <input type="text" className="form-control" placeholder="Consecutivo Sello" id="s_0"
-                                                    required onChange={(e) => formData.set('id_public', e.target.value)} />
-                                            </div>
-                                            <hr />
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="fas fa-ruler-combined"></i>
-                                                </span>
-                                                <input type="number" min="0" step="1" className="form-control" placeholder="Planos" id="blueprints"
-                                                    required onChange={(e) => { formData.set('blueprints', e.target.value) }} />
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="fas fa-database"></i>
-                                                </span>
-                                                <input type="number" min="0" step="1" className="form-control" placeholder="Memorias" id="drives"
-                                                    required onChange={(e) => formData.set('drives', e.target.value)} />
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="fas fa-file-invoice"></i>
-                                                </span>
-                                                <input type="number" min="0" step="1" className="form-control" placeholder="Estudios" id="folders"
-                                                    required onChange={(e) => formData.set('folders', e.target.value)} />
-                                            </div>
-                                            <div className="text-center py-4 mt-3">
-                                                <button className="btn btn-lg btn-info"><i className="fas fa-file-import"></i> CREAR </button>
-                                            </div>
-
-                                        </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-
-                                <MDBCard className="bg-card my-3">
-                                    <MDBCardTitle><h2 className="text-center my-4">Buscar Sellos</h2></MDBCardTitle>
-                                    <MDBCardBody>
-                                        <form onSubmit={search} id="app-form">
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="fas fa-info-circle"></i>
-                                                </span>
-                                                <select className="form-select" id="search_0" required>
-                                                    <option value="1">Numero de Radicado</option>
-                                                    <option value="2">Consecutivo Sello</option>
-                                                </select>
-                                            </div>
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <i className="far fa-comment-dots"></i>
-                                                </span>
-                                                <input type="text" className="form-control" id="search_1" required />
-                                            </div>
-                                            <div className="text-center py-4 mt-3">
-                                                <button className="btn btn-lg btn-secondary"><i className="fas fa-search-plus"></i> CONSULTAR </button>
-                                            </div>
-                                        </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="7">
-                                <div className="text-center">
-                                    <h2 className="text-center my-4">Listado de Sellos</h2>
-                                    {isLoaded ? (
-                                        <DataTable
-                                            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                            noDataComponent="No hay publicaciones en estos momentos"
-                                            striped="true"
-                                            columns={columns}
-                                            data={items}
-                                            highlightOnHover
-                                            pagination
-                                            paginationPerPage={20}
-                                            paginationRowsPerPageOptions={[20, 50, 100]}
-                                            className="data-table-component"
-                                            noHeader
-                                        />
-                                    ) : (
-                                        <div>
-                                            <h4>No Data Retrieved</h4>
-                                        </div>)}
-                                </div>
-                            </MDBCol>
-                        </MDBRow>
+                    <div className="lg:col-span-7">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-base"><Icon name="FileText" size={16} className="inline mr-2" />Listado de Sellos</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                {isLoaded ? (
+                                    <DataTable
+                                        paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                        noDataComponent="No hay publicaciones en estos momentos"
+                                        striped="true"
+                                        columns={columns}
+                                        data={items}
+                                        highlightOnHover
+                                        pagination
+                                        paginationPerPage={20}
+                                        paginationRowsPerPageOptions={[20, 50, 100]}
+                                        className="data-table-component"
+                                        noHeader
+                                    />
+                                ) : (
+                                    <div className="p-8 text-center text-muted-foreground text-sm">Cargando...</div>
+                                )}
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
-                <MDBModal show={getToggle()} tabIndex='-2' staticBackdrop >
-                    <MDBModalDialog size="md">
-                        <MDBModalContent className="container-primary">
-                            <MDBModalHeader>
-                                <MDBModalTitle><h2 className="text-center"><i className="far fa-file-alt"></i> DETALLES DE EL SELLO: {currentItem ? currentItem.id_public : ''} </h2></MDBModalTitle>
-                                <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
-                            </MDBModalHeader>
-                            <MDBModalBody>
-                                <MDBCard className="bg-card">
-                                    <MDBCardBody>
-                                        <table className="table table-bordered table-sm table-hover  text-start table-light">
-                                            <tbody>
-                                                {currentItem ? <>
-                                                    <tr>
-                                                        <td><label >Nr. de Solicitud</label></td>
-                                                        <td><label className="fw-bold">{currentItem.fun_0.id_public}</label></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><label>Consecutivo Sello</label></td>
-                                                        <td><label className="fw-bold">{currentItem.id_public}</label></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colSpan="2"><label>Modalidad</label></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colSpan="2">
-                                                            <textarea className="form-control mb-3" rows="3" id="t_11"></textarea>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><label>Area</label></td>
-                                                        <td><label className="fw-bold">{currentItem.area}</label></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><label>Fecha</label></td>
-                                                        <td><label className="fw-bold">
-                                                        <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="gen_03"
-                                                         defaultValue={currentItem.fun_0.date} /></label></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><label>Planos</label></td>
-                                                        <td><label className="fw-bold">{currentItem.blueprints}</label></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><label>Memorias</label></td>
-                                                        <td><label className="fw-bold">{currentItem.drives}</label></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><label>Estudios</label></td>
-                                                        <td><label className="fw-bold">{currentItem.folders}</label></td>
-                                                    </tr>
-                                                </> : ""}
-                                            </tbody>
-                                        </table>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBModalBody>
-                            <MDBModalFooter>
-                                <MDBBtn color='success' onClick={() => generate(1)}>
-                                    <h4 className="pt-2"><i className="far fa-file"></i> GENERAR ORIGINAL</h4>
-                                </MDBBtn>
-                                <MDBBtn color='success' onClick={() => generate(0)}>
-                                    <h4 className="pt-2"><i className="far fa-file"></i> GENERAR TITULAR</h4>
-                                </MDBBtn>
-                                <MDBBtn color='info' onClick={toggle}>
-                                    <h4 className="pt-2"><i className="fas fa-times-circle"></i> Cerrar</h4>
-                                </MDBBtn>
-                            </MDBModalFooter>
-                        </MDBModalContent>
-                    </MDBModalDialog>
-                </MDBModal>
-            </div >
+
+                {/* Detail Modal */}
+                {getToggle() && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={toggle}>
+                        <Card className="w-full max-w-2xl max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
+                            <div className="flex items-center justify-between p-4 border-b border-border">
+                                <h2 className="text-lg font-semibold"><Icon name="FileText" size={18} className="inline mr-2" />Detalles del Sello: {currentItem ? currentItem.id_public : ''}</h2>
+                                <button type="button" className="btn-close" onClick={toggle} />
+                            </div>
+                            <CardContent className="p-4">
+                                <table className="table table-bordered table-sm table-hover text-start table-light">
+                                    <tbody>
+                                        {currentItem ? <>
+                                            <tr>
+                                                <td><label>Nr. de Solicitud</label></td>
+                                                <td><label className="fw-bold">{currentItem.fun_0.id_public}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Consecutivo Sello</label></td>
+                                                <td><label className="fw-bold">{currentItem.id_public}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="2"><label>Modalidad</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="2">
+                                                    <textarea className="form-control mb-3" rows="3" id="t_11"></textarea>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Area</label></td>
+                                                <td><label className="fw-bold">{currentItem.area}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Fecha</label></td>
+                                                <td><label className="fw-bold">
+                                                <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="gen_03"
+                                                 defaultValue={currentItem.fun_0.date} /></label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Planos</label></td>
+                                                <td><label className="fw-bold">{currentItem.blueprints}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Memorias</label></td>
+                                                <td><label className="fw-bold">{currentItem.drives}</label></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label>Estudios</label></td>
+                                                <td><label className="fw-bold">{currentItem.folders}</label></td>
+                                            </tr>
+                                        </> : ""}
+                                    </tbody>
+                                </table>
+                            </CardContent>
+                            <div className="flex flex-wrap justify-end gap-2 p-4 border-t border-border">
+                                <Button variant="default" onClick={() => generate(1)}><Icon name="FileText" size={16} /> Generar Original</Button>
+                                <Button variant="default" onClick={() => generate(0)}><Icon name="FileText" size={16} /> Generar Titular</Button>
+                                <Button variant="secondary" onClick={toggle}><Icon name="XCircle" size={16} /> Cerrar</Button>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+            </div>
         );
 }
 
