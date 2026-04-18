@@ -106,7 +106,7 @@ export default function EXP_AREAS_RECORD(props) {
                 filterable: true,
                 center: true,
                 maxWidth: '80px',
-                cell: row => <label>{row.area}</label>
+                cell: row => <span className="text-sm">{row.area}</span>
             },
             {
                 name: 'UNIDADES',
@@ -115,7 +115,7 @@ export default function EXP_AREAS_RECORD(props) {
                 filterable: true,
                 center: true,
                 maxWidth: '80px',
-                cell: row => <label>{row.units}</label>
+                cell: row => <span className="text-sm">{row.units}</span>
             },
             {
                 name: 'USO',
@@ -124,7 +124,7 @@ export default function EXP_AREAS_RECORD(props) {
                 filterable: true,
                 center: true,
                 maxWidth: '60px',
-                cell: row => <label>{row.use}</label>
+                cell: row => <span className="text-sm">{row.use}</span>
             },
             {
                 name: 'Modalidad',
@@ -132,7 +132,7 @@ export default function EXP_AREAS_RECORD(props) {
                 sortable: true,
                 filterable: true,
                 compact: true,
-                cell: row => <label>{row.desc}</label>
+                cell: row => <span className="text-sm">{row.desc}</span>
             },
             {
                 name: 'ACCION',

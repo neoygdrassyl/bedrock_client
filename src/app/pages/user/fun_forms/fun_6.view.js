@@ -99,7 +99,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     selector: row => row.description,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.description}</label>
+                    cell: row => <span className="text-sm">{row.description}</span>
                 },
                 {
                     name: 'VR',
@@ -120,7 +120,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     sortable: true,
                     filterable: true,
                     maxWidth: '50px',
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
                     name: 'FOLIOS',
@@ -128,7 +128,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     sortable: true,
                     filterable: true,
                     maxWidth: '40px',
-                    cell: row => <label>{row.pages}</label>
+                    cell: row => <span className="text-sm">{row.pages}</span>
                 },
                 {
                     name: 'FECHA RADICACIÓN',
@@ -136,7 +136,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',
-                    cell: row => <label>{row.date}</label>
+                    cell: row => <span className="text-sm">{row.date}</span>
                 },
                 /**
                  * {

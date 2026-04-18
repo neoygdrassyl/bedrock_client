@@ -559,12 +559,12 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     sortable: true,
                     filterable: true,
                     minWidth: '250px',
-                    cell: row => <label>{row.name}</label>
+                    cell: row => <span className="text-sm">{row.name}</span>
                 },
                 {
                     name: 'OBSERVACIONES',
                     minWidth: '330px',
-                    cell: row => <label>{(row.desc)}</label>
+                    cell: row => <span className="text-sm">{(row.desc)}</span>
                 },
                 {
                     name: 'FECHA EVENTO',
@@ -572,7 +572,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.date_start)}</label>
+                    cell: row => <span className="text-sm">{(row.date_start)}</span>
                 },
                 {
                     name: 'FECHA LIMITE',
@@ -580,12 +580,12 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{_GET_LIMITE_DATE(row.state, row.version)}</label>
+                    cell: row => <span className="text-sm">{_GET_LIMITE_DATE(row.state, row.version)}</span>
                 },
                 {
                     name: 'RESULTADO',
                     center: true,
-                    cell: row => <label>{resolveStatusIcon[row.resolver_sattus ?? '-1']}</label>
+                    cell: row => <span className="text-sm">{resolveStatusIcon[row.resolver_sattus ?? '-1']}</span>
                 },
                 {
                     name: 'SOPORTE DOCUMENTO',

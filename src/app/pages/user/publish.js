@@ -253,14 +253,14 @@ function Publish({ translation, swaMsg, breadCrums }) {
         sortable: true,
         filterable: true,
         minWidth: '100px',
-        cell: row => <label>{row.id_publico}</label>
+        cell: row => <span className="text-sm">{row.id_publico}</span>
       },
       {
         name: <h4>Fecha</h4>,
         selector: row => row.date,
         sortable: true,
         minWidth: '100px',
-        cell: row => <label>{row.date}</label>
+        cell: row => <span className="text-sm">{row.date}</span>
       },
       {
         name: <h4>Tipo</h4>,

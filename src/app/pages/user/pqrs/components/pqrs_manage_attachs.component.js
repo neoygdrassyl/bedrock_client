@@ -32,14 +32,14 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.public_name}</label>,
+                    cell: row => <span className="text-sm">{row.public_name}</span>,
                 },
                 {
                     name: 'TIPO',
                     selector: row => row.competence,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.type}</label>,
+                    cell: row => <span className="text-sm">{row.type}</span>,
                 },
                 {
                     name: 'ACCIÓN',

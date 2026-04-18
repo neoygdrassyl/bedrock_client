@@ -36,21 +36,21 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
                     selector: row => row.public_name,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.public_name}</label>,
+                    cell: row => <span className="text-sm">{row.public_name}</span>,
                 },
                 {
                     name: 'TIPO',
                     selector: row => row.class,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{fileType[row.class ?? 0]}</label>,
+                    cell: row => <span className="text-sm">{fileType[row.class ?? 0]}</span>,
                 },
                 {
                     name: 'FORMATO',
                     selector: row => row.type,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.type}</label>,
+                    cell: row => <span className="text-sm">{row.type}</span>,
                 },
 
                 {

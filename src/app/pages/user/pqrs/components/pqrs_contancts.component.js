@@ -24,40 +24,40 @@ function PQRS_COMPONENT_CONTACTS({ translation, swaMsg, globals, currentItem }) 
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.address}</label>,
+                    cell: row => <span className="text-sm">{row.address}</span>,
                 },
                 {
                     name: 'BARRIO',
                     selector: row => row.competence,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.neighbour}</label>,
+                    cell: row => <span className="text-sm">{row.neighbour}</span>,
                 },
                 {
                     name: 'MUNICIPIO',
-                    cell: row => <label>{row.county}</label>,
+                    cell: row => <span className="text-sm">{row.county}</span>,
                 },
                 {
                     name: 'TELÉFONO',
                     selector: row => row.asign,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.phone}</label>,
+                    cell: row => <span className="text-sm">{row.phone}</span>,
                 },
                 {
                     name: 'CONTACTO',
                     minWidth: '180px',
-                    cell: row => <label>{row.email}</label>,
+                    cell: row => <span className="text-sm">{row.email}</span>,
                 },
                 {
                     name: 'DEPARTAMENTO',
-                    cell: row => <label>{row.state}</label>,
+                    cell: row => <span className="text-sm">{row.state}</span>,
                 },
                 {
                     name: '¿NOTIFICA CORREO?',
                     minWidth: '180px',
                     center: true,
-                    cell: row => <label>{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</label>,
+                    cell: row => <span className="text-sm">{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</span>,
                 },
             ]
             var _COMPONENT = <DataTable

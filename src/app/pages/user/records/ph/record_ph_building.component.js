@@ -46,7 +46,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.number}</label>
+                    cell: row => <span className="text-sm">{row.number}</span>
                 },
                 {
                     name: 'PREDIAL',
@@ -54,7 +54,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.predial}</label>
+                    cell: row => <span className="text-sm">{row.predial}</span>
                 },
                 {
                     name: 'MATRICULA',
@@ -62,7 +62,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.matricula}</label>
+                    cell: row => <span className="text-sm">{row.matricula}</span>
                 },
                 {
                     name: 'NOMENCLATURA',

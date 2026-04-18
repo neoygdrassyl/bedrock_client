@@ -25,19 +25,19 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     selector: row => row.coord,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.coord}</label>
+                    cell: row => <span className="text-sm">{row.coord}</span>
                 },
                 {
                     name: 'LONGITUD',
                     selector: row => row.longitud,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.longitud}</label>
+                    cell: row => <span className="text-sm">{row.longitud}</span>
                 },
                 {
                     name: 'COLINDA CON',
                     selector: row => row.colinda,
-                    cell: row => <label>{row.colinda}</label>
+                    cell: row => <span className="text-sm">{row.colinda}</span>
                 },
                 {
                     name: 'ACCIÓN',

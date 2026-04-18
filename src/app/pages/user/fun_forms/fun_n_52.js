@@ -630,7 +630,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.name + " " + row.surname}</label>
+                    cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
                 {
                     name: 'CC/NIT',
@@ -639,21 +639,21 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.id_number}</label>
+                    cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
                     name: 'TELEFONO/ CELULAR',
                     selector: row => row.number, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.number}</label>
+                    cell: row => <span className="text-sm">{row.number}</span>
                 },
                 {
                     name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.email}</label>
+                    cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
                     name: 'PROFESION',
@@ -662,21 +662,21 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.role}</label>
+                    cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
                     name: 'MATRICULA',
                     selector: row => row.registration, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.registration}</label>
+                    cell: row => <span className="text-sm">{row.registration}</span>
                 },
                 {
                     name: 'EXP. MATRICULA',
                     selector: row => row.registration_date, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{dateParser(row.registration_date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.registration_date)}</span>
                 },
                 {
                     name: 'EXPERIENCIA',
@@ -689,13 +689,13 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     name: '¿SANCIONADO?',
                     selector: row => row.sanction, // FIX: react-data-table v7→v8
                     center: true,
-                    cell: row => <label>{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</label>
+                    cell: row => <span className="text-sm">{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</span>
                 },
                 {
                     name: 'SUPERVISION',
                     selector: row => row.supervision, // FIX: react-data-table v7→v8
                     center: true,
-                    cell: row => <label>{row.supervision}</label>
+                    cell: row => <span className="text-sm">{row.supervision}</span>
                 },
                 {
                     name: 'DOCUMENTOS',

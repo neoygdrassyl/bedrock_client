@@ -81,7 +81,7 @@ export default function RECORD_ARC_36_TABLE(props) {
             center: true,
             compact: true,
             minWidth: '150px',
-            cell: row => <label>{row.address}</label>
+            cell: row => <span className="text-sm">{row.address}</span>
         },
         {
             name: 'Perfil',
@@ -123,7 +123,7 @@ export default function RECORD_ARC_36_TABLE(props) {
             center: true,
             compact: true,
             minWidth: '100px',
-            cell: row => <label>{row.side}</label>
+            cell: row => <span className="text-sm">{row.side}</span>
         },
          {
             name: 'Norma',
@@ -133,7 +133,7 @@ export default function RECORD_ARC_36_TABLE(props) {
             center: true,
             compact: true,
             minWidth: '40px',
-            cell: row => <label>{row.norm}</label>
+            cell: row => <span className="text-sm">{row.norm}</span>
         },
         {
             name: 'Proyecto',
@@ -143,21 +143,21 @@ export default function RECORD_ARC_36_TABLE(props) {
             center: true,
             compact: true,
             minWidth: '40px',
-            cell: row => <label>{row.project}</label>
+            cell: row => <span className="text-sm">{row.project}</span>
         },
         {
             name: 'Dif.',
             center: true,
             compact: true,
             minWidth: '40px',
-            cell: row => <label>{(row.project - row.norm).toFixed(2)}</label>
+            cell: row => <span className="text-sm">{(row.project - row.norm).toFixed(2)}</span>
         },
         {
             name: 'Observación',
             center: true,
             compact: true,
             minWidth: '50px',
-            cell: row => <label>{_GET_EVALUATION(row.norm, row.project)}</label>
+            cell: row => <span className="text-sm">{_GET_EVALUATION(row.norm, row.project)}</span>
         },
         {
             name: 'Evaluación',

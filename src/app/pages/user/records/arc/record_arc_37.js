@@ -544,7 +544,7 @@ export default function RECORD_ARC_37(props) {
                 center: true,
                 compact: true,
                 minWidth: '150px',
-                cell: row => <label>{row.name}</label>
+                cell: row => <span className="text-sm">{row.name}</span>
             },
             {
                 name: 'Grupos',

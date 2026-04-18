@@ -112,7 +112,7 @@ function RECORD_LAW_GEN_2_FUN52(props) {
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.name + " " + row.surname}</label>
+                    cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
                 {
                     name: 'CC/NIT',
@@ -121,21 +121,21 @@ function RECORD_LAW_GEN_2_FUN52(props) {
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.id_number}</label>
+                    cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
                     name: 'TELEFONO/ CELULAR',
                     selector: row => row.number,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.number}</label>
+                    cell: row => <span className="text-sm">{row.number}</span>
                 },
                 {
                     name: 'CORREO',
                     selector: row => row.email,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.email}</label>
+                    cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
                     name: 'PROFESIÓN',
@@ -144,21 +144,21 @@ function RECORD_LAW_GEN_2_FUN52(props) {
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.role}</label>
+                    cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
                     name: 'MATRÍCULA',
                     selector: row => row.registration,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.registration}</label>
+                    cell: row => <span className="text-sm">{row.registration}</span>
                 },
                 {
                     name: 'EXP. MATRÍCULA',
                     selector: row => row.registration_date,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{dateParser(row.registration_date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.registration_date)}</span>
                 },
                 {
                     name: 'EXPERIENCIA',
@@ -171,13 +171,13 @@ function RECORD_LAW_GEN_2_FUN52(props) {
                     name: '¿SANCIONADO?',
                     selector: row => row.sanction,
                     center: true,
-                    cell: row => <label>{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</label>
+                    cell: row => <span className="text-sm">{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</span>
                 },
                 {
                     name: 'SUPERVISIÓN',
                     selector: row => row.supervision,
                     center: true,
-                    cell: row => <label>{row.supervision}</label>
+                    cell: row => <span className="text-sm">{row.supervision}</span>
                 },
                 {
                     name: 'DOCUMENTOS',

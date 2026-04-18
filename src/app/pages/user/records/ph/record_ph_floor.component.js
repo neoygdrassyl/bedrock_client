@@ -197,7 +197,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.floor}</label>
+                    cell: row => <span className="text-sm">{row.floor}</span>
                 },
                 {
                     name: 'División',
@@ -228,7 +228,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.common).split(';')[0]}</label>
+                    cell: row => <span className="text-sm">{(row.common).split(';')[0]}</span>
                 },
                 {
                     name: 'Área Común Libre',
@@ -236,7 +236,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.common).split(';')[1]}</label>
+                    cell: row => <span className="text-sm">{(row.common).split(';')[1]}</span>
                 },
                 {
                     name: 'Área Exclusiva Construida',
@@ -244,7 +244,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.common).split(';')[2]}</label>
+                    cell: row => <span className="text-sm">{(row.common).split(';')[2]}</span>
                 },
                 {
                     name: 'Área Exclusiva Libre',
@@ -252,7 +252,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{(row.common).split(';')[3]}</label>
+                    cell: row => <span className="text-sm">{(row.common).split(';')[3]}</span>
                 },
                 {
                     name: 'Total Común Construida',

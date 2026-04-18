@@ -80,21 +80,21 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
             const columns = [
                 {
                     name: 'DETALLES',
-                    cell: row => <label>{row.detail}</label>
+                    cell: row => <span className="text-sm">{row.detail}</span>
                 },
                 {
                     name: 'FECHA',
                     selector: row => row.date, // FIX: v7→v8 column selector
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.date}</label>
+                    cell: row => <span className="text-sm">{row.date}</span>
                 },
                 {
                     name: 'ESTADO FINAL',
                     selector: row => row.state, // FIX: v7→v8 column selector
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.state == 0 ? "EN ARCHIVO" : "FUERA DE ARCHIVO"}</label>
+                    cell: row => <span className="text-sm">{row.state == 0 ? "EN ARCHIVO" : "FUERA DE ARCHIVO"}</span>
                 },
                 {
                     name: 'ACCION',

@@ -416,7 +416,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.use}</label>
+                    cell: row => <span className="text-sm">{row.use}</span>
                 },
                 {
                     name: 'Tipo',
@@ -425,7 +425,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     filterable: true,
                     center: true,
                     minWidth: '120px',
-                    cell: row => <label>{row.type}</label>
+                    cell: row => <span className="text-sm">{row.type}</span>
                 },
                 {
                     name: 'Unidad Uso',
@@ -434,7 +434,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     filterable: true,
                     center: true,
                     minWidth: '120px',
-                    cell: row => <label>{row.pos}</label>
+                    cell: row => <span className="text-sm">{row.pos}</span>
                 },
                 {
                     name: 'Relación',
@@ -442,7 +442,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.name}</label>
+                    cell: row => <span className="text-sm">{row.name}</span>
                 },
                 {
                     name: 'Norma',
@@ -452,7 +452,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     compact: true,
                     minWidth: '40px',
-                    cell: row => <label>{row.norm}</label>
+                    cell: row => <span className="text-sm">{row.norm}</span>
                 },
                 {
                     name: 'Proyecto',
@@ -462,21 +462,21 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     compact: true,
                     minWidth: '40px',
-                    cell: row => <label>{row.project}</label>
+                    cell: row => <span className="text-sm">{row.project}</span>
                 },
                 {
                     name: 'Dif.',
                     center: true,
                     compact: true,
                     minWidth: '40px',
-                    cell: row => <label>{row.project - row.norm}</label>
+                    cell: row => <span className="text-sm">{row.project - row.norm}</span>
                 },
                 {
                     name: 'Observación',
                     center: true,
                     compact: true,
                     minWidth: '50px',
-                    cell: row => <label>{_GET_EVALUATION(row.norm, row.project)}</label>
+                    cell: row => <span className="text-sm">{_GET_EVALUATION(row.norm, row.project)}</span>
                 },
                 {
                     name: 'Evaluación',
@@ -692,28 +692,28 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     compact: true,
                     minWidth: '50px',
-                    cell: row => <label>{row.floor}</label>
+                    cell: row => <span className="text-sm">{row.floor}</span>
                 },
                 {
                     name: 'D -m- (2.20*4.50)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
-                    cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 0)}</label>
+                    cell: row => <span className="text-sm">{_GET_LOCATION_INDEX(row.diensions, 0)}</span>
                 },
                 {
                     name: 'D -m- (2.50*5.00)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
-                    cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 1)}</label>
+                    cell: row => <span className="text-sm">{_GET_LOCATION_INDEX(row.diensions, 1)}</span>
                 },
                 {
                     name: 'D -m- (3.30*5.00)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
-                    cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 2)}</label>
+                    cell: row => <span className="text-sm">{_GET_LOCATION_INDEX(row.diensions, 2)}</span>
                 },
                 {
                     name: 'Total',
@@ -727,21 +727,21 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     compact: true,
                     minWidth: '50px',
-                    cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 3)}</label>
+                    cell: row => <span className="text-sm">{_GET_LOCATION_INDEX(row.diensions, 3)}</span>
                 },
                 {
                     name: 'Motos (2.00*7.00)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
-                    cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 4)}</label>
+                    cell: row => <span className="text-sm">{_GET_LOCATION_INDEX(row.diensions, 4)}</span>
                 },
                 {
                     name: 'Bicicletas (0.50*2.50)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
-                    cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 5)}</label>
+                    cell: row => <span className="text-sm">{_GET_LOCATION_INDEX(row.diensions, 5)}</span>
                 },
                 {
                     name: 'Evaluación',

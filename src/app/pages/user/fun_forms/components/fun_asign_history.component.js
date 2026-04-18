@@ -148,7 +148,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.type}</label>
+                cell: row => <span className="text-sm">{row.type}</span>
             },
             {
                 name: 'ESTADO',
@@ -166,7 +166,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{row.asign}</label>
+                cell: row => <span className="text-sm">{row.asign}</span>
             },
             {
                 name: 'REV.',
@@ -175,7 +175,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{row.rew}</label>
+                cell: row => <span className="text-sm">{row.rew}</span>
             },
             {
                 name: 'RES.',

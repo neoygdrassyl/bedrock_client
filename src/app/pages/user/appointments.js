@@ -86,7 +86,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 filterable: true,
                 minWidth: '40px',
                 center: true,
-                cell: row => <label>{row.id}</label>
+                cell: row => <span className="text-sm">{row.id}</span>
             },
             {
                 name: <h4>FECHA</h4>,
@@ -94,21 +94,21 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser(row.date)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.date)}</span>
             },
             {
                 name: <h4>HORA</h4>,
                 selector: row => row.time,
                 sortable: true,
                 center: true,
-                cell: row => <label>{row.time}</label>
+                cell: row => <span className="text-sm">{row.time}</span>
             },
             {
                 name: <h4>PROFESIONAL</h4>,
                 selector: row => row.profesional,
                 sortable: true,
                 center: true,
-                cell: row => <label>{row.profesional}</label>
+                cell: row => <span className="text-sm">{row.profesional}</span>
             },
             {
                 name: <h4>DESCRIPCIÓN</h4>,
@@ -116,7 +116,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 sortable: true,
                 center: true,
                 minWidth: '100px',
-                cell: row => <label>{row.content}</label>
+                cell: row => <span className="text-sm">{row.content}</span>
             },
                         {
                 name: <h4>OBSERVACIONES</h4>,
@@ -124,7 +124,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 sortable: true,
                 center: true,
                 minWidth: '100px',
-                cell: row => <label>{row.details}</label>
+                cell: row => <span className="text-sm">{row.details}</span>
             },
             {
                 name: <h4>ASISTENCIA SEÑAS</h4>,
@@ -132,7 +132,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 sortable: true,
                 center: true,
                 minWidth: '250px',
-                cell: row => <label>{row.accesibility == true ? <label className='text-success fw-bold'>Si</label> : 'No'}</label>
+                cell: row => <span className="text-sm">{row.accesibility == true ? <label className='text-success fw-bold'>Si</label> : 'No'}</span>
             },
             {
                 name: <h4>ACCIÓN</h4>,

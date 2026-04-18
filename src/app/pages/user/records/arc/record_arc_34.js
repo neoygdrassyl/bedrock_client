@@ -397,7 +397,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.norm}</label>
+                    cell: row => <span className="text-sm">{row.norm}</span>
                 },
                 {
                     name: 'Descripción',
@@ -405,7 +405,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.desc}</label>
+                    cell: row => <span className="text-sm">{row.desc}</span>
                 },
                 {
                     name: 'Fecha',
@@ -413,7 +413,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{dateParser(row.date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.date)}</span>
                 },
                 {
                     name: 'Folios',
@@ -421,7 +421,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.pages}</label>
+                    cell: row => <span className="text-sm">{row.pages}</span>
                 },
                 {
                     name: 'ESTADO',

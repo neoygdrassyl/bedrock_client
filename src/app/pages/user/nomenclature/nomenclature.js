@@ -90,14 +90,14 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className="text-sm">{row.id_public}</span>
             },
             {
                 name: 'TIPO',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.type}</label>
+                cell: row => <span className="text-sm">{row.type}</span>
             },
             {
                 name: 'FECHA RADICACIÓN',
@@ -105,7 +105,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser(row.date_start)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.date_start)}</span>
             },
             {
                 name: 'FECHA EXPEDICIÓN',
@@ -113,7 +113,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser(row.date_end)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.date_end)}</span>
             },
             {
                 name: 'DOCUMENTO',
