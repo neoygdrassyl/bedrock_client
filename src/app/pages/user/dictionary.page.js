@@ -1,6 +1,7 @@
-import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane, MDBPopover, MDBPopoverHeader, MDBPopoverBody, MDBCol, MDBPagination, MDBRow, MDBBtnGroup } from '../../components/ui';
+import { MDBTabsContent, MDBTabsPane, MDBPopover, MDBPopoverHeader, MDBPopoverBody } from '../../components/ui';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
 
 import SERVICE_CUSTOM from '../../services/custom.service';
 
@@ -129,16 +130,9 @@ export default function DICTIONARY(props) {
     }
     let _HEADER_COMPONENET = () => {
         return <>
-            <div className="col-12 d-flex justify-content-start p-0">
-                <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                    <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i className="fas fa-book"></i>  <label className="text-uppercase">{breadCrums.bc_u13}</label></MDBBreadcrumbItem>
-                </MDBBreadcrumb>
+            <div>
+                <h1 className="text-xl font-bold text-foreground">Nomenclatura</h1>
+                <p className="text-sm text-muted-foreground mt-1">Diccionario de series, tipología y consecutivos</p>
             </div>
             <div className="row my-4 d-flex justify-content-center">
                 <div className="col-lg-11 col-md-12">
@@ -178,9 +172,9 @@ export default function DICTIONARY(props) {
         }
 
         return <>
-            <MDBRow>
-                <MDBCol>
-                    <MDBPagination className="m-3">
+            <div className="row">
+                <div className="col">
+                    <nav className="m-3"><ul className="pagination">
                         <li className={`page-item${_page == 1 ? ' disabled' : ''}`} onClick={() => { if (_page != 1) _func(_page - 1) }}>
                             <a className="page-link" role="button" aria-label="Anterior">
                                 <i className="fas fa-chevron-left"></i>
@@ -195,12 +189,12 @@ export default function DICTIONARY(props) {
                             </a>
                         </li>
                         <li className="page-item"> <label className='lead'>{(_limit) * (_page - 1) == 0 ? 1 : (_limit) * (_page - 1)} - {LIST.length < _limit * _page ? LIST.length : _limit * _page}</label> </li>
-                    </MDBPagination>
-                </MDBCol>
-                <MDBCol className="m-3 text-end">
+                    </ul></nav>
+                </div>
+                <div className="col m-3 text-end">
                     <label className='lead'>{currentItemsLenght} DE {LIST.length}</label>
-                </MDBCol>
-            </MDBRow>
+                </div>
+            </div>
         </>
     }
 
@@ -219,8 +213,8 @@ export default function DICTIONARY(props) {
                 </span>
                 <input type='text' className='form-control' placeholder='Busqueda...' id={_id} defaultValue={_filter}
                     onKeyPress={(e) => { if (e.key === 'Enter') setFilter() }} />
-                <MDBBtn link color="primary" size="sm" onClick={() => setFilter()}><i className="fas fa-angle-double-right"></i> Buscar</MDBBtn>
-                {_filter ? <MDBBtn link color="danger" size="sm" onClick={() => clearFilter()}><i className="fas fa-times"></i> </MDBBtn>
+                <Button variant="secondary" size="sm" onClick={() => setFilter()}><i className="fas fa-angle-double-right"></i> Buscar</Button>
+                {_filter ? <Button variant="ghost" size="sm" onClick={() => clearFilter()}><i className="fas fa-times"></i> </Button>
                     : ''}
             </div>
         </>
@@ -295,18 +289,14 @@ export default function DICTIONARY(props) {
                         }} />
 
                     {/* Botón Buscar */}
-                    <MDBBtn link color="primary" size="sm" onClick={() => {
+                    <Button variant="secondary" size="sm" onClick={() => {
                         setFilter()
                         setProccess(proccessSelected);
-                    }}>
-                        <i className="fas fa-angle-double-right"></i> Buscar
-                    </MDBBtn>
+                    }}><i className="fas fa-angle-double-right"></i> Buscar</Button>
 
                     {/* Botón Limpiar */}
                     {_filter || process ? (
-                        <MDBBtn link color="danger" size="sm" onClick={() => clearFilter()}>
-                            <i className="fas fa-times"></i>
-                        </MDBBtn>
+                        <Button variant="ghost" size="sm" onClick={() => clearFilter()}><i className="fas fa-times"></i></Button>
                     ) : (
                         ''
                     )}
@@ -453,9 +443,9 @@ export default function DICTIONARY(props) {
                             LISTADO DE PROFESIONALES  <i className="fas fa-user-circle"></i>
                         </div>
                         <div className='col-3 text-end'>
-                            <MDBBtn onClick={() => generateCVS(headers, LIST.map(row => [(row.name + ' ' + row.surname).toUpperCase(),
+                            <Button variant="outline" size="sm" onClick={() => generateCVS(headers, LIST.map(row => [(row.name + ' ' + row.surname).toUpperCase(),
                             row.id_number, row.email, row.number, row.registration, row.registration_date, row.sanction ? 'SI' : 'NO']), 'LISTADO PROFESIONALES')}
-                                color='success' size='sm' outline><i className="fas fa-table"></i> DESCARGAR CSV</MDBBtn>
+                                ><i className="fas fa-table"></i> Descargar CSV</Button>
                         </div>
                     </div>
                 </>}
@@ -586,16 +576,16 @@ export default function DICTIONARY(props) {
         return <>
             <div className='row'>
                 <div className='col text-center'>
-                    <MDBBtnGroup size="sm">
-                        <MDBBtn color="primary" onClick={() => setTab('C')} outline={tab != 'C'}>ACTUACIONES ({LIST_C.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('E')} outline={tab != 'E'}>CONSECUTIVOS ENTRADA ({LIST_E.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('D')} outline={tab != 'D'}>CONSECUTIVOS SALIDA ({LIST_D.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('F')} outline={tab != 'F'}>CONSECUTIVO FINAL  ({LIST_F.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('G')} outline={tab != 'G'}>CERTIFICACIONES  ({LIST_G.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('H')} outline={tab != 'H'}>PROFESIONALES  ({LIST_H.length})</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('A')} outline={tab != 'A'}>SERIES Y SUBSERIES</MDBBtn>
-                        <MDBBtn color="primary" onClick={() => setTab('B')} outline={tab != 'B'}>TIPOLOGÍA DOCUMENTAL</MDBBtn>
-                    </MDBBtnGroup>
+                    <div className="flex flex-wrap gap-1">
+                        <Button variant={tab != 'C' ? "outline" : "default"} size="sm" onClick={() => setTab('C')}>ACTUACIONES ({LIST_C.length})</Button>
+                        <Button variant={tab != 'E' ? "outline" : "default"} size="sm" onClick={() => setTab('E')}>CONSECUTIVOS ENTRADA ({LIST_E.length})</Button>
+                        <Button variant={tab != 'D' ? "outline" : "default"} size="sm" onClick={() => setTab('D')}>CONSECUTIVOS SALIDA ({LIST_D.length})</Button>
+                        <Button variant={tab != 'F' ? "outline" : "default"} size="sm" onClick={() => setTab('F')}>CONSECUTIVO FINAL  ({LIST_F.length})</Button>
+                        <Button variant={tab != 'G' ? "outline" : "default"} size="sm" onClick={() => setTab('G')}>CERTIFICACIONES  ({LIST_G.length})</Button>
+                        <Button variant={tab != 'H' ? "outline" : "default"} size="sm" onClick={() => setTab('H')}>PROFESIONALES  ({LIST_H.length})</Button>
+                        <Button variant={tab != 'A' ? "outline" : "default"} size="sm" onClick={() => setTab('A')}>SERIES Y SUBSERIES</Button>
+                        <Button variant={tab != 'B' ? "outline" : "default"} size="sm" onClick={() => setTab('B')}>TIPOLOGÍA DOCUMENTAL</Button>
+                    </div>
                 </div>
             </div>
 
@@ -628,12 +618,12 @@ export default function DICTIONARY(props) {
                     {_COMPONENT_PAGINATION(LIST_D, pag_D, limit_D, setPag_D, filter_D, proccessToFilter, 'cub')}
                     <div className='row mx-3'>
                         <div className='col text-end'>
-                            <MDBBtn onClick={() => generateCVS(
+                            <Button variant="outline" size="sm" onClick={() => generateCVS(
                                 ['CÓDIGO', 'PROCESO', 'DESCRIPCCIÓN', "FECHA"],
                                 LIST_D.map((i) => ([`${i.cub}`, `${i.id || i.vr}`, `${i.res}`, 
                                     i.res === 'Citacion Notificación Resolución' ? getJSONFull(i.date).date_doc :i.date])),
                                 'LISTADO CONSECUTIVOS DE SALIDA')}
-                                color='success' size='sm' outline><i className="fas fa-table"></i> DESCARGAR CSV</MDBBtn>
+                                ><i className="fas fa-table"></i> Descargar CSV</Button>
                         </div>
                     </div>
                     {_COMPONENT_MAIN_LIST(LIST_D, filter_D, proccessToFilter, 'cub', limit_D, pag_D, _COMPONENT_POPC_D)}

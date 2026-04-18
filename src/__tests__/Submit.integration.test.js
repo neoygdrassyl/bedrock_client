@@ -166,20 +166,18 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     delete window.user;
   });
 
-  test('1. Renderiza sin crash y muestra título "VENTANILLA ÚNICA"', async () => {
+  test('1. Renderiza sin crash y muestra título "Ventanilla Única"', async () => {
     await act(async () => {
       renderSubmit();
     });
-    expect(screen.getByText('VENTANILLA ÚNICA')).toBeInTheDocument();
+    expect(screen.getByText('Ventanilla Única')).toBeInTheDocument();
   });
 
-  test('2. Breadcrumb con navegación Inicio > Dashboard > Ventanilla Única', async () => {
+  test('2. Subtítulo de gestión visible', async () => {
     await act(async () => {
       renderSubmit();
     });
-    expect(screen.getByText('Inicio')).toBeInTheDocument();
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Ventanilla Única')).toBeInTheDocument();
+    expect(screen.getByText(/Gestión de entradas/i)).toBeInTheDocument();
   });
 
   test('3. Sección ACCIONES visible', async () => {
@@ -201,7 +199,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     const { container } = await act(async () => {
       return renderSubmit();
     });
-    const matches = screen.getAllByText('CONSULTAR');
+    const matches = screen.getAllByText(/consultar/i);
     expect(matches.length).toBeGreaterThanOrEqual(1);
     // Search select field
     const searchSelect = container.querySelector('#submit_search_0');
@@ -215,7 +213,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     const { container } = await act(async () => {
       return renderSubmit();
     });
-    expect(screen.getByText('DOCUMENTO CSV')).toBeInTheDocument();
+    expect(screen.getByText('Documento CSV')).toBeInTheDocument();
     const csvLimit1 = container.querySelector('#csv_limit_1');
     const csvLimit2 = container.querySelector('#csv_limit_2');
     expect(csvLimit1).toBeInTheDocument();
