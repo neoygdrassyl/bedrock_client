@@ -65,7 +65,7 @@ vi.mock('../app/components/ui', () => ({
   MDBTypography: ({ children }) => React.createElement('div', null, children),
 }));
 
-vi.mock('react-data-table-component', () => ({
+vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ title }) => React.createElement('div', { 'data-testid': 'datatable-stub' }, title),
 }));

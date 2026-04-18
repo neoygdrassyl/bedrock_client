@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { Item } from '../../../components/ui';
 import { Link } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import Zone_Use_Service from "../../../services/zone_use.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

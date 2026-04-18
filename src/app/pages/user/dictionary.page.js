@@ -9,7 +9,7 @@ import { formsParser1, getJSONFull } from '../../components/customClasses/typePa
 import TIPOLOGIA from '../../components/jsons/fun6DocsList.json'
 import SERIES from '../../components/jsons/funCodes.json'
 import SERIES_CB1 from '../../components/jsons/funcCodes.cb1.json'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../components/vizualizer.component';
 import { infoCud } from '../../components/jsons/vars';
 import { Icon } from '@/components/icon';

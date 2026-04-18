@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
 import USERS_Service from '../../../services/users.service'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser } from '../../../components/customClasses/typeParse'
 import PQRS_COMPONENT_SOLICITORS from './components/pqrs_solicitors.component';
 import PQRS_COMPONENT_CONTACTS from './components/pqrs_contancts.component';

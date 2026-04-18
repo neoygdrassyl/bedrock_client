@@ -75,7 +75,7 @@ vi.mock('../app/components/ui', () => ({
   MDBTooltip: ({ children }) => React.createElement('span', null, children),
 }));
 
-vi.mock('react-data-table-component', () => ({
+vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data, columns, noDataComponent }) =>
     React.createElement('div', { 'data-testid': 'datatable-stub' }, noDataComponent),

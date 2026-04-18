@@ -26,7 +26,7 @@ vi.mock('../app/services/zone_use.service', () => ({
 }));
 
 // DataTable mock — renders row data directly without calling column cell functions
-vi.mock('react-data-table-component', () => ({
+vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data = [], noDataComponent, progressPending, progressComponent }) => (
     <div data-testid='mock-datatable'>

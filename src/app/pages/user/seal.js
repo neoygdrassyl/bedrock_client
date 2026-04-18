@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { formsParser1_exlucde2, dateParser, formsParser1 } from '../../components/customClasses/typeParse'
 import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);

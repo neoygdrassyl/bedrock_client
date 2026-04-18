@@ -6,7 +6,7 @@ import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
 import FunService from '../../../services/fun.service';
 import PqrsMainDataService from '../../../services/pqrs_main.service';
 import Codes from '../../../components/jsons/fun6DocsList.json';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import TABLE_COMPONENT_EXPANDED from '../fun_forms/components/table_components/table.component_expanded';
 import USER_SERVICE from '../../../services/users.service';

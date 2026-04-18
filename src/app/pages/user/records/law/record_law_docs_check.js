@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import VIZUALIZER from '../../../../components/vizualizer.component';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 

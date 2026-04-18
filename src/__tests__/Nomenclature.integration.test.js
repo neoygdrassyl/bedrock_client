@@ -30,7 +30,7 @@ vi.mock('../app/services/nomeclature.service', () => ({
 }));
 
 // DataTable mock simple — no llama col.cell para evitar deps de UI internas
-vi.mock('react-data-table-component', () => ({
+vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data = [], noDataComponent }) => (
     <div data-testid='mock-datatable'>

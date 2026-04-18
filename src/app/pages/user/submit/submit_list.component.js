@@ -9,7 +9,7 @@ import SubmitService from '../../../services/submit.service';
 import Fun6DocList from '../../../components/jsons/fun6DocsList.json'
 import { Lists } from '../../../components/jsons/lists_submit'
 
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import DOCS_LIST from '../fun_forms/components/docs_list.component';
 import { Icon } from '@/components/icon';
 

@@ -1,7 +1,7 @@
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader,  } from '../../../../components/ui';
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 import FunService from '../../../../services/fun.service';
 import { Icon } from '@/components/icon';

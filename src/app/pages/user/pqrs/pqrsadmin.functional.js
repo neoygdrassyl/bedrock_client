@@ -4,7 +4,7 @@ import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../components/customClasses/typeParse'
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 

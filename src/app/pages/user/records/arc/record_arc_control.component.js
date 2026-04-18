@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 
 import FUN_SERVICE from '../../../../services/fun.service'
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';

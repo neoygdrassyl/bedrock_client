@@ -5,7 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 
 export default function RECORD_ARC_AREAS_RESUME(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

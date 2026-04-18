@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
 import { MDBCollapse, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTabsContent, MDBTabsPane } from '../../../components/ui';
 import TagInput from "../../../components/TagInput";

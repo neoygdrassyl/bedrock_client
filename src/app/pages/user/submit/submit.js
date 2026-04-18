@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import SubmitService from '../../../services/submit.service';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser } from '../../../components/customClasses/typeParse';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

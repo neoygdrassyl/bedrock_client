@@ -83,7 +83,7 @@ vi.mock('../app/components/Collapsible', () => ({
   default: ({ children }) => <div data-testid="collapsible-stub">{children}</div>,
 }));
 
-vi.mock('react-data-table-component', () => ({
+vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
   default: () => <div data-testid="data-table-stub" />,
 }));

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 
 import SERVICE_CERTIFICATIONS from '../../../../services/certifications.service';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

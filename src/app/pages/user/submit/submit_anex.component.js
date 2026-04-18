@@ -8,7 +8,7 @@ import funService from '../../../services/fun.service';
 import dayjs from 'dayjs';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);

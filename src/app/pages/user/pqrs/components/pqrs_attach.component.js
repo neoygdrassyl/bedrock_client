@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'

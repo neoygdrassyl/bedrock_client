@@ -1,7 +1,7 @@
 
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import DATATABLE from 'react-data-table-component';
+import DATATABLE from '@/components/data-table-bridge';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from '../../../../services/fun.service';

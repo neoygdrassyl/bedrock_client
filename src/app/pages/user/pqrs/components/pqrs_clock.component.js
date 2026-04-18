@@ -1,5 +1,5 @@
 import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
-import DataTable, { Alignment } from 'react-data-table-component';
+import DataTable, { Alignment } from '@/components/data-table-bridge';
 
 function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form, currentItem }) {
 

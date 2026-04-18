@@ -1,6 +1,6 @@
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader } from '../../../../components/ui';
 import React, { useState, useEffect } from 'react';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'

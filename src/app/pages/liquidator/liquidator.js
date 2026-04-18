@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { Link } from "react-router-dom";
 import Collapsible from '../../components/Collapsible';
 import dayjs from 'dayjs';
