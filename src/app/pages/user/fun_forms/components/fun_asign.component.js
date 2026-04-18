@@ -36,7 +36,7 @@ const Whisper = ({ children, speaker }) => {
   );
 };
 const Popover = ({ children }) => <>{children}</>;
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import FUN_ASIGNS_HISTORY_COMPONENT from './fun_asign_history.component';
 import './fun_modal_shared.css';
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { PDFDocument } from 'pdf-lib';
 import { Document, Page, pdfjs } from "react-pdf";
 import 'react-pdf/dist/Page/AnnotationLayer.css';

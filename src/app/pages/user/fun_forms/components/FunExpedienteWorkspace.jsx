@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import { Button } from '@/components/ui/button';
 import FUNService from '../../../../services/fun.service';

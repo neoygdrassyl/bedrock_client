@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'

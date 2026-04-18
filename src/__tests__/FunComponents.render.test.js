@@ -51,9 +51,8 @@ vi.mock('../app/components/jsons/vars', () => ({
   nomens: 'CUB1',
 }));
 
-vi.mock('react-modal', () => ({
-  __esModule: true,
-  default: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
+vi.mock('@/components/legacy-modal', () => ({
+  LegacyModal: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
     if (!isOpen) return null;
     return React.createElement(
       'div',

@@ -18,7 +18,7 @@ import COLOMBIA from '../img/img6.jpg'
 import CarouselLogos from '../components/carousel.component'
 
 // FRONT PAGE MODAL
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import './home.css'
 import { infoCud } from '../components/jsons/vars';

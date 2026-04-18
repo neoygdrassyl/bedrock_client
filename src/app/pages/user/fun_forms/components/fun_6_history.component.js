@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import FUN_SERVICE from '../../../../services/fun.service'
 import Swal from 'sweetalert2'

@@ -9,7 +9,7 @@ const Tag = ({ color, children }) => (
   </span>
 );
 
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
 import DataTable from 'react-data-table-component';

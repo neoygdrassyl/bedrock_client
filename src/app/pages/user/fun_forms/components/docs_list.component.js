@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import DataTable from 'react-data-table-component';
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import ListJson from '../../../../components/jsons/fun6DocsList.json';
 import './fun_modal_shared.css';
 

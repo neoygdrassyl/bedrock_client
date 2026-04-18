@@ -100,16 +100,12 @@ vi.mock('sweetalert2-react-content', () => ({
   }),
 }));
 
-vi.mock('react-modal', () => {
-  const React = require('react');
-  return {
-    __esModule: true,
-    default: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
-      if (!isOpen) return null;
-      return <div data-testid="mock-modal" data-label={contentLabel}>{children}</div>;
-    },
-  };
-});
+vi.mock('@/components/legacy-modal', () => ({
+  LegacyModal: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
+    if (!isOpen) return null;
+    return <div data-testid="mock-modal" data-label={contentLabel}>{children}</div>;
+  },
+}));
 
 vi.mock('rsuite', () => {
   const React = require('react');

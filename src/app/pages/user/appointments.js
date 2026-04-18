@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
 import DataTable from 'react-data-table-component';
 import Collapsible from '../../components/Collapsible';
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser } from '../../components/customClasses/typeParse'

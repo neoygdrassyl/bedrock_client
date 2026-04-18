@@ -46,9 +46,8 @@ vi.mock('react-data-table-component', () => ({
   ),
 }));
 
-vi.mock('react-modal', () => ({
-  __esModule: true,
-  default: ({ children, isOpen }) =>
+vi.mock('@/components/legacy-modal', () => ({
+  LegacyModal: ({ children, isOpen }) =>
     isOpen ? <div data-testid='mock-modal'>{children}</div> : null,
 }));
 

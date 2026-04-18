@@ -8,7 +8,7 @@ import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
 import Collapsible from '../../components/Collapsible';
 import { PUBLISH_TYPE_ARRAY } from '../../components/vars.global'
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import publishService from '../../services/publish.service';
 
 
