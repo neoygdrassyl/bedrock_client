@@ -5,6 +5,7 @@ import { IconRail } from './IconRail';
 import { ContextPanel } from './ContextPanel';
 import { HeaderBar } from './HeaderBar';
 import { AppFooter } from './AppFooter';
+import { LegacyPageWrapper } from './LegacyPageWrapper';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { infoCud } from '@/app/components/jsons/vars';
 
@@ -70,7 +71,9 @@ export function AppShell({ user, onLogout, children }) {
 
         <ScrollArea className="flex-1">
           <main id="main-content" className="p-6">
-            {children}
+            <LegacyPageWrapper>
+              {children}
+            </LegacyPageWrapper>
           </main>
         </ScrollArea>
 

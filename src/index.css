@@ -97,3 +97,203 @@ button:where(:not(.btn):not([class*="btn-"]):not(.Collapsible__trigger)) {
   border: 0;
   background: transparent;
 }
+
+/* ── Legacy Bridge ──────────────────────────────────────────────────
+   Overrides Bootstrap component colors inside .legacy-bridge to align
+   with the design token palette. Uses :where() for zero-specificity
+   so explicit utilities still win. ─────────────────────────────────── */
+
+/* Buttons */
+.legacy-bridge .btn-primary {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.legacy-bridge .btn-primary:hover,
+.legacy-bridge .btn-primary:focus {
+  background-color: hsl(var(--primary) / 0.9);
+  border-color: hsl(var(--primary) / 0.9);
+  box-shadow: 0 0 0 0.2rem hsl(var(--primary) / 0.25);
+}
+.legacy-bridge .btn-success {
+  background-color: hsl(var(--accent));
+  border-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+.legacy-bridge .btn-success:hover,
+.legacy-bridge .btn-success:focus {
+  background-color: hsl(var(--accent) / 0.9);
+  border-color: hsl(var(--accent) / 0.9);
+}
+.legacy-bridge .btn-danger {
+  background-color: hsl(var(--destructive));
+  border-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+.legacy-bridge .btn-danger:hover,
+.legacy-bridge .btn-danger:focus {
+  background-color: hsl(var(--destructive) / 0.9);
+  border-color: hsl(var(--destructive) / 0.9);
+}
+.legacy-bridge .btn-warning {
+  background-color: hsl(var(--warning));
+  border-color: hsl(var(--warning));
+  color: hsl(var(--warning-foreground));
+}
+.legacy-bridge .btn-outline-primary {
+  color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+.legacy-bridge .btn-outline-primary:hover {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Tables */
+.legacy-bridge .table {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
+}
+.legacy-bridge .table th {
+  border-color: hsl(var(--border));
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: hsl(var(--muted-foreground));
+  background-color: hsl(var(--muted));
+}
+.legacy-bridge .table td {
+  border-color: hsl(var(--border));
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+.legacy-bridge .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: hsl(var(--muted) / 0.3);
+  color: inherit;
+}
+.legacy-bridge .table-hover > tbody > tr:hover > * {
+  background-color: hsl(var(--primary) / 0.05);
+  color: inherit;
+}
+
+/* Cards (Bootstrap) */
+.legacy-bridge .card {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-color: hsl(var(--border));
+  border-radius: var(--radius);
+}
+.legacy-bridge .card-header {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+  font-weight: 600;
+}
+
+/* Badges */
+.legacy-bridge .badge.bg-primary { background-color: hsl(var(--primary)) !important; }
+.legacy-bridge .badge.bg-success { background-color: hsl(var(--accent)) !important; }
+.legacy-bridge .badge.bg-danger { background-color: hsl(var(--destructive)) !important; }
+.legacy-bridge .badge.bg-warning { background-color: hsl(var(--warning)) !important; }
+
+/* Alerts */
+.legacy-bridge .alert-primary {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  border-color: hsl(var(--primary) / 0.2);
+}
+.legacy-bridge .alert-success {
+  background-color: hsl(var(--accent) / 0.1);
+  color: hsl(var(--accent));
+  border-color: hsl(var(--accent) / 0.2);
+}
+.legacy-bridge .alert-danger {
+  background-color: hsl(var(--destructive) / 0.1);
+  color: hsl(var(--destructive));
+  border-color: hsl(var(--destructive) / 0.2);
+}
+
+/* Forms */
+.legacy-bridge .form-control,
+.legacy-bridge .form-select {
+  border-color: hsl(var(--input));
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.875rem;
+}
+.legacy-bridge .form-control:focus,
+.legacy-bridge .form-select:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 0.2rem hsl(var(--ring) / 0.25);
+}
+.legacy-bridge .form-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Nav tabs */
+.legacy-bridge .nav-tabs .nav-link {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
+.legacy-bridge .nav-tabs .nav-link.active {
+  color: hsl(var(--primary));
+  border-color: hsl(var(--border)) hsl(var(--border)) transparent;
+  background-color: hsl(var(--card));
+  font-weight: 500;
+}
+.legacy-bridge .nav-tabs .nav-link:hover:not(.active) {
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+/* Text utilities alignment */
+.legacy-bridge .text-primary { color: hsl(var(--primary)) !important; }
+.legacy-bridge .text-success { color: hsl(var(--accent)) !important; }
+.legacy-bridge .text-danger { color: hsl(var(--destructive)) !important; }
+.legacy-bridge .text-warning { color: hsl(var(--warning)) !important; }
+.legacy-bridge .text-muted { color: hsl(var(--muted-foreground)) !important; }
+
+/* Page titles inside legacy content */
+.legacy-bridge h1, .legacy-bridge h2, .legacy-bridge h3, .legacy-bridge h4 {
+  color: hsl(var(--foreground));
+  font-family: 'Inter', sans-serif;
+}
+
+/* Accordion / Collapsible */
+.legacy-bridge .accordion-button {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--card));
+}
+.legacy-bridge .accordion-button:not(.collapsed) {
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.05);
+}
+
+/* Progress bars */
+.legacy-bridge .progress-bar {
+  background-color: hsl(var(--primary));
+}
+
+/* Dark mode adjustments for legacy */
+.dark .legacy-bridge .form-control,
+.dark .legacy-bridge .form-select {
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
+}
+.dark .legacy-bridge .table {
+  --bs-table-bg: transparent;
+}
+.dark .legacy-bridge .table th {
+  background-color: hsl(var(--muted) / 0.5);
+}
+.dark .legacy-bridge .card {
+  border-color: hsl(var(--border) / 0.5);
+}
+.dark .legacy-bridge .modal-content {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-color: hsl(var(--border));
+}
