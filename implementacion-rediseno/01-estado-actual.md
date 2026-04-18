@@ -88,7 +88,7 @@
 | Tablas legacy (react-data-table-component) | **MIGRADO — 83 archivos usan DataTableBridge** |
 | Modales legacy (react-modal) | **MIGRADO — 30 archivos usan LegacyModal** |
 | Alertas (SweetAlert2) | ~100 archivos, ~2330 lineas sin migrar (Fase 6) |
-| Iconos (FontAwesome CDN) | **MIGRADO — 170 archivos usan Lucide Icon bridge** |
+| Iconos (FontAwesome CDN) | **MIGRADO — 220+ archivos usan Lucide Icon bridge, CDN eliminado** |
 | Forms | Todos manuales, sin sistema unificado |
 | Styled-components restantes | global.js + componentes puntuales |
 | Bootstrap como dependencia | Grid/utilidades aun necesarias |
