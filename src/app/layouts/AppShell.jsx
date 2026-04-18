@@ -5,10 +5,8 @@ import { IconRail } from './IconRail';
 import { ContextPanel } from './ContextPanel';
 import { HeaderBar } from './HeaderBar';
 import { AppFooter } from './AppFooter';
-import { useTheme } from '@/components/theme-provider';
-import { Button } from '@/components/ui/button';
-import { Sun, Moon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { infoCud } from '@/app/components/jsons/vars';
 
 /**
  * Main application shell: rail + panel + header + content + footer.
@@ -16,7 +14,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 export function AppShell({ user, onLogout, children }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { resolvedTheme, setTheme } = useTheme();
 
   const navItems = getNavItems(user?.role_short);
 
@@ -44,23 +41,13 @@ export function AppShell({ user, onLogout, children }) {
   );
 
   const logo = (
-    <div className="w-8 h-8 rounded-lg bg-sidebar-accent/20 flex items-center justify-center text-sidebar-foreground font-semibold text-sm">
-      D
+    <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-white/10">
+      <img
+        src={infoCud.icon}
+        alt={infoCud.name}
+        className="w-full h-full object-contain"
+      />
     </div>
-  );
-
-  const bottomSlot = (
-    <>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-        className="h-10 w-10 p-0 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-white/10"
-        aria-label={resolvedTheme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
-      >
-        {resolvedTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-      </Button>
-    </>
   );
 
   return (
@@ -70,7 +57,6 @@ export function AppShell({ user, onLogout, children }) {
         activeId={activeRailId}
         onSelect={handleRailSelect}
         logo={logo}
-        bottomSlot={bottomSlot}
       />
 
       <ContextPanel

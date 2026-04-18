@@ -9,54 +9,77 @@ import {
 } from '@/components/ui/tooltip';
 
 /**
+ * Items before this index are "main nav", after are "utility nav".
+ * Used to render a visual separator between groups.
+ */
+const UTILITY_START_INDEX = 7;
+
+/**
  * Vertical icon-only navigation rail (48px wide, always dark bg).
  */
-export function IconRail({ items, activeId, onSelect, logo, bottomSlot }) {
+export function IconRail({ items, activeId, onSelect, logo }) {
   const location = useLocation();
+
+  const mainItems = items.slice(0, UTILITY_START_INDEX);
+  const utilityItems = items.slice(UTILITY_START_INDEX);
 
   return (
     <nav
       aria-label="Navegación principal"
-      className="flex flex-col items-center h-full w-12 bg-sidebar text-sidebar-foreground py-3 gap-1"
+      className="flex flex-col items-center h-full w-12 bg-sidebar text-sidebar-foreground py-3 gap-1 shrink-0"
     >
       {logo && <div className="mb-4 flex items-center justify-center">{logo}</div>}
 
       <TooltipProvider delayDuration={200}>
         <div className="flex flex-col items-center gap-1 flex-1">
-          {items.map((item) => {
-            const isActive =
-              activeId === item.id || location.pathname.startsWith(item.route);
-            return (
-              <Tooltip key={item.id}>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => onSelect(item.id)}
-                    className={cn(
-                      'flex items-center justify-center w-10 h-10 rounded-lg transition-colors',
-                      isActive
-                        ? 'bg-sidebar-accent text-white'
-                        : 'text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-white/10'
-                    )}
-                    aria-label={item.label}
-                    aria-current={isActive ? 'page' : undefined}
-                  >
-                    <Icon name={item.icon} size={20} />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="right" sideOffset={8}>
-                  {item.label}
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
+          {mainItems.map((item) => (
+            <RailButton
+              key={item.id}
+              item={item}
+              isActive={activeId === item.id || location.pathname.startsWith(item.route)}
+              onSelect={onSelect}
+            />
+          ))}
+
+          {utilityItems.length > 0 && (
+            <div className="w-6 border-t border-sidebar-foreground/10 my-1.5" />
+          )}
+
+          {utilityItems.map((item) => (
+            <RailButton
+              key={item.id}
+              item={item}
+              isActive={activeId === item.id || location.pathname.startsWith(item.route)}
+              onSelect={onSelect}
+            />
+          ))}
         </div>
       </TooltipProvider>
-
-      {bottomSlot && (
-        <div className="flex flex-col items-center gap-2 mt-auto pt-2 border-t border-white/10">
-          {bottomSlot}
-        </div>
-      )}
     </nav>
+  );
+}
+
+function RailButton({ item, isActive, onSelect }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          onClick={() => onSelect(item.id)}
+          className={cn(
+            'flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-150',
+            isActive
+              ? 'bg-sidebar-accent text-white shadow-[0_0_10px_rgba(37,99,235,0.25)]'
+              : 'text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-white/10 hover:shadow-[0_0_8px_rgba(255,255,255,0.06)]'
+          )}
+          aria-label={item.label}
+          aria-current={isActive ? 'page' : undefined}
+        >
+          <Icon name={item.icon} size={20} />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="right" sideOffset={8}>
+        {item.label}
+      </TooltipContent>
+    </Tooltip>
   );
 }

@@ -9,9 +9,10 @@ describe('Icon bridge component', () => {
     expect(container.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('renders nothing for an unknown FA name', () => {
+  it('renders fallback CircleAlert for an unknown FA name', () => {
     const { container } = render(<Icon name="fa-nonexistent-icon-xyz" />);
-    expect(container.querySelector('svg')).not.toBeInTheDocument();
+    const svg = container.querySelector('svg');
+    expect(svg).toBeInTheDocument();
   });
 
   it('passes className to the svg', () => {

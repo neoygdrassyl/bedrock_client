@@ -1,4 +1,5 @@
 import * as LucideIcons from 'lucide-react';
+import { CircleAlert } from 'lucide-react';
 import { FA_TO_LUCIDE } from '@/lib/icon-map';
 
 /**
@@ -17,14 +18,8 @@ import { FA_TO_LUCIDE } from '@/lib/icon-map';
  * @param {string} [props.className] - CSS classes
  */
 export function Icon({ name, size = 16, className, ...rest }) {
-  // Resolve FA name to Lucide name, or use name directly if it's already a Lucide name
   const lucideName = FA_TO_LUCIDE[name] || name;
-
-  const LucideComponent = LucideIcons[lucideName];
-
-  if (!LucideComponent) {
-    return null;
-  }
+  const LucideComponent = LucideIcons[lucideName] || CircleAlert;
 
   return <LucideComponent size={size} className={className} {...rest} />;
 }

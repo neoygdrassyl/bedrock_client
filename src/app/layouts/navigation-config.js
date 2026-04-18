@@ -26,8 +26,8 @@ const NAV_ITEMS = [
     route: '/licencias',
     roles: ['ADMIN', 'AUX'],
     children: [
-      { id: 'licencias-radicar', label: 'Radicar', route: '/licencias' },
-      { id: 'licencias-gestion', label: 'Gestión', route: '/licencias/gestion' },
+      { id: 'licencias-radicar', label: 'Radicar', route: '/licencias', icon: 'FilePlus' },
+      { id: 'licencias-gestion', label: 'Gestión', route: '/licencias/gestion', icon: 'FolderOpen' },
     ],
   },
   {
@@ -93,8 +93,8 @@ const NAV_ITEMS = [
     route: '/normas',
     roles: [],
     children: [
-      { id: 'normas-urbanas', label: 'Normas', route: '/normas' },
-      { id: 'uso-suelo', label: 'Uso de suelo', route: '/uso-suelo' },
+      { id: 'normas-urbanas', label: 'Normas', route: '/normas', icon: 'Scale' },
+      { id: 'uso-suelo', label: 'Uso de suelo', route: '/uso-suelo', icon: 'MapPin' },
     ],
   },
 ];

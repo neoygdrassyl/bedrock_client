@@ -62,12 +62,15 @@ import LEGAL_FLOW_GUIDE from './pages/user/legal_flow_guide/LegalFlowGuide.page'
 // ── Loading fallback for Suspense ───────────────────────────────────
 function LoadingFallback() {
   return (
-    <div className="d-flex justify-content-center align-items-center py-5" style={{ minHeight: '40vh' }}>
-      <div className="text-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
+    <div className="flex items-center justify-center py-12" style={{ minHeight: '40vh' }}>
+      <div className="text-center space-y-3">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+          <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
         </div>
-        <p className="mt-2 text-muted">Cargando m&oacute;dulo...</p>
+        <p className="text-sm text-muted-foreground">Cargando módulo...</p>
       </div>
     </div>
   );
@@ -90,11 +93,11 @@ class RouteErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="container py-4">
-          <div className="alert alert-danger">
-            <h4 className="mb-2">Error en este modulo</h4>
-            <p className="mb-2">La vista actual presento un error y se detuvo para evitar una pantalla en blanco.</p>
-            <p className="mb-0"><a href="/dashboard">Volver al panel</a></p>
+        <div className="max-w-2xl mx-auto py-8 px-4">
+          <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 space-y-2">
+            <h4 className="text-base font-semibold text-destructive">Error en este módulo</h4>
+            <p className="text-sm text-muted-foreground">La vista actual presentó un error y se detuvo para evitar una pantalla en blanco.</p>
+            <p className="text-sm"><a href="/dashboard" className="text-primary hover:underline">Volver al panel</a></p>
           </div>
         </div>
       );
