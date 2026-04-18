@@ -122,17 +122,29 @@
 
 33. **DataTable bridge mejorado** — estado vacio con icono FileX + mensaje estilizado. Paginacion compacta con botones h-7, indicadores de pagina para ≤7 paginas, contador de registros totales.
 
+### Fase 3 — FUN (Licencias) Module
+
+34. **Dashboard real-time counts** — conteos en vivo desde 5 APIs del backend (FUN, PQRS, Submit, Mailbox, Appointments) con Skeleton loading. FUN activas filtradas por state>0 && <100, pendientes por state==1 || ==-1.
+
+35. **FUN.js status badges** — `_GET_MISSING_CONTEXT` y `_GET_STATE_STR` reescritos: de `<label text-danger>` a `<Badge variant="destructive">`. 15+ estados con badges color-coded (primary, accent, secondary, outline, destructive).
+
+36. **FUN.js row styles tokenizados** — `var(--bs-info-bg-subtle)` → `hsl(var(--primary)/0.08)`, `var(--bs-warning-bg-subtle)` → `hsl(var(--warning)/0.12)`. Compatible dark mode.
+
+37. **FUN.js column headers limpios** — 7 sets de columnas: `<label className="text-center">` → strings planos. Cell renderers: `<label>`/`<h6>` → `<span className="text-sm">` con font-mono para IDs/fechas. Categoria usa `<Badge variant="outline">`. Tiempo restante color-coded (destructive <0, warning ≤5).
+
+38. **funmanage.page.js visual alignment** — FECHA PENDIENTE → Badge destructive, titulo H1 ALL CAPS → H2 title case tracking-tight, tabs labels → span font-medium uppercase tracking-wide.
+
 ## Que falta (resumen)
 
 | Area | Estado |
 |---|---|
 | Brecha visual del shell | **COMPLETADO — IconRail hover glow, ContextPanel con grupos/badges, HeaderBar con search/bell/breadcrumb, Footer VS Code-style con conectividad** |
-| Paginas de modulos legacy (FUN, PQRS, etc.) | Intactas con estilo viejo Bootstrap, **envueltas en LegacyPageWrapper para reducir choque visual** |
+| Paginas de modulos legacy (FUN, PQRS, etc.) | **FUN parcialmente migrado (badges, columns, row tokens). PQRS, Records, Submit pendientes** |
 | Tablas legacy (react-data-table-component) | **MIGRADO — 83 archivos usan DataTableBridge** |
 | Modales legacy (react-modal) | **MIGRADO — 30 archivos usan LegacyModal** |
 | Alertas (SweetAlert2) | **CSS THEME APLICADO — dialogs visualmente alineados con tokens. Migracion JS completa en Fase 6** |
 | Iconos (FontAwesome CDN) | **MIGRADO — 220+ archivos usan Lucide Icon bridge, CDN eliminado** |
-| Dashboard | **PULIDO — saludo dinamico, fecha en español, secciones con divisores, cards stat-ready** |
+| Dashboard | **COMPLETO — saludo dinamico, fecha, secciones, cards con conteos en vivo (5 APIs)** |
 | Forms | Todos manuales, sin sistema unificado |
 | Styled-components restantes | **ELIMINADO — global.js/font.js borrados, paquete desinstalado, bundle reducido** |
 | Bootstrap como dependencia | Grid/utilidades aun necesarias |
