@@ -26,6 +26,7 @@ import { getRouteRedirects } from './layouts/navigation-config';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/legacy-bridge.css';
+import './styles/swal-theme.css';
 
 // Login (extracted, eager — entry point for unauthenticated users)
 import LoginPage from './pages/auth/LoginPage';
