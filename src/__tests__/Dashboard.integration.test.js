@@ -33,7 +33,10 @@ describe('Dashboard — Integración del panel principal', () => {
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
-    expect(screen.getByText('Panel de Control')).toBeInTheDocument();
+    // Greeting is dynamic (Buenos días/tardes/noches), check for any of them
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toBeInTheDocument();
+    expect(heading.textContent).toMatch(/Buen[oa]s?\s+(días|tardes|noches)/i);
   });
 
   it('muestra sección de módulos de trabajo con al menos 2 widgets', () => {
