@@ -30,6 +30,7 @@ import cubXvrService from '../../../services/cubXvr.service';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
+import { Badge } from '@/components/ui/badge';
 
 const MySwal = withReactContent(Swal);
 
@@ -259,61 +260,61 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         }
         const columns = [
             {
-                name: <label><b>PROFESIONAL</b></label>,
+                name: 'PROFESIONAL',
                 selector: row => row.name,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{row.name}</h6>
+                cell: row => <span className="text-sm">{row.name}</span>
             },
             {
-                name: <label><b>COMPETENCIA</b></label>,
+                name: 'COMPETENCIA',
                 selector: row => row.competence,
                 minWidth: '150px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{row.competence}</h6>
+                cell: row => <span className="text-sm">{row.competence}</span>
             },
             {
-                name: <label><b>FECHA ASIGNACIÓN</b></label>,
+                name: 'FECHA ASIGNACIÓN',
                 selector: row => row.asign,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{dateParser(row.asign)}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.asign)}</span>
             },
             {
-                name: <label><b>FECHA RESPUESTA</b></label>,
+                name: 'FECHA RESPUESTA',
                 selector: row => row.date_reply,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{dateParser(row.date_reply)}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.date_reply)}</span>
             },
             {
-                name: <label><b>FECHA LIMITE </b></label>,
+                name: 'FECHA LÍMITE',
                 selector: row => row.date_reply,
                 minWidth: '180px',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3 text-center">{(dateParser(dateParser_finalDate(row.asign, business_days()))) ?? ''}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{(dateParser(dateParser_finalDate(row.asign, business_days()))) ?? ''}</span>
             },
             {
-                name: <label><b>DIAS HABILES</b></label>,
+                name: 'DÍAS HÁBILES',
                 minWidth: '150px',
                 center: true,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{business_days() ? business_days() : ''}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{business_days() ? business_days() : ''}</span>
             },
             {
-                name: <label><b>¿NOTIFICO EMAIL?</b></label>,
+                name: '¿NOTIFICÓ EMAIL?',
                 center: true,
                 minWidth: '150px',
-                cell: row => <h6 className="pt-3 text-center">{row.sent_email_notify ? "SI" : "NO"}</h6>
+                cell: row => row.sent_email_notify ? <Badge className="text-[10px] bg-accent text-accent-foreground">Sí</Badge> : <Badge variant="secondary" className="text-[10px]">No</Badge>
             },
             {
-                name: <label><b>ACCIÓN</b></label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
@@ -348,38 +349,38 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         }
         const columns = [
             {
-                name: <label><b>PROFESIONAL</b></label>,
+                name: 'PROFESIONAL',
                 selector: row => row.name,
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="text-center">{row.name}</h6>
+                cell: row => <span className="text-sm">{row.name}</span>
             },
             {
-                name: <label><b>COMPETENCIA</b></label>,
+                name: 'COMPETENCIA',
                 selector: row => row.competence,
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="text-center">{row.competence}</h6>
+                cell: row => <span className="text-sm">{row.competence}</span>
             },
             {
-                name: <label><b>FECHA ASIGNACIÓN</b></label>,
+                name: 'FECHA ASIGNACIÓN',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="text-center">{dateParser(row.asign)}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.asign)}</span>
             },
             {
-                name: <label><b>VISTO BUENO</b></label>,
+                name: 'VISTO BUENO',
                 center: true,
-                cell: row => <h6 className=" text-center">{row.feedback == 1 ? <label className="fw-bold text-success">SI</label> : row.feedback == 0 ? <label className="fw-bold text-danger">NO</label> : ''}</h6>
+                cell: row => row.feedback == 1 ? <Badge className="text-[10px] bg-accent text-accent-foreground">Sí</Badge> : row.feedback == 0 ? <Badge variant="destructive" className="text-[10px]">No</Badge> : ''
             },
             {
-                name: <label><b>FECHA VISTO BUENO</b></label>,
+                name: 'FECHA VISTO BUENO',
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="text-center">{dateParser(row.feedback_date)}</h6>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.feedback_date)}</span>
             },
             {
-                name: <label><b>ACCIÓN</b></label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
@@ -842,21 +843,21 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         }
         const columns = [
             {
-                name: <h3>NOMBRE</h3>,
+                name: 'NOMBRE',
                 selector: row => row.name,
                 sortable: true,
                 filterable: true,
-                cell: row => <p className="pt-3 text-center">{row.public_name}</p>
+                cell: row => <span className="text-sm">{row.public_name}</span>
             },
             {
-                name: <h3>TIPO</h3>,
+                name: 'TIPO',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
-                cell: row => <p className="pt-3">{row.type}</p>
+                cell: row => <span className="text-sm">{row.type}</span>
             },
             {
-                name: <h3>ACCIÓN</h3>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
                 cell: row => <>

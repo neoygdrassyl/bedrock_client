@@ -254,7 +254,7 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
     await act(async () => {
       renderFunManage();
     });
-    expect(screen.getByText('GESTIÓN DE SOLICITUDES')).toBeInTheDocument();
+    expect(screen.getByText('Gestión de Solicitudes')).toBeInTheDocument();
   });
 
   test('2. Page header muestra título y subtítulo', async () => {
@@ -269,16 +269,16 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
     await act(async () => {
       renderFunManage();
     });
-    expect(screen.getByText('PROCESOS DIARIOS')).toBeInTheDocument();
-    expect(screen.getByText('ENTRADA DE DOCUMENTOS')).toBeInTheDocument();
-    expect(screen.getByText('CARGA PROFESIONAL')).toBeInTheDocument();
+    expect(screen.getByText('Procesos Diarios')).toBeInTheDocument();
+    expect(screen.getByText('Entrada de Documentos')).toBeInTheDocument();
+    expect(screen.getByText('Carga Profesional')).toBeInTheDocument();
   });
 
   test('4. Tab PROCESOS DIARIOS está activo por defecto — stub visible', async () => {
     await act(async () => {
       renderFunManage();
     });
-    const dailyTabLabel = screen.getByText('PROCESOS DIARIOS');
+    const dailyTabLabel = screen.getByText('Procesos Diarios');
     expect(dailyTabLabel).toBeInTheDocument();
     // The stub for FUN_DAILY_COMPONENT should be rendered in the active pane
     expect(screen.getByTestId('fun-daily-stub')).toBeInTheDocument();
@@ -317,7 +317,7 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
     await act(async () => {
       renderFunManage();
     });
-    const docTabLabel = screen.getByText('ENTRADA DE DOCUMENTOS');
+    const docTabLabel = screen.getByText('Entrada de Documentos');
     await act(async () => {
       fireEvent.click(docTabLabel);
     });
@@ -329,7 +329,7 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
     await act(async () => {
       renderFunManage();
     });
-    const cargaTabLabel = screen.getByText('CARGA PROFESIONAL');
+    const cargaTabLabel = screen.getByText('Carga Profesional');
     await act(async () => {
       fireEvent.click(cargaTabLabel);
     });
@@ -371,6 +371,6 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
       renderFunManage();
     });
 
-    expect(screen.getByText('GESTIÓN DE SOLICITUDES')).toBeInTheDocument();
+    expect(screen.getByText('Gestión de Solicitudes')).toBeInTheDocument();
   });
 });
