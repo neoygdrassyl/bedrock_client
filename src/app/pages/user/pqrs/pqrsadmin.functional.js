@@ -44,6 +44,8 @@ import { ACESS_EDIT } from './access_edit';
 import dayjs from 'dayjs';
 import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
 import { Icon } from '@/components/icon';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 const MySwal = withReactContent(Swal);
 
 function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums }) {
@@ -413,13 +415,13 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
     let _STATUS_COMPONENT = (item) => {
         switch (item) {
             case 0:
-                return <label className="text-danger fw-bold">ACTIVO</label>
+                return <Badge variant="destructive" className="text-[10px]">Activo</Badge>
             case 1:
-                return <label className="text-success fw-bold">CERRADO</label>
+                return <Badge className="text-[10px] bg-accent text-accent-foreground">Cerrado</Badge>
             case 2:
-                return <label className="text-primary fw-bold">ARCHIVADO</label>
+                return <Badge variant="secondary" className="text-[10px]">Archivado</Badge>
             case 3:
-                return <label className="text-secondary fw-bold">TRASLADADO</label>
+                return <Badge variant="outline" className="text-[10px]">Trasladado</Badge>
             default:
                 break;
         }
@@ -450,9 +452,9 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 break;
             }
         }
-        if (review == 1) return <label className="text-success fw-bold">VISTO BUENO</label>;
-        else if (review == 0) return <label className="text-warning fw-bold">VISTO NEGATIVO</label>;
-        else if (review == null) return <label className="text-danger fw-bold">DEBE DAR VISTO</label>;
+        if (review == 1) return <Badge className="text-[10px] bg-accent text-accent-foreground">Visto Bueno</Badge>;
+        else if (review == 0) return <Badge variant="outline" className="text-[10px] text-warning border-warning">Visto Negativo</Badge>;
+        else if (review == null) return <Badge variant="destructive" className="text-[10px]">Debe dar Visto</Badge>;
     }
 
     const dataFilter = (_items, _filterreply, _filterreply2) => {
@@ -508,7 +510,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                 <div className="row">
                     <div className="col-10">
-                        <label className="fw-bold">PQRS PENDIENTES POR VENTANILLA ÚNICA: </label>
+                    <span className="font-semibold text-sm">PQRS PENDIENTES POR VENTANILLA ÚNICA: </span>
                     </div>
                     <div className="col text-end">
                         <button type="button" title="Ver Listado" className="btn btn-info btn-sm px-2" onClick={() => setPending_open(prev => !prev)}>
@@ -529,11 +531,11 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         </div >
     )
     // -----------------
-    const rowSelectedStyle = [
+        const rowSelectedStyle = [
         {
             when: row => row.id == selectedRow,
             style: {
-                backgroundColor: 'BlanchedAlmond',
+                backgroundColor: 'hsl(var(--warning) / 0.12)',
             },
         },
     ];
@@ -544,31 +546,30 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             name: "",
             right: true,
             maxWidth: "40px",
-            cell: row => <label>{_GET_STOPLIGHT_COLOR(row)}</label>
+            cell: row => _GET_STOPLIGHT_COLOR(row)
         },
         {
-            name: <label>CONSECUTIVO ENTRADA</label>,
+            name: 'CONSECUTIVO ENTRADA',
             selector: row => row.id_global ? row.id_global : row.id_publico ? row.id_publico : '',
             sortable: true,
             center: true,
             filterable: true,
-            cell: row => <label>{row.id_global ? row.id_global : row.id_publico ? row.id_publico : <label className="fw-bold text-danger">SIN CONSECUTIVO</label>}</label>
+            cell: row => <span className="text-sm font-medium font-mono">{row.id_global ? row.id_global : row.id_publico ? row.id_publico : <Badge variant="destructive" className="text-[10px]">Sin consecutivo</Badge>}</span>
         },
         {
-            name: <label>¿PROFESIONAL ASIGNADO?</label>,
-            //center: true,
-            cell: row => <label>{row.pqrs_workers.length ? <label>{row.pqrs_workers.map(function (value) { return <h5 className='my-0 py-0 fw-normal'>{value.name}</h5> })}</label> : <label className="fw-bold text-warning">PENDIENTE</label>}</label>
+            name: '¿PROFESIONAL ASIGNADO?',
+            cell: row => <span className="text-xs">{row.pqrs_workers.length ? row.pqrs_workers.map((value, idx) => <span key={idx} className="block">{value.name}</span>) : <Badge variant="outline" className="text-[10px] text-warning border-warning">Pendiente</Badge>}</span>
         },
         {
-            name: <label>FECHA RADICACIÓN</label>,
+            name: 'FECHA RADICACIÓN',
             selector: row => row.pqrs_time ? row.pqrs_time.legal : '',
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => <label>{(row.pqrs_time ? row.pqrs_time.legal : false)}</label>
+            cell: row => <span className="text-xs font-mono tabular-nums">{row.pqrs_time ? row.pqrs_time.legal : ''}</span>
         },
         {
-            name: <label>TIEMPO RESTANTE</label>,
+            name: 'TIEMPO RESTANTE',
             selector: row => {
                 let time = row.pqrs_time ? row.pqrs_time.time : 0;
                 let legal = row.pqrs_time ? row.pqrs_time.legal : 0;
@@ -583,11 +584,11 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 let legal = row.pqrs_time ? row.pqrs_time.legal : 0;
                 let ext = row.pqrs_law ? row.pqrs_law.extension ? 2 : 1 : 1;
                 let result = (dateParser_timeLeft(legal, time * (ext)))
-                return <label>{result} d</label>
+                return <span className="text-xs"><span className={cn('font-bold tabular-nums', result <= 0 ? 'text-destructive' : result < 7 ? 'text-warning' : '')}>{result}</span><span className="text-muted-foreground"> d</span></span>
             }
         },
         {
-            name: <label>FECHA LIMITE</label>,
+            name: 'FECHA LÍMITE',
             selector: row => {
                 let time = row.pqrs_time ? row.pqrs_time.time : 0;
                 let legal = row.pqrs_time ? row.pqrs_time.legal : 0;
@@ -602,11 +603,11 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 let legal = row.pqrs_time ? row.pqrs_time.legal : 0;
                 let ext = row.pqrs_law ? row.pqrs_law.extension ? 2 : 1 : 1;
                 let result = (dateParser_finalDate(legal, time * (ext)))
-                return <label>{result}</label>
+                return <span className="text-xs font-mono tabular-nums">{result}</span>
             }
         },
         {
-            name: <label>ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '150px',
@@ -621,54 +622,54 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
     ]
     const columnsArchive = [
         {
-            name: <h6>CONSECUTIVO ENTRADA</h6>,
+            name: 'CONSECUTIVO ENTRADA',
             selector: row => row.id_publico ? row.id_publico : row.id_global ? row.id_global : '',
             sortable: true,
             filterable: true,
-            cell: row => <label>{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <label className="fw-bold text-danger">SIN CONSECUTIVO</label>}</label>
+            cell: row => <span className="text-sm font-medium font-mono">{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <Badge variant="destructive" className="text-[10px]">Sin consecutivo</Badge>}</span>
         },
         {
-            name: <h6>CONSECUTIVO SALIDA</h6>,
+            name: 'CONSECUTIVO SALIDA',
             selector: row => row.id_reply,
             sortable: true,
             filterable: true,
-            cell: row => <label>{row.id_reply}</label>
+            cell: row => <span className="text-sm font-mono">{row.id_reply}</span>
         },
         {
-            name: <h6>FECHA RADICACIÓN</h6>,
+            name: 'FECHA RADICACIÓN',
             selector: row => row.pqrs_time?.legal,
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => <label>{dateParser(row.pqrs_time.legal) ?? ''}</label>
+            cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.pqrs_time.legal) ?? ''}</span>
 
         },
         {
-            name: <h6>FECHA LÍMITE RESPUESTA</h6>,
+            name: 'FECHA LÍMITE RESPUESTA',
             minWidth: '150px',
             selector: row => dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1)),
             sortable: true,
             center: true,
-            cell: row => <label>{dateParser(dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1)))}</label>
+            cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1)))}</span>
         },
         {
-            name: <h6>FECHA ENVIO RESPUESTA </h6>,
+            name: 'FECHA ENVÍO RESPUESTA',
             selector: row => row.pqrs_time?.reply_formal,
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => <label>{dateParser(row.pqrs_time.reply_formal)}</label>
+            cell: row => <span className="text-xs font-mono tabular-nums">{dateParser(row.pqrs_time.reply_formal)}</span>
         },
         {
-            name: <h6>TIEMPO REAL DE RESPUESTA</h6>,
+            name: 'TIEMPO REAL RESPUESTA',
             selector: row => dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal),
             sortable: true,
             center: true,
-            cell: row => <label>{dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal) + ' | ' + (row.pqrs_time.time)} día(s) habiles</label>
+            cell: row => <span className="text-xs">{dateParser_dateDiff(row.pqrs_time.legal, row.pqrs_time.reply_formal)} | {row.pqrs_time.time} día(s) hábiles</span>
         },
 
         {
-            name: <p>ACCIÓN</p>,
+            name: 'ACCIÓN',
             button: true,
             minWidth: '150px',
             center: true,
@@ -687,43 +688,41 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
     ]
     const columnsSearch = [
         {
-            name: <label>CONSECUTIVO ENTRADA</label>,
+            name: 'CONSECUTIVO ENTRADA',
             selector: row => row.id_publico ? row.id_publico : row.id_global ? row.id_global : '',
             sortable: true,
             filterable: true,
-            cell: row => <label>{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <label className="fw-bold text-danger">SIN CONSECUTIVO</label>}</label>
+            cell: row => <span className="text-sm font-medium font-mono">{row.id_publico ? row.id_publico : row.id_global ? row.id_global : <Badge variant="destructive" className="text-[10px]">Sin consecutivo</Badge>}</span>
         },
         {
-            name: <label>CONSECUTIVO SALIDA</label>,
+            name: 'CONSECUTIVO SALIDA',
             selector: row => row.id_reply,
             sortable: true,
             filterable: true,
-            cell: row => <label>{row.id_reply}</label>
+            cell: row => <span className="text-sm font-mono">{row.id_reply}</span>
         },
         {
-            name: <label>ESTADO</label>,
+            name: 'ESTADO',
             selector: row => row.status,
             sortable: true,
             filterable: true,
-            cell: row => <label>{_STATUS_COMPONENT(row.status)}</label>
+            cell: row => _STATUS_COMPONENT(row.status)
         },
         {
-            name: <label>FECHA RADICACIÓN</label>,
+            name: 'FECHA RADICACIÓN',
             selector: row => row.pqrs_time?.reply_legal,
             sortable: true,
             filterable: true,
-            cell: row => <label>{row.pqrs_time ? dateParser(row.pqrs_time.legal) : ''}</label>
+            cell: row => <span className="text-xs font-mono tabular-nums">{row.pqrs_time ? dateParser(row.pqrs_time.legal) : ''}</span>
         },
         {
-            name: <label className="text-center">FECHA LIMITE RESPUESTA</label>,
+            name: 'FECHA LÍMITE RESPUESTA',
             selector: row => row.pqrs_time?.legal,
             sortable: true,
-
-            cell: row => <label>{row.pqrs_time ? dateParser(dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1))) : ''}</label>
-
+            cell: row => <span className="text-xs font-mono tabular-nums">{row.pqrs_time ? dateParser(dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1))) : ''}</span>
         },
         {
-            name: <label>ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             minWidth: '150px',
             cell: row => <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></button>,
@@ -955,12 +954,12 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 <nav className="nav nav-tabs">
                     
                         <button type="button" className={`nav-link ${fillActive === '1' ? "active" : ""}`} onClick={() => handleFillClick('1')}>
-                            <label className="upper-case">PETICIONES ACTIVAS ({items.length})</label>
+                            <span className="text-xs font-medium uppercase tracking-wide">Peticiones Activas ({items.length})</span>
                         </button>
                     
                     
                         <button type="button" className={`nav-link ${fillActive === '10' ? "active" : ""}`} onClick={() => handleFillClick('10')}>
-                            <label className="upper-case">ARCHIVO ({itemsClose.length})</label>
+                            <span className="text-xs font-medium uppercase tracking-wide">Archivo ({itemsClose.length})</span>
                         </button>
                     
                 </nav>
