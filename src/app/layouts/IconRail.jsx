@@ -16,8 +16,9 @@ const UTILITY_START_INDEX = 7;
 
 /**
  * Vertical icon-only navigation rail (48px wide, always dark bg).
+ * Collapses to 0px when `collapsed` is true.
  */
-export function IconRail({ items, activeId, onSelect, logo }) {
+export function IconRail({ items, activeId, onSelect, logo, collapsed = false }) {
   const location = useLocation();
 
   const mainItems = items.slice(0, UTILITY_START_INDEX);
@@ -26,7 +27,11 @@ export function IconRail({ items, activeId, onSelect, logo }) {
   return (
     <nav
       aria-label="Navegación principal"
-      className="flex flex-col items-center h-full w-12 bg-sidebar text-sidebar-foreground py-3 gap-1 shrink-0"
+      className={cn(
+        'flex flex-col items-center h-full bg-sidebar text-sidebar-foreground py-3 gap-1 shrink-0 transition-all duration-200 overflow-hidden',
+        collapsed ? 'w-0 p-0' : 'w-12'
+      )}
+      aria-hidden={collapsed}
     >
       {logo && <div className="mb-4 flex items-center justify-center">{logo}</div>}
 

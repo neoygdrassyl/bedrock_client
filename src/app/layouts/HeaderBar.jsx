@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,8 +10,14 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/components/theme-provider';
-import { Sun, Moon, LogOut, Search, Bell } from 'lucide-react';
+import { Sun, Moon, LogOut, Search, Bell, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { Icon } from '@/components/icon';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const MODULE_ICONS = {
   dashboard: 'LayoutDashboard',
@@ -34,9 +40,9 @@ const MODULE_ICONS = {
 };
 
 /**
- * Top header bar: breadcrumb + search + theme toggle + user dropdown.
+ * Top header bar: sidebar toggle + breadcrumb + search + theme toggle + user dropdown.
  */
-export function HeaderBar({ user, onLogout }) {
+export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar }) {
   const { resolvedTheme, setTheme } = useTheme();
   const location = useLocation();
 
@@ -52,11 +58,33 @@ export function HeaderBar({ user, onLogout }) {
     : '?';
 
   return (
-    <header className="flex items-center h-12 px-4 border-b border-border bg-card gap-3 shadow-[0_1px_3px_0_rgba(0,0,0,0.05)]">
+    <header className="flex items-center h-12 px-3 border-b border-border bg-card gap-2 shadow-[0_1px_3px_0_rgba(0,0,0,0.05)]">
+      {/* Sidebar toggle */}
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggleSidebar}
+              aria-label={sidebarCollapsed ? 'Expandir menú lateral' : 'Ocultar menú lateral'}
+              className="h-8 w-8 p-0 shrink-0"
+            >
+              {sidebarCollapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={4}>
+            {sidebarCollapsed ? 'Expandir menú' : 'Ocultar menú'} <kbd className="ml-1 text-[10px] bg-muted px-1 py-0.5 rounded font-mono">⌘B</kbd>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
+      <Separator orientation="vertical" className="h-5" />
+
       <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm flex-1 min-w-0">
-        <a href="/dashboard" className="text-muted-foreground hover:text-foreground no-underline transition-colors">
+        <Link to="/dashboard" className="text-muted-foreground hover:text-foreground no-underline transition-colors">
           Inicio
-        </a>
+        </Link>
         {breadcrumb.map((crumb, i) => (
           <span key={crumb.path} className="flex items-center gap-1">
             <span className="text-muted-foreground/50">/</span>
@@ -66,9 +94,9 @@ export function HeaderBar({ user, onLogout }) {
                 {crumb.label}
               </span>
             ) : (
-              <a href={crumb.path} className="text-muted-foreground hover:text-foreground no-underline transition-colors">
+              <Link to={crumb.path} className="text-muted-foreground hover:text-foreground no-underline transition-colors">
                 {crumb.label}
-              </a>
+              </Link>
             )}
           </span>
         ))}

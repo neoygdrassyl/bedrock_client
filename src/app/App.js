@@ -82,6 +82,13 @@ class RouteErrorBoundary extends React.Component {
     return { hasError: true, error };
   }
 
+  componentDidUpdate(prevProps) {
+    // Reset error when user navigates away from the broken route
+    if (this.props.pathname !== prevProps.pathname && this.state.hasError) {
+      this.setState({ hasError: false, error: null });
+    }
+  }
+
   componentDidCatch(error, info) {
     console.error('Route subtree error captured:', error, info);
   }
@@ -93,7 +100,11 @@ class RouteErrorBoundary extends React.Component {
           <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 space-y-2">
             <h4 className="text-base font-semibold text-destructive">Error en este módulo</h4>
             <p className="text-sm text-muted-foreground">La vista actual presentó un error y se detuvo para evitar una pantalla en blanco.</p>
-            <p className="text-sm"><a href="/dashboard" className="text-primary hover:underline">Volver al panel</a></p>
+            <p className="text-sm">
+              <a href="/dashboard" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/dashboard'); window.location.reload(); }} className="text-primary hover:underline">
+                Volver al panel
+              </a>
+            </p>
           </div>
         </div>
       );
@@ -105,7 +116,7 @@ class RouteErrorBoundary extends React.Component {
 
 function RoutesWithBoundary({ children }) {
   const location = useLocation();
-  return <RouteErrorBoundary key={location.pathname}>{children}</RouteErrorBoundary>;
+  return <RouteErrorBoundary pathname={location.pathname}>{children}</RouteErrorBoundary>;
 }
 
 // ── Main App ────────────────────────────────────────────────────────
@@ -129,24 +140,31 @@ export default function App() {
         <Router>
               <Toaster position="bottom-right" richColors closeButton />
 
-              <Suspense fallback={<LoadingFallback />}>
-                <RoutesWithBoundary>
+              <RoutesWithBoundary>
                   <Routes>
                     {/* ── Public routes (no shell) ──────────────────── */}
                     <Route path="/login" element={<LoginPageWithAuth />} />
                     <Route path="/home" element={<Navigate to="/login" replace />} />
 
                     <Route path="/normas" element={
-                      <NORMS translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      <Suspense fallback={<LoadingFallback />}>
+                        <NORMS translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      </Suspense>
                     } />
                     <Route path="/certificados" element={
-                      <CERTIFICATE_WORKER translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      <Suspense fallback={<LoadingFallback />}>
+                        <CERTIFICATE_WORKER translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      </Suspense>
                     } />
                     <Route path="/uso-suelo" element={
-                      <ZONE_USE translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      <Suspense fallback={<LoadingFallback />}>
+                        <ZONE_USE translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+                      </Suspense>
                     } />
                     <Route path="/dev-guide" element={
-                      <DEV_GUIDE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
+                      <Suspense fallback={<LoadingFallback />}>
+                        <DEV_GUIDE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
+                      </Suspense>
                     } />
 
                     {/* ── Legacy route redirects ────────────────────── */}
@@ -216,8 +234,7 @@ export default function App() {
                     {/* ── Root & fallback ───────────────────────────── */}
                     <Route path="/" element={<Navigate to="/login" replace />} />
                   </Routes>
-                </RoutesWithBoundary>
-              </Suspense>
+              </RoutesWithBoundary>
 
         </Router>
       </ThemeProvider>
@@ -241,7 +258,9 @@ function PrivateLayout() {
       user={auth.user}
       onLogout={() => auth.signout(() => navigate('/login'))}
     >
-      <Outlet />
+      <Suspense fallback={<LoadingFallback />}>
+        <Outlet />
+      </Suspense>
     </AppShell>
   );
 }

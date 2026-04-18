@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getNavItems } from './navigation-config';
 import { IconRail } from './IconRail';
@@ -9,8 +9,11 @@ import { LegacyPageWrapper } from './LegacyPageWrapper';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { infoCud } from '@/app/components/jsons/vars';
 
+const SIDEBAR_STORAGE_KEY = 'dovela-sidebar-collapsed';
+
 /**
  * Main application shell: rail + panel + header + content + footer.
+ * Sidebar is collapsible and persists state in localStorage.
  */
 export function AppShell({ user, onLogout, children }) {
   const navigate = useNavigate();
@@ -26,6 +29,37 @@ export function AppShell({ user, onLogout, children }) {
   ) || navItems[0];
 
   const [activeRailId, setActiveRailId] = useState(activeItem?.id || 'dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try { return localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true'; }
+    catch { return false; }
+  });
+
+  // Sync activeRailId when route changes externally (e.g. browser back/forward)
+  useEffect(() => {
+    if (activeItem && activeItem.id !== activeRailId) {
+      setActiveRailId(activeItem.id);
+    }
+  }, [activeItem?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try { localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  // Keyboard shortcut: Ctrl+B / Cmd+B
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [toggleSidebar]);
 
   const selectedItem = navItems.find((item) => item.id === activeRailId);
   const panelItems = selectedItem?.children || [];
@@ -58,16 +92,22 @@ export function AppShell({ user, onLogout, children }) {
         activeId={activeRailId}
         onSelect={handleRailSelect}
         logo={logo}
+        collapsed={sidebarCollapsed}
       />
 
       <ContextPanel
         title={selectedItem?.label || ''}
         items={panelItems}
-        collapsed={panelItems.length === 0}
+        collapsed={sidebarCollapsed || panelItems.length === 0}
       />
 
       <div className="flex flex-col flex-1 min-w-0">
-        <HeaderBar user={user} onLogout={onLogout} />
+        <HeaderBar
+          user={user}
+          onLogout={onLogout}
+          sidebarCollapsed={sidebarCollapsed}
+          onToggleSidebar={toggleSidebar}
+        />
 
         <ScrollArea className="flex-1">
           <main id="main-content" className="p-6">
