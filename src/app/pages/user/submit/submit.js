@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBTooltip } from '../../../components/ui';
-import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import SubmitService from '../../../services/submit.service';
 import DataTable from 'react-data-table-component';
 import { dateParser } from '../../../components/customClasses/typeParse';
@@ -133,14 +133,12 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 button: true,
                 minWidth: '100px',
                 cell: row => <>
-                    <MDBTooltip title='Ver detalles' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
+                    
                         <button onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <i className="far fa-folder-open fa-2x" ></i></button></MDBTooltip>
-
-                    <MDBTooltip title='Eliminar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
+                            <i className="far fa-folder-open fa-2x" ></i></button>
+                    
                         <button onClick={() => delete_submit(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                            <i className="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
-                </>,
+                            <i className="far fa-trash-alt fa-2x"></i></button>                </>,
             },
         ]
 
@@ -324,23 +322,14 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
             link.click();
         }
         return (
-            <div className="submit  container">
-                <div className="col-12 d-flex justify-content-start p-0">
-                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                        <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u10}</label></MDBBreadcrumbItem>
-                    </MDBBreadcrumb>
-                </div >
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-xl font-bold text-foreground">Ventanilla Única</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Gestión de entradas y radicados</p>
+                </div>
 
                 <div className="row d-flex justify-content-center">
                     <div className="col-10">
-                        <h1 className="text-center my-4">VENTANILLA ÚNICA</h1>
-                        <hr />
                         <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
 
                         <div className="row">
@@ -350,9 +339,9 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                                 </div>
                             </div>
                             <div className="col-4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>CONSULTAR</h4></MDBCardTitle>
+                                <Card className="mb-3">
+                                    <CardContent>
+                                        <CardTitle className="text-center">Consultar</CardTitle>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
                                                 <i className="fas fa-info-circle"></i>
@@ -374,13 +363,13 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                                         <div className="text-center py-2">
                                             <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><i className="fas fa-search-plus"></i> CONSULTAR </button>
                                         </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                                    </CardContent></Card>
+                                
                             </div>
                             <div className="col-4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>DOCUMENTO CSV</h4></MDBCardTitle>
+                                <Card className="mb-3">
+                                    <CardContent>
+                                        <CardTitle className="text-center">Documento CSV</CardTitle>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
                                                 <i className="fas fa-hashtag"></i>
@@ -398,8 +387,8 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                                         <div className="text-center py-2">
                                             <button type="button" className="btn btn-success shadow-none" onClick={() => generateCVS()}><i className="fas fa-table"></i> GENERAR CSV </button>
                                         </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                                    </CardContent></Card>
+                                
                             </div>
                         </div>
 
@@ -443,7 +432,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <h3><i className="far fa-edit"></i> ACTUALIZAR ENTRADA: {currentIdPublic} </h3>
-                        <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={toggle} />
                     </div>
                     <SUBTMIT_MANAGE
                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -464,7 +453,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <h3><i className="fas fa-plus-circle"></i> NUEVA ENTRADA </h3>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_new()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_new()} />
                     </div>
                     <SUBTMIT_MANAGE
                         translation={translation} swaMsg={swaMsg} globals={globals}

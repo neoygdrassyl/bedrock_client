@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { MDBBreadcrumb, MDBBreadcrumbItem } from '../../components/ui';
 
 // SERVICES
 import FunManageDashboardService from '../../services/funmanage_dashboard.service';
@@ -121,34 +120,17 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
   // RENDER
   // =========================================================================
   return (
-    <div className="container-fluid p-0">
-      {/* ---- Breadcrumb ---- */}
-      <div className="col-12 d-flex justify-content-start p-0">
-        <MDBBreadcrumb className="mb-0 p-0 ms-0">
-          <MDBBreadcrumbItem>
-            <Link to="/home">
-              <i className="fas fa-home"></i>{' '}
-              <label className="text-uppercase">{breadCrums?.bc_01 || 'Inicio'}</label>
-            </Link>
-          </MDBBreadcrumbItem>
-          <MDBBreadcrumbItem>
-            <Link to="/dashboard">
-              <i className="far fa-bookmark"></i>{' '}
-              <label className="text-uppercase">{breadCrums?.bc_u1 || 'Panel'}</label>
-            </Link>
-          </MDBBreadcrumbItem>
-          <MDBBreadcrumbItem active>
-            <i className="fas fa-layer-group"></i>{' '}
-            <label className="text-uppercase">Centro de Operaciones</label>
-          </MDBBreadcrumbItem>
-        </MDBBreadcrumb>
+    <div className="space-y-6">
+      {/* ---- Page Header ---- */}
+      <div>
+        <h1 className="text-xl font-bold text-foreground">Centro de Operaciones de Licencias</h1>
+        <p className="text-sm text-muted-foreground mt-1">Gestión y seguimiento del flujo de licencias urbanísticas</p>
       </div>
 
       {/* ---- Title ---- */}
       <div className="row mb-3 d-flex justify-content-center">
         <div className="col-lg-11 col-md-12">
-          <div className="d-flex justify-content-between align-items-center my-3">
-            <h1 className="mb-0">CENTRO DE OPERACIONES DE LICENCIAS</h1>
+          <div className="d-flex justify-content-end my-3">
             <button
               className="btn btn-outline-primary btn-sm"
               onClick={() => window.open('/legal-flow-guide', '_blank')}
@@ -158,7 +140,6 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
               Ver Guía Legal
             </button>
           </div>
-          <hr />
         </div>
 
         {/* ============================================================= */}
