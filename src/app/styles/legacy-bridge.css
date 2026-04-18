@@ -1,0 +1,285 @@
+/*
+ * Legacy Bridge — Bootstrap-to-token overrides
+ *
+ * Maps Bootstrap component colors/borders to Dovela design tokens
+ * so legacy pages inside AppShell don't visually clash with the new shell.
+ *
+ * Scoped to #main-content to avoid leaking into the shell itself.
+ * Uses :where() for zero specificity where possible.
+ *
+ * Remove individual sections as modules get fully migrated (Phases 3-5).
+ */
+
+/* ── Bootstrap color variables → Dovela tokens ──────────────────── */
+#main-content {
+  --bs-primary: hsl(var(--primary));
+  --bs-primary-rgb: 37, 99, 235;
+  --bs-success: hsl(var(--accent));
+  --bs-success-rgb: 5, 150, 105;
+  --bs-danger: hsl(var(--destructive));
+  --bs-danger-rgb: 239, 68, 68;
+  --bs-warning: hsl(var(--warning));
+  --bs-warning-rgb: 245, 158, 11;
+  --bs-body-color: hsl(var(--foreground));
+  --bs-body-bg: hsl(var(--background));
+  --bs-border-color: hsl(var(--border));
+  --bs-link-color: hsl(var(--primary));
+  --bs-link-hover-color: hsl(var(--primary));
+}
+
+.dark #main-content {
+  --bs-body-color: hsl(var(--foreground));
+  --bs-body-bg: hsl(var(--background));
+  --bs-border-color: hsl(var(--border));
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+#main-content :where(.btn) {
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#main-content :where(.btn-primary) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+#main-content :where(.btn-primary:hover) {
+  background-color: hsl(var(--primary) / 0.9);
+  border-color: hsl(var(--primary) / 0.9);
+}
+
+#main-content :where(.btn-success) {
+  background-color: hsl(var(--accent));
+  border-color: hsl(var(--accent));
+}
+
+#main-content :where(.btn-danger) {
+  background-color: hsl(var(--destructive));
+  border-color: hsl(var(--destructive));
+}
+
+#main-content :where(.btn-warning) {
+  background-color: hsl(var(--warning));
+  border-color: hsl(var(--warning));
+  color: hsl(var(--warning-foreground));
+}
+
+#main-content :where(.btn-outline-primary) {
+  color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+#main-content :where(.btn-outline-primary:hover) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+#main-content :where(.btn-outline-secondary) {
+  color: hsl(var(--muted-foreground));
+  border-color: hsl(var(--border));
+}
+
+/* ── Cards ───────────────────────────────────────────────────────── */
+#main-content :where(.card) {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+#main-content :where(.card-header) {
+  background-color: hsl(var(--muted));
+  border-bottom-color: hsl(var(--border));
+}
+
+#main-content :where(.card-body) {
+  color: hsl(var(--card-foreground));
+}
+
+/* ── Tables ──────────────────────────────────────────────────────── */
+#main-content :where(.table) {
+  --bs-table-bg: transparent;
+  --bs-table-border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+}
+
+#main-content :where(.table > thead) {
+  background-color: hsl(var(--muted));
+}
+
+#main-content :where(.table > thead th) {
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(var(--muted-foreground));
+  border-bottom-width: 1px;
+}
+
+#main-content :where(.table-striped > tbody > tr:nth-of-type(odd)) {
+  --bs-table-striped-bg: hsl(var(--muted) / 0.5);
+}
+
+#main-content :where(.table-hover > tbody > tr:hover) {
+  --bs-table-hover-bg: hsl(var(--muted));
+}
+
+/* ── Forms ────────────────────────────────────────────────────────── */
+#main-content :where(.form-control) {
+  border-color: hsl(var(--input));
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#main-content :where(.form-control:focus) {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+#main-content :where(.form-select) {
+  border-color: hsl(var(--input));
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.form-select:focus) {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+#main-content :where(.form-label) {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+/* ── Badges ──────────────────────────────────────────────────────── */
+#main-content :where(.badge) {
+  font-weight: 500;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+  padding: 0.125rem 0.625rem;
+}
+
+#main-content :where(.badge.bg-primary) {
+  background-color: hsl(var(--primary)) !important;
+}
+
+#main-content :where(.badge.bg-success) {
+  background-color: hsl(var(--accent)) !important;
+}
+
+#main-content :where(.badge.bg-danger) {
+  background-color: hsl(var(--destructive)) !important;
+}
+
+#main-content :where(.badge.bg-warning) {
+  background-color: hsl(var(--warning)) !important;
+  color: hsl(var(--warning-foreground)) !important;
+}
+
+/* ── Alerts ──────────────────────────────────────────────────────── */
+#main-content :where(.alert) {
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  border-width: 1px;
+}
+
+/* ── Modals (react-modal still in use) ───────────────────────────── */
+:where(.ReactModal__Overlay) {
+  background-color: hsl(var(--foreground) / 0.5) !important;
+  backdrop-filter: blur(2px);
+}
+
+:where(.ReactModal__Content) {
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.5rem !important;
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+}
+
+/* ── Pagination ──────────────────────────────────────────────────── */
+#main-content :where(.page-link) {
+  color: hsl(var(--primary));
+  border-color: hsl(var(--border));
+  font-size: 0.875rem;
+}
+
+#main-content :where(.page-item.active .page-link) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+/* ── Navs & Tabs ─────────────────────────────────────────────────── */
+#main-content :where(.nav-tabs .nav-link) {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  border-color: transparent;
+}
+
+#main-content :where(.nav-tabs .nav-link.active) {
+  color: hsl(var(--primary));
+  border-bottom-color: hsl(var(--primary));
+  background-color: transparent;
+}
+
+#main-content :where(.nav-tabs .nav-link:hover:not(.active)) {
+  border-color: transparent;
+  color: hsl(var(--foreground));
+}
+
+/* ── react-data-table-component ──────────────────────────────────── */
+#main-content :where(.rdt_Table) {
+  font-size: 0.875rem;
+}
+
+#main-content :where(.rdt_TableHeadRow) {
+  background-color: hsl(var(--muted));
+  border-bottom-color: hsl(var(--border));
+  min-height: 40px;
+}
+
+#main-content :where(.rdt_TableRow) {
+  border-bottom-color: hsl(var(--border));
+}
+
+#main-content :where(.rdt_TableRow:hover) {
+  background-color: hsl(var(--muted));
+}
+
+#main-content :where(.rdt_Pagination) {
+  border-top-color: hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+}
+
+/* ── Dark mode specifics ─────────────────────────────────────────── */
+.dark #main-content :where(.form-control),
+.dark #main-content :where(.form-select) {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--input));
+}
+
+.dark #main-content :where(.card) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.dark #main-content :where(.table) {
+  color: hsl(var(--foreground));
+}
+
+.dark #main-content :where(.modal-content) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+}
