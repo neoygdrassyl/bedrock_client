@@ -4,7 +4,7 @@
  */
 import '@testing-library/jest-dom/vitest';
 
-// styled-components v6 CJS bundle expects React in global scope
+// React in global scope — required by some legacy test mocks
 import React from 'react';
 globalThis.React = React;
 
