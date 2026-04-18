@@ -19,34 +19,39 @@ function FlowFilters({ filters, onChange }) {
   );
 
   return (
-    <div className="d-flex flex-column gap-3">
-      {/* Configuración del Proyecto */}
-      <div>
-        <h6 className="fw-semibold border-bottom pb-1 mb-2">Configuración del Proyecto</h6>
+    <div className="lf-filters">
+      {/* Configuracion del Proyecto */}
+      <div className="lf-filter-group">
+        <div className="lf-section-title">
+          <i className="fas fa-cog"></i>
+          Proyecto
+        </div>
 
-        <label className="form-label mb-1" htmlFor="ff-projectType">
-          Categoría
+        <label className="lf-filter-label" htmlFor="ff-projectType">
+          Categoria
         </label>
         <select
           id="ff-projectType"
-          className="form-select form-select-sm mb-2"
+          className="lf-select w-100"
           value={filters.projectType}
           onChange={(e) => update({ projectType: e.target.value })}
         >
           {PROJECT_TYPES.map((t) => (
             <option key={t} value={t}>
-              Categoría {t}
+              Categoria {t}
             </option>
           ))}
         </select>
 
-        <label className="form-label mb-1">Modo de Notificación</label>
-        <div className="btn-group btn-group-sm w-100 mb-2" role="group">
+        <label className="lf-filter-label" style={{ marginTop: '0.25rem' }}>
+          Modo de Notificacion
+        </label>
+        <div className="lf-toggle-group">
           {['notificar', 'comunicar'].map((mode) => (
             <button
               key={mode}
               type="button"
-              className={`btn btn-outline-primary${filters.notificationMode === mode ? ' active' : ''}`}
+              className={`lf-toggle-btn${filters.notificationMode === mode ? ' active' : ''}`}
               onClick={() => update({ notificationMode: mode })}
             >
               {mode === 'notificar' ? 'Notificar' : 'Comunicar'}
@@ -56,12 +61,12 @@ function FlowFilters({ filters, onChange }) {
 
         {filters.notificationMode === 'notificar' && (
           <>
-            <label className="form-label mb-1" htmlFor="ff-notType">
-              Tipo de Notificación
+            <label className="lf-filter-label" htmlFor="ff-notType" style={{ marginTop: '0.25rem' }}>
+              Tipo de Notificacion
             </label>
             <select
               id="ff-notType"
-              className="form-select form-select-sm"
+              className="lf-select w-100"
               value={filters.notificationType}
               onChange={(e) => update({ notificationType: e.target.value })}
             >
@@ -73,66 +78,70 @@ function FlowFilters({ filters, onChange }) {
       </div>
 
       {/* Resultado del Acta */}
-      <div>
-        <h6 className="fw-semibold border-bottom pb-1 mb-2">Resultado del Acta</h6>
-        <div className="btn-group btn-group-sm w-100" role="group">
+      <div className="lf-filter-group">
+        <div className="lf-section-title">
+          <i className="fas fa-clipboard-check"></i>
+          Resultado del Acta
+        </div>
+        <div className="lf-toggle-group">
           <button
             type="button"
-            className={`btn btn-outline-${filters.cumpleActa ? 'success active' : 'secondary'}`}
+            className={`lf-toggle-btn${filters.cumpleActa ? ' active--success' : ''}`}
             onClick={() => update({ cumpleActa: true })}
           >
-            CUMPLE
+            Cumple
           </button>
           <button
             type="button"
-            className={`btn btn-outline-${!filters.cumpleActa ? 'danger active' : 'secondary'}`}
+            className={`lf-toggle-btn${!filters.cumpleActa ? ' active--danger' : ''}`}
             onClick={() => update({ cumpleActa: false })}
           >
-            NO CUMPLE
+            No Cumple
           </button>
         </div>
       </div>
 
       {/* Desistimientos */}
-      <div>
-        <h6 className="fw-semibold border-bottom pb-1 mb-2">Desistimientos</h6>
+      <div className="lf-filter-group">
+        <div className="lf-section-title">
+          <i className="fas fa-exclamation-circle"></i>
+          Desistimientos
+        </div>
         {Object.entries(PROCESS_DEFINITION.desistimientos).map(([key, def]) => (
-          <div className="form-check" key={key}>
+          <label className="lf-check" key={key}>
             <input
-              className="form-check-input"
               type="checkbox"
               id={`ff-des-${key}`}
               checked={!!filters.desistimientos[key]}
               onChange={(e) => updateDesistimiento(key, e.target.checked)}
             />
-            <label className="form-check-label" htmlFor={`ff-des-${key}`}>
-              {key}: {def.label}
-            </label>
-          </div>
+            <span className="lf-check__tag">{key}</span>
+            <span className="lf-check__label">{def.label}</span>
+          </label>
         ))}
       </div>
 
       {/* Modificadores */}
-      <div>
-        <h6 className="fw-semibold border-bottom pb-1 mb-2">Modificadores</h6>
+      <div className="lf-filter-group">
+        <div className="lf-section-title">
+          <i className="fas fa-sliders-h"></i>
+          Modificadores
+        </div>
         {[
-          { key: 'showSuspension', label: 'Suspensión' },
-          { key: 'showExtension', label: 'Extensión' },
-          { key: 'showProrroga', label: 'Prórroga Correcciones' },
-          { key: 'showRecurso', label: 'Recurso de Reposición' },
+          { key: 'showSuspension', label: 'Suspension' },
+          { key: 'showExtension', label: 'Extension' },
+          { key: 'showProrroga', label: 'Prorroga Correcciones' },
+          { key: 'showRecurso', label: 'Recurso de Reposicion' },
         ].map(({ key, label }) => (
-          <div className="form-check" key={key}>
+          <label className="lf-check" key={key}>
             <input
-              className="form-check-input"
               type="checkbox"
               id={`ff-mod-${key}`}
               checked={!!filters[key]}
               onChange={(e) => update({ [key]: e.target.checked })}
             />
-            <label className="form-check-label" htmlFor={`ff-mod-${key}`}>
-              {label}
-            </label>
-          </div>
+            <span className="lf-check__label">{label}</span>
+          </label>
         ))}
       </div>
     </div>

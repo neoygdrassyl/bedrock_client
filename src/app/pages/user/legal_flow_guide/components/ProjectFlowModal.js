@@ -11,12 +11,18 @@ function ProjectFlowModal({ show, onClose, phases, expediente }) {
   if (!show) return null;
 
   const currentPhase = phases?.find((p) => p.status === 'activo');
-  const riskClass =
-    currentPhase?.daysUsed > currentPhase?.daysLimit
-      ? 'text-danger'
-      : currentPhase?.daysUsed > currentPhase?.daysLimit * 0.8
-        ? 'text-warning'
-        : 'text-success';
+  const isOverdue = currentPhase?.daysUsed > currentPhase?.daysLimit;
+  const isWarning = !isOverdue && currentPhase?.daysUsed > currentPhase?.daysLimit * 0.8;
+
+  const riskBadge = isOverdue
+    ? 'lf-badge--danger'
+    : isWarning
+      ? 'lf-badge--warning'
+      : 'lf-badge--success';
+
+  const statusBadge = expediente?.es_desistido
+    ? 'lf-badge--danger'
+    : 'lf-badge--primary';
 
   return (
     <>
@@ -31,12 +37,13 @@ function ProjectFlowModal({ show, onClose, phases, expediente }) {
         onClick={onClose}
       >
         <div
-          className="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
+          className="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable legal-flow-modal"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
+                <i className="fas fa-project-diagram me-2" style={{ opacity: 0.5 }}></i>
                 Flujo del Expediente: {expediente?.radicado || '—'}
               </h5>
               <button type="button" className="btn-close" onClick={onClose} />
@@ -45,20 +52,21 @@ function ProjectFlowModal({ show, onClose, phases, expediente }) {
             <div className="modal-body">
               {/* Summary info */}
               {currentPhase && (
-                <div className="d-flex gap-3 mb-3 flex-wrap">
-                  <span>
+                <div className="lf-modal-meta">
+                  <span className="lf-modal-meta__item">
                     <strong>Fase actual:</strong> {currentPhase.label}
                   </span>
-                  <span className={riskClass}>
-                    <strong>Días:</strong> {currentPhase.daysUsed} / {currentPhase.daysLimit}
+                  <span className="lf-modal-meta__item">
+                    <strong>Dias:</strong>
+                    <span className={`lf-badge ${riskBadge}`}>
+                      {currentPhase.daysUsed} / {currentPhase.daysLimit}
+                    </span>
                   </span>
-                  <span>
-                    <strong>Estado:</strong>{' '}
-                    {expediente?.es_desistido ? (
-                      <span className="badge bg-danger">Desistido</span>
-                    ) : (
-                      <span className="badge bg-primary">{expediente?.status || 'Activo'}</span>
-                    )}
+                  <span className="lf-modal-meta__item">
+                    <strong>Estado:</strong>
+                    <span className={`lf-badge ${statusBadge}`}>
+                      {expediente?.es_desistido ? 'Desistido' : (expediente?.status || 'Activo')}
+                    </span>
                   </span>
                 </div>
               )}
@@ -67,7 +75,9 @@ function ProjectFlowModal({ show, onClose, phases, expediente }) {
               {mermaidString ? (
                 <MermaidDiagram chart={mermaidString} />
               ) : (
-                <p className="text-muted text-center">Sin datos de fases disponibles.</p>
+                <p style={{ color: '#8C95A6', textAlign: 'center' }}>
+                  Sin datos de fases disponibles.
+                </p>
               )}
             </div>
 

@@ -6,16 +6,10 @@ import {
   getPhaseDays,
 } from '../utils/legalProcessDefinition';
 
-const RESPONSIBLE_LABELS = {
-  solicitante: 'Solicitante',
-  curaduria: 'Curaduría',
-  paralelo: 'Paralelo',
-};
-
-const RESPONSIBLE_COLORS = {
-  solicitante: 'text-primary',
-  curaduria: 'text-success',
-  paralelo: 'text-warning',
+const ACTOR_META = {
+  curaduria: { label: 'Curaduria', dotClass: 'lf-actor-dot--curaduria', barClass: 'lf-actor-bar__fill--curaduria' },
+  solicitante: { label: 'Solicitante', dotClass: 'lf-actor-dot--solicitante', barClass: 'lf-actor-bar__fill--solicitante' },
+  paralelo: { label: 'Paralelo', dotClass: 'lf-actor-dot--paralelo', barClass: 'lf-actor-bar__fill--paralelo' },
 };
 
 function FlowRouteSummary({ filters }) {
@@ -27,7 +21,6 @@ function FlowRouteSummary({ filters }) {
       withProrroga: filters.showProrroga,
     };
 
-    // Determine visible phases based on filters
     const visible = PROCESS_DEFINITION.phases
       .filter((p) => {
         if (!p.skipConditions) return true;
@@ -46,7 +39,6 @@ function FlowRouteSummary({ filters }) {
     const totalDays = calculateRouteDays(visible, options);
     const poolTotal = getPoolDays(filters.projectType);
 
-    // Days per actor
     const byActor = {};
     for (const pid of visible) {
       const phase = PROCESS_DEFINITION.phases.find((p) => p.id === pid);
@@ -56,7 +48,6 @@ function FlowRouteSummary({ filters }) {
       byActor[actor] = (byActor[actor] || 0) + days;
     }
 
-    // Active desistimientos
     const activeDesist = Object.entries(filters.desistimientos)
       .filter(([, v]) => v)
       .map(([k]) => k);
@@ -64,43 +55,60 @@ function FlowRouteSummary({ filters }) {
     return { totalDays, poolTotal, byActor, activeDesist };
   }, [filters]);
 
+  const maxActorDays = Math.max(...Object.values(summary.byActor), 1);
+
   return (
-    <div className="card card-body">
-      <h6 className="fw-semibold mb-2">Resumen de Ruta</h6>
-
-      <div className="mb-2">
-        <span className="text-muted">Happy Path:</span>{' '}
-        <strong>{summary.totalDays} días hábiles</strong>
-      </div>
-
-      <table className="table table-sm table-borderless mb-2">
-        <tbody>
-          {Object.entries(summary.byActor).map(([actor, days]) => (
-            <tr key={actor}>
-              <td className={RESPONSIBLE_COLORS[actor] || ''}>
-                {RESPONSIBLE_LABELS[actor] || actor}
-              </td>
-              <td className="text-end">{days}d</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="mb-2">
-        <span className="text-muted">Pool compartido EST + VIA:</span>{' '}
-        <strong>{summary.poolTotal}d</strong>
-      </div>
-
-      {summary.activeDesist.length > 0 && (
-        <div className="border-top pt-2 mt-1">
-          <small className="text-muted d-block mb-1">
-            Desistimientos activos: {summary.activeDesist.join(', ')}
-          </small>
-          <small className="text-danger">
-            Subflujo desistimiento base: 5 + 15 + 10 = 30d adicionales
-          </small>
+    <div className="lf-card">
+      <div className="lf-card__body">
+        <div className="lf-section-title">
+          <i className="fas fa-chart-bar"></i>
+          Resumen de Ruta
         </div>
-      )}
+
+        {/* Total days - hero stat */}
+        <div className="lf-summary__stat">
+          <span className="lf-summary__stat-value">{summary.totalDays}</span>
+          <span className="lf-summary__stat-label">dias habiles (happy path)</span>
+        </div>
+
+        {/* Days per actor with bars */}
+        <div className="lf-summary__actors">
+          {Object.entries(summary.byActor).map(([actor, days]) => {
+            const meta = ACTOR_META[actor] || { label: actor, dotClass: '', barClass: '' };
+            const pct = Math.round((days / maxActorDays) * 100);
+            return (
+              <div key={actor}>
+                <div className="lf-actor-row">
+                  <span className={`lf-actor-dot ${meta.dotClass}`} />
+                  <span className="lf-actor-name">{meta.label}</span>
+                  <span className="lf-actor-days">{days}d</span>
+                </div>
+                <div className="lf-actor-bar" style={{ marginLeft: '1.35rem', marginTop: '0.2rem' }}>
+                  <div
+                    className={`lf-actor-bar__fill ${meta.barClass}`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Pool badge */}
+        <div className="lf-pool-badge">
+          <i className="fas fa-link" style={{ fontSize: '0.65rem' }}></i>
+          Pool EST + VIA: {summary.poolTotal}d (Tipo {filters.projectType})
+        </div>
+
+        {/* Desistimientos info */}
+        {summary.activeDesist.length > 0 && (
+          <div className="lf-desist-info">
+            <strong>Desistimientos activos:</strong> {summary.activeDesist.join(', ')}
+            <br />
+            Subflujo base: 5 + 15 + 10 = 30d adicionales
+          </div>
+        )}
+      </div>
     </div>
   );
 }

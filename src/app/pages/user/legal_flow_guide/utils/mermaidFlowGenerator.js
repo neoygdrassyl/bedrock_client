@@ -6,7 +6,7 @@ import { PROCESS_DEFINITION, getPhaseDays, getPoolDays } from './legalProcessDef
 
 const RESPONSIBLE_LABELS = {
   solicitante: 'Solicitante',
-  curaduria: 'Curaduría',
+  curaduria: 'Curaduria',
   paralelo: 'Paralelo',
 };
 
@@ -44,12 +44,12 @@ export function generateLegalFlowMermaid(options = {}) {
   lines.push('flowchart TD');
   lines.push('');
 
-  // --- Class definitions ---
-  lines.push('  classDef curaduria fill:#4A90D9,stroke:#333,color:white');
-  lines.push('  classDef solicitante fill:#F5A623,stroke:#333,color:white');
-  lines.push('  classDef paralelo fill:#999,stroke:#333,color:white');
-  lines.push('  classDef desistimiento fill:#E74C3C,stroke:#333,color:white');
-  lines.push('  classDef modifier fill:#9B59B6,stroke:#333,color:white,stroke-dasharray:5');
+  // --- Class definitions — cohesive professional palette ---
+  lines.push('  classDef curaduria fill:#5B7FD6,stroke:#4A6BC0,color:#fff,rx:8,ry:8');
+  lines.push('  classDef solicitante fill:#3D9B7F,stroke:#338A6E,color:#fff,rx:8,ry:8');
+  lines.push('  classDef paralelo fill:#8B95A8,stroke:#7A8494,color:#fff,rx:8,ry:8');
+  lines.push('  classDef desistimiento fill:#C97A7A,stroke:#B56A6A,color:#fff,rx:8,ry:8');
+  lines.push('  classDef modifier fill:#9185BE,stroke:#7F73AB,color:#fff,rx:8,ry:8,stroke-dasharray:5');
   lines.push('');
 
   // --- Determine visible phases ---
@@ -80,7 +80,7 @@ export function generateLegalFlowMermaid(options = {}) {
     }
     const daysLabel = days != null ? `${days}d` : '—';
     const resp = RESPONSIBLE_LABELS[phase.responsible] || phase.responsible;
-    const label = `F${phase.order}: ${phase.label}\\n${daysLabel} | ${resp}`;
+    const label = `F${phase.order}: ${phase.label}\\n${daysLabel} · ${resp}`;
     lines.push(`  ${phase.id}["${label}"]:::${phase.color}`);
   }
   lines.push('');
@@ -102,18 +102,18 @@ export function generateLegalFlowMermaid(options = {}) {
   // --- Modifiers ---
   if (showSuspension) {
     const susPre = PROCESS_DEFINITION.modifiers.suspension_pre_acta;
-    lines.push(`  MOD_SUS_PRE["${susPre.label}\\n+${susPre.maxDays}d máx"]:::modifier`);
+    lines.push(`  MOD_SUS_PRE["${susPre.label}\\n+${susPre.maxDays}d max"]:::modifier`);
     lines.push('  EST -.- MOD_SUS_PRE');
 
     const susPost = PROCESS_DEFINITION.modifiers.suspension_post_acta;
-    lines.push(`  MOD_SUS_POST["${susPost.label}\\n+${susPost.maxDays}d máx"]:::modifier`);
+    lines.push(`  MOD_SUS_POST["${susPost.label}\\n+${susPost.maxDays}d max"]:::modifier`);
     lines.push('  VIA -.- MOD_SUS_POST');
     lines.push('');
   }
 
   if (showExtension) {
     const ext = PROCESS_DEFINITION.modifiers.extension;
-    lines.push(`  MOD_EXT["${ext.label}\\n1 vez máx"]:::modifier`);
+    lines.push(`  MOD_EXT["${ext.label}\\n1 vez max"]:::modifier`);
     lines.push('  EST -.- MOD_EXT');
     lines.push('');
   }
@@ -127,9 +127,9 @@ export function generateLegalFlowMermaid(options = {}) {
 
   // --- Recurso subflow ---
   if (showRecurso) {
-    lines.push('  subgraph "Recurso de Reposición"');
-    lines.push('    REC_RES["Resolver Recurso\\n45d | Curaduría"]:::curaduria');
-    lines.push('    REC_NOT["Notif. Respuesta\\n15d | Curaduría"]:::curaduria');
+    lines.push('  subgraph recurso ["Recurso de Reposicion"]');
+    lines.push('    REC_RES["Resolver Recurso\\n45d · Curaduria"]:::curaduria');
+    lines.push('    REC_NOT["Notif. Respuesta\\n15d · Curaduria"]:::curaduria');
     lines.push('    REC_RES --> REC_NOT');
     lines.push('  end');
     lines.push('  EJEC -->|"Recurso"| REC_RES');
@@ -142,12 +142,12 @@ export function generateLegalFlowMermaid(options = {}) {
 
   if (enabledDesist.length > 0) {
     // Render shared desistimiento subflow once
-    lines.push('  subgraph "Subflujo Desistimiento"');
+    lines.push('  subgraph desist ["Subflujo Desistimiento"]');
     for (const step of PROCESS_DEFINITION.desistimientoSubflow) {
       const sid = `DS_${step.id}`;
       const resp = RESPONSIBLE_LABELS[step.responsible] || step.responsible;
       const condLabel = step.conditional ? ' (si recurso)' : '';
-      lines.push(`    ${sid}["${step.label}${condLabel}\\n${step.days}d | ${resp}"]:::desistimiento`);
+      lines.push(`    ${sid}["${step.label}${condLabel}\\n${step.days}d · ${resp}"]:::desistimiento`);
     }
     // Chain subflow
     for (let i = 0; i < PROCESS_DEFINITION.desistimientoSubflow.length - 1; i++) {
