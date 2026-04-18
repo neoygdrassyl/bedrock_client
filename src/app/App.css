@@ -1,3 +1,7 @@
+/* ── LEGACY: The following styles are from the pre-redesign layout.
+   They will be removed once all pages are migrated to the new shell.
+   The new layout is handled by AppShell (Tailwind + shadcn/ui). ── */
+
 html{
   scroll-behavior: smooth;
 }
