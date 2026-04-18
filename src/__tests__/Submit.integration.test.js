@@ -340,12 +340,12 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText('Nr. RADICACIÓN')).toBeInTheDocument();
+      expect(screen.getByText('Nr. Radicación')).toBeInTheDocument();
     });
     expect(screen.getByText('Nr. Licencia / Solicitud')).toBeInTheDocument();
-    expect(screen.getByText('TIPO')).toBeInTheDocument();
-    expect(screen.getByText('FECHA RADICACIÓN')).toBeInTheDocument();
-    expect(screen.getByText('DOCUMENTO')).toBeInTheDocument();
+    expect(screen.getByText('Tipo')).toBeInTheDocument();
+    expect(screen.getByText('Fecha Radicación')).toBeInTheDocument();
+    expect(screen.getByText('Documento')).toBeInTheDocument();
     expect(screen.getByText('ACCIÓN')).toBeInTheDocument();
   });
 

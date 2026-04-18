@@ -260,7 +260,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
         let _COMPONENT_LIST = () => {
             const columns = [
                 {
-                    name: <label className="text-center">DOCUMENTOS</label>,
+                    name: 'Documentos',
                     selector: row => row.id, // FIX: v7→v8 column selector
                     sortable: true,
                     filterable: true,
@@ -269,7 +269,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     cell: row => <div className="py-2">{_LIST_GEN(row)}</div>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'Acción',
                     button: true,
                     wrap: false,
                     minWidth: '100px',

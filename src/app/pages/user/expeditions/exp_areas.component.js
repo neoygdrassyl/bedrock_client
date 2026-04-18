@@ -81,35 +81,35 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
             let _LIST = _GET_CHILD_AREAS();
             const columns = [
                 {
-                    name: <label className="text-center">AREA</label>,
+                    name: 'Área',
                     selector: row => row.area,
                     sortable: true,
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
-                    cell: row => <label>{row.area}</label>
+                    cell: row => <span className="text-sm font-mono">{row.area}</span>
                 },
                 {
-                    name: <label className="text-center">UNIDADES</label>,
+                    name: 'Unidades',
                     selector: row => row.units,
                     sortable: true,
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
-                    cell: row => <label>{row.units}</label>
+                    cell: row => <span className="text-sm font-mono">{row.units}</span>
                 },
                 {
-                    name: <label className="text-center">COBRO  * m2/U</label>,
+                    name: 'Cobro × m²/U',
                     selector: row => row.charge,
                     sortable: true,
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
                     omit: _GLOBAL_ID != 'cp1',
-                    cell: row => <label>{row.charge}</label>
+                    cell: row => <span className="text-sm font-mono">{row.charge}</span>
                 },
                 {
-                    name: <label className="text-center">COBRO TOTAL</label>,
+                    name: 'Cobro Total',
                     selector: row => row.charge * row.area,
                     sortable: true,
                     filterable: true,
@@ -118,25 +118,25 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     cell: row => <label>{_GLOBAL_ID == 'cp1' ? Math.round(row.charge * row.area) : row.charge}</label>
                 },
                 {
-                    name: <label className="text-center">USO</label>,
+                    name: 'Uso',
                     selector: row => row.use,
                     sortable: true,
                     filterable: true,
                     center: true,
                     maxWidth: '60px',
-                    cell: row => <label>{row.use}</label>
+                    cell: row => <span className="text-sm">{row.use}</span>
                 },
                 {
-                    name: <label className="text-center">TIPO DE ACTUACIÓN</label>,
+                    name: 'Tipo de Actuación',
                     selector: row => row.desc,
                     sortable: true,
                     filterable: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label>{row.desc}</label>
+                    cell: row => <span className="text-sm">{row.desc}</span>
                 },
                 {
-                    name: <label className="text-center">REGLAS</label>,
+                    name: 'Reglas',
                     selector: row => row.payment,
                     sortable: true,
                     filterable: true,
@@ -146,7 +146,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     cell: row => <label >{infoCud.exp_rules[row.payment] ?? ''}</label>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'Acción',
                     button: true,
                     maxWidth: '50px',
                     cell: row => <>

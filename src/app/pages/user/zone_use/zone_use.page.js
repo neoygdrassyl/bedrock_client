@@ -235,7 +235,7 @@ export default function ZONE_USE(props) {
 
     const columns = [
         {
-            name: <label className="text-center">No. RADICACIÓN</label>,
+            name: 'No. Radicación',
             selector: row => row.id_in,
             sortable: true,
             filterable: true,
@@ -243,7 +243,7 @@ export default function ZONE_USE(props) {
             cell: row => row.id_in
         },
         {
-            name: <label className="text-center">No. EXPEDICIÓN</label>,
+            name: 'No. Expedición',
             selector: row => row.id_out,
             sortable: true,
             filterable: true,
@@ -251,7 +251,7 @@ export default function ZONE_USE(props) {
             cell: row => row.id_out
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'Acción',
             button: true,
             center: true,
             minWidth: '80px',

@@ -2725,7 +2725,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             ]
 
             let _columns = [...columns, ...extraColumns]
-            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name.props.children })
+            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return typeof c.name === 'string' ? c.name : (c.name?.props?.children ?? '') })
             rows = _data.map(d =>
                 _columns.filter(c => c.ignoreCSV == undefined).map(c => {
                     if (c.cvsCB) return (String(c.cvsCB(d) ?? '')).replace(/[\n\r]+ */g, ' ')
@@ -2752,7 +2752,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         let generateCVSNegative = (_data, _name) => {
             var rows = [];
             let _columns = [...columns_negative]
-            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name.props.children })
+            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return typeof c.name === 'string' ? c.name : (c.name?.props?.children ?? '') })
             rows = _data.map(d =>
                 _columns.filter(c => c.ignoreCSV == undefined).map(c => {
                     if (c.cvsCB) return (String(c.cvsCB(d) ?? '')).replace(/[\n\r]+ */g, ' ')

@@ -353,7 +353,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
     expect(screen.getByText('Entrepaño')).toBeInTheDocument();
     expect(screen.getByText('Caja N°')).toBeInTheDocument();
     expect(screen.getByText('Contenido')).toBeInTheDocument();
-    expect(screen.getByText('ACCIÓN')).toBeInTheDocument();
+    expect(screen.getByText('Acción')).toBeInTheDocument();
   });
 
   test('15. Click en "NUEVA CAJA" abre modal de nueva caja', async () => {

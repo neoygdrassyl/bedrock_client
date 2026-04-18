@@ -163,7 +163,7 @@ export default function ARCHIVE(props) {
     // ***************************  DATATABLES *********************** //
     const columns_a = [
         {
-            name: <label className="text-center">Estante</label>,
+            name: 'Estante',
             selector: row => row.column,
             sortable: true,
             filterable: true,
@@ -173,7 +173,7 @@ export default function ARCHIVE(props) {
 
         },
         {
-            name: <label className="text-center">Entrepaño</label>,
+            name: 'Entrepaño',
             selector: row => row.row,
             sortable: true,
             filterable: true,
@@ -183,7 +183,7 @@ export default function ARCHIVE(props) {
 
         },
         {
-            name: <label className="text-center">Caja N°</label>,
+            name: 'Caja N°',
             selector: row => row.box,
             sortable: true,
             filterable: true,
@@ -193,7 +193,7 @@ export default function ARCHIVE(props) {
 
         },
         {
-            name: <label className="text-center">Contenido</label>,
+            name: 'Contenido',
             center: true,
             cell: row => <TagGroup>
                 {row.process_x_archives.map(it => {
@@ -216,7 +216,7 @@ export default function ARCHIVE(props) {
             </TagGroup>
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'Acción',
             button: true,
             center: true,
             omit: window.user.roleId != 1 && window.user.roleId != 3,

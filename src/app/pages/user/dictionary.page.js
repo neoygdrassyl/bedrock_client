@@ -379,7 +379,7 @@ export default function DICTIONARY(props) {
         const headers = ['NOMBRE', 'DOCUMENTO', 'CORREO', 'NUMERO', 'MATRICULA', 'FECHA MAT.', 'SANCIÓN']
         const columns = [
             {
-                name: <label className="text-center">Nombre</label>,
+                name: 'Nombre',
                 selector: row => row.name + ' ' + row.surname,
                 sortable: true,
                 filterable: true,
@@ -388,7 +388,7 @@ export default function DICTIONARY(props) {
 
             },
             {
-                name: <label className="text-center">Documento</label>,
+                name: 'Documento',
                 selector: row => row.id_number,
                 sortable: true,
                 filterable: true,
@@ -396,7 +396,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.id_number}</h6>
             },
             {
-                name: <label className="text-center">Coreo</label>,
+                name: 'Correo',
                 selector: row => row.email,
                 sortable: true,
                 filterable: true,
@@ -404,7 +404,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.email}</h6>
             },
             {
-                name: <label className="text-center">Número</label>,
+                name: 'Número',
                 selector: row => row.number,
                 sortable: true,
                 filterable: true,
@@ -412,7 +412,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.number}</h6>
             },
             {
-                name: <label className="text-center">Matricula</label>,
+                name: 'Matrícula',
                 selector: row => row.registration,
                 sortable: true,
                 filterable: true,
@@ -420,7 +420,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.registration}</h6>
             },
             {
-                name: <label className="text-center">Fecha Mat.</label>,
+                name: 'Fecha Mat.',
                 selector: row => row.registration_date,
                 sortable: true,
                 filterable: true,
@@ -428,7 +428,7 @@ export default function DICTIONARY(props) {
                 cell: row => <h6 className='fw-normal'>{row.registration_date}</h6>
             },
             {
-                name: <label className="text-center">Docs</label>,
+                name: 'Docs',
                 center: true,
                 cell: row => <h6 className='fw-normal'>{_GET_DOCS_BTNS(row.docs)}</h6>
             },

@@ -1327,13 +1327,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
             let extraColumns = [
                 {
-                    name: <label className="text-center">FECHA DE LICENCIA</label>,
+                name: 'Fecha de Licencia',
                     cell: row => row.clock_license
                 }
             ]
 
             let _columns = [...columns_archive, ...extraColumns]
-            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return c.name.props.children })
+            const headRows = _columns.filter(c => c.ignoreCSV == undefined).map(c => { return typeof c.name === 'string' ? c.name : (c.name?.props?.children ?? '') })
             rows = _data.map(d =>
                 _columns.filter(c => c.ignoreCSV == undefined).map(c => {
                     if (c.cvsCB) return (String(c.cvsCB(d) ?? '')).replace(/[\n\r]+ */g, ' ')
