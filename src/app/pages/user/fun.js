@@ -1,12 +1,25 @@
 import ChartErrorBoundary from '../../components/ChartErrorBoundary';
 import { useReducer, useEffect, useRef } from 'react';
-import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsContent, MDBTabsPane, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBDropdownLink, MDBPopover, MDBPopoverBody } from '../../components/ui';
-import { Link } from "react-router-dom";
+import { MDBTabsPane } from '../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
 import Modal from 'react-modal';
-import IMG_SEARCH_ICON from '../../img/pqrs/Buscaricono-01.png'
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
+import { Icon } from '@/components/icon';
+import { cn } from '@/lib/utils';
 
 // SERVICES
 import FUNService from '../../services/fun.service'
@@ -1130,40 +1143,100 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             const canAssign = window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2;
 
             return (
-                <MDBPopover size='sm' color='info' btnChildren={<i className="fas fa-ellipsis-v"></i>} placement='left' dismiss btnClassName='fun-action-toggle'>
-                    <MDBPopoverBody className='fun-action-menu p-0'>
-                        <ul className="list-unstyled mb-0">
-                            <li><h6 className="dropdown-header"><i className="far fa-eye me-2"></i>Consulta</h6></li>
-                            <li><button type="button" className="dropdown-item" onClick={() => toggle(row)}><i className="far fa-folder-open text-info me-2"></i>Detalles</button></li>
-                            <li><button type="button" className="dropdown-item" onClick={() => toggle_clock(row)}><i className="far fa-clock text-secondary me-2"></i>Tiempos</button></li>
-                            <li><button type="button" className="dropdown-item" onClick={() => toggle_d(row)}><i className="fas fa-archive text-secondary me-2"></i>Documentos</button></li>
-                            {canEdit && <>
-                                <li><hr className="dropdown-divider" /></li>
-                                <li><h6 className="dropdown-header"><i className="fas fa-pencil-alt me-2"></i>Gestión</h6></li>
-                                <li><button type="button" className="dropdown-item" onClick={() => toggle_n(row)}><i className="fas fa-sync-alt text-primary me-2"></i>Actualizar</button></li>
-                                <li><button type="button" className="dropdown-item" onClick={() => toggle_c(row)}><i className="far fa-check-square text-success me-2"></i>Checkeo</button></li>
-                                {isPH ? <>
-                                    <li><button type="button" className="dropdown-item" onClick={() => toggle_recordPH(row)}><i className="fas fa-pencil-ruler text-warning me-2"></i>Inf. P.H.</button></li>
-                                </> : <>
-                                    {!isOA && rules[0] != 1 && <li><button type="button" className="dropdown-item" onClick={() => toggle_alert(row)}><i className="fas fa-sign text-warning me-2"></i>Publicidad</button></li>}
-                                    <li><button type="button" className="dropdown-item" onClick={() => toggle_recordLaw(row)}><i className="fas fa-balance-scale text-warning me-2"></i>Inf. Jurídico</button></li>
-                                    {!isOA && <>
-                                        <li><button type="button" className="dropdown-item" onClick={() => toggle_recordArc(row)}><i className="far fa-building text-warning me-2"></i>Inf. Arquitectónico</button></li>
-                                        {rules[1] != 1 && <li><button type="button" className="dropdown-item" onClick={() => toggle_recordEng(row)}><i className="fas fa-cogs text-warning me-2"></i>Inf. Estructural</button></li>}
-                                        <li><button type="button" className="dropdown-item" onClick={() => toggle_recordReview(row)}><i className="fas fa-file-contract text-warning me-2"></i>Acta</button></li>
-                                    </>}
-                                </>}
-                                <li><hr className="dropdown-divider" /></li>
-                                <li><h6 className="dropdown-header"><i className="far fa-file-alt me-2"></i>Resolución</h6></li>
-                                <li><button type="button" className="dropdown-item" onClick={() => toggle_exp(row)}><i className="far fa-file-alt text-success me-2"></i>Expedición</button></li>
-                            </>}
-                            {canAssign && <>
-                                <li><hr className="dropdown-divider" /></li>
-                                <li><button type="button" className="dropdown-item" onClick={() => retrieveMacroSingle(row.id)}><i className="fas fa-user-cog text-primary me-2"></i>Asignar</button></li>
-                            </>}
-                        </ul>
-                    </MDBPopoverBody>
-                </MDBPopover>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Icon name="MoreVertical" size={16} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel className="flex items-center gap-2">
+                            <Icon name="Eye" size={14} /> Consulta
+                        </DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => toggle(row)}>
+                            <Icon name="FolderOpen" size={14} className="text-primary" />
+                            Detalles
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toggle_clock(row)}>
+                            <Icon name="Clock" size={14} className="text-muted-foreground" />
+                            Tiempos
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toggle_d(row)}>
+                            <Icon name="Archive" size={14} className="text-muted-foreground" />
+                            Documentos
+                        </DropdownMenuItem>
+                        {canEdit && (
+                            <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuLabel className="flex items-center gap-2">
+                                    <Icon name="Pencil" size={14} /> Gestión
+                                </DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => toggle_n(row)}>
+                                    <Icon name="RefreshCw" size={14} className="text-primary" />
+                                    Actualizar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => toggle_c(row)}>
+                                    <Icon name="CheckSquare" size={14} className="text-accent" />
+                                    Checkeo
+                                </DropdownMenuItem>
+                                {isPH ? (
+                                    <DropdownMenuItem onClick={() => toggle_recordPH(row)}>
+                                        <Icon name="PenTool" size={14} className="text-warning" />
+                                        Inf. P.H.
+                                    </DropdownMenuItem>
+                                ) : (
+                                    <>
+                                        {!isOA && rules[0] != 1 && (
+                                            <DropdownMenuItem onClick={() => toggle_alert(row)}>
+                                                <Icon name="Megaphone" size={14} className="text-warning" />
+                                                Publicidad
+                                            </DropdownMenuItem>
+                                        )}
+                                        <DropdownMenuItem onClick={() => toggle_recordLaw(row)}>
+                                            <Icon name="Scale" size={14} className="text-warning" />
+                                            Inf. Jurídico
+                                        </DropdownMenuItem>
+                                        {!isOA && (
+                                            <>
+                                                <DropdownMenuItem onClick={() => toggle_recordArc(row)}>
+                                                    <Icon name="Building" size={14} className="text-warning" />
+                                                    Inf. Arquitectónico
+                                                </DropdownMenuItem>
+                                                {rules[1] != 1 && (
+                                                    <DropdownMenuItem onClick={() => toggle_recordEng(row)}>
+                                                        <Icon name="Cog" size={14} className="text-warning" />
+                                                        Inf. Estructural
+                                                    </DropdownMenuItem>
+                                                )}
+                                                <DropdownMenuItem onClick={() => toggle_recordReview(row)}>
+                                                    <Icon name="FileText" size={14} className="text-warning" />
+                                                    Acta
+                                                </DropdownMenuItem>
+                                            </>
+                                        )}
+                                    </>
+                                )}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuLabel className="flex items-center gap-2">
+                                    <Icon name="FileOutput" size={14} /> Resolución
+                                </DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => toggle_exp(row)}>
+                                    <Icon name="FileCheck" size={14} className="text-accent" />
+                                    Expedición
+                                </DropdownMenuItem>
+                            </>
+                        )}
+                        {canAssign && (
+                            <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => retrieveMacroSingle(row.id)}>
+                                    <Icon name="UserCog" size={14} className="text-primary" />
+                                    Asignar
+                                </DropdownMenuItem>
+                            </>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             );
         }
 
@@ -1291,178 +1364,163 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
         return (
             
-            <div className="Publish container-fluid p-0 mb-4">
-                <div className="row d-flex p-0">
+            <div className="space-y-6">
+                <FUN_WORKER_ASIGN translation={translation} globals={globals}
+                    type={"law"}
+                    openModal={openModal} />
+                <FUN_WORKER_ASIGN translation={translation} globals={globals}
+                    type={"arc"}
+                    openModal={openModal} />
+                <FUN_WORKER_ASIGN translation={translation} globals={globals}
+                    type={"eng"}
+                    openModal={openModal} />
 
-                        <div className="col-12 d-flex justify-content-start p-0">
-                            <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                                <MDBBreadcrumbItem>
-                                <Link to="/home"><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                                </MDBBreadcrumbItem>
-                                <MDBBreadcrumbItem>
-                                <Link to="/dashboard"><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                                </MDBBreadcrumbItem>
-                                <MDBBreadcrumbItem active>
-                                <i className="fas fa-file-alt"></i> <label className="text-uppercase">RADICACIÓN DE SOLICITUDES</label>
-                                </MDBBreadcrumbItem>
-                            </MDBBreadcrumb>
-                        </div>
-                    <div className="col-lg-11 col-md-12">
-                        <h1 className="text-center my-4">RADICACIÓN DE SOLICITUDES</h1>
-                        <hr />
+                {/* ── Actions: New license + Search ──────────────── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <Icon name="FilePlus" size={18} className="text-primary" />
+                                Generar Nueva Radicación
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleSubmit} id="app-form" className="space-y-3">
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <div className="input-group">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="Calendar" size={14} />
+                                            </span>
+                                            <input type="date" className="form-control" id="f_01" required />
+                                        </div>
+                                    </div>
+                                    <div className="flex-[2]">
+                                        <div className="input-group">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="Hash" size={14} />
+                                            </span>
+                                            <input type="text" className="form-control" defaultValue={nomens} id="f_02" required />
+                                            <Button type="button" variant="outline" size="sm" className="rounded-l-none"
+                                                onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                        <Icon name="FolderPlus" size={14} /> Crear
+                                    </Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <Icon name="Search" size={18} className="text-primary" />
+                                Consultar Solicitud
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={search} id="app-form" className="space-y-3">
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <div className="input-group">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="Info" size={14} />
+                                            </span>
+                                            <select className="form-select" id="search_0" required>
+                                                <option value="1">Número de Radicado</option>
+                                                <option value="2">Número de Matricula Inmobiliaria</option>
+                                                <option value="3">Número de Indentificacion Predial/Catastral</option>
+                                                <option value="4">Dirección Actual</option>
+                                                <option value="5">C.C o NIT</option>
+                                                <option value="6">Nombre</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="input-group">
+                                            <span className="input-group-text bg-primary text-primary-foreground">
+                                                <Icon name="MessageCircle" size={14} />
+                                            </span>
+                                            <input type="text" className="form-control" id="search_1" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <Button type="submit" variant="secondary">
+                                        <Icon name="SearchCheck" size={14} /> Consultar
+                                    </Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* ── Search results ─────────────────────────────── */}
+                {list_search.length > 0 && (
+                    <div>
+                        <h3 className="text-base font-semibold text-center mb-3 flex items-center justify-center gap-2">
+                            <Icon name="SearchCheck" size={18} className="text-primary" />
+                            Resultado de la Búsqueda
+                        </h3>
+                        <DataTable
+                            conditionalRowStyles={rowSelectedStyle}
+                            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                            noDataComponent="NO HAY SOLICITUDES"
+                            striped="true"
+                            columns={columns_search}
+                            data={list_search}
+                            highlightOnHover
+                            pagination
+                            paginationPerPage={20}
+                            paginationRowsPerPageOptions={[20, 50, 100]}
+                            className="data-table-component"
+                            noHeader
+                            onRowClicked={(e) => setState({ selectedRow: e.id })}
+                            dense
+                            progressPending={!isLoaded}
+                            progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
+                        />
+                    </div>
+                )}
+
+                {/* ── Tab navigation ─────────────────────────────── */}
+                <div>
+                    <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                        {[
+                            { key: '1', label: 'Radicación', count: list_started.length, icon: 'FileInput' },
+                            { key: '5', label: 'Evaluación', count: state.list_legal.length, icon: 'ClipboardCheck' },
+                            { key: '50', label: 'Expedición', count: state.list_expedition.length, icon: 'FileOutput' },
+                            { key: '10', label: 'Otras Actuaciones', count: state.list_profesional.length, icon: 'Briefcase' },
+                            { key: '-1', label: 'Desistimiento', count: list_incomplete.length, icon: 'XCircle', variant: 'destructive' },
+                            { key: '100', label: 'Archivadas', count: state.list_archive.length, icon: 'Archive' },
+                        ].map((tab) => (
+                            <button
+                                key={tab.key}
+                                role="tab"
+                                aria-selected={state.fillActive === tab.key}
+                                onClick={() => handleFillClick(tab.key)}
+                                className={cn(
+                                    'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                    state.fillActive === tab.key
+                                        ? 'border-b-primary text-primary'
+                                        : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                                )}
+                            >
+                                <Icon name={tab.icon} size={14} />
+                                {tab.label}
+                                <Badge variant={tab.variant === 'destructive' ? 'destructive' : 'secondary'} className="ml-1 text-[10px] px-1.5 py-0">
+                                    {tab.count}
+                                </Badge>
+                            </button>
+                        ))}
                     </div>
 
-                    <FUN_WORKER_ASIGN translation={translation} globals={globals}
-                        type={"law"}
-                        openModal={openModal} />
-                    <FUN_WORKER_ASIGN translation={translation} globals={globals}
-                        type={"arc"}
-                        openModal={openModal} />
-                    <FUN_WORKER_ASIGN translation={translation} globals={globals}
-                        type={"eng"}
-                        openModal={openModal} />
-                    <div style={{ paddingLeft: '175px', paddingRight: '175px' }}>
-                        <MDBRow>
-                            <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
-                            <MDBCol md="6">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>GENERAR NUEVA RADICACIÓN</h4></MDBCardTitle>
-                                        <form onSubmit={handleSubmit} id="app-form">
-
-                                            <div className='row'>
-                                                <div className='col'>
-                                                    <div className="input-group">
-                                                        <span className="input-group-text bg-info text-white">
-                                                            <i className="far fa-calendar-alt"></i>
-                                                        </span>
-                                                        <input type="date" className="form-control" id="f_01" required />
-                                                    </div>
-                                                </div>
-                                                <div className='col-7'>
-                                                    <div className="input-group">
-                                                        <span className="input-group-text bg-info text-white">
-                                                            <i className="fas fa-hashtag"></i>
-                                                        </span>
-                                                        <input type="text" className="form-control" defaultValue={nomens} id="f_02" required />
-                                                        <MDBBtn className="btn btn-sm btn-info shadow-none m-1"
-                                                            onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</MDBBtn>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="text-center">
-                                                <button className="btn btn btn-success my-1"><i className="fas fa-folder-plus"></i> CREAR </button>
-                                            </div>
-                                        </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="6">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>CONSULTAR SOLICITUD</h4></MDBCardTitle>
-                                        <form onSubmit={search} id="app-form">
-                                            <div className='row'>
-                                                <div className='col'>
-                                                    <div className="input-group">
-                                                        <span className="input-group-text bg-info text-white">
-                                                            <i className="fas fa-info-circle"></i>
-                                                        </span>
-                                                        <select className="form-select" id="search_0" required>
-                                                            <option value="1">Número de Radicado</option>
-                                                            <option value="2">Número de Matricula Inmobiliaria</option>
-                                                            <option value="3">Número de Indentificacion Predial/Catastral</option>
-                                                            <option value="4">Dirección Actual</option>
-                                                            <option value="5">C.C o NIT</option>
-                                                            <option value="6">Nombre</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className='col'>
-                                                    <div className="input-group">
-                                                        <span className="input-group-text bg-info text-white">
-                                                            <i className="far fa-comment-dots"></i>
-                                                        </span>
-                                                        <input type="text" className="form-control" id="search_1" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="text-center">
-                                                <button className="btn btn-secondary mt-1"><i className="fas fa-search-plus"></i> CONSULTAR </button>
-                                            </div>
-                                        </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-
-                        </MDBRow>
-                    </div>
-                    {list_search.length > 0 ?
-                        <div className="row d-flex justify-content-center">
-                            <div className="col-12">
-
-                                <h2 className="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} className="" height="75px" alt="..." /></h2>
-
-                                <DataTable
-                                    conditionalRowStyles={rowSelectedStyle}
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                    noDataComponent="NO HAY SOLICITUDES"
-                                    striped="true"
-                                    columns={columns_search}
-                                    data={list_search}
-                                    highlightOnHover
-                                    pagination
-                                    paginationPerPage={20}
-                                    paginationRowsPerPageOptions={[20, 50, 100]}
-                                    className="data-table-component"
-                                    noHeader
-                                    onRowClicked={(e) => setState({ selectedRow: e.id })}
-                                    dense
-                                    progressPending={!isLoaded}
-                                    progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
-                                />
-
-                            </div>
-                        </div>
-
-                        : ''}
-
-                    <MDBTabs fill className='m-0 border' pills>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('1')} active={state.fillActive === '1'}>
-                                <label className="upper-case">Radicación ({list_started.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('5')} active={state.fillActive === '5'}>
-                                <label className="upper-case">Evaluacion ({state.list_legal.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('50')} active={state.fillActive === '50'}>
-                                <label className="upper-case">EXPEDICIÓN ({state.list_expedition.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('10')} active={state.fillActive === '10'}>
-                                <label className="upper-case">OTRAS ACTUACIONES ({state.list_profesional.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('-1')} active={state.fillActive === '-1'}>
-                                <label className="upper-case text-danger">Desistimiento ({list_incomplete.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('100')} active={state.fillActive === '100'}>
-                                <label className="upper-case">ARCHIVADAS ({state.list_archive.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                    </MDBTabs>
-
-                    <MDBTabsContent>
+                    {/* Tab content */}
+                    <div className="mt-2">
                         <MDBTabsPane show={state.fillActive === '1'}>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
@@ -1479,13 +1537,11 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 noHeader
                                 dense
                                 onRowClicked={(e) => setState({ selectedRow: e.id })}
-
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
                         </MDBTabsPane>
                         <MDBTabsPane show={state.fillActive === '-1'}>
-
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1501,14 +1557,11 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 noHeader
                                 dense
                                 onRowClicked={(e) => setState({ selectedRow: e.id })}
-
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-
                         </MDBTabsPane>
                         <MDBTabsPane show={state.fillActive === '5'}>
-
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1524,14 +1577,11 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 noHeader
                                 dense
                                 onRowClicked={(e) => setState({ selectedRow: e.id })}
-
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-
                         </MDBTabsPane>
                         <MDBTabsPane show={state.fillActive === '10'}>
-
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1547,14 +1597,11 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 noHeader
                                 dense
                                 onRowClicked={(e) => setState({ selectedRow: e.id })}
-
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-
                         </MDBTabsPane>
                         <MDBTabsPane show={state.fillActive === '50'}>
-
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1570,17 +1617,16 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 noHeader
                                 dense
                                 onRowClicked={(e) => setState({ selectedRow: e.id })}
-
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-
                         </MDBTabsPane>
                         <MDBTabsPane show={state.fillActive === '100'}>
-
-                            <div className='my-2'><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(state.list_archive, "LICENCIAS ARCHIVADAS") }}
-                            ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
-
+                            <div className='my-2'>
+                                <Button variant="outline" size="sm" onClick={() => { generateCVS(state.list_archive, "LICENCIAS ARCHIVADAS") }}>
+                                    <Icon name="FileSpreadsheet" size={14} /> Descargar CSV
+                                </Button>
+                            </div>
                             <DataTable
                                 conditionalRowStyles={rowSelectedStyle}
                                 paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
@@ -1596,16 +1642,14 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                 noHeader
                                 dense
                                 onRowClicked={(e) => setState({ selectedRow: e.id })}
-
                                 progressPending={!isLoaded}
-                                progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                                progressComponent={<span className='text-sm text-muted-foreground'>Cargando...</span>}
                             />
-
                         </MDBTabsPane>
-                    </MDBTabsContent>
+                    </div>
+                </div>
 
-                </div >
-
+                {/* ── Modals (react-modal — kept during migration) ── */}
                 <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={state.modal}
                     style={customStylesForModal()}
@@ -1614,7 +1658,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle()} />
                     </div>
                     {modalHeader}
 
@@ -1639,7 +1683,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {state.currentPublic}</label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_c()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_c()} />
                     </div>
                     {modalHeader}
 
@@ -1654,9 +1698,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_c}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_c}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1667,7 +1709,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_n()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_n()} />
                     </div>
                     {modalHeader}
 
@@ -1680,9 +1722,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_n}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_n}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1693,7 +1733,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_d()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_d()} />
                     </div>
                     {modalHeader}
 
@@ -1705,9 +1745,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_d}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_d}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1718,7 +1756,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_alert()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_alert()} />
                     </div>
                     {modalHeader}
 
@@ -1731,9 +1769,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} /></ChartErrorBoundary>
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_alert}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_alert}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1744,7 +1780,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_clock()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_clock()} />
                     </div>
                     {modalHeader}
 
@@ -1756,9 +1792,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_clock}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_clock}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1769,7 +1803,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordArc()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_recordArc()} />
                     </div>
                     {modalHeader}
 
@@ -1783,9 +1817,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_recordArc}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_recordArc}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1796,7 +1828,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordLaw()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_recordLaw()} />
                     </div>
                     {modalHeader}
 
@@ -1809,9 +1841,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_recordLaw}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_recordLaw}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1822,7 +1852,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordPH()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_recordPH()} />
                     </div>
                     {modalHeader}
 
@@ -1836,9 +1866,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_recordPH}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_recordPH}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1849,7 +1877,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordEng()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_recordEng()} />
                     </div>
                     {modalHeader}
 
@@ -1862,9 +1890,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION_VERSION={navigation_version} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_recordEng}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_recordEng}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1875,7 +1901,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_recordReview()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_recordReview()} />
                     </div>
                     {modalHeader}
 
@@ -1887,9 +1913,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_recordReview}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_recordReview}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1900,7 +1924,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_exp()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_exp()} />
                     </div>
                     {modalHeader}
 
@@ -1912,9 +1936,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation} />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={toggle_exp}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={toggle_exp}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1925,7 +1947,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {state.currentPublic} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => setState({ modal_asign_prof: false })}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => setState({ modal_asign_prof: false })} />
                     </div>
 
                     {currentItemAsignProf?.length ? <TABLE_COMPONENT_EXPANDED currentItem={{ ...currentItemAsignProf[0], rec_review: currentItemAsignProf[0].rec_review, rec_review_2: currentItemAsignProf[0].rec_rev_2 }}
@@ -1937,9 +1959,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     /> : "Loading..."}
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={() => setState({ modal_asign_prof: false })}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        <Button variant="secondary" size="lg" onClick={() => setState({ modal_asign_prof: false })}><Icon name="XCircle" size={16} /> Cerrar</Button>
                     </div>
                 </Modal>
 

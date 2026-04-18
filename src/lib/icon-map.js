@@ -164,4 +164,18 @@ export const FA_TO_LUCIDE = {
   'fa-trophy': 'Trophy',
   'fa-thumbs-up': 'ThumbsUp',
   'fa-thumbs-down': 'ThumbsDown',
+
+  // FUN module icons
+  'fa-ellipsis-v': 'MoreVertical',
+  'fa-archive': 'Archive',
+  'fa-check-square': 'CheckSquare',
+  'fa-pencil-ruler': 'PenTool',
+  'fa-sign': 'Megaphone',
+  'fa-cogs': 'Cog',
+  'fa-file-contract': 'FileCheck',
+  'fa-user-cog': 'UserCog',
+  'fa-comment-dots': 'MessageCircle',
+  'fa-search-plus': 'SearchCheck',
+  'fa-briefcase': 'Briefcase',
+  'fa-folder-plus': 'FolderPlus',
 };
