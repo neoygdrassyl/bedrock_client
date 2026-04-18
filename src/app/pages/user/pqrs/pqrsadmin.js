@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBBtn, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent, MDBBtnGroup, MDBTypography } from '../../../components/ui';
+import { MDBTabsPane, MDBTabsContent } from '../../../components/ui';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
@@ -497,22 +497,16 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
     const PENDING_COMPONENT = () => (
             <div className="col-lg-11 col-md-12">
-                <MDBTypography note noteColor="warning">
+                <div className="alert alert-warning">
 
                     <div className="row">
                         <div className="col-10">
                             <label className="fw-bold">PQRS PENDIENTES POR VENTANILLA ÚNICA: </label>
                         </div>
                         <div className="col text-end">
-                            <MDBTooltip title='Ver Listado' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                                <MDBBtn
-                                    color="info"
-                                    size="sm"
-                                    onClick={() => setPending_open(prev => !prev)}
-                                    className="px-2"
-                                > <i className="fas fa-info-circle fa-2x"></i>
-                                </MDBBtn>
-                            </MDBTooltip>
+                            <button type="button" title="Ver Listado" className="btn btn-info btn-sm px-2" onClick={() => setPending_open(prev => !prev)}>
+                                <i className="fas fa-info-circle fa-2x"></i>
+                            </button>
                         </div>
                     </div>
                     {pending_open && (
@@ -524,7 +518,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             </div>
                         </div>
                     )}
-                </MDBTypography >
+                </div>
             </div >
         )
         // -----------------
@@ -537,7 +531,6 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             },
         ];
         // -----------------
-
 
         const columns = [
             {
@@ -612,14 +605,10 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 center: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye"></i></button>
-                    </MDBTooltip>
+                    <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye"></i></button>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ? <>
-                            <MDBTooltip title='Gestionar peticion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                                <button className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => toggleManage(row)}><i className="fas fa-cog"></i></button>
-                            </MDBTooltip>
+                            <button title="Gestionar peticion" className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => toggleManage(row)}><i className="fas fa-cog"></i></button>
                         </> : ""}
                 </>,
             },
@@ -678,9 +667,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 minWidth: '150px',
                 center: true,
                 cell: row => <>
-                    <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye"></i></button>
-                    </MDBTooltip>
+                    <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye"></i></button>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ?
                         <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
@@ -733,10 +720,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 name: <label>ACCIÓN</label>,
                 button: true,
                 minWidth: '150px',
-                cell: row => <MDBTooltip title='Informacion General' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                    <button className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye "></i></button>
-
-                </MDBTooltip>,
+                cell: row => <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye "></i></button>,
 
             },
         ]
@@ -805,7 +789,6 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             setFillActive(state);
         };
 
-
         var formData = new FormData();
 
         let search = (event) => {
@@ -855,16 +838,9 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         }
         return (
             <div className="Publish container">
-                <div className="col-12 d-flex justify-content-start p-0">
-                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                        <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u7}</label></MDBBreadcrumbItem>
-                    </MDBBreadcrumb>
+                <div>
+                    <h1 className="text-xl font-bold text-foreground">PQRS</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Gestión de peticiones, quejas, reclamos y sugerencias</p>
                 </div>
                 
                 <div className="row mb-4 d-flex justify-content-center">
@@ -874,23 +850,23 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     <div className="col-lg-11 col-md-12">
                         <h1 className="text-center my-4">GESTIÓN DE PQRS Y SOLICITUDES</h1>
                         <hr />
-                        <MDBRow>
+                        <div className="row">
                             <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
-                            <MDBCol md="4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>GENERAR PQRS</h4></MDBCardTitle>
+                            <div className="col-md-4">
+                                <div className="rounded-lg border bg-card p-4 bg-card mb-3">
+                                    <div>
+                                        <h4 className="text-center font-semibold mb-3">GENERAR PQRS</h4>
                                         <p className="app-text-primary text-justify"> Permite la digitalización de una solicitud PQRS</p>
                                         <div className="text-center py-4 mt-3">
                                             <button className="btn btn-lg btn-success" onClick={() => toggle()}><i className="fas fa-folder-plus"></i> NUEVA SOLICITUD </button>
                                         </div>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>CONSULTAR PQRS</h4></MDBCardTitle>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-4">
+                                <div className="rounded-lg border bg-card p-4 bg-card mb-3">
+                                    <div>
+                                        <h4 className="text-center font-semibold mb-3">CONSULTAR PQRS</h4>
                                         <form onSubmit={search} id="app-form">
                                             <div className="input-group mb-3">
                                                 <span className="input-group-text bg-info text-white">
@@ -915,13 +891,13 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                                 <button className="btn btn-lg btn-secondary"><i className="fas fa-search-plus"></i> CONSULTAR </button>
                                             </div>
                                         </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                            <MDBCol md="4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>MACRO TABLA</h4></MDBCardTitle>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-4">
+                                <div className="rounded-lg border bg-card p-4 bg-card mb-3">
+                                    <div>
+                                        <h4 className="text-center font-semibold mb-3">MACRO TABLA</h4>
                                         <form onSubmit={loadMacro} id="fun_form_macro_table_pqrs">
                                             <div className="input-group mb-3">
                                                 <span className="input-group-text bg-info text-white">
@@ -941,14 +917,11 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                                 <button className="btn btn-lg btn-danger"><i className="fas fa-th"></i> CARGAR </button>
                                             </div>
                                         </form>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                        </MDBRow>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-
-
 
                     <div className="row d-flex justify-content-center">
                         <div className="col-11">
@@ -975,29 +948,28 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         </div>
                     </div>
 
-                    <MDBTabs fill pills className='mb-3'>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('1')} active={fillActive === '1'}>
+                    <nav className="nav nav-tabs">
+                        
+                            <button type="button" className={`nav-link ${fillActive === '1' ? "active" : ""}`} onClick={() => handleFillClick('1')}>
                                 <label className="upper-case">PETICIONES ACTIVAS ({items.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                        <MDBTabsItem>
-                            <MDBTabsLink onClick={() => handleFillClick('10')} active={fillActive === '10'}>
+                            </button>
+                        
+                        
+                            <button type="button" className={`nav-link ${fillActive === '10' ? "active" : ""}`} onClick={() => handleFillClick('10')}>
                                 <label className="upper-case">ARCHIVO ({itemsClose.length})</label>
-                            </MDBTabsLink>
-                        </MDBTabsItem>
-                    </MDBTabs>
-
+                            </button>
+                        
+                    </nav>
 
                     <MDBTabsContent>
                         <MDBTabsPane show={fillActive === '1'}>
                             {isLoaded ? <>
                                 <div className="row">
                                     <div className='col ms-5 mb-3'>
-                                        <MDBBtnGroup >
-                                            <MDBBtn outline={!filterreply} onClick={() => setFilterreply(prev => !prev)} size='sm'>VER POR RESPONDER: {dataFilter(items, true, false).length}</MDBBtn>
-                                            <MDBBtn outline={!filterreply2} onClick={() => setFilterreply2(prev => !prev)} size='sm'>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</MDBBtn>
-                                        </MDBBtnGroup>
+                                        <div className="flex flex-wrap gap-1">
+                                            <button type="button" className={`btn btn-sm ${!filterreply ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setFilterreply(prev => !prev)}>VER POR RESPONDER: {dataFilter(items, true, false).length}</button>
+                                            <button type="button" className={`btn btn-sm ${!filterreply2 ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setFilterreply2(prev => !prev)}>VER POR VISTO BUENO: {dataFilter(items, false, true).length}</button>
+                                        </div>
                                     </div>
                                 </div>
                                 <DataTable
@@ -1052,8 +1024,6 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         </MDBTabsPane>
 
                     </MDBTabsContent>
-
-
 
                     <Modal contentLabel="GENERAR SOLCITUD PQRS"
                         isOpen={modalNew}
@@ -1291,7 +1261,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     >
                         <div className="my-4 d-flex justify-content-between">
                             <label><i className="fas fa-th"></i> Macro tabla de seguimiento: Desde {dateParser(date_start)} hasta {dateParser(date_end)}</label>
-                            <MDBBtn className='btn-close' color='none' onClick={() => toggle_macro()}></MDBBtn>
+                            <button type="button" className="btn-close" onClick={() => toggle_macro()} />
                         </div>
 
                         <PQRS_MACROTABLE translation={translation} swaMsg={swaMsg} globals={globals}
