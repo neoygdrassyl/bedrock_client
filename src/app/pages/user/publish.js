@@ -1,17 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import PublishService from '../../services/publish.service'
-import {
-  MDBRow, MDBCol, MDBCard, MDBCardBody,
-  MDBBtn,
-  MDBModal,
-  MDBModalDialog,
-  MDBModalContent,
-  MDBModalHeader,
-  MDBModalTitle,
-  MDBModalBody,
-  MDBModalFooter, MDBBreadcrumb, MDBBreadcrumbItem, MDBTabs, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTabsContent
-} from '../../components/ui';
-import { Link } from "react-router-dom";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Icon } from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -546,11 +537,11 @@ function Publish({ translation, swaMsg, breadCrums }) {
 
     let PUBLIC_FORM = () => {
       return <>
-        <MDBCard className="bg-card my-2">
-          <MDBCardBody>
+        <Card className="my-2">
+          <CardContent className="pt-4">
             <form onSubmit={handleSubmit} id="app-form">
-              <MDBRow>
-                <MDBCol md="6">
+              <div className="row">
+                <div className="col-md-6">
                   <label>Identificador público</label><br />
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white">
@@ -590,8 +581,8 @@ function Publish({ translation, swaMsg, breadCrums }) {
                     </span>
                     <input type="date" className="form-control" required id="publish_date" />
                   </div>
-                </MDBCol>
-                <MDBCol md="6">
+                </div>
+                <div className="col-md-6">
                   <label>Documento a subir</label><br />
                   <div className="input-group my-2">
                     <label className="input-group-text bg-info  text-white" htmlFor="file"><i className="fas fa-paperclip"></i></label>
@@ -632,16 +623,16 @@ function Publish({ translation, swaMsg, breadCrums }) {
                     </span>
                     <input type="text" className="form-control" placeholder="Detalles de la publicacion..." id="publish_5" />
                   </div>
-                </MDBCol>
+                </div>
                 <div className="text-center py-1 mt-1">
                   <button className="btn btn-lg btn-info"> Enviar </button>
                 </div>
 
 
-              </MDBRow>
+              </div>
             </form>
-          </MDBCardBody>
-        </MDBCard>
+          </CardContent>
+        </Card>
 
       </>
     }
@@ -650,11 +641,11 @@ function Publish({ translation, swaMsg, breadCrums }) {
       var _ITEM = edit;
 
       return <>
-        <MDBCard className="bg- my-4 py-4">
-          <MDBCardBody>
+        <Card className="my-4 py-4">
+          <CardContent className="pt-4">
             <form onSubmit={handleEdit} id="app-form">
-              <MDBRow>
-                <MDBCol md="6">
+              <div className="row">
+                <div className="col-md-6">
                   <label>Id publico</label><br />
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white">
@@ -694,8 +685,8 @@ function Publish({ translation, swaMsg, breadCrums }) {
                       <option value={'ren'}>Renuncia</option>
                     </select>
                   </div>
-                </MDBCol>
-                <MDBCol md="6">
+                </div>
+                <div className="col-md-6">
                   <label>Fecha</label><br />
                   <div className="input-group my-2">
                     <label className="input-group-text bg-info  text-white" htmlFor="date"><i className="fas fa-paperclip"></i></label>
@@ -736,59 +727,40 @@ function Publish({ translation, swaMsg, breadCrums }) {
                     </span>
                     <input type="text" className="form-control" defaultValue={_ITEM.subdetail}  id="sub_edit" />
                   </div>
-                </MDBCol>
+                </div>
                 <div className="text-center py-1 mt-1">
                   <button className="btn btn-sm btn-success"> Enviar </button>
                 </div>
-              </MDBRow>
+              </div>
             </form>
-          </MDBCardBody>
-        </MDBCard>
+          </CardContent>
+        </Card>
       </>
     }
 
     return (
 
-      <div className="Publish container p-0">
-        <div className="row mb-4 d-flex p-0">
-          <div className="col-12 d-flex justify-content-start p-0">
-            <MDBBreadcrumb className="mb-0 p-0 ms-0">
-              <MDBBreadcrumbItem>
-                <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-              </MDBBreadcrumbItem>
-              <MDBBreadcrumbItem>
-                <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-              </MDBBreadcrumbItem>
-              <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u3}</label></MDBBreadcrumbItem>
-            </MDBBreadcrumb>
-          </div>
-          <div className="col-lg-11 col-md-12">
-            <h1 className="text-center my-4">Publicar</h1>
-            <hr />
-            <MDBRow center>
-              <MDBCol md="9" >
-                <h4>Publicacion de documentos de la Curaduria N°1 de Bucaramanga</h4>
-                {PUBLIC_FORM()}
-              </MDBCol>
-            </MDBRow>
-
-            <MDBRow>
-
-              <MDBCol md="12">
-                <div className="text-center">
-                  {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[0], items_00, 'ID00')}
-                  {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[1], items_01, 'ID02')}
-                  {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[2], items_02, 'ID03')}
-                  {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[3], items_03, 'ID04')}
-                  {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[4], items_04, 'ID05')}
-                  {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[5], items_05, 'ID06')}
-                  {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[6], items_06, 'ID07')}
-                  {/* {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[7], items_07, 'ID08')}*/}
-                </div>
-              </MDBCol>
-            </MDBRow>
-          </div>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Publicar</h1>
+          <p className="text-sm text-muted-foreground mt-1">Publicación de documentos de la Curaduría</p>
         </div>
+
+        <div className="max-w-4xl mx-auto">
+          {PUBLIC_FORM()}
+        </div>
+
+        <div>
+          {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[0], items_00, 'ID00')}
+          {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[1], items_01, 'ID02')}
+          {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[2], items_02, 'ID03')}
+          {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[3], items_03, 'ID04')}
+          {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[4], items_04, 'ID05')}
+          {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[5], items_05, 'ID06')}
+          {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[6], items_06, 'ID07')}
+          {/* {COLLAPSIBLE_JSX(PUBLISH_TYPE_ARRAY[7], items_07, 'ID08')}*/}
+        </div>
+
         <Modal contentLabel="MANAGE EDIT"
           isOpen={edit}
           style={customStyles}
@@ -796,7 +768,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
         >
           <div className="my-4 d-flex justify-content-between">
             <h3>MODIFICAR PETICION</h3>
-            <div className='btn-close' color='none' onClick={() => { toggleManage() }}></div>
+            <button type="button" className='btn-close' onClick={() => { toggleManage() }} />
           </div>
           <hr />
           {Edit_components()}
@@ -805,7 +777,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
             <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i className="fas fa-times-circle"></i> CERRAR </button>
           </div>
         </Modal>
-      </div >
+      </div>
     );
 }
 

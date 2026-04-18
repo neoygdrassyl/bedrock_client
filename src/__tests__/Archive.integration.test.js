@@ -185,20 +185,18 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
     delete window.user;
   });
 
-  test('1. Renderiza sin crash y muestra título "ARCHIVO"', async () => {
+  test('1. Renderiza sin crash y muestra título "Archivo"', async () => {
     await act(async () => {
       renderArchive();
     });
-    expect(screen.getByText('ARCHIVO')).toBeInTheDocument();
+    expect(screen.getByText('Archivo')).toBeInTheDocument();
   });
 
-  test('2. Breadcrumb con navegación Inicio > Dashboard > Archivo', async () => {
+  test('2. Subtítulo de gestión de archivo visible', async () => {
     await act(async () => {
       renderArchive();
     });
-    expect(screen.getByText('Inicio')).toBeInTheDocument();
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Archivo')).toBeInTheDocument();
+    expect(screen.getByText(/Gestión de cajas/i)).toBeInTheDocument();
   });
 
   test('3. Botón "NUEVA CAJA" visible para role 1 (admin)', async () => {
