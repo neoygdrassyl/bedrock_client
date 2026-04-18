@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBBtn, MDBCard, MDBCardBody } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -16,8 +16,6 @@ import EXP_CLOCKS from './exp_clocks.component';
 import EXP_LIC from './exp_lic.component';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../components/customClasses/typeParse';
 import EXP_2 from './exp_2.component';
-
-
 
 const MySwal = withReactContent(Swal);
 
@@ -251,7 +249,6 @@ function EXPEDITION(props) {
                                             requestUpdate={requestUpdate}
                                             requestUpdateRecord={requestUpdateRecord} />
 
-
                                             <EXP_DOCS
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                                 currentItem={currentItem}
@@ -322,8 +319,8 @@ const NAV_FUNA = (_CHILD) => {
     return (
         <div className="btn-navpqrs">
             <div className="fung_nav">
-                <MDBCard className="container-primary" border='dark'>
-                    <MDBCardBody className="p-1">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
                         <legend className="px-3 pt-2 text-uppercase bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
@@ -412,8 +409,8 @@ const NAV_FUNA = (_CHILD) => {
                             </legend>
                         </a>
                         <br />
-                    </MDBCardBody>
-                </MDBCard>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBTooltip } from '../../../components/ui';
+import { Item } from '../../../components/ui';
 import { useEffect, useState } from 'react';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
@@ -120,13 +120,9 @@ export default function PROFESIONALS(props) {
       center: true,
       omit: window.user.id != 1 && window.user.roleId != 3 || window.user.roleId != 2,
       cell: row => <>
-        <MDBTooltip title='Modificar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-          <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => { setId(row.id); setModal(true) }}><i className="fas fa-edit"></i></MDBBtn>
-        </MDBTooltip>
+        <button type="button" title="Modificar Profesional" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => { setId(row.id); setModal(true) }}><i className="fas fa-edit"></i></button>
         {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
-          <MDBTooltip title='Eliminar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-            <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => { eliminate(row.id); }}><i className="far fa-trash-alt"></i></MDBBtn>
-          </MDBTooltip>
+          <button type="button" title="Eliminar Profesional" className="btn btn-danger btn-sm px-1 py-1" onClick={() => { eliminate(row.id); }}><i className="far fa-trash-alt"></i></button>
           : null}
       </>,
     },
@@ -188,15 +184,15 @@ export default function PROFESIONALS(props) {
     return <>
       <div className='row'>
         <div className='col-3'>
-          { window.user.id == 1 || window.user.roleId == 3 ? <MDBBtn color='success' onClick={() => { setId(false); setModal(!modal) }}><i className="fas fa-plus-circle"></i> NUEVO PROFESIONAL</MDBBtn> : null }
+          { window.user.id == 1 || window.user.roleId == 3 ? <button type="button" className="btn btn-success" onClick={() => { setId(false); setModal(!modal) }}><i className="fas fa-plus-circle"></i> Nuevo Profesional</button> : null }
         </div>
         <div className='col'>
           <div className="row">
             <div className='col px-0'>
               <div className="input-group row">
-                <MDBBtn color='primary' className='col-2' onClick={() => search()}><i className="fas fa-search"></i> BUSCAR</MDBBtn>
+                <button type="button" className="btn btn-primary col-2" onClick={() => search()}><i className="fas fa-search"></i> Buscar</button>
                 <input type="text" className="form-control col" id="search_text" placeholder="Buscar..." onKeyPress={(e) => e.key === 'Enter' ? search() : ''}></input>
-                {clearBtn ? <MDBBtn color='danger' className='col-1' onClick={() => clear()}><i className="fas fa-times"></i> </MDBBtn> : ''}
+                {clearBtn ? <button type="button" className="btn btn-danger col-1" onClick={() => clear()}><i className="fas fa-times"></i></button> : ''}
               </div>
             </div>
           </div>
@@ -270,17 +266,7 @@ export default function PROFESIONALS(props) {
   }
   return (
     <div>
-      <div className="col-12 d-flex justify-content-start p-0">
-        <MDBBreadcrumb className="mb-0 p-0 ms-0">
-          <MDBBreadcrumbItem>
-            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-          </MDBBreadcrumbItem>
-          <MDBBreadcrumbItem>
-            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-          </MDBBreadcrumbItem>
-          <MDBBreadcrumbItem active><i className="fas fa-hard-hat"></i>  <label className="text-uppercase">{'Profesionals'}</label></MDBBreadcrumbItem>
-        </MDBBreadcrumb>
-      </div>
+      
       
       <div className='row my-3 d-flex justify-content-center'>
         <div className='col-10'>
@@ -321,7 +307,7 @@ export default function PROFESIONALS(props) {
           </div>
 
 
-          <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
+          <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
         </div>
         <hr />
 
@@ -335,7 +321,7 @@ export default function PROFESIONALS(props) {
         />
         <hr />
         <div className="text-end py-2">
-          <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+          <button type="button" className="btn btn-info btn-sm" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> Cerrar</button>
         </div>
       </Modal>
 

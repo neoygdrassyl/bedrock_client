@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBCol, MDBRow, MDBTooltip } from '../../../components/ui';
+import { Item } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import Zone_Use_Service from "../../../services/zone_use.service"
@@ -186,9 +186,9 @@ export default function ZONE_USE(props) {
 
 
     // ***************************  JXS *********************** //
-    const NEW_ITEM = <MDBCard className="bg-card mb-3">
-        <MDBCardBody>
-            <MDBCardTitle className="text-center"> <h4>GENERAR NUEVA CONCEPTO DE USO DEL SUELO</h4></MDBCardTitle>
+    const NEW_ITEM = <div className="rounded-lg border bg-card p-4 mb-3">
+        <div>
+            <h4 className="text-center font-semibold mb-3">GENERAR NUEVA CONCEPTO DE USO DEL SUELO</h4>
             <form onSubmit={create} id="new-norm-form">
 
                 <div className='row'>
@@ -206,12 +206,12 @@ export default function ZONE_USE(props) {
                     <button className="btn btn btn-success my-1"><i className="fas fa-folder-plus"></i> CREAR </button>
                 </div>
             </form>
-        </MDBCardBody>
-    </MDBCard>
+        </div>
+    </div>
 
-    const SEARCH_ITEM = <MDBCard className="bg-card mb-3">
-        <MDBCardBody>
-            <MDBCardTitle className="text-center"> <h4>BUSCAR CONCEPTO</h4></MDBCardTitle>
+    const SEARCH_ITEM = <div className="rounded-lg border bg-card p-4 mb-3">
+        <div>
+            <h4 className="text-center font-semibold mb-3">BUSCAR CONCEPTO</h4>
             <form onSubmit={search} id="app-form">
 
                 <div className='row'>
@@ -229,8 +229,8 @@ export default function ZONE_USE(props) {
                     <button className="btn btn btn-secondary my-1"><i className="fa fa-search"></i> BUSCAR </button>
                 </div>
             </form>
-        </MDBCardBody>
-    </MDBCard>
+        </div>
+    </div>
 
     const columns = [
         {
@@ -255,17 +255,13 @@ export default function ZONE_USE(props) {
             center: true,
             minWidth: '80px',
             cell: row => <>
-                <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                    <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => {
+                <button type="button" title="Modificar Item" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => {
                         setSelectedId(row.id);
                         setSelectedIdPublic(row.id_in);
                         setModal(!modal);
-                    }}><i className="far fa-edit"></i></MDBBtn>
-                </MDBTooltip>
+                    }}><i className="far fa-edit"></i></button>
                 {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2 ?
-                    <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                        <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
-                    </MDBTooltip>
+                    <button type="button" title="Eliminar Item" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></button>
                     : null}
             </>,
         },
@@ -292,28 +288,18 @@ export default function ZONE_USE(props) {
         <>
 
             <div className="Publish container">
-                <div className="col-12 d-flex justify-content-start p-0">
-                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                        <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i className="fas fa-home"></i>  <label className="text-uppercase">CONCEPTOS</label></MDBBreadcrumbItem>
-                    </MDBBreadcrumb>
-                </div>
+                
                 <div className="row my-4 d-flex justify-content-center">
                     <div className="col-lg-11 col-md-12">
                         <h1 className="text-center my-4">CONCEPTOS</h1>
                         <hr />
                     </div>
 
-                    <MDBRow>
-                        <MDBCol md="6">{NEW_ITEM}</MDBCol>
-                        <MDBCol md="6">{SEARCH_ITEM}</MDBCol>
-                        {/* <MDBCol md="4"></MDBCol> */}
-                    </MDBRow>
+                    <div className="row">
+                        <div className="col-md-6">{NEW_ITEM}</div>
+                        <div className="col-md-6">{SEARCH_ITEM}</div>
+                        {/* <div className="col-md-4"></div> */}
+                    </div>
 
                     <h2 className="text-uppercase text-center pb-2">LISTADO DE CONCEPTOS</h2>
 
@@ -328,7 +314,7 @@ export default function ZONE_USE(props) {
             >
                 <div className="my-2 d-flex justify-content-between">
                     <h2 className="text-uppercase text-center">CONCEPTO USO DEL SUELO: {selectedIdPublic}</h2>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
+                    <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
                 </div>
 
                 <hr />
@@ -342,7 +328,7 @@ export default function ZONE_USE(props) {
 
 
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <button type="button" className="btn btn-info btn-sm" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> Cerrar</button>
                 </div>
             </Modal>
         </>

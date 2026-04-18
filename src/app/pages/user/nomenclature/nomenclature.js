@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem, MDBTooltip, MDBCard, MDBCardBody, MDBCardTitle } from '../../../components/ui';
+
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -129,13 +129,11 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 button: true,
                 minWidth: '100px',
                 cell: row => <>
-                    <MDBTooltip title='Ver detalles' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                        <button onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <i className="far fa-folder-open fa-2x" ></i></button></MDBTooltip>
+                        <button title="Ver detalles" onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
+                            <i className="far fa-folder-open fa-2x" ></i></button>
 
-                    <MDBTooltip title='Eliminar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                        <button onClick={() => delete_nomenclature(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                            <i className="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
+                        <button title="Eliminar" onClick={() => delete_nomenclature(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
+                            <i className="far fa-trash-alt fa-2x"></i></button>
                 </>,
             },
         ]
@@ -326,17 +324,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
         }
         return (
             <div className="Nomenclature container">
-                <div className="col-12 d-flex justify-content-start p-0">
-                    <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                        <MDBBreadcrumbItem>
-                            <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem>
-                            <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-                        </MDBBreadcrumbItem>
-                        <MDBBreadcrumbItem active><i className="fas fa-file-alt"></i>  <label className="text-uppercase">{breadCrums.bc_u9}</label></MDBBreadcrumbItem>
-                    </MDBBreadcrumb>
-                </div>
+                
 
                 <div className="row d-flex justify-content-center">
                     <div className="col-10">
@@ -351,9 +339,9 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                 </div>
                             </div>
                             <div className="col-4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>CONSULTAR NOMENCLATURA</h4></MDBCardTitle>
+                                <div className="rounded-lg border bg-card p-4 mb-3">
+                                    <div>
+                                        <h4 className="text-center font-semibold mb-3">CONSULTAR NOMENCLATURA</h4>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
                                                 <i className="fas fa-info-circle"></i>
@@ -376,13 +364,13 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                         <div className="text-center py-2">
                                             <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><i className="fas fa-search-plus"></i> CONSULTAR </button>
                                         </div>
-                                    </MDBCardBody>
-                                </MDBCard>
+                                    </div>
+                                </div>
                             </div>
                             <div className="col-4">
-                                <MDBCard className="bg-card mb-3">
-                                    <MDBCardBody>
-                                        <MDBCardTitle className="text-center"> <h4>GENERAR EXCEL</h4></MDBCardTitle>
+                                <div className="rounded-lg border bg-card p-4 mb-3">
+                                    <div>
+                                        <h4 className="text-center font-semibold mb-3">GENERAR EXCEL</h4>
                                         <form onSubmit={get_cvs} id="fun_form_nomenclature_cvs_gen">
                                             <div className="input-group mb-3">
                                                 <span className="input-group-text bg-info text-white">
@@ -402,8 +390,8 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                                                 <button className="btn btn-success"><i className="far fa-file-excel"></i> DESCARGAR </button>
                                             </div>
                                         </form>
-                                    </MDBCardBody>
-                                </MDBCard>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -445,7 +433,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <h3><i className="far fa-edit"></i> ACTUALIZAR NOMENCLATURA: {currentId} </h3>
-                        <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={toggle} />
                     </div>
                     <NOMENCLATURE_NEW
                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -465,7 +453,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <h3><i className="fas fa-plus-circle"></i> NUEVA NOMENCLATURA </h3>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle_new()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle_new()} />
                     </div>
                     <NOMENCLATURE_NEW
                         translation={translation} swaMsg={swaMsg} globals={globals}

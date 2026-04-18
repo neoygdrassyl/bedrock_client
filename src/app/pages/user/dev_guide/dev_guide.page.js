@@ -1,4 +1,4 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, } from '../../../components/ui';
+import { Item } from '../../../components/ui';
 import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import Markdown from 'markdown-to-jsx';
@@ -54,17 +54,7 @@ export default function DEV_GUIDE(props) {
     // ***************************  JXS *********************** //
     let _HEADER_COMPONENT = () => {
         return <>
-            <div className="col-12 d-flex justify-content-start p-0">
-                <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                    <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">INICIO</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">DASHBOARD</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i className="fas fa-code"></i> <label className="text-uppercase">GUÍA DE DESARROLLO</label></MDBBreadcrumbItem>
-                </MDBBreadcrumb>
-            </div>
+            
             <div className="row mb-4 d-flex justify-content-center">
                 <div className="col-lg-11 col-md-12">
                     <h1 className="text-center my-4">

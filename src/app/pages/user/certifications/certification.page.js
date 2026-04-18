@@ -4,7 +4,7 @@ import UsersService from '../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import dayjs from 'dayjs';
-import { MDBBreadcrumb, MDBBreadcrumbItem, MDBBtn } from '../../../components/ui';
+import { Item } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 
 export default function CERTIFICATE_WORKER(props) {
@@ -199,17 +199,10 @@ export default function CERTIFICATE_WORKER(props) {
     }
 
     return (
-        <div>
-            <div className="col-12 d-flex justify-content-start p-0">
-                <MDBBreadcrumb className="mb-0 p-0 ms-0">
-                    <MDBBreadcrumbItem>
-                        <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">INICIO</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem>
-                        <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">PANEL DE CONTROL</label></Link>
-                    </MDBBreadcrumbItem>
-                    <MDBBreadcrumbItem active><i className="fas fa-address-book"></i> <label className="text-uppercase">HISTORIAL PROFESIONALES</label></MDBBreadcrumbItem>
-                </MDBBreadcrumb>
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-xl font-bold text-foreground">Certificaciones</h1>
+                <p className="text-sm text-muted-foreground mt-1">Consulta de historial de profesionales</p>
             </div>
 
             <div className="row my-4 d-flex justify-content-center">
@@ -240,10 +233,8 @@ export default function CERTIFICATE_WORKER(props) {
                         </div>
 
                         <div className='my-2'>
-                            <MDBBtn outline className='mx-1' color='danger' size="sm" onClick={() => generatePDF()}>
-                                <i className="far fa-file-pdf"></i> GENERAR PDF</MDBBtn>
-                            <MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(data, 'HISTORIAL DEL PRFESIONAL ' + title) }}>
-                                <i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn>
+                            <button type="button" className="btn btn-outline-danger btn-sm mx-1" onClick={() => generatePDF()}><i className="far fa-file-pdf"></i> Generar PDF</button>
+                            <button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVS(data, 'HISTORIAL DEL PRFESIONAL ' + title) }}><i className="fas fa-file-csv"></i> Descargar CSV</button>
                         </div>
 
                         <div className='row text-center border border-black py-2' style={{ backgroundColor: 'lightgray' }}>
