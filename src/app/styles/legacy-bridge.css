@@ -261,6 +261,182 @@
   font-size: 0.8125rem;
 }
 
+/* ── Input groups ────────────────────────────────────────────────── */
+#main-content :where(.input-group .input-group-text) {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--input));
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
+
+#main-content :where(.input-group .form-control,
+                       .input-group .form-select) {
+  border-color: hsl(var(--input));
+}
+
+/* ── Form checks (checkboxes, radios, switches) ─────────────────── */
+#main-content :where(.form-check-input) {
+  border-color: hsl(var(--input));
+  background-color: hsl(var(--background));
+}
+
+#main-content :where(.form-check-input:checked) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+#main-content :where(.form-check-input:focus) {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.25);
+}
+
+#main-content :where(.form-check-label) {
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+}
+
+#main-content :where(.form-switch .form-check-input) {
+  border-radius: 999px;
+}
+
+/* ── Bootstrap pagination ────────────────────────────────────────── */
+#main-content :where(.pagination .page-link) {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
+  font-size: 0.8125rem;
+  transition: background-color 0.15s ease;
+}
+
+#main-content :where(.pagination .page-link:hover) {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.pagination .page-item.active .page-link) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+#main-content :where(.pagination .page-item.disabled .page-link) {
+  color: hsl(var(--muted-foreground));
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+}
+
+/* ── List groups ─────────────────────────────────────────────────── */
+#main-content :where(.list-group-item) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+  font-size: 0.875rem;
+}
+
+#main-content :where(.list-group-item.active) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+#main-content :where(.list-group-item-action:hover) {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+/* ── Modals (Bootstrap modals) ───────────────────────────────────── */
+#main-content :where(.modal-content) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+  border-radius: 0.75rem;
+}
+
+#main-content :where(.modal-header) {
+  border-bottom-color: hsl(var(--border));
+}
+
+#main-content :where(.modal-footer) {
+  border-top-color: hsl(var(--border));
+}
+
+#main-content :where(.modal-title) {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* ── Progress bars ───────────────────────────────────────────────── */
+#main-content :where(.progress) {
+  background-color: hsl(var(--muted));
+  border-radius: 0.375rem;
+  height: 0.5rem;
+}
+
+#main-content :where(.progress-bar) {
+  background-color: hsl(var(--primary));
+}
+
+#main-content :where(.progress-bar.bg-success) {
+  background-color: hsl(var(--accent));
+}
+
+#main-content :where(.progress-bar.bg-danger) {
+  background-color: hsl(var(--destructive));
+}
+
+#main-content :where(.progress-bar.bg-warning) {
+  background-color: hsl(var(--warning));
+}
+
+/* ── Dropdowns ───────────────────────────────────────────────────── */
+#main-content :where(.dropdown-menu) {
+  background-color: hsl(var(--popover));
+  border-color: hsl(var(--border));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  font-size: 0.875rem;
+}
+
+#main-content :where(.dropdown-item) {
+  color: hsl(var(--popover-foreground));
+}
+
+#main-content :where(.dropdown-item:hover,
+                       .dropdown-item:focus) {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.dropdown-divider) {
+  border-color: hsl(var(--border));
+}
+
+/* ── Breadcrumbs (legacy) ────────────────────────────────────────── */
+#main-content :where(.breadcrumb-item a) {
+  color: hsl(var(--primary));
+}
+
+#main-content :where(.breadcrumb-item.active) {
+  color: hsl(var(--muted-foreground));
+}
+
+/* ── Form labels ─────────────────────────────────────────────────── */
+#main-content :where(label) {
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* ── Tooltip text ────────────────────────────────────────────────── */
+#main-content :where(.tooltip-inner) {
+  background-color: hsl(var(--sidebar));
+  color: hsl(var(--sidebar-foreground));
+  font-size: 0.75rem;
+  border-radius: 0.375rem;
+}
+
 /* ── Dark mode specifics ─────────────────────────────────────────── */
 .dark #main-content :where(.form-control),
 .dark #main-content :where(.form-select) {
@@ -282,4 +458,32 @@
   background-color: hsl(var(--card));
   border-color: hsl(var(--border));
   color: hsl(var(--card-foreground));
+}
+
+.dark #main-content :where(.input-group-text) {
+  background-color: hsl(var(--secondary));
+  border-color: hsl(var(--input));
+  color: hsl(var(--muted-foreground));
+}
+
+.dark #main-content :where(.form-check-input) {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--input));
+}
+
+.dark #main-content :where(.list-group-item) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--card-foreground));
+}
+
+.dark #main-content :where(.pagination .page-link) {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.dark #main-content :where(.dropdown-menu) {
+  background-color: hsl(var(--popover));
+  border-color: hsl(var(--border));
 }

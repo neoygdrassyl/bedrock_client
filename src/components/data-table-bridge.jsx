@@ -278,8 +278,13 @@ export function DataTableBridge({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={tanstackColumns.length} className="h-24 text-center text-muted-foreground">
-                  {noDataComponent}
+                <TableCell colSpan={tanstackColumns.length} className="h-32 text-center">
+                  <div className="flex flex-col items-center gap-2 py-4">
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                      <svg className="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{typeof noDataComponent === 'string' ? noDataComponent : 'No hay registros'}</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
@@ -288,19 +293,36 @@ export function DataTableBridge({
       </div>
 
       {pagination && !progressPending && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount() || 1}
+        <div className="flex items-center justify-between text-sm pt-1">
+          <span className="text-muted-foreground text-xs">
+            {table.getFilteredRowModel().rows.length} registros
             {' · '}
-            {table.getFilteredRowModel().rows.length}{' '}
-            {paginationComponentOptions?.rowsPerPageText ? '' : 'registros'}
+            Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount() || 1}
           </span>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-              <ChevronLeft className="h-4 w-4" />
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+              <ChevronLeft className="h-3.5 w-3.5" />
             </Button>
-            <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              <ChevronRight className="h-4 w-4" />
+            {/* Page number indicators */}
+            {table.getPageCount() <= 7 ? (
+              Array.from({ length: table.getPageCount() }, (_, i) => (
+                <Button
+                  key={i}
+                  variant={table.getState().pagination.pageIndex === i ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-7 w-7 p-0 text-xs"
+                  onClick={() => table.setPageIndex(i)}
+                >
+                  {i + 1}
+                </Button>
+              ))
+            ) : (
+              <span className="text-xs text-muted-foreground px-2">
+                {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
+              </span>
+            )}
+            <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+              <ChevronRight className="h-3.5 w-3.5" />
             </Button>
           </div>
         </div>
