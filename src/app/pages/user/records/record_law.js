@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { MDBCard, MDBCardBody } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -30,9 +30,7 @@ import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../../../services/fun.service';
 
-
 // RECORDS
-
 
 const MySwal = withReactContent(Swal);
 
@@ -281,8 +279,6 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     currentVersion={currentVersion}
                                 />
 
-
-
                                 <legend className="my-2 px-3 text-uppercase Collapsible" id="record_law_gen_2">
                                     <label className="app-p lead fw-normal text-uppercase">II. Observaciones Jurídicas</label>
                                 </legend>
@@ -336,8 +332,6 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     requestUpdate={requestUpdate}
                                     docsScope={'law'} />
 
-
-
                                 <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_23">
                                     <label className="app-p lead fw-normal text-uppercase">2.3 DOCUMENTOS DIGITALIZADOS</label>
                                 </legend>
@@ -360,7 +354,6 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     id_related={currentItem.id_public}
                                 />
-
 
                                 <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_25">
                                     <label className="app-p lead fw-normal text-uppercase">2.5 Formulario Único Nacional</label>
@@ -398,7 +391,6 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     quickModalStyle={quickModalStyle}
                                 />
 
-
                                 <RECORD_LAW_FUN_51
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
@@ -432,7 +424,6 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     quickModalStyle={quickModalStyle}
                                 />
 
-
                                 <RECORD_LAW_GEN2_11
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
@@ -447,7 +438,6 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                 <legend className="my-2 px-3 text-uppercase bg-light" id="record_law_26">
                                     <label className="app-p lead fw-normal text-uppercase">2.6 ACCIONES DE PUBLICIDAD DEL PROCESO</label>
                                 </legend>
-
 
                                 <div className="row border my-2 py-4 border border-warning bg-body-secondary" style={{ borderWidth: '3px' }}>
                                     <div className="col-4"></div>
@@ -472,8 +462,6 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                         quickModalStyle={quickModalStyle}
                                     />
                                 </> : ''}
-
-
 
                                 <legend className="my-2 px-3 text-uppercase Collapsible" id="record_law_gen_3">
                                     <label className="app-p lead fw-normal text-uppercase">III. Viabilidad Jurídica</label>
@@ -534,8 +522,8 @@ const NAV_FUNA = (_CHILD) => {
     return (
         <div className="btn-navpqrs">
             <div className="fung_nav">
-                <MDBCard className="container-primary" border='dark'>
-                    <MDBCardBody className="p-1">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
                         <legend className="px-3 pt-2 text-uppercase bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
@@ -592,8 +580,8 @@ const NAV_FUNA = (_CHILD) => {
                             </legend>
                         </a>
 
-                    </MDBCardBody>
-                </MDBCard>
+                    </div>
+                </div>
             </div>
         </div>
     );

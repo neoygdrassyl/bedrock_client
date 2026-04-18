@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBBtn, MDBBreadcrumb, MDBBreadcrumbItem } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -281,7 +281,6 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
             </>
         }
 
-
         let new_record_arc = () => {
             formData = new FormData();
             formData.set('fun0Id', currentItem.id);
@@ -376,7 +375,6 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         readOnly={false}
                                         docsScope={'arc'} />
 
-
                                     <RECORD_ENG_PROFESIONALS
                                         _FUN_52={_GET_CHILD_52()}
                                         _FUN_6={_GET_CHILD_6()}
@@ -390,7 +388,6 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                     <legend className="my-2 px-3 text-uppercase bg-light" id="record_eng_411">
                                         <label className="app-p lead fw-normal text-uppercase">DOCUMENTOS DIGITALIZADOS</label>
                                     </legend>
-
 
                                     <FUN_6_VIEW
                                         translation={translation}
@@ -461,7 +458,6 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         requestUpdateRecord={requestUpdateRecord}
                                         AIM={"Estructural"}
                                         readOnly />
-
 
                                 </fieldset>
                                 {_GLOBAL_ID == 'cb1' ?
@@ -612,7 +608,6 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                             _FUN_R={_GET_CHILD_REVIEW()}
                                         />
 
-
                                         <legend className="my-2 px-3 text-uppercase Collapsible mt-5" id="record_arc_34">
                                             <label className="app-p lead fw-normal text-uppercase">3.4 EVALUACIÓN</label>
                                         </legend>
@@ -637,8 +632,6 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         />
                                     </fieldset>
                                 }
-
-
 
                                 <fieldset className="p-3">
                                     <legend className="my-2 px-3 text-uppercase Collapsible" id="record_arc_38">
@@ -694,8 +687,8 @@ const NAV_FUNA = (_CHILD) => {
     return (
         <div className="btn-navpqrs">
             <div className="">
-                <MDBCard className="container-primary" border='dark'>
-                    <MDBCardBody className="p-1">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
                         <legend className="px-3 pt-2 text-uppercase bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
@@ -762,8 +755,8 @@ const NAV_FUNA = (_CHILD) => {
                                 <h6>3.8 VIABILIDAD ARQUITECTÓNICA</h6>
                             </legend>
                         </a>
-                    </MDBCardBody>
-                </MDBCard>
+                    </div>
+                </div>
             </div>
         </div>
     );

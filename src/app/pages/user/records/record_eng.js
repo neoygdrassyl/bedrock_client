@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { MDBBtn, MDBCard, MDBCardBody, MDBTypography } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -35,7 +35,6 @@ import { ENG_MANPOSTERIA } from './eng/recprd_eng_mamporteria';
 import { ENG_FUEGO } from './eng/record_eng_fuego.component';
 
 // RECORDS
-
 
 const MySwal = withReactContent(Swal);
 
@@ -172,7 +171,6 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
 
             return steps
         }
-
 
         let _GET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -390,8 +388,6 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                         {currentRecord
                             ? <>
 
-
-
                                 <legend className="my-2 px-3 text-uppercase Collapsible text-start" id="record_eng_41">
                                     <label className="app-p lead fw-normal text-uppercase">4.1 Revisión Documentos y profesionales requeridos para la actuación urbanística solicitada.</label>
                                 </legend>
@@ -430,7 +426,6 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     <label className="app-p lead fw-normal text-uppercase">4.1.2 DOCUMENTOS DIGITALIZADOS</label>
                                 </legend>
 
-
                                 <FUN_6_VIEW
                                     translation={translation}
                                     swaMsg={swaMsg}
@@ -450,8 +445,6 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     id_related={currentItem.id_public}
                                 />
-
-
 
                                 <FUN_G_REPORTS
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -497,8 +490,6 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                 {currentRecord.category != null
                                     ?
                                     <>
-
-
 
                                         <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_42">
                                             <label className="app-p lead fw-normal text-uppercase">4.2 DESCRIPCIÓN DEL PROYECTO</label>
@@ -571,10 +562,6 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                                     <label className="app-p lead fw-normal text-uppercase">4.3 REVISIÓN DEL PROYECTO</label>
                                                 </legend>
                                                 {PARENT_STEP_PROVIDER()}
-
-
-
-
 
                                                 <RECORD_ENG_STEP_431
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -768,7 +755,6 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                             </>
                                             : ""}
 
-
                                         <legend className="my-2 px-3 text-uppercase Collapsible" id="record_eng_45">
                                             <label className="app-p lead fw-normal text-uppercase">4.5 APROBACIÓN</label>
                                         </legend>
@@ -785,8 +771,6 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     </>
 
                                     : ""}
-
-
 
                                 {/* {NAV_FUNA(currentRecord)} */}
                             </> : <>
@@ -827,8 +811,8 @@ const NAV_FUNA = (currentRecord) => {
     return (
         <div className="btn-navpqrs">
             <div className="fung_nav">
-                <MDBCard className="container-primary" border='dark'>
-                    <MDBCardBody className="p-1">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
                         <legend className="px-3 pt-2 text-uppercase bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
@@ -909,8 +893,8 @@ const NAV_FUNA = (currentRecord) => {
                                 <h6>4.5 APROBACIÓN</h6>
                             </legend>
                         </a>
-                    </MDBCardBody>
-                </MDBCard>
+                    </div>
+                </div>
             </div>
         </div>
     );

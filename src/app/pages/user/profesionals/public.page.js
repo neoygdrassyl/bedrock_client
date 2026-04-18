@@ -1,4 +1,4 @@
-import { MDBBreadcrumb, MDBBreadcrumbItem, } from '../../../components/ui';
+import { Item } from '../../../components/ui';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
@@ -141,15 +141,11 @@ export default function PROFESIONALS_PUBLIC(props) {
     }
 
     return (
-        <div>
-            <MDBBreadcrumb className="mx-5 my-2">
-                <MDBBreadcrumbItem>
-                    <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">Inicio</label></Link>
-                </MDBBreadcrumbItem>
-                <MDBBreadcrumbItem active><i className="fas fa-hard-hat"></i>  <label className="text-uppercase">HOJA DE VIDA PROFESIONALES</label></MDBBreadcrumbItem>
-            </MDBBreadcrumb>
-
-            <h2 className="text-center my-4">ACTUALIZACIÓN DE HOJA DE VIDA DE PROFESIONALES</h2>
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-xl font-bold text-foreground">Directorio Público</h1>
+                <p className="text-sm text-muted-foreground mt-1">Actualización de hoja de vida de profesionales</p>
+            </div>
 
             <div className="d-flex justify-content-center">
                 <form onSubmit={getData} className=" border border-info m-2 p-2">

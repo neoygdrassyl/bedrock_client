@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBBtn, MDBCard, MDBCardBody } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { PDFDocument, StandardFonts } from 'pdf-lib';
@@ -21,8 +21,6 @@ import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
-
-
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -167,11 +165,9 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         const helveticaFont = await mergedPdf.embedFont(StandardFonts.Helvetica)
         page.setFont(helveticaFont)
 
-
         handleLAWhCheck(mergedPdf, page, chekcs[0], _detail[0], 0, 1);
         handleArchCheck(mergedPdf, page, chekcs[1], _detail[1], 2, 3);
         handleEnghCheck(mergedPdf, page, chekcs[2], _detail[2], 4, 5);
-
 
         let _city = _headers.city;
         let _number = _headers.number;
@@ -729,7 +725,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         }
         let _COMPONENT_CLOCK_LIST = () => {
 
-
             return record_clocks.map((value, i) => <>
                 {value.alert ? <div className="row mx-2 my-0 text-center">
                     <div className="col border border-danger">
@@ -777,7 +772,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                 : ""}
                         </div>
                     </div>}
-
 
             </>)
         }
@@ -1087,7 +1081,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                             </select>
                         </div>
 
-
                     </div>
                 </div>
             </>
@@ -1148,7 +1141,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 icon: 'error',
                 confirmButtonText: "REVISAR",
             })
-
 
             MySwal.fire({
                 title: "NUEVA REVISION",
@@ -1221,7 +1213,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     confirmButtonText: "REVISAR",
                 })
             }*/
-
 
             MySwal.fire({
                 title: "REALIZAR REVISION",
@@ -1336,7 +1327,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
             //let state = 30 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
             let version = currentItem.version;
-
 
             let date = document.getElementById("record_review_2").value;
             let date_2 = document.getElementById("record_review_4").value;
@@ -1521,8 +1511,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 }
             });
 
-
-
         }
 
         let manage_fun_0 = () => {
@@ -1623,7 +1611,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             let r_check_3_eng = document.getElementById("record_pdf_check_3_v_eng").value;
             formData.set('r_check_3_eng', r_check_3_eng);
 
-
             let r_check_c_eng = document.getElementById("record_pdf_check_1_c_eng").value;
             formData.set('r_check_c_eng', r_check_c_eng);
             let r_check_2_c_eng = document.getElementById("record_pdf_check_2_c_eng").value;
@@ -1713,9 +1700,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 if (currentIndex > -1) { index = currentIndex; break; }
             }
             checks.push({ index: _check[index], Y: 266 })
-
-
-
 
             let _resume = [];
             let values_1 = _GET_STEP_TYPE('s1', 'value', 'record_law_steps');
@@ -1811,8 +1795,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 checks.push(partialChecks[1]); // 27
             }
 
-
-
             _RESUME.push(_resume);
             _CHECKS.push(checks)
             // *************** ENG ***************//
@@ -1846,7 +1828,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             formatData.set('fun', currentItem.id_public);
             formatData.set('process', 'OBSERVACIONES Y CORRECIONES');
             formatData.set('desc', 'Observaciones y correciones');
-
 
             let date = document.getElementById('record_review_2').value;
             formatData.set('date', date);
@@ -1936,15 +1917,12 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         {currentItem.state > -5
                                             ? <>
                                                 <div className="col">
-                                                    <MDBBtn className="btn btn-danger my-3" onClick={() => review()}><i className="far fa-check-square"></i> REALIZAR REVISIÓN </MDBBtn>
+                                                    <button type="button" className="btn btn-danger my-3" onClick={() => review()}><i className="far fa-check-square"></i> REALIZAR REVISIÓN </button>
                                                 </div>
                                             </>
                                             : <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
                                                 NO SE PUEDE REALIZAR REVISIONES HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
                                     </div>
-
-
-
 
                                     {/**
                                      * 
@@ -1956,7 +1934,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         {currentRecord.check == 0
                                             ? <>
                                                 <div className="col text-center">
-                                                    <MDBBtn className="btn btn-secondary my-3" onClick={() => new_version()} ><i className="fas fa-plus-circle"></i> NUEVA REVISION</MDBBtn>
+                                                    <button type="button" className="btn btn-secondary my-3" onClick={() => new_version()}><i className="fas fa-plus-circle"></i> NUEVA REVISION</button>
                                                 </div>
                                                 <div className="col">
                                                     <label>Genera una nueva version de esta solicitud, guardando la información anterior.</label>
@@ -1971,13 +1949,11 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                     </legend>
                                     {PDF_GEN_ACTA()}
 
-
                                     <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_3">
                                         <label className="app-p lead fw-normal text-uppercase">4. PROCESO DE NOTIFICACIÓN</label>
                                     </legend>
 
                                     {_COMPONENT_NOTIFICATION_OBS()}
-
 
                                     <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_review_title_4">
                                         <label className="app-p lead fw-normal text-uppercase">5. PROSEGUIR A EXPEDICIÓN</label>
@@ -2055,8 +2031,8 @@ const NAV_FUNA = (_CHILD) => {
     return (
         <div className="btn-navpqrs">
             <div className="fung_nav">
-                <MDBCard className="container-primary" border='dark'>
-                    <MDBCardBody className="p-1">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
                         <legend className="px-3 pt-2 text-uppercase bg-light text-center">
                             <h6>Menu de Navegacion</h6>
                         </legend>
@@ -2102,8 +2078,8 @@ const NAV_FUNA = (_CHILD) => {
                                 <h6>4. PROSEGUIR A EXPEDICION</h6>
                             </legend>
                         </a>
-                    </MDBCardBody>
-                </MDBCard>
+                    </div>
+                </div>
             </div>
         </div>
     );

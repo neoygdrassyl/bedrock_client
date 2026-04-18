@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { MDBCard, MDBCardBody } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -231,7 +231,6 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         <label className="app-p lead fw-normal text-uppercase">DOCUMENTOS DIGITALIZADOS</label>
                                     </legend>
 
-
                                     <FUN_6_VIEW
                                         translation={translation}
                                         swaMsg={swaMsg}
@@ -252,7 +251,6 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         id_related={currentItem.id_public}
                                     />
 
-
                                     <RECORD_PH_LAW
                                         translation={translation} swaMsg={swaMsg} globals={globals}
                                         _FUN_1={_GET_CHILD_1()}
@@ -264,7 +262,6 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         currentVersionR={currentVersionR}
                                         requestUpdate={requestUpdate}
                                         requestUpdateRecord={requestUpdateRecord} />
-
 
                                     <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_ph_2">
                                         <label className="app-p lead fw-normal text-uppercase">2. ANÁLISIS ARQUITECTÓNICO</label>
@@ -327,7 +324,6 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
 
-
                                             <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_ph_2">
                                                 <label className="app-p lead fw-normal text-uppercase">2.3 Observaciones a la planimetria revisada. Formato de revisión e información de proyectos</label>
                                             </legend>
@@ -340,7 +336,6 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 requestUpdateRecord={requestUpdateRecord}
                                                 requestUpdate={requestUpdate}
                                             />
-
 
                                         </> :
                                         <>
@@ -374,8 +369,6 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
                                         </>}
-
-
 
                                     <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="record_ph_3">
                                         <label className="app-p lead fw-normal text-uppercase">3. APROBACIÓN</label>
@@ -431,8 +424,8 @@ const NAV_FUNA = (_CHILD) => {
     return (
         <div className="btn-navpqrs">
             <div className="fung_nav">
-                <MDBCard className="container-primary" border='dark'>
-                    <MDBCardBody className="p-1">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
                         <legend className="px-3 pt-2 text-uppercase bg-light text-center">
                             <h6>Menu de Navegación</h6>
                         </legend>
@@ -466,8 +459,8 @@ const NAV_FUNA = (_CHILD) => {
                                 <h6>3. APROBACIÓN</h6>
                             </legend>
                         </a>
-                    </MDBCardBody>
-                </MDBCard>
+                    </div>
+                </div>
             </div>
         </div>
     );
