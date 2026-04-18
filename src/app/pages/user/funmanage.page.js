@@ -36,6 +36,7 @@ import FUN_ASIGNS_COMPONENT from './fun_forms/components/fun_asign.component';
 // JSONS
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
+import { Badge } from '@/components/ui/badge';
 const MySwal = withReactContent(Swal);
 
 function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
@@ -437,7 +438,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
         setCurrentVersion(item.version);
         setCurrentId(item.id);
         setCurrentLastVersion(item.version);
-        setCurrentDate(item.clock_payment ?? <label className='fw-bold text-danger'>FECHA PENDIENTE</label>);
+        setCurrentDate(item.clock_payment ?? <Badge variant="destructive">FECHA PENDIENTE</Badge>);
         setCurrentPublic(item.id_public);
         setSelectedRow(item.id);
     }
@@ -580,7 +581,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                 <div className="row mb-4 d-flex justify-content-center">
                     <div className="col-lg-11 col-md-12">
-                        <h1 className="text-center my-4">GESTIÓN DE SOLICITUDES</h1>
+                        <h2 className="text-center my-4 text-xl font-semibold tracking-tight">Gestión de Solicitudes</h2>
                         <hr />
                     </div>
 
@@ -672,18 +673,18 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     <nav className="nav nav-tabs">
                         
                             <button type="button" className={`nav-link ${fillActive === '4' ? "active" : ""}`} onClick={() => handleFillClick('4')}>
-                                <label className="upper-case">PROCESOS DIARIOS</label>
+                                <span className="text-xs font-medium uppercase tracking-wide">Procesos Diarios</span>
                             </button>
                         
 
                         
                             <button type="button" className={`nav-link ${fillActive === '2' ? "active" : ""}`} onClick={() => handleFillClick('2')}>
-                                <label className="upper-case">ENTRADA DE DOCUMENTOS </label>
+                                <span className="text-xs font-medium uppercase tracking-wide">Entrada de Documentos</span>
                             </button>
                         
                         
                             <button type="button" className={`nav-link ${fillActive === '3' ? "active" : ""}`} onClick={() => handleFillClick('3')}>
-                                <label className="upper-case">CARGA PROFESIONAL </label>
+                                <span className="text-xs font-medium uppercase tracking-wide">Carga Profesional</span>
                             </button>
                         
 
