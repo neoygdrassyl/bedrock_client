@@ -90,3 +90,10 @@ code {
   font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas,
     'Courier New', monospace;
 }
+
+/* ── Button reset (preflight=false means browser defaults leak).
+   Zero-specificity :where() so any Tailwind/Bootstrap class overrides. ── */
+button:where(:not(.btn):not([class*="btn-"]):not(.Collapsible__trigger)) {
+  border: 0;
+  background: transparent;
+}

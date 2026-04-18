@@ -226,7 +226,7 @@ export default function LoginPage({ signin }) {
 
             <button
               type="submit"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 w-full bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors"
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 w-full border-0 bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors"
             >
               Iniciar sesión
             </button>
