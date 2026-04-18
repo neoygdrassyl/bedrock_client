@@ -37,35 +37,35 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
             var _LIST = _GET_WORKERS();
             const columns = [
                 {
-                    name: <label>PROFESIONAL</label>,
+                    name: 'PROFESIONAL',
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.name}</label>,
                 },
                 {
-                    name: <label>VISTO</label>,
+                    name: 'VISTO',
                     selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{_GET_FEEBACK(row.feedback)}</label>,
                 },
                 {
-                    name: <label>ARGUMENTO</label>,
+                    name: 'ARGUMENTO',
                     selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.feedback_argument}</label>,
                 },
                 {
-                    name: <label>FECHA</label>,
+                    name: 'FECHA',
                     selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.feedback_date}</label>,
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>

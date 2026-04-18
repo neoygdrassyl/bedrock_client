@@ -33,7 +33,7 @@ function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form,
             
             const columns = [
                 {
-                    name: <label><b>CONTACTO</b></label>,
+                    name: '<b>CONTACTO</b>',
                     selector: row => row.name,
                     minWidth: '100px',
                     sortable: true,
@@ -41,7 +41,7 @@ function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form,
                     cell: row => <h6 className="pt-3 text-center">{row.email ? row.email : row.address}</h6>
                 },
                 {
-                    name: <label><b>NOTIFICACIÓN - CONFIRMACIÓN</b></label>,
+                    name: '<b>NOTIFICACIÓN - CONFIRMACIÓN</b>',
                     selector: row => row.competence,
                     minWidth: '100px',
                     sortable: true,
@@ -49,7 +49,7 @@ function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form,
                     cell: row => <h6>{ row.notify_confirm ? _GET_NOTIFY_CONTEXT(row.notify_confirm, row.notify_confirm_date) : <label className="text-warning">PENDIENTE</label> }</h6>
                 },
                 {
-                    name: <label><b>NOTIFICACIÓN - EXTENSION</b></label>,
+                    name: '<b>NOTIFICACIÓN - EXTENSION</b>',
                     selector: row => row.asign,
                     minWidth: '100px',
                     sortable: true,
@@ -57,7 +57,7 @@ function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form,
                     cell: row => <h6>{ row.notify_reply ? _GET_NOTIFY_CONTEXT(row.notify_reply, row.notify_date): <label className="text-warning">PENDIENTE</label>}</h6>,
                 },
                 {
-                    name: <label><b>NOTIFICACIÓN - OFICIO RESPUESTA</b></label>,
+                    name: '<b>NOTIFICACIÓN - OFICIO RESPUESTA</b>',
                     selector: row => row.asign,
                     minWidth: '100px',
                     sortable: true,

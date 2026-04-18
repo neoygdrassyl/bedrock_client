@@ -95,7 +95,7 @@ function RECORD_LAW_GEN_2_FUN52(props) {
             let _LIST = _GET_CHILD_52();
             const columns_52 = [
                 {
-                    name: <label>ANÁLISIS</label>,
+                    name: 'ANÁLISIS',
                     button: true,
                     center: true,
                     minWidth: '150px',
@@ -106,7 +106,7 @@ function RECORD_LAW_GEN_2_FUN52(props) {
                     </select></>
                 },
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.surname,
                     sortable: true,
                     filterable: true,
@@ -115,7 +115,7 @@ function RECORD_LAW_GEN_2_FUN52(props) {
                     cell: row => <label>{row.name + " " + row.surname}</label>
                 },
                 {
-                    name: <label>CC/NIT</label>,
+                    name: 'CC/NIT',
                     selector: row => row.id_number,
                     sortable: true,
                     filterable: true,
@@ -124,21 +124,21 @@ function RECORD_LAW_GEN_2_FUN52(props) {
                     cell: row => <label>{row.id_number}</label>
                 },
                 {
-                    name: <label>TELEFONO/ CELULAR</label>,
+                    name: 'TELEFONO/ CELULAR',
                     selector: row => row.number,
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.number}</label>
                 },
                 {
-                    name: <label>CORREO</label>,
+                    name: 'CORREO',
                     selector: row => row.email,
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.email}</label>
                 },
                 {
-                    name: <label>PROFESIÓN</label>,
+                    name: 'PROFESIÓN',
                     selector: row => row.role,
                     sortable: true,
                     filterable: true,
@@ -147,40 +147,40 @@ function RECORD_LAW_GEN_2_FUN52(props) {
                     cell: row => <label>{row.role}</label>
                 },
                 {
-                    name: <label>MATRÍCULA</label>,
+                    name: 'MATRÍCULA',
                     selector: row => row.registration,
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.registration}</label>
                 },
                 {
-                    name: <label>EXP. MATRÍCULA</label>,
+                    name: 'EXP. MATRÍCULA',
                     selector: row => row.registration_date,
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{dateParser(row.registration_date)}</label>
                 },
                 {
-                    name: <label>EXPERIENCIA</label>,
+                    name: 'EXPERIENCIA',
                     selector: row => row.expirience,
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{Math.trunc(row.expirience / 12)} año(s)</label>
                 },
                 {
-                    name: <label>¿SANCIONADO?</label>,
+                    name: '¿SANCIONADO?',
                     selector: row => row.sanction,
                     center: true,
                     cell: row => <label>{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</label>
                 },
                 {
-                    name: <label>SUPERVISIÓN</label>,
+                    name: 'SUPERVISIÓN',
                     selector: row => row.supervision,
                     center: true,
                     cell: row => <label>{row.supervision}</label>
                 },
                 {
-                    name: <label>DOCUMENTOS</label>,
+                    name: 'DOCUMENTOS',
                     button: true,
                     center: true,
                     cell: row => <> {_GET_DOCS_BTNS(row.docs)}</>

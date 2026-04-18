@@ -261,29 +261,29 @@ function RECORD_LAW_DOCSCHECK(props) {
     var formData = new FormData();
     const columns = [
         {
-            name: <label className="text-center">MODALIDAD</label>,
+            name: 'MODALIDAD',
             minWidth: '350px',
             cell: row => <label>{row.parent}</label>
         },
         {
-            name: <label className="text-center">DOCUMENTO</label>,
+            name: 'DOCUMENTO',
             minWidth: '350px',
             cell: row => <label>{row.name ?? FUN6JSON[row.code]}</label>
         },
         {
-            name: <label className="text-center">CODIGO</label>,
+            name: 'CODIGO',
             center: true,
             minWidth: '60px',
             cell: row => <label>{(row.code)}</label>
         },
         {
-            name: <label className="text-center">ESTATUS</label>,
+            name: 'ESTATUS',
             center: true,
             minWidth: '60px',
             cell: row => _GET_VALUE_BADGE(row)
         },
         {
-            name: <label className="text-center">EVALUACION</label>,
+            name: 'EVALUACION',
             minWidth: '150px',
             cell: row => _GET_EVA_VAKUE(row) ? <div className="input-group input-group-sm">
                 <input type="hidden" value={row.doc} name={'r_l_g2_doc_code'} />
@@ -294,7 +294,7 @@ function RECORD_LAW_DOCSCHECK(props) {
                 </select></div> : ''
         },
         {
-            name: <label className="text-center">ANEXO</label>,
+            name: 'ANEXO',
             center: true,
             minWidth: '150px',
             cell: row => <div className="input-group input-group-sm"><select className='form-select' name="r_l_g2_doc_id6" disabled={readOnly ? true : !_GET_EDIT_POWERS(row)}
@@ -305,7 +305,7 @@ function RECORD_LAW_DOCSCHECK(props) {
             </select></div>
         },
         {
-            name: <label className="text-center">VER</label>,
+            name: 'VER',
             center: true,
             minWidth: '100px',
             cell: row => {

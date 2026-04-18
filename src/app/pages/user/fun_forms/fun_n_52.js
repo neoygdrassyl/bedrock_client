@@ -624,7 +624,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let _LIST = _SET_CHILD_52();
             const columns_52 = [
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.surname, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -633,7 +633,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     cell: row => <label>{row.name + " " + row.surname}</label>
                 },
                 {
-                    name: <label>CC/NIT</label>,
+                    name: 'CC/NIT',
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -642,21 +642,21 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     cell: row => <label>{row.id_number}</label>
                 },
                 {
-                    name: <label>TELEFONO/ CELULAR</label>,
+                    name: 'TELEFONO/ CELULAR',
                     selector: row => row.number, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.number}</label>
                 },
                 {
-                    name: <label>CORREO</label>,
+                    name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.email}</label>
                 },
                 {
-                    name: <label>PROFESION</label>,
+                    name: 'PROFESION',
                     selector: row => row.role, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -665,47 +665,47 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     cell: row => <label>{row.role}</label>
                 },
                 {
-                    name: <label>MATRICULA</label>,
+                    name: 'MATRICULA',
                     selector: row => row.registration, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.registration}</label>
                 },
                 {
-                    name: <label>EXP. MATRICULA</label>,
+                    name: 'EXP. MATRICULA',
                     selector: row => row.registration_date, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{dateParser(row.registration_date)}</label>
                 },
                 {
-                    name: <label>EXPERIENCIA</label>,
+                    name: 'EXPERIENCIA',
                     selector: row => row.expirience, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{Math.trunc(row.expirience / 12)} año(s)</label>
                 },
                 {
-                    name: <label>¿SANCIONADO?</label>,
+                    name: '¿SANCIONADO?',
                     selector: row => row.sanction, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label>{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</label>
                 },
                 {
-                    name: <label>SUPERVISION</label>,
+                    name: 'SUPERVISION',
                     selector: row => row.supervision, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label>{row.supervision}</label>
                 },
                 {
-                    name: <label>DOCUMENTOS</label>,
+                    name: 'DOCUMENTOS',
                     button: true,
                     center: true,
                     minWidth: '190px',
                     cell: row => <>{_GET_DOCS_BTNS(row.docs)}</>
                 },
                 {
-                    name: <label>ESTADO</label>,
+                    name: 'ESTADO',
                     button: true,
                     compact: true,
                     cell: row =>
@@ -714,7 +714,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                         </div>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     compact: true,
                     cell: row => <>

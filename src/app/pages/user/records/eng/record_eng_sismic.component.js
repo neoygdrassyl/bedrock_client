@@ -648,7 +648,7 @@ function RECORD_ENG_SISMIC(props) {
                     }</>
                 },
                 {
-                    name: <label className="text-center">Descripción</label>,
+                    name: 'Descripción',
                     center: true,
                     cell: row => <>{
                         qedit[row.id]
@@ -659,12 +659,12 @@ function RECORD_ENG_SISMIC(props) {
                     }</>
                 },
                 {
-                    name: <label className="text-center">Nivel j [m]</label>,
+                    name: 'Nivel j [m]',
                     center: true,
                     cell: row => <label>{_get_SUMLEVEL(row.id, row.name)}</label>
                 },
                 {
-                    name: <label className="text-center">h Piso [m]</label>,
+                    name: 'h Piso [m]',
                     center: true,
                     cell: row => <>{
                         qedit[row.id]
@@ -675,7 +675,7 @@ function RECORD_ENG_SISMIC(props) {
                     }</>
                 },
                 {
-                    name: <label className="text-center">Área placa [m2]</label>,
+                    name: 'Área placa [m2]',
                     center: true,
                     cell: row => <>{
                         qedit[row.id]
@@ -686,7 +686,7 @@ function RECORD_ENG_SISMIC(props) {
                     }</>
                 },
                 {
-                    name: <label className="text-center">Den/Plac [kN/m2]</label>,
+                    name: 'Den/Plac [kN/m2]',
                     center: true,
                     minWidth: "40px",
                     compact: true,
@@ -699,28 +699,28 @@ function RECORD_ENG_SISMIC(props) {
                     }</>
                 },
                 {
-                    name: <label className="text-center">Peso/Plac [kN]</label>,
+                    name: 'Peso/Plac [kN]',
                     center: true,
                     minWidth: "40px",
                     compact: true,
                     cell: row => <label >{row.pos <= 1 ? '' : _GET_PESOPLAC_VALUE(row)}</label>
                 },
                 {
-                    name: <label className="text-center">Col/Pan [KN]</label>,
+                    name: 'Col/Pan [KN]',
                     center: true,
                     minWidth: "40px",
                     compact: true,
                     cell: row => <label >{row.pos <= 1 ? '' : _get_COLPAN_VALUE(row)}</label>
                 },
                 {
-                    name: <label className="text-center">Viga [KN]</label>,
+                    name: 'Viga [KN]',
                     center: true,
                     minWidth: "40px",
                     compact: true,
                     cell: row => <label >{row.pos <= 1 ? '' : _get_VIGA(row.height)}</label>
                 },
                 {
-                    name: <label className="text-center">Esca [kN]</label>,
+                    name: 'Esca [kN]',
                     center: true,
                     minWidth: "40px",
                     compact: true,
@@ -733,14 +733,14 @@ function RECORD_ENG_SISMIC(props) {
                     }</>
                 },
                 {
-                    name: <label className="text-center">Peso tot [kN]</label>,
+                    name: 'Peso tot [kN]',
                     center: true,
                     minWidth: "40px",
                     compact: true,
                     cell: row => <label >{row.pos <= 1 ? '' : _get_TOT(row)}</label>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
@@ -776,48 +776,48 @@ function RECORD_ENG_SISMIC(props) {
                     cell: row => <label>{row.pos}</label>
                 },
                 {
-                    name: <label className="text-center">Descripción</label>,
+                    name: 'Descripción',
                     center: true,
                     cell: row => <label>{alert_icon(row)} {row.name}</label>
                 },
                 {
-                    name: <label className="text-center">Nivel i [m]</label>,
+                    name: 'Nivel i [m]',
                     center: true,
                     cell: row => <label>{_get_SUMLEVEL(row.id, row.name)}</label>
                 },
                 {
-                    name: <label className="text-center">hi [m]</label>,
+                    name: 'hi [m]',
                     center: true,
                     cell: row => <label>{row.height}</label>
                 },
                 {
-                    name: <label className="text-center">Wi [m]</label>,
+                    name: 'Wi [m]',
                     center: true,
                     cell: row => <label>{_get_TOT(row)}</label>
                 },
                 {
-                    name: <label className="text-center">Wi *(hi)^k</label>,
+                    name: 'Wi *(hi)^k',
                     center: true,
                     minWidth: "40px",
                     compact: true,
                     cell: row => <label >{_get_WIHIK(row)}</label>
                 },
                 {
-                    name: <label className="text-center">cvi</label>,
+                    name: 'cvi',
                     center: true,
                     minWidth: "40px",
                     compact: true,
                     cell: row => <label>{_get_CVI(row)}</label>
                 },
                 {
-                    name: <label className="text-center">F_x [kN]</label>,
+                    name: 'F_x [kN]',
                     center: true,
                     minWidth: "40px",
                     compact: true,
                     cell: row => <label>{_get_F_x(row)}</label>
                 },
                 {
-                    name: <label className="text-center">F_y [kN]</label>,
+                    name: 'F_y [kN]',
                     center: true,
                     minWidth: "40px",
                     compact: true,

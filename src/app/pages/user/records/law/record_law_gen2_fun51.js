@@ -79,7 +79,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
             let _LIST = _GET_CHILD_51();
             const columns_51 = [
                 {
-                    name: <label>EVALUACION</label>,
+                    name: 'EVALUACION',
                     button: true,
                     center: true,
                     minWidth: '150px',
@@ -90,7 +90,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     </select></>
                 },
                 {
-                    name: <label>TIPO</label>,
+                    name: 'TIPO',
                     selector: row => row.type,
                     sortable: true,
                     filterable: true,
@@ -99,7 +99,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     cell: row => <label>{row.type}</label>
                 },
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
@@ -108,7 +108,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     cell: row => <label>{row.name + " " + row.surname}</label>
                 },
                 {
-                    name: <label>CC/NIT</label>,
+                    name: 'CC/NIT',
                     selector: row => row.id_number,
                     sortable: true,
                     filterable: true,
@@ -116,7 +116,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     cell: row => <label>{row.id_number}</label>
                 },
                 {
-                    name: <label>NOMBRE REP. LEGAL</label>,
+                    name: 'NOMBRE REP. LEGAL',
                     selector: row => row.rep_name,
                     sortable: true,
                     filterable: true,
@@ -125,7 +125,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     cell: row => <label>{row.rep_name}</label>
                 },
                 {
-                    name: <label>C.C. REP. LEGAL</label>,
+                    name: 'C.C. REP. LEGAL',
                     selector: row => row.rep_id_number,
                     sortable: true,
                     filterable: true,
@@ -133,26 +133,26 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     cell: row => <label>{row.rep_id_number}</label>
                 },
                 {
-                    name: <label>TELEFONO/ CELULAR</label>,
+                    name: 'TELEFONO/ CELULAR',
                     selector: row => row.nunber,
                     center: true,
                     cell: row => <label >{row.nunber}</label>
                 },
                 {
-                    name: <label>CORREO</label>,
+                    name: 'CORREO',
                     selector: row => row.email,
                     center: true,
                     cell: row => <label>{row.email}</label>
                 },
                 {
-                    name: <label>ROL</label>,
+                    name: 'ROL',
                     selector: row => row.role,
                     center: true,
                     minWidth: '200px',
                     cell: row => <label>{row.role}</label>
                 },
                 {
-                    name: <label>DOCUMENTOS</label>,
+                    name: 'DOCUMENTOS',
                     button: true,
                     center: true,
                     center: true,

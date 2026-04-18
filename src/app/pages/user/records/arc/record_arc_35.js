@@ -411,7 +411,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
             let _LIST = _GET_CHILD_35_PARKING();
             const columns = [
                 {
-                    name: <label>Uso</label>,
+                    name: 'Uso',
                     selector: row => row.use,
                     sortable: true,
                     filterable: true,
@@ -419,7 +419,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.use}</label>
                 },
                 {
-                    name: <label>Tipo</label>,
+                    name: 'Tipo',
                     selector: row => row.type,
                     sortable: true,
                     filterable: true,
@@ -428,7 +428,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.type}</label>
                 },
                 {
-                    name: <label>Unidad Uso</label>,
+                    name: 'Unidad Uso',
                     selector: row => row.pos,
                     sortable: true,
                     filterable: true,
@@ -437,7 +437,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.pos}</label>
                 },
                 {
-                    name: <label>Relación</label>,
+                    name: 'Relación',
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
@@ -445,7 +445,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.name}</label>
                 },
                 {
-                    name: <label>Norma</label>,
+                    name: 'Norma',
                     selector: row => row.norm,
                     sortable: true,
                     filterable: true,
@@ -455,7 +455,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.norm}</label>
                 },
                 {
-                    name: <label>Proyecto</label>,
+                    name: 'Proyecto',
                     selector: row => row.project,
                     sortable: true,
                     filterable: true,
@@ -465,21 +465,21 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.project}</label>
                 },
                 {
-                    name: <label>Dif.</label>,
+                    name: 'Dif.',
                     center: true,
                     compact: true,
                     minWidth: '40px',
                     cell: row => <label>{row.project - row.norm}</label>
                 },
                 {
-                    name: <label>Observación</label>,
+                    name: 'Observación',
                     center: true,
                     compact: true,
                     minWidth: '50px',
                     cell: row => <label>{_GET_EVALUATION(row.norm, row.project)}</label>
                 },
                 {
-                    name: <label>Evaluación</label>,
+                    name: 'Evaluación',
                     button: true,
                     center: true,
                     minWidth: '140px',
@@ -493,7 +493,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                 },
                 /**
                  *  {
-                    name: <label>ESTADO</label>,
+                    name: 'ESTADO',
                     button: true,
                     center: true,
                     cell: row =>
@@ -504,7 +504,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                  * 
                  */
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     center: true,
                     minWidth: '110px',
@@ -685,7 +685,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
             let _LIST = _GET_CHILD_35_LOCATION();
             const columns = [
                 {
-                    name: <label>Piso / Sótano</label>,
+                    name: 'Piso / Sótano',
                     selector: row => row.floor,
                     sortable: true,
                     filterable: true,
@@ -695,56 +695,56 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.floor}</label>
                 },
                 {
-                    name: <label>D -m- (2.20*4.50)</label>,
+                    name: 'D -m- (2.20*4.50)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
                     cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 0)}</label>
                 },
                 {
-                    name: <label>D -m- (2.50*5.00)</label>,
+                    name: 'D -m- (2.50*5.00)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
                     cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 1)}</label>
                 },
                 {
-                    name: <label>D -m- (3.30*5.00)</label>,
+                    name: 'D -m- (3.30*5.00)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
                     cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 2)}</label>
                 },
                 {
-                    name: <label>Total</label>,
+                    name: 'Total',
                     center: true,
                     compact: true,
                     minWidth: '50px',
                     cell: row => <label className="text-success">{parseInt(_GET_LOCATION_INDEX(row.diensions, 1)) + parseInt(_GET_LOCATION_INDEX(row.diensions, 2)) + parseInt(_GET_LOCATION_INDEX(row.diensions, 0))}</label>
                 },
                 {
-                    name: <label>Carga (3.50*7.00)</label>,
+                    name: 'Carga (3.50*7.00)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
                     cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 3)}</label>
                 },
                 {
-                    name: <label>Motos (2.00*7.00)</label>,
+                    name: 'Motos (2.00*7.00)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
                     cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 4)}</label>
                 },
                 {
-                    name: <label>Bicicletas (0.50*2.50)</label>,
+                    name: 'Bicicletas (0.50*2.50)',
                     center: true,
                     compact: true,
                     minWidth: '50px',
                     cell: row => <label>{_GET_LOCATION_INDEX(row.diensions, 5)}</label>
                 },
                 {
-                    name: <label>Evaluación</label>,
+                    name: 'Evaluación',
                     button: true,
                     center: true,
                     minWidth: '140px',
@@ -758,7 +758,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                 },
                 /**
                  *  {
-                    name: <label>ESTADO</label>,
+                    name: 'ESTADO',
                     button: true,
                     center: true,
                     cell: row =>
@@ -769,7 +769,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                  */
 
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     center: true,
                     minWidth: '120px',

@@ -183,7 +183,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             let _LIST = _GET_CHILD_33_AREAS_BLUEPRINTS();
             const columns = [
                 {
-                    name: <label>ID</label>,
+                    name: 'ID',
                     center: true,
                     maxWidth: '40px',
                     maxWidth: '40px',
@@ -193,7 +193,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                         </div> : <label>{row.id_public}</label>
                 },
                 {
-                    name: <label>Escala</label>,
+                    name: 'Escala',
                     center: true,
                     maxWidth: '40px',
                     maxWidth: '40px',
@@ -203,7 +203,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                         </div> : <label className='text-center'>{row.scale}</label>
                 },
                 {
-                    name: <label>Descripción</label>,
+                    name: 'Descripción',
                     center: true,
                     cell: row => dynamicState['qedit_bp_' + row.id]
                         ? <div className="input-group input-group-sm">
@@ -211,7 +211,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                         </div> : <label className='text-center'>{row.use}</label>
                 },
                 {
-                    name: <label>Documento</label>,
+                    name: 'Documento',
                     center: true,
                     cell: row => dynamicState['qedit_bp_' + row.id]
                         ? <div className="input-group input-group-sm">
@@ -226,7 +226,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                             : ""
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     center: true,
                     minWidth: '120px',

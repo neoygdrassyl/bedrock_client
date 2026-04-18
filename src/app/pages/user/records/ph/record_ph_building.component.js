@@ -41,7 +41,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
             let _LIST = _GET_CHILD_BUILDINGS();
             const columns = [
                 {
-                    name: <label className="text-center">PREDIO N°</label>,
+                    name: 'PREDIO N°',
                     selector: row => row.number,
                     sortable: true,
                     filterable: true,
@@ -49,7 +49,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     cell: row => <label>{row.number}</label>
                 },
                 {
-                    name: <label className="text-center">PREDIAL</label>,
+                    name: 'PREDIAL',
                     selector: row => row.predial,
                     sortable: true,
                     filterable: true,
@@ -57,7 +57,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     cell: row => <label>{row.predial}</label>
                 },
                 {
-                    name: <label className="text-center">MATRICULA</label>,
+                    name: 'MATRICULA',
                     selector: row => row.matricula,
                     sortable: true,
                     filterable: true,
@@ -65,7 +65,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     cell: row => <label>{row.matricula}</label>
                 },
                 {
-                    name: <label className="text-center">NOMENCLATURA</label>,
+                    name: 'NOMENCLATURA',
                     selector: row => row.nomenclature,
                     sortable: true,
                     filterable: true,
@@ -73,7 +73,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     cell: row => <label >{row.nomenclature}</label>
                 },
                 {
-                    name: <label className="text-center">AREA Y LINDEROS</label>,
+                    name: 'AREA Y LINDEROS',
                     selector: row => row.area,
                     sortable: true,
                     filterable: true,
@@ -81,7 +81,7 @@ function RECORD_PH_BUILDING({ translation, swaMsg, globals, currentItem, current
                     cell: row => <label >{row.area} m2</label>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>

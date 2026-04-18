@@ -21,26 +21,26 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             let _LIST = _SET_CHILD_4();
             const columns_4 = [
                 {
-                    name: <label>LINDEROS</label>,
+                    name: 'LINDEROS',
                     selector: row => row.coord,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.coord}</label>
                 },
                 {
-                    name: <label>LONGITUD</label>,
+                    name: 'LONGITUD',
                     selector: row => row.longitud,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.longitud}</label>
                 },
                 {
-                    name: <label>COLINDA CON</label>,
+                    name: 'COLINDA CON',
                     selector: row => row.colinda,
                     cell: row => <label>{row.colinda}</label>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     cell: row => <button type="button" className="btn btn-sm btn-danger" onClick={() => delete_4(row.id)}><Icon name="trash-alt" size={16} /></button>
                 },

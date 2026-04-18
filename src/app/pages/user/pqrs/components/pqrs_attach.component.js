@@ -32,21 +32,21 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
             var _LIST = _GET_ATTACHS();
             const columns = [
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.public_name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.public_name}</label>,
                 },
                 {
-                    name: <label>TIPO</label>,
+                    name: 'TIPO',
                     selector: row => row.class,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{fileType[row.class ?? 0]}</label>,
                 },
                 {
-                    name: <label>FORMATO</label>,
+                    name: 'FORMATO',
                     selector: row => row.type,
                     sortable: true,
                     filterable: true,
@@ -54,7 +54,7 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
                 },
 
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>

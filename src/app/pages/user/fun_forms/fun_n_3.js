@@ -121,43 +121,43 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             let _LIST = _SET_CHILD_3();
             const columns_3 = [
                 {
-                    name: <label>DIRECCION DEL PREDIO</label>,
+                    name: 'DIRECCION DEL PREDIO',
                     selector: row => row.direccion_1, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_1}</label>
                 },
                 {
-                    name: <label>DIRECCIÓN DE CORRESPONDENCIA</label>,
+                    name: 'DIRECCIÓN DE CORRESPONDENCIA',
                     selector: row => row.direccion_2, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_2}</label>
                 },
                 {
-                    name: <label>ORIGEN DATO</label>,
+                    name: 'ORIGEN DATO',
                     cell: row => <label>{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</label>
                 },
                 {
-                    name: <label>¿SE DECLARÓ PARTE?</label>,
+                    name: '¿SE DECLARÓ PARTE?',
                     cell: row => <label>{row.part} - {row.part_id}</label>
                 },
                 {
-                    name: <label>ESTADO CITACIÓN</label>,
+                    name: 'ESTADO CITACIÓN',
                     selector: row => row.state, // FIX: react-data-table v7→v8 (was 'row.state')
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{_GET_NEIGHBOUR_STATE(row.state)}</label>
                 },
                 {
-                    name: <label>CUB RELACIONADO</label>,
+                    name: 'CUB RELACIONADO',
                     selector: row => row.id_cub, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.id_cub}</label>
                 },
                 {
-                    name: <label>GUIA DE CONFIRMACION</label>,
+                    name: 'GUIA DE CONFIRMACION',
                     selector: row => row.id_alerted, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -166,25 +166,25 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         : row.id_alerted}</label>
                 },
                 {
-                    name: <label>FECHA RECIBIDO</label>,
+                    name: 'FECHA RECIBIDO',
                     selector: row => row.alerted, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.state == 1 ? dateParser(row.alerted) : ""}</label>
                 },
                 {
-                    name: <label>METODOS DE PUBLICACION</label>,
+                    name: 'METODOS DE PUBLICACION',
                     minWidth: '250px',
                     cell: row => <label>{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</label>
                 },
                 {
-                    name: <label>SOPORTES DE PUBLICACION</label>,
+                    name: 'SOPORTES DE PUBLICACION',
 
                     minWidth: '200px',
                     cell: row => <label>{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</label>
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
+                    name: 'DOCUMENTO',
                     button: true,
                     minWidth: '150px',
                     cell: row =>  <>
@@ -195,7 +195,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         : ""}</>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>

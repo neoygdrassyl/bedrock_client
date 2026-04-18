@@ -392,7 +392,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             let _LIST = _GET_CHILD_34_GEN();
             const columns = [
                 {
-                    name: <label>Norma Urbana CUB</label>,
+                    name: 'Norma Urbana CUB',
                     selector: row => row.norm,
                     sortable: true,
                     filterable: true,
@@ -400,7 +400,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.norm}</label>
                 },
                 {
-                    name: <label>Descripción</label>,
+                    name: 'Descripción',
                     selector: row => row.desc,
                     sortable: true,
                     filterable: true,
@@ -408,7 +408,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.desc}</label>
                 },
                 {
-                    name: <label>Fecha</label>,
+                    name: 'Fecha',
                     selector: row => row.date,
                     sortable: true,
                     filterable: true,
@@ -416,7 +416,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{dateParser(row.date)}</label>
                 },
                 {
-                    name: <label>Folios</label>,
+                    name: 'Folios',
                     selector: row => row.pages,
                     sortable: true,
                     filterable: true,
@@ -424,7 +424,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     cell: row => <label>{row.pages}</label>
                 },
                 {
-                    name: <label>ESTADO</label>,
+                    name: 'ESTADO',
                     button: true,
                     center: true,
                     cell: row =>
@@ -433,7 +433,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         </div>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     center: true,
                     minWidth: '100px',

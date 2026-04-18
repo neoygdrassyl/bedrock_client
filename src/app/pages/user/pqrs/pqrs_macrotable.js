@@ -310,7 +310,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 excellValue: row => row.pqrs_time ? row.pqrs_time.time && _GET_REPLY_TIME_TIME(row) && Number(_GET_REPLY_TIME_TIME(row)) <= Number(row.pqrs_time.time) ? 'SI' : 'NO' : ''
             },
             {
-                name: <label  className="text-center">INDICADOR</label>,
+                name: 'INDICADOR',
                 selector: row => row.pqrs_time ? row.pqrs_time.time && _GET_REPLY_TIME_TIME(row) ? Number(Number(_GET_REPLY_TIME_TIME(row)) / Number(row.pqrs_time.time)).toFixed(1)  : '' : '',
                 sortable: true,
                 filterable: true,
@@ -320,7 +320,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 excellValue: row => row.pqrs_time ? row.pqrs_time.time && _GET_REPLY_TIME_TIME(row) ? Number(Number(_GET_REPLY_TIME_TIME(row)) / Number(row.pqrs_time.time)).toFixed(1)  : '' : ''
             },
             {
-                name: <label  className="text-center">DESCRIPCIÓN</label>,
+                name: 'DESCRIPCIÓN',
                 cell: row => row.content && row.content.length > 0 ? row.content.substring(0, 50) + (row.content.length > 50 ? "..." : '' ): '',
                 minWidth: "200px",
                 excellHeader: "DESCRIPCIÓN",

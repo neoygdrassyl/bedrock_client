@@ -74,7 +74,7 @@ export default function RECORD_ARC_36_TABLE(props) {
     // ******************************* JSX ***************************** 
     const columns = [
         {
-            name: <label>Dirección</label>,
+            name: 'Dirección',
             selector: row => row.parent,
             sortable: true,
             filterable: true,
@@ -84,7 +84,7 @@ export default function RECORD_ARC_36_TABLE(props) {
             cell: row => <label>{row.address}</label>
         },
         {
-            name: <label>Perfil</label>,
+            name: 'Perfil',
             selector: row => row.parent,
             sortable: true,
             filterable: true,
@@ -99,7 +99,7 @@ export default function RECORD_ARC_36_TABLE(props) {
             }
         },
         {
-            name: <label>Relación</label>,
+            name: 'Relación',
             selector: row => row.name,
             sortable: true,
             filterable: true,
@@ -116,7 +116,7 @@ export default function RECORD_ARC_36_TABLE(props) {
 
         /**
          * {
-            name: <label>Lado</label>,
+            name: 'Lado',
             selector: row => row.side,
             sortable: true,
             filterable: true,
@@ -126,7 +126,7 @@ export default function RECORD_ARC_36_TABLE(props) {
             cell: row => <label>{row.side}</label>
         },
          {
-            name: <label>Norma</label>,
+            name: 'Norma',
             selector: row => row.norm,
             sortable: true,
             filterable: true,
@@ -136,7 +136,7 @@ export default function RECORD_ARC_36_TABLE(props) {
             cell: row => <label>{row.norm}</label>
         },
         {
-            name: <label>Proyecto</label>,
+            name: 'Proyecto',
             selector: row => row.project,
             sortable: true,
             filterable: true,
@@ -146,21 +146,21 @@ export default function RECORD_ARC_36_TABLE(props) {
             cell: row => <label>{row.project}</label>
         },
         {
-            name: <label>Dif.</label>,
+            name: 'Dif.',
             center: true,
             compact: true,
             minWidth: '40px',
             cell: row => <label>{(row.project - row.norm).toFixed(2)}</label>
         },
         {
-            name: <label>Observación</label>,
+            name: 'Observación',
             center: true,
             compact: true,
             minWidth: '50px',
             cell: row => <label>{_GET_EVALUATION(row.norm, row.project)}</label>
         },
         {
-            name: <label>Evaluación</label>,
+            name: 'Evaluación',
             button: true,
             center: true,
             minWidth: '140px',
@@ -173,7 +173,7 @@ export default function RECORD_ARC_36_TABLE(props) {
             </select>
         },
          *  {
-            name: <label>ESTADO</label>,
+            name: 'ESTADO',
             button: true,
             center: true,
             cell: row =>
@@ -184,7 +184,7 @@ export default function RECORD_ARC_36_TABLE(props) {
          */
 
         {
-            name: <label>ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '110px',

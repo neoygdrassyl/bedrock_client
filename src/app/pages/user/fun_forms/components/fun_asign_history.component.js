@@ -135,7 +135,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
     let LIST_COMPONENT = () => {
         const columns = [
             {
-                name: <label className="text-center">No. RADICACIÓN</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
@@ -144,14 +144,14 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 cell: row => <h6 className='fw-normal'>{row.id_public}</h6>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.type}</label>
             },
             {
-                name: <label className="text-center">ESTADO</label>,
+                name: 'ESTADO',
                 selector: row => row.state,
                 sortable: true,
                 filterable: true,
@@ -160,7 +160,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 cell: row => <>{_GET_STATE_STR(row.state)}</>
             },
             {
-                name: <label className="text-center">ASIG.</label>,
+                name: 'ASIG.',
                 selector: row => row.asign,
                 sortable: true,
                 filterable: true,
@@ -169,7 +169,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 cell: row => <label>{row.asign}</label>
             },
             {
-                name: <label className="text-center">REV.</label>,
+                name: 'REV.',
                 selector: row => row.rew,
                 sortable: true,
                 filterable: true,
@@ -178,7 +178,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                 cell: row => <label>{row.rew}</label>
             },
             {
-                name: <label className="text-center">RES.</label>,
+                name: 'RES.',
                 selector: row => row.res,
                 sortable: true,
                 filterable: true,

@@ -210,7 +210,7 @@ export default function NORM_ELEMENT(props) {
     // ***************************  JXS *********************** //
     const columns = [
         {
-            name: <label className="text-center">ELEMENTO</label>,
+            name: 'ELEMENTO',
             selector: row => row.element,
             sortable: true,
             filterable: true,
@@ -218,22 +218,22 @@ export default function NORM_ELEMENT(props) {
             cell: row => ELEMENTS.find(ele => ele.value == row.element) ? ELEMENTS.find(ele => ele.value == row.element).name : 'OTRO ELEMENTO'
         },
         {
-            name: <label className="text-center">DIMENSION NORMA</label>,
+            name: 'DIMENSION NORMA',
             center: true,
             cell: row => row.dimension_n
         },
         {
-            name: <label className="text-center">DIMENSION SITIO</label>,
+            name: 'DIMENSION SITIO',
             center: true,
             cell: row => row.dimension_p
         },
         {
-            name: <label className="text-center">RETROCESO EXIGIDO</label>,
+            name: 'RETROCESO EXIGIDO',
             center: true,
             cell: row => (Number(row.dimension_n)- Number(row.dimension_p)).toFixed(2)
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '80px',

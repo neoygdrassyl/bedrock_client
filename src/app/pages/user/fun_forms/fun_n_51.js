@@ -415,7 +415,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let _LIST = _SET_CHILD_51();
             const columns_51 = [
                 {
-                    name: <label>TIPO PERSONA</label>,
+                    name: 'TIPO PERSONA',
                     selector: row => row.type, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -424,7 +424,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     cell: row => <label>{row.type}</label>
                 },
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -433,7 +433,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     cell: row => <label>{row.name + " " + row.surname}</label>
                 },
                 {
-                    name: <label>CC/NIT</label>,
+                    name: 'CC/NIT',
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -441,7 +441,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     cell: row => <label>{row.id_number}</label>
                 },
                 {
-                    name: <label>NOMBRE REP. LEGAL</label>,
+                    name: 'NOMBRE REP. LEGAL',
                     selector: row => row.rep_name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -450,7 +450,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     cell: row => <label>{row.rep_name}</label>
                 },
                 {
-                    name: <label>C.C. REP. LEGAL</label>,
+                    name: 'C.C. REP. LEGAL',
                     selector: row => row.rep_id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -458,33 +458,33 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     cell: row => <label>{row.rep_id_number}</label>
                 },
                 {
-                    name: <label>TELEFONO/ CELULAR</label>,
+                    name: 'TELEFONO/ CELULAR',
                     selector: row => row.nunber, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label >{row.nunber}</label>
                 },
                 {
-                    name: <label>CORREO</label>,
+                    name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label>{row.email}</label>
                 },
                 {
-                    name: <label>TIPO TITULAR</label>,
+                    name: 'TIPO TITULAR',
                     selector: row => row.role, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '200px',
                     cell: row => <label>{row.role}</label>
                 },
                 {
-                    name: <label>DOCUMENTOS</label>,
+                    name: 'DOCUMENTOS',
                     button: true,
                     center: true,
                     center: true,
                     cell: row => <> {_GET_DOCS_BTNS(row.docs)}</>
                 },
                 {
-                    name: <label>ESTADO</label>,
+                    name: 'ESTADO',
                     button: true,
                     cell: row =>
                         <div className="form-check form-switch">
@@ -492,7 +492,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                         </div>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>

@@ -29,32 +29,32 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
             var _LIST = _GET_SOLICITORS();
             const columns = [
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.name}</label>,
                 },
                 {
-                    name: <label>TIPO PERSONA</label>,
+                    name: 'TIPO PERSONA',
                     selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.type}</label>,
                 },
                 {
-                    name: <label>TIPO DOCUMENTO</label>,
+                    name: 'TIPO DOCUMENTO',
                     selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.type_id}</label>,
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
+                    name: 'DOCUMENTO',
                     cell: row => <label>{row.id_number}</label>,
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>

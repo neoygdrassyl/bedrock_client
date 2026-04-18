@@ -169,32 +169,32 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
             }
             const columns = [
                 {
-                    name: <label>PROFESIONAL</label>,
+                    name: 'PROFESIONAL',
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{row.name}</p>
                 },
                 {
-                    name: <label>COMPETENCIA</label>,
+                    name: 'COMPETENCIA',
                     selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{row.competence}</p>
                 },
                 {
-                    name: <label>FECHA ASIGNACIÓN</label>,
+                    name: 'FECHA ASIGNACIÓN',
                     selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <p className="pt-3 text-center">{dateParser(row.asign)}</p>
                 },
                 {
-                    name: <label>¿NOTIFICO EMAIL?</label>,
+                    name: '¿NOTIFICO EMAIL?',
                     cell: row => <p className="pt-3 text-center">{row.sent_email_notify ? "SI" : "NO"}</p>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>

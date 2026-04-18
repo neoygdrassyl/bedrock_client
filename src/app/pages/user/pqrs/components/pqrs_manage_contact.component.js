@@ -52,7 +52,7 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
             var _LIST = _GET_CONTACTS();
             const columns = [
                 {
-                    name: <label>DIRECCION</label>,
+                    name: 'DIRECCION',
                     selector: row => row.name,
                     minWidth: '210px',
                     sortable: true,
@@ -60,7 +60,7 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                     cell: row => <label>{row.address}</label>,
                 },
                 {
-                    name: <label>BARRIO</label>,
+                    name: 'BARRIO',
                     selector: row => row.competence,
                     minWidth: '180px',
                     sortable: true,
@@ -68,12 +68,12 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                     cell: row => <label>{row.neighbour}</label>,
                 },
                 {
-                    name: <label>MUNICIPIO</label>,
+                    name: 'MUNICIPIO',
                     minWidth: '180px',
                     cell: row => <label>{row.county}</label>,
                 },
                 {
-                    name: <label>TÉLEFONO</label>,
+                    name: 'TÉLEFONO',
                     selector: row => row.asign,
                     minWidth: '180px',
                     sortable: true,
@@ -81,19 +81,19 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                     cell: row => <label>{row.phone}</label>,
                 },
                 {
-                    name: <label>CONTACTO</label>,
+                    name: 'CONTACTO',
                     minWidth: '199px',
                     cell: row => <label>{row.email}</label>,
                 },
 
                 {
-                    name: <label>¿AUTORIZA NOTIFICACIÓN POR CORREO?</label>,
+                    name: '¿AUTORIZA NOTIFICACIÓN POR CORREO?',
                     center: true,
                     minWidth: '290px',
                     cell: row => <label>{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</label>,
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>

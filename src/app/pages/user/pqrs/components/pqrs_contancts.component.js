@@ -20,41 +20,41 @@ function PQRS_COMPONENT_CONTACTS({ translation, swaMsg, globals, currentItem }) 
             var _LIST = _GET_CONTACTS();
             const columns = [
                 {
-                    name: <label>DIRECCIÓN</label>,
+                    name: 'DIRECCIÓN',
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.address}</label>,
                 },
                 {
-                    name: <label>BARRIO</label>,
+                    name: 'BARRIO',
                     selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.neighbour}</label>,
                 },
                 {
-                    name: <label>MUNICIPIO</label>,
+                    name: 'MUNICIPIO',
                     cell: row => <label>{row.county}</label>,
                 },
                 {
-                    name: <label>TELÉFONO</label>,
+                    name: 'TELÉFONO',
                     selector: row => row.asign,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.phone}</label>,
                 },
                 {
-                    name: <label>CONTACTO</label>,
+                    name: 'CONTACTO',
                     minWidth: '180px',
                     cell: row => <label>{row.email}</label>,
                 },
                 {
-                    name: <label>DEPARTAMENTO</label>,
+                    name: 'DEPARTAMENTO',
                     cell: row => <label>{row.state}</label>,
                 },
                 {
-                    name: <label>¿NOTIFICA CORREO?</label>,
+                    name: '¿NOTIFICA CORREO?',
                     minWidth: '180px',
                     center: true,
                     cell: row => <label>{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</label>,

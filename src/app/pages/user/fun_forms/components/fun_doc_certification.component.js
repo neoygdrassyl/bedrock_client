@@ -222,7 +222,7 @@ export default function FUN_CERTIFICATION(props) {
     // ***************************  DATATABLES *********************** //
     const columns = [
         {
-            name: <label className="text-center">Consecutivo</label>,
+            name: 'Consecutivo',
             selector: row => row.id_public,
             sortable: true,
             filterable: true,
@@ -231,7 +231,7 @@ export default function FUN_CERTIFICATION(props) {
 
         },
         {
-            name: <label className="text-center">Fecha Exp.</label>,
+            name: 'Fecha Exp.',
             selector: row => row.createdAt,
             sortable: true,
             filterable: true,
@@ -240,7 +240,7 @@ export default function FUN_CERTIFICATION(props) {
 
         },
         {
-            name: <label className="text-center">Acción</label>,
+            name: 'Acción',
             center: true,
             maxWidth: '80px',
             cell: row => <button type="button" className="btn btn-primary" onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}

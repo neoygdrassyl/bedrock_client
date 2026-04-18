@@ -554,7 +554,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
 
             const columns = [
                 {
-                    name: <label className="text-center">EVENTO</label>,
+                    name: 'EVENTO',
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
@@ -562,12 +562,12 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     cell: row => <label>{row.name}</label>
                 },
                 {
-                    name: <label className="text-center">OBSERVACIONES</label>,
+                    name: 'OBSERVACIONES',
                     minWidth: '330px',
                     cell: row => <label>{(row.desc)}</label>
                 },
                 {
-                    name: <label className="text-center">FECHA EVENTO</label>,
+                    name: 'FECHA EVENTO',
                     selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
@@ -575,7 +575,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     cell: row => <label>{(row.date_start)}</label>
                 },
                 {
-                    name: <label className="text-center">FECHA LIMITE</label>,
+                    name: 'FECHA LIMITE',
                     selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
@@ -583,12 +583,12 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     cell: row => <label>{_GET_LIMITE_DATE(row.state, row.version)}</label>
                 },
                 {
-                    name: <label className="text-center">RESULTADO</label>,
+                    name: 'RESULTADO',
                     center: true,
                     cell: row => <label>{resolveStatusIcon[row.resolver_sattus ?? '-1']}</label>
                 },
                 {
-                    name: <label className="text-center">SOPORTE DOCUMENTO</label>,
+                    name: 'SOPORTE DOCUMENTO',
                     center: true,
                     cell: row => {
                         let id6 = row.resolver_id6;

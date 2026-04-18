@@ -121,7 +121,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
     // ************************** TABLE COMPONENTS ********************* // 
     const columns = [
         {
-            name: <label>No. RADICACION</label>,
+            name: 'No. RADICACION',
             selector: row => row.id_public,
             sortable: true,
             filterable: true,
@@ -129,14 +129,14 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label>{row.id_public}</label>
         },
         {
-            name: <label>INFO</label>,
+            name: 'INFO',
             button: true,
             cell: row => <button title="Informacion solicitud" className="btn btn-sm btn-info m-0 p-1 shadow-none"
                     onClick={() => props.NAVIGATION_GEN(row)}>
                     <Icon name="folder-open" size={16} /></button>
         },
         {
-            name: <label>ACTUACION</label>,
+            name: 'ACTUACION',
             selector: row => _PARSE_FUN_1(row),
             sortable: true,
             filterable: true,
@@ -144,7 +144,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label>{row.usos == 'A' ? <u>{_PARSE_FUN_1(row)}</u> : _PARSE_FUN_1(row)}</label>
         },
         {
-            name: <label className="text-center">ESTADO</label>,
+            name: 'ESTADO',
             selector: row => row.state,
             sortable: true,
             filterable: true,
@@ -153,7 +153,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label>{_fun_0_state(row.state)}</label>
         },
         {
-            name: <label className="text-center">CATEGORIA</label>,
+            name: 'CATEGORIA',
             selector: row => row.type,
             sortable: true,
             filterable: true,
@@ -170,7 +170,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="fw-bold text-primary">{row.clock_3} </label>
         },
         {
-            name: <label className="text-center">INCOMPLETO <Icon name="window-close" size={24} /></label>,
+            name: 'INCOMPLETO <Icon name="window-close" size={24} />',
             selector: row => row.clock_01,
             sortable: true,
             filterable: true,
@@ -186,7 +186,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="fw-bold text-primary text-center">{row.clock_5}</label>
         },
         {
-            name: <label className="text-center">RADICACIÓN VALLA <Icon name="sign" size={24} /></label>,
+            name: 'RADICACIÓN VALLA <Icon name="sign" size={24} />',
             selector: row => row.sign ? row.sign.split(',')[1] : '',
             sortable: true,
             filterable: true,
@@ -194,7 +194,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.sign ? row.sign.split(',')[1] : ''}</label>
         },
         {
-            name: <label>JUR. PROF. ASIG. <Icon name="balance-scale" size={24} /></label>,
+            name: 'JUR. PROF. ASIG. <Icon name="balance-scale" size={24} />',
             selector: row => !regexChecker_isPh(row, true) ? row.asign_law_worker_id : row.sign_ph_law_worker_id,
             sortable: true,
             filterable: true,
@@ -210,7 +210,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 )}</>
         },
         {
-            name: <label>JUR. FECHA ASIG.  <Icon name="balance-scale" size={24} /></label>,
+            name: 'JUR. FECHA ASIG.  <Icon name="balance-scale" size={24} />',
             selector: row => !regexChecker_isPh(row, true) ? row.asign_law_date : row.asign_ph_law_date,
             sortable: true,
             filterable: true,
@@ -227,7 +227,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 
         },
         {
-            name: <label className="text-center">JUR. PROFESIONAL <Icon name="balance-scale" size={24} /></label>,
+            name: 'JUR. PROFESIONAL <Icon name="balance-scale" size={24} />',
             selector: row => row.lawr_workername,
             sortable: true,
             filterable: true,
@@ -240,7 +240,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 : row.ph_id ? <label>{row.ph_lawwname}</label> : nullIcon
         },
         {
-            name: <label className="text-center">JUR. FECHA REVISIÓN <Icon name="balance-scale" size={24} /></label>,
+            name: 'JUR. FECHA REVISIÓN <Icon name="balance-scale" size={24} />',
             selector: row => row.lawr_date,
             sortable: true,
             filterable: true,
@@ -252,7 +252,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 : row.ph_id ? <label>{row.ph_lawdate}</label> : nullIcon
         },
         {
-            name: <label className="text-center">JUR. REVISIÓN <Icon name="balance-scale" size={24} /></label>,
+            name: 'JUR. REVISIÓN <Icon name="balance-scale" size={24} />',
             selector: row => row.arcr_check,
             sortable: true,
             filterable: true,
@@ -265,7 +265,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 : row.ph_id ? <label>{_GET_REVIEW(row.ph_lawcheck)}</label> : nullIcon
         },
         {
-            name: <label className="text-center">ARQ. PROFESIONAL <Icon name="building" size={24} /></label>,
+            name: 'ARQ. PROFESIONAL <Icon name="building" size={24} />',
             selector: row => row.arcr_workername,
             sortable: true,
             filterable: true,
@@ -278,7 +278,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 : row.ph_id ? <label>{row.ph_arcwname}</label> : nullIcon
         },
         {
-            name: <label className="text-center">ARQ. FECHA REVISIÓN <Icon name="building" size={24} /></label>,
+            name: 'ARQ. FECHA REVISIÓN <Icon name="building" size={24} />',
             selector: row => row.lawr_date,
             sortable: true,
             filterable: true,
@@ -290,7 +290,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 : row.ph_id ? <label>{row.ph_arcdate}</label> : nullIcon
         },
         {
-            name: <label className="text-center">ARQ. REVISIÓN <Icon name="building" size={24} /></label>,
+            name: 'ARQ. REVISIÓN <Icon name="building" size={24} />',
             selector: row => row.arcr_check,
             sortable: true,
             filterable: true,
@@ -303,7 +303,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
                 : row.ph_id ? <label>{_GET_REVIEW(row.ph_arccheck)}</label> : nullIcon
         },
         {
-            name: <label className="text-center">EST. PROFESIONAL <Icon name="cogs" size={24} /></label>,
+            name: 'EST. PROFESIONAL <Icon name="cogs" size={24} />',
             selector: row => row.engr_workername,
             sortable: true,
             filterable: true,
@@ -317,7 +317,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
 
         },
         {
-            name: <label className="text-center">EST. FECHA REVISIÓN <Icon name="cogs" size={24} /></label>,
+            name: 'EST. FECHA REVISIÓN <Icon name="cogs" size={24} />',
             selector: row => row.engr_date,
             sortable: true,
             filterable: true,
@@ -330,7 +330,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
 
         },
         {
-            name: <label className="text-center">EST. REVISIÓN <Icon name="cogs" size={24} /></label>,
+            name: 'EST. REVISIÓN <Icon name="cogs" size={24} />',
             selector: row => row.engr_check,
             sortable: true,
             filterable: true,
@@ -344,7 +344,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
 
         },
         {
-            name: <label className="text-center">ACTA P.1 <Icon name="file-contract" size={24} /></label>,
+            name: 'ACTA P.1 <Icon name="file-contract" size={24} />',
             selector: row => row.clock_30,
             sortable: true,
             filterable: true,
@@ -352,7 +352,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_30}</label>
         },
         {
-            name: <label className="text-center">NOT. PERSONAL <Icon name="envelope" size={24} /></label>,
+            name: 'NOT. PERSONAL <Icon name="envelope" size={24} />',
             selector: row => row.clock_32,
             sortable: true,
             filterable: true,
@@ -360,7 +360,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_32}</label>
         },
         {
-            name: <label className="text-center">NOT. AVISO <Icon name="envelope" size={24} /></label>,
+            name: 'NOT. AVISO <Icon name="envelope" size={24} />',
             selector: row => row.clock_33,
             sortable: true,
             filterable: true,
@@ -368,7 +368,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_33}</label>
         },
         {
-            name: <label className="text-center">ACTA P.2 <Icon name="file-contract" size={24} /></label>,
+            name: 'ACTA P.2 <Icon name="file-contract" size={24} />',
             selector: row => row.clock_49,
             sortable: true,
             filterable: true,
@@ -381,7 +381,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="fw-bold text-primary text-center">{'XOXO'}</label>
         },
         {
-            name: <label className="text-center">TRAMITE LICENCIA <Icon name="dollar-sign" size={24} /></label>,
+            name: 'TRAMITE LICENCIA <Icon name="dollar-sign" size={24} />',
             selector: row => row.clock_61,
             sortable: true,
             filterable: true,
@@ -389,7 +389,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_61}</label>
         },
         {
-            name: <label className="text-center">EXPENSAS VARIABLES <Icon name="dollar-sign" size={24} /></label>,
+            name: 'EXPENSAS VARIABLES <Icon name="dollar-sign" size={24} />',
             selector: row => row.clock_62,
             sortable: true,
             filterable: true,
@@ -397,7 +397,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_62}</label>
         },
         {
-            name: <label className="text-center">IMPUESTOS MUNICIPALES <Icon name="dollar-sign" size={24} /></label>,
+            name: 'IMPUESTOS MUNICIPALES <Icon name="dollar-sign" size={24} />',
             selector: row => row.clock_63,
             sortable: true,
             filterable: true,
@@ -405,7 +405,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_63}</label>
         },
         {
-            name: <label className="text-center">ESTAMPILLA PRO-UIS <Icon name="dollar-sign" size={24} /></label>,
+            name: 'ESTAMPILLA PRO-UIS <Icon name="dollar-sign" size={24} />',
             selector: row => row.clock_64,
             sortable: true,
             filterable: true,
@@ -413,7 +413,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_64}</label>
         },
         {
-            name: <label className="text-center">DEBERES URBANISTICOS <Icon name="dollar-sign" size={24} /></label>,
+            name: 'DEBERES URBANISTICOS <Icon name="dollar-sign" size={24} />',
             selector: row => row.clock_65,
             sortable: true,
             filterable: true,
@@ -421,7 +421,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_65}</label>
         },
         {
-            name: <label className="text-center">ACTO ADMI. / RESOLUCIÓN <Icon name="file-invoice" size={24} /></label>,
+            name: 'ACTO ADMI. / RESOLUCIÓN <Icon name="file-invoice" size={24} />',
             selector: row => row.clock_70,
             sortable: true,
             filterable: true,
@@ -429,7 +429,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_70}</label>
         },
         {
-            name: <label className="text-center">NOT. PERSONAL <Icon name="envelope" size={24} /></label>,
+            name: 'NOT. PERSONAL <Icon name="envelope" size={24} />',
             selector: row => row.clock_72,
             sortable: true,
             filterable: true,
@@ -437,7 +437,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_72}</label>
         },
         {
-            name: <label className="text-center">NOT. AVISO <Icon name="envelope" size={24} /></label>,
+            name: 'NOT. AVISO <Icon name="envelope" size={24} />',
             selector: row => row.clock_73,
             sortable: true,
             filterable: true,
@@ -445,7 +445,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             cell: row => <label className="">{row.clock_73}</label>
         },
         {
-            name: <label className="text-center">EJECUTORIA <Icon name="file-invoice" size={24} /></label>,
+            name: 'EJECUTORIA <Icon name="file-invoice" size={24} />',
             selector: row => row.clock_80,
             sortable: true,
             filterable: true,

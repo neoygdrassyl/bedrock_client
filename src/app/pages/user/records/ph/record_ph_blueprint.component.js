@@ -49,7 +49,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
             let _LIST = _GET_CHILD_BLUEPRINTS();
             const columns = [
                 {
-                    name: <label className="text-center">ID Plano</label>,
+                    name: 'ID Plano',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
@@ -57,7 +57,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label>{row.id_public}</label>
                 },
                 {
-                    name: <label className="text-center">Sótano / Piso</label>,
+                    name: 'Sótano / Piso',
                     selector: row => row.floor,
                     sortable: true,
                     filterable: true,
@@ -65,7 +65,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label>{row.floor}</label>
                 },
                 {
-                    name: <label className="text-center">Área total construida m2</label>,
+                    name: 'Área total construida m2',
                     selector: row => row.area,
                     sortable: true,
                     filterable: true,
@@ -73,7 +73,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label>{row.area}</label>
                 },
                 {
-                    name: <label className="text-center">Vivienda / Aptos.</label>,
+                    name: 'Vivienda / Aptos.',
                     selector: row => (row.units).split(";")[0],
                     sortable: true,
                     filterable: true,
@@ -83,7 +83,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label >{(row.units).split(";")[0]}</label>
                 },
                 {
-                    name: <label className="text-center">Locales / Lockers</label>,
+                    name: 'Locales / Lockers',
                     selector: row => (row.units).split(";")[1],
                     sortable: true,
                     filterable: true,
@@ -93,7 +93,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label >{(row.units).split(";")[1]}</label>
                 },
                 {
-                    name: <label className="text-center">Parcelas / Lotes</label>,
+                    name: 'Parcelas / Lotes',
                     selector: row => (row.units).split(";")[2],
                     sortable: true,
                     filterable: true,
@@ -103,7 +103,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label >{(row.units).split(";")[2]}</label>
                 },
                 {
-                    name: <label className="text-center">Paqrueos</label>,
+                    name: 'Paqrueos',
                     selector: row => (row.units).split(";")[3],
                     sortable: true,
                     filterable: true,
@@ -113,7 +113,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label >{(row.units).split(";")[3]}</label>
                 },
                 {
-                    name: <label className="text-center">Oficinas</label>,
+                    name: 'Oficinas',
                     selector: row => (row.units).split(";")[4],
                     sortable: true,
                     filterable: true,
@@ -123,7 +123,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label >{(row.units).split(";")[4]}</label>
                 },
                 {
-                    name: <label className="text-center">Bodegas</label>,
+                    name: 'Bodegas',
                     selector: row => (row.units).split(";")[5],
                     sortable: true,
                     filterable: true,
@@ -133,7 +133,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label >{(row.units).split(";")[5]}</label>
                 },
                 {
-                    name: <label className="text-center">Número Parqueos</label>,
+                    name: 'Número Parqueos',
                     selector: row => (row.units).split(";")[6],
                     sortable: true,
                     filterable: true,
@@ -143,7 +143,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label >{(row.units).split(";")[6]}</label>
                 },
                 {
-                    name: <label className="text-center">Descripción otros bienes (espacios)</label>,
+                    name: 'Descripción otros bienes (espacios)',
                     selector: row => row.units_other,
                     sortable: true,
                     filterable: true,
@@ -152,7 +152,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     cell: row => <label >{row.units_other}</label>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>

@@ -237,7 +237,7 @@ export default function NORMS(props) {
 
     const columns = [
         {
-            name: <label className="text-center">No. RADICACIÓN</label>,
+            name: 'No. RADICACIÓN',
             selector: row => row.id_in,
             sortable: true,
             filterable: true,
@@ -245,7 +245,7 @@ export default function NORMS(props) {
             cell: row => row.id_in
         },
         {
-            name: <label className="text-center">No. EXPEDICIÓN</label>,
+            name: 'No. EXPEDICIÓN',
             selector: row => row.id_out,
             sortable: true,
             filterable: true,
@@ -253,7 +253,7 @@ export default function NORMS(props) {
             cell: row => row.id_out
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '80px',
