@@ -1,7 +1,15 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import FUNService from '../../services/fun.service';
+import PqrsMainService from '../../services/pqrs_main.service';
+import SubmitService from '../../services/submit.service';
+import MailboxService from '../../services/mailbox.service';
+import AppointmentsService from '../../services/appointments.service';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -58,6 +66,45 @@ function getFormattedDate() {
  * Uses new Spanish routes and shadcn/ui Card components.
  */
 function Dashboard({ breadCrums }) {
+  const [counts, setCounts] = useState({});
+  const [loadingCounts, setLoadingCounts] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchCounts() {
+      try {
+        const results = await Promise.allSettled([
+          FUNService.getAll(),
+          PqrsMainService.getAll(),
+          SubmitService.getAll(),
+          MailboxService.getAll(),
+          AppointmentsService.getAll(),
+        ]);
+        if (cancelled) return;
+        const len = (r) => r.status === 'fulfilled' && Array.isArray(r.value?.data) ? r.value.data.length : null;
+        const funData = results[0].status === 'fulfilled' ? results[0].value?.data : [];
+        const activeFun = Array.isArray(funData) ? funData.filter(f => f.state > 0 && f.state < 100).length : null;
+        const pendingFun = Array.isArray(funData) ? funData.filter(f => f.state == 1 || f.state == -1).length : null;
+
+        setCounts({
+          '/licencias': pendingFun,
+          '/licencias/gestion': activeFun,
+          '/licencias/gestion-nueva': activeFun,
+          '/peticiones': len(results[1]),
+          '/ventanilla': len(results[2]),
+          '/mensajes': len(results[3]),
+          '/calendario': len(results[4]),
+        });
+      } catch {
+        // Silently fail — counts are optional enhancement
+      } finally {
+        if (!cancelled) setLoadingCounts(false);
+      }
+    }
+    fetchCounts();
+    return () => { cancelled = true; };
+  }, []);
+
   const workModules = [
     { title: 'Radicar Licencias', icon: 'FileText', desc: 'Nuevas solicitudes', link: '/licencias' },
     { title: 'Gestionar Licencias', icon: 'FolderOpen', desc: 'Seguimiento y trámite', link: '/licencias/gestion' },
@@ -98,7 +145,7 @@ function Dashboard({ breadCrums }) {
         <SectionHeader title="Operación y Gestión" subtitle={`${workModules.length} módulos`} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {workModules.map((mod) => (
-            <ModuleCard key={mod.link} {...mod} />
+            <ModuleCard key={mod.link} {...mod} count={counts[mod.link]} loadingCount={loadingCounts} />
           ))}
         </div>
       </section>
@@ -137,7 +184,7 @@ function SectionHeader({ title, subtitle }) {
  * Single module card with icon, title, description, and colored left border.
  * Layout is stat-ready: when `count` is provided in future, it renders prominently.
  */
-function ModuleCard({ title, icon, desc, link, count }) {
+function ModuleCard({ title, icon, desc, link, count, loadingCount }) {
   const borderColor = CARD_COLORS[link] || 'border-l-border';
   const iconColor = ICON_COLORS[link] || DEFAULT_ICON_COLOR;
 
@@ -159,11 +206,13 @@ function ModuleCard({ title, icon, desc, link, count }) {
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <h3 className="text-sm font-medium text-foreground leading-tight">{title}</h3>
-              {count != null && (
+              {loadingCount ? (
+                <Skeleton className="h-5 w-8 rounded" />
+              ) : count != null ? (
                 <span className="text-lg font-bold text-foreground tabular-nums leading-none">
                   {count}
                 </span>
-              )}
+              ) : null}
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 truncate">{desc}</p>
           </div>
