@@ -5,8 +5,8 @@ import { FunPage } from '../pages/fun.page';
 /**
  * E2E: Radicacion de Proyecto (License Filing)
  *
- * Tests the core license creation and management workflow in /fun:
- * 1. Navigate to /fun and verify the page loads
+ * Tests the core license creation and management workflow in /licencias:
+ * 1. Navigate to /licencias and verify the page loads
  * 2. Create a new license (radicacion)
  * 3. Verify the license appears in the DataTable
  * 4. Open the license and verify detail sections are accessible
@@ -37,7 +37,7 @@ test.describe('E2E: Radicacion de Proyecto', () => {
     return false;
   }
 
-  test('navigate to /fun and verify the page loads with heading and form', async ({ authenticatedPage }) => {
+  test('navigate to /licencias and verify the page loads with heading and form', async ({ authenticatedPage }) => {
     await funPage.goto();
     await funPage.waitForPageLoad();
 

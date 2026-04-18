@@ -37,15 +37,15 @@ test.describe('E2E: Login page', () => {
     await expect(page).toHaveURL(/\/login/);
   });
 
-  test('unauthenticated user accessing /fun is redirected to /login', async ({ page }) => {
-    await page.goto('/fun');
+  test('unauthenticated user accessing /licencias is redirected to /login', async ({ page }) => {
+    await page.goto('/licencias');
 
     await page.waitForURL('**/login', { timeout: 10_000 });
     await expect(page).toHaveURL(/\/login/);
   });
 
-  test('unauthenticated user accessing /submit is redirected to /login', async ({ page }) => {
-    await page.goto('/submit');
+  test('unauthenticated user accessing /ventanilla is redirected to /login', async ({ page }) => {
+    await page.goto('/ventanilla');
 
     await page.waitForURL('**/login', { timeout: 10_000 });
     await expect(page).toHaveURL(/\/login/);
@@ -57,44 +57,44 @@ authTest.describe('E2E: Authenticated session', () => {
     // The auth fixture already navigated to /dashboard
     await authExpect(authenticatedPage).toHaveURL(/\/dashboard/);
 
-    // Verify user name appears in the navbar (RSuite Nav.Menu title)
-    const userName = authenticatedPage.locator('text=Admin Test');
+    // Verify user name appears in the HeaderBar user dropdown trigger
+    const userName = authenticatedPage.locator('header button', { hasText: /Admin/ });
     await authExpect(userName.first()).toBeVisible({ timeout: 10_000 });
   });
 
-  authTest.fixme('authenticated user can navigate to /fun — times out, may need backend data', async ({ authenticatedPage }) => {
-    await authenticatedPage.goto('/fun');
+  authTest.fixme('authenticated user can navigate to /licencias — times out, may need backend data', async ({ authenticatedPage }) => {
+    await authenticatedPage.goto('/licencias');
 
     // Should NOT be redirected to /login
     await authExpect(authenticatedPage).not.toHaveURL(/\/login/);
-    await authExpect(authenticatedPage).toHaveURL(/\/fun/);
+    await authExpect(authenticatedPage).toHaveURL(/\/licencias/);
   });
 
-  authTest('authenticated user can navigate to /submit', async ({ authenticatedPage }) => {
-    await authenticatedPage.goto('/submit');
+  authTest('authenticated user can navigate to /ventanilla', async ({ authenticatedPage }) => {
+    await authenticatedPage.goto('/ventanilla');
 
     await authExpect(authenticatedPage).not.toHaveURL(/\/login/);
-    await authExpect(authenticatedPage).toHaveURL(/\/submit/);
+    await authExpect(authenticatedPage).toHaveURL(/\/ventanilla/);
   });
 
-  authTest.fixme('authenticated user can navigate to /archive — times out, may need backend data', async ({ authenticatedPage }) => {
-    await authenticatedPage.goto('/archive');
+  authTest.fixme('authenticated user can navigate to /archivo — times out, may need backend data', async ({ authenticatedPage }) => {
+    await authenticatedPage.goto('/archivo');
 
     await authExpect(authenticatedPage).not.toHaveURL(/\/login/);
-    await authExpect(authenticatedPage).toHaveURL(/\/archive/);
+    await authExpect(authenticatedPage).toHaveURL(/\/archivo/);
   });
 
   authTest('logout clears session and redirects to login', async ({ authenticatedPage }) => {
-    // Open the user menu (RSuite Nav.Menu)
-    const userMenuTrigger = authenticatedPage.locator('text=Admin Test').first();
+    // Open the user dropdown menu in HeaderBar
+    const userMenuTrigger = authenticatedPage.locator('header button', { hasText: /Admin/ }).first();
     await userMenuTrigger.click();
 
-    // Click "Log out"
-    const logoutItem = authenticatedPage.locator('text=Log out');
+    // Click "Cerrar sesión" in the dropdown
+    const logoutItem = authenticatedPage.locator('[role="menuitem"]', { hasText: /Cerrar sesión/i });
     await logoutItem.click();
 
-    // Should redirect to /home (the signout callback navigates to /home)
-    await authenticatedPage.waitForURL('**/home', { timeout: 10_000 });
+    // Should redirect to /login (the signout callback navigates to /login)
+    await authenticatedPage.waitForURL('**/login', { timeout: 10_000 });
 
     // Verify localStorage is cleared
     const token = await authenticatedPage.evaluate(() =>

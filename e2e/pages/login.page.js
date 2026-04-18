@@ -17,11 +17,11 @@ export class LoginPage {
   constructor(page) {
     this.page = page;
 
-    // Locators — match the actual form structure in App.js LoginPage component
+    // Locators — match the redesigned split-screen LoginPage component
     this.emailInput = page.locator('#email');
     this.passwordInput = page.locator('#password');
     this.submitButton = page.locator('button[type="submit"]');
-    this.heading = page.locator('h2', { hasText: /INICIO DE SESIÓN.*CURADURIA/i });
+    this.heading = page.locator('h2', { hasText: /Iniciar sesión/i });
     this.errorAlert = page.locator('.swal2-popup');
   }
 

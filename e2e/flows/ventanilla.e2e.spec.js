@@ -5,8 +5,8 @@ import { SubmitPage } from '../pages/submit.page';
 /**
  * E2E: Ventanilla Unica (Single-Window Filing)
  *
- * Tests the document filing system at /submit:
- * 1. Navigate to /submit and verify the page loads
+ * Tests the document filing system at /ventanilla:
+ * 1. Navigate to /ventanilla and verify the page loads
  * 2. Open the "NUEVA ENTRADA" modal
  * 3. Verify the creation form fields
  * 4. Search for entries by different criteria
@@ -23,7 +23,7 @@ test.describe('E2E: Ventanilla Unica', () => {
     submitPage = new SubmitPage(authenticatedPage);
   });
 
-  test('navigate to /submit and verify the page loads with heading and actions', async ({ authenticatedPage }) => {
+  test('navigate to /ventanilla and verify the page loads with heading and actions', async ({ authenticatedPage }) => {
     await submitPage.goto();
     await submitPage.waitForPageLoad();
 

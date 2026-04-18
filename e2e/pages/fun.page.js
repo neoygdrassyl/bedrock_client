@@ -56,9 +56,9 @@ export class FunPage {
     };
   }
 
-  /** Navigate to /fun */
+  /** Navigate to /licencias (canonical) — legacy /fun redirects here */
   async goto() {
-    await this.page.goto('/fun');
+    await this.page.goto('/licencias');
     await this.page.waitForLoadState('domcontentloaded');
   }
 
