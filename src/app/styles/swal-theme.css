@@ -1,0 +1,164 @@
+/* ── SweetAlert2 Theme — Dovela Design Tokens ───────────────────────
+   Aligns all existing Swal dialogs with the redesign palette.
+   No JavaScript changes needed — pure CSS override of swal2 defaults.
+   Remove this file when SweetAlert2 is fully migrated (Phase 6). ─── */
+
+/* Popup container */
+.swal2-popup {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  border-radius: 0.75rem;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  font-size: 0.875rem;
+  padding: 2rem;
+}
+
+/* Backdrop */
+.swal2-container {
+  backdrop-filter: blur(2px);
+}
+
+/* Title */
+.swal2-title {
+  color: hsl(var(--foreground));
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 0 0 0.5rem;
+}
+
+/* Content text */
+.swal2-html-container {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Footer */
+.swal2-footer {
+  border-top-color: hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+}
+
+/* Confirm button */
+.swal2-confirm.swal2-styled {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  box-shadow: none;
+  transition: background-color 0.15s ease;
+}
+.swal2-confirm.swal2-styled:hover {
+  background-color: hsl(var(--primary) / 0.9);
+}
+.swal2-confirm.swal2-styled:focus {
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.25);
+}
+
+/* Cancel button */
+.swal2-cancel.swal2-styled {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  box-shadow: none;
+  transition: background-color 0.15s ease;
+}
+.swal2-cancel.swal2-styled:hover {
+  background-color: hsl(var(--muted) / 0.8);
+}
+
+/* Deny button */
+.swal2-deny.swal2-styled {
+  background-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* Icon colors */
+.swal2-icon.swal2-success {
+  border-color: hsl(var(--accent));
+  color: hsl(var(--accent));
+}
+.swal2-icon.swal2-success .swal2-success-line-tip,
+.swal2-icon.swal2-success .swal2-success-line-long {
+  background-color: hsl(var(--accent));
+}
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: hsl(var(--accent) / 0.3);
+}
+
+.swal2-icon.swal2-error {
+  border-color: hsl(var(--destructive));
+  color: hsl(var(--destructive));
+}
+.swal2-icon.swal2-error .swal2-x-mark-line-left,
+.swal2-icon.swal2-error .swal2-x-mark-line-right {
+  background-color: hsl(var(--destructive));
+}
+
+.swal2-icon.swal2-warning {
+  border-color: hsl(var(--warning));
+  color: hsl(var(--warning));
+}
+
+.swal2-icon.swal2-info {
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
+}
+
+.swal2-icon.swal2-question {
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
+}
+
+/* Input fields inside Swal */
+.swal2-input,
+.swal2-textarea,
+.swal2-select {
+  border-color: hsl(var(--input));
+  border-radius: 0.375rem;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-size: 0.875rem;
+}
+.swal2-input:focus,
+.swal2-textarea:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.25);
+}
+
+/* Close button */
+.swal2-close {
+  color: hsl(var(--muted-foreground));
+}
+.swal2-close:hover {
+  color: hsl(var(--foreground));
+}
+
+/* Timer progress bar */
+.swal2-timer-progress-bar {
+  background: hsl(var(--primary) / 0.3);
+}
+
+/* Loading spinner */
+.swal2-loading .swal2-styled.swal2-confirm {
+  border-color: hsl(var(--primary));
+  background-color: transparent;
+  color: hsl(var(--primary));
+}
+
+/* Dark mode adjustments */
+.dark .swal2-popup {
+  background: hsl(var(--background));
+  border-color: hsl(var(--border));
+}
