@@ -80,7 +80,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
             {
                 when: row => row.fixed != null && row.fixed.includes('&&'),
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
             },
         ];

@@ -1039,7 +1039,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             {
                 when: row => row.id == selectedRow,
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
             },
         ];
@@ -1047,14 +1047,14 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             {
                 when: row => row.id_sistem == selectedRow,
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
             },
         ];
         const conditionalCellStylesJUR = [
             {
                 when: row => row.id == selectedRow,
-                style: { backgroundColor: 'BlanchedAlmond' }
+                style: { backgroundColor: 'hsl(var(--warning) / 0.12)' }
             },
             {
                 when: row => row.id != selectedRow,
@@ -1064,7 +1064,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         const conditionalCellStylesENG = [
             {
                 when: row => row.id == selectedRow,
-                style: { backgroundColor: 'BlanchedAlmond' }
+                style: { backgroundColor: 'hsl(var(--warning) / 0.12)' }
             },
             {
                 when: row => row.id != selectedRow,
@@ -1074,7 +1074,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         const conditionalCellStylesARQ = [
             {
                 when: row => row.id == selectedRow,
-                style: { backgroundColor: 'BlanchedAlmond' }
+                style: { backgroundColor: 'hsl(var(--warning) / 0.12)' }
             },
             {
                 when: row => row.id != selectedRow,
@@ -2785,17 +2785,17 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 <nav className="nav nav-tabs">
                     
                         <button type="button" className={`nav-link ${state.fillActive === '1' ? "active" : ""}`} onClick={() => handleFillClick('1')}>
-                            <label className="upper-case">GENERAL ({state.data_macro_filter.length})</label>
+                            <span className="text-xs font-medium uppercase tracking-wide">General ({state.data_macro_filter.length})</span>
                         </button>
                     
                     
                         <button type="button" className={`nav-link ${state.fillActive === '2' ? "active" : ""}`} onClick={() => handleFillClick('2')}>
-                            <label className="upper-case">OTRAS ACTUACIONES ({state.data_oa.length})</label>
+                            <span className="text-xs font-medium uppercase tracking-wide">Otras Actuaciones ({state.data_oa.length})</span>
                         </button>
                     
                     
                         <button type="button" className={`nav-link ${state.fillActive === '-1' ? "active" : ""}`} onClick={() => handleFillClick('-1')}>
-                            <label className="upper-case text-danger">DESISTIMIENTOS ({state.data_negative.length})</label>
+                            <span className="text-xs font-medium uppercase tracking-wide text-destructive">Desistimientos ({state.data_negative.length})</span>
                         </button>
                     
 

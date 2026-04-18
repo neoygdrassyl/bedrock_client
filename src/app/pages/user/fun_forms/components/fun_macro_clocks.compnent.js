@@ -22,7 +22,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
         {
             when: row => row.id == selectedRow,
             style: {
-                backgroundColor: 'BlanchedAlmond',
+                backgroundColor: 'hsl(var(--warning) / 0.12)',
             },
         },
     ];
@@ -42,7 +42,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
     const conditionalCellStylesJUR = [
         {
             when: row => row.id == selectedRow,
-            style: { backgroundColor: 'BlanchedAlmond' }
+            style: { backgroundColor: 'hsl(var(--warning) / 0.12)' }
         },
         {
             when: row => row.id != selectedRow,
@@ -52,7 +52,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
     const conditionalCellStylesENG = [
         {
             when: row => row.id == selectedRow,
-            style: { backgroundColor: 'BlanchedAlmond' }
+            style: { backgroundColor: 'hsl(var(--warning) / 0.12)' }
         },
         {
             when: row => row.id != selectedRow,
@@ -62,7 +62,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
     const conditionalCellStylesARQ = [
         {
             when: row => row.id == selectedRow,
-            style: { backgroundColor: 'BlanchedAlmond' }
+            style: { backgroundColor: 'hsl(var(--warning) / 0.12)' }
         },
         {
             when: row => row.id != selectedRow,
