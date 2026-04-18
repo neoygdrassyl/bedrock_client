@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import PROFESIONALS_MANAGE from './manage.component';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

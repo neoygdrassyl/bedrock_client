@@ -7,7 +7,7 @@ import { dateParser } from '../../../components/customClasses/typeParse';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import SUBTMIT_MANAGE from './submit_manage'
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import dayjs from 'dayjs';
 import ListsCodes from '../../../components/jsons/fun6DocsList.json'
 

@@ -3,7 +3,7 @@ import { MDBTabsContent, MDBTabsPane } from '../../components/ui';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 // SERVICES
 import FUNService from '../../services/fun.service'

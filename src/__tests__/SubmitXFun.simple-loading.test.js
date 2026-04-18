@@ -46,9 +46,8 @@ vi.mock('sweetalert2-react-content', () => ({
   }),
 }));
 
-vi.mock('react-modal', () => ({
-  __esModule: true,
-  default: ({ children, isOpen }) => (isOpen ? React.createElement('div', null, children) : null),
+vi.mock('@/components/legacy-modal', () => ({
+  LegacyModal: ({ children, isOpen }) => (isOpen ? React.createElement('div', null, children) : null),
 }));
 
 vi.mock('../app/components/customClasses/typeParse', () => ({

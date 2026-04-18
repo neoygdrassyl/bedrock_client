@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import HTMLDatalist from '../../../components/HTMLDatalist';
-import ReactModal from 'react-modal';
+import { LegacyModal as ReactModal } from '@/components/legacy-modal';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { formsParser1, getJSON, getJSONFull, _GET_SERIE_COD, _GET_SUBSERIE_COD } from '../../../components/customClasses/typeParse';

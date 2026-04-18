@@ -1,6 +1,6 @@
 import { Component, useState } from 'react';
 import { MDBCollapse } from '../../../../components/ui';
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import './fun_modal_shared.css';
 
 export default function FUN_MACROTABLE_FILTERLIST(props) {

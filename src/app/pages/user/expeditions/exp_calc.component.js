@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { infoCud } from '../../../components/jsons/vars';
 import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';

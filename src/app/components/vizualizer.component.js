@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MDBTooltip } from './ui';
-import Modal from 'react-modal';
+import { LegacyModal as Modal } from '@/components/legacy-modal';
 import PDF_VIEWER from './pdfViewer.component';
 import FUNService from '../services/fun.service'
 
