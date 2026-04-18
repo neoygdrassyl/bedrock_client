@@ -7,7 +7,7 @@ import { ClocksPage } from '../pages/clocks.page';
  * E2E: Relojes Legales (Legal Clocks)
  *
  * Tests the legal clock/timeline system for license applications.
- * Clocks are accessed via FUN (/fun) -> Row action -> "Tiempos".
+ * Clocks are accessed via FUN (/licencias) -> Row action -> "Tiempos".
  *
  * Scenarios:
  * 1. Open a license's clocks modal

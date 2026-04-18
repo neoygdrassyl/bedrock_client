@@ -59,9 +59,9 @@ export class SubmitPage {
     };
   }
 
-  /** Navigate to /submit */
+  /** Navigate to /ventanilla (canonical) — legacy /submit redirects here */
   async goto() {
-    await this.page.goto('/submit', { timeout: 60_000 });
+    await this.page.goto('/ventanilla', { timeout: 60_000 });
     // networkidle can hang in this module due to background polling; use DOM-ready + explicit UI assertions.
     await this.page.waitForLoadState('domcontentloaded');
   }

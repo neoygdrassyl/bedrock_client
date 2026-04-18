@@ -5,8 +5,8 @@ import { ArchivePage } from '../pages/archive.page';
 /**
  * E2E: Archivo Documental (Document Archive)
  *
- * Tests the archive module at /archive:
- * 1. Navigate to /archive and verify the page loads
+ * Tests the archive module at /archivo:
+ * 1. Navigate to /archivo and verify the page loads
  * 2. Verify "NUEVA CAJA" button is present for admin role
  * 3. Verify DataTable renders with boxes or "NO HAY CAJAS"
  * 4. Search for boxes by number
@@ -23,7 +23,7 @@ test.describe('E2E: Archivo Documental', () => {
     archivePage = new ArchivePage(authenticatedPage);
   });
 
-  test('navigate to /archive and verify the page loads with heading', async ({ authenticatedPage }) => {
+  test('navigate to /archivo and verify the page loads with heading', async ({ authenticatedPage }) => {
     await archivePage.goto();
     await archivePage.waitForPageLoad();
 

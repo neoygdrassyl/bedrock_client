@@ -40,14 +40,14 @@ export class ArchivePage {
     this.expandedContent = page.locator('.rdt_ExpanderRow');
   }
 
-  /** Navigate to /archive */
+  /** Navigate to /archivo (canonical) — legacy /archive redirects here */
   async goto() {
-    await this.page.goto('/archive');
+    await this.page.goto('/archivo');
     await this.page.waitForLoadState('domcontentloaded');
 
     const headingVisible = await this.heading.isVisible().catch(() => false);
     if (!headingVisible) {
-      const archiveLink = this.page.locator('a[href="/archive"]').first();
+      const archiveLink = this.page.locator('a[href="/archivo"]').first();
       if (await archiveLink.isVisible().catch(() => false)) {
         await archiveLink.click();
         await this.page.waitForLoadState('domcontentloaded');
