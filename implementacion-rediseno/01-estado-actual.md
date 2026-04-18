@@ -20,9 +20,19 @@
 
 4. **Icon Bridge** (`src/components/icon.jsx` + `src/lib/icon-map.js`)
    - Wrapper sobre Lucide que acepta nombre string → componente
-   - Fallback a CircleAlert para iconos no mapeados
+   - Fallback a CircleAlert para iconos no mapeados (corregido: antes retornaba null)
 
-5. **DataTable wrapper** (`src/components/data-table.jsx`)
+5. **Reset de botones sin preflight** (`src/index.css`)
+   - Selector `:where()` de especificidad cero resetea borders nativos de `<button>`
+   - Excluye `.btn`, `[class*="btn-"]` y `.Collapsible__trigger` para no afectar legacy
+   - Necesario porque `preflight: false` en Tailwind no resetea elementos nativos
+
+6. **Tokens semanticos corregidos en shadcn**
+   - `--accent` (green #059669) reservado para exito/aprobacion de dominio
+   - Hover/focus en ghost/outline buttons, dropdown, command, select, dialog usan `bg-muted` (gris sutil)
+   - Elimina el flash verde en hover que causaba la convencion original de shadcn
+
+7. **DataTable wrapper** (`src/components/data-table.jsx`)
    - Basado en @tanstack/react-table
    - Sorting, filtering, pagination integrados con shadcn/ui
    - Reemplazara progresivamente a react-data-table-component
@@ -37,16 +47,16 @@
                                          [Footer ~24px]
    ```
 
-7. **IconRail** — navegacion vertical con iconos Lucide, tooltips, active state
-8. **ContextPanel** — submenu contextual con animacion smooth
-9. **HeaderBar** — breadcrumb automatico + theme toggle + dropdown de usuario
+7. **IconRail** — navegacion vertical con iconos Lucide, tooltips, active state, hover glow, group separators
+8. **ContextPanel** — submenu contextual con animacion smooth, iconos en sub-items
+9. **HeaderBar** — breadcrumb automatico con iconos de modulo + theme toggle + dropdown de usuario + search placeholder + shadow-sm
 10. **AppFooter** — version + nombre curaduria + ciudad + NIT
-11. **navigation-config.js** — fuente unica de verdad para rutas, roles, redirects legacy
+11. **navigation-config.js** — fuente unica de verdad para rutas, roles, redirects legacy, iconos en children
 
 ### Paginas (Fase 2 — Login + Dashboard)
 
-12. **LoginPage** rediseñada — split-screen con panel institucional + formulario
-13. **Dashboard** rediseñado — grid de cards con iconos y contadores
+12. **LoginPage** rediseñada — split-screen con panel institucional gradiente + formulario + animacion fadeInUp
+13. **Dashboard** rediseñado — grid de cards con iconos, contadores, bordes laterales de color por modulo, hover con elevacion
 
 ### Refactors estructurales
 
@@ -58,7 +68,7 @@
 
 | Area | Estado |
 |---|---|
-| Brecha visual (shell no se ve profesional) | **CRITICO — resolver antes de Fase 3** |
+| Brecha visual del shell | **EN PROGRESO — bordes y transiciones corregidos, polish aplicado** |
 | Paginas de modulos legacy (FUN, PQRS, etc.) | Intactas con estilo viejo Bootstrap |
 | Tablas legacy (react-data-table-component) | 71 archivos sin migrar a DataTable |
 | Modales legacy (react-modal) | 29 archivos sin migrar a Dialog |
