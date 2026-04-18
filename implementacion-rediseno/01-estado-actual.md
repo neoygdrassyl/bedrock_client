@@ -35,7 +35,22 @@
 7. **DataTable wrapper** (`src/components/data-table.jsx`)
    - Basado en @tanstack/react-table
    - Sorting, filtering, pagination integrados con shadcn/ui
-   - Reemplazara progresivamente a react-data-table-component
+   - Usado por funmanage_new.page.js y FunmanageDataTable.jsx
+
+8. **DataTable Bridge** (`src/components/data-table-bridge.jsx`)
+   - Drop-in replacement para react-data-table-component
+   - Acepta la API completa de RDT (columns, pagination, conditionalRowStyles, expandableRows, etc.)
+   - Convierte columnas RDT → tanstack ColumnDef automaticamente
+   - 83 archivos migrados (import swap)
+
+9. **LegacyModal** (`src/components/legacy-modal.jsx`)
+   - Drop-in replacement para react-modal
+   - Portal-based dialog con design tokens, ESC key, overlay click, body scroll lock
+   - 30 archivos migrados
+
+10. **Icon Bridge expandido** (`src/lib/icon-map.js`)
+    - ~180 iconos FA → Lucide mapeados
+    - 170 archivos migrados de `<i className="fas fa-*">` a `<Icon name="*" />`
 
 ### Shell (Fase 1 — Application Shell)
 
@@ -70,13 +85,14 @@
 |---|---|
 | Brecha visual del shell | **EN PROGRESO — bordes y transiciones corregidos, polish aplicado** |
 | Paginas de modulos legacy (FUN, PQRS, etc.) | Intactas con estilo viejo Bootstrap |
-| Tablas legacy (react-data-table-component) | 71 archivos sin migrar a DataTable |
-| Modales legacy (react-modal) | 29 archivos sin migrar a Dialog |
-| Alertas (SweetAlert2) | ~100 archivos, ~2330 lineas sin migrar |
-| Iconos (FontAwesome CDN) | ~216 archivos con `<i className="fas fa-*">` |
+| Tablas legacy (react-data-table-component) | **MIGRADO — 83 archivos usan DataTableBridge** |
+| Modales legacy (react-modal) | **MIGRADO — 30 archivos usan LegacyModal** |
+| Alertas (SweetAlert2) | ~100 archivos, ~2330 lineas sin migrar (Fase 6) |
+| Iconos (FontAwesome CDN) | **MIGRADO — 170 archivos usan Lucide Icon bridge** |
 | Forms | Todos manuales, sin sistema unificado |
 | Styled-components restantes | global.js + componentes puntuales |
 | Bootstrap como dependencia | Grid/utilidades aun necesarias |
+| MDB wrappers | 24 archivos usan wrappers locales (no MDB directo) — limpios |
 
 ## Clases CSS legacy que NO se pueden eliminar aun
 
@@ -85,10 +101,13 @@ Estas clases siguen usandose en componentes activos:
 - `container-primary` — 12 archivos
 - `bg-card` — 20 archivos (CONFLICTO: tambien es clase Tailwind de shadcn)
 - `Collapsible*` — submit_manage, appointments
-- `react-modal` — 10 archivos
 - `btn-navpqrs` — 8 archivos de formularios FUN
 - `fung_nav` / `fun_nav` — formularios FUN internos
 - `chart-clock` — 5 archivos de charts
 - `container-sh` — fun_gen.report, record_arc_areas
 - `fun-action-*` — acciones de FUN
-- `ReactModal__*` — overrides de react-modal (incluyen dark mode)
+
+### Clases CSS eliminadas en esta fase
+
+- `react-modal` — ya no se usa (LegacyModal no depende de clases react-modal)
+- `ReactModal__*` — overrides de react-modal eliminados
