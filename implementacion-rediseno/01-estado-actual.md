@@ -134,12 +134,42 @@
 
 38. **funmanage.page.js visual alignment** — FECHA PENDIENTE → Badge destructive, titulo H1 ALL CAPS → H2 title case tracking-tight, tabs labels → span font-medium uppercase tracking-wide.
 
+### Fase 4 — PQRS Module
+
+39. **pqrsadmin.js status badges** — `_STATUS_COMPONENT` reescrito: 4 estados (ACTIVO, CERRADO, REVISIÓN, ARCHIVADO) → `<Badge>` con variantes destructive/accent/primary/secondary. `_CHECK_FOR_REVIEWS`: 3 estados de revisión → Badge components.
+
+40. **pqrsadmin.js column cleanup** — 3 column sets (columns, columnsArchive, columnsSearch): headers `<label>` → strings, cells `<label>` → `<span>` con font-mono para IDs/fechas. Tiempo restante color-coded.
+
+41. **pqrsadmin.functional.js** — misma migración completa que admin view (archivo casi idéntico, código separado).
+
+42. **pqrs_manage.view.js** — columnas de asignación de trabajadores, columnas de adjuntos, badges de retroalimentación (SI/NO → Badge accent/secondary).
+
+43. **pqrs_macrotable.js** — 20 column headers limpios, BlanchedAlmond → token, fecha límite header.
+
+### Fase 5 — Submit, Expeditions, Records, y Bulk Cleanup
+
+44. **Submit module** — submit.js, submit_view, submit_x_fun, submit_anex, submit_list: todos los headers y cells limpios. Tiempo restante con color-coded destructive.
+
+45. **Expeditions** — exp_areas: 7 headers + 5 cells limpios, action header modernizado.
+
+46. **Módulos auxiliares** — archive, dictionary, zone_use, fun_worker_asign: headers limpios.
+
+47. **Bulk column header cleanup** — Script automatizado limpió 211 headers `<label>` → string en 47 archivos (fun_forms, records arc/law/ph/eng, norms, nomenclature, pqrs subcomponents).
+
+48. **Bulk cell renderer cleanup** — 259 cell renderers `<label>{expr}</label>` → `<span className="text-sm">{expr}</span>` en 38 archivos.
+
+49. **Row style tokenization global** — `BlanchedAlmond` → `hsl(var(--warning) / 0.12)` en 4 archivos (pqrs_macrotable, fun_macrotable, fun_macro_clocks, record_ph_floor).
+
+50. **CSV export compatibility** — `c.name.props.children` → fallback que acepta strings Y React elements en fun.js, appointments, fun_macrotable (3 archivos).
+
+51. **Tab labels modernizados** — fun_macrotable: GENERAL/OTRAS ACTUACIONES/DESISTIMIENTOS → Title Case con tracking-wide.
+
 ## Que falta (resumen)
 
 | Area | Estado |
 |---|---|
 | Brecha visual del shell | **COMPLETADO — IconRail hover glow, ContextPanel con grupos/badges, HeaderBar con search/bell/breadcrumb, Footer VS Code-style con conectividad** |
-| Paginas de modulos legacy (FUN, PQRS, etc.) | **FUN parcialmente migrado (badges, columns, row tokens). PQRS, Records, Submit pendientes** |
+| Paginas de modulos legacy (FUN, PQRS, etc.) | **FUN migrado (badges, columns, row tokens). PQRS migrado (3 archivos principales + macrotable). Submit, Expeditions, Archive, Dictionary, Zone Use migrados. Records/Norms: headers y cells limpios en bulk.** |
 | Tablas legacy (react-data-table-component) | **MIGRADO — 83 archivos usan DataTableBridge** |
 | Modales legacy (react-modal) | **MIGRADO — 30 archivos usan LegacyModal** |
 | Alertas (SweetAlert2) | **CSS THEME APLICADO — dialogs visualmente alineados con tokens. Migracion JS completa en Fase 6** |
