@@ -2,27 +2,13 @@
    New layout is handled by AppShell (Tailwind + shadcn/ui).
    These will be removed as pages migrate to the new design system. */
 
-/* ── Background & text utilities (used by multiple pages) ── */
-.bg-image {
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: 0% 50%;
-  background-image: url('img/map.png');
-}
-
+/* ── Text utilities ── */
 .text-justify {
   text-align: justify;
 }
 
-/* ── Collapsible (react-collapsible, used in submit, appointments, etc.) ── */
-.Collapsible {
-  margin-bottom: 2px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  background-color: var(--bs-secondary-bg);
-  background: var(--bs-secondary-bg);
-}
-
+/* ── Collapsible spacing (react-collapsible, used in submit, appointments, etc.) ──
+   Color/bg overrides are in index.css (migrated from styled-components). ── */
 .Collapsible__trigger {
   padding: 15px;
   font-size: 20px;
@@ -235,17 +221,7 @@ legend {
   background-color: var(--bs-secondary) !important;
 }
 
+/* ── Popover z-index fix ── */
 .popover {
   z-index: 10500 !important;
-}
-
-/* ── React-modal: dark mode overrides ── */
-[data-bs-theme="dark"] .ReactModal__Overlay {
-  background-color: rgba(0, 0, 0, 0.75) !important;
-}
-
-[data-bs-theme="dark"] .ReactModal__Content {
-  background-color: var(--bs-body-bg) !important;
-  border-color: var(--bs-border-color) !important;
-  color: var(--bs-body-color) !important;
 }
