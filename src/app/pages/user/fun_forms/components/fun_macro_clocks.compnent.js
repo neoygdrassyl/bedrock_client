@@ -126,7 +126,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             sortable: true,
             filterable: true,
             minWidth: '150px',
-            cell: row => <label>{row.id_public}</label>
+            cell: row => <span className="text-sm">{row.id_public}</span>
         },
         {
             name: 'INFO',
@@ -150,7 +150,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             filterable: true,
             center: true,
             minWidth: '200px',
-            cell: row => <label>{_fun_0_state(row.state)}</label>
+            cell: row => <span className="text-sm">{_fun_0_state(row.state)}</span>
         },
         {
             name: 'CATEGORIA',
@@ -159,7 +159,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             filterable: true,
             center: true,
             minWidth: '200px',
-            cell: row => <label>{_fun_0_type[row.type]}</label>
+            cell: row => <span className="text-sm">{_fun_0_type[row.type]}</span>
         },
         {
             name: <label className="fw-bold text-primary text-center">EXPENSAS FIJAS <Icon name="dollar-sign" size={24} /></label>,

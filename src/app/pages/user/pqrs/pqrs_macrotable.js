@@ -123,7 +123,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 name: "",
                 center: true,
                 maxWidth: "40px",
-                cell: row => <label>{_GET_STOPLIGHT_COLOR(row)}</label>,
+                cell: row => <span className="text-sm">{_GET_STOPLIGHT_COLOR(row)}</span>,
                 excell: false,
             },
             { 
@@ -132,7 +132,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.id_global}</label>,
+                cell: row => <span className="text-sm">{row.id_global}</span>,
                 excellHeader: "RADICADO VENTANILLA",
                 excellValue: row => row.id_global
             }, 
@@ -142,7 +142,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.pqrs_time ? row.pqrs_time.legal : ''}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_time ? row.pqrs_time.legal : ''}</span>,
                 excellHeader: "FECHA RADICACIÓN",
                 excellValue: row => row.pqrs_time ? row.pqrs_time.legal : ''
             },
@@ -153,7 +153,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 filterable: true,
                 minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_info ? row.pqrs_info.radication_channel : ''}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_info ? row.pqrs_info.radication_channel : ''}</span>,
                 excellHeader: "CANAL DE INGRESO",
                 excellValue: row => row.pqrs_info ? row.pqrs_info.radication_channel : ''
             },
@@ -161,7 +161,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 name: 'Nombre Peticionario',
                 minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_solocitors.map(e => e.name).join(', ')}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_solocitors.map(e => e.name).join(', ')}</span>,
                 excellHeader: "NOMBRE PETICIONARIO",
                 excellValue: row => row.pqrs_solocitors.map(e => e.name).join(' ')
             },
@@ -169,7 +169,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 name: 'Tipo Peticionario',
                 minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_solocitors.map(e => e.type).join(', ')}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_solocitors.map(e => e.type).join(', ')}</span>,
                 excellHeader: "TIPO DE PETICIONARIO",
                 excellValue: row => row.pqrs_solocitors.map(e => e.type).join(' ')
             },
@@ -177,7 +177,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 name: 'Tipo Documento',
                 minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_solocitors.map(e => e.type_id).join(', ')}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_solocitors.map(e => e.type_id).join(', ')}</span>,
                 excellHeader: "TIPO DE DOCUMENTO",
                 excellValue: row => row.pqrs_solocitors.map(e => e.type_id).join(' ')
             }, 
@@ -185,7 +185,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 name: 'Nro. Documento',
                 minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_solocitors.map(e => e.id_number).join(', ')}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_solocitors.map(e => e.id_number).join(', ')}</span>,
                 excellHeader: "NUMERO DE DOCUMENTO",
                 excellValue: row => row.pqrs_solocitors.map(e => e.id_number).join(' ')
             }, 
@@ -193,7 +193,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 name: 'Dirección',
                 minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_contacts.map(e => e.address).join(', ')}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_contacts.map(e => e.address).join(', ')}</span>,
                 excellHeader: "DIRECCION",
                 excellValue: row => row.pqrs_contacts.map(e => e.address).join(' ')
             },
@@ -201,7 +201,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 name: 'Municipio',
                 minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_contacts.map(e => e.county).join(', ')}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_contacts.map(e => e.county).join(', ')}</span>,
                 excellHeader: "MUNICIPIO",
                 excellValue: row => row.pqrs_contacts.map(e => e.county).join(' ')
             },
@@ -209,7 +209,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 name: 'Contacto',
                 minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_contacts.map(e => e.email || e.phone).join(', ')}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_contacts.map(e => e.email || e.phone).join(', ')}</span>,
                 excellHeader: "CONTACTO",
                 excellValue: row => row.pqrs_contacts.map(e => e.email || e.phone).join(' ')
             }, 
@@ -217,7 +217,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 name: 'Autoriza Correo',
                 minWidth: "200px",
                 center: true,
-                cell: row => <label>{row.pqrs_contacts.map(e => e.notify ? "SI" : "NO").join(', ')}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_contacts.map(e => e.notify ? "SI" : "NO").join(', ')}</span>,
                 excellHeader: "AUTORIZA CORREO ELECTRÓNICO",
                 excellValue: row => row.pqrs_contacts.map(e => e.notify ? "SI" : "NO").join(' ')
             },
@@ -227,7 +227,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.type}</label>,
+                cell: row => <span className="text-sm">{row.type}</span>,
                 excellHeader: "TIPO DE PETICIÓN",
                 excellValue: row => row.type
             },
@@ -245,7 +245,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 selector: row => _GET_REPLY_TIME_TIME(row),
                 sortable: true,
                 center: true,
-                cell: row => <label>{_GET_REPLY_TIME_REPORT(row)}</label>,
+                cell: row => <span className="text-sm">{_GET_REPLY_TIME_REPORT(row)}</span>,
                 excellHeader: "TIEMPO DE RESPUESTA",
                 excellValue: row => _GET_REPLY_TIME_TIME(row)
             },
@@ -255,7 +255,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.id_reply}</label>,
+                cell: row => <span className="text-sm">{row.id_reply}</span>,
                 excellHeader: "CONSECUTIVO SALID",
                 excellValue: row => row.id_reply
             },
@@ -264,7 +264,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 selector: row => row.pqrs_time?.legal,
                 sortable: true,
                 center: true,
-                cell: row => <label>{row.pqrs_time ? (dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time)) : ''}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_time ? (dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time)) : ''}</span>,
                 excellHeader: "FECHA LIMITE RESPUESTA LEGAL",
                 excellValue: row => row.pqrs_time ? (dateParser_finalDate(row.pqrs_time.legal, row.pqrs_time.time)) : ''
             },
@@ -273,7 +273,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 selector: row => (!row.status && row.pqrs_time ? dateParser_timeLeft(row.pqrs_time.legal, row.pqrs_time.time) : -9999),
                 sortable: true,
                 center: true,
-                cell: row => <label>{!row.status && row.pqrs_time? dateParser_timeLeft(row.pqrs_time.legal, row.pqrs_time.time) + ' dia(s)' : ""}</label>,
+                cell: row => <span className="text-sm">{!row.status && row.pqrs_time? dateParser_timeLeft(row.pqrs_time.legal, row.pqrs_time.time) + ' dia(s)' : ""}</span>,
                 excell: false
             },
             {
@@ -282,7 +282,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.pqrs_time ? row.pqrs_time.reply_formal : ''}</label>,
+                cell: row => <span className="text-sm">{row.pqrs_time ? row.pqrs_time.reply_formal : ''}</span>,
                 excellHeader: "FECHA DE RESPUESTA",
                 excellValue: row => row.pqrs_time ? row.pqrs_time.reply_formal : ''
             },

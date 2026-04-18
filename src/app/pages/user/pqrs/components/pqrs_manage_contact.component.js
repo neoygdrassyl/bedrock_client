@@ -57,7 +57,7 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                     minWidth: '210px',
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.address}</label>,
+                    cell: row => <span className="text-sm">{row.address}</span>,
                 },
                 {
                     name: 'BARRIO',
@@ -65,12 +65,12 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                     minWidth: '180px',
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.neighbour}</label>,
+                    cell: row => <span className="text-sm">{row.neighbour}</span>,
                 },
                 {
                     name: 'MUNICIPIO',
                     minWidth: '180px',
-                    cell: row => <label>{row.county}</label>,
+                    cell: row => <span className="text-sm">{row.county}</span>,
                 },
                 {
                     name: 'TÉLEFONO',
@@ -78,19 +78,19 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                     minWidth: '180px',
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.phone}</label>,
+                    cell: row => <span className="text-sm">{row.phone}</span>,
                 },
                 {
                     name: 'CONTACTO',
                     minWidth: '199px',
-                    cell: row => <label>{row.email}</label>,
+                    cell: row => <span className="text-sm">{row.email}</span>,
                 },
 
                 {
                     name: '¿AUTORIZA NOTIFICACIÓN POR CORREO?',
                     center: true,
                     minWidth: '290px',
-                    cell: row => <label>{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</label>,
+                    cell: row => <span className="text-sm">{row.notify ? <label className="text-success fw-bold">SI</label> : "NO"}</span>,
                 },
                 {
                     name: 'ACCIÓN',

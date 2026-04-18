@@ -107,18 +107,18 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
                     selector: row => row.direccion_1,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.direccion_1}</label>
+                    cell: row => <span className="text-sm">{row.direccion_1}</span>
                 },
                 {
                     name: 'DIRECCIÓN DE CORRESPONDENCIA',
                     selector: row => row.direccion_2,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.direccion_2}</label>
+                    cell: row => <span className="text-sm">{row.direccion_2}</span>
                 },
                 {
                     name: 'ORIGEN DATO',
-                    cell: row => <label>{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</label>
+                    cell: row => <span className="text-sm">{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</span>
                 },
                 {
                     name: '¿SE DECLARÓ PARTE?',
@@ -129,40 +129,40 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
                     selector: row => row.state,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{_GET_NEIGHBOUR_STATE(row.state)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_STATE(row.state)}</span>
                 },
                 {
                     name: 'CONSECUTIVO RELACIONADO',
                     selector: row => row.id_cub,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.id_cub}</label>
+                    cell: row => <span className="text-sm">{row.id_cub}</span>
                 },
                 {
                     name: 'GUIÁ DE CONFIRMACIÓN',
                     selector: row => row.id_alerted,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.id_alerted == "-1"
+                    cell: row => <span className="text-sm">{row.id_alerted == "-1"
                         ? ""
-                        : row.id_alerted}</label>
+                        : row.id_alerted}</span>
                 },
                 {
                     name: 'FECHA RECIBIDO',
                     selector: row => row.alerted,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.state == 1 ? dateParser(row.alerted) : ""}</label>
+                    cell: row => <span className="text-sm">{row.state == 1 ? dateParser(row.alerted) : ""}</span>
                 },
                 {
                     name: 'MÉTODOS DE PUBLICACIÓN',
                     minWidth: '250px',
-                    cell: row => <label>{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</span>
                 },
                 {
                     name: 'SOPORTES DE PUBLICACIÓN',
                     minWidth: '200px',
-                    cell: row => <label>{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</span>
                 },
                 {
                     name: 'DOCUMENTO',

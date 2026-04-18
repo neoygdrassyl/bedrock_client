@@ -1120,7 +1120,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 center: true,
                 minWidth: '140px',
                 cvsCB: row => _fun_0_state(row.state, true, row),
-                cell: row => <label>{_fun_0_state(row.state, false, row)}</label>
+                cell: row => <span className="text-sm">{_fun_0_state(row.state, false, row)}</span>
             },
             {
                 name: 'CATEGORIA',
@@ -1129,7 +1129,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 filterable: true,
                 center: true,
                 minWidth: '160px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <span className="text-sm">{_fun_0_type[row.type]}</span>
             },
             {
                 name: 'PROGRESION',
@@ -1144,7 +1144,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '130px',
-                cell: row => <label>{row.clock_payment}</label>
+                cell: row => <span className="text-sm">{row.clock_payment}</span>
             },
             {
                 name: 'FECHA MAX LyDF',
@@ -1272,7 +1272,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              minWidth: '70px',
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
-             cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_law ? row.clock_asign_law.split(';').length : row.jur_version}</label>
+             cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_law ? row.clock_asign_law.split(';').length : row.jur_version}</span>
          },
          {
              name: 'JUR. FECHA ASIG.',
@@ -1284,7 +1284,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              cellStyle: CellStylesJUR,
              center: true,
              omit: state.hide_jur,
-             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.asign_ph_law_date}</label>
+             cell: row => <span className="text-sm">{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.asign_ph_law_date}</span>
          },
          {
              name: 'JUR. FECHA MAX.',
@@ -1319,7 +1319,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              cellStyle: CellStylesJUR,
              center: true,
              omit: state.hide_jur,
-             cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_law : row.jur_date}</label>
+             cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_law : row.jur_date}</span>
          },
           {
               name: 'DIAS',
@@ -1361,7 +1361,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 center: true,
                 omit: state.hide_jur,
                 cvsCB: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law, false, false, true) : _GET_REVIEW(row.jur_review, row.clock_review_law_c, row.clock_asign_law, true),
-                cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law) : _GET_REVIEW(row.jur_review, row.clock_review_law_c, row.clock_asign_law)}</label>
+                cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law) : _GET_REVIEW(row.jur_review, row.clock_review_law_c, row.clock_asign_law)}</span>
             },
             /**
                         {
@@ -1382,7 +1382,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             omit: state.hide_arc,
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
-                            cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_arc ? row.clock_asign_arc.split(';').length : row.arc_version}</label>
+                            cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_arc ? row.clock_asign_arc.split(';').length : row.arc_version}</span>
                         },
                         {
                             name: 'ARQ. FECHA ASIG.',
@@ -1394,7 +1394,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             cellStyle: CellStylesARQ,
                             center: true,
                             omit: state.hide_arc,
-                            cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.asign_ph_law_date}</label>
+                            cell: row => <span className="text-sm">{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.asign_ph_law_date}</span>
                         },
                         {
                             name: 'ARQ. FECHA MAX.',
@@ -1429,7 +1429,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             cellStyle: CellStylesARQ,
                             center: true,
                             omit: state.hide_arc,
-                            cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_arc : row.arc_date}</label>
+                            cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_arc : row.arc_date}</span>
                         },
                         {
                 name: 'DIAS',
@@ -1489,7 +1489,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 center: true,
                 omit: state.hide_arc,
                 cvsCB: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review, false, false, true) : _GET_REVIEW(row.arc_review, row.clock_review_arc_c, row.clock_asign_arc, true),
-                cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review) : _GET_REVIEW(row.arc_review, row.clock_review_arc_c, row.clock_asign_arc)}</label>
+                cell: row => <span className="text-sm">{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review) : _GET_REVIEW(row.arc_review, row.clock_review_arc_c, row.clock_asign_arc)}</span>
             },
 
             /** 
@@ -1511,7 +1511,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
             minWidth: '70px',
-            cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.clock_asign_eng ? row.clock_asign_eng.split(';').length : row.eng_version : ""}</label>
+            cell: row => <span className="text-sm">{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.clock_asign_eng ? row.clock_asign_eng.split(';').length : row.eng_version : ""}</span>
         },
       
         {
@@ -1524,7 +1524,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             cellStyle: CellStylesENG,
             center: true,
             omit: state.hide_ing,
-            cell: row => <label>{_GET_ASIGN_DATE(row.asign_eng_date, 12, row)}</label>
+            cell: row => <span className="text-sm">{_GET_ASIGN_DATE(row.asign_eng_date, 12, row)}</span>
         },
         {
             name: 'EST. FECHA MAX.',
@@ -1555,7 +1555,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             cellStyle: CellStylesENG,
             center: true,
             omit: state.hide_ing,
-            cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.eng_date : ""}</label>
+            cell: row => <span className="text-sm">{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.eng_date : ""}</span>
         },
         {
                 name: 'DIAS',
@@ -1633,7 +1633,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 filterable: true,
                 center: true,
                 cvsCB: row => _GET_REVIEW_RECORD(row.rec_review, true),
-                cell: row => <label>{_GET_REVIEW_RECORD(row.rec_review)}</label>
+                cell: row => <span className="text-sm">{_GET_REVIEW_RECORD(row.rec_review)}</span>
             },
             /*{
                 name: '¿REQ. CORRECIONES?',
@@ -1641,7 +1641,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.rec_review == 0 ? <label className="fw-bold text-danger">SI</label> : row.rec_review == 1 ? <label className="fw-bold text-success">NO</label> : ""}</label>
+                cell: row => <span className="text-sm">{row.rec_review == 0 ? <label className="fw-bold text-danger">SI</label> : row.rec_review == 1 ? <label className="fw-bold text-success">NO</label> : ""}</span>
             },*/
             {
                 name: 'FECHA NOTIFICACIÓN',
@@ -1650,7 +1650,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <label>{row.clock_not_1 || row.clock_not_2 || ''}</label>
+                cell: row => <span className="text-sm">{row.clock_not_1 || row.clock_not_2 || ''}</span>
             },
             {
                 name: 'FECHA LIMITE ENTREGA',
@@ -1658,7 +1658,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 30)}</label>
+                cell: row => <span className="text-sm">{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 30)}</span>
             },
             {
                 name: 'FECHA LIMITE + PRÓRROGA',
@@ -1666,7 +1666,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 45)}</label>
+                cell: row => <span className="text-sm">{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 45)}</span>
             },
             {
                 name: 'FECHA ENTREGA CORRECIONES',
@@ -1674,7 +1674,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.clock_corrections}</label>
+                cell: row => <span className="text-sm">{row.clock_corrections}</span>
             },
             {
                 name: <label className="text-center text-primary fw-bold">FECHA ACTA P.2</label>,
@@ -1692,7 +1692,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 filterable: true,
                 center: true,
                 cvsCB: row => _GET_REVIEW_RECORD(row.rec_review_2, true),
-                cell: row => <label>{_GET_REVIEW_RECORD(row.rec_review_2)}</label>
+                cell: row => <span className="text-sm">{_GET_REVIEW_RECORD(row.rec_review_2)}</span>
             },
             {
                 name: 'CARTA VIABILIDAD',
@@ -1701,7 +1701,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 filterable: true,
                 center: true,
                 minWidth: '120px',
-                cell: row => <label>{row.clock_pay2}</label>
+                cell: row => <span className="text-sm">{row.clock_pay2}</span>
             },
             {
                 name: 'RESOLUCIÓN LIMITE',
@@ -1710,7 +1710,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 filterable: true,
                 center: true,
                 minWidth: '120px',
-                cell: row => <label>{dateParser_finalDate(row.clock_pay_69 ?? false, 5)}</label>
+                cell: row => <span className="text-sm">{dateParser_finalDate(row.clock_pay_69 ?? false, 5)}</span>
             },
             {
                 name: 'RESOLUCIÓN',
@@ -1719,7 +1719,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 filterable: true,
                 center: true,
                 minWidth: '120px',
-                cell: row => <label>{row.clock_pay_69}</label>
+                cell: row => <span className="text-sm">{row.clock_pay_69}</span>
             },
             {
                 name: 'LICENCIA LIMITE',
@@ -1728,7 +1728,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 filterable: true,
                 center: true,
                 minWidth: '120px',
-                cell: row => <label>{dateParser_finalDate(row.clock_not_1_res || row.clock_not_2_res || false, 10)}</label>
+                cell: row => <span className="text-sm">{dateParser_finalDate(row.clock_not_1_res || row.clock_not_2_res || false, 10)}</span>
             },
             {
                 name: <label className="text-center fw-bold text-primary">FECHA LICENCIA</label>,
@@ -1763,7 +1763,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className="text-sm">{row.id_public}</span>
             },
             {
                 name: 'INFO',
@@ -1788,7 +1788,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{_GET_PROCESS_CONTEXT(row.clock_cause)}</label>
+                cell: row => <span className="text-sm">{_GET_PROCESS_CONTEXT(row.clock_cause)}</span>
             },
             {
                 name: 'ESTADO ACTUAL',
@@ -1796,7 +1796,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{_GET_CURRENT_STEP(row)}</label>
+                cell: row => <span className="text-sm">{_GET_CURRENT_STEP(row)}</span>
             },
             {
                 name: 'SIGUIENTE ESTADO',
@@ -1804,14 +1804,14 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{_GET_NEXT_STEP_STRING(row)}</label>
+                cell: row => <span className="text-sm">{_GET_NEXT_STEP_STRING(row)}</span>
             },
             {
                 name: 'FECHA LIMITE',
                 selector: row => _GET_TIME_FOR_NEGATIVE_PROCESS(row),
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{_GET_TIME_FOR_NEGATIVE_PROCESS(row)}</label>
+                cell: row => <span className="text-sm">{_GET_TIME_FOR_NEGATIVE_PROCESS(row)}</span>
             },
             {
                 name: 'TIEMPO RESTANTE',
@@ -1826,7 +1826,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 name: 'SUJETO',
                 minWidth: '150px',
                 cvsCB: row => _GET_SUBJECT(row, true),
-                cell: row => <label>{_GET_SUBJECT(row)}</label>
+                cell: row => <span className="text-sm">{_GET_SUBJECT(row)}</span>
             },
             {
                 name: "{defaultProcess['-5'].name}",
@@ -1834,7 +1834,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_5)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_5)}</span>
             },
             {
                 name: "{defaultProcess['-6'].name}",
@@ -1842,7 +1842,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_6)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_6)}</span>
             },
             {
                 name: "{defaultProcess['-7'].name}",
@@ -1850,7 +1850,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_7)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_7)}</span>
             },
             {
                 name: "{defaultProcess['-8'].name}",
@@ -1858,7 +1858,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_8)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_8)}</span>
             },
             {
                 name: "{defaultProcess['-10'].name}",
@@ -1866,7 +1866,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_10)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_10)}</span>
             },
             {
                 name: <label className="text-danger">{defaultProcess['-11'].name}</label>,
@@ -1882,7 +1882,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_17)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_17)}</span>
             },
             {
                 name: "{defaultProcess['-18'].name}",
@@ -1890,7 +1890,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_18)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_18)}</span>
             },
             {
                 name: <label className="text-danger">{defaultProcess['-19'].name}</label>,
@@ -1906,7 +1906,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_20)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_20)}</span>
             },
             {
                 name: "{defaultProcess['-21'].name}",
@@ -1914,7 +1914,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_21)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_21)}</span>
             },
             {
                 name: "{defaultProcess['-22'].name}",
@@ -1922,7 +1922,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_22)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_22)}</span>
             },
             {
                 name: <label className="text-success">{defaultProcess['-30'].name}</label>,
@@ -1930,7 +1930,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
-                cell: row => <label>{dateParser(row.clock_30)}</label>
+                cell: row => <span className="text-sm">{dateParser(row.clock_30)}</span>
             },
 
         ]

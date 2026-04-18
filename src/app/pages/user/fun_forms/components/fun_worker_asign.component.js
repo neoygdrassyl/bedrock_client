@@ -293,7 +293,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     filterable: true,
                     center: true,
                     minWidth: '140px',
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
                     name: 'Rev',
@@ -301,7 +301,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{get_obj(row).process}</label>
+                    cell: row => <span className="text-sm">{get_obj(row).process}</span>
                 },
                 {
                     name: 'Fecha Asignación',
@@ -309,7 +309,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{get_obj(row).date_asign}</label>
+                    cell: row => <span className="text-sm">{get_obj(row).date_asign}</span>
                 },
                 {
                     name: 'Fecha Límite',
@@ -317,7 +317,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{get_obj(row).max_date}</label>
+                    cell: row => <span className="text-sm">{get_obj(row).max_date}</span>
                 },
                 {
                     name: 'Est',
@@ -327,7 +327,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     center: true,
                     minWidth: '100px',
                     maxWidth: '100px',
-                    cell: row => <label>{get_state_label(row)}</label>
+                    cell: row => <span className="text-sm">{get_state_label(row)}</span>
                 },
                 {
                     name: 'CT',
@@ -337,7 +337,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     center: true,
                     minWidth: '60px',
                     maxWidth: '60px',
-                    cell: row => <label>{_fun_0_type[row.type ?? 0]}</label>
+                    cell: row => <span className="text-sm">{_fun_0_type[row.type ?? 0]}</span>
                 },
                 {
                     name: 'Último VR',

@@ -125,18 +125,18 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     selector: row => row.direccion_1, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.direccion_1}</label>
+                    cell: row => <span className="text-sm">{row.direccion_1}</span>
                 },
                 {
                     name: 'DIRECCIÓN DE CORRESPONDENCIA',
                     selector: row => row.direccion_2, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.direccion_2}</label>
+                    cell: row => <span className="text-sm">{row.direccion_2}</span>
                 },
                 {
                     name: 'ORIGEN DATO',
-                    cell: row => <label>{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</label>
+                    cell: row => <span className="text-sm">{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</span>
                 },
                 {
                     name: '¿SE DECLARÓ PARTE?',
@@ -147,41 +147,41 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     selector: row => row.state, // FIX: react-data-table v7→v8 (was 'row.state')
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{_GET_NEIGHBOUR_STATE(row.state)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_STATE(row.state)}</span>
                 },
                 {
                     name: 'CUB RELACIONADO',
                     selector: row => row.id_cub, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.id_cub}</label>
+                    cell: row => <span className="text-sm">{row.id_cub}</span>
                 },
                 {
                     name: 'GUIA DE CONFIRMACION',
                     selector: row => row.id_alerted, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.id_alerted == "-1"
+                    cell: row => <span className="text-sm">{row.id_alerted == "-1"
                         ? ""
-                        : row.id_alerted}</label>
+                        : row.id_alerted}</span>
                 },
                 {
                     name: 'FECHA RECIBIDO',
                     selector: row => row.alerted, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.state == 1 ? dateParser(row.alerted) : ""}</label>
+                    cell: row => <span className="text-sm">{row.state == 1 ? dateParser(row.alerted) : ""}</span>
                 },
                 {
                     name: 'METODOS DE PUBLICACION',
                     minWidth: '250px',
-                    cell: row => <label>{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</span>
                 },
                 {
                     name: 'SOPORTES DE PUBLICACION',
 
                     minWidth: '200px',
-                    cell: row => <label>{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</label>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</span>
                 },
                 {
                     name: 'DOCUMENTO',

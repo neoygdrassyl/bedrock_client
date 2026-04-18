@@ -96,7 +96,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.type}</label>
+                    cell: row => <span className="text-sm">{row.type}</span>
                 },
                 {
                     name: 'NOMBRE',
@@ -105,7 +105,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.name + " " + row.surname}</label>
+                    cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
                 {
                     name: 'CC/NIT',
@@ -113,7 +113,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_number}</label>
+                    cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
                     name: 'NOMBRE REP. LEGAL',
@@ -122,7 +122,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.rep_name}</label>
+                    cell: row => <span className="text-sm">{row.rep_name}</span>
                 },
                 {
                     name: 'C.C. REP. LEGAL',
@@ -130,7 +130,7 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.rep_id_number}</label>
+                    cell: row => <span className="text-sm">{row.rep_id_number}</span>
                 },
                 {
                     name: 'TELEFONO/ CELULAR',
@@ -142,14 +142,14 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                     name: 'CORREO',
                     selector: row => row.email,
                     center: true,
-                    cell: row => <label>{row.email}</label>
+                    cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
                     name: 'ROL',
                     selector: row => row.role,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.role}</label>
+                    cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
                     name: 'DOCUMENTOS',

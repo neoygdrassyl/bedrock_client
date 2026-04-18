@@ -661,7 +661,7 @@ function RECORD_ENG_SISMIC(props) {
                 {
                     name: 'Nivel j [m]',
                     center: true,
-                    cell: row => <label>{_get_SUMLEVEL(row.id, row.name)}</label>
+                    cell: row => <span className="text-sm">{_get_SUMLEVEL(row.id, row.name)}</span>
                 },
                 {
                     name: 'h Piso [m]',
@@ -773,7 +773,7 @@ function RECORD_ENG_SISMIC(props) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.pos}</label>
+                    cell: row => <span className="text-sm">{row.pos}</span>
                 },
                 {
                     name: 'Descripción',
@@ -783,17 +783,17 @@ function RECORD_ENG_SISMIC(props) {
                 {
                     name: 'Nivel i [m]',
                     center: true,
-                    cell: row => <label>{_get_SUMLEVEL(row.id, row.name)}</label>
+                    cell: row => <span className="text-sm">{_get_SUMLEVEL(row.id, row.name)}</span>
                 },
                 {
                     name: 'hi [m]',
                     center: true,
-                    cell: row => <label>{row.height}</label>
+                    cell: row => <span className="text-sm">{row.height}</span>
                 },
                 {
                     name: 'Wi [m]',
                     center: true,
-                    cell: row => <label>{_get_TOT(row)}</label>
+                    cell: row => <span className="text-sm">{_get_TOT(row)}</span>
                 },
                 {
                     name: 'Wi *(hi)^k',
@@ -807,21 +807,21 @@ function RECORD_ENG_SISMIC(props) {
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label>{_get_CVI(row)}</label>
+                    cell: row => <span className="text-sm">{_get_CVI(row)}</span>
                 },
                 {
                     name: 'F_x [kN]',
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label>{_get_F_x(row)}</label>
+                    cell: row => <span className="text-sm">{_get_F_x(row)}</span>
                 },
                 {
                     name: 'F_y [kN]',
                     center: true,
                     minWidth: "40px",
                     compact: true,
-                    cell: row => <label>{_get_F_y(row)}</label>
+                    cell: row => <span className="text-sm">{_get_F_y(row)}</span>
                 },
             ]
             return <DataTable

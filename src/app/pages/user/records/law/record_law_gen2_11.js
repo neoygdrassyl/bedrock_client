@@ -238,7 +238,7 @@ function RECORD_LAW_GEN2_11(props) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
                     name: 'FECHA',
@@ -247,7 +247,7 @@ function RECORD_LAW_GEN2_11(props) {
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{dateParser(row.date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.date)}</span>
                 },
                 {
                     name: 'CODIGO CATASTRAL',
@@ -255,7 +255,7 @@ function RECORD_LAW_GEN2_11(props) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.predial}</label>
+                    cell: row => <span className="text-sm">{row.predial}</span>
                 },
                 {
                     name: 'DIRECCION',
@@ -636,7 +636,7 @@ function RECORD_LAW_GEN2_11(props) {
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.type}</label>
+                    cell: row => <span className="text-sm">{row.type}</span>
                 },
                 {
                     name: 'No. RECIBO',
@@ -644,7 +644,7 @@ function RECORD_LAW_GEN2_11(props) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
                     name: 'FECHA',
@@ -653,7 +653,7 @@ function RECORD_LAW_GEN2_11(props) {
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{dateParser(row.date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.date)}</span>
                 },
                 {
                     name: 'CODIGO CATASTRAL',
@@ -661,7 +661,7 @@ function RECORD_LAW_GEN2_11(props) {
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.predial}</label>
+                    cell: row => <span className="text-sm">{row.predial}</span>
                 },
                 {
                     name: 'DIRECCION',

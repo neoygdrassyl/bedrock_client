@@ -115,7 +115,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     filterable: true,
                     center: true,
                     maxWidth: '40px',
-                    cell: row => <label>{_GLOBAL_ID == 'cp1' ? Math.round(row.charge * row.area) : row.charge}</label>
+                    cell: row => <span className="text-sm">{_GLOBAL_ID == 'cp1' ? Math.round(row.charge * row.area) : row.charge}</span>
                 },
                 {
                     name: 'Uso',

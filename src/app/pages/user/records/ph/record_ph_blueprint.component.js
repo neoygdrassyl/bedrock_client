@@ -54,7 +54,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
                     name: 'Sótano / Piso',
@@ -62,7 +62,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.floor}</label>
+                    cell: row => <span className="text-sm">{row.floor}</span>
                 },
                 {
                     name: 'Área total construida m2',
@@ -70,7 +70,7 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.area}</label>
+                    cell: row => <span className="text-sm">{row.area}</span>
                 },
                 {
                     name: 'Vivienda / Aptos.',

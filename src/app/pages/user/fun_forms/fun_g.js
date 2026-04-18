@@ -498,19 +498,19 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     selector: row => row.coord, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.coord}</label>
+                    cell: row => <span className="text-sm">{row.coord}</span>
                 },
                 {
                     name: 'LONGITUD',
                     selector: row => row.longitud, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.longitud}</label>
+                    cell: row => <span className="text-sm">{row.longitud}</span>
                 },
                 {
                     name: 'COLINDA CON',
                     selector: row => row.colinda, // FIX: react-data-table v7→v8
-                    cell: row => <label>{row.colinda}</label>
+                    cell: row => <span className="text-sm">{row.colinda}</span>
                 },
             ]
             return <DataTable
@@ -546,7 +546,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.type}</label>
+                    cell: row => <span className="text-sm">{row.type}</span>
                 },
                 {
                     name: 'NOMBRE',
@@ -555,7 +555,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.name + " " + row.surname}</label>
+                    cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
                 {
                     name: 'CC/NIT',
@@ -563,7 +563,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.id_number}</label>
+                    cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
                     name: 'NOMBRE REP. LEGAL',
@@ -572,7 +572,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.rep_name}</label>
+                    cell: row => <span className="text-sm">{row.rep_name}</span>
                 },
                 {
                     name: 'C.C. REP. LEGAL',
@@ -580,7 +580,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <label>{row.rep_id_number}</label>
+                    cell: row => <span className="text-sm">{row.rep_id_number}</span>
                 },
                 {
                     name: 'TELÉFONO/ CELULAR',
@@ -592,14 +592,14 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
-                    cell: row => <label>{row.email}</label>
+                    cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
                     name: 'ROL',
                     selector: row => row.role, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.role}</label>
+                    cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
                     name: 'DOCUMENTOS',
@@ -638,7 +638,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.name + " " + row.surname}</label>
+                    cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
                 {
                     name: 'CC/NIT',
@@ -647,21 +647,21 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     filterable: true,
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.id_number}</label>
+                    cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
                     name: 'TELÉFONO/ CELULAR',
                     selector: row => row.number, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.number}</label>
+                    cell: row => <span className="text-sm">{row.number}</span>
                 },
                 {
                     name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.email}</label>
+                    cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
                     name: 'PROFESIÓN',
@@ -670,21 +670,21 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     filterable: true,
                     center: true,
                     minWidth: '200px',
-                    cell: row => <label>{row.role}</label>
+                    cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
                     name: 'MATRICULA',
                     selector: row => row.registration, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{row.registration}</label>
+                    cell: row => <span className="text-sm">{row.registration}</span>
                 },
                 {
                     name: 'EXP. MATRICULA',
                     selector: row => row.registration_date, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
-                    cell: row => <label>{dateParser(row.registration_date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.registration_date)}</span>
                 },
                 {
                     name: 'EXPERIENCIA',
@@ -697,13 +697,13 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     name: '¿SANCIONADO?',
                     selector: row => row.sanction, // FIX: react-data-table v7→v8
                     center: true,
-                    cell: row => <label>{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</label>
+                    cell: row => <span className="text-sm">{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</span>
                 },
                 {
                     name: 'SUPERVISIÓN',
                     selector: row => row.supervision, // FIX: react-data-table v7→v8
                     center: true,
-                    cell: row => <label>{row.supervision}</label>
+                    cell: row => <span className="text-sm">{row.supervision}</span>
                 },
                 {
                     name: 'DOCUMENTOS',

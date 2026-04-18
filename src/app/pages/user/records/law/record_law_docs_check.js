@@ -263,18 +263,18 @@ function RECORD_LAW_DOCSCHECK(props) {
         {
             name: 'MODALIDAD',
             minWidth: '350px',
-            cell: row => <label>{row.parent}</label>
+            cell: row => <span className="text-sm">{row.parent}</span>
         },
         {
             name: 'DOCUMENTO',
             minWidth: '350px',
-            cell: row => <label>{row.name ?? FUN6JSON[row.code]}</label>
+            cell: row => <span className="text-sm">{row.name ?? FUN6JSON[row.code]}</span>
         },
         {
             name: 'CODIGO',
             center: true,
             minWidth: '60px',
-            cell: row => <label>{(row.code)}</label>
+            cell: row => <span className="text-sm">{(row.code)}</span>
         },
         {
             name: 'ESTATUS',

@@ -1599,7 +1599,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     selector: row => row.description,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.description}</label>
+                    cell: row => <span className="text-sm">{row.description}</span>
                 },
                 {
                     name: 'CÓDIGO',
@@ -1607,7 +1607,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     sortable: true,
                     filterable: true,
                     maxWidth: '50px',
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm">{row.id_public}</span>
                 },
                 {
                     name: 'FOLIOS',
@@ -1615,7 +1615,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     sortable: true,
                     filterable: true,
                     maxWidth: '40px',
-                    cell: row => <label>{row.pages}</label>
+                    cell: row => <span className="text-sm">{row.pages}</span>
                 },
                 {
                     name: 'FECHA ANEXO',
@@ -1623,7 +1623,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',
-                    cell: row => <label>{dateParser(row.date)}</label>
+                    cell: row => <span className="text-sm">{dateParser(row.date)}</span>
                 },
                 {
                     name: 'ESTADO',
