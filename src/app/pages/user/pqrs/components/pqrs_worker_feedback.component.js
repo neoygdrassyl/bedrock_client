@@ -1,5 +1,6 @@
 
 import dayjs from 'dayjs';
+import Icon from '@/components/icon';
 import { useState, useEffect } from 'react';
 import DataTable from '@/components/data-table-bridge';
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -70,11 +71,11 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                     cell: row => <>
                         {row.worker_id == window.user.id || window.user.roleId == 1
                             ? <button title="Dar visto" onClick={() => setFeedback(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                    <i className="far fa-check-square fa-2x"></i></button>
+                                    <Icon name="check-square" size={24} /></button>
                             : ""}
                         {window.user.roleId == 5 || window.user.roleId == 1 || window.user.roleId == 2
                             ? <button title="Enviar Correo" onClick={() => setWorker(row)} className="btn btn-sm btn-warning m-0 p-2 shadow-none">
-                                    <i className="far fa-paper-plane fa-2x"></i></button>
+                                    <Icon name="paper-plane" size={24} /></button>
                             : ""}
                     </>,
                 },
@@ -98,7 +99,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                         <label>Visto Final</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="pqrs_worker_feeback_1" required>
                                 <option value="0">NO APRUEBO</option>
@@ -111,7 +112,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                         <label>Fecha de Visto</label>
                         <div className="input-group mb-3">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id="pqrs_worker_feeback_2"
                                 disabled required defaultValue={dayjs().format('YYYY-MM-DD')} />
@@ -190,7 +191,7 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                             {WOERKER_FEEBACK_COMPONENT()}
                             <div className="row d-flex justify-content-center">
                                 <div className="col-4 text-center">
-                                    <button className="btn btn-lg btn-success"><i className="far fa-check-square"></i> DAR VISTO </button>
+                                    <button className="btn btn-lg btn-success"><Icon name="check-square" size={16} /> DAR VISTO </button>
                                 </div>
                             </div>
                         </form>

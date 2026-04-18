@@ -122,8 +122,8 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 filterable: true,
                 center: true,
                 cell: row => <label>{row.nome_doc
-                    ? <i className="text-success fas fa-check fa-2x"></i>
-                    : <i className="text-danger fas fa-times fa-2x"></i>}</label>
+                    ? <Icon name="check" size={24} className="text-success" />
+                    : <Icon name="times" size={24} className="text-danger" />}</label>
             },
             {
                 name: <label>ACCIÓN</label>,

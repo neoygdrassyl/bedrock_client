@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Icon from '@/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -103,10 +104,10 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
     }
     let _GET_REVIEW = (_REVIEW) => {
         let res = {
-            '-1': <label className=" me-1"><i className="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-            '0': <label className="fw-bold text-danger me-1"><i className="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-            '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-            '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+            '-1': <label className=" me-1"><Icon name="dot-circle" size={24} /></label>,
+            '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={24} /></label>,
+            '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={24} /></label>,
+            '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={24} /></label>,
         }
         return res[_REVIEW || 0]
     }

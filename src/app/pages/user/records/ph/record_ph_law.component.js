@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2'
+import Icon from '@/components/icon';
 import withReactContent from 'sweetalert2-react-content'
 
 import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
@@ -139,7 +140,7 @@ function RECORD_PH_LAW(props) {
                         <label>Profesional</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="record_ph_worker_law_1"
                                 defaultValue={currentRecord.worker_law_name ? currentRecord.worker_law_name : window.user.name + " " + window.user.surname} />
@@ -149,7 +150,7 @@ function RECORD_PH_LAW(props) {
                         <label>Fecha de la revisón</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="record_ph_worker_law_2" required
                                 defaultValue={currentRecord.date_law_review ? currentRecord.date_law_review : dayjs().format('YYYY-MM-DD')} />
@@ -160,7 +161,7 @@ function RECORD_PH_LAW(props) {
                         <label>Aprobado</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-control" id="record_ph_worker_law_3" defaultValue={currentRecord.check_law} >
                                 <option value="0" className="text-danger">NO</option>
@@ -295,7 +296,7 @@ function RECORD_PH_LAW(props) {
                     <div className="row mb-3 text-center">
 
                         <div className="col">
-                            <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                            <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
                         </div>
                     </div>
                 </form>

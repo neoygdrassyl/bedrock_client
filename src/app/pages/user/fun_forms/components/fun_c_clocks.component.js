@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import Icon from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
@@ -84,8 +85,8 @@ export default function FUN_C_CLOCKS(props) {
     }
     let get_clockExistIcon = (state) => {
         var _CHILD = _GET_CLOCK_STATE(state);
-        if (_CHILD) return <i className="far fa-check-circle text-success"></i>
-        return <i className="far fa-dot-circle"></i>
+        if (_CHILD) return <Icon name="check-circle" size={16} className="text-success" />
+        return <Icon name="dot-circle" size={16} />
     }
 
     let get_map_clock = (_array) => {

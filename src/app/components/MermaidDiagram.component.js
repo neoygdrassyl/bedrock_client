@@ -487,7 +487,7 @@ const MermaidDiagram = ({ chart, className = '' }) => {
                             onClick={() => setShowCode(!showCode)}
                             title={showCode ? 'Ocultar código' : 'Ver código'}
                         >
-                            <i className={`fas ${showCode ? 'fa-eye-slash' : 'fa-code'} me-1`}></i>
+                            <Icon name={showCode ? 'eye-slash' : 'code'} size={16} className="me-1" />
                             {showCode ? 'Ocultar' : 'Código'}
                         </button>
                         <button

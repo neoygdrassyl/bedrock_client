@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2'
+import Icon from '@/components/icon';
 import withReactContent from 'sweetalert2-react-content'
 
 import VIZUALIZER from '../../../../components/vizualizer.component';
@@ -221,7 +222,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
                     {COMPONENT_DOCS_CHECK(_DOCS)}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <button className="btn btn-success my-3" ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                            <button className="btn btn-success my-3" ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
                         </div>
                     </div>
                 </form>

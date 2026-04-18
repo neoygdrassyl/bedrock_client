@@ -59,6 +59,9 @@ export const FA_TO_LUCIDE = {
   'fa-hourglass-half': 'Timer',
   'fa-history': 'History',
   'fa-stopwatch': 'Timer',
+  'fa-pause': 'Pause',
+  'fa-pause-circle': 'PauseCircle',
+  'fa-stop-circle': 'StopCircle',
 
   // Actions
   'fa-plus': 'Plus',
@@ -243,4 +246,12 @@ export const FA_TO_LUCIDE = {
   'fa-user-graduate': 'GraduationCap',
   'fa-vector-square': 'Square',
   'fa-whatsapp': 'MessageCircle',
+
+  // Additional icons (FA Regular + misc)
+  'fa-window-close': 'SquareX',
+  'fa-id-badge': 'BadgeCheck',
+  'fa-file-word': 'FileText',
+  'fa-file-excel': 'FileSpreadsheet',
+  'fa-wpforms': 'FormInput',
+  'fa-toolbox': 'Wrench',
 };

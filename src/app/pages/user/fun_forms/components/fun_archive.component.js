@@ -1,5 +1,6 @@
 
 import Swal from 'sweetalert2'
+import Icon from '@/components/icon';
 import withReactContent from 'sweetalert2-react-content'
 import { _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 import FUN_SERVICE from '../../../../services/fun.service'
@@ -392,11 +393,11 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                     <div className="row">
                         {isEdit
                             ? <div className="col  text-center">
-                                <button className="btn btn-success my-3" ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success my-3" ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
                             </div>
                             : ""}
                         <div className="col  text-center">
-                            <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                            <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                         </div>
                     </div>
 

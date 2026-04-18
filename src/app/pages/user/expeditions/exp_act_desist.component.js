@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import Icon from '@/components/icon';
 import SubmitService from '../../../services/submit.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -15,7 +16,6 @@ import { cities, domains_number, infoCud, zonesTable } from '../../../components
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
-import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -287,7 +287,7 @@ const restoreDocs = useCallback(() => {
   const tightInput = { width: "100%", height: 28, padding: "2px 6px", lineHeight: 1.1, borderRadius: 4 };
   const tightChk = { transform: "scale(0.95)", cursor: "pointer" };
   const tableTight = { fontSize: "0.86rem" };
-  const sortIcon = (active, dir) => <i className={`ms-1 fas ${!active ? "fa-sort" : dir === "asc" ? "fa-sort-up" : "fa-sort-down"}`} />;
+  const sortIcon = (active, dir) => <Icon name={!active ? "sort" : dir === "asc" ? "sort-up" : "sort-down"} size={14} className="ms-1" />;
 
   const confirmRestore = (msg, action) => {
     MySwal.fire({
@@ -583,7 +583,7 @@ const restoreDocs = useCallback(() => {
                                     }}
                                     title={showHiddenLD ? "Ocultar ocultos" : "Mostrar ocultos"}
                                     >
-                                    <i className={`fas ${showHiddenLD ? "fa-eye-slash" : "fa-eye"}`} />
+                                    <Icon name={showHiddenLD ? "eye-slash" : "eye"} size={16} />
                                     <span className="d-none d-sm-inline">
                                         {showHiddenLD ? "Ocultar ocultos" : "Mostrar ocultos"}
                                     </span>

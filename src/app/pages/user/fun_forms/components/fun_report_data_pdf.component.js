@@ -1,4 +1,5 @@
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
+import Icon from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from '../../../../services/fun.service'
@@ -680,12 +681,12 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                     <div className="row text-center">
                         <div className="col">
                             <button className="btn btn-success my-3">
-                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                             </button>
                         </div>
                         <div className="col">
                             <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}>
-                                <i className="far fa-file-pdf"></i> GENERAR PDF
+                                <Icon name="file-pdf" size={16} /> GENERAR PDF
                             </button>
                         </div>
                     </div>

@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2'
+import Icon from '@/components/icon';
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
@@ -490,10 +491,10 @@ function RECORD_LAW_PDF(props) {
                     </div>
                     <div className="row mb-3 text-center">
                         <div className="col" hidden={noReport}>
-                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <i className="far fa-file-pdf"></i> DESCARGAR INFORME</button>
+                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</button>
                         </div>
                         <div className="col">
-                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <i className="far fa-check-square"></i> DESCARGAR CHECKEO</button>
+                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</button>
                         </div>
                     </div>
                 </div>

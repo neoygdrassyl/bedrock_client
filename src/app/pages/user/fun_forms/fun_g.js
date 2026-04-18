@@ -1039,7 +1039,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                                 onClick={() => setShowDuplicate(prev => !prev)}
                                 type="button"
                             >
-                                <i className={`fas ${showDuplicate ? 'fa-times' : 'fa-copy'} me-2`}></i>
+                                <Icon name={showDuplicate ? 'times' : 'copy'} size={16} className="me-2" />
                                 {showDuplicate ? 'Cerrar duplicación' : 'Duplicar proyecto'}
                             </button>
                         </div>
