@@ -4,7 +4,7 @@ import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import { dateParser, dateParser_timePassed, dateParser_yearsPassed } from '../../../components/customClasses/typeParse'
 import VIZUALIZER from '../../../components/vizualizer.component';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
@@ -40,7 +40,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 document.getElementById("f_529_edit").value = experience_y;
                 document.getElementById("f_529m_edit").value = experience_months_left;
             }
-
 
             let array = _ITEM.role.split(',');
             let select = document.getElementById("f_525_edit");
@@ -142,7 +141,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <VIZUALIZER url={_FIND_6(_array[5]).path + "/" + _FIND_6(_array[5]).filename} apipath={'/files/'}
                     icon={'far fa-file-alt fa-2x'} color={'gray'} />
                 : ""}</>)
-
 
             return <>{_COMPONENT}</>
         }
@@ -719,8 +717,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     button: true,
                     compact: true,
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            {/* FIX: button anidado - replaced MDBBtn with span */}
+                        <span title="Modificar Item">{/* FIX: button anidado - replaced MDBBtn with span */}
                             <span 
                                 role="button" 
                                 tabIndex={0} 
@@ -729,10 +726,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setEdit(row); }}
                                 style={{cursor: 'pointer'}}>
                                 <i className="far fa-edit fa-2x"></i>
-                            </span>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            {/* FIX: button anidado - replaced MDBBtn with span */}
+                            </span></span>
+                        <span title="Eliminar Item">{/* FIX: button anidado - replaced MDBBtn with span */}
                             <span 
                                 role="button" 
                                 tabIndex={0} 
@@ -741,8 +736,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') delete_52(row.id); }}
                                 style={{cursor: 'pointer'}}>
                                 <i className="far fa-trash-alt fa-2x"></i>
-                            </span>
-                        </MDBTooltip>
+                            </span></span>
 
                     </>
                 },
@@ -1159,7 +1153,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                         </form>
                     </>
                     : ""}
-
 
                 {_CHILD_52_LIST()}
                 <div className="border p-2 m-2">

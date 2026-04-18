@@ -7,7 +7,7 @@ import FUN_SERVICE from '../../../../services/fun.service'
 
 import dayjs from 'dayjs';
 import RECORD_LAW_PDF from './record_law_pdf';
-import { MDBBtn, MDBTypography } from '../../../../components/ui';
+
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
@@ -283,10 +283,10 @@ function RECORD_LAW_EVALUATION(props) {
             const ALLOW_REVIEW = _ALLOW_REVIEW();
             return <>
 
-                {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
+                {!ALLOW_REVIEW ? <div className="alert alert-danger">
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 2.2 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
-                </MDBTypography> : ''}
+                </div> : ''}
                 <div className="row border bg-info py-1 text-white fw-bold">
                     <div className="col">
                         <label>REVISION</label>
@@ -347,12 +347,12 @@ function RECORD_LAW_EVALUATION(props) {
                                 }
                             </div>
                             <div className="col-1">
-                                {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={dynState['REW' + i]}
-                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></MDBBtn>
+                                {allowReview ? <button type="button" className={`btn btn-sm ${!dynState['REW' + i] ? "btn-outline-secondary" : "btn-secondary"}`}
+                                    onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></button>
                                     : ''}
                                 {dynState['REW' + i]
-                                    ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
-                                        onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></MDBBtn>
+                                    ? <button type="button" className="btn btn-success btn-sm ms-1"
+                                        onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></button>
                                     : ""
                                 }
                                 {true ?

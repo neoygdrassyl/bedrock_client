@@ -3,7 +3,6 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import DataTable from 'react-data-table-component';
-import { MDBTooltip } from '../../../../components/ui';
 
 const MySwal = withReactContent(Swal);
 function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
@@ -58,12 +57,10 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i className="far fa-edit "></i></button></MDBTooltip>
-                        <MDBTooltip title='Eliminar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
-                                <i className="far fa-trash-alt "></i></button></MDBTooltip>
+                        <button title="Modificar item" onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
+                                <i className="far fa-edit "></i></button>
+                        <button title="Eliminar item" onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
+                                <i className="far fa-trash-alt "></i></button>
                     </>,
                 },
             ]
@@ -144,7 +141,6 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
             let type_id = document.getElementById("pqrs_edit_solicitor_4").value;
             formData.set('type_id', type_id);
 
-
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
@@ -193,7 +189,6 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
             formData.set('id_number', id_number);
             let type_id = document.getElementById("pqrs_edit_solicitor_4_edit").value;
             formData.set('type_id', type_id);
-
 
             MySwal.fire({
                 title: swaMsg.title_wait,

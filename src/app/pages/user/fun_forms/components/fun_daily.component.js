@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn, MDBPopover, MDBPopoverBody } from '../../../../components/ui';
+import { MDBPopover, MDBPopoverBody } from '../../../../components/ui';
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isOA_3, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST, _SET_PRIORITY, formsParser1 } from '../../../../components/customClasses/typeParse';
 import FUN_CHART_MACRO_GRANTT from './charts_components.js/chart_macroGant.component';
 import { nomens } from '../../../../components/jsons/vars';
@@ -145,7 +145,6 @@ export default function FUN_DAILY_COMPONENT(props) {
             return () => { cancelled = true; };
         }
     }, [load]);
-
 
     // ***************************  DATA GETTERS *********************** //
     function retrieveMacro() {
@@ -335,7 +334,6 @@ export default function FUN_DAILY_COMPONENT(props) {
             lastAi = null;
             lastRi = null;
 
-
             for (let i = 0; i < process; i++) {
                 if (i == 0) {
                     con1 = asigns[0] || asgin_primal;
@@ -419,7 +417,6 @@ export default function FUN_DAILY_COMPONENT(props) {
 
             if ((lastR[0] == 0 || (lastR[1] == 0)) && !conAsist) { return 'eng' }
             if ((lastR[0] == 0 || (lastR[1] == 0)) && conAsist) { return 'eng2' }
-
 
         }
 
@@ -618,8 +615,6 @@ export default function FUN_DAILY_COMPONENT(props) {
 
             if (row.state >= 100) return;
 
-
-
             let con1 = row.state >= 5 && row.state < 100
             let con2 = row.rec_review != 1 && (row.rec_review_2 != 1 || row.rec_review_2 == 2)
             let con21 = row.rec_review != null && row.rec_review != 1 && row.rec_review_2 != 1
@@ -686,7 +681,6 @@ export default function FUN_DAILY_COMPONENT(props) {
                     if (dayjs(doc.date).isSameOrAfter(lastVR.date)) lastVR = doc;
                 })
 
-
                 if (con2) {
 
                     rowCon_law = _con_check(row, 'law', lastVR, VRDI.law2)
@@ -704,7 +698,6 @@ export default function FUN_DAILY_COMPONENT(props) {
                     if (rowCon_eng === 'eng2' && !conOA && rules[1] != 1) { _datac.eng.push({ ...row, color: color_review, wn: worker_est, }); namesFowDataGen[2] = true }
                 }
 
-
                 /** check */
                 let check_law = _con_check_2(row, 'law')
                 let check_arc = _con_check_2(row, 'arc')
@@ -719,7 +712,6 @@ export default function FUN_DAILY_COMPONENT(props) {
                 if (con_rx3 && rules[1] != 1) textCntx += 'E';
                 if (con_rx1 || con_rx2 || con_rx3) _datac.check.push({ ...row, color: 'success', contextTest: textCntx })
 
-
                 /** rec */
                 let rowCon = _con_rec(row);
 
@@ -729,7 +721,6 @@ export default function FUN_DAILY_COMPONENT(props) {
                
                 if ((rowCon.rec == null || rowCon.rec == undefined) && con4) _datac.rec.push({ ...row })
                 if ((rowCon.rec != null || rowCon.rec != undefined) && con4 && !conActaNot) _datac.rec.push({ ...row, color: 'success' })
-
 
                 /** pay */
 
@@ -760,7 +751,6 @@ export default function FUN_DAILY_COMPONENT(props) {
                 //let limitDate = dateParser_finalDate(row.clock_not_1 || row.clock_not_2, clock_ext ? 45 : 30)
                 let dayEva2 = dateParser_timeLeft(limit_timeEva2, row.clock_corrections || dayjs().format('YYYY-MM-DD'));
 
-
                 //let con8 = rowCon.cor
                 let con9 = dayEva2 || (limit - Math.abs(dayEva));
                 let conPro = con9 <= 5 && !clock_ext;
@@ -768,7 +758,6 @@ export default function FUN_DAILY_COMPONENT(props) {
                 /** neg 2 -  2,3 */
                 if (con2 && !con3 && con9 <= 0) _datac.neg.push({ ...row, color: 'warning' })
                 if (con7 && !con3) {
-
 
                     /** pay2 */
                     rowCon = _con_pay2(row);
@@ -790,7 +779,6 @@ export default function FUN_DAILY_COMPONENT(props) {
                     if (conClockRes && conRes && conContext && !resNot) _datac.res.push({ ...row, color: 'success' })
                     if (conClockRes && conRes && conContext && resNot) _datac.res.push({ ...row, color: 'secondary' })
 
-
                     /** rsc2 */
                     conContext = resContext == 'NIEGA'
                     //if (!resContext &&  _con_res(row) && con7 && !con3 && conContext  && !resNot) _datac.res.push({ ...row, color: 'primary' })
@@ -802,14 +790,12 @@ export default function FUN_DAILY_COMPONENT(props) {
                     if (conClockRes && conRes && conContext && !resNot) _datac.neg.push({ ...row, color: 'success' })
                     if (conClockRes && conRes && conContext && resNot) _datac.neg.push({ ...row, color: 'secondary' })
 
-
                     /** rsc */
                     let conRsc = row.clock_resource
                     let conRscOut = row.clock_resource_solve
                     let daysRsc = dayjs().diff(conRsc, 'days');
                     if (conClockRes && conRes && resNot && conRsc && daysRsc <= 60 && !conRscOut) _datac.rsc.push({ ...row })
                     if (conClockRes && conRes && resNot && conRsc && daysRsc > 60 && !conRscOut) _datac.rsc.push({ ...row, color: 'warning' })
-
 
                     /** lic */
                     let licCon1 = row.clock_resource_solve  // RECURSO RESUELTO ->  row.clock_resource_solve 
@@ -847,7 +833,6 @@ export default function FUN_DAILY_COMPONENT(props) {
                         if (rowCon_arc && !conOA) { _datac.arc.push({ ...row, color: 'dark', wn: worker_arc, }); namesFowDataGen[1] = true } /** ARC */
                         if (rowCon_eng && !conOA && rules[1] != 1) { _datac.eng.push({ ...row, color: 'dark', wn: worker_est, }); namesFowDataGen[2] = true }/** EST */
 
-
                         /** check */
                         let check_law = _con_check_2(row, 'law')
                         let check_arc = _con_check_2(row, 'arc')
@@ -872,11 +857,9 @@ export default function FUN_DAILY_COMPONENT(props) {
                     /** neg 2 -  1 */
                     if (days_rad < 0) _datac.neg.push({ ...row, color: 'warning' })
 
-
                 }
 
             }
-
 
         })
 
@@ -942,7 +925,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 <input type='text' className='form-control' placeholder='Busqueda...' id="ti-search"
                     onChange={(e) => setFilter(e.target.value)} defaultValue={filter} />
                 {filter ?
-                    <MDBBtn link color="danger" size="sm" onClick={() => { setFilter(''); document.getElementById('ti-search').value = '' }}><i className="fas fa-times"></i> </MDBBtn>
+                    <button type="button" className="btn btn-danger btn-sm" onClick={() => { setFilter(''); document.getElementById('ti-search').value = '' }}><i className="fas fa-times"></i> </button>
                     : ''}
 
             </div>
@@ -956,7 +939,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 </span>
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
-                <MDBBtn onClick={() => {
+                <button type="button" className="btn btn-primary" onClick={() => {
                     setData([]);
                     setLoad(false);
 
@@ -964,7 +947,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                     setDatac(createDefaultData());
                     setExpandedTableSections(new Set());
                     //retrieveMacro();
-                }}>CARGAR</MDBBtn>
+                }}>CARGAR</button>
             </div>
         );
     }
@@ -1041,14 +1024,9 @@ export default function FUN_DAILY_COMPONENT(props) {
             return (
                 <div className="d-flex flex-column align-items-start gap-2">
                     <span className="small text-muted">Contenido diferido para reducir la carga inicial.</span>
-                    <MDBBtn
-                        color='secondary'
-                        size='sm'
-                        outline
-                        onClick={() => expandTableSection(sectionKey)}
-                    >
+                    <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => expandTableSection(sectionKey)}>
                         Ver {datas.length} solicitudes
-                    </MDBBtn>
+                    </button>
                 </div>
             );
         }
@@ -1359,7 +1337,6 @@ export default function FUN_DAILY_COMPONENT(props) {
     }
 
     // ******************************* APIS **************************** // 
-
 
     return <>
         {TOP_PAGE()}

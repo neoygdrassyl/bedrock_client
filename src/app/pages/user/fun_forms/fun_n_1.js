@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn } from '../../../components/ui';
 
 const MySwal = withReactContent(Swal);
 const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
@@ -725,7 +724,6 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 } formData.set('regla_2', value);
             }
 
-
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
@@ -840,10 +838,10 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-6">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => new_1()}><i className="far fa-file-alt"></i> ACTUALIZAR </MDBBtn>
+                        <button type="button" className="btn btn-success my-3" onClick={() => new_1()}><i className="far fa-file-alt"></i> ACTUALIZAR </button>
                     </div>
                     <div className="col-6">
-                        <MDBBtn className="btn btn-warning my-3" onClick={() => _RESET_FORM_1()}><i className="fas fa-eraser"></i> LIMPIAR </MDBBtn>
+                        <button type="button" className="btn btn-warning my-3" onClick={() => _RESET_FORM_1()}><i className="fas fa-eraser"></i> LIMPIAR </button>
                     </div>
                 </div>
             </fieldset>

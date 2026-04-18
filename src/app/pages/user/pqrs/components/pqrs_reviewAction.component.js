@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Modal from 'react-modal';
-import { MDBBtn, MDBIcon, MDBTooltip } from '../../../../components/ui';
+
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars'
 
@@ -225,7 +225,6 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     const rew_2_04 = { id_public: "rew_2_04", desc: `Observaciones `, value: true };
 
-
     const SOLICITORS_COMPONENT = () => {
         let solicitors = currentItem.pqrs_solocitors || [];
         let contacts = currentItem.pqrs_contacts || [];
@@ -437,7 +436,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
                     <div className='col-1 border'>
                         <div className='row text-center'>
                             <div className='col'>
-                                <MDBIcon color='danger' fas icon='trash' onClick={() => DELETE_STEP_JSON(i)} />
+                                <i className="fas fa-trash text-danger" onClick={() => DELETE_STEP_JSON(i)} />
                             </div>
                         </div>
                     </div>
@@ -446,7 +445,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
             <div className='row text-center my-3'>
                 <div className='col'>
-                    <MDBBtn color='success' size='sm' outline rounded onClick={() => NEW_STEP_JSON(-1)}>NUEVO OFICIO</MDBBtn>
+                    <button type="button" className="btn btn-outline-success btn-sm rounded-pill" onClick={() => NEW_STEP_JSON(-1)}>NUEVO OFICIO</button>
                 </div>
             </div>
         </>
@@ -496,7 +495,6 @@ export const PQRS_ACTION_REVIEW = (props) => {
                     <div className='row'><label className='fw-bold'>Observaciones</label></div>
                     <textarea rows={4} defaultValue={GET_STEP('rew_2_04').value} onBlur={(e) => SAVE_STEP(e.target.value, rew_2_04)} className='form-control' />
 
-
                 </div>
             </div>
         </>
@@ -508,10 +506,9 @@ export const PQRS_ACTION_REVIEW = (props) => {
 
     return (
         <div className="">
-            <MDBTooltip title='Control administrativo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button className="btn btn-sm btn-warning m-0 px-2 shadow-none"
+            <button title="Control administrativo" className="btn btn-sm btn-warning m-0 px-2 shadow-none"
                     onClick={() => loadData(currentItemId)}>
-                    <i className="fas fa-clipboard-check"></i></button></MDBTooltip>
+                    <i className="fas fa-clipboard-check"></i></button>
 
             <Modal contentLabel="REVIEW ACTION"
                 isOpen={review_modal}
@@ -521,7 +518,7 @@ export const PQRS_ACTION_REVIEW = (props) => {
                 {currentItem ? <>
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-th"></i> Control Administrativo {currentItem.id_global}</label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => setModal(prev => !prev)}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => setModal(prev => !prev)} style={{cursor:"pointer"}} />
                     </div>
                     <hr />
                     {SOLICITORS_COMPONENT()}
@@ -531,7 +528,6 @@ export const PQRS_ACTION_REVIEW = (props) => {
                 </>
 
                     : "CARGARGANDO..."}
-
 
                 <div className="text-end py-4 mt-3">
                     <button className="btn btn-lg btn-info" onClick={() => setModal(prev => !prev)}>

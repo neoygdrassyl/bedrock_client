@@ -1,17 +1,14 @@
-import { MDBBtn } from '../../../../components/ui';
-import { useEffect, useState } from 'react';
 
+import { useEffect, useState } from 'react';
 
 import SERVICE_CERTIFICATIONS from '../../../../services/certifications.service';
 import DataTable from 'react-data-table-component';
-
 
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
 import { cities, states } from '../../../../components/jsons/vars';
-
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -27,7 +24,6 @@ export default function FUN_CERTIFICATION(props) {
     useEffect(() => {
         if (load == 0) loadLists();
     }, [load]);
-
 
     // ***************************  DATA CONVERTER *********************** //
     let _GET_CHILD_1 = () => {
@@ -246,8 +242,8 @@ export default function FUN_CERTIFICATION(props) {
             name: <label className="text-center">Acción</label>,
             center: true,
             maxWidth: '80px',
-            cell: row => <MDBBtn onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
-            color="danger" size="sm" className='m-0 p-1 px-2'><i className="fas fa-file-download"></i></MDBBtn>
+            cell: row => <button type="button" className="btn btn-primary" onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
+            color="danger" size="sm" className='m-0 p-1 px-2'><i className="fas fa-file-download"></i></button>
 
         },
     ]
@@ -342,7 +338,6 @@ export default function FUN_CERTIFICATION(props) {
             highlightOnHover
             dense
 
-
             progressPending={!load}
             progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
 
@@ -373,7 +368,6 @@ export default function FUN_CERTIFICATION(props) {
 
         var content = {};
 
-
         content.date_doc = document.getElementById("genc_date_doc").value;
         content.id_public = document.getElementById("genc_id_public").value;
         content.state = document.getElementById("genc_state").value;
@@ -389,7 +383,6 @@ export default function FUN_CERTIFICATION(props) {
         content.predial = document.getElementById("genc_predial").value;
 
         formData.set('content', JSON.stringify(content));
-
 
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -429,7 +422,6 @@ export default function FUN_CERTIFICATION(props) {
                 });
             });
 
-
     }
 
     function gen_confirmDoc(oc, data) {
@@ -449,7 +441,6 @@ export default function FUN_CERTIFICATION(props) {
         formData.set('address2', data.address2);
         formData.set('matricula', data.matricula);
         formData.set('predial', data.predial);
-
 
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -481,20 +472,19 @@ export default function FUN_CERTIFICATION(props) {
                 });
             });
 
-
     }
     return (
         <>
             <div className='row'>
                 <div className='col'>
-                    <MDBBtn outline={!newItem} size='sm' rounded onClick={() => setNewItem(!newItem)}><i className="fas fa-plus"></i> NUEVA CERTIFICACIÓN</MDBBtn>
+                    <button type="button" className={`btn btn-sm rounded-pill ${!newItem ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setNewItem(!newItem)}><i className="fas fa-plus"></i> NUEVA CERTIFICACIÓN</button>
                 </div>
             </div>
             {newItem ? <>
                 <div className='border p-2'>
                     {_COMPONENT_NEW()}
                     <div className='text-center my-2'>
-                        <MDBBtn size='sm' rounded onClick={() => createCert()} color="success"><i className="fas fa-plus"></i> CREAR</MDBBtn>
+                        <button type="button" className="btn btn-success btn-sm rounded-pill" onClick={() => createCert()}><i className="fas fa-plus"></i> CREAR</button>
                     </div>
                 </div>
             </> : ''}

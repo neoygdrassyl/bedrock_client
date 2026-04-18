@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../components/ui';
+
 import { useState } from 'react';
 import Modal from 'react-modal';
 import { infoCud } from '../../../components/jsons/vars';
@@ -162,8 +162,6 @@ const old_2023 = [
             { name: 'Estrao 5 y 6', mult: 2320, round: true, },
         ]},
 ]
-
-
 
 const rules_matrix = () => {
 
@@ -387,8 +385,8 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <MDBBtn size='sm' className='my-1' outline onClick={() => COPY_TO_DOM('cur_fix')}><i className="far fa-copy"></i> COPIAR CARGO FIJO</MDBBtn>
-                    <MDBBtn size='sm' outline onClick={() => COPY_TO_DOM('cur_var')}><i className="far fa-copy"></i> COPIAR CARGO VARIABLE</MDBBtn>
+                    <button type="button" className="btn btn-outline-primary btn-sm my-1" onClick={() => COPY_TO_DOM('cur_fix')}><i className="far fa-copy"></i> COPIAR CARGO FIJO</button>
+                    <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => COPY_TO_DOM('cur_var')}><i className="far fa-copy"></i> COPIAR CARGO VARIABLE</button>
                 </div>
             </div>
             <hr />
@@ -442,16 +440,15 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <MDBBtn size='sm' outline onClick={() => COPY_TO_DOM('other')}><i className="far fa-copy"></i> COPIAR</MDBBtn>
+                    <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => COPY_TO_DOM('other')}><i className="far fa-copy"></i> COPIAR</button>
                 </div>
             </div>
         </>
     }
 
-
     return (
         <>
-            <MDBBtn size='sm' onClick={() => setModal(!modal)}><i className="fas fa-calculator"></i> {compact ? '' : 'CALCULADORA'}</MDBBtn>
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => setModal(!modal)}><i className="fas fa-calculator"></i> {compact ? '' : 'CALCULADORA'}</button>
 
             <Modal contentLabel="EXP CALC"
                 isOpen={modal}
@@ -470,8 +467,7 @@ export default function EXP_CALC(props) {
                         </div>
                     </div>
 
-
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
+                    <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
                 </div>
                 <hr />
 
@@ -480,7 +476,7 @@ export default function EXP_CALC(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <button type="button" className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> CERRAR</button>
                 </div>
             </Modal>
         </>

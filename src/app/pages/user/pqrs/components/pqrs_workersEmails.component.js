@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -115,7 +115,6 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
         document.getElementById('pqrs_email_notify_worker_2').value = _email_body;
     }
 
-
         // DATA GETTERS 
         // DATA CONVERTERS
         let _GET_EMAIL_TYPES = () => {
@@ -194,7 +193,6 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
             let email_body = document.getElementById("pqrs_email_notify_worker_2").value;
             formData.set('email_body', email_body);
 
-
             // GET DATA OF ATTACHS
             if (attachsForEmails) {
                 let files = document.getElementsByName("files_foremail");
@@ -253,9 +251,9 @@ function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker
                                         <div className="text-end m-3">
                                             <p className="text-end fw-bold text-uppercase">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <MDBBtn className="btn btn-secondary mx-3" onClick={() => minusAttachEmail()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <button type="button" className="btn btn-secondary mx-3" onClick={() => minusAttachEmail()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                                                 : ""}
-                                            <MDBBtn className="btn btn-secondary" onClick={() => addAttachEmail()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <button type="button" className="btn btn-secondary" onClick={() => addAttachEmail()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>

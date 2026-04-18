@@ -3,7 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import DataTable from 'react-data-table-component';
-import { MDBTooltip } from '../../../../components/ui';
+
 import { dateParser } from '../../../../components/customClasses/typeParse';
 
 const MySwal = withReactContent(Swal);
@@ -96,12 +96,10 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i className="far fa-edit"></i></button></MDBTooltip>
-                        <MDBTooltip title='Eliminar item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
-                                <i className="far fa-trash-alt"></i></button></MDBTooltip>
+                        <button title="Modificar item" onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
+                                <i className="far fa-edit"></i></button>
+                        <button title="Eliminar item" onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
+                                <i className="far fa-trash-alt"></i></button>
                     </>,
                 },
             ]
@@ -197,7 +195,6 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
                         </div>
                     </>
                     : ""}
-
 
                 {validations_pqrs_law && _edit
                     ? <>
@@ -357,7 +354,6 @@ function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshC
             formData.set('notify_reply', notify_reply);
             let notify_date = document.getElementById("pqrs_con_edit_112").value;
             if (notify_date) formData.set('notify_date', notify_date);
-
 
             MySwal.fire({
                 title: swaMsg.title_wait,

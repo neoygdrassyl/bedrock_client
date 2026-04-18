@@ -4,14 +4,13 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Collapsible from '../../../components/Collapsible';
 
-
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import FUN_SERVICE from '../../../services/fun.service';
 import '../../../../styles/docs-expediente.css';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
-import { MDBBtn } from '../../../components/ui';
+
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
@@ -462,14 +461,14 @@ export default function EXP_EJEC(props) {
             <hr />
             <div className="row text-center">
                 <div className="col">
-                    <MDBBtn className="btn btn-success my-3" onClick={() => save_eje()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+                    <button type="button" className="btn btn-success my-3" onClick={() => save_eje()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                 </div>
                 <div className="col">
                     {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
-                        <MDBBtn className="btn my-3" color="primary" onClick={() => pd_eje(true)}>
+                        <button type="button" className="btn btn-primary btn my-3" onClick={() => pd_eje(true)}>
                             <i className="fas fa-edit me-2" />
                             Editar PDF
-                        </MDBBtn>
+                        </button>
                     )}
                 </div>
             </div>
@@ -761,7 +760,6 @@ export default function EXP_EJEC(props) {
                 });
             });
     };
-
 
     return (
             <div>

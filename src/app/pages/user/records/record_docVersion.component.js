@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../components/ui';
+
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -136,7 +136,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         </form>
     }
 
-    let BTN_DOWN = <MDBBtn floating tag='a' size='sm' color='primary' className='ms-1'><i className="fas fa-download"></i></MDBBtn>
+    let BTN_DOWN = <button type="button" className="btn btn-primary btn-sm ms-1"><i className="fas fa-download"></i></button>
     let BTN_VIEW = (API, params) => <VIEWER API={API} params={params} ></VIEWER>
     // ******************* APIS ******************* //
     let addDocument = (e) => {
@@ -165,7 +165,6 @@ export default function RECORD_DOCUMENT_VERSION(props) {
         formData.set('codes2', code);
         formData.set('pages', page);
         formData.set('dates', date);
-
 
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -215,7 +214,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
     }
     return (
         <>
-            {!_FIND_6_ID_REPLACE(id6) ? <MDBBtn floating tag='a' size='sm' color='danger' className='ms-1' onClick={() => setModal(true)}><i className="fas fa-upload"></i></MDBBtn> : null}
+            {!_FIND_6_ID_REPLACE(id6) ? <button type="button" className="btn btn-danger btn-sm ms-1" onClick={() => setModal(true)}><i className="fas fa-upload"></i></button> : null}
             {_FIND_6_ID_REPLACE(id6) ? BTN_VIEW(getF6Document, [_FIND_6_ID_REPLACE(id6)]) : null}
 
             <Modal contentLabel="UPLOAD RECORD DOC"
@@ -225,7 +224,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
             >
                 <div className="my-4 d-flex justify-content-between">
                     <label><i className="fas fa-file-upload"></i> SUBIR DOCUMENTO DE EVALUACIÓN: {VERSION_DESC[id6] || 'Documento de Evaluación'}</label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
+                    <button type="button" className="btn-close" onClick={() => setModal(false)} />
                 </div>
                 <hr />
 
@@ -233,7 +232,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModal(false)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <button type="button" className="btn btn-sm btn-info" onClick={() => setModal(false)}><i className="fas fa-times-circle"></i> CERRAR</button>
                 </div>
             </Modal>
         </>

@@ -5,9 +5,8 @@ import DataTable from 'react-data-table-component';
 
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft } from '../../../components/customClasses/typeParse';
-import { MDBTooltip, MDBTypography } from '../../../components/ui';
-import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
 
+import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
 
 const MySwal = withReactContent(Swal);
 
@@ -113,10 +112,9 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
             {
                 name: <label>ACCION</label>,
                 button: true,
-                cell: row => <> <MDBTooltip title='Informacion solicitud' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                    <button className="btn btn-sm btn-info m-0 p-2 shadow-none"
+                cell: row => <> <button title="Informacion solicitud" className="btn btn-sm btn-info m-0 p-2 shadow-none"
                         onClick={() => NAVIGATION_GEN(row)}>
-                        <i className="far fa-eye" ></i></button></MDBTooltip>
+                        <i className="far fa-eye" ></i></button>
                 </>,
                 excell: false,
             },
@@ -364,14 +362,14 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
             <div className="py-3">
                 <div className="row">
                     <div className="col-6">
-                        <MDBTypography note noteColor='danger'>
+                        <div className="alert alert-danger">
                             Hay un total de {_OPEN} peticiones ACTIVAS en proceso.
-                        </MDBTypography>
+                        </div>
                     </div>
                     <div className="col-6">
-                        <MDBTypography note noteColor='success'>
+                        <div className="alert alert-success">
                             Hay un total de {_CLOSE} peticiones CERRADAS, ya resueltas.
-                        </MDBTypography>
+                        </div>
                     </div>
                 </div>
 

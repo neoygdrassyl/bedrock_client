@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBBtn } from '../../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -28,7 +28,6 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             document.getElementById("r_a_34_k_6_edit").value = _ITEM.exception;
         }
     }, [editK]);
-
 
         // DATA GETERS
 
@@ -177,7 +176,6 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
         let _GET_SESION_P = () => {
             let EQUIP = _GET_STEP_TYPE('equip', 'value');
 
-
             let sl = document.getElementById('sesion_l') ? document.getElementById('sesion_l').value : (EQUIP[0] ?? 0);
             let sc = document.getElementById('sesion_c') ? document.getElementById('sesion_c').value : (EQUIP[1] ?? 0);
             let sp = (1 - sl - sc);
@@ -277,7 +275,6 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             let strPartB = B[0] ? B[0].toLowerCase() : '';
             let nunPartA = Number(A[1]) ?? Infinity;
             let nunPartB = Number(B[1]) ?? Infinity;
-
 
             if (strPartA < strPartB) { return -1; }
             if (strPartA > strPartB) { return 1; }
@@ -440,7 +437,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     minWidth: '100px',
                     cell: row => <>
-                        <MDBBtn className="btn btn-danger btn-sm" onClick={() => delete_34_gen(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
+                        <button type="button" className="btn btn-danger btn-sm" onClick={() => delete_34_gen(row.id)}><i className="far fa-trash-alt fa-2x"></i></button>
                     </>,
                 },
             ]
@@ -1504,7 +1501,6 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             </div>
         }
 
-
         let _COMPONENT_HABITABILITY = () => {
             const _CHECK_ARRAY = _GET_STEP_TYPE('s34_hs', 'check');
             const _VALUE_ARRAY = _GET_STEP_TYPE('s34_hs', 'value');
@@ -1794,7 +1790,6 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             let pages = document.getElementById("r_a_34_gen_4").value;
             formData.set('pages', pages);
 
-
             RECORD_ARCSERVICE.create_arc_34_gen(formData)
                 .then(response => {
                     if (response.data === 'OK') {
@@ -1988,7 +1983,6 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
 
             save_step('s_34_te', false, formData);
 
-
             formData = new FormData();
             checks = [];
             checks_html = document.getElementsByName('s_34_ev_checks');
@@ -2047,7 +2041,6 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
 
             formData = new FormData();
 
-
             checks = [];
             checks_html = document.getElementsByName('s_34__hs_checks');
             for (var i = 0; i < checks_html.length; i++) {
@@ -2078,7 +2071,6 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             var values_html;
 
             formData = new FormData();
-
 
             formData = new FormData();
             checks = [];
@@ -2258,7 +2250,6 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
 
                 <h3 className="py-3" >3.4.3 Empate volumétrico</h3>
                 {_COMPONENENT_EMPATE()}
-
 
                 <h3 className="py-3" >3.4.4 Cesion tipo B</h3>
                 {_COMPONENT_SESSION_B()}

@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -209,7 +209,6 @@ export default function FUN_D_CONTROL_2(props) {
             }))
         }
 
-
         formData.set('check_control_inventory', JSON.stringify(inventory));
         manage_fun_r(formData);
 
@@ -238,7 +237,6 @@ export default function FUN_D_CONTROL_2(props) {
                 label: i.label || '',
             }))
         }
-
 
         formData.set('data', JSON.stringify(inventory));
 
@@ -432,10 +430,10 @@ export default function FUN_D_CONTROL_2(props) {
             <div className="row my-2">
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => save_fun_r()} ><i className="far fa-edit"></i> GUARDAR CAMBIOS </MDBBtn>
+                        <button type="button" className="btn btn-success my-3" onClick={() => save_fun_r()} ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
                     </div>
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                     </div>
                 </div>
             </div>

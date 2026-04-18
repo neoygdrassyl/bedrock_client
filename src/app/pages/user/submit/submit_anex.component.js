@@ -7,9 +7,8 @@ import Submit_Service from '../../../services/submit.service'
 import funService from '../../../services/fun.service';
 import dayjs from 'dayjs';
 import VIZUALIZER from '../../../components/vizualizer.component';
-import { MDBBtn } from '../../../components/ui';
-import DataTable from 'react-data-table-component';
 
+import DataTable from 'react-data-table-component';
 
 const MySwal = withReactContent(Swal);
 
@@ -37,7 +36,6 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
         })
     }
 
-
     var formData = new FormData();
 
     // DATA GETTER
@@ -57,7 +55,6 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
             url = url.replace("docs/submit/", "");
             return url;
         }
-
 
         let _CHILD_6_LIST = () => {
             let _LIST = fun6;
@@ -139,7 +136,6 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                 formData.append('file', file.files[0], "submit_" + _creationYear + "_" + _folder + "_" + file.files[0].name)
             }
 
-
             let id_public = document.getElementById("submit_anex_2").value;
             formData.set('id_public', id_public);
             let pages = document.getElementById("submit_anex_3").value;
@@ -217,7 +213,6 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                     });
             }
 
-
         }
 
         let pdf_gen = () => {
@@ -260,7 +255,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
             <div className="nomenclature_anex container">
                 <label className="fw-bold my-2">GENERAR DOCUMENTO</label>
                 <div className="col-3">
-                    <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                    <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                 </div>
                 <hr className="my-3" />
                 <label className="fw-bold my-2">ANEXAR DOCUMENTO</label>
@@ -274,8 +269,6 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                     : <>
                     <label><i className="text-danger fas fa-times"></i> No hay documento anexo</label>
                     </>}
-
-
 
                 <form id="form_submit_anex" onSubmit={addDocument} enctype="multipart/form-data">
                     <div className="row">

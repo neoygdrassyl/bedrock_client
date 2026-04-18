@@ -1,11 +1,11 @@
-import { MDBCard, MDBCardBody } from '../../../../components/ui';
+
 
 function FUND_NAV({ translation, swaMsg, globals, currentItem, currentVersion }) {
         return (
             <div className="btn-navpqrs">
                 <div className="fung_nav">
-                    <MDBCard className="container-primary" border='dark'>
-                        <MDBCardBody className="p-1">
+                    <div className="rounded-lg border bg-card p-4 container-primary">
+                        <div>
                             <legend className="px-3 pt-2 text-uppercase bg-light text-center">
                                 <h6>Menu de Navegación</h6>
                             </legend>
@@ -106,7 +106,6 @@ function FUND_NAV({ translation, swaMsg, globals, currentItem, currentVersion })
                                 </legend>
                             </a>
 
-
                             <br />
                             <a href="#fund_23" >
                                 <legend className="px-3 text-uppercase btn-success">
@@ -114,8 +113,8 @@ function FUND_NAV({ translation, swaMsg, globals, currentItem, currentVersion })
                                 </legend>
                             </a>
 
-                        </MDBCardBody>
-                    </MDBCard>
+                        </div>
+                    </div>
                 </div>
             </div>
         );

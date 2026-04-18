@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTypography } from '../../../../components/ui';
+
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -122,7 +122,6 @@ function RECORD_ENG_REVIEW(props) {
         const currentItem = _currentItem;
         const id_public = currentItem.id_public;
 
-
         let model = currentItem.model
         if (!model) return MySwal.fire({
             title: 'SOLICITUD SIN MODELO',
@@ -144,7 +143,6 @@ function RECORD_ENG_REVIEW(props) {
         // WIDTH = 612, HEIGHT = 936
 
         handleEnghCheck(pdfDoc, page, chekcs, _detail, 0, 1, model)
-
 
         let _city = _headers.city;
         if (_date && _GLOBAL_ID === 'cb1') _city = _headers.city + ", radicado el " + _date;
@@ -187,9 +185,7 @@ function RECORD_ENG_REVIEW(props) {
         fileDownload(pdfBytes, 'INFORME ESTRUCTURAL ' + id_public + '.pdf');
         MySwal.close();
 
-
     }
-
 
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP } = props;
 
@@ -422,10 +418,10 @@ function RECORD_ENG_REVIEW(props) {
 
             const ALLOW_REVIEW = _ALLOW_REVIEW();
             return <>
-                {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
+                {!ALLOW_REVIEW ? <div className="alert alert-danger">
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 4.1.1 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
-                </MDBTypography> : ''}
+                </div> : ''}
                 <div className="row border bg-info py-1 text-white fw-bold">
                     <div className="col">
                         <label>REVISION</label>
@@ -484,12 +480,12 @@ function RECORD_ENG_REVIEW(props) {
                                     }
                                 </div>
                                 <div className="col-1">
-                                    {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={rewStates['REW' + i]}
-                                        onClick={() => setRewStates(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></MDBBtn>
+                                    {allowReview ? <button type="button" className={`btn btn-sm ${!rewStates['REW' + i] ? "btn-outline-secondary" : "btn-secondary"}`}
+                                        onClick={() => setRewStates(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></button>
                                         : ''}
                                     {rewStates['REW' + i]
-                                        ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
-                                            onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></MDBBtn>
+                                        ? <button type="button" className="btn btn-success btn-sm ms-1"
+                                            onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></button>
                                         : ""
                                     }
                                     {true ?
@@ -1189,7 +1185,6 @@ function RECORD_ENG_REVIEW(props) {
             formData.set('r_date', r_date);
             let r_engc_pending = document.getElementById("record_eng_pending").checked;
             formData.set('r_engc_pending', r_engc_pending);
-
 
             let r_check = document.getElementById("record_pdf_check_1_v").value;
             formData.set('r_check', r_check);

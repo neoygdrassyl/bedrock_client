@@ -1,4 +1,4 @@
-import { MDBCard, MDBCardBody } from '../../../../components/ui';
+
 
 function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD, NAVIGATION_VERSION }) {
         return (<>
@@ -6,8 +6,8 @@ function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD
                 ? <> {currentItem.version > 1
                     ? <div className="btn-nav_version">
                         <div className="fun_nav">
-                            <MDBCard className="container-primary" border='dark' >
-                                <MDBCardBody className="p-1">
+                            <div className="rounded-lg border bg-card p-4 container-primary">
+                                <div>
                                     <div className="m-1 text-center">
                                         {ON
                                             ? <>
@@ -24,8 +24,8 @@ function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD
                                                     : <button type="button" className="btn btn-sm btn-info p-1" onClick={() => NAVIGATION_VERSION("plus")}><i className="fas fa-chevron-circle-right fa-2x"></i></button>}
                                             </> : ""}
                                     </div>
-                                </MDBCardBody>
-                            </MDBCard>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     : ""}

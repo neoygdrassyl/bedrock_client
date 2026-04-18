@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
@@ -155,12 +155,8 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit fa-2x"></i></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt fa-2x"></i></button></span>
                     </>
                 },
             ]
@@ -446,7 +442,6 @@ function RECORD_PH_BLUEPRINT({ translation, swaMsg, globals, currentItem, curren
                 units.push(items[i].value);
             }
             if (units.length) formData.set('units', units.join(';'));
-
 
             MySwal.fire({
                 title: swaMsg.title_wait,

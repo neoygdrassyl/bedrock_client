@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
@@ -36,14 +36,12 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
             }
             cb.dispatchEvent(event);
 
-
             document.getElementById("r_ph_fl_1_edit").value = _ITEM.floor;
 
             document.getElementById("r_ph_floor_fixed_3_edit").value = fixedVal[1] ?? "";
             document.getElementById("r_ph_floor_fixed_4_edit").value = fixedVal[2] ?? "";
             document.getElementById("r_ph_floor_fixed_5_edit").value = fixedVal[3] ?? "";
             document.getElementById("r_ph_floor_fixed_6_edit").value = fixedVal[4] ?? "";
-
 
             let inputs = document.getElementsByName("r_ph_fl_common_edit");
             for (var i = 0; i < inputs.length; i++) {
@@ -276,12 +274,8 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => _SET_EDIT(row)}><i className="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => _SET_EDIT(row)}><i className="far fa-edit fa-2x"></i></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt fa-2x"></i></button></span>
                     </>
                 },
             ]
@@ -322,7 +316,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             <>
                                 {divisionsEdit > 1
                                     ? <>
-                                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                        <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                                     </>
                                     : ""}
                             </>
@@ -330,12 +324,12 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                             : <>
                                 {divisions > 1
                                     ? <>
-                                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                        <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit - 1) : setDivisions(divisions - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                                     </>
                                     : ""}
                             </>}
 
-                        <MDBBtn className="btn btn-sm btn-secondary" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit + 1) : setDivisions(divisions + 1)}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                        <button type="button" className="btn btn-sm btn-secondary" onClick={() => editSuffix ? setDivisionsEdit(divisionsEdit + 1) : setDivisions(divisions + 1)}><i className="fas fa-plus-circle"></i> AÑADIR </button>
                     </div>
                 </div>
 
@@ -491,7 +485,6 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
 
             formData.set('common', common.join(';'));
 
-
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
@@ -630,7 +623,6 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
 
             formData.set('common', common.join(';'));
 
-
             MySwal.fire({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
@@ -710,7 +702,6 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
         );
 }
 
-
 const PH_DIVISIONS = (edit, LENGTH = 1, object) => {
     var _COMPONEN_DIV = [];
     var counter = 1;
@@ -778,6 +769,5 @@ const PH_FIXED_AREA = (edit) => {
     return <>{_COMPONEN_DIV}</>
 
 }
-
 
 export default RECORD_PH_FLOOR;

@@ -6,9 +6,8 @@ import withReactContent from 'sweetalert2-react-content'
 import Nomenclature_Service from '../../../services/nomeclature.service'
 import dayjs from 'dayjs';
 import VIZUALIZER from '../../../components/vizualizer.component';
-import { MDBBtn } from '../../../components/ui';
-import { cities } from '../../../components/jsons/vars';
 
+import { cities } from '../../../components/jsons/vars';
 
 const MySwal = withReactContent(Swal);
 
@@ -47,7 +46,6 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
             if (file.files[0]) {
                 formData.append('file', file.files[0], "nomenclature_" + _creationYear + "_" + _folder + "_" + file.files[0].name)
             }
-
 
             let id_public = document.getElementById("nomen_anex_2").value;
             formData.set('id_public', id_public);
@@ -125,7 +123,6 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                     });
             }
 
-
         }
 
         let pdf_gen = () => {
@@ -193,7 +190,6 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                 <label className="fw-bold my-2">GENERAR DOCUMENTO</label>
                 <div className="row">
 
-
                     <div className="col-3">
                         <label>Fecha del Documento</label>
                         <div className="input-group mb-1">
@@ -223,7 +219,7 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                         </div>
                     </div>
                 </div>
-                <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                 <hr className="my-3" />
                 <label className="fw-bold my-2">ANEXAR DOCUMENTO</label>
                 <br />
@@ -236,8 +232,6 @@ function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshL
                     : <>
                         <label><i className="text-danger fas fa-times"></i> No hay documento anexo</label>
                     </>}
-
-
 
                 <form id="form_nomen_anex" onSubmit={addDocument} enctype="multipart/form-data">
                     <div className="row">

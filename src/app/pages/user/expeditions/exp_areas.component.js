@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import { useState, useEffect, useRef } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
@@ -149,12 +149,8 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     button: true,
                     maxWidth: '50px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                            <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit"></i></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></button></span>
                     </>
                 },
             ]
@@ -250,7 +246,6 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
             let units = document.getElementById("expedition_area_6").value;
             if (units) formData.set('units', units);
             else formData.set('units', 1);
-
 
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -395,7 +390,6 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                 });
         }
 
-
         return (
             <div className="expedition_areas my-2">
                 <legend className="my-2 px-3 text-uppercase bg-light" id="nav_expedition_10">
@@ -413,7 +407,6 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     </>
 
                     : null}
-
 
                 <hr />
                 <div className="form-check ms-5">

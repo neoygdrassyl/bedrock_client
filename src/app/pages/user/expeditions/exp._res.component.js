@@ -6,9 +6,8 @@ import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import FUN_SERVICE from '../../../services/fun.service';
 
-
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
-import { MDBBtn } from '../../../components/ui';
+
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
@@ -420,7 +419,6 @@ export default function EXP_RES(props) {
         const art_4_2_dv = (_GET_STEP_TYPE('s33', 'value')[1] + (_GET_CHILD_ENG_REW().desc ? '\n' + _GET_CHILD_ENG_REW().desc : '')) || '';
         const art_4_p_dv = reso.art_4_p ?? '';
 
-
         //  GET DATA FROM ARCS AND ENGS DOCUMENTS GIVEN
         const BP_CHECK_ARRAY = _GET_STEP_TYPE('blue_prints', 'check');
         const BP_VALUE_ARRAY = _GET_STEP_TYPE('blue_prints', 'value');
@@ -509,7 +507,6 @@ export default function EXP_RES(props) {
                 }
             }
 
-
             return text;
         }
         const art_1_cb_tb = reso.art_1_cb_tb ?? false;
@@ -540,7 +537,6 @@ export default function EXP_RES(props) {
         const sexto_b_dv = sexto_b_dv_1.replace(/x{2,3}/g, () => {
             return data_sexto[indice++] ?? 'xx';
         });
-
 
         const sexto_c1_dv = currentItem.id_payment || sexto_v[3] || '';
         const sexto_c2_dv = sexto_v[4] || taxes.id_payment_1 || '';
@@ -847,7 +843,6 @@ export default function EXP_RES(props) {
                     </div>
                 </div>
 
-
                 <div className="row mb-1">
                     <div className="col-2">
                     </div>
@@ -945,7 +940,6 @@ export default function EXP_RES(props) {
                         <textarea className="form-control" id="expedition_doc_res_open_2" rows={'4'} defaultValue={open_2}></textarea>
                     </div>
                 </div>
-
 
                 <div className="row mb-1">
                     <div className="col-2">
@@ -1727,7 +1721,6 @@ export default function EXP_RES(props) {
         const primero_3_dv = reso.primero_3 || '102'; //NEGATIVE ID
         const primero_32_dv = reso.primero_4 || ''; // LAW USER THAT REVIEWS
 
-
         const negative_info = {
             '101': [
                 {
@@ -1940,7 +1933,6 @@ export default function EXP_RES(props) {
                 </div>
             </div>
 
-
             <div className="row mb-1">
                 <div className="col">
                     <div className='row text-start'>
@@ -2144,7 +2136,6 @@ export default function EXP_RES(props) {
         let parcon_12 = parcon[7] || `Que la EMPRESA PIEDECUESTA DE SERVICIOS PÚBLICOS E.S.P., certificó el xxxxxx (xx) de xxxxxxx de dos mil veintidós (2022) que el predio con número catastral 68547-00-00-0000-0000-000 puede acceder al servicio de acueducto para xxxxxxxxxxxxxxxxxxx, por lo tanto cuenta con disponibilidad del servicio de acueducto y aseo.`
         let parcon_13 = parcon[8] || `Que el titular de la licencia presentó memoria técnica del sistema de tratamiento a implementar en la recolección de aguas servidas y disposición final de la red sanitaria para la edificación. `
 
-
         return <>
             <div className="row mb-1">
                 <label className='fw-bold'>CONSIDERATIVA 2</label>
@@ -2272,7 +2263,6 @@ export default function EXP_RES(props) {
 
         let parcon_6 = parcon[0] || `Que para el predio rural objeto de la presente subdivisión, el titular de la licencia realiza la subdivisión según lo establecido en el artículo 45 literal b) de la Ley 160 de 1994, por lo cual los predios resultantes de la subdivisión serán destinados para uso principal xxxxxxxxxxxxx como uso compatible de acuerdo a lo establecido por Acuerdo N° 028 de 2003 PBOT.`
 
-
         return <>
             <div className="row mb-1">
                 <label className='fw-bold'>CONSIDERATIVA 6</label>
@@ -2280,8 +2270,6 @@ export default function EXP_RES(props) {
                     <textarea className='form-control' rows="4" name="expedition_doc_res_c_sub" defaultValue={parcon_6 || ''} />
                 </div>
             </div>
-
-
 
             <div className="row mb-1">
                 <div className="col">
@@ -2536,7 +2524,6 @@ export default function EXP_RES(props) {
 
         let parcon_2 = parcon[0] || `Autorizar la Revalidación de la “(NOMBRE LICENCIA ANTERIOR XXXXXXXXXXXXX)” otorgada mediante la Resolución N0000-0-00-0000 del 00 de XXXXX de 20XX, expedida por XXXXXXXXX, otorgando con el presente acto un periodo adicional de veinticuatro (24) meses para culminar las obras aprobadas en los actos administrativos referenciados anteriormente, previo cumplimiento de lo reglamentado en el artículo 2.2.6.1.2.4.1.`
 
-
         return <>
             <div className="row mb-1">
                 <label className='fw-bold'>CONSIDERATIVA 2</label>
@@ -2574,7 +2561,6 @@ export default function EXP_RES(props) {
 
         let parcon_2 = parcon[0] || `Que dentro del término de ejecutoria se interpuso recurso de reposición y en subsidio de apelación contra la Resolución No. ${currentRecord.id_public} del XXXX (XX) de XXXXX de XXXXXs (XXXX), la cual fue CONFIRMADA por el/la suscrita Curador(a) Urbano/a mediante la Resolución N°  ${currentRecord.id_public} del XXXX (XX) de XXXX de XXXX (XXXX), de estas actuaciones se surtió traslado a la Oficina Asesora de Planeación, la cual CONFIRMÓ la resolución en todos sus apartes mediante Resolución N° XXXX-XXXX por medio de la cual resuelve el recurso de apelación, siendo notificada el XXXX (XX) de XXXX de XXXX (XXXX) y quedando el acto administrativo de ${type} debidamente EJECUTORIADO EL XXXX (XX) DE XXXX DE XXXXX (XXXX).`
 
-
         return <>
             <div className="row mb-1">
                 <label className='fw-bold'>CUERPO</label>
@@ -2603,7 +2589,6 @@ export default function EXP_RES(props) {
         let parcon_3 = parcon[1] || `Que el apoderado o solicitante allega petición radicada bajo el radicado VR22-XXXX del XXXXXX (XX) de XXXX de dos mil veinte XX (202X), por medio de la cual solicita “XXXXXXXX”`
         let parcon_4 = parcon[2] || `Corregir y aclarar el parágrafo x del artículo x° de la Resolución N° 0XXX del XXX (X) de marzo de dos mil veinte___ (202X), el cual quedará así: `
         let parcon_5 = parcon[3] || ``
-
 
         return <>
             <label className='fw-bold'>CONSIDERATIVA 3</label>
@@ -2657,7 +2642,6 @@ export default function EXP_RES(props) {
                 taxChargeDelineacion += _areas[i].charge;
             }
         }
-
 
         let f2 = _GET_CHILD_2();
         let f53 = _GET_CHILD_53();
@@ -2848,7 +2832,6 @@ export default function EXP_RES(props) {
                 </div>
             </div>
 
-
         </>
     }
     let _MODEL_UPDATE = () => {
@@ -2939,8 +2922,6 @@ export default function EXP_RES(props) {
         let parcon_6 = parcon[1] || `Que, debido al incumplimiento de los requisitos, se expidió la resolución No. ${sexto_c1_dv || 'XXXX'} del ${dateParser(reso_date_dv) || 'XX de XXXX de XXXX'}, “Por la cual se Niega una solicitud de ${type}” acto administrativo notificado a la solicitante el día XXXX (XX) de XXXX de XXXX.`
         let parcon_7 = parcon[2] || `Que el día xx (xx) de xxxx de xxxx, el señor ${_CHILD_53.item_5311} ${_CHILD_53.item_5312}, identificado con la cédula de ciudadanía No. ${_CHILD_53.item_532} radicó ante la Curaduría Urbana No. ${infoCud.nomens} de ${infoCud.city}-, recurso de reposición y en subsidio de apelación en contra de la precitada RESOLUCIÓN No. xxx del xxxx (xx) de xxxx de xxxx.`
         let parcon_8 = parcon[3] || `Ahora bien, se tiene que el mismo fue presentado personalmente por XXXXXXXXXXX  identificado con la cédula de ciudadanía XXXXXXXXX, sin manifestar en calidad de que actúa, sin embargo se encuentra que dentro de los documentos anexos que acompañan el recurso de reposición y en subsidio el del apelación no existe poder otorgado por los propietarios, que lo faculte para representarlos e interponer los precitados recursos en su nombre, encontrando únicamente dentro del expediente del trámite de XXXXXXXXXXXXX, poder para realizar el trámite de licencia, sin que dicho poder le faculte para interponer recursos. Así mismo XXXXXXXX identificado con la cédula de ciudadanía XXXXXXXXX no es abogado en ejercicio, y tan solo los abogados en ejercicio podrán ser apoderados.`
-
-
 
         return <>
             <div className="row mb-1">
@@ -3087,7 +3068,6 @@ export default function EXP_RES(props) {
         var model = currentRecord.model || 'open';
         let canSave = (window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2) || _GLOBAL_ID == 'cb1';
 
-
         function getOptions(model) {
             let defaultOp = <>
                 {_GLOBAL_ID == 'cb1' ? <option>OTORGADA</option> : ''}
@@ -3118,7 +3098,6 @@ export default function EXP_RES(props) {
             return defaultOp;
 
         }
-
 
         var reso = _GET_EXPEDITION_JSON('reso');
         var _CHILD_1 = _GET_CHILD_1();
@@ -3187,7 +3166,6 @@ export default function EXP_RES(props) {
                 : ''}
 
         </>
-
 
     }
     let _COMPONENT_DOC_RES_PDF = () => {
@@ -3287,7 +3265,6 @@ export default function EXP_RES(props) {
                 </div>
             </div>
 
-
             <div className="row mb-2 text-center">
 
                 <div className="col ">
@@ -3351,13 +3328,13 @@ export default function EXP_RES(props) {
             <div className="row text-center">
                 <div className="col d-flex justify-content-center">
                     <div className="d-flex gap-3"> {/* Espaciado entre botones */}
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
                             <i className="far fa-file-pdf"></i> GENERAR PDF
-                        </MDBBtn>
+                        </button>
                         {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
-                            <MDBBtn className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
+                            <button type="button" className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
                                 <i className="fas fa-edit"></i> EDITAR PDF
-                            </MDBBtn>
+                            </button>
                         )}
                     </div>
                 </div>
@@ -3655,7 +3632,6 @@ export default function EXP_RES(props) {
             if (document.getElementById('expedition_doc_res_duty_20')) formData.set('duty_20', document.getElementById('expedition_doc_res_duty_20').value);
             if (document.getElementById('expedition_doc_res_duty_21')) formData.set('duty_21', document.getElementById('expedition_doc_res_duty_21').value);
 
-
             if (document.getElementById('expedition_doc_res_art_1p')) formData.set('art_1p', document.getElementById('expedition_doc_res_art_1p').value);
             if (document.getElementById('expedition_doc_res_art_1_text')) formData.set('art_1_txt', document.getElementById('expedition_doc_res_art_1_text').value);
             if (document.getElementById('expedition_doc_res_art_1_cb_tb')) formData.set('art_1_cb_tb', document.getElementById('expedition_doc_res_art_1_cb_tb').checked ? true : false);
@@ -3675,7 +3651,6 @@ export default function EXP_RES(props) {
             if (document.getElementById('expedition_doc_res_open_1')) formData.set('open_1', document.getElementById('expedition_doc_res_open_1').value);
             if (document.getElementById('expedition_doc_res_open_2')) formData.set('open_2', document.getElementById('expedition_doc_res_open_2').value);
             if (document.getElementById('expedition_doc_res_open_3')) formData.set('open_3', document.getElementById('expedition_doc_res_open_3').value);
-
 
             let values_html = document.getElementsByName('expedition_doc_res_sexto_v');
             for (let i = 0; i < values_html.length; i++) {
@@ -3858,15 +3833,12 @@ export default function EXP_RES(props) {
         reso.eje = document.getElementById('exp_pdf_reso_record_version').value;
         reso.header_text = document.getElementById('expedition_doc_header_text').value;
 
-
-
         reso.primero = document.getElementById("expedition_doc_res_primero") ? document.getElementById("expedition_doc_res_primero").value : '';
         reso.primero_1 = document.getElementById("expedition_doc_res_primero_1") ? document.getElementById("expedition_doc_res_primero_1").value : '';
         reso.primero_2 = document.getElementById("expedition_doc_res_primero_2") ? document.getElementById("expedition_doc_res_primero_2").value : '';
         reso.primero_3 = document.getElementById("expedition_doc_res_negative_id") ? document.getElementById("expedition_doc_res_negative_id").value : '';
         reso.primero_4 = document.getElementById("expedition_doc_res_negative_user") ? document.getElementById("expedition_doc_res_negative_user").value : '';
         reso.primero_5 = document.getElementById("expedition_doc_res_primero_5") ? document.getElementById("expedition_doc_res_primero_5").value : '';
-
 
         reso.segundo_1 = document.getElementById("expedition_doc_res_segundo_1") ? document.getElementById("expedition_doc_res_segundo_1").value : '';
         reso.segundo_2 = document.getElementById("expedition_doc_res_segundo_2") ? document.getElementById("expedition_doc_res_segundo_2").value : '';
@@ -3892,9 +3864,7 @@ export default function EXP_RES(props) {
         reso.cuarto_1 = document.getElementById("expedition_doc_res_cuarto_1") ? document.getElementById("expedition_doc_res_cuarto_1").value : '';
         reso.cuarto_cb = document.getElementById("expedition_doc_res_cuarto_cb") ? document.getElementById("expedition_doc_res_cuarto_cb").checked ? 1 : 0 : 0;
 
-
         reso.sexto_b = document.getElementById("expedition_doc_res_sexto_b") ? document.getElementById("expedition_doc_res_sexto_b").value : '';
-
 
         let values = [];
         let values_html = document.getElementsByName('expedition_doc_res_segundo_cb');
@@ -3905,7 +3875,6 @@ export default function EXP_RES(props) {
         }
         reso.segundo_cb = values.join(';');
         reso.segundo_a = document.getElementsByName('expedition_doc_res_segundo_a').value;
-
 
         values = [];
         values_html = document.getElementsByName('expedition_doc_res_sexto_v');

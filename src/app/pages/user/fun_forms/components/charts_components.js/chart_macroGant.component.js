@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../../components/ui';
+
 import dayjs from 'dayjs';
 import { useState, useEffect, useRef, memo } from 'react';
 
@@ -452,7 +452,6 @@ function FUN_CHART_MACRO_GRANTT(props) {
         let val_5_p = val_5 / total * 100;
         let val_6_p = val_6 / total * 100;
 
-
         var legends = [
             { angle: val_1, group: 'inc', val: val_1, val_p: val_1_p, color: 'DodgerBlue', title: 'RADICACION: ' + val_1, strokeWidth: 10 },
             { angle: val_2, group: 'ldf', val: val_2, val_p: val_2_p, color: 'ForestGreen', title: 'EVALUACION: ' + val_2, strokeWidth: 10 },
@@ -589,12 +588,12 @@ function FUN_CHART_MACRO_GRANTT(props) {
                 </div>
                 <div className='col-3 text-end'>
                     <div className="btn-group btn-group-sm" role="group" aria-label="...">
-                        <MDBBtn color='primary' outline={bt_scope != 0} size='sm'
-                            onClick={() => { setBt_scope(0) }}>OPTIMO</MDBBtn>
-                        <MDBBtn color='primary' outline={bt_scope != 1} size='sm'
-                            onClick={() => { setBt_scope(1) }}>PROMEDIO</MDBBtn>
-                        <MDBBtn color='primary' outline={bt_scope != 2} size='sm'
-                            onClick={() => { setBt_scope(2) }}>LIMITE</MDBBtn>
+                        <button type="button" className={`btn btn-sm ${bt_scope != 0 ? "btn-outline-primary" : "btn-primary"}`}
+                            onClick={() => { setBt_scope(0) }}>OPTIMO</button>
+                        <button type="button" className={`btn btn-sm ${bt_scope != 1 ? "btn-outline-primary" : "btn-primary"}`}
+                            onClick={() => { setBt_scope(1) }}>PROMEDIO</button>
+                        <button type="button" className={`btn btn-sm ${bt_scope != 2 ? "btn-outline-primary" : "btn-primary"}`}
+                            onClick={() => { setBt_scope(2) }}>LIMITE</button>
                     </div>
                 </div>
             </div>

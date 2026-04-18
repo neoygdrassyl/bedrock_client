@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -286,9 +286,9 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                         {_SELECT_PROFESIONAL()}
                         {_COMPONENT()}
                         <div className="text-center">
-                            <MDBBtn className="btn btn-success my-3" onClick={() => save_ra_31()}>
+                            <button type="button" className="btn btn-success my-3" onClick={() => save_ra_31()}>
                                 <i className="far fa-share-square"></i> GUARDAR CAMBIOS
-                            </MDBBtn>
+                            </button>
                         </div>
                     </div>
                     <div className="col-6">

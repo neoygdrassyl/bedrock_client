@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import { useState } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
@@ -26,7 +26,6 @@ export default function RECORD_ARC_36_TABLE(props) {
     var [edit36, setEdit] = useState(false);
     var [newRow, setRow] = useState({});
     var [editRow, setRowE] = useState({});
-
 
     // ***************************  DATA GETTERS *********************** //
     let _GET_CHILD_36_INFO = () => {
@@ -189,8 +188,8 @@ export default function RECORD_ARC_36_TABLE(props) {
             center: true,
             minWidth: '110px',
             cell: row => <>
-                <MDBBtn className="btn btn-secondary btn-sm px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><i className="far fa-edit"></i></MDBBtn>
-                <MDBBtn className="btn btn-danger btn-sm px-2" onClick={() => delete_36_info(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
+                <button type="button" className="btn btn-secondary btn-sm px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><i className="far fa-edit"></i></button>
+                <button type="button" className="btn btn-danger btn-sm px-2" onClick={() => delete_36_info(row.id)}><i className="far fa-trash-alt"></i></button>
             </>,
         },
     ]
@@ -200,7 +199,7 @@ export default function RECORD_ARC_36_TABLE(props) {
         return <>
             <div className='row border'>
                 <div className='col my-1'>
-                    <MDBBtn rounded outline size='sm' className='me-1' onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO PERFIL</MDBBtn>
+                    <button type="button" className="btn btn-outline-primary btn-sm rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO PERFIL</button>
                 </div>
             </div>
 
@@ -310,7 +309,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <MDBBtn color="danger" rounded outline size='sm' className='px-2' onClick={() => del_grp_37(data.id)}> <i className="fas fa-minus text-danger"></i></MDBBtn>
+                                <button type="button" className="btn btn-outline-danger btn-sm rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <i className="fas fa-minus text-danger"></i></button>
                             }
                         </div>
                     </div>
@@ -351,7 +350,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <MDBBtn color="success" rounded outline size='sm' className='px-2' onClick={() => add_perfil(data.id)}> <i className="fas fa-plus text-success"></i></MDBBtn> : ''}
+                            <button type="button" className="btn btn-outline-success btn-sm rounded-pill px-2" onClick={() => add_perfil(data.id)}> <i className="fas fa-plus text-success"></i></button> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -407,7 +406,6 @@ export default function RECORD_ARC_36_TABLE(props) {
     }
     let _LIST_COMPONENT = () => {
         let _LIST = _GET_CHILD_36_INFO();
-
 
         return <DataTable
             noDataComponent="No hay Items"

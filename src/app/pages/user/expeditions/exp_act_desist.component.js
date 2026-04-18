@@ -11,7 +11,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 import '../../../../styles/docs-expediente.css';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
-import { MDBBtn } from '../../../components/ui';
+
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
@@ -574,26 +574,22 @@ const restoreDocs = useCallback(() => {
                             <span className="actions">
                                 {listDocsOpen ? (
                                 <>
-                                    <MDBBtn
-                                    size="sm"
-                                    color={showHiddenLD ? "info" : "light"}
+                                    <button type="button"
+                                    className={`btn btn-sm d-inline-flex align-items-center gap-2 me-2 btn-${showHiddenLD ? "info" : "light"}`}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setShowHiddenLD((v) => !v);
                                     }}
                                     title={showHiddenLD ? "Ocultar ocultos" : "Mostrar ocultos"}
-                                    className="d-inline-flex align-items-center gap-2 me-2"
                                     >
                                     <i className={`fas ${showHiddenLD ? "fa-eye-slash" : "fa-eye"}`} />
                                     <span className="d-none d-sm-inline">
                                         {showHiddenLD ? "Ocultar ocultos" : "Mostrar ocultos"}
                                     </span>
-                                    </MDBBtn>
+                                    </button>
 
-                                    <MDBBtn
-                                    size="sm"
-                                    color="warning"
-                                    outline
+                                    <button type="button"
+                                    className="btn btn-outline-warning btn-sm d-inline-flex align-items-center gap-2 me-2"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         confirmRestore(
@@ -606,15 +602,13 @@ const restoreDocs = useCallback(() => {
                                         );
                                     }}
                                     title="Restaurar lista inicial"
-                                    className="d-inline-flex align-items-center gap-2 me-2"
                                     >
                                     <i className="fas fa-undo" />
                                     <span className="d-none d-sm-inline">Restaurar</span>
-                                    </MDBBtn>
+                                    </button>
 
-                                    <MDBBtn
-                                    size="sm"
-                                    color="primary"
+                                    <button type="button"
+                                    className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         const uid = `new_${Date.now()}`;
@@ -635,11 +629,10 @@ const restoreDocs = useCallback(() => {
                                         ]);
                                     }}
                                     title="Agregar documento"
-                                    className="d-inline-flex align-items-center gap-2"
                                     >
                                     <i className="fas fa-plus" />
                                     <span className="d-none d-sm-inline">Agregar</span>
-                                    </MDBBtn>
+                                    </button>
                                 </>
                                 ) : null}
                                 <i
@@ -879,15 +872,13 @@ const restoreDocs = useCallback(() => {
                                 <span className="actions">
                                 {docsOpen ? (
                                     <>
-                                    <MDBBtn
-                                        size="sm"
-                                        color={showHiddenDocs ? "info" : "light"}
+                                    <button type="button"
+                                        className={`btn btn-sm d-inline-flex align-items-center gap-2 me-2 btn-${showHiddenDocs ? "info" : "light"}`}
                                         onClick={(e) => {
                                         e.stopPropagation();
                                         setShowHiddenDocs((v) => !v);
                                         }}
                                         title={showHiddenDocs ? "Ocultar ocultos" : "Mostrar ocultos"}
-                                        className="d-inline-flex align-items-center gap-2 me-2"
                                     >
                                         <i
                                         className={`fas ${
@@ -897,12 +888,10 @@ const restoreDocs = useCallback(() => {
                                         <span className="d-none d-sm-inline">
                                         {showHiddenDocs ? "Ocultar ocultos" : "Mostrar ocultos"}
                                         </span>
-                                    </MDBBtn>
+                                    </button>
 
-                                    <MDBBtn
-                                        size="sm"
-                                        color="warning"
-                                        outline
+                                    <button type="button"
+                                        className="btn btn-outline-warning btn-sm d-inline-flex align-items-center gap-2 me-2"
                                         onClick={(e) => {
                                         e.stopPropagation();
                                         confirmRestore(
@@ -915,22 +904,19 @@ const restoreDocs = useCallback(() => {
                                         );
                                         }}
                                         title="Restaurar documentos iniciales"
-                                        className="d-inline-flex align-items-center gap-2 me-2"
                                     >
                                         <i className="fas fa-undo" />
                                         <span className="d-none d-sm-inline">Restaurar</span>
-                                    </MDBBtn>
+                                    </button>
 
-                                    <MDBBtn
-                                        size="sm"
-                                        color="primary"
+                                    <button type="button"
+                                        className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
                                         onClick={addNewDoc}
                                         title="Agregar documento"
-                                        className="d-inline-flex align-items-center gap-2"
                                     >
                                         <i className="fas fa-plus" />
                                         <span className="d-none d-sm-inline">Agregar</span>
-                                    </MDBBtn>
+                                    </button>
                                     </>
                                 ) : null}
 
@@ -1260,14 +1246,14 @@ let _COMPONENT_DOC_RES_PDF = () => {
     <hr />
     <div className="row text-center">
         <div className="col">
-            <MDBBtn className="btn btn-success my-3" onClick={save_exp_res}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+            <button type="button" className="btn btn-success my-3" onClick={save_exp_res}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
         </div>
         <div className="col">
             {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
-                <MDBBtn className="btn my-3" color="primary" onClick={() => pdf_gen_res(true)}>
+                <button type="button" className="btn btn-primary my-3" onClick={() => pdf_gen_res(true)}>
                     <i className="fas fa-edit me-2" />
                     Editar PDF
-                </MDBBtn>
+                </button>
             )}
         </div>
     </div>

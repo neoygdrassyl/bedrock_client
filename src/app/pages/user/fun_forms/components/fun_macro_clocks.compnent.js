@@ -11,7 +11,7 @@ import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
 import RECORD_ARC_SERVICE from '../../../../services/record_arc.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
 import { dateParser_finalDate, formsParser1, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
-import { MDBTooltip } from '../../../../components/ui';
+
 import FUN_ICON_PROGRESS from './icon_progress.compoennt';
 
 export default function FUN_MACROTABLE_CLOCKS(props) {
@@ -130,10 +130,9 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
         {
             name: <label>INFO</label>,
             button: true,
-            cell: row => <MDBTooltip title='Informacion solicitud' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button className="btn btn-sm btn-info m-0 p-1 shadow-none"
+            cell: row => <button title="Informacion solicitud" className="btn btn-sm btn-info m-0 p-1 shadow-none"
                     onClick={() => props.NAVIGATION_GEN(row)}>
-                    <i className="far fa-folder-open" ></i></button></MDBTooltip>
+                    <i className="far fa-folder-open" ></i></button>
         },
         {
             name: <label>ACTUACION</label>,
@@ -460,7 +459,6 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             center: true,
             cell: row => <label className=" text-primary fw-bold">{row.clock_90}</label>
         },
-
 
     ]
     // ******************************* APIS **************************** // 

@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { MDBBtn, MDBCollapse } from '../../../../components/ui';
+import { MDBCollapse } from '../../../../components/ui';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import TagInput from '../../../../components/TagInput';
 import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
@@ -146,7 +146,6 @@ export default function RECORD_ARC_AREAS_2(props) {
         'Reconstruida',
     ];
 
-
     const MySwal = withReactContent(Swal);
     var [data, setData] = useState([]);
     var [saving, setSaving] = useState(-1);
@@ -276,7 +275,6 @@ export default function RECORD_ARC_AREAS_2(props) {
         return sum;
     }
 
-
     let _GET_TOTAL_AREA = (_build, _historic) => {
         if (!_build) return 0;
         var build = _build.split(",");
@@ -298,7 +296,6 @@ export default function RECORD_ARC_AREAS_2(props) {
         let sum = destroy.reduce((p, n) => Number(p) + Number(n))
         return (sum).toFixed(2);
     }
-
 
     let _GET_NET_INDEX = (_build, _destroy, _historic) => {
         if (!_build) return 0;
@@ -515,7 +512,6 @@ export default function RECORD_ARC_AREAS_2(props) {
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 0), name: 'build_0', color: 'green', id: (v) => v.id, },)
         }
 
-
         if (child.m_lic.includes('g') && !_header.includes('Demolida parcial')) {
             _header.splice(spliceOffset, 0, 'Demolida parcial')
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 7), name: 'build_7', color: 'green', id: (v) => v.id, },)
@@ -524,7 +520,6 @@ export default function RECORD_ARC_AREAS_2(props) {
             _header.splice(spliceOffset, 0, 'Demolida total')
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 6), name: 'build_6', color: 'green', id: (v) => v.id, },)
         }
-
 
         tagsH.map((tag, i) => {
             if (!_header.includes(tag)) {
@@ -539,8 +534,6 @@ export default function RECORD_ARC_AREAS_2(props) {
                 _cells.splice(spliceOffset + i, 0, { value: (v) => _CHECK_AREA_STR(v, 'empate_h', i, ';'), name: 'empate_' + i, color: 'green', id: (v) => v.id, },)
             }
         })
-
-
 
         destory_check.map((label, i) => {
             if (destroy_cb[i] === 'true' && !_header.some(h => h === label)) {
@@ -861,7 +854,6 @@ export default function RECORD_ARC_AREAS_2(props) {
                             })
                         }
 
-
                         if (_h.includes('Empate: ')) {
                             tagsE.map((tag, i) => {
                                 if (_h === 'Empate: ' + tag) {
@@ -871,8 +863,6 @@ export default function RECORD_ARC_AREAS_2(props) {
                                 }
                             })
                         }
-
-
 
                         cell.push(cellObj)
                     }
@@ -912,7 +902,6 @@ export default function RECORD_ARC_AREAS_2(props) {
             newData.splice(newData.length - 1, 0, newRow)
         }
 
-
         for (let i = 0; i < ss; i++) {
             let newRow = Array.from(data[0]).map(v => { return { name: v.name, value: '' } })
             let rowAdd = { value: "Semisótano", name: 'floor', }
@@ -938,7 +927,6 @@ export default function RECORD_ARC_AREAS_2(props) {
 
         if (!en && st) en = st
         else if (!st && en) st = en
-
 
         if (st > en) {
             let saven = st;
@@ -1067,12 +1055,12 @@ export default function RECORD_ARC_AREAS_2(props) {
             <div className='row'>
                 <div className='col-8'>
                     <div className="btn-group btn-group-sm" role="group" aria-label="...">
-                        <MDBBtn color='primary' outline={!openConfig} size='sm'
-                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</MDBBtn>
-                        <MDBBtn color='primary' outline size='sm'
-                            onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</MDBBtn>
-                        <MDBBtn color='success' outline size='sm'
-                            onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</MDBBtn>
+                        <button type="button" className={`btn btn-sm ${!openConfig ? "btn-outline-primary" : "btn-primary"}`}
+                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</button>
+                        <button type="button" className="btn btn-outline-primary btn-sm"
+                            onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</button>
+                        <button type="button" className="btn btn-outline-success btn-sm"
+                            onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</button>
                     </div>
                     <div>
                         {saving === 0 ?
@@ -1088,8 +1076,8 @@ export default function RECORD_ARC_AREAS_2(props) {
                     <div className="btn-group btn-group-sm" role="group" aria-label="...">
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area" />
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area_end" />
-                        <MDBBtn color='danger' outline size='sm'
-                            onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</MDBBtn>
+                        <button type="button" className="btn btn-outline-danger btn-sm"
+                            onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</button>
                     </div>
                 </div>
             </div>
@@ -1224,7 +1212,7 @@ export default function RECORD_ARC_AREAS_2(props) {
                             </div>
                         </div>
                         <div className='col-2'>
-                            <MDBBtn color='primary' outline size='sm' onClick={() => _NEW_BD()}>CREAR</MDBBtn>
+                            <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => _NEW_BD()}>CREAR</button>
                         </div>
                         <div className='col'>
                             <div className="form-check">
@@ -1272,8 +1260,6 @@ export default function RECORD_ARC_AREAS_2(props) {
             })
         });
 
-
-
         setData(new_data);
         manage_areas(new_data);
     }
@@ -1307,7 +1293,6 @@ export default function RECORD_ARC_AREAS_2(props) {
             for (let i = 0; i < units_a.length; i++) {
                 units_a[i] = getCellByName(cells, 'units_a_' + i) || 0;
             }
-
 
             let historic = [];
             let empate = [];
@@ -1513,7 +1498,6 @@ export default function RECORD_ARC_AREAS_2(props) {
                 });
             });
 
-
     }
     // ************
     let manage_ra_34 = () => {
@@ -1530,7 +1514,6 @@ export default function RECORD_ARC_AREAS_2(props) {
 
         save_step('s34', false, formData);
     }
-
 
     let update_category = (useSwal) => {
         let formData = new FormData();

@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -80,12 +80,9 @@ function FUN_CLOCKS_EMAILS(props) {
         return _CHILD_VARS;
     }
 
-
     const _GET_EMAIL_BODY = (_body) => {
         let _email_body = "";
         let CURRENT_ITEM = props.currentItem;
-
-
 
         if (_body == 3 || _body == null) {
             _email_body = `
@@ -423,9 +420,9 @@ function FUN_CLOCKS_EMAILS(props) {
                                         <div className="text-end m-3">
                                             <p className="lead text-end fw-bold text-uppercase">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <MDBBtn className="btn btn-secondary mx-3" onClick={() => this.minusAttachEmail()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <button type="button" className="btn btn-secondary mx-3" onClick={() => this.minusAttachEmail()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                                                 : ""}
-                                            <MDBBtn className="btn btn-secondary" onClick={() => this.addAttachEmail()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <button type="button" className="btn btn-secondary" onClick={() => this.addAttachEmail()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>

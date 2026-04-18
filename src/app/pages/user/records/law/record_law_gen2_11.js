@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
@@ -319,13 +319,9 @@ function RECORD_LAW_GEN2_11(props) {
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                                <i className="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_gen(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
+                                <i className="far fa-edit fa-2x"></i></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_gen(row.id)}><i className="far fa-trash-alt fa-2x"></i></button></span>
 
                     </>
                 },
@@ -698,12 +694,8 @@ function RECORD_LAW_GEN2_11(props) {
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEditTax(row)}><i className="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_tax(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEditTax(row)}><i className="far fa-edit fa-2x"></i></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_tax(row.id)}><i className="far fa-trash-alt fa-2x"></i></button></span>
                     </>
                 },
             ]
@@ -1206,7 +1198,6 @@ function RECORD_LAW_GEN2_11(props) {
             formData.set('desc', desc);
             let id_6 = document.getElementById("r_lg_liberty_11_edit").value;
             formData.set('id_6', id_6);
-
 
             MySwal.fire({
                 title: swaMsg.title_wait,

@@ -8,7 +8,6 @@ import withReactContent from 'sweetalert2-react-content'
 import dayjs from 'dayjs';
 import { infoCud } from '../../../../components/jsons/vars';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { MDBBtn } from '../../../../components/ui';
 
 const MySwal = withReactContent(Swal);
 function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate, swaMsg, alert }) {
@@ -915,7 +914,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                         </div>
                         : ''}
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</button>
                     </div>
                 </div>
             </form>

@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Record_lawService from '../../../../services/record_law.service';
@@ -188,8 +188,6 @@ function RECORD_LAW_STEP_1(props) {
                     });
             }
         }
-
-
 
         return (
             <div className="record_law_step_1 container">

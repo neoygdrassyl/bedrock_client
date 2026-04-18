@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -304,7 +304,6 @@ export default function FUN_D_ABDICATE(props) {
         formData.set('date_year_2', year_2);
         formData.set('date_ll_2', dateParser(document.getElementById('fda_res_date_1').value));
 
-
         formData.set('f51_name', document.getElementById('fda_f51').value);
         formData.set('f51_id_number', document.getElementById('fda_f51_id').value);
         formData.set('f51_role', document.getElementById('fda_f51_role').value);
@@ -359,7 +358,7 @@ export default function FUN_D_ABDICATE(props) {
             <div className='border p-2'>
                 {_COMPONENT()}
                 <div className='text-center my-2'>
-                    <MDBBtn className="btn btn-danger my-3" onClick={(e) => get_pdf(e)}><i className="far fa-file-pdf"></i> GENERAR PDF</MDBBtn>
+                    <button type="button" className="btn btn-danger my-3" onClick={(e) => get_pdf(e)}><i className="far fa-file-pdf"></i> GENERAR PDF</button>
                 </div>
             </div>
         </>

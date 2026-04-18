@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -197,14 +197,10 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <MDBTooltip title='Desasignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
+                        <button title="Desasignar Profesional" className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
                                 <i className="fas fa-user-minus fa-2x"></i></button>
-                        </MDBTooltip>
-                        <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setWorker(row)}>
+                        <button title="Enviar Correo" className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setWorker(row)}>
                                 <i className="far fa-paper-plane fa-2x"></i></button>
-                        </MDBTooltip>
                     </>,
                 },
             ]
@@ -254,7 +250,7 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                         <tbody>
                             <tr>
                                 <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                                <td><MDBBtn className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i className="fas fa-cloud-download-alt fa-2x"></i></MDBBtn></td>
+                                <td><button type="button" className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i className="fas fa-cloud-download-alt fa-2x"></i></button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -477,7 +473,6 @@ function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, 
                                         closeComponent={() => setWorker(false)}
                                     />
                                 </> : ""}
-
 
                         </fieldset>
 

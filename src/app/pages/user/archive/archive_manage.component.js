@@ -1,9 +1,8 @@
-import { MDBBtn } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
-
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -11,15 +10,11 @@ const MySwal = withReactContent(Swal);
 export default function ARCHIVE_MANAGE(props) {
     const { translation, swaMsg, globals, currentItem } = props;
 
-
     // ***************************  DATA CONVERTER *********************** //
-
 
     // ***************************  JXS *********************** //
 
-
     // ***************************  DATATABLES *********************** //
-
 
     // ***************************  APIS *********************** //
     function create() {
@@ -83,7 +78,6 @@ export default function ARCHIVE_MANAGE(props) {
         let box = document.getElementById("achr_3").value;
         formData.set('box', box);
 
-
         MySwal.fire({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
@@ -141,8 +135,8 @@ export default function ARCHIVE_MANAGE(props) {
             <div className='row my-3'>
                 <div className='col text-end'>
                     {currentItem ?
-                        <MDBBtn className="btn btn-sm btn-success" onClick={() => update()}><i className="far fa-edit"></i> ACTUALIZAR</MDBBtn>
-                        : <MDBBtn className="btn btn-sm btn-success" onClick={() => create()}><i className="fas fa-plus-circle"></i> CREAR</MDBBtn>}
+                        <button type="button" className="btn btn-sm btn-success" onClick={() => update()}><i className="far fa-edit"></i> ACTUALIZAR</button>
+                        : <button type="button" className="btn btn-sm btn-success" onClick={() => create()}><i className="fas fa-plus-circle"></i> CREAR</button>}
                 </div>
             </div>
         </>

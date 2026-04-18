@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { MDBBtn } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -125,7 +125,7 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                     minWidth: '150px',
                     cell: row => <>
                         <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i className="fas fa-cloud-download-alt fa-2x"></i></a>
-                        <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
+                        <button type="button" className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></button>
                     </>,
                 },
             ]
@@ -194,7 +194,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                     let reply_formal = document.getElementById('pqrs_formal_time').value
                     formData.set('reply_formal', reply_formal);
 
-
                     let files = document.getElementsByName("files_close");
 
                     formData.set('attachs_length', attachs);
@@ -253,7 +252,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                 array_form.push(array_html[i].value)
             }
             formData.set('files_names', array_form);
-
 
             MySwal.fire({
                 title: swaMsg.title_wait,
@@ -342,8 +340,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                             />
                         </fieldset>
 
-
-
                         <fieldset className="p-3">
                             <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
                                 <label className="app-p lead fw-normal text-uppercase">INFORMACIÓN DE RESPUESTAS</label>
@@ -366,7 +362,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                                 />
 
                             </> : ""}
-
 
                         <fieldset className="p-3">
                             <legend className="my-2 px-3 text-uppercase bg-warning" id="pqrs_info_1">
@@ -463,7 +458,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                                      */}
                                  
 
-
                                     <div className="my-2 p-2">
                                         <PQRS_EMAILS
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -495,16 +489,16 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                                         <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
                                         <div className="text-end m-3">
                                             {attachs > 0
-                                                ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                                                 : ""}
-                                            <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
                                         {
                                             /**
                                              * 
                                              *    <div className="text-center m-3">
-                                            {attachs > 0 ? <MDBBtn className="btn btn-lg btn-warning my-2" onClick={() => addAttachsClose()}><i className="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </MDBBtn> : ""}
+                                            {attachs > 0 ? <button type="button" className="btn btn-lg btn-warning my-2" onClick={() => addAttachsClose()}><i className="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </button> : ""}
                                         </div>
                                              */
                                         }

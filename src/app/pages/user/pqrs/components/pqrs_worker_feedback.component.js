@@ -1,4 +1,4 @@
-import { MDBTooltip } from '../../../../components/ui';
+
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
@@ -69,14 +69,12 @@ function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentI
                     minWidth: '150px',
                     cell: row => <>
                         {row.worker_id == window.user.id || window.user.roleId == 1
-                            ? <MDBTooltip title='Dar visto' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                                <button onClick={() => setFeedback(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                    <i className="far fa-check-square fa-2x"></i></button></MDBTooltip>
+                            ? <button title="Dar visto" onClick={() => setFeedback(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
+                                    <i className="far fa-check-square fa-2x"></i></button>
                             : ""}
                         {window.user.roleId == 5 || window.user.roleId == 1 || window.user.roleId == 2
-                            ? <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                                <button onClick={() => setWorker(row)} className="btn btn-sm btn-warning m-0 p-2 shadow-none">
-                                    <i className="far fa-paper-plane fa-2x"></i></button></MDBTooltip>
+                            ? <button title="Enviar Correo" onClick={() => setWorker(row)} className="btn btn-sm btn-warning m-0 p-2 shadow-none">
+                                    <i className="far fa-paper-plane fa-2x"></i></button>
                             : ""}
                     </>,
                 },

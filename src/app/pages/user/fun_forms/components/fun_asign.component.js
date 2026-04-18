@@ -4,7 +4,7 @@ import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn, MDBPopover, MDBPopoverBody, MDBTooltip } from '../../../../components/ui';
+import { MDBPopover, MDBPopoverBody } from '../../../../components/ui';
 import { dateParser_dateDiff, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import TABLE_COMPONENT_EXPANDED from './table_components/table.component_expanded';
 import HeatMap from '@uiw/react-heat-map';
@@ -84,7 +84,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     const LoadTitleShort = { 'law': 'J', 'arc': 'A', 'eng': 'E' }
     const LoadTypeShort = { 'i': 'I', 'ii': 'II', 'iii': 'III', 'iv': 'IV', 'oa': 'OA', '0': 'III' }
 
-
     var [id1, setId1] = useState(`${nomens}${dayjs().subtract(1, 'year').format('YY')}-0000`);
     var [id2, setId2] = useState(`${nomens}${dayjs().format('YY')}-9999`);
     var [data, setData] = useState([])
@@ -142,7 +141,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     useEffect(() => {
         if (load2) updateCurateW();
     }, [filterEng, filterArc, filterLaw]);
-
 
     // ***************************  DATA GETTERS *********************** //
     function retrieveMacro() {
@@ -376,7 +374,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     if (names.type == 'arc' && filterArc && !isOA) rowCon = _con_arc(value)
                     if (names.type == 'eng' && filterEng && !isOA) rowCon = _con_eng(value)
 
-
                     if (rowCon == 1 || rowCon == 2 || rowCon == 3 || rowCon == 5) {
                         let _color = value.state == 5 ? _colorI[rowCon] : 'dark';
                         workers.push({
@@ -500,25 +497,25 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 </span>
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
-                <MDBBtn onClick={() => {
+                <button type="button" className="btn btn-primary" onClick={() => {
                     setData([]);
                     setLoad(false);
 
                     setLoad2(false);
                     setDataW([]);
-                }}>CARGAR</MDBBtn>
+                }}>CARGAR</button>
             </div>
         );
     }
     const iconsComponent = () => {
         return (
             <div className="input-group mt-1">
-                <MDBBtn link className='m-0 px-2' outline={!filterState} color="dark" size="sm" onClick={() => { setFilterState(!filterState); }}><i className="fas fa-check-square"></i></MDBBtn>
-                <MDBBtn link className='m-0 px-2' outline={!filterLaw} size="sm" onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><i className="fas fa-balance-scale"></i></MDBBtn>
-                <MDBBtn link className='m-0 px-2' outline={!filterArc} size="sm" onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <i className="far fa-building "></i></MDBBtn>
-                <MDBBtn link className='m-0 px-2' outline={!filterEng} size="sm" onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><i className="fas fa-cogs"></i> </MDBBtn>
+                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterState ? "btn-outline-dark" : "btn-dark"}`} onClick={() => { setFilterState(!filterState); }}><i className="fas fa-check-square"></i></button>
+                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterLaw ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><i className="fas fa-balance-scale"></i></button>
+                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterArc ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <i className="far fa-building "></i></button>
+                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterEng ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><i className="fas fa-cogs"></i> </button>
                 {currenItem != null ?
-                    <MDBBtn link className='m-0 px-2' color="danger" size="sm" onClick={() => { setCurrentItem(null); setSbtn(null) }}><i className="fas fa-times"></i> </MDBBtn>
+                    <button type="button" className="m-0 px-2 btn btn-danger btn-sm" onClick={() => { setCurrentItem(null); setSbtn(null) }}><i className="fas fa-times"></i> </button>
                     : ''}
             </div>
         );
@@ -547,8 +544,8 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 return <>
                     <div className="row mb-1">
                         <div className='col'>
-                            <MDBBtn outline={!isSelected} rounded block size='sm' style={{ backgroundColor: isSelected ? worker.color : 'whitesmoke', color: 'black', borderColor: "white" }}
-                                onClick={() => setWorkerChecked(worker.name)} >{worker.icon} {worker.name} ({worker.datas.length})</MDBBtn>
+                            <button type="button" className={`btn btn-sm rounded-pill w-100 ${!isSelected ? "btn-outline-secondary" : ""}`} style={{ backgroundColor: isSelected ? worker.color : 'whitesmoke', color: 'black', borderColor: "white" }}
+                                onClick={() => setWorkerChecked(worker.name)} >{worker.icon} {worker.name} ({worker.datas.length})</button>
                         </div>
                     </div>
                 </>
@@ -703,7 +700,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                         <li className={classList} style={{ backgroundColor: worker.color, }}>
                             <div className='row'>
                                 <div className='col'>
-                                    {worker.icon} {worker.name} ({worker.datas.filter(item => _filter(item)).length}) {worker.icon ? <MDBBtn rounded size='sm' onClick={() => {setModalF(true); setCurrentProf({name: worker.name, type: wType, id: worker.id})}} >Ver historial</MDBBtn>: null}
+                                    {worker.icon} {worker.name} ({worker.datas.filter(item => _filter(item)).length}) {worker.icon ? <button type="button" className="btn btn-primary btn-sm rounded-pill" onClick={() => {setModalF(true); setCurrentProf({name: worker.name, type: wType, id: worker.id})}} >Ver historial</button>: null}
                                 </div>
                             </div>
                         </li>
@@ -933,7 +930,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     }
     // ******************************* APIS **************************** // 
 
-
     return <>
         {TOP_PAGE()}
         {CALENDAR()}
@@ -948,15 +944,15 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {currenItem ? currenItem.id_public : ''} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => setModal(false)} />
                     </div>
 
                     {BOT_PAGE()}
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={() => setModal(false)}>
+                        <button type="button" className="btn btn-info" onClick={() => setModal(false)}>
                             <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i className="fas fa-times-circle"></i> CERRAR</div>
-                        </MDBBtn>
+                        </button>
                     </div>
                 </Modal>
 
@@ -967,7 +963,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="far fa-file-alt"></i> HISTORIAL DE ASIGNACIONES:  {currentProf ? currentProf.name : ''} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => setModalF(false)}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => setModalF(false)} />
                     </div>
 
                     <FUN_ASIGNS_HISTORY_COMPONENT 
@@ -978,9 +974,9 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     />
 
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={() => setModalF(false)}>
+                        <button type="button" className="btn btn-info" onClick={() => setModalF(false)}>
                             <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i className="fas fa-times-circle"></i> CERRAR</div>
-                        </MDBBtn>
+                        </button>
                     </div>
                 </Modal>
             </>
@@ -988,5 +984,4 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             : <div className='row text-center' > <label className='fw-normal lead text-muted'>CARGANDO...</label></div>}
     </>;
 }
-
 

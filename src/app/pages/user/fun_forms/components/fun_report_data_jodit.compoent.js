@@ -1,15 +1,13 @@
 import { useRef, useState } from 'react';
 import { dateParser, dateParser_finalDate, formsParser1 } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
-import { MDBBtn } from '../../../../components/ui';
+
 import { infoCud } from '../../../../components/jsons/vars';
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import dayjs from 'dayjs';
 
-
 export const FUN_REPORT_DATA_JODIT = (props) => {
     const { translation, swaMsg, globals, currentItem, currentVersion } = props;
-
 
     // DATA GETERS
     let _GET_CHILD_1 = () => {
@@ -205,7 +203,6 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
     const editor = useRef(null)
     const [content, setContent] = useState(default_content)
 
-
     const config = () => {
         return {
             readonly: false, // all options from https://xdsoft.net/jodit/doc/,
@@ -234,8 +231,6 @@ export const FUN_REPORT_DATA_JODIT = (props) => {
             }
         }
     }
-
-
 
     let _JODIT_COMPONENT = () => {
 

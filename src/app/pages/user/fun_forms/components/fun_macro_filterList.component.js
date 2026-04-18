@@ -1,9 +1,7 @@
 import { Component, useState } from 'react';
-import { MDBBadge, MDBBtn, MDBCollapse, MDBTooltip } from '../../../../components/ui';
+import { MDBCollapse } from '../../../../components/ui';
 import Modal from 'react-modal';
 import './fun_modal_shared.css';
-
-
 
 export default function FUN_MACROTABLE_FILTERLIST(props) {
     const { idRef, text } = props;
@@ -282,10 +280,7 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
             ]
         },
 
-
-
     ];
-
 
     let toggle = (id) => {
         setModal(!modal)
@@ -300,17 +295,17 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
                 {data.map((parent, i) => {
                     return <>
                         <ul className="list-group">
-                            <MDBBtn tag='a' outline color={parent.color} className={'my-1 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
+                            <button type="button" tag='a' outline color={parent.color} className={'my-1 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
                                 onClick={(prevState) => setCollapsables({ ...prevState, [parent.title]: !collapsables[parent.title] })}>
                                 <label className="app-p lead fw-normal text-muted" >{i + 1}. {parent.title}</label>
-                            </MDBBtn>
+                            </button>
                             <MDBCollapse show={collapsables[parent.title]}>
                                 {parent.children.map(child => {
                                     if (child.badge) return <>{
                                         child.filter ? <li className="list-group-item">
-                                            <MDBBadge color={parent.color}>
+                                            <span className={`badge bg-${parent.color}`}>
                                                 <label className="fw-bold app-pointer" onClick={(e) => props.setValues(e.target.innerText)}>{child.filter}</label>
-                                            </MDBBadge> {child.label}</li>
+                                            </span> {child.label}</li>
                                             : ''
                                     }
                                         {child.ex ? EX(child) : ''}</>;
@@ -327,7 +322,7 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
     }
     return (
         <div>
-            <MDBBtn className="btn btn-primary shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i className="fas fa-th-list"></i> {text}</MDBBtn>
+            <button type="button" className="btn btn-primary shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i className="fas fa-th-list"></i> {text}</button>
             <Modal contentLabel="GENERAL VIEW FUN"
                 isOpen={modal}
                 style={customStylesForModal}
@@ -336,15 +331,12 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
 
                 <div className="my-4 d-flex justify-content-between">
                     <label><i className="fas fa-th-list"></i> LISTA DE FILTROS</label>
-                    <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
+                    <button type="button" className="btn-close" onClick={toggle} />
                 </div>
                 {_COMPONENT_LIST()}
 
-
-
-
                 <div className="text-end py-1 mt-2">
-                    <MDBBtn className="btn btn-lg btn-info" onClick={() => setModal(false)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <button type="button" className="btn btn-lg btn-info" onClick={() => setModal(false)}><i className="fas fa-times-circle"></i> CERRAR</button>
                 </div>
             </Modal>
 

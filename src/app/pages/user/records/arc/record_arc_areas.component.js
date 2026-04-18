@@ -3,7 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { Spreadsheet } from "react-spreadsheet";
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { MDBBtn, MDBCollapse } from '../../../../components/ui';
+import { MDBCollapse } from '../../../../components/ui';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import TagInput from '../../../../components/TagInput';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
@@ -238,7 +238,6 @@ export default function RECORD_ARC_AREAS(props) {
         return sum;
     }
 
-
     let _GET_TOTAL_AREA = (_build, _historic) => {
         if (!_build) return 0;
         var build = _build.split(",");
@@ -259,7 +258,6 @@ export default function RECORD_ARC_AREAS(props) {
         let sum = destroy.reduce((p, n) => Number(p) + Number(n))
         return (sum).toFixed(2);
     }
-
 
     let _GET_NET_INDEX = (_build, _destroy, _historic) => {
         if (!_build) return 0;
@@ -473,7 +471,6 @@ export default function RECORD_ARC_AREAS(props) {
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 0), name: 'build_0', },)
         }
 
-
         if (child.m_lic.includes('g') && !_header.includes('Demolida parcial')) {
             _header.splice(spliceOffset, 0, 'Demolida parcial')
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 7), name: 'build_7', },)
@@ -482,7 +479,6 @@ export default function RECORD_ARC_AREAS(props) {
             _header.splice(spliceOffset, 0, 'Demolida total')
             _cells.splice(spliceOffset, 0, { value: (v) => _CHECK_AREA_STR(v, 'build', 6), name: 'build_6', },)
         }
-
 
         tagsH.map((tag, i) => {
             if (!_header.includes(tag)) {
@@ -497,8 +493,6 @@ export default function RECORD_ARC_AREAS(props) {
                 _cells.splice(spliceOffset + i, 0, { value: (v) => _CHECK_AREA_STR(v, 'empate_h', i, ';'), name: 'empate_' + i, },)
             }
         })
-
-
 
         destory_check.map((label, i) => {
             if (destroy_cb[i] === 'true' && !_header.includes(label)) {
@@ -743,7 +737,6 @@ export default function RECORD_ARC_AREAS(props) {
                             })
                         }
 
-
                         if (_h.includes('Empate: ')) {
                             tagsE.map((tag, i) => {
                                 if (_h === 'Empate: ' + tag) {
@@ -752,8 +745,6 @@ export default function RECORD_ARC_AREAS(props) {
                                 }
                             })
                         }
-
-
 
                         cell.push(cellObj)
                     }
@@ -792,7 +783,6 @@ export default function RECORD_ARC_AREAS(props) {
             newData.splice(newData.length - 1, 0, newRow)
         }
 
-
         for (let i = 0; i < ss; i++) {
             let newRow = Array.from(data[0]).map(v => { return { name: v.name } })
             let rowAdd = { value: "Semisótano", name: 'floor', }
@@ -806,9 +796,6 @@ export default function RECORD_ARC_AREAS(props) {
             newRow.splice(3, 1, rowAdd)
             newData.splice(newData.length - 1, 0, newRow)
         }
-
-
-
 
         setData(newData)
     }
@@ -850,12 +837,12 @@ export default function RECORD_ARC_AREAS(props) {
             <div className='row'>
                 <div className='col-8'>
                     <div className="btn-group btn-group-sm" role="group" aria-label="...">
-                        <MDBBtn color='primary' outline={!openConfig} size='sm'
-                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</MDBBtn>
-                        <MDBBtn color='primary' outline size='sm'
-                            onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</MDBBtn>
-                        <MDBBtn color='success' outline size='sm'
-                            onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</MDBBtn>
+                        <button type="button" className={`btn btn-sm ${!openConfig ? "btn-outline-primary" : "btn-primary"}`}
+                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</button>
+                        <button type="button" className="btn btn-outline-primary btn-sm"
+                            onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</button>
+                        <button type="button" className="btn btn-outline-success btn-sm"
+                            onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</button>
                     </div>
                     <div>
                         {saving === 0 ?
@@ -871,8 +858,8 @@ export default function RECORD_ARC_AREAS(props) {
                     <div className="btn-group btn-group-sm" role="group" aria-label="...">
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area" />
                         <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area_end" />
-                        <MDBBtn color='danger' outline size='sm'
-                            onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</MDBBtn>
+                        <button type="button" className="btn btn-outline-danger btn-sm"
+                            onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</button>
                     </div>
                 </div>
             </div>
@@ -1005,7 +992,7 @@ export default function RECORD_ARC_AREAS(props) {
                             </div>
                         </div>
                         <div className='col-3'>
-                            <MDBBtn color='primary' outline size='sm' onClick={() => _NEW_BD()}>CREAR</MDBBtn>
+                            <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => _NEW_BD()}>CREAR</button>
                         </div>
                         <div className='col'>
                             <div className="form-check">
@@ -1053,7 +1040,6 @@ export default function RECORD_ARC_AREAS(props) {
                 units_a[i] = getCellByName(cells, 'units_a_' + i) || 0;
             }
 
-
             let historic = [];
             let empate = [];
             let STEP = LOAD_STEP('a_config');
@@ -1067,7 +1053,6 @@ export default function RECORD_ARC_AREAS(props) {
             for (let i = 0; i < tagsEL; i++) {
                 empate.push(getCellByName(cells, 'empate_' + i) || 0)
             }
-
 
             let newArea = {
                 id_public: getCellByName(cells, 'id_public') ?? '',
@@ -1257,10 +1242,8 @@ export default function RECORD_ARC_AREAS(props) {
                 });
             });
 
-
     }
     // ************
-
 
     let manage_fun_1 = () => {
         let formData = new FormData();
@@ -1398,7 +1381,6 @@ export default function RECORD_ARC_AREAS(props) {
             check.push(cb.checked)
         }
         json.units_a_cb = check.join(';');
-
 
         var checks_html = document.getElementById('cb_level_rule').checked ? 1 : 0;
         formData.set('check', checks_html);

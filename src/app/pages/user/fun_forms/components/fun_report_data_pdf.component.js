@@ -3,13 +3,12 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from '../../../../services/fun.service'
 import { cities, infoCud } from '../../../../components/jsons/vars';
-import { MDBBtn } from '../../../../components/ui';
+
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 
 const MySwal = withReactContent(Swal);
 import dayjs from 'dayjs';
 function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
-
 
         // DATA GETERS
         let _GET_CHILD_1 = () => {
@@ -678,7 +677,6 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                         </>
                         : ''}
 
-
                     <div className="row text-center">
                         <div className="col">
                             <button className="btn btn-success my-3">
@@ -686,9 +684,9 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                             </button>
                         </div>
                         <div className="col">
-                            <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen()}>
+                            <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}>
                                 <i className="far fa-file-pdf"></i> GENERAR PDF
-                            </MDBBtn>
+                            </button>
                         </div>
                     </div>
                 </form>

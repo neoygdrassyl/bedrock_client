@@ -1,7 +1,6 @@
 import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn } from '../../../components/ui';
 
 const MySwal = withReactContent(Swal);
 const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
@@ -393,10 +392,10 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 {_CHILD_2_COMPONENT()}
                 <div className="row mb-3 text-center">
                     <div className="col-6">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => new_2()}><i className="far fa-file-alt"></i> ACTUALIZAR </MDBBtn>
+                        <button type="button" className="btn btn-success my-3" onClick={() => new_2()}><i className="far fa-file-alt"></i> ACTUALIZAR </button>
                     </div>
                     <div className="col-6">
-                            <MDBBtn className="btn btn-warning my-3" onClick={() => _RESET_FORM_2()}><i className="fas fa-eraser"></i> LIMPIAR (2.4 y 2.5) </MDBBtn>
+                            <button type="button" className="btn btn-warning my-3" onClick={() => _RESET_FORM_2()}><i className="fas fa-eraser"></i> LIMPIAR (2.4 y 2.5) </button>
                         </div>
                 </div>
             </fieldset>

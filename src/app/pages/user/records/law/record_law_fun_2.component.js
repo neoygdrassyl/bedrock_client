@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import Record_lawService from '../../../../services/record_law.service';
 import Modal from 'react-modal';
-import { MDBBtn } from '../../../../components/ui';
+
 import FUNN2 from '../../fun_forms/fun_n_2'
 
 export default function RECORD_LAW_FUN_2(props) {
@@ -427,7 +427,7 @@ export default function RECORD_LAW_FUN_2(props) {
             >
                 <div className="my-4 d-flex justify-content-between">
                     <label className="fw-bold align-middle"> <i className="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
+                    <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
                 </div>
 
                 <FUNN2
@@ -437,7 +437,6 @@ export default function RECORD_LAW_FUN_2(props) {
                     currentItem={currentItem}
                     currentVersion={currentVersion}
                     requestUpdate={props.requestUpdate} />
-
 
             </Modal>
         </>
@@ -543,7 +542,6 @@ export default function RECORD_LAW_FUN_2(props) {
                 });
         }
     }
-
 
     return (
         <div>

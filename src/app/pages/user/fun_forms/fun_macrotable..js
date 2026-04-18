@@ -3,10 +3,9 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
 import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
-import { MDBBadge, MDBBtn, MDBCollapse, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from '../../../components/ui';
+import { MDBCollapse, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTabsContent, MDBTabsPane } from '../../../components/ui';
 import TagInput from "../../../components/TagInput";
 import Collapsible from '../../../components/Collapsible';
-
 
 import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
@@ -38,7 +37,6 @@ import FUN_MACROTABLE_FILTERLIST from './components/fun_macro_filterList.compone
 import FUN_CHART_NEGATIVE from './components/charts_components.js/chart_negative.component';
 import FUN_CHART_TIME from './components/charts_components.js/chart_time.component';
 import ChartErrorBoundary from '../../../components/ChartErrorBoundary';
-
 
 const MySwal = withReactContent(Swal);
 const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15, '0': 45 };
@@ -478,7 +476,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             'alltype': (row) => { return row.clocks_version ? row.clocks_version.split(';').some(value => value <= -1) : false },
         }
 
-
         for (var i = 0; i < _FULL_LIST.length; i++) {
             for (var j = 0; j < _FILTERS.length; j++) {
                 if (_FILTERS[j] == 'relax') forcedConditions = false;
@@ -529,7 +526,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 if (_FULL_LIST[i].state == 101) currentState = 7;
 
                 if (_FULL_LIST[i].state < -100) currentState = 8;
-
 
                 if (targetState > 0 && currentState > 0) {
                     if (sFILTER.includes('*') && currentState >= targetState) meetCondition = true;
@@ -822,7 +818,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     if (counterConditions > 0 && condition_state) meetCondition = true;
                 }
 
-
                 // PQRS X FUN 
                 if (sFILTER == 'pqrs' && _FULL_LIST[i].pqrs > 0) meetCondition = true;
 
@@ -887,7 +882,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                         })
                     }
 
-
                 }
                 // TAG
                 if ((sFILTER.includes('tag:') || sFILTER.includes('t:')) && sFILTER[0] == 't') {
@@ -944,7 +938,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                         let number = Number(rank)
                         if (_FULL_LIST[i].priority_rank == number) meetCondition = true;
                     }
-
 
                 }
 
@@ -1623,7 +1616,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     : ""
             },
 
-
             {
                 name: <label className="text-center text-primary fw-bold">FECHA ACTA P.1</label>,
                 selector: row => row.clock_record_p1,
@@ -2190,7 +2182,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             return ""
         }
 
-
         let _MODULE_BTN_POP = (row) => {
             const isOA = regexChecker_isOA_2(row);
             let rules = row.rules ? row.rules.split(';') : [];
@@ -2234,11 +2225,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     </div>
                 </div>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
+                <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
                         <i className="far fa-chart-bar"></i> GRAFICAS GENERALES
                     </label>
-                </MDBBtn>}>
+                </button>}>
                     <div>
                         <div className="row">
                             <div className="col-4">
@@ -2282,11 +2273,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     </div>
                 </Collapsible>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
+                <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
                         <i className="far fa-chart-bar"></i> GRAFICA DE ASIGNACION
                     </label>
-                </MDBBtn>}>
+                </button>}>
                     <div>
                         <div className="row">
                             {/**
@@ -2311,11 +2302,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     </div>
                 </Collapsible>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
+                <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
                         <i className="far fa-chart-bar"></i> GRAFICAS DE EVALUACION
                     </label>
-                </MDBBtn>}>
+                </button>}>
                     <div>
                         <div className="row">
                             <div className="col-4">
@@ -2357,11 +2348,11 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     </div>
                 </Collapsible>
 
-                <Collapsible className="bg-info py-0 my-1" trigger={<MDBBtn tag='a' size='sm' outline color={'info'} className={'my-1 py-0 text-uppercase bg-light'}>
+                <Collapsible className="bg-info py-0 my-1" trigger={<button type="button" className="btn btn-outline-info btn-sm my-1 py-0 text-uppercase bg-light">
                     <label className="fw-normal text-muted my-0 py-0" >
                         <i className="far fa-chart-bar"></i> GRAFICA DE LICENCIAS EXPEDIDAS
                     </label>
-                </MDBBtn>}>
+                </button>}>
                     <div>
                         <div className="row">
                             <ChartErrorBoundary>
@@ -2397,7 +2388,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                         </div>
                         <FUN_MACROTABLE_FILTERLIST idRef={'btn-filter'} setValues={(newTags) => _UPDATE_FILTERS(newTags)} text={'LISTA DE FILTROS'} />
                         <div className="input-group-prepend">
-                            <MDBBtn color='secondary' outline={state.includeEx} onClick={(e) => changeList(!state.includeEx)}><i className="fas fa-database"></i> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</MDBBtn>
+                            <button type="button" className={`btn ${state.includeEx ? "btn-outline-secondary" : "btn-secondary"}`} onClick={(e) => changeList(!state.includeEx)}><i className="fas fa-database"></i> {state.includeEx ? 'EXCLUIR' : 'INCLUIR'} EXPEDIDAS</button>
                         </div>
                     </div>
                 </div>
@@ -2539,7 +2530,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
                     },
                 },
-
 
                 {
                     name: <label>ARQ. ASIGN OVBSERVACIONES</label>,
@@ -2748,7 +2738,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             let csvContent = "data:text/csv;charset=utf-8,"
                 + rows.map(e => e.join(";")).join("\n");
 
-
             var encodedUri = encodeURI(csvContent);
             const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
 
@@ -2776,7 +2765,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             let csvContent = "data:text/csv;charset=utf-8,"
                 + rows.map(e => e.join(";")).join("\n");
 
-
             var encodedUri = encodeURI(csvContent);
             const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
 
@@ -2793,24 +2781,24 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 {_COMPONENT_CHARTS()}
                 {_COMPONENT_FILTER()}
 
-                <MDBTabs fill className='m-0 border' pills>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('1')} active={state.fillActive === '1'}>
+                <nav className="nav nav-tabs">
+                    
+                        <button type="button" className={`nav-link ${state.fillActive === '1' ? "active" : ""}`} onClick={() => handleFillClick('1')}>
                             <label className="upper-case">GENERAL ({state.data_macro_filter.length})</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('2')} active={state.fillActive === '2'}>
+                        </button>
+                    
+                    
+                        <button type="button" className={`nav-link ${state.fillActive === '2' ? "active" : ""}`} onClick={() => handleFillClick('2')}>
                             <label className="upper-case">OTRAS ACTUACIONES ({state.data_oa.length})</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-1')} active={state.fillActive === '-1'}>
+                        </button>
+                    
+                    
+                        <button type="button" className={`nav-link ${state.fillActive === '-1' ? "active" : ""}`} onClick={() => handleFillClick('-1')}>
                             <label className="upper-case text-danger">DESISTIMIENTOS ({state.data_negative.length})</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
+                        </button>
+                    
 
-                </MDBTabs>
+                </nav>
 
                 <MDBTabsContent>
 
@@ -2832,8 +2820,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 title={
                                     <div className="d-flex justify-content-between">
                                         <div><h5>LICENCIAS URBANISTICAS</h5></div>
-                                        <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(state.data_macro_filter) }}
-                                        ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                        <div><button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVS(state.data_macro_filter) }}
+                                        ><i className="fas fa-file-csv"></i> DESCARGAR CSV</button></div>
                                     </div>
                                 }
                                 dense
@@ -2876,8 +2864,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 title={
                                     <div className="d-flex justify-content-between">
                                         <div><h5>OTRAS ACTUACIONES</h5></div>
-                                        <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVS(state.data_oa, "OTRAS ACTUACIONES") }}
-                                        ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                        <div><button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVS(state.data_oa, "OTRAS ACTUACIONES") }}
+                                        ><i className="fas fa-file-csv"></i> DESCARGAR CSV</button></div>
                                     </div>
                                 }
                                 progressPending={!load}
@@ -2928,8 +2916,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                     title={
                                         <div className="d-flex justify-content-between">
                                             <div><h5>DESISTIDOS / DESISTENDO</h5></div>
-                                            <div><MDBBtn outline color='success' size="sm" onClick={() => { generateCVSNegative(state.data_negative, "DESISTIDOS") }}
-                                            ><i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn></div>
+                                            <div><button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVSNegative(state.data_negative, "DESISTIDOS") }}
+                                            ><i className="fas fa-file-csv"></i> DESCARGAR CSV</button></div>
                                         </div>
                                     }
                                     dense
@@ -2967,7 +2955,6 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     </MDBTabsPane>
                         */
                     }
-
 
                 </MDBTabsContent>
             </div >

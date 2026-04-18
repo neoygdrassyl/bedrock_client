@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+
 import Modal from 'react-modal';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import FUN_SERVICE from '../../../../services/fun.service'
@@ -100,14 +100,10 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                                <i className="far fa-edit fa-2x "></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger btn-sm  m-0 p-2 shadow-none" onClick={() => delete_6_h(row.id)}>
-                                <i className="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
+                                <i className="far fa-edit fa-2x "></i></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-2 shadow-none" onClick={() => delete_6_h(row.id)}>
+                                <i className="far fa-trash-alt fa-2x"></i></button></span>
                     </>
                 },
             ]
@@ -324,8 +320,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
         }
         return (
             <div>
-                <MDBTooltip title='Ver Historial' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 ms-1">
-                    {/* FIX: Changed from MDBBtn to span to avoid nested button issues */}
+                <span title="Ver Historial">{/* FIX: Changed from MDBBtn to span to avoid nested button issues */}
                     <span 
                         role="button" 
                         tabIndex={0} 
@@ -334,8 +329,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggle(true); }}
                         style={{cursor: 'pointer'}}>
                         <i className="fas fa-history" style={{fontSize: '150%'}}></i>
-                    </span>
-                </MDBTooltip>
+                    </span></span>
 
                 <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={modal}
@@ -343,10 +337,9 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     ariaHideApp={false}
                 >
 
-
                     <div className="my-4 d-flex justify-content-between">
                         <label className="fw-bold align-middle"> <i className="fas fa-history fa-2x"></i> HISTORIA DEL DOCUMENTO</label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => toggle()}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => toggle()} />
                     </div>
 
                     <div className="form-check ms-5">
@@ -368,7 +361,6 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                         </>
                         : ""}
 
-
                     {load
                         ? <>
                             {COMPONENT_HISTORY()}
@@ -386,9 +378,8 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                         </>
                         : <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>}
 
-
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                        <button type="button" className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR</button>
                     </div>
                 </Modal>
 

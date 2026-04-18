@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../components/ui';
+
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -104,7 +104,6 @@ export default function FUN_ANEX(props) {
                             name="fun_1_a1" defaultValue={VAR[6] || ''} />
                     </div>
                 </div></div>
-
 
         </>
     }
@@ -717,7 +716,6 @@ export default function FUN_ANEX(props) {
         let anex1 = value.join(';');
         formData.set('anex1', anex1);
 
-
         value = []
         checkbox = document.getElementsByName("fun_1_a3");
         for (var i = 0; i < checkbox.length; i++) {
@@ -742,7 +740,6 @@ export default function FUN_ANEX(props) {
             else value.push(0)
         }
         anex2.a212 = value.join(';');
-
 
         value = []
         checkbox = document.getElementsByName("fun_1_a22");
@@ -807,7 +804,6 @@ export default function FUN_ANEX(props) {
             else value.push(0)
         }
         anex2.a29 = value.join(';');
-
 
         formData.set('anex2', JSON.stringify(anex2));
         
@@ -888,7 +884,7 @@ export default function FUN_ANEX(props) {
             <div className="row mb-3 text-center">
                 <hr />
                 <div className="col">
-                    <MDBBtn className="btn btn-success my-3" onClick={() => manage_a()}><i className="far fa-file-alt"></i> ACTUALIZAR </MDBBtn>
+                    <button type="button" className="btn btn-success my-3" onClick={() => manage_a()}><i className="far fa-file-alt"></i> ACTUALIZAR </button>
                 </div>
             </div>
         </fieldset>

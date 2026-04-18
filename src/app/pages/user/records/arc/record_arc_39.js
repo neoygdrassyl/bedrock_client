@@ -275,7 +275,6 @@
 //     this.toggleModal('viewPoints', false);
 //   };
 
-
 //   openEditPredioModal = (predio) => {
 //     this.setState({ 
 //       editingPredio: { ...predio } 
@@ -517,7 +516,7 @@
 //               className="me-2" 
 //               onClick={this.openCreatePredioModal}
 //             >
-//               <MDBIcon icon="plus-square" className="me-1" />Crear Predio
+//               Crear Predio
 //             </Button>
 //             <Button 
 //               size="sm" 
@@ -525,14 +524,14 @@
 //               className="me-2" 
 //               onClick={this.openCreatePointModal}
 //             >
-//               <MDBIcon icon="plus-square" className="me-1" /> Crear Punto
+//                Crear Punto
 //             </Button>
 //             <Button
 //               size="sm"
 //               variant="outline-info"
 //               onClick={this.openViewPointsModal}
 //             >
-//               <MDBIcon icon="list" className="me-1" /> Ver Puntos
+//                Ver Puntos
 //             </Button>
 //           </div>
 //         </div>
@@ -551,7 +550,7 @@
 //                     variant="outline-secondary" 
 //                     onClick={() => this.openEditPredioModal(predio)}
 //                   >
-//                     <MDBIcon far icon="edit" /> Editar Predio
+//                      Editar Predio
 //                   </Button>
 //                 </div>
 //               </div>
@@ -680,14 +679,14 @@
 //                               onClick={() => this.toggleBoundaryForm(predio.id, index)}
 //                               className="me-1"
 //                             >
-//                               <MDBIcon fas icon="plus" />
+//                               <i className="fas fa-plus"></i>
 //                             </Button>
 //                             <Button 
 //                               size="sm" 
 //                               variant="outline-secondary" 
 //                               onClick={() => this.openEditBoundaryModal(boundary, index)}
 //                             >
-//                               <MDBIcon far icon="edit" />
+//                               
 //                             </Button>
 //                           </td>
 //                         </tr>
@@ -1212,7 +1211,7 @@
 //                     <td>{point.coord_y}</td>
 //                     <td>
 //                       <Button variant="outline-secondary" size="sm">
-//                         <MDBIcon far icon="edit" /> Editar
+//                          Editar
 //                       </Button>
 //                     </td>
 //                   </tr>

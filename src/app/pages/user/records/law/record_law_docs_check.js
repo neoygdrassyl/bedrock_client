@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge } from '../../../../components/ui';
 import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import VIZUALIZER from '../../../../components/vizualizer.component';
@@ -152,8 +151,7 @@ function RECORD_LAW_DOCSCHECK(props) {
         if (row.value == 2) bg = { color: 'warning', text: 'NO APLICA', value: 0 }
         let editable = _GET_EDIT_POWERS(row);
 
-
-        return <a href="#!" onClick={() => { if (editable) save_fun_r_2(bg.value, row.code) }}> <MDBBadge color={bg.color}>{bg.text}</MDBBadge></a>
+        return <a href="#!" onClick={() => { if (editable) save_fun_r_2(bg.value, row.code) }}> <span className={`badge bg-${bg.color}`}>{bg.text}</span></a>
     }
     let _GET_EVA_VAKUE = (row) =>{
         if(row.value == 1) return true;
@@ -404,7 +402,6 @@ function RECORD_LAW_DOCSCHECK(props) {
                 });
         }
     }
-
 
     return (
         <div className="record_lar_doc_check container">

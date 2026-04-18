@@ -1,4 +1,4 @@
-import { MDBBadge, MDBBtn, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip, MDBTypography } from '../../../components/ui';
+import { MDBPopover, MDBPopoverBody, MDBPopoverHeader } from '../../../components/ui';
 import dayjs from 'dayjs';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
@@ -14,7 +14,6 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 const MySwal = withReactContent(Swal);
-
 
 function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSubtmitRows, openModal, listIncomplete }) {
     const [currentItems, setCurrentItems] = useState([]);
@@ -219,7 +218,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     bluePrints = true
                 }
             })
-            if (bluePrints === true) return <MDBBadge color="primary" className='mb-3'>PLANOS</MDBBadge>
+            if (bluePrints === true) return <span className="badge bg-primary">PLANOS</span>
         }
         let listVR = (item) => {
             var scodes = item.scodes ? item.scodes.split(',') : [];
@@ -287,7 +286,6 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                 if ((checked[i] == 1 || checked[i] == 0) && code) toSubmit.push(code);
                 if (checked[i] === '1') inChecked.push(code)
             })
-
 
             return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: '800px', minWidth: '800px' }}
                 btnChildren={<i className="fas fa-file-import"></i>}
@@ -407,13 +405,11 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     minWidth: '200px',
                     cell: row => <>
                         {listIncPopOver(row)}
-                        <MDBTooltip title='Documentos' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button
+                        <button
                                 onClick={() => openModal({ ...row, version: 1 }, 'archive')}
                                 className="px-1 btn-sm btn-secondary btn"
                             ><i className="fas fa-archive"></i>
                             </button>
-                        </MDBTooltip>
                     </>,
                 },
             ]
@@ -487,20 +483,16 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     minWidth: '200px',
                     cell: row => <>
                         {listItemPopOver(row)}
-                        <MDBTooltip title='Informacion Solicitud' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button
+                        <button
                                 onClick={() => openModal(row, 'general')}
                                 className="px-1 btn-sm btn-info btn"
                             > <i className="far fa-folder-open" ></i>
                             </button>
-                        </MDBTooltip>
-                        <MDBTooltip title='Asignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button
+                        <button
                                 onClick={() => { setModal(true); setSelectedItem(row); }}
                                 className="px-1 btn-sm btn-warning btn"
                             > <i className="fas fa-user-clock"></i>
                             </button>
-                        </MDBTooltip>
                     </>,
                 },
             ]
@@ -527,21 +519,19 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
         }
 
         let _COMPONENT_SIMPLE = () => {
-            return <MDBTypography note noteColor='danger'>
+            return <div className="alert alert-danger">
                 <div className="row">
                     <div className="col-10">
                         <label className="fw-bold">SOLICITUDES PARA DECLARAR EN LYDF</label>
                     </div>
                     <div className="col text-end">
-                        <MDBTooltip title='Detalles' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <MDBBtn
+                        <span title="Detalles"><button type="button" className="btn"
                                 color="info"
                                 size="sm"
                                 onClick={() => setLicList(prev => !prev)}
                                 className="px-2"
                             > <i className="fas fa-info-circle fa-2x"></i>
-                            </MDBBtn>
-                        </MDBTooltip>
+                            </button></span>
                     </div>
                 </div>
                 {lic_list && (
@@ -550,7 +540,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     </ul>
                 )}
 
-            </MDBTypography>
+            </div>
         }
 
         // CHANGE ONE ROLE ID FOR 3 IN THE FUTURE IF IS NEEDED
@@ -569,7 +559,6 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     {_COMPONENT_SUBMIT_LIST()}
                 </div>
 
-
                 <Modal contentLabel="ASIGN PROFS"
                     isOpen={modal}
                     style={customStylesForModal}
@@ -577,7 +566,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                 >
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {selectedItem ? selectedItem.id_public : ''} </label>
-                        <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={() => setModal(false)} />
                     </div>
 
                     {selectedItem ?
@@ -590,11 +579,10 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                         />
                         : null}
 
-
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn color='info' onClick={() => setModal(false)}>
+                        <button type="button" className="btn btn-info" onClick={() => setModal(false)}>
                             <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
-                        </MDBBtn>
+                        </button>
                     </div>
                 </Modal>
 
