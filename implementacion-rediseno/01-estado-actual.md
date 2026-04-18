@@ -72,6 +72,7 @@
 
 12. **LoginPage** rediseñada — split-screen con panel institucional gradiente + formulario + animacion fadeInUp
 13. **Dashboard** rediseñado — grid de cards con iconos, contadores, bordes laterales de color por modulo, hover con elevacion
+14. **Dashboard pulido** — saludo dinamico (Buenos dias/tardes/noches), fecha en español, secciones con linea divisora decorativa y badge de conteo, cards stat-ready con prop `count` opcional
 
 ### Refactors estructurales
 
@@ -79,16 +80,25 @@
 15. **Rutas renombradas**: `/fun` → `/licencias`, `/pqrsadmin` → `/peticiones`, etc.
 16. **Redirects legacy** preservan URLs viejas bookmarkeadas
 
+### Polish visual (Fase 2.5)
+
+17. **LegacyPageWrapper** (`src/app/layouts/LegacyPageWrapper.jsx`) — bridge CSS que envuelve todas las paginas legacy en `.legacy-bridge`, alineando colores Bootstrap con tokens del redeseno (botones, tablas, cards, badges, alerts, formularios, tabs, accordions)
+18. **ContextPanel mejorado** — soporte para secciones agrupadas (`item.group`), badges/contadores opcionales (`item.badge`), padding mas compacto, separadores visuales entre grupos
+19. **Dashboard pulido** — saludo dinamico segun hora del dia, fecha formateada en español, secciones con linea divisora decorativa, cards stat-ready con prop `count` para futura integracion backend
+20. **FontAwesome CDN eliminado** — cero dependencias de FA en runtime
+21. **Navigation config expandido** — `Gestion nueva` agregado como hijo de Licencias en el context panel
+
 ## Que falta (resumen)
 
 | Area | Estado |
 |---|---|
-| Brecha visual del shell | **EN PROGRESO — bordes y transiciones corregidos, polish aplicado** |
-| Paginas de modulos legacy (FUN, PQRS, etc.) | Intactas con estilo viejo Bootstrap |
+| Brecha visual del shell | **COMPLETADO — IconRail hover glow, ContextPanel con grupos/badges, HeaderBar con search/bell/breadcrumb, Footer VS Code-style con conectividad** |
+| Paginas de modulos legacy (FUN, PQRS, etc.) | Intactas con estilo viejo Bootstrap, **envueltas en LegacyPageWrapper para reducir choque visual** |
 | Tablas legacy (react-data-table-component) | **MIGRADO — 83 archivos usan DataTableBridge** |
 | Modales legacy (react-modal) | **MIGRADO — 30 archivos usan LegacyModal** |
 | Alertas (SweetAlert2) | ~100 archivos, ~2330 lineas sin migrar (Fase 6) |
 | Iconos (FontAwesome CDN) | **MIGRADO — 220+ archivos usan Lucide Icon bridge, CDN eliminado** |
+| Dashboard | **PULIDO — saludo dinamico, fecha en español, secciones con divisores, cards stat-ready** |
 | Forms | Todos manuales, sin sistema unificado |
 | Styled-components restantes | global.js + componentes puntuales |
 | Bootstrap como dependencia | Grid/utilidades aun necesarias |
