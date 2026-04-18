@@ -96,6 +96,13 @@
 25. **Archivos muertos eliminados** — `global.js` (styled-components GlobalStyles), `font.js` (escalas de fuente, ya no importado)
 26. **Paquetes desinstalados** — `react-modal`, `react-data-table-component`, `styled-components`, `@emotion/is-prop-valid` (bridges no los importan, solo docs los referencian)
 
+### UX estructural (Fase 2.7)
+
+27. **Navegacion SPA corregida** — eliminado `key={pathname}` en ErrorBoundary que remontaba todo el arbol en cada cambio de ruta. Ahora el shell (sidebar, header, footer) persiste y solo cambia el area de contenido. Suspense movido dentro del shell para que la carga lazy no reemplace toda la pantalla.
+28. **Sidebar colapsable** — boton de toggle en HeaderBar (PanelLeftClose/PanelLeft), atajo Ctrl+B / Cmd+B, estado persistido en localStorage. Transicion suave de 200ms en IconRail + ContextPanel.
+29. **Contraste modo oscuro mejorado** — tokens `--border` y `--input` ajustados de 17.5% a 25% luminosidad en modo oscuro. Antes eran identicos a `--card`, haciendo bordes e inputs invisibles.
+30. **Breadcrumbs sin recarga** — `<a href>` reemplazados por `<Link to>` en HeaderBar para navegacion SPA sin refrescar pagina.
+
 ## Que falta (resumen)
 
 | Area | Estado |
