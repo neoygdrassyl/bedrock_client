@@ -60,6 +60,7 @@ const NORMS = lazy(() => import('./pages/user/norms/norms.page'));
 const CERTIFICATE_WORKER = lazy(() => import('./pages/user/certifications/certification.page'));
 const ZONE_USE = lazy(() => import('./pages/user/zone_use/zone_use.page'));
 import LEGAL_FLOW_GUIDE from './pages/user/legal_flow_guide/LegalFlowGuide.page';
+import LoginPage from './pages/auth/LoginPage';
 
 
 const MySwal = withReactContent(Swal);
@@ -172,7 +173,7 @@ export default function App() {
                         <Routes>
 
                           <Route path='/home' element={
-                              <LoginPage
+                              <LoginPageWithAuth
                                 translation={t("login", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
@@ -181,7 +182,7 @@ export default function App() {
                           />
 
                           <Route path='/login' element={
-                              <LoginPage
+                              <LoginPageWithAuth
                                 translation={t("login", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
@@ -403,7 +404,7 @@ export default function App() {
 
 
                           <Route path='/' element={
-                              <LoginPage
+                              <LoginPageWithAuth
                                 translation={t("login", { returnObjects: true })}
                                 swaMsg={t("swa_messages", { returnObjects: true })}
                                 breadCrums={t("breadCrums", { returnObjects: true })}
@@ -411,7 +412,7 @@ export default function App() {
                             }
                           />
 
-                          <Route path='*' element={<LoginPage />} />
+                          <Route path='*' element={<LoginPageWithAuth />} />
                         </Routes>
                         </RoutesWithBoundary>
                         </Suspense>
@@ -559,145 +560,8 @@ function PrivateRoute({ children }) {
   return children;
 }
 
-function LoginPage() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  let auth = useAuth();
-  const recaptchaRef = React.useRef(null);
-  const credentialsRef = React.useRef({ email: "", password: "" });
-
-  let { from } = { from: { pathname: "/dashboard" } };
-
-  let handleSubmit = (event) => {
-    event.preventDefault();
-
-    const showAuthError = ({ title, text, footer }) => {
-      MySwal.fire({
-        title,
-        text,
-        footer,
-        icon: 'error',
-        confirmButtonText: 'CONTINUAR',
-      });
-    };
-
-    recaptchaRef.current.execute().then(response => {
-      CustomsDataService.appLoginCompatible(credentialsRef.current)
-        .then(response => {
-          let userInfo = {};
-
-          if (response.data.token && response.data.user) {
-            // JWT format: { token, user: { ..., Role: { name, desc, short } } }
-            const u = response.data.user;
-            userInfo.name = u.name;
-            userInfo.surname = u.surname;
-            userInfo.role = u.Role.name;
-            userInfo.role_short = u.Role.short;
-            userInfo.roleDesc = u.Role.desc;
-            userInfo.active = u.active;
-            userInfo.roleId = u.roleId;
-            userInfo.id = u.id;
-            userInfo.name_short = u.name + ' ' + u.surname;
-            userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
-            DataSerive.saveToken(response.data.token);
-            DataSerive.setUser(userInfo);
-            login();
-          } else if (Array.isArray(response.data) && response.data.length === 1) {
-            const u = response.data[0];
-            userInfo.name = u.name;
-            userInfo.surname = u.surname;
-            userInfo.role = u.role?.name;
-            userInfo.role_short = u.role?.short;
-            userInfo.roleDesc = u.role?.desc;
-            userInfo.active = u.active;
-            userInfo.roleId = u.roleId;
-            userInfo.id = u.id;
-            userInfo.name_short = u.name + ' ' + u.surname;
-            userInfo.name_full = u.name + ' ' + (u.name_2 || '') + ' ' + u.surname + ' ' + (u.surname_2 || '');
-            DataSerive.setUser(userInfo);
-            login();
-          } else {
-            showAuthError({
-              title: 'CERTIFICACION FALLIDA',
-              text: 'Respuesta de autenticación inválida',
-              footer: 'El servidor respondió sin token o sin datos de usuario',
-            });
-          }
-        })
-        .catch(e => {
-          console.log('[AUTH] Login error', e);
-
-          if (!e.response) {
-            showAuthError({
-              title: 'ERROR DE CONEXION',
-              text: 'No fue posible conectar con el servidor',
-              footer: 'Verifique que el backend esté en línea y VITE_API_URL apunte correctamente',
-            });
-            return;
-          }
-
-          if (e.response.status === 401) {
-            showAuthError({
-              title: 'CREDENCIALES INVALIDAS',
-              text: 'Usuario o contraseña incorrectos',
-              footer: 'Revise sus credenciales e intentelo nuevamente',
-            });
-            return;
-          }
-
-          showAuthError({
-            title: 'ERROR EN EL SERVIDOR',
-            text: 'No fue posible iniciar sesión en este momento',
-            footer: 'Intente nuevamente o contacte al administrador',
-          });
-        });
-    }).catch(e => {
-      console.log(e);
-    });;
-
-
-  };
-
-  let login = () => {
-    auth.signin(() => {
-      navigate(from, { replace: true });
-    });
-  };
-
-
-  return (
-    <div className="Login container py-3">
-      <div className="row my-4 d-flex justify-content-center">
-        <div className="col-lg-8 col-md-12">
-          <h2 className="text-center my-4">INICIO DE SESIÓN {infoCud.name} DE {infoCud.city.toUpperCase()}</h2>
-          <div className="d-flex justify-content-center mt-5">
-            <div className="w-75 rounded">
-              <div className="card-body" style={{backgroundColor: '#d3d3d3'}}>
-                <form onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label htmlFor="email" className="form-label text-black">{t('login.str_user')}</label>
-                    <input type="email" className="form-control" id="email"
-                      onChange={(e) => { credentialsRef.current.email = e.target.value; }} />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="password" className="form-label text-black">{t('login.str_pass')}</label>
-                    <input type="password" className="form-control" id="password"
-                      onChange={(e) => { credentialsRef.current.password = e.target.value; }} />
-                  </div>
-                  <div className="text-center pt-4 mt-3">
-                    <button type="submit" className="btn text-white" style={{ backgroundColor: '#2651A8' }}>{t('login.str_btn')}</button>
-                  </div>
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    size="invisible"
-                    sitekey={import.meta.env.VITE_GOOGLE_CAPTCHA_HTML}
-                  />
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+/** Thin wrapper: reads auth from context and passes signin to extracted LoginPage */
+function LoginPageWithAuth(props) {
+  const auth = useAuth();
+  return <LoginPage {...props} signin={auth.signin} />;
 }
