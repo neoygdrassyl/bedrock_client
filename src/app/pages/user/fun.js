@@ -628,13 +628,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             <label>ULTIMA VERSIÓN :{state.currentLastVersion}</label>
         </div>
         let _GET_MISSING_CONTEXT = (state) => {
-            if (state == '-1') return <label className="fw-bold">INCOMPLETO</label>
-            if (state == '-101') return <label className="fw-bold text-danger">DESISTIMIENTO POR INCOMPLETO</label>
-            if (state == '-102') return <label className="fw-bold text-danger">NO CUMPLE ACTA DE OBSERVACIONES</label>
-            if (state == '-103') return <label className="fw-bold text-danger">NO CUMPLE ACTA DE CORRECIONES</label>
-            if (state == '-104') return <label className="fw-bold text-danger">NO PAGO EXPENSAS VARIABLES</label>
-            if (state == '-105') return <label className="fw-bold text-danger">VOLUNTARIO</label>
-            if (state == '-106') return <label className="fw-bold text-danger">NEGADA</label>
+            if (state == '-1') return <Badge variant="secondary" className="text-[10px]">INCOMPLETO</Badge>
+            if (state == '-101') return <Badge variant="destructive" className="text-[10px]">DESIST. INCOMPLETO</Badge>
+            if (state == '-102') return <Badge variant="destructive" className="text-[10px]">NO CUMPLE ACTA OBS.</Badge>
+            if (state == '-103') return <Badge variant="destructive" className="text-[10px]">NO CUMPLE ACTA CORR.</Badge>
+            if (state == '-104') return <Badge variant="destructive" className="text-[10px]">NO PAGO EXPENSAS</Badge>
+            if (state == '-105') return <Badge variant="destructive" className="text-[10px]">VOLUNTARIO</Badge>
+            if (state == '-106') return <Badge variant="destructive" className="text-[10px]">NEGADA</Badge>
         }
         let _GET_MISSING_DATE = (row) => {
             if (row.state == '-1') return false
@@ -646,13 +646,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             if (row.state == '-106') return row.clock_close_6
         }
         let _GET_STATE_STR = (state, isString, row) => {
-            if (state < '-1') return isString ? 'DESISTIDO (Ejecución)' : <label className='text-danger text-center'>DESISTIDO (Ejecución)</label>
+            if (state < '-1') return isString ? 'DESISTIDO (Ejecución)' : <Badge variant="destructive" className="text-[10px]">Desistido (Ejecución)</Badge>
             if (state == '-1') return 'INCOMPLETO'
             if (state == '1') return 'INCOMPLETO'
-            if (state == '5') return 'LYDF'
-            if (state == '50') return 'EXPEDICIÓN'
-            if (state == '100') return isString ? 'ARCHIVADO' : <label className='fw-bold'>CERRADO</label>
-            if (state == '101') return isString ? 'ARCHIVADO' : <label className='fw-bold text-primary'>ARCHIVADO</label>
+            if (state == '5') return isString ? 'LYDF' : <Badge className="text-[10px] bg-primary">LyDF</Badge>
+            if (state == '50') return isString ? 'EXPEDICIÓN' : <Badge className="text-[10px] bg-accent text-accent-foreground">Expedición</Badge>
+            if (state == '100') return isString ? 'ARCHIVADO' : <Badge variant="secondary" className="text-[10px]">Cerrado</Badge>
+            if (state == '101') return isString ? 'ARCHIVADO' : <Badge variant="outline" className="text-[10px] text-primary border-primary">Archivado</Badge>
             if (state == '200') {
                 if (isString) {
                     if (row.clock_close_6) return 'NEGADA'
@@ -661,14 +661,14 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     if (row.clock_close_3) return 'DESISTIDO (No subsanó Acta)'
                     if (row.clock_close_2) return 'DESISTIDO (No radicó valla)'
                     if (row.clock_close_1) return 'DESISTIDO (Incompleto)'
-                } else return <label className='fw-bold text-center'>CERRADO (Desistido)</label>
+                } else return <Badge variant="secondary" className="text-[10px]">Cerrado (Desistido)</Badge>
             }
-            if (state == '201') return isString ? 'DESISTIDO (Incompleto)' : <label className='text-danger text-center'>DESISTIDO (Incompleto)</label>
-            if (state == '202') return isString ? 'DESISTIDO (No radicó valla)' : <label className='text-danger text-center'>DESISTIDO (No radicó valla)</label>
-            if (state == '203') return isString ? 'DESISTIDO (No subsanó Acta)' : <label className='text-danger text-center'>DESISTIDO (No subsanó Acta)</label>
-            if (state == '204') return isString ? 'DESISTIDO (No radicó pagos)' : <label className='text-danger text-center'>DESISTIDO (No radicó pagos)</label>
-            if (state == '205') return isString ? 'DESISTIDO (Voluntario)' : <label className='text-danger text-center'>DESISTIDO (Voluntario)</label>
-            if (state == '206') return isString ? 'DESISTIDO (Negada)' : <label className='text-danger text-center'>DESISTIDO (Negada)</label>
+            if (state == '201') return isString ? 'DESISTIDO (Incompleto)' : <Badge variant="destructive" className="text-[10px]">Desist. Incompleto</Badge>
+            if (state == '202') return isString ? 'DESISTIDO (No radicó valla)' : <Badge variant="destructive" className="text-[10px]">Desist. Valla</Badge>
+            if (state == '203') return isString ? 'DESISTIDO (No subsanó Acta)' : <Badge variant="destructive" className="text-[10px]">Desist. Acta</Badge>
+            if (state == '204') return isString ? 'DESISTIDO (No radicó pagos)' : <Badge variant="destructive" className="text-[10px]">Desist. Pagos</Badge>
+            if (state == '205') return isString ? 'DESISTIDO (Voluntario)' : <Badge variant="destructive" className="text-[10px]">Desist. Voluntario</Badge>
+            if (state == '206') return isString ? 'DESISTIDO (Negada)' : <Badge variant="destructive" className="text-[10px]">Negada</Badge>
             return ''
         }
         const _fun_0_type = { '0': 'NC', 'i': 'I', 'ii': "II", 'iii': "III", 'iv': "IV", 'oa': "OA" }
@@ -678,13 +678,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             {
                 when: row => (state.submitItems).includes(row.id),
                 style: {
-                    backgroundColor: 'var(--bs-info-bg-subtle)',
+                    backgroundColor: 'hsl(var(--primary) / 0.08)',
                 },
             },
             {
                 when: row => row.id == state.selectedRow,
                 style: {
-                    backgroundColor: 'var(--bs-warning-bg-subtle)',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
             },
         ];
@@ -692,64 +692,64 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         // ---------------------
         const columns = [
             {
-                name: <label className="text-center">No. RADICACIÓN</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <h6 className='fw-normal'>{(row.id_public)}</h6>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">FECHA PAGO EXPENSAS FIJAS</label>,
+                name: 'FECHA PAGO EXPENSAS',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_payment)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
             },
             {
-                name: <label className="text-center">FECHA LIMITE LyDF</label>,
+                name: 'FECHA LÍMITE LyDF',
                 selector: row => dateParser_finalDate(row.clock_payment, 30),
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{dateParser_finalDate(row.clock_payment, 30)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{dateParser_finalDate(row.clock_payment, 30)}</span>
             },
             {
-                name: <label className="text-center">TIEMPO RESTANTE</label>,
+                name: 'TIEMPO RESTANTE',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
                 cell: row => {
                     let time = 30 - dateParser_timePassed(row.clock_payment)
-                    return <label><label className={time <= 0 ? 'text-danger fw-bold' : ''}>{time}</label> / 30</label>
+                    return <span className="text-xs"><span className={cn('font-bold tabular-nums', time <= 0 ? 'text-destructive' : time <= 5 ? 'text-warning' : '')}>{time}</span><span className="text-muted-foreground"> / 30</span></span>
                 }
             },
 
             {
-                name: <label className="text-center">PROGRESIÓN</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '320px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label className="text-center">ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 center: true,
                 minWidth: '80px',
@@ -758,51 +758,51 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         ]
         const columns_missing = [
             {
-                name: <label className="text-center">No. RADICACIÓN</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.id_public)}</label>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">MOTIVO</label>,
+                name: 'MOTIVO',
                 selector: row => _GET_MISSING_CONTEXT(row.state),
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{_GET_MISSING_CONTEXT(row.state)}</label>
+                cell: row => _GET_MISSING_CONTEXT(row.state)
             },
             {
-                name: <label className="text-center">FECHA PAGO EXPENSAS</label>,
+                name: 'FECHA PAGO EXPENSAS',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_payment)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '320px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '80px',
                 cell: row => _MODULE_ACTION_MENU(row),
@@ -810,42 +810,42 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         ]
         const columns_legal = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">FECHA LYDF</label>,
+                name: 'FECHA LyDF',
                 selector: row => row.clock_date,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_date)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_date}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '80px',
                 cell: row => _MODULE_ACTION_MENU(row),
@@ -853,42 +853,42 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         ]
         const columns_exp = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">FECHA VIAVILIDAD</label>,
+                name: 'FECHA VIABILIDAD',
                 selector: row => row.clock_pay2,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_pay2)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_pay2}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '80px',
                 cell: row => _MODULE_ACTION_MENU(row),
@@ -896,50 +896,50 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         ]
         const columns_profesional = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">FECHA PAGO EXPENSAS</label>,
+                name: 'FECHA PAGO EXPENSAS',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_payment)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_payment}</span>
             },
             {
-                name: <label className="text-center">FECHA LYDF</label>,
+                name: 'FECHA LyDF',
                 selector: row => row.clock_date,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{(row.clock_date)}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_date}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '80px',
                 cell: row => _MODULE_ACTION_MENU(row),
@@ -947,29 +947,28 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         ]
         const columns_archive = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
-                cell: row => row.id_public
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => formsParser1(row, true),
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>,
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => _fun_0_type[row.type]
-
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label>ESTADO</label>,
+                name: 'ESTADO',
                 selector: row => _GET_STATE_STR(row.state, true, row),
                 sortable: true,
                 filterable: true,
@@ -978,22 +977,22 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cvsCB: row => _GET_STATE_STR(row.state, true, row)
             },
             {
-                name: <label className="text-center">FECHA ARCHIVACIÓN</label>,
+                name: 'FECHA ARCHIVACIÓN',
                 selector: row => row.clock_archive,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => row.clock_archive
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.clock_archive}</span>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '330px',
                 ignoreCSV: true,
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '80px',
                 ignoreCSV: true,
@@ -1002,30 +1001,30 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         ]
         const columns_search = [
             {
-                name: <label className="text-center">No. RADICACIÓN</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 center: true,
                 minWidth: '130px',
-                cell: row => <h6 className='fw-normal'>{(row.id_public)}</h6>
+                cell: row => <span className='text-sm font-medium font-mono'>{row.id_public}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'TIPO',
                 minWidth: '350px',
-                cell: row => <label>{formsParser1(row, true)}</label>
+                cell: row => <span className="text-xs">{formsParser1(row, true)}</span>
             },
             {
-                name: <label className="text-center">CAT.</label>,
+                name: 'CAT.',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 center: true,
                 maxWidth: '90px',
-                cell: row => <label>{_fun_0_type[row.type]}</label>
+                cell: row => <Badge variant="outline" className="text-[10px] font-mono">{_fun_0_type[row.type]}</Badge>
             },
             {
-                name: <label className="text-center">ESTADO</label>,
+                name: 'ESTADO',
                 selector: row => row.state,
                 sortable: true,
                 filterable: true,
@@ -1033,13 +1032,13 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 cell: row => _GET_STATE_STR(row.state)
             },
             {
-                name: <label className="text-center">PROGRESIÓN</label>,
+                name: 'PROGRESIÓN',
                 center: true,
                 minWidth: '320px',
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} />
             },
             {
-                name: <label className="text-center">ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 center: true,
                 minWidth: '80px',
