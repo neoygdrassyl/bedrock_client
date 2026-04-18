@@ -13,7 +13,7 @@ const STATUS_CLASS = {
 
 const RESPONSIBLE_LABELS = {
   solicitante: 'Solicitante',
-  curaduria: 'Curaduría',
+  curaduria: 'Curaduria',
   paralelo: 'Paralelo',
 };
 
@@ -31,12 +31,12 @@ export function generateProjectFlowMermaid(phases, expediente) {
   lines.push('flowchart TD');
   lines.push('');
 
-  // --- Class definitions ---
-  lines.push('  classDef completado fill:#27AE60,stroke:#333,color:white');
-  lines.push('  classDef activo fill:#F39C12,stroke:#333,color:white,stroke-width:3px');
-  lines.push('  classDef pendiente fill:#BDC3C7,stroke:#999,color:#666');
-  lines.push('  classDef vencido fill:#E74C3C,stroke:#333,color:white');
-  lines.push('  classDef desistimiento fill:#E74C3C,stroke:#333,color:white');
+  // --- Class definitions — cohesive professional palette ---
+  lines.push('  classDef completado fill:#3D9B7F,stroke:#338A6E,color:#fff,rx:8,ry:8');
+  lines.push('  classDef activo fill:#D4943A,stroke:#C0842E,color:#fff,rx:8,ry:8,stroke-width:3px');
+  lines.push('  classDef pendiente fill:#CBD2DC,stroke:#B0B8C5,color:#5A6578,rx:8,ry:8');
+  lines.push('  classDef vencido fill:#C97A7A,stroke:#B56A6A,color:#fff,rx:8,ry:8');
+  lines.push('  classDef desistimiento fill:#C97A7A,stroke:#B56A6A,color:#fff,rx:8,ry:8');
   lines.push('');
 
   // --- Title ---
@@ -44,7 +44,6 @@ export function generateProjectFlowMermaid(phases, expediente) {
   lines.push('');
 
   // Build a set of phase IDs that have been reached (completado, activo, or vencido)
-  const reachedStatuses = new Set(['completado', 'activo', 'vencido']);
   const activePhase = phases.find((p) => p.status === 'activo');
   const activeIdx = activePhase ? phases.indexOf(activePhase) : -1;
 
@@ -59,7 +58,7 @@ export function generateProjectFlowMermaid(phases, expediente) {
     const daysInfo = phase.daysLimit != null
       ? `${phase.daysUsed ?? 0}/${phase.daysLimit}d`
       : `${phase.daysUsed ?? 0}d`;
-    const label = `${phase.label}\\n${daysInfo} | ${resp}`;
+    const label = `${phase.label}\\n${daysInfo} · ${resp}`;
     lines.push(`  ${sanitizeId(phase.phaseId)}["${label}"]:::${cls}`);
   }
   lines.push('');
@@ -68,7 +67,6 @@ export function generateProjectFlowMermaid(phases, expediente) {
   for (let i = 0; i < visiblePhases.length - 1; i++) {
     const curr = visiblePhases[i];
     const next = visiblePhases[i + 1];
-    const isActiveEdge = curr.status === 'activo' || next.status === 'activo';
     const edgeLabel = next.status === 'activo' ? '|"Fase Actual"|' : '';
     lines.push(`  ${sanitizeId(curr.phaseId)} -->${edgeLabel} ${sanitizeId(next.phaseId)}`);
   }
@@ -83,12 +81,12 @@ export function generateProjectFlowMermaid(phases, expediente) {
   if (expediente?.es_desistido) {
     const bifurcationPhase = activePhase || visiblePhases[visiblePhases.length - 1];
 
-    lines.push('  subgraph "Subflujo Desistimiento"');
+    lines.push('  subgraph desist ["Subflujo Desistimiento"]');
     for (const step of PROCESS_DEFINITION.desistimientoSubflow) {
       const sid = `DS_${step.id}`;
       const resp = RESPONSIBLE_LABELS[step.responsible] || step.responsible;
       const condLabel = step.conditional ? ' (si recurso)' : '';
-      lines.push(`    ${sid}["${step.label}${condLabel}\\n${step.days}d | ${resp}"]:::desistimiento`);
+      lines.push(`    ${sid}["${step.label}${condLabel}\\n${step.days}d · ${resp}"]:::desistimiento`);
     }
     for (let i = 0; i < PROCESS_DEFINITION.desistimientoSubflow.length - 1; i++) {
       const a = `DS_${PROCESS_DEFINITION.desistimientoSubflow[i].id}`;
