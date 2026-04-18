@@ -104,7 +104,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
             {
                 when: row => row.id == selectedRow,
                 style: {
-                    backgroundColor: 'BlanchedAlmond',
+                    backgroundColor: 'hsl(var(--warning) / 0.12)',
                 },
             },
         ];
