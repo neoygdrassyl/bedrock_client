@@ -121,7 +121,7 @@ export function getRouteRedirects() {
   return {
     '/fun': '/licencias',
     '/funmanage': '/licencias/gestion',
-    '/funmanage-new': '/licencias/gestion',
+    '/funmanage-new': '/licencias/gestion-nueva',
     '/pqrsadmin': '/peticiones',
     '/mail': '/mensajes',
     '/appointments': '/calendario',
@@ -136,6 +136,8 @@ export function getRouteRedirects() {
     '/nomenclature': '/nomenclatura',
     '/zone_use': '/uso-suelo',
     '/archive': '/archivo',
+    '/norms': '/normas',
+    '/seals': '/sellos',
   };
 }
 

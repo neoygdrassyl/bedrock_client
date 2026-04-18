@@ -10,6 +10,21 @@ globalThis.React = React;
 
 // mdb-react-ui-kit eliminated — components replaced by src/app/components/ui/
 
+// jsdom doesn't implement window.matchMedia — required by ThemeProvider & sonner
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 // Set default env vars for tests (equivalent to old process.env.REACT_APP_*)
 // These can be overridden in individual test files via import.meta.env
 if (!import.meta.env.VITE_API_URL) {
