@@ -537,7 +537,7 @@ export default function RECORD_ARC_37(props) {
 
         const columns = [
             {
-                name: <label>Dirección</label>,
+                name: 'Dirección',
                 selector: row => row.name,
                 sortable: true,
                 filterable: true,
@@ -547,7 +547,7 @@ export default function RECORD_ARC_37(props) {
                 cell: row => <label>{row.name}</label>
             },
             {
-                name: <label>Grupos</label>,
+                name: 'Grupos',
                 center: true,
                 compact: true,
                 cell: row => {
@@ -558,7 +558,7 @@ export default function RECORD_ARC_37(props) {
                 }
             },
             {
-                name: <label>Subgrupos</label>,
+                name: 'Subgrupos',
                 center: true,
                 compact: true,
                 cell: row => {
@@ -567,7 +567,7 @@ export default function RECORD_ARC_37(props) {
                 }
             },
             {
-                name: <label>Áreas Netas</label>,
+                name: 'Áreas Netas',
                 center: true,
                 compact: true,
                 maxWidth: '60px',
@@ -581,7 +581,7 @@ export default function RECORD_ARC_37(props) {
             /**
              * 
              * {
-                name: <label>Evaluación</label>,
+                name: 'Evaluación',
                 button: true,
                 center: true,
                 minWidth: '140px',
@@ -596,7 +596,7 @@ export default function RECORD_ARC_37(props) {
            
              */
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 center: true,
                 minWidth: '110px',

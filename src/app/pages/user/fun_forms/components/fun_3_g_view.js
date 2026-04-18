@@ -103,43 +103,43 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
             let _LIST = _SET_CHILD_3();
             const columns_3 = [
                 {
-                    name: <label>DIRECCIÓN DEL PREDIO</label>,
+                    name: 'DIRECCIÓN DEL PREDIO',
                     selector: row => row.direccion_1,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_1}</label>
                 },
                 {
-                    name: <label>DIRECCIÓN DE CORRESPONDENCIA</label>,
+                    name: 'DIRECCIÓN DE CORRESPONDENCIA',
                     selector: row => row.direccion_2,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.direccion_2}</label>
                 },
                 {
-                    name: <label>ORIGEN DATO</label>,
+                    name: 'ORIGEN DATO',
                     cell: row => <label>{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</label>
                 },
                 {
-                    name: <label>¿SE DECLARÓ PARTE?</label>,
+                    name: '¿SE DECLARÓ PARTE?',
                     cell: row => <label>{row.part} - {row.part_id}</label>
                 },
                 {
-                    name: <label>ESTADO CITACIÓN</label>,
+                    name: 'ESTADO CITACIÓN',
                     selector: row => row.state,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{_GET_NEIGHBOUR_STATE(row.state)}</label>
                 },
                 {
-                    name: <label>CONSECUTIVO RELACIONADO</label>,
+                    name: 'CONSECUTIVO RELACIONADO',
                     selector: row => row.id_cub,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.id_cub}</label>
                 },
                 {
-                    name: <label>GUIÁ DE CONFIRMACIÓN</label>,
+                    name: 'GUIÁ DE CONFIRMACIÓN',
                     selector: row => row.id_alerted,
                     sortable: true,
                     filterable: true,
@@ -148,24 +148,24 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
                         : row.id_alerted}</label>
                 },
                 {
-                    name: <label>FECHA RECIBIDO</label>,
+                    name: 'FECHA RECIBIDO',
                     selector: row => row.alerted,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.state == 1 ? dateParser(row.alerted) : ""}</label>
                 },
                 {
-                    name: <label>MÉTODOS DE PUBLICACIÓN</label>,
+                    name: 'MÉTODOS DE PUBLICACIÓN',
                     minWidth: '250px',
                     cell: row => <label>{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</label>
                 },
                 {
-                    name: <label>SOPORTES DE PUBLICACIÓN</label>,
+                    name: 'SOPORTES DE PUBLICACIÓN',
                     minWidth: '200px',
                     cell: row => <label>{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</label>
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
+                    name: 'DOCUMENTO',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>

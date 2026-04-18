@@ -130,7 +130,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     : <Icon name="times" size={24} className="text-danger" />}</label>
             },
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '100px',
                 cell: row => <>

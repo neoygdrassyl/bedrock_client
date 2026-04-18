@@ -494,21 +494,21 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             }
             const columns_4 = [
                 {
-                    name: <label>LINDEROS</label>,
+                    name: 'LINDEROS',
                     selector: row => row.coord, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.coord}</label>
                 },
                 {
-                    name: <label>LONGITUD</label>,
+                    name: 'LONGITUD',
                     selector: row => row.longitud, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.longitud}</label>
                 },
                 {
-                    name: <label>COLINDA CON</label>,
+                    name: 'COLINDA CON',
                     selector: row => row.colinda, // FIX: react-data-table v7→v8
                     cell: row => <label>{row.colinda}</label>
                 },
@@ -540,7 +540,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             }
             const columns_51 = [
                 {
-                    name: <label>TIPO</label>,
+                    name: 'TIPO',
                     selector: row => row.type, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -549,7 +549,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     cell: row => <label>{row.type}</label>
                 },
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -558,7 +558,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     cell: row => <label>{row.name + " " + row.surname}</label>
                 },
                 {
-                    name: <label>CC/NIT</label>,
+                    name: 'CC/NIT',
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -566,7 +566,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     cell: row => <label>{row.id_number}</label>
                 },
                 {
-                    name: <label>NOMBRE REP. LEGAL</label>,
+                    name: 'NOMBRE REP. LEGAL',
                     selector: row => row.rep_name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -575,7 +575,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     cell: row => <label>{row.rep_name}</label>
                 },
                 {
-                    name: <label>C.C. REP. LEGAL</label>,
+                    name: 'C.C. REP. LEGAL',
                     selector: row => row.rep_id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -583,26 +583,26 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     cell: row => <label>{row.rep_id_number}</label>
                 },
                 {
-                    name: <label>TELÉFONO/ CELULAR</label>,
+                    name: 'TELÉFONO/ CELULAR',
                     selector: row => row.nunber, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label >{row.nunber}</label>
                 },
                 {
-                    name: <label>CORREO</label>,
+                    name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label>{row.email}</label>
                 },
                 {
-                    name: <label>ROL</label>,
+                    name: 'ROL',
                     selector: row => row.role, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '200px',
                     cell: row => <label>{row.role}</label>
                 },
                 {
-                    name: <label>DOCUMENTOS</label>,
+                    name: 'DOCUMENTOS',
                     button: true,
                     center: true,
                     center: true,
@@ -632,7 +632,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             }
             const columns_52 = [
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.surname, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -641,7 +641,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     cell: row => <label>{row.name + " " + row.surname}</label>
                 },
                 {
-                    name: <label>CC/NIT</label>,
+                    name: 'CC/NIT',
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -650,21 +650,21 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     cell: row => <label>{row.id_number}</label>
                 },
                 {
-                    name: <label>TELÉFONO/ CELULAR</label>,
+                    name: 'TELÉFONO/ CELULAR',
                     selector: row => row.number, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.number}</label>
                 },
                 {
-                    name: <label>CORREO</label>,
+                    name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.email}</label>
                 },
                 {
-                    name: <label>PROFESIÓN</label>,
+                    name: 'PROFESIÓN',
                     selector: row => row.role, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
@@ -673,40 +673,40 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     cell: row => <label>{row.role}</label>
                 },
                 {
-                    name: <label>MATRICULA</label>,
+                    name: 'MATRICULA',
                     selector: row => row.registration, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{row.registration}</label>
                 },
                 {
-                    name: <label>EXP. MATRICULA</label>,
+                    name: 'EXP. MATRICULA',
                     selector: row => row.registration_date, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{dateParser(row.registration_date)}</label>
                 },
                 {
-                    name: <label>EXPERIENCIA</label>,
+                    name: 'EXPERIENCIA',
                     selector: row => row.expirience, // FIX: react-data-table v7→v8
                     center: true,
                     minWidth: '150px',
                     cell: row => <label>{Math.trunc(row.expirience / 12)} año(s)</label>
                 },
                 {
-                    name: <label>¿SANCIONADO?</label>,
+                    name: '¿SANCIONADO?',
                     selector: row => row.sanction, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label>{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</label>
                 },
                 {
-                    name: <label>SUPERVISIÓN</label>,
+                    name: 'SUPERVISIÓN',
                     selector: row => row.supervision, // FIX: react-data-table v7→v8
                     center: true,
                     cell: row => <label>{row.supervision}</label>
                 },
                 {
-                    name: <label>DOCUMENTOS</label>,
+                    name: 'DOCUMENTOS',
                     button: true,
                     center: true,
                     cell: row => <> {_GET_DOCS_BTNS(row.docs)}</>

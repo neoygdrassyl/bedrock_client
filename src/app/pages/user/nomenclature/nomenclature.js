@@ -86,21 +86,21 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
 
         const columns = [
             {
-                name: <label>No. RADICACIÓN</label>,
+                name: 'No. RADICACIÓN',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.id_public}</label>
             },
             {
-                name: <label>TIPO</label>,
+                name: 'TIPO',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{row.type}</label>
             },
             {
-                name: <label>FECHA RADICACIÓN</label>,
+                name: 'FECHA RADICACIÓN',
                 selector: row => row.date_start,
                 sortable: true,
                 filterable: true,
@@ -108,7 +108,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 cell: row => <label>{dateParser(row.date_start)}</label>
             },
             {
-                name: <label>FECHA EXPEDICIÓN</label>,
+                name: 'FECHA EXPEDICIÓN',
                 selector: row => row.date_end,
                 sortable: true,
                 filterable: true,
@@ -116,7 +116,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                 cell: row => <label>{dateParser(row.date_end)}</label>
             },
             {
-                name: <label>DOCUMENTO</label>,
+                name: 'DOCUMENTO',
                 selector: row => row.nome_doc,
                 sortable: true,
                 filterable: true,
@@ -126,7 +126,7 @@ function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
                     : <Icon name="times" size={24} className="text-danger" />}</label>
             },
             {
-                name: <label>ACCIÓN</label>,
+                name: 'ACCIÓN',
                 button: true,
                 minWidth: '100px',
                 cell: row => <>

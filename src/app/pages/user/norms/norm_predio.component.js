@@ -224,7 +224,7 @@ export default function NORM_PREDIOS(props) {
     // ***************************  JXS *********************** //
     const columns = [
         {
-            name: <label className="text-center">No. PREDIAL</label>,
+            name: 'No. PREDIAL',
             selector: row => row.predial,
             sortable: true,
             filterable: true,
@@ -232,7 +232,7 @@ export default function NORM_PREDIOS(props) {
             cell: row => row.predial
         },
         {
-            name: <label className="text-center">DIRECCIÓN</label>,
+            name: 'DIRECCIÓN',
             selector: row => row.dir,
             sortable: true,
             filterable: true,
@@ -240,17 +240,17 @@ export default function NORM_PREDIOS(props) {
             cell: row => row.dir
         },
         {
-            name: <label className="text-center">AREA</label>,
+            name: 'AREA',
             center: true,
             cell: row => row.area
         },
         {
-            name: <label className="text-center">FRENTE</label>,
+            name: 'FRENTE',
             center: true,
             cell: row => row.front
         },
         {
-            name: <label className="text-center">BIC</label>,
+            name: 'BIC',
             center: true,
             cell: row => {
                 if(row.bic_pred === 1) return 'SI'
@@ -259,7 +259,7 @@ export default function NORM_PREDIOS(props) {
             } 
         },
         {
-            name: <label className="text-center">BIC AREA</label>,
+            name: 'BIC AREA',
             center: true,
             cell: row => {
                 if(row.bic_area === '1') return 'APLICA'
@@ -268,7 +268,7 @@ export default function NORM_PREDIOS(props) {
             } 
         },
         {
-            name: <label className="text-center">COMP. ESP. PUB.</label>,
+            name: 'COMP. ESP. PUB.',
             center: true,
             cell: row => {
                 if(row.art_192 === 1) return 'APLICA'
@@ -277,7 +277,7 @@ export default function NORM_PREDIOS(props) {
             } 
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '80px',

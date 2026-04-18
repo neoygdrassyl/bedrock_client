@@ -213,32 +213,32 @@ export default function NORM_PERFIL(props) {
 
     const columns = [
         {
-            name: <label className="text-center">CODIGO</label>,
+            name: 'CODIGO',
             center: true,
             cell: row => row.code
         },
         {
-            name: <label className="text-center">PERFIL</label>,
+            name: 'PERFIL',
             center: true,
             cell: row => row.perfil
         },
         {
-            name: <label className="text-center">CARDINALIDAD</label>,
+            name: 'CARDINALIDAD',
             center: true,
             cell: row => CARDS.find(card => card.value == row.card) ? CARDS.find(card => card.value == row.card).name : 'SIN CARDINALIDAD'
         },
         {
-            name: <label className="text-center">ANTEJARDIN NORMA</label>,
+            name: 'ANTEJARDIN NORMA',
             center: true,
             cell: row => row.antejardin_n
         },
         {
-            name: <label className="text-center">ANTEJARDIN SITIO</label>,
+            name: 'ANTEJARDIN SITIO',
             center: true,
             cell: row => row.antejardin_p
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '80px',

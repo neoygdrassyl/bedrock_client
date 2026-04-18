@@ -1084,7 +1084,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 
         const columns = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACION',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
@@ -1093,7 +1093,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label >{row.id_public}</label>
             },
             {
-                name: <label>INFO</label>,
+                name: 'INFO',
                 button: true,
                 fixed: true,
                 minWidth: '80px',
@@ -1103,7 +1103,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 </MDBPopover>
             },
             {
-                name: <label>ACTUACION</label>,
+                name: 'ACTUACION',
                 selector: row => formsParser1(row, true),
                 sortable: true,
                 filterable: true,
@@ -1113,7 +1113,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <h6 className='fw-normal'>{row.usos == 'A' ? <u>{formsParser1(row, true)}</u> : formsParser1(row, true)}</h6>
             },
             {
-                name: <label className="text-center">ESTADO</label>,
+                name: 'ESTADO',
                 selector: row => _fun_0_state(row.state, true, row),
                 sortable: true,
                 filterable: true,
@@ -1123,7 +1123,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{_fun_0_state(row.state, false, row)}</label>
             },
             {
-                name: <label className="text-center">CATEGORIA</label>,
+                name: 'CATEGORIA',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
@@ -1132,14 +1132,14 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{_fun_0_type[row.type]}</label>
             },
             {
-                name: <label className="text-center">PROGRESION</label>,
+                name: 'PROGRESION',
                 center: true,
                 minWidth: '330px',
                 ignoreCSV: true,
                 cell: row => <FUN_ICON_PROGRESS translation={translation} globals={globals} currentItem={row} small />
             },
             {
-                name: <label className="text-center">FECHA RADICACIÓN</label>,
+                name: 'FECHA RADICACIÓN',
                 selector: row => row.clock_payment,
                 sortable: true,
                 filterable: true,
@@ -1147,7 +1147,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{row.clock_payment}</label>
             },
             {
-                name: <label className="text-center">FECHA MAX LyDF</label>,
+                name: 'FECHA MAX LyDF',
                 selector: row => row.state == 1 || row.state == -1 ? dateParser_finalDate(row.clock_payment, 30) : '',
                 sortable: true,
                 filterable: true,
@@ -1158,7 +1158,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     : <Icon name="minus" size={16} />
             },
             {
-                name: <label className="text-center">DIAS LyDF</label>,
+                name: 'DIAS LyDF',
                 selector: row => row.state == 1 || row.state == -1 ? dateParser_timePassed(row.clock_payment) : -1,
                 sortable: true,
                 filterable: true,
@@ -1182,7 +1182,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label className="fw-bold text-primary">{row.clock_date}</label>
             },
             {
-                name: <label className="text-center">FECHA MAX ACTA</label>,
+                name: 'FECHA MAX ACTA',
                 selector: row => row.clock_record_p1 == null ? dateParser_finalDate(row.clock_date, _fun_0_type_time[row.type] ?? 45) : '',
                 sortable: true,
                 filterable: true,
@@ -1194,7 +1194,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     : <Icon name="minus" size={16} />
             },
             {
-                name: <label className="text-center">T. ACTA</label>,
+                name: 'T. ACTA',
                 selector: row => row.clock_record_p1 == null ? row.days_ldf : row.days_r1,
                 sortable: true,
                 filterable: true,
@@ -1214,7 +1214,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     </label>
             },
             {
-                name: <label className="text-center">INDICE PRIORIDAD</label>,
+                name: 'INDICE PRIORIDAD',
                 selector: row => row.priority_index,
                 sortable: true,
                 filterable: true,
@@ -1223,7 +1223,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => row.priority_index,
             },
             {
-                name: <label className="text-center">PRIORIDAD</label>,
+                name: 'PRIORIDAD',
                 selector: row => row.priority || 9999,
                 sortable: true,
                 filterable: true,
@@ -1236,7 +1236,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             },
             /**
           {
-              name: <label>JUR. PROF. ASIG.</label>,
+              name: 'JUR. PROF. ASIG.',
               selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.asign_law_worker_name : row.asign_ph_law_worker_name,
               sortable: true,
               filterable: true,
@@ -1256,7 +1256,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
           },
         
            *   {
-             name: <label>ASIGNAR</label>,
+             name: 'ASIGNAR',
              omit: (state.hide_jur && !(window.user.id == 1 || window.user.roleId == 3)),
              conditionalCellStyles: conditionalCellStylesJUR,
              cellStyle: CellStylesJUR,
@@ -1267,7 +1267,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              </div>
          },
          {
-             name: <label>#</label>,
+             name: '#',
              omit: state.hide_jur,
              minWidth: '70px',
              conditionalCellStyles: conditionalCellStylesJUR,
@@ -1275,7 +1275,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_law ? row.clock_asign_law.split(';').length : row.jur_version}</label>
          },
          {
-             name: <label>JUR. FECHA ASIG.</label>,
+             name: 'JUR. FECHA ASIG.',
              selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.asign_ph_law_date,
              sortable: true,
              filterable: true,
@@ -1287,7 +1287,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.asign_ph_law_date}</label>
          },
          {
-             name: <label>JUR. FECHA MAX.</label>,
+             name: 'JUR. FECHA MAX.',
              selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                  ? dateParser_finalDate(_GET_ASIGN_DATE(row.asign_law_date, 11, row), _fun_0_type_days[row.type] ?? 5)
                  : dateParser_finalDate(row.asign_ph_law_date, _fun_0_type_days[row.type] ?? 5),
@@ -1310,7 +1310,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              </label>
          },
          {
-             name: <label>JUR. FECHA REV.</label>,
+             name: 'JUR. FECHA REV.',
              selector: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_law : row.jur_date,
              sortable: true,
              filterable: true,
@@ -1322,7 +1322,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
              cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_law : row.jur_date}</label>
          },
           {
-              name: <label>DIAS</label>,
+              name: 'DIAS',
               selector: row => dateParser_dateDiff(
                   !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.jur_date : row.ph_date_law,
                   !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) ? dayjs(_GET_ASIGN_DATE(row.asign_law_date, 11, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_law_date, 11, row) : row.clock_date : row.clock_date : row.asign_ph_law_date
@@ -1351,7 +1351,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
 */
 
             {
-                name: <label>JUR. REVISION</label>,
+                name: 'JUR. REVISION',
                 selector: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review_law) : _GET_REVIEW(row.jur_review),
                 sortable: true,
                 filterable: true,
@@ -1365,7 +1365,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             },
             /**
                         {
-                            name: <label>ASIGNAR</label>,
+                            name: 'ASIGNAR',
                             omit: state.hide_arc && !(window.user.id == 1 || window.user.roleId == 3),
                             conditionalCellStyles: conditionalCellStylesARQ,
                             cellStyle: CellStylesARQ,
@@ -1376,7 +1376,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             </div>
                         },
                         {
-                            name: <label>#</label>,
+                            name: '#',
                             center: true,
                             minWidth: '70px',
                             omit: state.hide_arc,
@@ -1385,7 +1385,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_version : row.clock_asign_arc ? row.clock_asign_arc.split(';').length : row.arc_version}</label>
                         },
                         {
-                            name: <label>ARQ. FECHA ASIG.</label>,
+                            name: 'ARQ. FECHA ASIG.',
                             selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.asign_ph_arc_date,
                             sortable: true,
                             filterable: true,
@@ -1397,7 +1397,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.asign_ph_law_date}</label>
                         },
                         {
-                            name: <label>ARQ. FECHA MAX.</label>,
+                            name: 'ARQ. FECHA MAX.',
                             selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row))
                                 ? dateParser_finalDate(_GET_ASIGN_DATE(row.asign_arc_date, 13, row), _fun_0_type_days[row.type] ?? 5)
                                 : dateParser_finalDate(row.asign_ph_arc_date, _fun_0_type_days[row.type] ?? 5),
@@ -1420,7 +1420,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             </label>
                         },
                         {
-                            name: <label>ARQ. FECHA REV.</label>,
+                            name: 'ARQ. FECHA REV.',
                             selector: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_arc : row.arc_date,
                             sortable: true,
                             filterable: true,
@@ -1432,7 +1432,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             cell: row => <label>{_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.ph_date_arc : row.arc_date}</label>
                         },
                         {
-                name: <label>DIAS</label>,
+                name: 'DIAS',
                 selector: row => dateParser_dateDiff(
                     !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.arc_date : row.ph_date_arc,
                     !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) ? dayjs(_GET_ASIGN_DATE(row.asign_arc_date, 13, row)).isSameOrAfter(row.clock_date, 'day') >= 0 ? _GET_ASIGN_DATE(row.asign_arc_date, 13, row) : row.clock_date : row.clock_date : row.asign_ph_arc_date
@@ -1459,7 +1459,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             },
            
             {
-                name: <label>ARQ. PROF. ASIG.</label>,
+                name: 'ARQ. PROF. ASIG.',
                 selector: row => !_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.asign_arc_worker_name : row.asign_ph_arc_worker_name,
                 sortable: true,
                 filterable: true,
@@ -1479,7 +1479,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             },
   */
             {
-                name: <label>ARQ. REVISION</label>,
+                name: 'ARQ. REVISION',
                 selector: row => _REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? _GET_REVIEW(row.ph_review) : _GET_REVIEW(row.arc_review),
                 sortable: true,
                 filterable: true,
@@ -1495,7 +1495,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             /** 
 
         {
-            name: <label>ASIGNAR</label>,
+            name: 'ASIGNAR',
             omit: state.hide_ing && !(window.user.id == 1 || window.user.roleId == 3),
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
@@ -1506,7 +1506,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             </div> : ""
         },
         {
-            name: <label>#</label>,
+            name: '#',
             omit: state.hide_ing,
             conditionalCellStyles: conditionalCellStylesENG,
             cellStyle: CellStylesENG,
@@ -1515,7 +1515,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         },
       
         {
-            name: <label>EST. FECHA ASIG.</label>,
+            name: 'EST. FECHA ASIG.',
             selector: row => _GET_ASIGN_DATE(row.asign_eng_date, 12, row),
             sortable: true,
             filterable: true,
@@ -1527,7 +1527,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             cell: row => <label>{_GET_ASIGN_DATE(row.asign_eng_date, 12, row)}</label>
         },
         {
-            name: <label>EST. FECHA MAX.</label>,
+            name: 'EST. FECHA MAX.',
             selector: row => dateParser_finalDate(_GET_ASIGN_DATE(row.asign_eng_date, 12, row), _fun_0_type_days[row.type] ?? 5),
             sortable: true,
             filterable: true,
@@ -1546,7 +1546,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 : ''
         },
         {
-            name: <label>EST. FECHA REV.</label>,
+            name: 'EST. FECHA REV.',
             selector: row => row.eng_date,
             sortable: true,
             filterable: true,
@@ -1558,7 +1558,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             cell: row => <label>{!_REGEX_MATCH_PH(_PARSE_FUN_1(row)) ? row.eng_date : ""}</label>
         },
         {
-                name: <label>DIAS</label>,
+                name: 'DIAS',
                 selector: row => dateParser_dateDiff(row.eng_date, _GET_ASIGN_DATE(row.asign_eng_date, 12, row), true),
                 sortable: true,
                 filterable: true,
@@ -1580,7 +1580,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             },
 
             {
-                name: <label>EST. PROF. ASIG.</label>,
+                name: 'EST. PROF. ASIG.',
                 selector: row => row.asign_eng_worker_name,
                 sortable: true,
                 filterable: true,
@@ -1603,7 +1603,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             },
 */
             {
-                name: <label>EST. REVISION</label>,
+                name: 'EST. REVISION',
                 sortable: true,
                 filterable: true,
                 minWidth: '150px',
@@ -1627,7 +1627,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label className="text-primary fw-bold">{row.clock_record_p1}</label>
             },
             {
-                name: <label>ACTA P.1 REV.</label>,
+                name: 'ACTA P.1 REV.',
                 selector: row => row.rec_review,
                 sortable: true,
                 filterable: true,
@@ -1636,7 +1636,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{_GET_REVIEW_RECORD(row.rec_review)}</label>
             },
             /*{
-                name: <label className="text-center">¿REQ. CORRECIONES?</label>,
+                name: '¿REQ. CORRECIONES?',
                 selector: row => row.rec_review,
                 sortable: true,
                 filterable: true,
@@ -1644,7 +1644,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{row.rec_review == 0 ? <label className="fw-bold text-danger">SI</label> : row.rec_review == 1 ? <label className="fw-bold text-success">NO</label> : ""}</label>
             },*/
             {
-                name: <label className="text-center">FECHA NOTIFICACIÓN</label>,
+                name: 'FECHA NOTIFICACIÓN',
                 selector: row => row.clock_not_1 || row.clock_not_2 || '',
                 sortable: true,
                 filterable: true,
@@ -1653,7 +1653,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{row.clock_not_1 || row.clock_not_2 || ''}</label>
             },
             {
-                name: <label className="text-center">FECHA LIMITE ENTREGA</label>,
+                name: 'FECHA LIMITE ENTREGA',
                 selector: row => dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 30),
                 sortable: true,
                 filterable: true,
@@ -1661,7 +1661,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 30)}</label>
             },
             {
-                name: <label className="text-center">FECHA LIMITE + PRÓRROGA</label>,
+                name: 'FECHA LIMITE + PRÓRROGA',
                 selector: row => dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 45),
                 sortable: true,
                 filterable: true,
@@ -1669,7 +1669,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser_finalDate(row.clock_not_1 || row.clock_not_2 || false, 45)}</label>
             },
             {
-                name: <label className="text-center">FECHA ENTREGA CORRECIONES</label>,
+                name: 'FECHA ENTREGA CORRECIONES',
                 selector: row => row.clock_corrections,
                 sortable: true,
                 filterable: true,
@@ -1686,7 +1686,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label className="text-primary fw-bold">{row.clock_record_p2}</label>
             },
             {
-                name: <label>ACTA P.2 REV.</label>,
+                name: 'ACTA P.2 REV.',
                 selector: row => row.rec_review_2,
                 sortable: true,
                 filterable: true,
@@ -1695,7 +1695,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{_GET_REVIEW_RECORD(row.rec_review_2)}</label>
             },
             {
-                name: <label className="text-center">CARTA VIABILIDAD</label>,
+                name: 'CARTA VIABILIDAD',
                 selector: row => row.clock_pay2,
                 sortable: true,
                 filterable: true,
@@ -1704,7 +1704,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{row.clock_pay2}</label>
             },
             {
-                name: <label className="text-center">RESOLUCIÓN LIMITE</label>,
+                name: 'RESOLUCIÓN LIMITE',
                 selector: row => dateParser_finalDate(row.clock_pay_69 ?? false, 5),
                 sortable: true,
                 filterable: true,
@@ -1713,7 +1713,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser_finalDate(row.clock_pay_69 ?? false, 5)}</label>
             },
             {
-                name: <label className="text-center">RESOLUCIÓN</label>,
+                name: 'RESOLUCIÓN',
                 selector: row => row.clock_resolution,
                 sortable: true,
                 filterable: true,
@@ -1722,7 +1722,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{row.clock_pay_69}</label>
             },
             {
-                name: <label className="text-center">LICENCIA LIMITE</label>,
+                name: 'LICENCIA LIMITE',
                 selector: row => dateParser_finalDate(row.clock_not_1_res || row.clock_not_2_res || false, 10),
                 sortable: true,
                 filterable: true,
@@ -1758,7 +1758,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
         ]
         const columns_negative = [
             {
-                name: <label>No. RADICACION</label>,
+                name: 'No. RADICACION',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
@@ -1766,7 +1766,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{row.id_public}</label>
             },
             {
-                name: <label>INFO</label>,
+                name: 'INFO',
                 button: true,
                 ignoreCSV: true,
                 cell: row => <MDBPopover size='sm' color='info' btnChildren={'MENU'} placement='right' dismiss>
@@ -1774,7 +1774,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 </MDBPopover>
             },
             {
-                name: <label>ACTUACION</label>,
+                name: 'ACTUACION',
                 selector: row => _PARSE_FUN_1(row),
                 sortable: true,
                 filterable: true,
@@ -1783,7 +1783,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{row.usos == 'A' ? <u>{_PARSE_FUN_1(row)}</u> : _PARSE_FUN_1(row)}</label>
             },
             {
-                name: <label>CAUSA DESISTIMIENTO</label>,
+                name: 'CAUSA DESISTIMIENTO',
                 selector: row => row.clock_cause,
                 sortable: true,
                 filterable: true,
@@ -1791,7 +1791,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{_GET_PROCESS_CONTEXT(row.clock_cause)}</label>
             },
             {
-                name: <label>ESTADO ACTUAL</label>,
+                name: 'ESTADO ACTUAL',
                 selector: row => _GET_CURRENT_STEP(row),
                 sortable: true,
                 filterable: true,
@@ -1799,7 +1799,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{_GET_CURRENT_STEP(row)}</label>
             },
             {
-                name: <label>SIGUIENTE ESTADO</label>,
+                name: 'SIGUIENTE ESTADO',
                 selector: row => row.clock_5,
                 sortable: true,
                 filterable: true,
@@ -1807,14 +1807,14 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{_GET_NEXT_STEP_STRING(row)}</label>
             },
             {
-                name: <label>FECHA LIMITE</label>,
+                name: 'FECHA LIMITE',
                 selector: row => _GET_TIME_FOR_NEGATIVE_PROCESS(row),
                 sortable: true,
                 filterable: true,
                 cell: row => <label>{_GET_TIME_FOR_NEGATIVE_PROCESS(row)}</label>
             },
             {
-                name: <label>TIEMPO RESTANTE</label>,
+                name: 'TIEMPO RESTANTE',
                 selector: row => _GET_TIME_FOR_NEGATIVE_PROCESS(row),
                 sortable: true,
                 filterable: true,
@@ -1823,13 +1823,13 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     : ""}</label>
             },
             {
-                name: <label>SUJETO</label>,
+                name: 'SUJETO',
                 minWidth: '150px',
                 cvsCB: row => _GET_SUBJECT(row, true),
                 cell: row => <label>{_GET_SUBJECT(row)}</label>
             },
             {
-                name: <label>{defaultProcess['-5'].name}</label>,
+                name: "{defaultProcess['-5'].name}",
                 selector: row => row.clock_5,
                 sortable: true,
                 filterable: true,
@@ -1837,7 +1837,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser(row.clock_5)}</label>
             },
             {
-                name: <label>{defaultProcess['-6'].name}</label>,
+                name: "{defaultProcess['-6'].name}",
                 selector: row => row.clock_6,
                 sortable: true,
                 filterable: true,
@@ -1845,7 +1845,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser(row.clock_6)}</label>
             },
             {
-                name: <label>{defaultProcess['-7'].name}</label>,
+                name: "{defaultProcess['-7'].name}",
                 selector: row => row.clock_7,
                 sortable: true,
                 filterable: true,
@@ -1853,7 +1853,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser(row.clock_7)}</label>
             },
             {
-                name: <label>{defaultProcess['-8'].name}</label>,
+                name: "{defaultProcess['-8'].name}",
                 selector: row => row.clock_8,
                 sortable: true,
                 filterable: true,
@@ -1861,7 +1861,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser(row.clock_8)}</label>
             },
             {
-                name: <label>{defaultProcess['-10'].name}</label>,
+                name: "{defaultProcess['-10'].name}",
                 selector: row => row.clock_10,
                 sortable: true,
                 filterable: true,
@@ -1877,7 +1877,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label className="text-danger">{dateParser(row.clock_11)}</label>
             },
             {
-                name: <label>{defaultProcess['-17'].name}</label>,
+                name: "{defaultProcess['-17'].name}",
                 selector: row => row.clock_17,
                 sortable: true,
                 filterable: true,
@@ -1885,7 +1885,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser(row.clock_17)}</label>
             },
             {
-                name: <label>{defaultProcess['-18'].name}</label>,
+                name: "{defaultProcess['-18'].name}",
                 selector: row => row.clock_18,
                 sortable: true,
                 filterable: true,
@@ -1901,7 +1901,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label className="text-danger">{dateParser(row.clock_19)}</label>
             },
             {
-                name: <label>{defaultProcess['-20'].name}</label>,
+                name: "{defaultProcess['-20'].name}",
                 selector: row => row.clock_20,
                 sortable: true,
                 filterable: true,
@@ -1909,7 +1909,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser(row.clock_20)}</label>
             },
             {
-                name: <label>{defaultProcess['-21'].name}</label>,
+                name: "{defaultProcess['-21'].name}",
                 selector: row => row.clock_21,
                 sortable: true,
                 filterable: true,
@@ -1917,7 +1917,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 cell: row => <label>{dateParser(row.clock_21)}</label>
             },
             {
-                name: <label>{defaultProcess['-22'].name}</label>,
+                name: "{defaultProcess['-22'].name}",
                 selector: row => row.clock_22,
                 sortable: true,
                 filterable: true,
@@ -2436,7 +2436,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             var rows = [];
             let extraColumns = [
                 {
-                    name: <label>JUR. ASIGN OVBSERVACIONES</label>,
+                    name: 'JUR. ASIGN OVBSERVACIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2448,7 +2448,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>JUR. ASIGN TEC. 1</label>,
+                    name: 'JUR. ASIGN TEC. 1',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2460,7 +2460,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>JUR. ASIGN TEC. 2</label>,
+                    name: 'JUR. ASIGN TEC. 2',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2472,7 +2472,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>JUR. ASIGN COREECIONES</label>,
+                    name: 'JUR. ASIGN COREECIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return row.asign_ph_law_date || '';
@@ -2484,7 +2484,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>JUR. REVISION OVBSERVACIONES</label>,
+                    name: 'JUR. REVISION OVBSERVACIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2496,7 +2496,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>JUR. REVISION TEC. 1</label>,
+                    name: 'JUR. REVISION TEC. 1',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2508,7 +2508,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>JUR. REVISION TEC. 2</label>,
+                    name: 'JUR. REVISION TEC. 2',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2520,7 +2520,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>JUR. REVISION COREECIONES</label>,
+                    name: 'JUR. REVISION COREECIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return row.ph_date_law || '';
@@ -2533,7 +2533,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 },
 
                 {
-                    name: <label>ARQ. ASIGN OVBSERVACIONES</label>,
+                    name: 'ARQ. ASIGN OVBSERVACIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2545,7 +2545,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>ARQ. ASIGN TEC. 1</label>,
+                    name: 'ARQ. ASIGN TEC. 1',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2557,7 +2557,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>ARQ. ASIGN TEC. 2</label>,
+                    name: 'ARQ. ASIGN TEC. 2',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2569,7 +2569,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>ARQ. ASIGN COREECIONES</label>,
+                    name: 'ARQ. ASIGN COREECIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return row.ph_date_arc || '';
@@ -2581,7 +2581,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>ARQ. REVISION OVBSERVACIONES</label>,
+                    name: 'ARQ. REVISION OVBSERVACIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2593,7 +2593,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>ARQ. REVISION TEC. 1</label>,
+                    name: 'ARQ. REVISION TEC. 1',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2605,7 +2605,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>ARQ. REVISION TEC. 2</label>,
+                    name: 'ARQ. REVISION TEC. 2',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return '';
@@ -2617,7 +2617,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>ARQ. REVISION COREECIONES</label>,
+                    name: 'ARQ. REVISION COREECIONES',
                     cvsCB: row => {
                         let isPH = regexChecker_isPh(row);
                         if (isPH) return row.ph_date_arc || '';
@@ -2630,28 +2630,28 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 },
 
                 {
-                    name: <label>EST. ASIGN OVBSERVACIONES</label>,
+                    name: 'EST. ASIGN OVBSERVACIONES',
                     cvsCB: row => {
                         let date = row.clock_asign_eng ? row.clock_asign_eng.split(';')[0] : false
                         return date || row.asign_eng_date || '';
                     },
                 },
                 {
-                    name: <label>EST. ASIGN TEC. 1</label>,
+                    name: 'EST. ASIGN TEC. 1',
                     cvsCB: row => {
                         let date = row.clock_asign_eng ? row.clock_asign_eng.split(';')[1] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>EST. ASIGN TEC. 2</label>,
+                    name: 'EST. ASIGN TEC. 2',
                     cvsCB: row => {
                         let date = row.clock_asign_eng ? row.clock_asign_eng.split(';')[2] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>EST. ASIGN COREECIONES</label>,
+                    name: 'EST. ASIGN COREECIONES',
                     cvsCB: row => {
                         let date = row.clock_asign_arc ? row.clock_asign_arc.split(';')[3] : false
                         return date || '';
@@ -2659,65 +2659,65 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                     },
                 },
                 {
-                    name: <label>EST. REVISION OVBSERVACIONES</label>,
+                    name: 'EST. REVISION OVBSERVACIONES',
                     cvsCB: row => {
                         let date = row.clock_review_eng ? row.clock_review_eng.split(';')[0] : false
                         return date || row.eng_date || '';
                     },
                 },
                 {
-                    name: <label>EST. REVISION TEC. 1</label>,
+                    name: 'EST. REVISION TEC. 1',
                     cvsCB: row => {
                         let date = row.clock_review_eng ? row.clock_review_eng.split(';')[1] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>EST. REVISION TEC. 2</label>,
+                    name: 'EST. REVISION TEC. 2',
                     cvsCB: row => {
                         let date = row.clock_review_eng ? row.clock_review_eng.split(';')[2] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>EST. REVISION COREECIONES</label>,
+                    name: 'EST. REVISION COREECIONES',
                     cvsCB: row => {
                         let date = row.clock_review_eng ? row.clock_review_eng.split(';')[3] : false
                         return date || '';
                     },
                 },
                 {
-                    name: <label>DIRECCION PREDIO</label>,
+                    name: 'DIRECCION PREDIO',
                     cvsCB: row => {
                         return row.direccion ?? ''
                     },
                 },
                 {
-                    name: <label>MATRICULA PREDIO</label>,
+                    name: 'MATRICULA PREDIO',
                     cvsCB: row => {
                         return row.matricula ?? ''
                     },
                 },
                 {
-                    name: <label>PREDIAL PREDIO</label>,
+                    name: 'PREDIAL PREDIO',
                     cvsCB: row => {
                         return row.catastral ?? row.catastral_2 ?? ''
                     },
                 },
                 {
-                    name: <label>RESPONSABLE NOMBRE</label>,
+                    name: 'RESPONSABLE NOMBRE',
                     cvsCB: row => {
                         return (row.fun_53s_name ?? '') + (row.fun_53s_surname ?? '')
                     },
                 },
                 {
-                    name: <label>RESPONSABLE IDENTIFICACIÓN</label>,
+                    name: 'RESPONSABLE IDENTIFICACIÓN',
                     cvsCB: row => {
                         return (row.fun_53s_id_number ?? '')
                     },
                 },
                 {
-                    name: <label>RESPONSABLE CALIDAD</label>,
+                    name: 'RESPONSABLE CALIDAD',
                     cvsCB: row => {
                         return (row.fun_53s_role ?? '')
                     },

@@ -95,14 +95,14 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
             let isRewDoc = (id) => id.includes('law')  || id.includes('eng') || id.includes('arc')
             const columns = [
                 {
-                    name: <label className="text-center">DESCRIPCIÓN</label>,
+                    name: 'DESCRIPCIÓN',
                     selector: row => row.description,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.description}</label>
                 },
                 {
-                    name: <label>VR</label>,
+                    name: 'VR',
                     selector: row => row.id_replace,
                     sortable: true,
                     filterable: true,
@@ -115,7 +115,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     </select> : isRewDoc(row.id_replace || '') ? 'INFORME' : <label>{row.id_replace}</label>
                 },
                 {
-                    name: <label>CÓDIGO</label>,
+                    name: 'CÓDIGO',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
@@ -123,7 +123,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     cell: row => <label>{row.id_public}</label>
                 },
                 {
-                    name: <label>FOLIOS</label>,
+                    name: 'FOLIOS',
                     selector: row => row.pages,
                     sortable: true,
                     filterable: true,
@@ -131,7 +131,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                     cell: row => <label>{row.pages}</label>
                 },
                 {
-                    name: <label>FECHA RADICACIÓN</label>,
+                    name: 'FECHA RADICACIÓN',
                     selector: row => row.date,
                     sortable: true,
                     filterable: true,
@@ -140,7 +140,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                 },
                 /**
                  * {
-                    name: <label>ESTADO</label>,
+                    name: 'ESTADO',
                     button: true,
                     maxWidth: '50px',
                     omit: readOnly ? true : false,
@@ -152,7 +152,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                  * 
                  */
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>

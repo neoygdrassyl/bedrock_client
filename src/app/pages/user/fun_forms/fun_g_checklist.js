@@ -1595,14 +1595,14 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
             let _LIST = currentItem.fun_6s;
             const columns = [
                 {
-                    name: <label className="text-center">DESCRIPCIÓN</label>,
+                    name: 'DESCRIPCIÓN',
                     selector: row => row.description,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.description}</label>
                 },
                 {
-                    name: <label>CÓDIGO</label>,
+                    name: 'CÓDIGO',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
@@ -1610,7 +1610,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     cell: row => <label>{row.id_public}</label>
                 },
                 {
-                    name: <label>FOLIOS</label>,
+                    name: 'FOLIOS',
                     selector: row => row.pages,
                     sortable: true,
                     filterable: true,
@@ -1618,7 +1618,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     cell: row => <label>{row.pages}</label>
                 },
                 {
-                    name: <label>FECHA ANEXO</label>,
+                    name: 'FECHA ANEXO',
                     selector: row => row.date,
                     sortable: true,
                     filterable: true,
@@ -1626,7 +1626,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     cell: row => <label>{dateParser(row.date)}</label>
                 },
                 {
-                    name: <label>ESTADO</label>,
+                    name: 'ESTADO',
                     button: true,
                     maxWidth: '50px',
                     cell: row => <>
@@ -1636,7 +1636,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     </>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '140px',
                     cell: row => <>

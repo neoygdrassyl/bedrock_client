@@ -79,25 +79,25 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
         let COMPONENT_HISTORY = () => {
             const columns = [
                 {
-                    name: <label className="text-center">DETALLES</label>,
+                    name: 'DETALLES',
                     cell: row => <label>{row.detail}</label>
                 },
                 {
-                    name: <label>FECHA</label>,
+                    name: 'FECHA',
                     selector: row => row.date, // FIX: v7→v8 column selector
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.date}</label>
                 },
                 {
-                    name: <label>ESTADO FINAL</label>,
+                    name: 'ESTADO FINAL',
                     selector: row => row.state, // FIX: v7→v8 column selector
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.state == 0 ? "EN ARCHIVO" : "FUERA DE ARCHIVO"}</label>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>

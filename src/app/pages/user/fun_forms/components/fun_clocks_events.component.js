@@ -15,29 +15,29 @@ export default function FUN_CLOCK_EVENTS(props) {
     const search = ['date_start', 'desc', 'name'];
     const columns = [
         {
-            name: <label className="text-center">DE:</label>,
+            name: 'DE:',
             selector: row => row.name.split(';')[0],
             maxWidth: '150px',
             cell: row => <h6 className='fw-normal'>{(row.name.split(';')[0])}</h6>
         },
         {
-            name: <label className="text-center">PARA:</label>,
+            name: 'PARA:',
             selector: row => row.name.split(';')[1],
             maxWidth: '150px',
             cell: row => <h6 className='fw-normal'>{(row.name.split(';')[1])}</h6>
         },
         {
-            name: <label className="text-center">FECHA</label>,
+            name: 'FECHA',
             selector: row => row.date_start,
             maxWidth: '90px',
             cell: row => <h6 className='fw-normal'>{(row.date_start)}</h6>
         },
         {
-            name: <label className="text-center">EVENTO</label>,
+            name: 'EVENTO',
             cell: row => <h6 className='fw-normal'>{(row.desc)}</h6>
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'ACCIÓN',
             maxWidth: '90px',
             omit: !(window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 2),
             cell: row => <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => deleteEvent(row.id)}><Icon name="trash-alt" size={16} /></button></span>

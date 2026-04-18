@@ -28,21 +28,21 @@ function PQRS_EDIT_ATTACH({ translation, swaMsg, globals, currentItem, refreshCu
             var _LIST = _GET_ATTACHS();
             const columns = [
                 {
-                    name: <label>NOMBRE</label>,
+                    name: 'NOMBRE',
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.public_name}</label>,
                 },
                 {
-                    name: <label>TIPO</label>,
+                    name: 'TIPO',
                     selector: row => row.competence,
                     sortable: true,
                     filterable: true,
                     cell: row => <label>{row.type}</label>,
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>

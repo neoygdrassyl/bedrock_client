@@ -192,7 +192,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
             let _LIST = _GET_CHILD_FLOOR();
             const columns = [
                 {
-                    name: <label className="text-center">Piso</label>,
+                    name: 'Piso',
                     selector: row => row.floor,
                     sortable: true,
                     filterable: true,
@@ -200,30 +200,30 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     cell: row => <label>{row.floor}</label>
                 },
                 {
-                    name: <label className="text-center">División</label>,
+                    name: 'División',
                     center: true,
                     compact: true,
                     cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division)}</ul>
                 },
                 {
-                    name: <label className="text-center">Área Privada Construida</label>,
+                    name: 'Área Privada Construida',
                     center: true,
                     compact: true,
                     cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_build)}</ul>
                 },
                 {
-                    name: <label className="text-center">Área Privada Libre</label>,
+                    name: 'Área Privada Libre',
                     center: true,
                     compact: true,
                     cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION(row.division_free)}</ul>
                 },
                 {
-                    name: <label className="text-center">Área Total Privada</label>,
+                    name: 'Área Total Privada',
                     center: true,
                     cell: row => <ul className="list-group list-group-flush">{_DISPLAY_DIVISION_TOTAL(row)}</ul>
                 },
                 {
-                    name: <label className="text-center">Área Común Construida</label>,
+                    name: 'Área Común Construida',
                     selector: row => (row.common).split(";")[0],
                     sortable: true,
                     filterable: true,
@@ -231,7 +231,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     cell: row => <label>{(row.common).split(';')[0]}</label>
                 },
                 {
-                    name: <label className="text-center">Área Común Libre</label>,
+                    name: 'Área Común Libre',
                     selector: row => (row.common).split(";")[1],
                     sortable: true,
                     filterable: true,
@@ -239,7 +239,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     cell: row => <label>{(row.common).split(';')[1]}</label>
                 },
                 {
-                    name: <label className="text-center">Área Exclusiva Construida</label>,
+                    name: 'Área Exclusiva Construida',
                     selector: row => (row.common).split(";")[2],
                     sortable: true,
                     filterable: true,
@@ -247,7 +247,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     cell: row => <label>{(row.common).split(';')[2]}</label>
                 },
                 {
-                    name: <label className="text-center">Área Exclusiva Libre</label>,
+                    name: 'Área Exclusiva Libre',
                     selector: row => (row.common).split(";")[3],
                     sortable: true,
                     filterable: true,
@@ -255,7 +255,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     cell: row => <label>{(row.common).split(';')[3]}</label>
                 },
                 {
-                    name: <label className="text-center">Total Común Construida</label>,
+                    name: 'Total Común Construida',
                     selector: row => (Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])).toFixed(2),
                     sortable: true,
                     filterable: true,
@@ -263,7 +263,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     cell: row => <label className="fw-bold text-secondary">{(Number((row.common).split(';')[2]) + Number((row.common).split(';')[0])).toFixed(2) }</label>
                 },
                 {
-                    name: <label className="text-center">Area Total Visto Bueno</label>,
+                    name: 'Area Total Visto Bueno',
                     selector: row => _DISPLAY_SUB_TOTAL(row),
                     sortable: true,
                     filterable: true,
@@ -271,7 +271,7 @@ function RECORD_PH_FLOOR({ translation, swaMsg, globals, currentItem, currentVer
                     cell: row => <label className="fw-bold text-danger">{_DISPLAY_SUB_TOTAL(row)}</label>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>

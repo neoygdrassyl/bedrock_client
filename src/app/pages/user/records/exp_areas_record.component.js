@@ -100,7 +100,7 @@ export default function EXP_AREAS_RECORD(props) {
         let _LIST = _GET_CHILD_AREAS();
         const columns = [
             {
-                name: <label className="text-center">AREA</label>,
+                name: 'AREA',
                 selector: row => row.area,
                 sortable: true,
                 filterable: true,
@@ -109,7 +109,7 @@ export default function EXP_AREAS_RECORD(props) {
                 cell: row => <label>{row.area}</label>
             },
             {
-                name: <label className="text-center">UNIDADES</label>,
+                name: 'UNIDADES',
                 selector: row => row.area,
                 sortable: true,
                 filterable: true,
@@ -118,7 +118,7 @@ export default function EXP_AREAS_RECORD(props) {
                 cell: row => <label>{row.units}</label>
             },
             {
-                name: <label className="text-center">USO</label>,
+                name: 'USO',
                 selector: row => row.use,
                 sortable: true,
                 filterable: true,
@@ -127,7 +127,7 @@ export default function EXP_AREAS_RECORD(props) {
                 cell: row => <label>{row.use}</label>
             },
             {
-                name: <label className="text-center">Modalidad</label>,
+                name: 'Modalidad',
                 selector: row => row.desc,
                 sortable: true,
                 filterable: true,
@@ -135,7 +135,7 @@ export default function EXP_AREAS_RECORD(props) {
                 cell: row => <label>{row.desc}</label>
             },
             {
-                name: <label>ACCION</label>,
+                name: 'ACCION',
                 button: true,
                 maxWidth: '50px',
                 cell: row => <>

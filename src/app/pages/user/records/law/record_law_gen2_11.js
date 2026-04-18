@@ -233,7 +233,7 @@ function RECORD_LAW_GEN2_11(props) {
             let _LIST = _GET_CHILD_11_LIBERTY();
             const columns = [
                 {
-                    name: <label>MATRICULAR</label>,
+                    name: 'MATRICULAR',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
@@ -241,7 +241,7 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label>{row.id_public}</label>
                 },
                 {
-                    name: <label>FECHA</label>,
+                    name: 'FECHA',
                     selector: row => row.date,
                     sortable: true,
                     filterable: true,
@@ -250,7 +250,7 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label>{dateParser(row.date)}</label>
                 },
                 {
-                    name: <label>CODIGO CATASTRAL</label>,
+                    name: 'CODIGO CATASTRAL',
                     selector: row => row.predial,
                     sortable: true,
                     filterable: true,
@@ -258,7 +258,7 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label>{row.predial}</label>
                 },
                 {
-                    name: <label>DIRECCION</label>,
+                    name: 'DIRECCION',
                     selector: row => row.address,
                     sortable: true,
                     filterable: true,
@@ -266,27 +266,27 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label >{row.address}</label>
                 },
                 {
-                    name: <label>CABIDA</label>,
+                    name: 'CABIDA',
                     center: true,
                     cell: row => <label >{_PARSE_M(row.boundary)}</label>
                 },
                 {
-                    name: <label>LINDEROS</label>,
+                    name: 'LINDEROS',
                     center: true,
                     cell: row => <label >{_PARSE_AREAS(row.boundary)}</label>
                 },
                 {
-                    name: <label>ULTIMA ANOTACION</label>,
+                    name: 'ULTIMA ANOTACION',
                     center: true,
                     cell: row => <label >{row.lastnotify}</label>
                 },
                 {
-                    name: <label>ESPECIFICACION</label>,
+                    name: 'ESPECIFICACION',
                     center: true,
                     cell: row => <label >{row.specify}</label>
                 },
                 {
-                    name: <label>TITULAR DERECHO REAL</label>,
+                    name: 'TITULAR DERECHO REAL',
                     selector: row => row.subject,
                     sortable: true,
                     filterable: true,
@@ -294,7 +294,7 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label >{row.subject}</label>
                 },
                 {
-                    name: <label>CEDULA TITULAR</label>,
+                    name: 'CEDULA TITULAR',
                     selector: row => row.subject_id,
                     sortable: true,
                     filterable: true,
@@ -302,12 +302,12 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label >{row.subject_id}</label>
                 },
                 {
-                    name: <label>ANOTACIONES</label>,
+                    name: 'ANOTACIONES',
                     center: true,
                     cell: row => <label >{row.desc}</label>
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
+                    name: 'DOCUMENTO',
                     center: true,
                     cell: row => <>{row.id_6 > 0
                         ?
@@ -316,7 +316,7 @@ function RECORD_LAW_GEN2_11(props) {
                         : ""}</>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
@@ -630,7 +630,7 @@ function RECORD_LAW_GEN2_11(props) {
             let _LIST = _GET_CHILD_11_TAX();
             const columns = [
                 {
-                    name: <label>TIPO DOCUMENTO</label>,
+                    name: 'TIPO DOCUMENTO',
                     selector: row => row.type,
                     sortable: true,
                     filterable: true,
@@ -639,7 +639,7 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label>{row.type}</label>
                 },
                 {
-                    name: <label>No. RECIBO</label>,
+                    name: 'No. RECIBO',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
@@ -647,7 +647,7 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label>{row.id_public}</label>
                 },
                 {
-                    name: <label>FECHA</label>,
+                    name: 'FECHA',
                     selector: row => row.date,
                     sortable: true,
                     filterable: true,
@@ -656,7 +656,7 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label>{dateParser(row.date)}</label>
                 },
                 {
-                    name: <label>CODIGO CATASTRAL</label>,
+                    name: 'CODIGO CATASTRAL',
                     selector: row => row.predial,
                     sortable: true,
                     filterable: true,
@@ -664,7 +664,7 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label>{row.predial}</label>
                 },
                 {
-                    name: <label>DIRECCION</label>,
+                    name: 'DIRECCION',
                     selector: row => row.address,
                     sortable: true,
                     filterable: true,
@@ -672,17 +672,17 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <label >{row.address}</label>
                 },
                 {
-                    name: <label>ESTRATO</label>,
+                    name: 'ESTRATO',
                     center: true,
                     cell: row => <label >{row.strata}</label>
                 },
                 {
-                    name: <label>DESTINO</label>,
+                    name: 'DESTINO',
                     center: true,
                     cell: row => <label >{row.destiny}</label>
                 },
                 {
-                    name: <label>DOCUMENTO</label>,
+                    name: 'DOCUMENTO',
                     center: true,
                     cell: row => <>{row.id_6 > 0
                         ?
@@ -691,7 +691,7 @@ function RECORD_LAW_GEN2_11(props) {
                         : ""}</>
                 },
                 {
-                    name: <label>ACCION</label>,
+                    name: 'ACCION',
                     button: true,
                     minWidth: '120px',
                     cell: row => <>

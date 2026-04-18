@@ -84,7 +84,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                     cell: row => <span className="text-sm font-mono">{row.pages}</span>
                 },
                 {
-                    name: <label>FECHA RADICACIÓN</label>,
+                    name: 'FECHA RADICACIÓN',
                     selector: row => row.date,
                     sortable: true,
                     filterable: true,
@@ -92,7 +92,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                     cell: row => <span className="text-xs font-mono tabular-nums">{row.date}</span>
                 },
                 {
-                    name: <label>ACCIÓN</label>,
+                    name: 'ACCIÓN',
                     button: true,
                     minWidth: '150px',
                     cell: row => <>

@@ -229,32 +229,32 @@ export default function NORM_NEIGHBORS(props) {
     // ***************************  JXS *********************** //
     const columns = [
         {
-            name: <label className="text-center">CARDINALIDAD</label>,
+            name: 'CARDINALIDAD',
             center: true,
             cell: row => row.card
         },
         {
-            name: <label className="text-center">PISOS</label>,
+            name: 'PISOS',
             center: true,
             cell: row => row.floors
         },
         {
-            name: <label className="text-center">VOLADIZO</label>,
+            name: 'VOLADIZO',
             center: true,
             cell: row => row.voladizo
         },
         {
-            name: <label className="text-center">MATERIAL</label>,
+            name: 'MATERIAL',
             center: true,
             cell: row => row.material
         },
         {
-            name: <label className="text-center">IMAGE</label>,
+            name: 'IMAGE',
             center: true,
             cell: row => row.fun6id ? <VIEWER API={getImage} params={[row.fun6id]} /> : null
         },
         {
-            name: <label className="text-center">ACCIÓN</label>,
+            name: 'ACCIÓN',
             button: true,
             center: true,
             minWidth: '80px',
