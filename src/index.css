@@ -62,18 +62,31 @@
   }
 }
 
+/* ── Global resets ── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
 body {
   margin: 0;
+  height: 100%;
   font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root, .App {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
 code {
   font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas,
     'Courier New', monospace;
-}
-
-html {
-  scroll-behavior: smooth;
 }

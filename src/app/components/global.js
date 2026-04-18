@@ -4,14 +4,14 @@ export const GlobalStyles = createGlobalStyle`
   .container-primary {
     background: var(--bs-body-bg);
     color: var(--bs-body-color);
-    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   .container-secondary {
     background: var(--bs-primary);
     color: #fff;
-    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
@@ -28,7 +28,7 @@ export const GlobalStyles = createGlobalStyle`
     color: var(--bs-body-color);
     border: 1px solid var(--bs-border-color);
     border-radius: 0.375rem;
-    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
@@ -37,7 +37,7 @@ export const GlobalStyles = createGlobalStyle`
     color: var(--bs-body-color);
     border: 1px solid var(--bs-border-color);
     border-radius: 0.375rem;
-    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 

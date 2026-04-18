@@ -37,13 +37,18 @@ Regla cardinal:
 
 Para solicitudes de interfaz, experiencia de usuario, layout, estilos, componentes visuales o accesibilidad:
 
-1. Invocar primero `ui-ux-pro-max` como skill principal de diseno.
+> **Ruta de skills:** Las skills compartidas del workspace viven en `.agents/skills/`. Las skills de proceso especificas del frontend viven en `frontend/.agents/skills/`.
+
+> **Nombres canonicos en este entorno:** `ui-ux-pro-max`, `ckm-design-system`, `ckm-brand`, `ckm-ui-styling`, `ckm-banner-design`, `ckm-slides`, `visual-inspector`. Si algun lockfile o configuracion historica muestra alias con `ckm:` (por ejemplo `ckm:design-system`, `ckm:brand`, `ckm:ui-styling`), tratalos como la misma familia de skills.
+
+1. `ui-ux-pro-max` SIEMPRE es la skill principal de diseno e implementacion UI en este repo. No se reemplaza.
 2. Complementar segun necesidad:
-   - `ckm:design-system` para tokens y sistemas de diseno.
-   - `ckm:brand` para decisiones de identidad visual y tono.
-   - `ckm:ui-styling` para implementacion de estilos.
-   - `ckm:banner-design` y `ckm:slides` para piezas visuales de comunicacion.
-3. Mantener skills de proceso (ej. `brainstorming`) antes de skills de implementacion, cuando aplique.
+   - `visual-inspector` para revision visual automatizada con browser y contexto aislado. No reemplaza `ui-ux-pro-max`; la antecede o la complementa.
+   - `ckm-design-system` para tokens y sistemas de diseno.
+   - `ckm-brand` para decisiones de identidad visual y tono.
+   - `ckm-ui-styling` para implementacion de estilos.
+   - `ckm-banner-design` y `ckm-slides` solo para piezas visuales de comunicacion, no para refinamiento de la UI runtime.
+3. Mantener skills de proceso (ej. `brainstorming`, `dispatching-parallel-agents`) antes de skills de implementacion, cuando aplique.
 
 ## 4. Donde vive la verdad operativa
 
@@ -101,8 +106,8 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 
 ## 7. Backend y limites de este repo
 
-- El frontend consume un backend inspeccionado en `C:\xampp\htdocs\dovela-backend`.
-- Ese backend observado hoy es Express + Sequelize + MySQL.
+- El frontend consume el backend ubicado en `backend/` dentro del workspace (`/home/diego/dovela/backend/`). Ese es el directorio real en este entorno Linux.
+- El backend es Express 4 + Sequelize 6 + MySQL.
 - No todos los services frontend apuntan a ese backend; revisa `ai/system-map.md` antes de tocar integraciones.
 
 ## 8. Observaciones operativas
@@ -134,3 +139,21 @@ AGENTS.md solo debe darte lo necesario para arrancar. Si el cambio escala, lee l
 - Context7 -> `.github/instructions/context7.instructions.md`
 - Clocks -> `.github/instructions/clocks.instructions.md`
 - Tests -> `.github/instructions/testing.instructions.md`
+
+## 11. Rediseno UI en curso (LEER SI VAS A TOCAR ESTILOS O LAYOUT)
+
+**Branch activo:** `feat/ui-redesign-phases-0-2`
+
+Hay un rediseno progresivo en marcha. Antes de cualquier cambio visual, de layout o de componentes UI, lee en este orden:
+
+1. `implementacion-rediseno/README.md` — indice maestro del rediseno y estado actual
+2. `implementacion-rediseno/01-estado-actual.md` — fase actual, alcance y pendientes reales
+3. `implementacion-rediseno/02-principios-inquebrantables.md` — reglas que NO se negocian
+4. `implementacion-rediseno/04-antipatrones.md` — errores que ya se han identificado
+5. `implementacion-rediseno/06-brecha-visual.md` — analisis de la brecha actual vs objetivo
+
+**Agente especializado para el rediseno:** `.github/agents/dovela-ui-redesign.agent.md`
+
+**Inspeccion visual con browser:** Usa primero el skill `visual-inspector` y el agente `.github/agents/visual-inspector.agent.md` para abrir la app, tomar screenshots, verificar transiciones y generar un reporte de critica de diseno alineado con las fases del rediseno. Cuando la revision termine, vuelve a `ui-ux-pro-max` para refinar e implementar.
+
+**Regla critica:** Cualquier commit que toque componentes UI, estilos o layout debe ser comparado visualmente contra las apps de referencia (Linear, Notion, Figma) segun `implementacion-rediseno/03-apps-referencia.md`.

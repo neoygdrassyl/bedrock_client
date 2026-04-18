@@ -130,11 +130,12 @@ export default function LoginPage({ signin }) {
   return (
     <div className="flex min-h-screen">
       {/* Brand panel — left side (hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-2/5 bg-primary items-center justify-center p-12 relative overflow-hidden">
-        {/* Subtle geometric background pattern */}
-        <div className="absolute inset-0 opacity-[0.04]">
-          <div className="absolute top-0 right-0 w-96 h-96 rounded-full border border-white translate-x-1/3 -translate-y-1/3" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full border border-white -translate-x-1/4 translate-y-1/4" />
+      <div className="hidden lg:flex lg:w-2/5 bg-gradient-to-br from-primary via-primary to-primary/80 items-center justify-center p-12 relative overflow-hidden">
+        {/* Geometric background pattern */}
+        <div className="absolute inset-0 opacity-[0.06]">
+          <div className="absolute top-0 right-0 w-96 h-96 rounded-full border-2 border-white translate-x-1/3 -translate-y-1/3" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full border-2 border-white -translate-x-1/4 translate-y-1/4" />
+          <div className="absolute top-1/2 left-1/2 w-48 h-48 rounded-full border border-white -translate-x-1/2 -translate-y-1/2" />
         </div>
 
         <div className="text-center text-primary-foreground relative z-10">
@@ -144,7 +145,7 @@ export default function LoginPage({ signin }) {
               <img
                 src={infoCud.icon}
                 alt="Logo institucional"
-                className="w-24 h-24 object-contain mx-auto mb-6 drop-shadow-lg rounded-2xl bg-white/10 backdrop-blur-sm p-2"
+                className="w-28 h-28 object-contain mx-auto mb-6 drop-shadow-xl rounded-2xl bg-white/15 backdrop-blur-sm p-3"
               />
             ) : (
               <div className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-6">
@@ -152,7 +153,7 @@ export default function LoginPage({ signin }) {
               </div>
             )}
           </div>
-          <h1 className="text-2xl font-semibold mb-2">{infoCud.name}</h1>
+          <h1 className="text-2xl font-bold tracking-tight mb-2">{infoCud.name}</h1>
           <p className="text-primary-foreground/70 text-sm">
             {infoCud.city}{infoCud.state ? `, ${infoCud.state}` : ''}
           </p>
@@ -164,7 +165,7 @@ export default function LoginPage({ signin }) {
 
       {/* Form panel — right side */}
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
-        <div className="w-full max-w-sm space-y-8">
+        <div className="w-full max-w-sm space-y-8 animate-[fadeInUp_0.4s_ease-out]">
           {/* Mobile logo (visible only on small screens) */}
           <div className="lg:hidden text-center mb-8">
             {infoCud.icon ? (
