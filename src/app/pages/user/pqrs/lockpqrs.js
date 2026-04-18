@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import PQRS_COMPONENT_REPLIES_PROFESIONAL_2 from './components/pqrs_replies_3.component';
 import PQRS_COMPONENT_INFO from './components/pqrs_gen.component';
 import PQRS_COMPONENT_CLOCKS from './components/pqrs_clock.component';

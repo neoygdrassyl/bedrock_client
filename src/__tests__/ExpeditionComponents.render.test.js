@@ -170,7 +170,7 @@ vi.mock('../app/pages/user/records/arc/record_arc_areas_resumen.component', () =
   default: () => <div data-testid="record-arc-areas-resume-stub" />,
 }));
 
-vi.mock('react-data-table-component', () => ({
+vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data = [] }) => <div data-testid="datatable-stub">{data.length}</div>,
 }));

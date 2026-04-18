@@ -3,7 +3,7 @@ import { useReducer, useEffect, useRef } from 'react';
 import { MDBTabsPane } from '../../components/ui';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import { Button } from '@/components/ui/button';

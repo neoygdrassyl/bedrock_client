@@ -2,7 +2,7 @@ import { Item } from '../../../components/ui';
 import { useEffect, useState } from 'react';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import PROFESIONALS_MANAGE from './manage.component';
 import Swal from 'sweetalert2'

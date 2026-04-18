@@ -4,7 +4,7 @@ import UserslDataService from '../../services/users.service'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import Collapsible from '../../components/Collapsible';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import Swal from 'sweetalert2'

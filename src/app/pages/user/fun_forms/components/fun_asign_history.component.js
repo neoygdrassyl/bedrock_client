@@ -3,7 +3,7 @@ import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { formsParser1_exlucde2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 
 const MySwal = withReactContent(Swal);
 import dayjs from 'dayjs';

@@ -44,7 +44,7 @@ vi.mock('../app/pages/user/pqrs/components/pqrs_emails.component', () => ({
   default: () => <div data-testid="pqrs-emails-stub" />,
 }));
 
-vi.mock('react-data-table-component', () => ({
+vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data = [] }) => <div data-testid="datatable-stub">{data.length}</div>,
 }));

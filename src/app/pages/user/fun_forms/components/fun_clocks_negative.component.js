@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { useState, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

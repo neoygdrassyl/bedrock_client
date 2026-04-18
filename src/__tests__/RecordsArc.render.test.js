@@ -108,7 +108,7 @@ vi.mock('../app/pages/user/records/exp_areas_record.component', () => ({
   default: () => <div data-testid="exp-areas-stub" />,
 }));
 
-vi.mock('react-data-table-component', () => ({
+vi.mock('@/components/data-table-bridge', () => ({
   __esModule: true,
   default: () => <div data-testid="data-table-stub" />,
 }));

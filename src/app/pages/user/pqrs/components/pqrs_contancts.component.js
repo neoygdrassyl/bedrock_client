@@ -1,4 +1,4 @@
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 
 function PQRS_COMPONENT_CONTACTS({ translation, swaMsg, globals, currentItem }) {

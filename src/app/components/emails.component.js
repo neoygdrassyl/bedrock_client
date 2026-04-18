@@ -3,7 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import EmailsService from '../services/emails.service';
 import { MDBBtn, MDBTooltip } from './ui';
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import dayjs from 'dayjs';
 import VIEWER from './viewer.component';
 import { Icon } from '@/components/icon';

@@ -3,7 +3,7 @@ import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import DataTable from 'react-data-table-component';
+import DataTable from '@/components/data-table-bridge';
 import BICS from "../../../components/jsons/BICS.json"
 import { Icon } from '@/components/icon';
 
