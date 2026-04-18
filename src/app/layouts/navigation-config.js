@@ -28,6 +28,7 @@ const NAV_ITEMS = [
     children: [
       { id: 'licencias-radicar', label: 'Radicar', route: '/licencias', icon: 'FilePlus' },
       { id: 'licencias-gestion', label: 'Gestión', route: '/licencias/gestion', icon: 'FolderOpen' },
+      { id: 'licencias-gestion-nueva', label: 'Gestión nueva', route: '/licencias/gestion-nueva', icon: 'Layers' },
     ],
   },
   {
