@@ -45,9 +45,11 @@
   background-color: hsl(var(--primary));
   border-color: hsl(var(--primary));
 }
-#main-content :where(.btn-primary:hover) {
+#main-content :where(.btn-primary:hover),
+#main-content :where(.btn-primary:focus) {
   background-color: hsl(var(--primary) / 0.9);
   border-color: hsl(var(--primary) / 0.9);
+  box-shadow: 0 0 0 0.2rem hsl(var(--primary) / 0.25);
 }
 
 #main-content :where(.btn-success) {
@@ -486,4 +488,43 @@
 .dark #main-content :where(.dropdown-menu) {
   background-color: hsl(var(--popover));
   border-color: hsl(var(--border));
+}
+
+/* ─── Text utility overrides ───────────────────────────────────────── */
+#main-content :where(.text-primary) { color: hsl(var(--primary)) !important; }
+#main-content :where(.text-success) { color: hsl(var(--accent)) !important; }
+#main-content :where(.text-danger) { color: hsl(var(--destructive)) !important; }
+#main-content :where(.text-warning) { color: hsl(var(--warning)) !important; }
+#main-content :where(.text-muted) { color: hsl(var(--muted-foreground)) !important; }
+
+/* ─── Headings ─────────────────────────────────────────────────────── */
+#main-content :where(h1, h2, h3, h4) {
+  color: hsl(var(--foreground));
+  font-family: 'Inter', sans-serif;
+}
+
+/* ─── Accordion / Collapsible ──────────────────────────────────────── */
+#main-content :where(.accordion-button) {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--card));
+}
+#main-content :where(.accordion-button:not(.collapsed)) {
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.05);
+}
+.dark #main-content :where(.accordion-button) {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--card));
+}
+.dark #main-content :where(.accordion-button:not(.collapsed)) {
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+/* ─── Dark mode: Bootstrap table bg variable reset ─────────────────── */
+.dark #main-content :where(.table) {
+  --bs-table-bg: transparent;
+}
+.dark #main-content :where(.table th) {
+  background-color: hsl(var(--muted) / 0.5);
 }

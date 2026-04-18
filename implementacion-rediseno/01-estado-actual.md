@@ -103,6 +103,25 @@
 29. **Contraste modo oscuro mejorado** — tokens `--border` y `--input` ajustados de 17.5% a 25% luminosidad en modo oscuro. Antes eran identicos a `--card`, haciendo bordes e inputs invisibles.
 30. **Breadcrumbs sin recarga** — `<a href>` reemplazados por `<Link to>` en HeaderBar para navegacion SPA sin refrescar pagina.
 
+### Polish visual (Fase 2.8)
+
+31. **Legacy bridge CSS expandido** (`src/app/styles/legacy-bridge.css`) — de 285 a 489 lineas. Cobertura ampliada:
+    - Input groups: addon con tokens, border alignment (136 archivos)
+    - Form checks: checkbox/radio/switch con colores del sistema (69 archivos)
+    - Paginacion: links, active state, disabled state (42 archivos)
+    - List groups: colores, hover, active (18 archivos)
+    - Modals: background/border con tokens, esquinas redondeadas
+    - Progress bars: track muted, fills primary/accent/destructive/warning
+    - Dropdowns: popover bg, hover states, dividers
+    - Breadcrumbs legacy: links primary, active muted
+    - Form labels: foreground color, tamaño 0.875rem, peso medium
+    - Tooltips: sidebar bg, texto pequeño, rounded
+    - Dark mode: cobertura completa para todos los nuevos overrides
+
+32. **Skeleton loading** — LoadingFallback reemplazado: de un spinner centrado a un grid de cards skeleton con `animate-pulse` y delays escalonados. Simula la estructura del dashboard para continuidad visual.
+
+33. **DataTable bridge mejorado** — estado vacio con icono FileX + mensaje estilizado. Paginacion compacta con botones h-7, indicadores de pagina para ≤7 paginas, contador de registros totales.
+
 ## Que falta (resumen)
 
 | Area | Estado |
