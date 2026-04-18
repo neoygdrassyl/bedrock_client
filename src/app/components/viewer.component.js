@@ -5,6 +5,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { MDBBtn } from './ui';
+import { Icon } from '@/components/icon';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url
@@ -120,7 +121,7 @@ export default function VIEWER(props) {
     return (
         <>
         <MDBBtn className="btn btn-sm btn-info px-2 ms-2" onClick={() => setModalV(!modalViwewer)} >
-            <i className="fas fa-search"></i>
+            <Icon name="search" size={16} />
         </MDBBtn>
 
             <Modal
@@ -132,7 +133,7 @@ export default function VIEWER(props) {
                 <div className="my-2 d-flex justify-content-between ">
                     <div className='row'>
                         <div className="input-group">
-                            <label className=''><i className="fas fa-hard-hat"></i> DOCUMENTO</label>
+                            <label className=''><Icon name="hard-hat" size={16} /> DOCUMENTO</label>
                         </div>
                     </div>
 
@@ -178,8 +179,8 @@ export default function VIEWER(props) {
                 </div>
                 <hr />
                 <div className="text-end py-2">
-                    <a className="btn btn-sm btn-danger me-2" href={urlImg || urlFile} target='_blank'><i className="fas fa-cloud-download-alt"></i> DESCARGA</a>
-                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModalV(!modalViwewer)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                    <a className="btn btn-sm btn-danger me-2" href={urlImg || urlFile} target='_blank'><Icon name="cloud-download-alt" size={16} /> DESCARGA</a>
+                    <MDBBtn className="btn btn-sm btn-info" onClick={() => setModalV(!modalViwewer)}><Icon name="times-circle" size={16} /> CERRAR</MDBBtn>
                 </div>
             </Modal>
         </>

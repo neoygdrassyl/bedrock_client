@@ -13,6 +13,7 @@ import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
 import { dateParser_finalDate, formsParser1, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
 import FUN_ICON_PROGRESS from './icon_progress.compoennt';
+import { Icon } from '@/components/icon';
 
 export default function FUN_MACROTABLE_CLOCKS(props) {
     const { translation, swaMsg, globals, dataFilter, selectedRow, hide_jur, hide_arc, hide_ing, worker_list } = props;
@@ -68,7 +69,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             style: { backgroundColor: 'LightCyan' }
         }
     ];
-    const nullIcon = <i className="fas fa-minus text-danger"></i>
+    const nullIcon = <Icon name="minus" size={16} className="text-danger" />
   
     // *********************** DATA GETTERS ************************** // 
     let _PARSE_FUN_1 = (_ITEM) => {
@@ -132,7 +133,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             button: true,
             cell: row => <button title="Informacion solicitud" className="btn btn-sm btn-info m-0 p-1 shadow-none"
                     onClick={() => props.NAVIGATION_GEN(row)}>
-                    <i className="far fa-folder-open" ></i></button>
+                    <Icon name="folder-open" size={16} /></button>
         },
         {
             name: <label>ACTUACION</label>,
@@ -312,7 +313,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             omit: hide_ing,
             cell: row => !regexChecker_isPh(row, true)
                 ? row.eng_id ? <label>{row.engr_workername}</label> : nullIcon
-                : <i className="fas fa-minus"></i>
+                : <Icon name="minus" size={16} />
 
         },
         {
@@ -325,7 +326,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             omit: hide_ing,
             cell: row => !regexChecker_isPh(row, true)
                 ? row.eng_id ? <label className="">{row.engr_date}</label> : nullIcon
-                : <i className="fas fa-minus"></i>
+                : <Icon name="minus" size={16} />
 
         },
         {
@@ -339,7 +340,7 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
             omit: hide_ing,
             cell: row => !regexChecker_isPh(row, true)
                 ? row.eng_id ? <label>Revision 1: {GET_REVIEW_ENG(row.engr_check)}<br />Revision 2: {GET_REVIEW_ENG(row.engr_check_2)}</label> : nullIcon
-                : <i className="fas fa-minus"></i>
+                : <Icon name="minus" size={16} />
 
         },
         {

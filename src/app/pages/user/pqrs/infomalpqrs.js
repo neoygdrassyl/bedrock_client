@@ -9,6 +9,7 @@ import PQRS_COMPONENT_LICENCE from './components/pqrs_licence.component';
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 
 function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentId, currentItemAsign, refreshList: refreshListProp, closeModal, NAVIGATION }) {
@@ -62,11 +63,11 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files_informal" accept="image/png, image/jpeg application/pdf" />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="text" className="form-control" name="files_informal_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
@@ -201,9 +202,9 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                 <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
                                 <div className="text-end m-3">
                                     {attachs > 0
-                                        ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </button>
+                                        ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
                                         : ""}
-                                    <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button>
+                                    <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button>
                                 </div>
                                 {_ATTACHS_COMPONENT()}
 
@@ -214,14 +215,14 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                         <input type="text" className="form-control" placeholder="  ESTA RESPUESTA A LA SOLICITUD SE DA PARA LA FECHA:" disabled />
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="far fa-calendar-alt"></i>
+                                                <Icon name="calendar-alt" size={16} />
                                             </span>
                                             <input type="date" max="2100-01-01" className="form-control" id="pqrs_informal_time" defaultValue={dayjs().format('YYYY-MM-DD')} required />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="text-center py-4 mt-3">
-                                    <button className="btn btn-lg btn-success"><i className="fas fa-reply"></i> RESPONDER </button>
+                                    <button className="btn btn-lg btn-success"><Icon name="reply" size={16} /> RESPONDER </button>
                                 </div>
                             </form></> : <fieldset className="p-3" id="fung_0">
                             <div className="text-center"> <h3 className="fw-bold text-danger">NO HA SIDO POSIBLE CARGAR LA INFORMACIÓN, INTÉNTELO NUEVAMENTE</h3></div>

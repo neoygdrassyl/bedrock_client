@@ -6,6 +6,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { useParams } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import React, { useRef } from 'react';
+import { Icon } from '@/components/icon';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 const MySwal = withReactContent(Swal);
 
@@ -155,7 +156,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label htmlFor="name" className="form-label"><label className='text-danger'>*</label> Nombre</label>
                             <div className="input-group">
                                 <span className="input-group-text text-white bg-info">
-                                    <i className="fas fa-user"></i>
+                                    <Icon name="user" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="name" required />
                             </div>
@@ -165,7 +166,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label htmlFor="surname" className="form-label"><label className='text-danger'>*</label> Apellidos</label>
                             <div className="input-group">
                                 <span className="input-group-text text-white bg-info">
-                                    <i className="fas fa-user"></i>
+                                    <Icon name="user" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="surname" required />
                             </div>
@@ -175,7 +176,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label htmlFor="id_number" className="form-label"><label className='text-danger'>*</label> Nro. Documento</label>
                             <div className="input-group">
                                 <span className="input-group-text text-white bg-info">
-                                    <i className="far fa-id-card"></i>
+                                    <Icon name="id-card" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="id_number" onBlur={(e) => _REGEX_IDNUMBER(e)} required />
                             </div>
@@ -184,7 +185,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label htmlFor="reg_number" className="form-label"><label className='text-danger'>*</label> Nro. matricula/tarjeta</label>
                             <div className="input-group">
                                 <span className="input-group-text text-white bg-info">
-                                    <i className="far fa-id-card"></i>
+                                    <Icon name="id-card" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="reg_number" required />
                             </div>
@@ -195,7 +196,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label htmlFor="title" className="form-label"><label className='text-danger'>*</label> Titulo</label>
                             <div className="input-group">
                                 <span className="input-group-text text-white bg-info">
-                                    <i className="fas fa-hard-hat"></i>
+                                    <Icon name="hard-hat" size={16} />
                                 </span>
                                 <select className="form-select" id={"title"}>
                                     <option value="arq">ARQUITECTO</option>
@@ -209,7 +210,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label htmlFor="email" className="form-label"><label className='text-danger'>*</label> Correo de Contacto</label>
                             <div className="input-group">
                                 <span className="input-group-text text-white bg-info">
-                                    <i className="fas fa-envelope"></i>
+                                    <Icon name="envelope" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="email" />
                             </div>
@@ -218,7 +219,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label htmlFor="number" className="form-label"><label className='text-danger'>*</label> Número de Contacto</label>
                             <div className="input-group">
                                 <span className="input-group-text text-white bg-info">
-                                    <i className="fas fa-phone-alt"></i>
+                                    <Icon name="phone-alt" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="number" />
                             </div>
@@ -227,7 +228,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label htmlFor="date" className="form-label"><label className='text-danger'>*</label> Fecha de matricula/tarjeta</label>
                             <div className="input-group">
                                 <span className="input-group-text text-white bg-info">
-                                    <i className="fas fa-calendar-check"></i>
+                                    <Icon name="calendar-check" size={16} />
                                 </span>
                                 <input type="date" className="form-control" id="date" required />
                             </div>
@@ -240,7 +241,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label>Hoja de Vida y Certificados</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-file"></i>
+                                    <Icon name="file" size={16} />
                                 </span>
                                 <input type="file" className="form-control" id="attach_cv" accept="image/png, image/jpeg image/pjg application/pdf" />
                             </div>
@@ -249,7 +250,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label>Documento de Identidad</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-file"></i>
+                                    <Icon name="file" size={16} />
                                 </span>
                                 <input type="file" className="form-control" id="attach_id" accept="image/png, image/jpeg image/pjg application/pdf" />
                             </div>
@@ -260,7 +261,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                             <label>Matricula</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-file"></i>
+                                    <Icon name="file" size={16} />
                                 </span>
                                 <input type="file" className="form-control" id="attach_reg" accept="image/png, image/jpeg image/pjg application/pdf" />
                             </div>

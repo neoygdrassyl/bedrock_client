@@ -5,6 +5,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import EXP_CALC from '../expeditions/exp_calc.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -47,7 +48,7 @@ export default function EXP_AREAS_RECORD(props) {
                     <label>Area</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-cube"></i>
+                            <Icon name="cube" size={16} />
                         </span>
                         <input type="number" min="0" step="0.01" className="form-control" id={"expedition_area_1" + edit} />
                     </div>
@@ -57,7 +58,7 @@ export default function EXP_AREAS_RECORD(props) {
                     <label>Unidades</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-cube"></i>
+                            <Icon name="cube" size={16} />
                         </span>
                         <input type="number" min="0" step="1" className="form-control" id={"expedition_area_5" + edit} />
                     </div>
@@ -67,7 +68,7 @@ export default function EXP_AREAS_RECORD(props) {
                     <label>Uso</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-home"></i>
+                            <Icon name="home" size={16} />
                         </span>
                         <input list="exp_uses_datalist" className="form-select" id={"expedition_area_3" + edit} autoComplete="off" />
 
@@ -86,7 +87,7 @@ export default function EXP_AREAS_RECORD(props) {
                     <label>Modalidad</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-question-circle"></i>
+                            <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" id={"expedition_area_4" + edit} />
                     </div>
@@ -138,8 +139,8 @@ export default function EXP_AREAS_RECORD(props) {
                 button: true,
                 maxWidth: '50px',
                 cell: row => <>
-                    <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit"></i></button></span>
-                    <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></button></span>
+                    <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></button></span>
+                    <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></button></span>
                 </>
             },
         ]
@@ -390,7 +391,7 @@ export default function EXP_AREAS_RECORD(props) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col">
-                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
                                     </div>
                                 </div>
                             </form>
@@ -404,7 +405,7 @@ export default function EXP_AREAS_RECORD(props) {
                                 {_COMPONENT_MANAGE('_edit')}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
                                     </div>
                                 </div>
                             </form>

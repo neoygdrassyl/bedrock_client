@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import './fun_moduleNav_enhanced.css';
+import { Icon } from '@/components/icon';
 
 function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGATION, pqrsxfun }) {
     // Check if CSS variable is already set to determine initial state
@@ -151,7 +152,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                             {!isCollapsed && (
                                 <>
                                     <div className="fun-nav-header-title">
-                                        <i className="fas fa-folder-open"></i>
+                                        <Icon name="folder-open" size={16} />
                                         <span className="ms-2">NAVEGACIÓN</span>
                                     </div>
                                     <div className="fun-nav-header-info">
@@ -188,7 +189,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                                 className={`fun-nav-item btn-close-module`}
                                 data-tooltip="CERRAR"
                             >
-                                <i className="fas fa-times-circle"></i>
+                                <Icon name="times-circle" size={16} />
                                 {!isCollapsed && <span className="fun-nav-label">CERRAR</span>}
                             </button>
                         </div>

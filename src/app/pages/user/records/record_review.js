@@ -21,6 +21,7 @@ import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -458,8 +459,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         }
         let get_clockExistIcon = (state) => {
             var _CHILD = _GET_CLOCK_STATE(state);
-            if (_CHILD) return <i className="far fa-check-circle text-success"></i>
-            return <i className="far fa-dot-circle"></i>
+            if (_CHILD) return <Icon name="check-circle" size={16} className="text-success" />
+            return <Icon name="dot-circle" size={16} />
         }
         let pro = () => {
             return _GET_CLOCK_STATE(34).date_start ?? false;
@@ -576,7 +577,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         <label>Fecha del acta de observaciones</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="record_review_2" max="2100-01-01"
                                 defaultValue={currentRecord.date ?? ''} />
@@ -586,7 +587,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         <label>Resultado</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="record_review_3" defaultValue={currentRecord.check ?? 2} >
                                 <option value="0" className="text-danger">TIENE OBSERVACIONES</option>
@@ -606,7 +607,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         <label>Fecha del acta de Correcciones</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="record_review_4" max="2100-01-01"
                                 defaultValue={currentRecord.date_2 ?? ''} />
@@ -616,7 +617,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         <label>Resultado</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="record_review_5" defaultValue={currentRecord.check_2 ?? 2} >
                                 <option value="0" className="text-danger">NO CUMPLE (NEGADO)</option>
@@ -650,7 +651,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                 <label>Fecha del acta de observaciones</label>
                                 <div className="input-group my-1">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="far fa-calendar-alt"></i>
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="date" className="form-control" id="record_ph_worker_arc_2" required
                                         defaultValue={values[1]} />
@@ -660,7 +661,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                 <label>Aprobado</label>
                                 <div className="input-group my-1">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="far fa-check-square"></i>
+                                        <Icon name="check-square" size={16} />
                                     </span>
                                     <select className="form-control" id="recprd_ph_final_check" defaultValue={values[0]} >
                                         <option value="0" className="text-danger">NO</option>
@@ -897,7 +898,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     <div className="col-1"> <label className='fw-bold'>PEND.</label> </div>
                 </div>
                 <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><i className="fas fa-balance-scale"></i> JUR.</label> </div>
+                    <div className="col text-center pt-1"> <label className='fw-bold'><Icon name="balance-scale" size={16} /> JUR.</label> </div>
                     <div className="col">
                         <div className="input-group input-group-sm">
                             <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('law', reviews_law, e.target.value)}>
@@ -928,7 +929,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
                 </div>
                 <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><i className="far fa-building"></i>  ARQ.</label> </div>
+                    <div className="col text-center pt-1"> <label className='fw-bold'><Icon name="building" size={16} />  ARQ.</label> </div>
                     <div className="col">
                         <div className="input-group input-group-sm">
                             <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('arc', reviews_arc, e.target.value)}>
@@ -959,7 +960,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
                 </div>
                 <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><i className="fas fa-cogs"></i> EST.</label> </div>
+                    <div className="col text-center pt-1"> <label className='fw-bold'><Icon name="cogs" size={16} /> EST.</label> </div>
                     <div className="col">
                         <div className="input-group input-group-sm">
                             <select className="form-select me-1" id={"record_pdf_version_eng"} onChange={(e) => _CHANGE_VALUES_ENG(reviews_eng, e.target.value)}>
@@ -1047,10 +1048,10 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-danger me-1 btn-sm" onClick={() => creae_pdf()}> <i className="far fa-file-pdf"></i> DESCARGAR ACTA</button>
+                        <button className="btn btn-danger me-1 btn-sm" onClick={() => creae_pdf()}> <Icon name="file-pdf" size={16} /> DESCARGAR ACTA</button>
                     </div>
                     <div className="col text-center">
-                        <button className="btn btn-danger btn-sm" onClick={() => CREATE_PDF_CHECK()}> <i className="far fa-file-pdf"></i> DESCARGAR CHEKEO</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="file-pdf" size={16} /> DESCARGAR CHEKEO</button>
                     </div>
                 </div>
             </>
@@ -1917,7 +1918,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         {currentItem.state > -5
                                             ? <>
                                                 <div className="col">
-                                                    <button type="button" className="btn btn-danger my-3" onClick={() => review()}><i className="far fa-check-square"></i> REALIZAR REVISIÓN </button>
+                                                    <button type="button" className="btn btn-danger my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </button>
                                                 </div>
                                             </>
                                             : <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
@@ -1934,7 +1935,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         {currentRecord.check == 0
                                             ? <>
                                                 <div className="col text-center">
-                                                    <button type="button" className="btn btn-secondary my-3" onClick={() => new_version()}><i className="fas fa-plus-circle"></i> NUEVA REVISION</button>
+                                                    <button type="button" className="btn btn-secondary my-3" onClick={() => new_version()}><Icon name="plus-circle" size={16} /> NUEVA REVISION</button>
                                                 </div>
                                                 <div className="col">
                                                     <label>Genera una nueva version de esta solicitud, guardando la información anterior.</label>
@@ -1977,7 +1978,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                                     <div className="row">
                                                         <div className="col text-center">
 
-                                                            <button className="btn btn-danger my-3"><i className="far fa-check-square"></i> PROSEGUIR A EXPEDICIÓN </button>
+                                                            <button className="btn btn-danger my-3"><Icon name="check-square" size={16} /> PROSEGUIR A EXPEDICIÓN </button>
                                                         </div>
                                                     </div>
                                                 </form>

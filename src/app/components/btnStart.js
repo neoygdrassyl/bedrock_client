@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Icon } from '@/components/icon';
 
 export default function BtnStart() {
   const [show, setShow] = useState(false);
@@ -22,7 +23,7 @@ export default function BtnStart() {
       aria-label="Ir al inicio"
       title="Ir al inicio"
     >
-      <i className="fas fa-chevron-up" aria-hidden="true" />
+      <Icon name="chevron-up" size={16} aria-hidden="true" />
     </button>
   );
 }

@@ -4,6 +4,7 @@ import DataTable from 'react-data-table-component';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import ListJson from '../../../../components/jsons/fun6DocsList.json';
 import './fun_modal_shared.css';
+import { Icon } from '@/components/icon';
 
 function DOCS_LIST({ idRef, text, setValues }) {
         const [modalSearchList, setModalSearchList] = useState(false);
@@ -60,7 +61,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
                 name: 'ACCION',
                 button: true,
                 cell: row => <button title="Copiar informacion" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => _COPY_INFO(row)}>
-                        <i className="far fa-copy fa-2x"></i></button>,
+                        <Icon name="copy" size={16} /></button>,
             }
         ]
         const docsData = _GET_DOCS_DATA();
@@ -74,7 +75,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
         }
         return (
             <div>
-                <button type="button" className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i className="fas fa-th-list"></i> {text}</button>
+                <button type="button" className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><Icon name="th-list" size={16} /> {text}</button>
                 <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={modalSearchList}
                     style={customStylesForModal}
@@ -82,7 +83,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
                 >
 
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-th-list"></i> CODIGOS TIPOLOGIA DOCUMENTAL</label>
+                        <label><Icon name="th-list" size={16} /> CODIGOS TIPOLOGIA DOCUMENTAL</label>
                         <button type="button" className="btn-close" onClick={toggle} />
                     </div>
                     <DataTable
@@ -97,7 +98,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
                         noDataComponent="No hay datos"
                     />
                     <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><i className="fas fa-times-circle"></i> CERRAR</button>
+                        <button type="button" className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><Icon name="times-circle" size={16} /> CERRAR</button>
                     </div>
                 </Modal>
 

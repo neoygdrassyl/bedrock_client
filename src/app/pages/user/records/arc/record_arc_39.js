@@ -679,7 +679,7 @@
 //                               onClick={() => this.toggleBoundaryForm(predio.id, index)}
 //                               className="me-1"
 //                             >
-//                               <i className="fas fa-plus"></i>
+//                               <Icon name="plus" size={16} />
 //                             </Button>
 //                             <Button 
 //                               size="sm" 

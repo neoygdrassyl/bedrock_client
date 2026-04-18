@@ -10,6 +10,7 @@ import SUBTMIT_MANAGE from './submit_manage'
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import dayjs from 'dayjs';
 import ListsCodes from '../../../components/jsons/fun6DocsList.json'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -135,10 +136,10 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 cell: row => <>
                     
                         <button onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <i className="far fa-folder-open fa-2x" ></i></button>
+                            <Icon name="folder-open" size={16} /></button>
                     
                         <button onClick={() => delete_submit(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                            <i className="far fa-trash-alt fa-2x"></i></button>                </>,
+                            <Icon name="trash-alt" size={16} /></button>                </>,
             },
         ]
 
@@ -335,7 +336,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                         <div className="row">
                             <div className="col-4">
                                 <div className="text-center py-4 mt-3">
-                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><i className="fas fa-plus-circle"></i> NUEVA ENTRADA </button>
+                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><Icon name="plus-circle" size={16} /> NUEVA ENTRADA </button>
                                 </div>
                             </div>
                             <div className="col-4">
@@ -344,7 +345,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                                         <CardTitle className="text-center">Consultar</CardTitle>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="fas fa-info-circle"></i>
+                                                <Icon name="info-circle" size={16} />
                                             </span>
                                             <select className="form-select" id="submit_search_0" required>
                                                 <option value="1">Número de radicado VR</option>
@@ -356,12 +357,12 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                                         </div>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="far fa-comment-dots"></i>
+                                                <Icon name="comment-dots" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="submit_search_1" placeholder="Buscar..." />
                                         </div>
                                         <div className="text-center py-2">
-                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><i className="fas fa-search-plus"></i> CONSULTAR </button>
+                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><Icon name="search-plus" size={16} /> CONSULTAR </button>
                                         </div>
                                     </CardContent></Card>
                                 
@@ -372,20 +373,20 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                                         <CardTitle className="text-center">Documento CSV</CardTitle>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="fas fa-hashtag"></i>
+                                                <Icon name="hashtag" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="csv_limit_1" placeholder="Limite inferior"
                                                 defaultValue={`VR${dayjs().format('YY')}-0001`} />
                                         </div>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="fas fa-hashtag"></i>
+                                                <Icon name="hashtag" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="csv_limit_2" placeholder="Limite superior"
                                                 defaultValue={`VR${dayjs().format('YY')}-9999`} />
                                         </div>
                                         <div className="text-center py-2">
-                                            <button type="button" className="btn btn-success shadow-none" onClick={() => generateCVS()}><i className="fas fa-table"></i> GENERAR CSV </button>
+                                            <button type="button" className="btn btn-success shadow-none" onClick={() => generateCVS()}><Icon name="table" size={16} /> GENERAR CSV </button>
                                         </div>
                                     </CardContent></Card>
                                 
@@ -431,7 +432,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i className="far fa-edit"></i> ACTUALIZAR ENTRADA: {currentIdPublic} </h3>
+                        <h3><Icon name="edit" size={16} /> ACTUALIZAR ENTRADA: {currentIdPublic} </h3>
                         <button type="button" className="btn-close" onClick={toggle} />
                     </div>
                     <SUBTMIT_MANAGE
@@ -442,7 +443,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                         edit />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -452,7 +453,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <h3><i className="fas fa-plus-circle"></i> NUEVA ENTRADA </h3>
+                        <h3><Icon name="plus-circle" size={16} /> NUEVA ENTRADA </h3>
                         <button type="button" className="btn-close" onClick={() => toggle_new()} />
                     </div>
                     <SUBTMIT_MANAGE
@@ -460,7 +461,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                         refreshList={refreshList}
                         closeModal={toggle_new} />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 

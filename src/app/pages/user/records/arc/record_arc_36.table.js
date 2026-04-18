@@ -6,6 +6,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import perfilData from '../../../../components/jsons/perfilesData.json';
+import { Icon } from '@/components/icon';
 
 export default function RECORD_ARC_36_TABLE(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
@@ -188,8 +189,8 @@ export default function RECORD_ARC_36_TABLE(props) {
             center: true,
             minWidth: '110px',
             cell: row => <>
-                <button type="button" className="btn btn-secondary btn-sm px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><i className="far fa-edit"></i></button>
-                <button type="button" className="btn btn-danger btn-sm px-2" onClick={() => delete_36_info(row.id)}><i className="far fa-trash-alt"></i></button>
+                <button type="button" className="btn btn-secondary btn-sm px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><Icon name="edit" size={16} /></button>
+                <button type="button" className="btn btn-danger btn-sm px-2" onClick={() => delete_36_info(row.id)}><Icon name="trash-alt" size={16} /></button>
             </>,
         },
     ]
@@ -205,28 +206,28 @@ export default function RECORD_ARC_36_TABLE(props) {
 
             <div className='row border'>
                 <div className='col-3'>
-                    <h5 className='fw-bold'><i className="fas fa-road"></i> PERFIL</h5>
+                    <h5 className='fw-bold'><Icon name="road" size={16} /> PERFIL</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="fas fa-cube"></i> LADO</h5>
+                    <h5 className='fw-bold'><Icon name="cube" size={16} /> LADO</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="fas fa-vector-square"></i> RELACION</h5>
+                    <h5 className='fw-bold'><Icon name="vector-square" size={16} /> RELACION</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="fas fa-hashtag"></i> NORMA</h5>
+                    <h5 className='fw-bold'><Icon name="hashtag" size={16} /> NORMA</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="fas fa-hashtag"></i> PROY.</h5>
+                    <h5 className='fw-bold'><Icon name="hashtag" size={16} /> PROY.</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="fas fa-greater-than-equal"></i> DIF.</h5>
+                    <h5 className='fw-bold'><Icon name="greater-than-equal" size={16} /> DIF.</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="fas fa-greater-than-equal"></i> OBS.</h5>
+                    <h5 className='fw-bold'><Icon name="greater-than-equal" size={16} /> OBS.</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="far fa-check-square"></i> EVA.</h5>
+                    <h5 className='fw-bold'><Icon name="check-square" size={16} /> EVA.</h5>
                 </div>
                 <div className='col-1'></div>
 
@@ -309,7 +310,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <button type="button" className="btn btn-outline-danger btn-sm rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <i className="fas fa-minus text-danger"></i></button>
+                                <button type="button" className="btn btn-outline-danger btn-sm rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <Icon name="minus" size={16} className="text-danger" /></button>
                             }
                         </div>
                     </div>
@@ -350,7 +351,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <button type="button" className="btn btn-outline-success btn-sm rounded-pill px-2" onClick={() => add_perfil(data.id)}> <i className="fas fa-plus text-success"></i></button> : ''}
+                            <button type="button" className="btn btn-outline-success btn-sm rounded-pill px-2" onClick={() => add_perfil(data.id)}> <Icon name="plus" size={16} className="text-success" /></button> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -375,7 +376,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                         </div>
                         <div className="col-1 p-1">
                             <div className="input-group">
-                                <a className="btn btn-info btn-sm p-2 ms-2 mt-3" target="_blank" href="http://www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/perfil_10.00_m_tipo_a.png" id={"r_a_36_imglink" + edit}><i className="far fa-image fa-2x"></i></a>
+                                <a className="btn btn-info btn-sm p-2 ms-2 mt-3" target="_blank" href="http://www.curaduria1bucaramanga.com/public_docs/OTHERS/PERFILES/perfil_10.00_m_tipo_a.png" id={"r_a_36_imglink" + edit}><Icon name="image" size={16} /></a>
                             </div>
                         </div>
                         <div className="col p-1">
@@ -794,7 +795,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     {_COMPONENT_1('')}
                     <div className="text-center">
                         <button className="btn btn-success btn-sm my-2">
-                            <i className="far fa-share-square"></i> AÑADIR ELEMENTOS
+                            <Icon name="share-square" size={16} /> AÑADIR ELEMENTOS
                         </button>
                     </div>
                 </form>
@@ -806,7 +807,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     {_COMPONENT_1('_edit')}
                     <div className="text-center">
                         <button className="btn btn-success btn-sm  my-2">
-                            <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                            <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                         </button>
                     </div>
                 </form>

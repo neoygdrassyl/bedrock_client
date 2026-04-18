@@ -9,6 +9,7 @@ import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 import FUNService from '../../../../services/fun.service';
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;;
 
 export default function RECORD_LAW_FUN_52(props) {
@@ -184,7 +185,7 @@ export default function RECORD_LAW_FUN_52(props) {
                     <label>Busqueda de Profesional. {searchingP ? <label className='fw-bold'>Buscando...</label> : ''}</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-success text-white">
-                            <i className="fas fa-search"></i>
+                            <Icon name="search" size={16} />
                         </span>
                         <HTMLDatalist
                             name={"search_52"}
@@ -438,7 +439,7 @@ export default function RECORD_LAW_FUN_52(props) {
     }
     let _EDIT_BTN = (item) => {
         return <>
-            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal({ [item.id]: true })}><i className="far fa-edit" style={{ fontSize: '150%' }}></i></button>
+            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal({ [item.id]: true })}><Icon name="edit" size={16} style={{ fontSize: '150%' }} /></button>
 
             <Modal contentLabel="EDIT FUN 52"
                 isOpen={modal[item.id]}
@@ -446,7 +447,7 @@ export default function RECORD_LAW_FUN_52(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label className="fw-bold align-middle"> <i className="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
+                    <label className="fw-bold align-middle"> <Icon name="edit" size={16} style={{ fontSize: '150%' }} />ACTUALIZACIÓN RÁPIDA</label>
                     <button type="button" className="btn-close" onClick={() => setModal({ [item.id]: false })} />
                 </div>
                 {_EDIT_COMPONENT(item)}
@@ -476,7 +477,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.1 Nombre</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5211" defaultValue={item.name} />
                         </div>
@@ -485,7 +486,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.1 Apellido(s)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_5212" defaultValue={item.surname} />
                         </div>
@@ -497,7 +498,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.2 Cédula</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-id-card"></i>
+                                <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_522" defaultValue={item.id_number}
                                 onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
@@ -507,7 +508,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.3 Correo Electrónico</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-envelope"></i>
+                                <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_523" defaultValue={item.email} />
                         </div>
@@ -519,7 +520,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.5 Rol que Desempeña (Puede seleccionar multiples usando la tecla ctrl)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-user-graduate"></i>
+                                <Icon name="user-graduate" size={16} />
                             </span>
                             <select className="form-select" id="f_525" defaultValue={item.role}>
                                 <option>URBANIZADOR/PARCELADOR</option>
@@ -542,7 +543,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.4 Teléfono de Contacto</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-phone-alt"></i>
+                                <Icon name="phone-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_524" defaultValue={item.number} />
                         </div>
@@ -551,7 +552,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.6 No. Matrícula Profesional</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-file-contract"></i>
+                                <Icon name="file-contract" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_526" defaultValue={item.registration} />
                         </div>
@@ -563,7 +564,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.7 Fecha expedición Matrícula</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" max="2100-01-01" id="f_527" defaultValue={item.registration_date}
                                 onChange={() => _GET_YEARS_EXPERIENCE('')} />
@@ -573,7 +574,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.8 ¿Sancionado?</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id="f_5210" defaultValue={item.sanction}>
                                 <option value="0">NO</option>
@@ -601,7 +602,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.10 Supervisión técnica</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-eye"></i>
+                                <Icon name="eye" size={16} />
                             </span>
                             <select className="form-select" id="f_528" defaultValue={item.supervision}>
                                 <option>N/A</option>
@@ -620,7 +621,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.11.1 Hoja de Vida</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file"></i>
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_114" defaultValue={docs[3]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -633,7 +634,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.11.2 Relacionar Documento: Documento de Identidad</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file"></i>
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_111" defaultValue={docs[0]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -646,7 +647,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.11.3 Relacionar Documento: Matricula</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file"></i>
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_112" defaultValue={docs[1]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -659,7 +660,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.11.4 Relacionar Documento: Vigencia Matricular</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file"></i>
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_113" defaultValue={docs[2]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -672,7 +673,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.11.5 Relacionar Documento: Estudios de postgrado</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file"></i>
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_115" defaultValue={docs[4]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -685,7 +686,7 @@ export default function RECORD_LAW_FUN_52(props) {
                         <label>5.2.11.6 Relacionar Documento: Certificados</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-file"></i>
+                                <Icon name="file" size={16} />
                             </span>
                             <select className='form-select' id="f_52_116" defaultValue={docs[5]}>
                                 <option value="-1">APORTADO FISICAMENTE</option>
@@ -699,7 +700,7 @@ export default function RECORD_LAW_FUN_52(props) {
 
                 <div className="text-center">
                     <button className="btn btn-success my-3" onClick={() => edit_52(item)}>
-                        <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                        <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                     </button>
                 </div>
             </fieldset>

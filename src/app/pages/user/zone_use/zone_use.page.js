@@ -7,6 +7,7 @@ import Zone_Use_Service from "../../../services/zone_use.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import ZONE_USE_COMPONENT from './zone_use.component';
+import { Icon } from '@/components/icon';
 
 
 const MySwal = withReactContent(Swal);
@@ -195,7 +196,7 @@ export default function ZONE_USE(props) {
                     <div className='col-12'>
                         <div className="input-group">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"> <label>Radicación: </label></i>
+                                <span className="flex items-center gap-1"><Icon name="hashtag" size={16} /> <label>Radicación: </label></span>
                             </span>
                             <input type="text" className="form-control" defaultValue={""} id="id_in" required />
                         </div>
@@ -203,7 +204,7 @@ export default function ZONE_USE(props) {
                 </div>
 
                 <div className="text-center">
-                    <button className="btn btn btn-success my-1"><i className="fas fa-folder-plus"></i> CREAR </button>
+                    <button className="btn btn btn-success my-1"><Icon name="folder-plus" size={16} /> CREAR </button>
                 </div>
             </form>
         </div>
@@ -218,7 +219,7 @@ export default function ZONE_USE(props) {
                     <div className='col-12'>
                         <div className="input-group">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fa fa-search"> <label>Buscar</label></i>
+                                <span className="flex items-center gap-1"><Icon name="search" size={16} /> <label>Buscar</label></span>
                             </span>
                             <input type="text" className="form-control" defaultValue={""} id="search" />
                         </div>
@@ -226,7 +227,7 @@ export default function ZONE_USE(props) {
                 </div>
 
                 <div className="text-center">
-                    <button className="btn btn btn-secondary my-1"><i className="fa fa-search"></i> BUSCAR </button>
+                    <button className="btn btn btn-secondary my-1"><Icon name="search" size={16} /> BUSCAR </button>
                 </div>
             </form>
         </div>
@@ -259,9 +260,9 @@ export default function ZONE_USE(props) {
                         setSelectedId(row.id);
                         setSelectedIdPublic(row.id_in);
                         setModal(!modal);
-                    }}><i className="far fa-edit"></i></button>
+                    }}><Icon name="edit" size={16} /></button>
                 {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2 ?
-                    <button type="button" title="Eliminar Item" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></button>
+                    <button type="button" title="Eliminar Item" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></button>
                     : null}
             </>,
         },
@@ -328,7 +329,7 @@ export default function ZONE_USE(props) {
 
 
                 <div className="text-end py-2">
-                    <button type="button" className="btn btn-info btn-sm" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> Cerrar</button>
+                    <button type="button" className="btn btn-info btn-sm" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> Cerrar</button>
                 </div>
             </Modal>
         </>

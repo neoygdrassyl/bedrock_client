@@ -6,6 +6,7 @@ import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
 import PERFILES from "../../../components/jsons/PERFILES.json"
 import { ELEMENTS } from './norm.vars'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -237,8 +238,8 @@ export default function NORM_ELEMENT(props) {
             center: true,
             minWidth: '80px',
             cell: row => <>
-                <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i className="far fa-edit"></i></button></span>
-                <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></button></span>
+                <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><Icon name="edit" size={16} /></button></span>
+                <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></button></span>
             </>,
         },
     ]
@@ -301,7 +302,7 @@ export default function NORM_ELEMENT(props) {
                 {_COMPONENT_MANAGE("")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i className="fas fa-plus-circle"></i> AÑADIR ITEM </button>
+                        <button className="btn btn-success btn-sm" ><Icon name="plus-circle" size={16} /> AÑADIR ITEM </button>
                     </div>
                 </div>
             </form>
@@ -315,7 +316,7 @@ export default function NORM_ELEMENT(props) {
                 {_COMPONENT_MANAGE("_edit")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><i className="fas fa-edit"></i> ACTUALIZAR ITEM </button>
+                        <button className="btn btn-success btn-sm" ><Icon name="edit" size={16} /> ACTUALIZAR ITEM </button>
                     </div>
                 </div>
             </form>

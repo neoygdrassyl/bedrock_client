@@ -7,6 +7,7 @@ import PQRS_Main from '../../../services/pqrs_main.service'
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft } from '../../../components/customClasses/typeParse';
 
 import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -77,11 +78,11 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
         }
         let _GET_STOPLIGHT_COLOR = (row) => {
             if (!row.pqrs_time) return ""
-            if (row.status) return <i className="fas fa-lightbulb fa-2x text-dark"></i>
+            if (row.status) return <Icon name="lightbulb" size={16} className="text-dark" />
             let days = dateParser_timeLeft(row.pqrs_time.legal, row.pqrs_time.time * (row.pqrs_law.extension ? 2 : 1));
-            if (days <= 0) return <i className="fas fa-lightbulb fa-2x text-danger"></i>
-            if (days > 0 && days < 7) return <i className="fas fa-lightbulb fa-2x text-warning"></i>
-            if (days >= 7) return <i className="fas fa-lightbulb fa-2x text-success"></i>
+            if (days <= 0) return <Icon name="lightbulb" size={16} className="text-danger" />
+            if (days > 0 && days < 7) return <Icon name="lightbulb" size={16} className="text-warning" />
+            if (days >= 7) return <Icon name="lightbulb" size={16} className="text-success" />
         }
         let _GET_REPLY_TIME_TIME = (row) => {
             if (!row.pqrs_time) return ""
@@ -114,7 +115,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 button: true,
                 cell: row => <> <button title="Informacion solicitud" className="btn btn-sm btn-info m-0 p-2 shadow-none"
                         onClick={() => NAVIGATION_GEN(row)}>
-                        <i className="far fa-eye" ></i></button>
+                        <Icon name="eye" size={16} /></button>
                 </>,
                 excell: false,
             },
@@ -376,7 +377,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
                 <div className="row">
                     <div className="col">
                         <label className="lead fw-bold me-3">Descargar Excel</label>
-                        <button type="button" onClick={() => generateCVS()} ><i className="far fa-file-excel fa-2x" style={{ color: "darkgreen" }}></i> </button>
+                        <button type="button" onClick={() => generateCVS()} ><Icon name="file-excel" size={16} style={{ color: "darkgreen" }} /> </button>
                     </div>
                 </div>
 

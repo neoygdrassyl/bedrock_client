@@ -43,6 +43,7 @@ import { ACESS_EDIT } from './access_edit';
 // JSONS
 import dayjs from 'dayjs';
 import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 
 function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums }) {
@@ -424,20 +425,20 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         }
     }
     let _GET_STOPLIGHT_COLOR = (row) => {
-        if (!row) return <i className="fas fa-lightbulb fa-2x text-muted"></i>;
+        if (!row) return <Icon name="lightbulb" size={16} className="text-muted" />;
         let time = row.pqrs_time ? row.pqrs_time.time : 0;
         let legal = row.pqrs_time ? row.pqrs_time.legal : 0
         let ext = row.pqrs_law ? row.pqrs_law.extension ? 2 : 1 : 1;
         let days = dateParser_timeLeft(legal, time * (ext));
-        if (days <= 0) return <i className="fas fa-lightbulb fa-2x text-danger"></i>
-        if (days > 0 && days < 7) return <i className="fas fa-lightbulb fa-2x text-warning"></i>
-        if (days >= 7) return <i className="fas fa-lightbulb fa-2x text-success"></i>
+        if (days <= 0) return <Icon name="lightbulb" size={16} className="text-danger" />
+        if (days > 0 && days < 7) return <Icon name="lightbulb" size={16} className="text-warning" />
+        if (days >= 7) return <Icon name="lightbulb" size={16} className="text-success" />
     }
     let _GET_STOPLIGHT_COLOR_ASSIGNED = (row) => {
         let days = dateParser_timeLeft(row.legal, row.time / 2);
-        if (days <= 0) return <i className="fas fa-lightbulb fa-2x text-danger"></i>
-        if (days > 0 && days < 7) return <i className="fas fa-lightbulb fa-2x text-warning"></i>
-        if (days >= 7) return <i className="fas fa-lightbulb fa-2x text-success"></i>
+        if (days <= 0) return <Icon name="lightbulb" size={16} className="text-danger" />
+        if (days > 0 && days < 7) return <Icon name="lightbulb" size={16} className="text-warning" />
+        if (days >= 7) return <Icon name="lightbulb" size={16} className="text-success" />
     }
     let _CHECK_FOR_REVIEWS = (row) => {
         let _woerker_list = row.pqrs_workers;
@@ -511,7 +512,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     </div>
                     <div className="col text-end">
                         <button type="button" title="Ver Listado" className="btn btn-info btn-sm px-2" onClick={() => setPending_open(prev => !prev)}>
-                            <i className="fas fa-info-circle fa-2x"></i>
+                            <Icon name="info-circle" size={16} />
                         </button>
                     </div>
                 </div>
@@ -610,10 +611,10 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             center: true,
             minWidth: '150px',
             cell: row => <>
-                <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye"></i></button>
+                <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></button>
                 {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                     ? <>
-                        <button title="Gestionar peticion" className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => toggleManage(row)}><i className="fas fa-cog"></i></button>
+                        <button title="Gestionar peticion" className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => toggleManage(row)}><Icon name="cog" size={16} /></button>
                     </> : ""}
             </>,
         },
@@ -672,7 +673,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             minWidth: '150px',
             center: true,
             cell: row => <>
-                <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye"></i></button>
+                <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></button>
                 {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                     ?
                     <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
@@ -725,7 +726,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             name: <label>ACCIÓN</label>,
             button: true,
             minWidth: '150px',
-            cell: row => <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><i className="far fa-eye "></i></button>,
+            cell: row => <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></button>,
 
         },
     ]
@@ -861,7 +862,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                     <h4 className="text-center font-semibold mb-3">GENERAR PQRS</h4>
                                     <p className="app-text-primary text-justify"> Permite la digitalización de una solicitud PQRS</p>
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-success" onClick={() => toggle()}><i className="fas fa-folder-plus"></i> NUEVA SOLICITUD </button>
+                                        <button className="btn btn-lg btn-success" onClick={() => toggle()}><Icon name="folder-plus" size={16} /> NUEVA SOLICITUD </button>
                                     </div>
                                 </div>
                             </div>
@@ -873,7 +874,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                     <form onSubmit={search} id="app-form">
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="fas fa-info-circle"></i>
+                                                <Icon name="info-circle" size={16} />
                                             </span>
                                             <select className="form-select" id="search_0" required>
                                                 <option value="1">Consecutivo de Entrada</option>
@@ -886,12 +887,12 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                         </div>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="far fa-comment-dots"></i>
+                                                <Icon name="comment-dots" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="search_1" />
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-secondary"><i className="fas fa-search-plus"></i> CONSULTAR </button>
+                                            <button className="btn btn-lg btn-secondary"><Icon name="search-plus" size={16} /> CONSULTAR </button>
                                         </div>
                                     </form>
                                 </div>
@@ -904,20 +905,20 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                     <form onSubmit={loadMacro} id="fun_form_macro_table_pqrs">
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="far fa-calendar-alt"></i>
+                                                <Icon name="calendar-alt" size={16} />
                                             </span>
                                             <input type="date" className="form-control" id="load_macro_date_1" required
                                                 defaultValue={dayjs().subtract(6, 'months').format('YYYY-MM-DD')} />
                                         </div>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="far fa-calendar-alt"></i>
+                                                <Icon name="calendar-alt" size={16} />
                                             </span>
                                             <input type="date" className="form-control" id="load_macro_date_2" required
                                                 defaultValue={dayjs().format('YYYY-MM-DD')} />
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-danger"><i className="fas fa-th"></i> CARGAR </button>
+                                            <button className="btn btn-lg btn-danger"><Icon name="th" size={16} /> CARGAR </button>
                                         </div>
                                     </form>
                                 </div>
@@ -1047,7 +1048,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         refreshRequested={refreshRequested} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1070,7 +1071,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleInfo()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleInfo()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1094,7 +1095,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleAsign()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleAsign()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1120,7 +1121,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         closeModal={() => toggleInformal()} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleInformal()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleInformal()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1145,7 +1146,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         closeModal={() => toggleReply()} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleReply()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleReply()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1169,7 +1170,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleLock()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleLock()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1193,7 +1194,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation} />
                     <hr />
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleEdit()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleEdit()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
                 <Modal contentLabel="MANAGE PQRS"
@@ -1219,7 +1220,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
                 <Modal contentLabel="EDIT PQRS"
@@ -1253,7 +1254,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         />
                     }
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleEditable()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggleEditable()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1263,7 +1264,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-th"></i> Macro tabla de seguimiento: Desde {dateParser(date_start)} hasta {dateParser(date_end)}</label>
+                        <label><Icon name="th" size={16} /> Macro tabla de seguimiento: Desde {dateParser(date_start)} hasta {dateParser(date_end)}</label>
                         <button type="button" className="btn-close" onClick={() => toggle_macro()} />
                     </div>
 

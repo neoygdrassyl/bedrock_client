@@ -22,6 +22,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 
 import './centralClocks.css';
 import './gantt.css';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -605,9 +606,9 @@ export default function EXP_CLOCKS(props) {
       width: '90vw', // Usamos un ancho relativo al viewport para mayor espacio
       showCancelButton: true,
       showDenyButton: hasSchedule,
-      confirmButtonText: '<i className="fas fa-save me-2"></i>Guardar Programación',
+      confirmButtonText: '<Icon name="save" size={16} className="me-2" />Guardar Programación',
       cancelButtonText: 'Cancelar',
-      denyButtonText: '<i className="fas fa-trash me-2"></i>Eliminar Programación',
+      denyButtonText: '<Icon name="trash" size={16} className="me-2" />Eliminar Programación',
       customClass: {
         popup: 'schedule-modal-popup', // Clase para control de altura y scroll
       },
@@ -941,7 +942,7 @@ export default function EXP_CLOCKS(props) {
 
       {!showAlarms && notificationAlarms.length > 0 && ( // CAMBIO: Referencia a notificationAlarms
         <button className="alarms-fab" onClick={() => setShowAlarms(true)} title="Mostrar Alertas">
-          <i className="fas fa-bell"></i>
+          <Icon name="bell" size={16} />
           <span className="fab-badge">{notificationAlarms.length}</span>
         </button>
       )}

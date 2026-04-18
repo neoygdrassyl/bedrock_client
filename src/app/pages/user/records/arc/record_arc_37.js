@@ -5,6 +5,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
+import { Icon } from '@/components/icon';
 
 export default function RECORD_ARC_37(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
@@ -270,19 +271,19 @@ export default function RECORD_ARC_37(props) {
 
             <div className='row border'>
                 <div className='col-3'>
-                    <h5 className='fw-bold'><i className="fas fa-asterisk"></i> GRUPO</h5>
+                    <h5 className='fw-bold'><Icon name="asterisk" size={16} /> GRUPO</h5>
                 </div>
                 <div className='col-3'>
-                    <h5 className='fw-bold'><i className="fas fa-asterisk"></i><i className="fas fa-asterisk"></i> SUBGRUPO</h5>
+                    <h5 className='fw-bold'><Icon name="asterisk" size={16} /><Icon name="asterisk" size={16} /> SUBGRUPO</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="fas fa-cube"></i> ÁREA NETA</h5>
+                    <h5 className='fw-bold'><Icon name="cube" size={16} /> ÁREA NETA</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="fas fa-male"></i> INDICE</h5>
+                    <h5 className='fw-bold'><Icon name="male" size={16} /> INDICE</h5>
                 </div>
                 <div className='col'>
-                    <h5 className='fw-bold'><i className="fas fa-male"></i> OCUPACIÓN REAL</h5>
+                    <h5 className='fw-bold'><Icon name="male" size={16} /> OCUPACIÓN REAL</h5>
                 </div>
                 <div className='col-1'></div>
 
@@ -348,7 +349,7 @@ export default function RECORD_ARC_37(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <button type="button" className="btn btn-outline-danger btn-sm rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <i className="fas fa-minus text-danger"></i></button>
+                                <button type="button" className="btn btn-outline-danger btn-sm rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <Icon name="minus" size={16} className="text-danger" /></button>
                             }
                         </div>
                     </div>
@@ -381,7 +382,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <button type="button" className="btn btn-outline-success btn-sm rounded-pill px-2" onClick={() => add_grp_37(data.id)}> <i className="fas fa-plus text-success"></i></button> : ''}
+                            <button type="button" className="btn btn-outline-success btn-sm rounded-pill px-2" onClick={() => add_grp_37(data.id)}> <Icon name="plus" size={16} className="text-success" /></button> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -424,7 +425,7 @@ export default function RECORD_ARC_37(props) {
             <div className='row my-2'>
                 <div className='col-1'></div>
                 <div className='col text-center'>
-                    <button type="button" className="btn btn-success btn-sm" onClick={() => import_37()}><i className="fas fa-file-upload"></i> IMPORTAR</button>
+                    <button type="button" className="btn btn-success btn-sm" onClick={() => import_37()}><Icon name="file-upload" size={16} /> IMPORTAR</button>
                 </div>
             </div>
         </>
@@ -600,8 +601,8 @@ export default function RECORD_ARC_37(props) {
                 center: true,
                 minWidth: '110px',
                 cell: row => <>
-                    <button type="button" className="btn btn-secondary btn-sm px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><i className="far fa-edit"></i></button>
-                    <button type="button" className="btn btn-danger btn-sm px-2" onClick={() => delete_37(row.id)}><i className="far fa-trash-alt"></i></button>
+                    <button type="button" className="btn btn-secondary btn-sm px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><Icon name="edit" size={16} /></button>
+                    <button type="button" className="btn btn-danger btn-sm px-2" onClick={() => delete_37(row.id)}><Icon name="trash-alt" size={16} /></button>
                 </>,
             },
         ]
@@ -1240,7 +1241,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                 </div>
                 <div className='col text-end'>
-                    <button type="button" className={`btn btn-sm ${!newImport ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setImport(!newImport)}><i className="fas fa-table"></i> IMPORTAR DE CUADRO DE AREAS</button>
+                    <button type="button" className={`btn btn-sm ${!newImport ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setImport(!newImport)}><Icon name="table" size={16} /> IMPORTAR DE CUADRO DE AREAS</button>
                 </div>
             </div>
 
@@ -1249,7 +1250,7 @@ export default function RECORD_ARC_37(props) {
                     {_COMPONENT_37('', false)}
                     <div className="text-center">
                         <button className="btn btn-success btn-sm my-2">
-                            <i className="far fa-share-square"></i> AÑADIR ELEMENTOS
+                            <Icon name="share-square" size={16} /> AÑADIR ELEMENTOS
                         </button>
                     </div>
                 </form>
@@ -1262,7 +1263,7 @@ export default function RECORD_ARC_37(props) {
                     {_COMPONENT_37('_edit', edit37)}
                     <div className="text-center">
                         <button className="btn btn-success btn-sm  my-2">
-                            <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                            <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                         </button>
                     </div>
                 </form>

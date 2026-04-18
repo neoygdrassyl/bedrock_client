@@ -9,6 +9,7 @@ import { formsParser1, getJSON, getJSONFull, _GET_SERIE_COD, _GET_SUBSERIE_COD }
 import SERVICE_ARCHIVE from '../../../services/archive.service';
 import FUN_6_UPLOAD from '../fun_forms/components/fun_6_upload.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
+import { Icon } from '@/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -78,7 +79,7 @@ export default function ARCHIVE_X_FUN(props) {
                     <label>Añadir licencia {searchingP ? <label className='fw-bold'>Buscando...</label> : ''}</label>
                     <div className="input-group my-1">
                         <span className="input-group-text bg-primary text-white">
-                            <i className="fas fa-search"></i>
+                            <Icon name="search" size={16} />
                         </span>
                         <HTMLDatalist
                             name={"lic"}
@@ -165,7 +166,7 @@ export default function ARCHIVE_X_FUN(props) {
                     </div>
                     <div className='row my-2'>
                         <div className='col text-end'>
-                            <button type="button" className="btn btn-primary btn-sm" onClick={() => addxList()}><i className="fas fa-plus-circle"></i> AÑADIR ITEM</button>
+                            <button type="button" className="btn btn-primary btn-sm" onClick={() => addxList()}><Icon name="plus-circle" size={16} /> AÑADIR ITEM</button>
                         </div>
                     </div>
                 </>
@@ -205,7 +206,7 @@ export default function ARCHIVE_X_FUN(props) {
             </div>
             <div className='row my-2'>
                 <div className='col text-end'>
-                    <button type="button" className="btn btn-primary btn-sm" onClick={() => UpdateXList(row)}><i className="far fa-edit"></i> ACTUALIZAR ITEM</button>
+                    <button type="button" className="btn btn-primary btn-sm" onClick={() => UpdateXList(row)}><Icon name="edit" size={16} /> ACTUALIZAR ITEM</button>
                 </div>
             </div>
         </>
@@ -238,9 +239,9 @@ export default function ARCHIVE_X_FUN(props) {
                         <label>Folios: <label className='fw-bold'>{it.pages}</label></label>
                     </div>
                     <div className='col-2 border text-center'>
-                        <span title="Administrar documentos item"><button type="button" className="btn btn-primary btn-sm px-1 py-1" onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><i className="fas fa-cloud-upload-alt"></i></button></span>
-                        <span title="Actualizar item de esta caja"><button type="button" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><i className="far fa-edit"></i></button></span>
-                        <span title="Eliminar item de esta caja"><button type="button" className="btn btn-danger btn-sm px-1 py-1" onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><i className="far fa-trash-alt"></i></button></span>
+                        <span title="Administrar documentos item"><button type="button" className="btn btn-primary btn-sm px-1 py-1" onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><Icon name="cloud-upload-alt" size={16} /></button></span>
+                        <span title="Actualizar item de esta caja"><button type="button" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><Icon name="edit" size={16} /></button></span>
+                        <span title="Eliminar item de esta caja"><button type="button" className="btn btn-danger btn-sm px-1 py-1" onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><Icon name="trash-alt" size={16} /></button></span>
 
                     </div>
                 </div>
@@ -466,7 +467,7 @@ export default function ARCHIVE_X_FUN(props) {
                 ariaHideApp={false}
             >
                 <div className="my-4 d-flex justify-content-between">
-                    <label><i className="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
+                    <label><Icon name="archive" size={16} /> GESTIÓN DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
                     <button type="button" className="btn-close" onClick={() => setModal_d(!modal_d)} />
                 </div>
                 <hr />
@@ -499,7 +500,7 @@ export default function ARCHIVE_X_FUN(props) {
                 <hr />
                 <div className="text-end">
                     <button type="button" className="btn btn-info btn-sm" onClick={() => setModal_d(!modal_d)}>
-                        <label ><i className="fas fa-times-circle"></i> CERRAR</label>
+                        <label ><Icon name="times-circle" size={16} /> CERRAR</label>
                     </button>
                 </div>
             </ReactModal>

@@ -7,6 +7,7 @@ import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import CubXVrDataService from '../../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 export const PQRS_SET_REPLY1 = (props) => {
@@ -312,7 +313,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                         <label className='text-start'>Consecutivo de Salida</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" defaultValue={currentItem.id_reply}
                                 id="pqrs_master_idreply" require />
@@ -324,7 +325,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                         <label>Fecha creación documento</label>
                         <div className="input-group my-1 ">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control"
                                 defaultValue={validar ?? dayjs().format('YYYY-MM-DD')}
@@ -352,12 +353,12 @@ export const PQRS_SET_REPLY1 = (props) => {
                     <div className="row justify-content-center">
                         <div className="col-3">
                             <div className="text-center m-3">
-                                <button type="button" className="btn btn-sm btn-info" onClick={funcion5}><i className="fas fa-exchange-alt"></i> CARGAR INFORMACIÓN</button>
+                                <button type="button" className="btn btn-sm btn-info" onClick={funcion5}><Icon name="exchange-alt" size={16} /> CARGAR INFORMACIÓN</button>
                             </div>
                         </div>
                         <div className="col-3">
                             <div className="text-center m-3">
-                                <button className="btn btn-sm btn-success" ><i className="fas fa-edit"></i> GUARDAR RESPUESTA </button>
+                                <button className="btn btn-sm btn-success" ><Icon name="edit" size={16} /> GUARDAR RESPUESTA </button>
                             </div>
                         </div>
                     </div>

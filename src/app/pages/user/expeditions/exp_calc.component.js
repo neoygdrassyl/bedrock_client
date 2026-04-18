@@ -4,6 +4,7 @@ import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { infoCud } from '../../../components/jsons/vars';
 import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {
@@ -385,8 +386,8 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <button type="button" className="btn btn-outline-primary btn-sm my-1" onClick={() => COPY_TO_DOM('cur_fix')}><i className="far fa-copy"></i> COPIAR CARGO FIJO</button>
-                    <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => COPY_TO_DOM('cur_var')}><i className="far fa-copy"></i> COPIAR CARGO VARIABLE</button>
+                    <button type="button" className="btn btn-outline-primary btn-sm my-1" onClick={() => COPY_TO_DOM('cur_fix')}><Icon name="copy" size={16} /> COPIAR CARGO FIJO</button>
+                    <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => COPY_TO_DOM('cur_var')}><Icon name="copy" size={16} /> COPIAR CARGO VARIABLE</button>
                 </div>
             </div>
             <hr />
@@ -440,7 +441,7 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => COPY_TO_DOM('other')}><i className="far fa-copy"></i> COPIAR</button>
+                    <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => COPY_TO_DOM('other')}><Icon name="copy" size={16} /> COPIAR</button>
                 </div>
             </div>
         </>
@@ -448,7 +449,7 @@ export default function EXP_CALC(props) {
 
     return (
         <>
-            <button type="button" className="btn btn-primary btn-sm" onClick={() => setModal(!modal)}><i className="fas fa-calculator"></i> {compact ? '' : 'CALCULADORA'}</button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => setModal(!modal)}><Icon name="calculator" size={16} /> {compact ? '' : 'CALCULADORA'}</button>
 
             <Modal contentLabel="EXP CALC"
                 isOpen={modal}
@@ -458,7 +459,7 @@ export default function EXP_CALC(props) {
                 <div className="my-2 d-flex justify-content-between ">
                     <div className='row'>
                         <div className="input-group">
-                            <label className=''><i className="fas fa-calculator"></i> CALCULADORA DE LIQUIDACIONES</label>
+                            <label className=''><Icon name="calculator" size={16} /> CALCULADORA DE LIQUIDACIONES</label>
                             <select className="form-select form-select-sm ms-2 border-primary"
                                 onChange={(e) => setMode(e.target.value)}>
                                 <option value={'cur'}>CURADURIA</option>
@@ -476,7 +477,7 @@ export default function EXP_CALC(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <button type="button" className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><i className="fas fa-times-circle"></i> CERRAR</button>
+                    <button type="button" className="btn btn-sm btn-info" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> CERRAR</button>
                 </div>
             </Modal>
         </>

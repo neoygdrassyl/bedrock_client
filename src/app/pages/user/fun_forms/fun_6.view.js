@@ -10,6 +10,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import DOCS_LIST from './components/docs_list.component';
 import FUN_6_HISTORY from './components/fun_6_history.component';
 import submitService from '../../../services/submit.service';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, readOnly, title, VREdit, parentLoad, updateParentLoad }) {
@@ -167,9 +168,9 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                             window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
                                 <>
                                     <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => set_edit_6(row)}>
-                                            <i className="far fa-edit" style={{ fontSize: '150%' }}></i></button></span>
+                                            <Icon name="edit" size={16} style={{ fontSize: '150%' }} /></button></span>
                                     <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => delete_6(row.id)}>
-                                            <i className="far fa-trash-alt" style={{ fontSize: '150%' }}></i></button></span>
+                                            <Icon name="trash-alt" size={16} style={{ fontSize: '150%' }} /></button></span>
                                 </>
                                 : ''
                         }
@@ -207,11 +208,11 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                 <div className="row">
                     <div className="col-12">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" id="file_fun6s_edit" accept="image/png, image/jpeg application/pdf" />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
                             <input list="fun_6_docs_list" id="fun6_descriptions_edit" className="form-control" required />
                             <DOCS_LIST idRef={''} setValues={setValues_edit} text={'VER LISTA'} />
                         </div>
@@ -220,19 +221,19 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                 <div className="row d-flex justify-content-start mb-3">
                     <div className="col-3">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="fas fa-hashtag"></i></span>
+                            <span className="input-group-text bg-info text-white"><Icon name="hashtag" size={16} /></span>
                             <input type="text" className="form-control" id="fun6_codes_edit" />
                         </div>
                     </div>
                     <div className="col-3">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="far fa-sticky-note"></i></span>
+                            <span className="input-group-text bg-info text-white"><Icon name="sticky-note" size={16} /></span>
                             <input type="number" className="form-control" step="1" min="0" id="fun6_pages_edit" required />
                         </div>
                     </div>
                     <div className="col-5">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="far fa-calendar-alt"></i>&nbsp;Fecha Anexo</span>
+                            <span className="input-group-text bg-info text-white"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Anexo</span>
                             <input type="date" className="form-control" max="2100-01-01" id="fun6_dates_edit" required />
                         </div>
                     </div>
@@ -400,7 +401,7 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                             {_EDIT_COMPONENT()}
                             <div className="row text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-lg btn-success"><i className="fas fa-archive"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-lg btn-success"><Icon name="archive" size={16} /> GUARDAR CAMBIOS </button>
                                 </div>
                             </div>
                         </form></> : ""}

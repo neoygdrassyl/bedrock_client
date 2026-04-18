@@ -20,6 +20,7 @@ import RTE_PQRS from './components/pqrs_rteReply.component';
 import Collapsible from '../../../components/Collapsible';
 
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 
 function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, refreshList: propRefreshList, NAVIGATION }) {
@@ -84,11 +85,11 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files_close" accept="image/png, image/jpeg application/pdf" />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="text" className="form-control" name="files_close_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
@@ -124,8 +125,8 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                     button: true,
                     minWidth: '150px',
                     cell: row => <>
-                        <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i className="fas fa-cloud-download-alt fa-2x"></i></a>
-                        <button type="button" className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></button>
+                        <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><Icon name="cloud-download-alt" size={16} /></a>
+                        <button type="button" className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></button>
                     </>,
                 },
             ]
@@ -489,22 +490,22 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                                         <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
                                         <div className="text-end m-3">
                                             {attachs > 0
-                                                ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                                                ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                                                 : ""}
-                                            <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
+                                            <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
                                         {
                                             /**
                                              * 
                                              *    <div className="text-center m-3">
-                                            {attachs > 0 ? <button type="button" className="btn btn-lg btn-warning my-2" onClick={() => addAttachsClose()}><i className="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </button> : ""}
+                                            {attachs > 0 ? <button type="button" className="btn btn-lg btn-warning my-2" onClick={() => addAttachsClose()}><Icon name="paperclip" size={16} /> ANEXAR {attachs} DOCUMENTOS </button> : ""}
                                         </div>
                                              */
                                         }
                                         <hr />
                                         <div className="text-center m-3">
-                                            <button className="btn btn-lg btn-success" ><i className="fas fa-lock"></i> CERRAR PETICIÓN</button>
+                                            <button className="btn btn-lg btn-success" ><Icon name="lock" size={16} /> CERRAR PETICIÓN</button>
                                         </div>
 
                                     </form> </>

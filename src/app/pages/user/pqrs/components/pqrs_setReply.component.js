@@ -4,6 +4,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
+import { Icon } from '@/components/icon';
 
 
 const MySwal = withReactContent(Swal);
@@ -153,7 +154,7 @@ parentRetrieveItem(currentItem.id);
                             <label className='text-start'>consecutivo de Salida</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-hashtag"></i>
+                                    <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={currentItem.id_reply}
                                     id="pqrs_master_idreply" require />
@@ -165,7 +166,7 @@ parentRetrieveItem(currentItem.id);
                             <label>Fecha de Respuesta</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-hashtag"></i>
+                                    <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="date" max="2100-01-01" className="form-control"
                                     defaultValue={currentItem.pqrs_time ? currentItem.pqrs_time.reply_formal : dayjs().format('YYYY-MM-DD')}
@@ -178,7 +179,7 @@ parentRetrieveItem(currentItem.id);
                     <label>Respuesta de Oficio (Máximo 4000 Caracteres)</label>
                     <textarea className="form-control mb-3" rows="5" maxlength="4096" id="pqrs_info_reply" defaultValue={currentItem.pqrs_info ? currentItem.pqrs_info.reply : ''}></textarea>
                     <div className="text-center m-3">
-                        <button className="btn btn-sm btn-success my-2" ><i className="fas fa-edit"></i> GUARDAR RESPUESTA </button>
+                        <button className="btn btn-sm btn-success my-2" ><Icon name="edit" size={16} /> GUARDAR RESPUESTA </button>
                     </div>
                 </form>
             </div>

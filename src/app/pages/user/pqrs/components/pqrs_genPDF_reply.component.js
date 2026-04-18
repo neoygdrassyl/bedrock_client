@@ -6,6 +6,7 @@ import { dateParser } from '../../../../components/customClasses/typeParse'
 import { cities } from '../../../../components/jsons/vars';
 
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
         var formData = new FormData();
@@ -57,7 +58,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                             <label>Fecha Documento</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-calendar-alt"></i>
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
                                 <input type="date" max="2100-01-01" className="form-control" id="pqrs_reply_date" 
                                 defaultValue={dayjs().format('YYYY-MM-DD')} required />
@@ -67,7 +68,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                             <label>Consecutivo Entrada</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="pqrs_reply_id_public" 
                                 defaultValue={currentItem.id_publico} disabled />
@@ -77,7 +78,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                             <label>Consecutivo Salida</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="pqrs_reply_id_reply" 
                                 defaultValue={currentItem.id_reply} disabled />
@@ -98,7 +99,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                             <label>Titulo referido</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                                 </span>
                                 <input list="titles" className="form-select" id="pqrs_reply_titles" />
                                 <datalist id="titles">
@@ -122,7 +123,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                             <label>Lista de Solicitantes</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-user"></i>
+                                    <Icon name="user" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Solicitantes" 
                                 defaultValue={_getSolicitorlList()} id="pqrs_reply_solicitor_list" />
@@ -135,7 +136,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                             <label>Lista de Correos</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-envelope"></i>
+                                    <Icon name="envelope" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Correos" 
                                 defaultValue={_getEmailList()} id="pqrs_reply_email_list" />
@@ -148,7 +149,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                             <label>Lista de Direcciones</label>
                             <div className="input-group my-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-home"></i>
+                                    <Icon name="home" size={16} />
                                 </span>
                                 <input type="text" className="form-control" placeholder="Lista de Correos" 
                                 defaultValue={_getAdresslList()} id="pqrs_reply_address_list" />
@@ -163,7 +164,7 @@ function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
                         <tbody>
                             <tr>
                                 <th><label className="app-p">Generar y descargar oficio de respuesta.</label></th>
-                                <td><i className="fas fa-cloud-download-alt fa-2x" onClick={() => request_dpf()} style={{color: "Crimson"}}></i></td>
+                                <td><Icon name="cloud-download-alt" size={24} className="cursor-pointer" onClick={() => request_dpf()} style={{color: "Crimson"}} /></td>
                             </tr>
                         </tbody>
                     </table>

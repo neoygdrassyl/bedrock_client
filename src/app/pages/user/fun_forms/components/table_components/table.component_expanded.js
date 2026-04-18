@@ -12,6 +12,7 @@ import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regex
 
 const MySwal = withReactContent(Swal);
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 
 export default function TABLE_COMPONENT_EXPANDED(props) {
     const { currentItem, swaMsg, worker_list, lenghtL, dataL, date_start, date_end } = props;
@@ -152,10 +153,10 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
 
     let _GET_REVIEW = (_REVIEW) => {
         let res = {
-            '-1': <label className=" me-1"><i className="far fa-dot-circle" style={{ fontSize: '150%' }}></i></label>,
-            '0': <label className="fw-bold text-danger me-1"><i className="far fa-times-circle" style={{ fontSize: '150%' }}></i></label>,
-            '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle" style={{ fontSize: '150%' }}></i></label>,
-            '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle" style={{ fontSize: '150%' }}></i></label>,
+            '-1': <label className=" me-1"><Icon name="dot-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+            '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+            '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} style={{ fontSize: '150%' }} /></label>,
+            '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} style={{ fontSize: '150%' }} /></label>,
         }
 
         return res[_REVIEW] ?? res['-1']
@@ -163,10 +164,10 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     let _GET_REVIEW_ENG = (_REVIEW) => {
         let revies = _REVIEW ? Array.isArray(_REVIEW) ? _REVIEW : _REVIEW.split(',') : ['-1', '-1'];
         let res = {
-            '-1': <label className=" me-1"><i className="far fa-dot-circle"></i></label>,
-            '0': <label className="fw-bold text-danger  me-1"><i className="far fa-times-circle"></i></label>,
-            '1': <label className="fw-bold text-success  me-1"><i className="far fa-check-circle"></i></label>,
-            '2': <label className="fw-bold text-warning  me-1"><i className="far fa-stop-circle"></i></label>,
+            '-1': <label className=" me-1"><Icon name="dot-circle" size={16} /></label>,
+            '0': <label className="fw-bold text-danger  me-1"><Icon name="times-circle" size={16} /></label>,
+            '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} /></label>,
+            '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} /></label>,
         }
         return revies.map((value, index) => <label>R. {index + 1}: {res[value] ?? res['-1']}</label>)
 
@@ -347,7 +348,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         : inforDate}</h6></div>
                     <div className='col-1 border'>
                         <button type="button" className={`btn btn-sm me-1 ${!editDate[index + '_' + state] ? "btn-outline-secondary" : "btn-secondary"}`}
-                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><i className="far fa-edit"></i></button>
+                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><Icon name="edit" size={16} /></button>
                     </div>
                 </div>
             })}
@@ -362,7 +363,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         if (state == 11) setncl(!ncl);
                         if (state == 12) setnce(!nce);
                         if (state == 13) setnca(!nca);
-                    }}><label><i className="fas fa-plus-circle"></i> NUEVA</label></button>
+                    }}><label><Icon name="plus-circle" size={16} /> NUEVA</label></button>
                 </div>
                 <div className='col-4'>
                     {(state == 11 && ncl) || (state == 12 && nce) || (state == 13 && nca) ?
@@ -381,7 +382,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                             var date = document.getElementById('asign_date_' + state).value;
                             if (!date) return;
                             save_clock(state, date)
-                        }}><label><i className="fas fa-life-ring"></i> ASIGNAR</label></button>
+                        }}><label><Icon name="life-ring" size={16} /> ASIGNAR</label></button>
                         : ''}
 
                 </div>
@@ -391,7 +392,7 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                             if (state == 11) setncl(false);
                             if (state == 12) setnce(false);
                             if (state == 13) setnca(false);
-                        }}><label><i className="fas fa-times-circle"></i> CANCELAR</label></button>
+                        }}><label><Icon name="times-circle" size={16} /> CANCELAR</label></button>
                         : ''}
 
                 </div>

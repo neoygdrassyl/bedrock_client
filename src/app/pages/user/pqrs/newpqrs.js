@@ -5,6 +5,7 @@ import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
 import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 
 function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshRequested }) {
@@ -56,14 +57,14 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <label className="m-0">Nombre:</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Nombre Completo" name="pqrs_sol_1" />
                         </div>
                         <label className="m-0">Tipo de persona:</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <select className="form-select" name="pqrs_sol_2">
                                 <option>NATURAL</option>
@@ -77,7 +78,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <label className='m-0'>Tipo de documento: </label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-id-card"></i>
+                                <Icon name="id-card" size={16} />
                             </span>
                             <select className="form-select" name="pqrs_sol_4">
                                 <option>CEDULA DE CIUDADANIA</option>
@@ -92,7 +93,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <div className="input-group my-1">
 
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-id-card"></i>
+                                <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Numero de Documento" name="pqrs_sol_3" />
                         </div>
@@ -110,20 +111,20 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                     <div className="col-lg-6 col-md-6">
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-signs"></i>
+                                <Icon name="map-signs" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Direccion Fisica" name="pqrs_con_1" />
                         </div>
 
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Barrio" name="pqrs_con_2" />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-phone-alt"></i>
+                                <Icon name="phone-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Numero de Contacto" name="pqrs_con_3" />
                         </div>
@@ -135,20 +136,20 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                     <div className="col-lg-6 col-md-6">
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-globe-americas"></i>
+                                <Icon name="globe-americas" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Departamento" name="pqrs_con_4" />
                         </div>
 
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-globe-americas"></i>
+                                <Icon name="globe-americas" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Municipio" name="pqrs_con_5" />
                         </div>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-envelope"></i>
+                                <Icon name="envelope" size={16} />
                             </span>
                             <input type="text" className="form-control" placeholder="Correo Electronico" name="pqrs_con_6" />
                         </div>
@@ -165,11 +166,11 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                     <div className="col-lg-8 col-md-8 ">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files" accept="image/png, image/jpeg application/pdf" />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white" id="name"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white" id="name"><Icon name="paperclip" size={16} /></span>
                             <input type="text" className="form-control" name="files_names" placeholder="Nombre documento (nombre o corta descripcion)" />
                         </div>
                     </div>
@@ -454,10 +455,10 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <div className="text-end m-3">
 
                             {(solicitors && contacts)  > 1
-                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => (minusSolicitor(), minusContact())}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </button>
+                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => (minusSolicitor(), minusContact())}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
                                 : ""}
                             <button type="button" className="btn btn-xs btn-secondary" onClick={() => (addSolicitor(), addContact())}
-                            ><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button>
+                            ><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button>
                         </div>
                         {_SOLICITORS_COMPONENT()}
                         <hr className="my-3" />
@@ -465,9 +466,9 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <label className="app-p lead text-start fw-bold text-uppercase">1.2 DATOS PARA NOTIFICACIÓN</label>
                         <div className="text-end m-3">
                             {/* {contacts > 1
-                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusContact()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </button>
+                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusContact()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
                                 : ""}
-                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => addContact()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button> */}
+                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => addContact()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button> */}
                         </div>
                         {_CONTACTS_COMPONENT()}
                         <hr className="my-3" />
@@ -482,13 +483,13 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <div className="col-lg-6 col-md-6">
                                     <div className="input-group my-1">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-map-signs"></i>
+                                            <Icon name="map-signs" size={16} />
                                         </span>
                                         <input type="text" className="form-control" placeholder="Numero de Radicacion" id="pqrs_fun_1" />
                                     </div>
                                     <div className="input-group my-1">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-map-marked-alt"></i>
+                                            <Icon name="map-marked-alt" size={16} />
                                         </span>
                                         <input type="text" className="form-control" placeholder="N° Predial / Catastral" id="pqrs_fun_2" />
                                     </div>
@@ -498,7 +499,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <div className="col-lg-6 col-md-6">
                                     <div className="input-group my-1">
                                         <span className="input-group-text bg-info text-white">
-                                            <i className="fas fa-user"></i>
+                                            <Icon name="user" size={16} />
                                         </span>
                                         <select className="form-select" id="pqrs_fun_3">
                                             <option>TITULAR DE LA ACTUACIÓN</option>
@@ -520,7 +521,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <label>Número de registro Ventanilla Única</label>
                                 <div className="input-group my-1">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="fas fa-hashtag"></i>
+                                        <Icon name="hashtag" size={16} />
                                     </span>
                                     <input type="text" className="form-control" id="pqrs_mas_6" />
                                 </div>
@@ -529,7 +530,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <label>Número de registro de caso(histórico año 2021)</label>
                                 <div className="input-group my-1">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="fas fa-hashtag"></i>
+                                        <Icon name="hashtag" size={16} />
                                     </span>
                                     <input type="text" className="form-control" id="pqrs_mas_1" />
                                     <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
@@ -544,7 +545,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <label>Clasificación de la Petición</label>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="fas fa-check-square"></i>
+                                        <Icon name="check-square" size={16} />
                                     </span>
                                     <input list="browsers" id="pqrs_mas_2" className="form-control" onChange={() => _SET_REPLY_TIME()}
                                         autoComplete='false' />
@@ -566,7 +567,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <label>Canal de radicación original</label>
                                 <div className="input-group mb-1">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="fas fa-check-square"></i>
+                                        <Icon name="check-square" size={16} />
                                     </span>
                                     <select className="form-select" id="pqrs_mas_3">
                                         {selectTypeChannel}
@@ -578,7 +579,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <label>Palabras Clave (Separadas por coma)</label>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="fas fa-font"></i>
+                                        <Icon name="font" size={16} />
                                     </span>
                                     <input type="text" className="form-control" maxLength="200" id="pqrs_mas_5" />
                                 </div>
@@ -591,7 +592,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <label> Fecha de radicación</label>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="far fa-calendar-alt"></i>
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="date" max="2100-01-01" className="form-control" id="pqrs_time_1" required
                                         onChange={() => _SET_LEGAL_TIME()} />
@@ -603,7 +604,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <label>Fecha inicio de términos</label>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text bg-info text-white" id="type-pqrs">
-                                        <i className="far fa-calendar-alt"></i>
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="date" max="2100-01-01" className="form-control" id="pqrs_time_2" disabled required />
                                 </div>
@@ -615,7 +616,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                 <label>Termino legal de respuesta </label>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text bg-info text-white">
-                                        <i className="far fa-calendar-alt"></i>
+                                        <Icon name="calendar-alt" size={16} />
                                     </span>
                                     <input type="number" step="1" min="1" className="form-control"
                                         placeholder="Termino legal de respuesta" id="pqrs_time_time" defaultValue={'15'} />
@@ -634,9 +635,9 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <label className="app-p lead text-start fw-bold text-uppercase">1.5 DOCUMENTOS ANEXOS</label>
                         <div className="text-end m-3">
                             {attachs > 0
-                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </button>
+                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
                                 : ""}
-                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button>
+                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button>
                         </div>
                         {_ATTACHS_COMPONENT()}
                         <hr className="my-3" />
@@ -645,7 +646,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             <input type="text" className="form-control" placeholder="Profesional que Generar esta Solicitud" disabled />
                             <div className="input-group mb-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-user"></i>
+                                    <Icon name="user" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={window.user.name + " " + window.user.surname} id="pqrs_mas_worker_creator" disabled />
                             </div>
@@ -654,13 +655,13 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             <input type="text" className="form-control" placeholder="Fecha en la cual se genera esta Solicitud" disabled />
                             <div className="input-group mb-1">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-calendar-alt"></i>
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
                                 <input type="date" className="form-control" defaultValue={dayjs().format('YYYY-MM-DD')} disabled />
                             </div>
                         </div>
                         <div className="text-center py-4 mt-3">
-                            <button className="btn btn-xs btn-success"><i className="fas fa-folder-plus"></i> GENERAR </button>
+                            <button className="btn btn-xs btn-success"><Icon name="folder-plus" size={16} /> GENERAR </button>
                         </div>
                     </div>
                 </form>

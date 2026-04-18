@@ -12,6 +12,7 @@ import TABLE_COMPONENT_EXPANDED from '../fun_forms/components/table_components/t
 import USER_SERVICE from '../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -260,7 +261,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
             ))
             vrItem.sort((a, b) => new Date(b.screated) - new Date(a.screated));
             return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: '600px', minWidth: '600px' }}
-                btnChildren={<i className="fas fa-file-import"></i>}
+                btnChildren={<Icon name="file-import" size={16} />}
                 btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
                 <MDBPopoverHeader>Ventanilla Única</MDBPopoverHeader>
                 <MDBPopoverBody>{vrItem.map(value => listVR(value))}</MDBPopoverBody>
@@ -288,7 +289,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
             })
 
             return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: '800px', minWidth: '800px' }}
-                btnChildren={<i className="fas fa-file-import"></i>}
+                btnChildren={<Icon name="file-import" size={16} />}
                 btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
                 <MDBPopoverHeader>Documentos aportados</MDBPopoverHeader>
                 <MDBPopoverBody>
@@ -300,7 +301,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                             if (inChecked.includes(code) && !submited.includes(code)) classColor = "text-warning"
                             if (inChecked.includes(code) && submited.includes(code)) classColor = "text-success"
                             return <li className={classColor}>
-                                <label> <label className='fw-bold'>{code}</label> - {Codes[code]}  {inChecked.includes(code) ? <i className="fas fa-check-square text-dark"></i> : ''} {submited.includes(code) ? <i className="fas fa-file-import text-dark"></i> : ''}</label>
+                                <label> <label className='fw-bold'>{code}</label> - {Codes[code]}  {inChecked.includes(code) ? <Icon name="check-square" size={16} className="text-dark" /> : ''} {submited.includes(code) ? <Icon name="file-import" size={16} className="text-dark" /> : ''}</label>
                             </li>
                         })}
                     </ul></MDBPopoverBody>
@@ -349,8 +350,8 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     maxWidth: '150px',
                     cell: row => {
                         const { completed, toSubmit, inChecked, allCheckedCounter } = processCodes(row)
-                        if (completed == toSubmit.length && completed != 0 && allCheckedCounter < toSubmit.length) return <div className='d-flex'><label>{row.id_public} <i className="fas fa-star text-muted"></i> </label></div>;
-                        else if (completed == toSubmit.length && completed != 0 && allCheckedCounter >= toSubmit.length) return <div className='d-flex'><label>{row.id_public} <i className="fas fa-star text-warning"></i> </label></div>;
+                        if (completed == toSubmit.length && completed != 0 && allCheckedCounter < toSubmit.length) return <div className='d-flex'><label>{row.id_public} <Icon name="star" size={16} className="text-muted" /> </label></div>;
+                        else if (completed == toSubmit.length && completed != 0 && allCheckedCounter >= toSubmit.length) return <div className='d-flex'><label>{row.id_public} <Icon name="star" size={16} className="text-warning" /> </label></div>;
                         else return <label>{row.id_public}</label>;
                     }
                 },
@@ -408,7 +409,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                         <button
                                 onClick={() => openModal({ ...row, version: 1 }, 'archive')}
                                 className="px-1 btn-sm btn-secondary btn"
-                            ><i className="fas fa-archive"></i>
+                            ><Icon name="archive" size={16} />
                             </button>
                     </>,
                 },
@@ -486,12 +487,12 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                         <button
                                 onClick={() => openModal(row, 'general')}
                                 className="px-1 btn-sm btn-info btn"
-                            > <i className="far fa-folder-open" ></i>
+                            > <Icon name="folder-open" size={16} />
                             </button>
                         <button
                                 onClick={() => { setModal(true); setSelectedItem(row); }}
                                 className="px-1 btn-sm btn-warning btn"
-                            > <i className="fas fa-user-clock"></i>
+                            > <Icon name="user-clock" size={16} />
                             </button>
                     </>,
                 },
@@ -530,7 +531,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                                 size="sm"
                                 onClick={() => setLicList(prev => !prev)}
                                 className="px-2"
-                            > <i className="fas fa-info-circle fa-2x"></i>
+                            > <Icon name="info-circle" size={16} />
                             </button></span>
                     </div>
                 </div>
@@ -565,7 +566,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {selectedItem ? selectedItem.id_public : ''} </label>
+                        <label><Icon name="file-alt" size={16} /> ASIFNACIÓN DE PROFESIONALES:  {selectedItem ? selectedItem.id_public : ''} </label>
                         <button type="button" className="btn-close" onClick={() => setModal(false)} />
                     </div>
 
@@ -581,7 +582,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={() => setModal(false)}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>

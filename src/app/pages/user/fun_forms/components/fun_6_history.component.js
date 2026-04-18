@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
 import './fun_modal_shared.css';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
@@ -101,9 +102,9 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     minWidth: '120px',
                     cell: row => <>
                         <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                                <i className="far fa-edit fa-2x "></i></button></span>
+                                <Icon name="edit" size={16} /></button></span>
                         <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-2 shadow-none" onClick={() => delete_6_h(row.id)}>
-                                <i className="far fa-trash-alt fa-2x"></i></button></span>
+                                <Icon name="trash-alt" size={16} /></button></span>
                     </>
                 },
             ]
@@ -131,7 +132,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                         <label>Detalles</label>
                         <div className="input-group">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-comment-dots"></i>
+                                <Icon name="comment-dots" size={16} />
                             </span>
                             <input type="text" className="form-control" id={"fun_6_h_1" + edit} required />
                         </div>
@@ -141,7 +142,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                         <label>Fecha</label>
                         <div className="input-group">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" max="2100-01-01" className="form-control" id={"fun_6_h_2" + edit} required />
                         </div>
@@ -151,7 +152,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                         <label>Estado Final</label>
                         <div className="input-group">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-select" id={"fun_6_h_3" + edit} required >
                                 <option value="0">EN ARCHIVO</option>
@@ -328,7 +329,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                         onClick={() => toggle(true)}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggle(true); }}
                         style={{cursor: 'pointer'}}>
-                        <i className="fas fa-history" style={{fontSize: '150%'}}></i>
+                        <Icon name="history" size={16} style={{fontSize: '150%'}} />
                     </span></span>
 
                 <Modal contentLabel="GENERAL VIEW FUN"
@@ -338,7 +339,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                 >
 
                     <div className="my-4 d-flex justify-content-between">
-                        <label className="fw-bold align-middle"> <i className="fas fa-history fa-2x"></i> HISTORIA DEL DOCUMENTO</label>
+                        <label className="fw-bold align-middle"> <Icon name="history" size={16} /> HISTORIA DEL DOCUMENTO</label>
                         <button type="button" className="btn-close" onClick={() => toggle()} />
                     </div>
 
@@ -354,7 +355,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
                                     </div>
                                 </div>
                             </form>
@@ -371,7 +372,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                                         {_COMPONENT_MANAGE('_edit')}
                                         <div className="row text-center">
                                             <div className="col-12">
-                                                <button className="btn btn-lg btn-success"><i className="fas fa-archive"></i> GUARDAR CAMBIOS </button>
+                                                <button className="btn btn-lg btn-success"><Icon name="archive" size={16} /> GUARDAR CAMBIOS </button>
                                             </div>
                                         </div>
                                     </form></> : ""}
@@ -379,7 +380,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                         : <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>}
 
                     <div className="text-end py-4 mt-3">
-                        <button type="button" className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR</button>
+                        <button type="button" className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR</button>
                     </div>
                 </Modal>
 

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import FUNService from '../../../../services/fun.service';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -219,7 +220,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
         <div className="rounded-lg border bg-card p-4 bg-card mb-3">
             <div>
                 <h4 className="text-center mb-3">
-                    <i className="fas fa-copy me-2"></i>
+                    <Icon name="copy" size={16} className="me-2" />
                     DUPLICAR PROYECTO
                 </h4>
                 <p className="text-muted text-center mb-3">
@@ -230,7 +231,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                     {/* New ID Public input */}
                     <div className="mb-3">
                         <label className="form-label fw-bold">
-                            <i className="fas fa-hashtag me-1"></i> Nuevo ID Público (Radicación) *
+                            <Icon name="hashtag" size={16} className="me-1" /> Nuevo ID Público (Radicación) *
                         </label>
                         <input
                             type="text"
@@ -306,7 +307,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                                 </>
                             ) : (
                                 <>
-                                    <i className="fas fa-copy me-2"></i>
+                                    <Icon name="copy" size={16} className="me-2" />
                                     Duplicar proyecto
                                 </>
                             )}

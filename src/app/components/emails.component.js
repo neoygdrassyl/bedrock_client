@@ -6,6 +6,7 @@ import { MDBBtn, MDBTooltip } from './ui';
 import DataTable from 'react-data-table-component';
 import dayjs from 'dayjs';
 import VIEWER from './viewer.component';
+import { Icon } from '@/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -68,8 +69,8 @@ export default function EMAILS_COMPONENT(props) {
 
     // **************** COMPONENTS  **************** //
     let CheckMark = (bool) => {
-        if (bool) return <i className="fas fa-check text-success"></i>
-        else return <i className="fas fa-times text-danger"></i>
+        if (bool) return <Icon name="check" size={16} className="text-success" />
+        else return <Icon name="times" size={16} className="text-danger" />
     }
 
     function loadEmals() {
@@ -91,7 +92,7 @@ export default function EMAILS_COMPONENT(props) {
                     <div className='col'>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <label><i className="far fa-envelope"></i> Para:</label>
+                                <label><Icon name="envelope" size={16} /> Para:</label>
                             </span>
                             <input className='form-control' id="to_email" defaultValue={""} required />
                             <button className='btn btn-sm btn-primary' type='button' onClick={() => loadEmals()}>CARGAR EMAILS</button>
@@ -102,7 +103,7 @@ export default function EMAILS_COMPONENT(props) {
                     <div className='col'>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <label><i className="far fa-envelope"></i> CC:</label>
+                                <label><Icon name="envelope" size={16} /> CC:</label>
                             </span>
                             <input className='form-control' id="cc" defaultValue={""} />
                         </div>
@@ -110,7 +111,7 @@ export default function EMAILS_COMPONENT(props) {
                     <div className='col'>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <label><i className="far fa-envelope"></i> BCC:</label>
+                                <label><Icon name="envelope" size={16} /> BCC:</label>
                             </span>
                             <input className='form-control' id="bcc" defaultValue={""} />
                         </div>
@@ -120,7 +121,7 @@ export default function EMAILS_COMPONENT(props) {
                     <div className='col'>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <label><i className="fas fa-star-of-life"></i> Asunto:</label>
+                                <label><Icon name="star-of-life" size={16} /> Asunto:</label>
                             </span>
                             <input className='form-control' id="subject" defaultValue={""} required />
                         </div>
@@ -130,7 +131,7 @@ export default function EMAILS_COMPONENT(props) {
                     <div className='col-6'>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <label><i className="fas fa-ellipsis-v"></i> Motivo:</label>
+                                <label><Icon name="ellipsis-v" size={16} /> Motivo:</label>
                             </span>
                             <select className='form-select' id="subprocess">
                                 {EMAIL_TPES.map(item => <option value={item.value}>{item.label}</option>)}
@@ -141,7 +142,7 @@ export default function EMAILS_COMPONENT(props) {
                     <div className='col-6'>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <label><i className="far fa-calendar-check"></i> Programar:</label>
+                                <label><Icon name="calendar-check" size={16} /> Programar:</label>
                             </span>
                             <input className='form-control' id="schedule_date" defaultValue={''} type="datetime-local" />
                         </div>
@@ -162,7 +163,7 @@ export default function EMAILS_COMPONENT(props) {
                             style={{ height: 200, border: '2px dashed var(--bs-border-color)', borderRadius: 'var(--dvl-radius-md)', cursor: 'pointer' }}
                         >
                             <span className="text-muted">
-                                <i className="fas fa-cloud-upload-alt me-2" />
+                                <Icon name="cloud-upload-alt" size={16} className="me-2" />
                                 {files && files.length > 0
                                     ? `${files.length} archivo(s) seleccionado(s)`
                                     : 'Arrastre los documentos a esta área o haga clic'}
@@ -180,7 +181,7 @@ export default function EMAILS_COMPONENT(props) {
 
                 <div className='row mt-2'>
                     <div className='col'>
-                        <button className='btn btn-sm btn-success' type='submit'><i className="far fa-paper-plane"></i> ENVIAR</button>
+                        <button className='btn btn-sm btn-success' type='submit'><Icon name="paper-plane" size={16} /> ENVIAR</button>
                     </div>
                 </div>
 
@@ -230,7 +231,7 @@ export default function EMAILS_COMPONENT(props) {
                 cell: row => !row.send ?
                     <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
                         <MDBBtn className="btn btn-danger btn-sm m-0 p-1 shadow-none" onClick={() => delete_email(row.id)}>
-                            <i className="far fa-trash-alt"></i></MDBBtn>
+                            <Icon name="trash-alt" size={16} /></MDBBtn>
                     </MDBTooltip>
                     : null
             },
@@ -452,7 +453,7 @@ export default function EMAILS_COMPONENT(props) {
                 <label className="app-p lead text-center fw-normal text-uppercase">Herramienta de correos electrónicos</label>
             </legend>
 
-            <MDBBtn rounded outline={!newEmail} color="success" sise="sm" onClick={() => setNewEmail(!newEmail)}><i className="fas fa-plus-circle"></i> NUEVO CORREO</MDBBtn>
+            <MDBBtn rounded outline={!newEmail} color="success" sise="sm" onClick={() => setNewEmail(!newEmail)}><Icon name="plus-circle" size={16} /> NUEVO CORREO</MDBBtn>
             {newEmail ? EMAIL_FORM() : null}
 
             {EMAIL_LIST()}

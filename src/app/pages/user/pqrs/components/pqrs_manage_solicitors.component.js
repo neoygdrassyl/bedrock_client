@@ -3,6 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import DataTable from 'react-data-table-component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
@@ -58,9 +59,9 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                     minWidth: '150px',
                     cell: row => <>
                         <button title="Modificar item" onClick={() => setEdit(row)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i className="far fa-edit "></i></button>
+                                <Icon name="edit" size={16} /></button>
                         <button title="Eliminar item" onClick={() => delete_item(row.id)} className="btn btn-sm btn-danger m-0 p-2 shadow-none">
-                                <i className="far fa-trash-alt "></i></button>
+                                <Icon name="trash-alt" size={16} /></button>
                     </>,
                 },
             ]
@@ -81,14 +82,14 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-user"></i>
+                            <Icon name="user" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Nombre Completo" id={"pqrs_edit_solicitor_1"+_edit} />
                     </div>
 
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="fas fa-user"></i>
+                            <Icon name="user" size={16} />
                         </span>
                         <select className="form-select" id={"pqrs_edit_solicitor_2"+_edit}>
                             <option>NATURAL</option>
@@ -101,14 +102,14 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                 <div className="col-lg-6 col-md-6">
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-id-card"></i>
+                            <Icon name="id-card" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Numero de Documento" id={"pqrs_edit_solicitor_3"+_edit} />
                     </div>
 
                     <div className="input-group my-1">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-id-card"></i>
+                            <Icon name="id-card" size={16} />
                         </span>
                         <select className="form-select" id={"pqrs_edit_solicitor_4"+_edit}>
                             <option>CEDULA DE CIUDADANIA</option>
@@ -289,7 +290,7 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                         {_COMPONENT_MANAGE("")}
                         <div className="text-center">
                             <button className="btn btn-sm btn-success my-3">
-                                <i className="far fa-share-square"></i> AÑADIR ITEM
+                                <Icon name="share-square" size={16} /> AÑADIR ITEM
                             </button>
                         </div>
                     </form>
@@ -303,7 +304,7 @@ function PQRS_EDIT_SOLICITORS({ translation, swaMsg, globals, currentItem, refre
                         {_COMPONENT_MANAGE("_edit")}
                         <div className="text-center">
                             <button className="btn btn-sm btn-success my-3">
-                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </form>

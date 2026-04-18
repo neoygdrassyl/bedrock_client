@@ -12,6 +12,7 @@ import RECORD_ARC_DESC from './record_arc_desc';
 import { getJSONFull } from '../../../../components/customClasses/typeParse';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 import RECORD_ARC_AREAS_2 from './record_arc_areas_2.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -69,8 +70,8 @@ function RECORD_ARC_CONTROL({ translation, swaMsg, globals, currentItem, current
         }
         let _SAVING_STATE = (state) => {
             if (!state) return '';
-            if (state == 1) return <label className='text-warning fw-bold'><i className="fas fa-save"></i></label>;
-            if (state == 2) return <label className='text-success fw-bold'><i className="fas fa-save"></i></label>;
+            if (state == 1) return <label className='text-warning fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 2) return <label className='text-success fw-bold'><Icon name="save" size={16} /></label>;
         }
         // COMPONENTS JSX 
 

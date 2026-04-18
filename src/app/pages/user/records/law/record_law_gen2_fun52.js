@@ -4,6 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 import FUN_Service from '../../../../services/fun.service'
 import { dateParser, dateParser_yearsPassed } from '../../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../../components/vizualizer.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -254,10 +255,10 @@ function RECORD_LAW_GEN_2_FUN52(props) {
                 {_COMPONENT_4_FUN_52()}
                 <div className="border p-2 m-2">
                     <label className="me-2">LEYENDA:</label>
-                    <label className="me-2"><a><i className="far fa-id-card fa-2x" style={{ "color": "DeepSkyBlue" }}></i></a> : C.C.,</label>
-                    <label className="me-2"><a><i className="far fa-id-badge fa-2x" style={{ "color": "DarkOrchid" }}></i></a> : Matrícula,</label>
-                    <label className="me-2"><a><i className="fas fa-book fa-2x" style={{ "color": "GoldenRod" }}></i></a> : Ficha COPNIA,</label>
-                    <label className="me-2"><a><i className="fas fa-file-invoice fa-2x" style={{ "color": "LimeGreen" }}></i></a> : Hoja de vida y Certificados</label>
+                    <label className="me-2"><a><Icon name="id-card" size={16} style={{ "color": "DeepSkyBlue" }} /></a> : C.C.,</label>
+                    <label className="me-2"><a><Icon name="id-badge" size={16} style={{ "color": "DarkOrchid" }} /></a> : Matrícula,</label>
+                    <label className="me-2"><a><Icon name="book" size={16} style={{ "color": "GoldenRod" }} /></a> : Ficha COPNIA,</label>
+                    <label className="me-2"><a><Icon name="file-invoice" size={16} style={{ "color": "LimeGreen" }} /></a> : Hoja de vida y Certificados</label>
                 </div>
             </div >
         );

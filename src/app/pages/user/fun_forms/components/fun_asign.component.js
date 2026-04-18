@@ -11,6 +11,7 @@ import HeatMap from '@uiw/react-heat-map';
 import { infoCud, nomens } from '../../../../components/jsons/vars';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { Icon } from '@/components/icon';
 // rsuite Badge/Tag/TagGroup/Whisper/Popover replaced with inline components (Phase 9.1)
 const Tag = ({ color, children }) => (
   <span className="badge me-1" style={{ backgroundColor: color === 'blue' ? 'var(--dvl-info)' : color === 'green' ? 'var(--dvl-success)' : 'var(--dvl-gray-400)', fontSize: 'var(--dvl-text-xs)' }}>{children}</span>
@@ -335,11 +336,11 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             let id_eng = value.asign_eng_worker_id;
 
             let conChecks = [
-                { name: con_law, type: 'law', icon: <i className="fas fa-balance-scale"></i>, id: id_law},
-                { name: con_law_ph, type: 'law', icon: <i className="fas fa-balance-scale"></i>, id:  id_law_ph},
-                { name: con_arc, type: 'arc', icon: <i className="far fa-building "></i>, id: id_arc },
-                { name: con_arc_ph, type: 'arc', icon: <i className="far fa-building"></i>, id: id_arc_ph },
-                { name: con_eng, type: 'eng', icon: <i className="fas fa-cogs"></i>, id: id_eng },
+                { name: con_law, type: 'law', icon: <Icon name="balance-scale" size={16} />, id: id_law},
+                { name: con_law_ph, type: 'law', icon: <Icon name="balance-scale" size={16} />, id:  id_law_ph},
+                { name: con_arc, type: 'arc', icon: <Icon name="building" size={16} />, id: id_arc },
+                { name: con_arc_ph, type: 'arc', icon: <Icon name="building" size={16} />, id: id_arc_ph },
+                { name: con_eng, type: 'eng', icon: <Icon name="cogs" size={16} />, id: id_eng },
             ]
 
             conChecks.map(names => {
@@ -482,7 +483,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
         return (
             <div className="input-group mb-2">
                 <span className="input-group-text bg-light">
-                    <i className="fas fa-search"></i>
+                    <Icon name="search" size={16} />
                 </span>
                 <input type='text' className='form-control' placeholder='Busqueda...'
                     onChange={(e) => setFilter(e.target.value)} defaultValue={filter} />
@@ -493,7 +494,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
         return (
             <div className="input-group mb-2">
                 <span className="input-group-text bg-light">
-                    <i className="fas fa-hashtag"></i>
+                    <Icon name="hashtag" size={16} />
                 </span>
                 <input type='text' className='form-control' defaultValue={id1} placeholder='Busqueda...' onChange={(e) => setId1(e.target.value)} />
                 <input type='text' className='form-control' defaultValue={id2} placeholder='Busqueda...' onChange={(e) => setId2(e.target.value)} />
@@ -510,12 +511,12 @@ export default function FUN_ASIGNS_COMPONENT(props) {
     const iconsComponent = () => {
         return (
             <div className="input-group mt-1">
-                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterState ? "btn-outline-dark" : "btn-dark"}`} onClick={() => { setFilterState(!filterState); }}><i className="fas fa-check-square"></i></button>
-                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterLaw ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><i className="fas fa-balance-scale"></i></button>
-                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterArc ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <i className="far fa-building "></i></button>
-                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterEng ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><i className="fas fa-cogs"></i> </button>
+                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterState ? "btn-outline-dark" : "btn-dark"}`} onClick={() => { setFilterState(!filterState); }}><Icon name="check-square" size={16} /></button>
+                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterLaw ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterLaw(!filterLaw); setLoad3(false) }}><Icon name="balance-scale" size={16} /></button>
+                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterArc ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterArc(!filterArc); setLoad3(false) }}> <Icon name="building" size={16} /></button>
+                <button type="button" className={`m-0 px-2 btn btn-sm ${!filterEng ? "btn-outline-primary" : "btn-primary"}`} onClick={() => { setFilterEng(!filterEng); setLoad3(false) }}><Icon name="cogs" size={16} /> </button>
                 {currenItem != null ?
-                    <button type="button" className="m-0 px-2 btn btn-danger btn-sm" onClick={() => { setCurrentItem(null); setSbtn(null) }}><i className="fas fa-times"></i> </button>
+                    <button type="button" className="m-0 px-2 btn btn-danger btn-sm" onClick={() => { setCurrentItem(null); setSbtn(null) }}><Icon name="times" size={16} /> </button>
                     : ''}
             </div>
         );
@@ -613,32 +614,32 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             <div className="list-group list-group-flush">
                 {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 5 || window.user.roleId == 2 ?
                     <>
-                        <button type="button" onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-user-clock"></i> ASIGNAR</button>
+                        <button type="button" onClick={() => { setCurrentItem(null); setCurrentItem(row); setModal(true) }} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="user-clock" size={16} /> ASIGNAR</button>
                     </> : null}
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-info" ></i> DETALLES</button>
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} className="list-group-item list-group-item-action p-1 m-0 " ><i className="far fa-clock text-secondary" ></i> TIEMPOS</button>
-                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-archive text-secondary" ></i> DOCUMENTOS</button>
+                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'general', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="folder-open" size={16} className="text-info" /> DETALLES</button>
+                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'clock', '')} className="list-group-item list-group-item-action p-1 m-0 " ><Icon name="clock" size={16} className="text-secondary" /> TIEMPOS</button>
+                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'archive', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="archive" size={16} className="text-secondary" /> DOCUMENTOS</button>
                 {row.state < 101 ?
                     <>
-                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-folder-open text-secondary" ></i> ACTUALIZAR</button>
-                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-check-square text-warning" ></i> CHECKEO</button>
+                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'edit', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="folder-open" size={16} className="text-secondary" /> ACTUALIZAR</button>
+                        <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'check', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="check-square" size={16} className="text-warning" /> CHECKEO</button>
                         {regexChecker_isPh(row, true) ?
                             <>
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-pencil-ruler text-warning" ></i>  INF. P.H.</button>
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_ph', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="pencil-ruler" size={16} className="text-warning" />  INF. P.H.</button>
+                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-alt" size={16} className="text-warning" /> EXPEDICION</button>
                             </>
                             :
                             <>
                                 {!isOA && rules[0] != 1 ? <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-sign text-warning" ></i>  PUBLICIDAD</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'alert', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="sign" size={16} className="text-warning" />  PUBLICIDAD</button>
                                 </> : ''}
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-balance-scale text-warning" ></i> INF. JURIDICO</button>
+                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_law', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="balance-scale" size={16} className="text-warning" /> INF. JURIDICO</button>
                                 {!isOA ? <>
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-building text-warning" ></i> INF. ARQUITECTONICO</button>
-                                    {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-cogs text-warning" ></i> INF. ESTRUCTURAL</button> : ''}
-                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="fas fa-file-contract text-warning" ></i> ACTA</button>
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_arc', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="building" size={16} className="text-warning" /> INF. ARQUITECTONICO</button>
+                                    {rules[1] != 1 ? <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_eng', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="cogs" size={16} className="text-warning" /> INF. ESTRUCTURAL</button> : ''}
+                                    <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'record_review', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-contract" size={16} className="text-warning" /> ACTA</button>
                                 </> : ''}
-                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><i className="far fa-file-alt text-warning" ></i> EXPEDICION</button>
+                                <button type="button" onClick={() => props.NAVIGATION_GEN(row, 'expedition', '')} className="list-group-item list-group-item-action p-1 m-0" ><Icon name="file-alt" size={16} className="text-warning" /> EXPEDICION</button>
                             </>}
                     </> : <></>}
             </div>
@@ -943,7 +944,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {currenItem ? currenItem.id_public : ''} </label>
+                        <label><Icon name="file-alt" size={16} /> ASIFNACIÓN DE PROFESIONALES:  {currenItem ? currenItem.id_public : ''} </label>
                         <button type="button" className="btn-close" onClick={() => setModal(false)} />
                     </div>
 
@@ -951,7 +952,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={() => setModal(false)}>
-                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i className="fas fa-times-circle"></i> CERRAR</div>
+                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><Icon name="times-circle" size={16} /> CERRAR</div>
                         </button>
                     </div>
                 </Modal>
@@ -962,7 +963,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-file-alt"></i> HISTORIAL DE ASIGNACIONES:  {currentProf ? currentProf.name : ''} </label>
+                        <label><Icon name="file-alt" size={16} /> HISTORIAL DE ASIGNACIONES:  {currentProf ? currentProf.name : ''} </label>
                         <button type="button" className="btn-close" onClick={() => setModalF(false)} />
                     </div>
 
@@ -975,7 +976,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={() => setModalF(false)}>
-                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><i className="fas fa-times-circle"></i> CERRAR</div>
+                            <div className="pt-2 fw-bold" style={{ fontSize: '1.25rem' }}><Icon name="times-circle" size={16} /> CERRAR</div>
                         </button>
                     </div>
                 </Modal>

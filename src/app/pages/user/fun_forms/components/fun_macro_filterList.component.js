@@ -2,6 +2,7 @@ import { Component, useState } from 'react';
 import { MDBCollapse } from '../../../../components/ui';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import './fun_modal_shared.css';
+import { Icon } from '@/components/icon';
 
 export default function FUN_MACROTABLE_FILTERLIST(props) {
     const { idRef, text } = props;
@@ -322,7 +323,7 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
     }
     return (
         <div>
-            <button type="button" className="btn btn-primary shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i className="fas fa-th-list"></i> {text}</button>
+            <button type="button" className="btn btn-primary shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><Icon name="th-list" size={16} /> {text}</button>
             <Modal contentLabel="GENERAL VIEW FUN"
                 isOpen={modal}
                 style={customStylesForModal}
@@ -330,13 +331,13 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
             >
 
                 <div className="my-4 d-flex justify-content-between">
-                    <label><i className="fas fa-th-list"></i> LISTA DE FILTROS</label>
+                    <label><Icon name="th-list" size={16} /> LISTA DE FILTROS</label>
                     <button type="button" className="btn-close" onClick={toggle} />
                 </div>
                 {_COMPONENT_LIST()}
 
                 <div className="text-end py-1 mt-2">
-                    <button type="button" className="btn btn-lg btn-info" onClick={() => setModal(false)}><i className="fas fa-times-circle"></i> CERRAR</button>
+                    <button type="button" className="btn btn-lg btn-info" onClick={() => setModal(false)}><Icon name="times-circle" size={16} /> CERRAR</button>
                 </div>
             </Modal>
 

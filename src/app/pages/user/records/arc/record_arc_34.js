@@ -10,6 +10,7 @@ import { dateParser, getJSONFull, getJSON_Simple } from '../../../../components/
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 import parkingData from '../../../../components/jsons/parkingData.json'
 import { SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../../components/vars.global';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
@@ -346,9 +347,9 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
         }
         let _SAVING_STATE = (state) => {
             if (!state) return '';
-            if (state == 1) return <label className='text-warning fw-bold'><i className="fas fa-save"></i></label>;
-            if (state == 2) return <label className='text-success fw-bold'><i className="fas fa-save"></i></label>;
-            if (state == 3) return <label className='text-danger fw-bold'><i className="fas fa-save"></i></label>;
+            if (state == 1) return <label className='text-warning fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 2) return <label className='text-success fw-bold'><Icon name="save" size={16} /></label>;
+            if (state == 3) return <label className='text-danger fw-bold'><Icon name="save" size={16} /></label>;
         }
 
         const value34 = _GET_STEP_TYPE('s34', 'value');
@@ -437,7 +438,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     minWidth: '100px',
                     cell: row => <>
-                        <button type="button" className="btn btn-danger btn-sm" onClick={() => delete_34_gen(row.id)}><i className="far fa-trash-alt fa-2x"></i></button>
+                        <button type="button" className="btn btn-danger btn-sm" onClick={() => delete_34_gen(row.id)}><Icon name="trash-alt" size={16} /></button>
                     </>,
                 },
             ]
@@ -2225,7 +2226,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_1()}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i className="far fa-share-square"></i> AÑADIR NORMA
+                                <Icon name="share-square" size={16} /> AÑADIR NORMA
                             </button>
                         </div>
                     </form>

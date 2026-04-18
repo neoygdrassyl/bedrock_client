@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Icon } from '@/components/icon';
 import {
   PROCESS_DEFINITION,
   calculateRouteDays,
@@ -61,7 +62,7 @@ function FlowRouteSummary({ filters }) {
     <div className="lf-card">
       <div className="lf-card__body">
         <div className="lf-section-title">
-          <i className="fas fa-chart-bar"></i>
+          <Icon name="chart-bar" size={16} />
           Resumen de Ruta
         </div>
 
@@ -96,7 +97,7 @@ function FlowRouteSummary({ filters }) {
 
         {/* Pool badge */}
         <div className="lf-pool-badge">
-          <i className="fas fa-link" style={{ fontSize: '0.65rem' }}></i>
+          <Icon name="link" size={16} style={{ fontSize: '0.65rem' }} />
           Pool EST + VIA: {summary.poolTotal}d (Tipo {filters.projectType})
         </div>
 

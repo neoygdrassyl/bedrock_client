@@ -3,6 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
+import { Icon } from '@/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -135,8 +136,8 @@ export default function ARCHIVE_MANAGE(props) {
             <div className='row my-3'>
                 <div className='col text-end'>
                     {currentItem ?
-                        <button type="button" className="btn btn-sm btn-success" onClick={() => update()}><i className="far fa-edit"></i> ACTUALIZAR</button>
-                        : <button type="button" className="btn btn-sm btn-success" onClick={() => create()}><i className="fas fa-plus-circle"></i> CREAR</button>}
+                        <button type="button" className="btn btn-sm btn-success" onClick={() => update()}><Icon name="edit" size={16} /> ACTUALIZAR</button>
+                        : <button type="button" className="btn btn-sm btn-success" onClick={() => create()}><Icon name="plus-circle" size={16} /> CREAR</button>}
                 </div>
             </div>
         </>

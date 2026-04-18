@@ -18,6 +18,7 @@ import FUN_SIGN_PDF from './components/fun_sign_pdf.component';
 import { _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 
 import CubXVrDataService from '../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -497,7 +498,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
                     <div className="row text-center">
                         <div className="col-12">
-                            <button type="button" className="btn btn-warning btn-lg my-3" onClick={() => alertAddress()}><i className="far fa-check-square"></i> CONFIRMAR</button>
+                            <button type="button" className="btn btn-warning btn-lg my-3" onClick={() => alertAddress()}><Icon name="check-square" size={16} /> CONFIRMAR</button>
                         </div>
                     </div>
                 </form>
@@ -598,7 +599,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                 <label>{contacts.phones[index]}</label>
                             </div>
                             <div className="col-2 text-center">
-                                <label>{contacts.notfies[index] ? <i className="fas fa-check text-success"></i> : <i className="fas fa-times text-danger"></i>}</label>
+                                <label>{contacts.notfies[index] ? <Icon name="check" size={16} className="text-success" /> : <Icon name="times" size={16} className="text-danger" />}</label>
                             </div>
                         </div>
                     })}
@@ -924,7 +925,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
                             <div className="row text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-warning btn-lg my-3" id="btn-review" ><i className="far fa-file-alt"></i> ANEXAR AVISO</button>
+                                    <button className="btn btn-warning btn-lg my-3" id="btn-review" ><Icon name="file-alt" size={16} /> ANEXAR AVISO</button>
                                 </div>
                             </div>
                         </form>
@@ -964,7 +965,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                         <label >Dirección del Predio</label>
                                         <div className="input-group my-1">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="fas fa-map-marked-alt"></i>
+                                                <Icon name="map-marked-alt" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="alert_3_1" />
                                         </div>
@@ -973,7 +974,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                         <label>Dirección de correspondencia</label>
                                         <div className="input-group my-1">
                                             <span className="input-group-text bg-info text-white">
-                                                <i className="fas fa-map-marked-alt"></i>
+                                                <Icon name="map-marked-alt" size={16} />
                                             </span>
                                             <input type="text" className="form-control" id="alert_3_2" />
                                         </div>
@@ -981,7 +982,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                 </div>
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-warning my-3"><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                        <button className="btn btn-warning my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
                                     </div>
                                 </div>
                             </form>

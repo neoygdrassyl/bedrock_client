@@ -15,6 +15,7 @@ import EXP_RES_2 from './exp_res_2.component';
 import EXP_EJEC from './exp_eje.component';
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -382,7 +383,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_1_6"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
                         </div>
                     </div>
                 </div>
@@ -466,7 +467,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_2_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -663,7 +664,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_3_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -848,7 +849,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_4_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -988,7 +989,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_5_8"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -1266,7 +1267,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_6_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -1446,7 +1447,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_7_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><i className="fas fa-home"></i></button>
+                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -1880,10 +1881,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <hr />
                 <div className="row text-center">
                     <div className="col">
-                        <button type="button" className="btn btn-success my-3" onClick={() => save_eje()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                        <button type="button" className="btn btn-success my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
                     </div>
                     <div className="col">
-                        <button type="button" className="btn btn-danger my-3" onClick={() => pd_eje()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => pd_eje()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                     </div>
                 </div>
             </>
@@ -2616,7 +2617,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             {_COMPONENT_DOC_1()}
                             <div className="row text-center">
                                 <div className="col">
-                                    <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                    <button className="btn btn-danger my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                                 </div>
                             </div>
                         </form>
@@ -2635,7 +2636,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                     {_COMPONENT_DOC_7()}
                                     <div className="row text-center">
                                         <div className="col">
-                                            <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                            <button className="btn btn-danger my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                                         </div>
                                     </div>
                                 </form>
@@ -2655,7 +2656,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 {_COMPONENT_DOC_2()}
                                 <div className="row text-center">
                                     <div className="col">
-                                        <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                        <button className="btn btn-danger my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                                     </div>
                                 </div>
                             </form>
@@ -2675,7 +2676,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 {_COMPONENT_DOC_3()}
                                 <div className="row text-center">
                                     <div className="col">
-                                        <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                        <button className="btn btn-danger my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                                     </div>
                                 </div>
                             </form>
@@ -2693,7 +2694,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             {_COMPONENT_DOC_4()}
                             <div className="row text-center">
                                 <div className="col">
-                                    <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                    <button className="btn btn-danger my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                                 </div>
                             </div>
                         </form>
@@ -2712,7 +2713,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                     {_COMPONENT_DOC_5()}
                                     <div className="row text-center">
                                         <div className="col">
-                                            <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                            <button className="btn btn-danger my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                                         </div>
                                     </div>
                                 </form>
@@ -2734,7 +2735,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                     {_COMPONENT_DOC_6()}
                                     <div className="row text-center">
                                         <div className="col">
-                                            <button className="btn btn-danger my-3"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                            <button className="btn btn-danger my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                                         </div>
                                     </div>
                                 </form>
@@ -2765,10 +2766,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         {_COMPOENEN_DOC_FINAL_NOT()}
                         <div className="row text-center">
                             <div className="col">
-                                <button className="btn btn-success my-3"><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
                             </div>
                             <div className="col">
-                                <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen_final_not()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen_final_not()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                             </div>
                         </div>
                     </form>

@@ -6,6 +6,7 @@ import withReactContent from 'sweetalert2-react-content'
 import FunService from '../../../../services/fun.service';
 import DOCS_LIST from './docs_list.component';
 import FUN6DATALIST from './fun_6_datalist';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 
@@ -29,11 +30,11 @@ export default function FUN_6_UPLOAD(props) {
                     <div className="col-12">
                         <label className="app-p lead text-start fw-normal text-uppercase">DOCUMENTO ANEXO N° {i + 1}</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
                             <input type="file" className="form-control" name="files_fun6s" accept="image/png, image/jpeg application/pdf" required />
                         </div>
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="fas fa-paperclip"></i></span>
+                            <span className="input-group-text bg-info text-white"><Icon name="paperclip" size={16} /></span>
                             <input list="fun_6_docs_list" name="fun6_descriptions" id={'fun6_descriptions_' + i} className="form-control" placeholder="Descripcion del documento" />
                             <DOCS_LIST idRef={i} setValues={setValues} text={'VER LISTA'} />
                         </div>
@@ -42,20 +43,20 @@ export default function FUN_6_UPLOAD(props) {
                 <div className="row d-flex justify-content-start">
                     <div className="col">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="fas fa-hashtag"></i></span>
+                            <span className="input-group-text bg-info text-white"><Icon name="hashtag" size={16} /></span>
                             <input type="text" className="form-control" id={'fun6_codes_' + i} placeholder="Codigo" name="fun6_codes" />
                         </div>
                     </div>
                     <div className="col">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="far fa-sticky-note"></i></span>
+                            <span className="input-group-text bg-info text-white"><Icon name="sticky-note" size={16} /></span>
                             <input type="number" className="form-control" placeholder="Folios" step="1" min="0" name="fun6_pages" />
                         </div>
                     </div>
 
                     <div className="col-4">
                         <div className="input-group">
-                            <span className="input-group-text bg-info text-white"><i className="far fa-calendar-alt"></i>&nbsp;Fecha Radicación</span>
+                            <span className="input-group-text bg-info text-white"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Radicación</span>
                             <input type="date" className="form-control" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} name="fun6_dates" />
                         </div>
                     </div>
@@ -160,9 +161,9 @@ export default function FUN_6_UPLOAD(props) {
                 <div className="col text-end m-2">
 
                     {attachs > 0
-                        ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => setAttachs(attachs - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
+                        ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => setAttachs(attachs - 1)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
                         : ""}
-                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => setAttachs(attachs + 1)}><i className="fas fa-plus-circle"></i> AÑADIR </button>
+                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => setAttachs(attachs + 1)}><Icon name="plus-circle" size={16} /> AÑADIR </button>
                 </div>
             </div>
 
@@ -172,7 +173,7 @@ export default function FUN_6_UPLOAD(props) {
                 {attachs > 0
                     ? <div className="row text-center my-2">
                         <div className="col-12">
-                            <button className="btn btn-success btn-sm"><i className="far fa-file-alt"></i> AÑADIR {attachs} DOCUMENTO(S)</button>
+                            <button className="btn btn-success btn-sm"><Icon name="file-alt" size={16} /> AÑADIR {attachs} DOCUMENTO(S)</button>
                         </div>
                     </div> : ""}
             </form>

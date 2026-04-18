@@ -3,6 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 
 
@@ -81,7 +82,7 @@ export const SEEN_COMPONENT_FORM = (props) => {
                 <label>VISTO BUENO</label>
                 <div className="input-group my-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-envelope"></i>
+                        <Icon name="envelope" size={16} />
                     </span>
                     <select className="form-control" id="pqrs_visto_worker_1" defaultValue={worker.feedback}>
                         <option value={1}>SI</option>
@@ -93,7 +94,7 @@ export const SEEN_COMPONENT_FORM = (props) => {
                 <label>FECHA CONFIRMACION</label>
                 <div className="input-group my-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="fas fa-calendar-alt"></i>
+                        <Icon name="calendar-alt" size={16} />
                     </span>
                     <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_2" defaultValue={worker.feedback_date ?? dayjs().format('YYYY-MM-DD')} required></input>
                 </div>
@@ -106,7 +107,7 @@ export const SEEN_COMPONENT_FORM = (props) => {
             </div>
         </div>
         <div className='text-center'>
-            <button type="button" className="btn btn-sm btn-success" onClick={update}>Confirmar <i className="fas fa-check"></i></button>
+            <button type="button" className="btn btn-sm btn-success" onClick={update}>Confirmar <Icon name="check" size={16} /></button>
         </div>
 
 

@@ -35,6 +35,7 @@ import FUN_ASIGNS_COMPONENT from './fun_forms/components/fun_asign.component';
 
 // JSONS
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 const MySwal = withReactContent(Swal);
 
 function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
@@ -610,7 +611,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                             <div className='col'>
                                                 <div className="input-group">
                                                     <span className="input-group-text bg-info text-white">
-                                                        <i className="far fa-calendar-alt"></i>
+                                                        <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_1" required
                                                         defaultValue={dayjs().subtract(12, 'months').format('YYYY-MM-DD')} />
@@ -619,7 +620,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                             <div className='col'>
                                                 <div className="input-group">
                                                     <span className="input-group-text bg-info text-white">
-                                                        <i className="far fa-calendar-alt"></i>
+                                                        <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_2" required
                                                         defaultValue={dayjs().format('YYYY-MM-DD')} />
@@ -628,7 +629,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                         </div>
 
                                         <div className="text-center">
-                                            <button className="btn btn-danger mt-1"><i className="fas fa-th"></i> CARGAR </button>
+                                            <button className="btn btn-danger mt-1"><Icon name="th" size={16} /> CARGAR </button>
                                         </div>
                                     </form>
                                 </div>
@@ -643,7 +644,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                             <div className='col'>
                                                 <div className="input-group">
                                                     <span className="input-group-text bg-info text-white">
-                                                        <i className="far fa-calendar-alt"></i>
+                                                        <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_1_s" required
                                                         defaultValue={dayjs().startOf('month').format('YYYY-MM-DD')} />
@@ -652,7 +653,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                             <div className='col'>
                                                 <div className="input-group">
                                                     <span className="input-group-text bg-info text-white">
-                                                        <i className="far fa-calendar-alt"></i>
+                                                        <Icon name="calendar-alt" size={16} />
                                                     </span>
                                                     <input type="date" className="form-control" id="load_macro_date_2_s" required
                                                         defaultValue={dayjs().endOf('month').format('YYYY-MM-DD')} />
@@ -660,7 +661,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                                             </div>
                                         </div>
                                         <div className="text-center">
-                                            <button className="btn btn-primary mt-1"><i className="fas fa-file-alt"></i> CARGAR </button>
+                                            <button className="btn btn-primary mt-1"><Icon name="file-alt" size={16} /> CARGAR </button>
                                         </div>
                                     </form>
                                 </div>
@@ -723,7 +724,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
 
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {currentPublic} </label>
+                        <label><Icon name="file-alt" size={16} /> DETALLES DE LA SOLICITUD - No. Radicación : {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle()} />
                     </div>
                     {modalHeader}
@@ -738,7 +739,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>}
 
@@ -748,7 +749,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {currentPublic}</label>
+                        <label><Icon name="check-square" size={16} /> LISTA DE CHECKEO : No. Radicación :  {currentPublic}</label>
                         <button type="button" className="btn-close" onClick={() => toggle_c()} />
                     </div>
                     {modalHeader}
@@ -764,7 +765,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_c}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -775,7 +776,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {currentPublic} </label>
+                        <label><Icon name="file-signature" size={16} /> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_n()} />
                     </div>
                     {modalHeader}
@@ -790,7 +791,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_n}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -801,7 +802,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {currentPublic} </label>
+                        <label><Icon name="archive" size={16} /> GESTIÓN DOCUMENTAL - No. Radicación :  {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_d()} />
                     </div>
                     {modalHeader}
@@ -815,7 +816,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_d}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -826,7 +827,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {currentPublic} </label>
+                        <label><Icon name="sign" size={16} /> AVISOS A VECINOS - No. Radicación :  {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_alert()} />
                     </div>
                     {modalHeader}
@@ -841,7 +842,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_alert}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -852,7 +853,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {currentPublic} </label>
+                        <label><Icon name="clock" size={16} /> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_clock()} />
                     </div>
                     {modalHeader}
@@ -866,7 +867,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_clock}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -877,7 +878,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {currentPublic} </label>
+                        <label><Icon name="building" size={16} /> INFORME ARQUITECTÓNICO - No. Radicación :  {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordArc()} />
                     </div>
                     {modalHeader}
@@ -893,7 +894,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_recordArc}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -904,7 +905,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {currentPublic} </label>
+                        <label><Icon name="balance-scale" size={16} /> INFORME JURIDICO - No. Radicación :  {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordLaw()} />
                     </div>
                     {modalHeader}
@@ -919,7 +920,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_recordLaw}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -930,7 +931,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {currentPublic} </label>
+                        <label><Icon name="pencil-ruler" size={16} /> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordPH()} />
                     </div>
                     {modalHeader}
@@ -946,7 +947,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_recordPH}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -957,7 +958,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {currentPublic} </label>
+                        <label><Icon name="cogs" size={16} /> INFORME ESTRUCTURAL - No. Radicación :  {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordEng()} />
                     </div>
                     {modalHeader}
@@ -972,7 +973,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_recordEng}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -983,7 +984,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {currentPublic} </label>
+                        <label><Icon name="file-contract" size={16} />ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordReview()} />
                     </div>
                     {modalHeader}
@@ -997,7 +998,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_recordReview}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -1008,7 +1009,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {currentPublic} </label>
+                        <label><Icon name="file-alt" size={16} /> EXPEDICIÓN DE LA LICENCIA:  {currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_exp()} />
                     </div>
                     {modalHeader}
@@ -1022,7 +1023,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
 
                     <div className="text-end py-4 mt-3">
                         <button type="button" className="btn btn-info" onClick={toggle_exp}>
-                            <h4 className="pt-2"><i className="fas fa-times-circle"></i> CERRAR</h4>
+                            <h4 className="pt-2"><Icon name="times-circle" size={16} /> CERRAR</h4>
                         </button>
                     </div>
                 </Modal>}
@@ -1035,7 +1036,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     overlayClassName="macro-modal-overlay"
                 >
                     <div className="my-1 d-flex justify-content-between">
-                        <label><i className="fas fa-th"></i> Macro tabla de seguimiento: Desde {date_start} hasta {date_end}</label>
+                        <label><Icon name="th" size={16} /> Macro tabla de seguimiento: Desde {date_start} hasta {date_end}</label>
                         <button type="button" className="btn-close" onClick={() => toggle_macro()} />
                     </div>
 
@@ -1071,7 +1072,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     <div className="row">
                         <div className="col">
                             <div className="form-group row">
-                                <label className='col-form-label col-3'><i className="fas fa-file-alt"></i> REPORTE GENERAL DE SOLICITUDES </label>
+                                <label className='col-form-label col-3'><Icon name="file-alt" size={16} /> REPORTE GENERAL DE SOLICITUDES </label>
                                 <label className='col-form-label col-1 text-end'>FECHAS: </label>
                                 <div className="col">
                                     <input type='date' max="2100-01-01" className='form-control form-control-sm mt-2' defaultValue={date_start} onBlur={(e) => setDate_start(e.target.value)} />

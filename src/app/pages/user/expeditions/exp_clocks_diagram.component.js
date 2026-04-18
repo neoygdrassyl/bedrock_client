@@ -5,6 +5,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -401,7 +402,7 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header" style={{ background: '#667eea' }}>
             <h5 className="modal-title text-white">
-              <i className="fas fa-clock me-2"></i>
+              <Icon name="clock" size={16} className="me-2" />
               {selectedNode.name}
             </h5>
             <button className="btn-close btn-close-white" onClick={handleClose}></button>
@@ -521,7 +522,7 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
           <div className="modal-footer">
             <button className="btn btn-secondary" onClick={handleClose}>Cancelar</button>
             <button className="btn btn-primary" onClick={handleSave}>
-              <i className="fas fa-save me-2"></i>Guardar
+              <Icon name="save" size={16} className="me-2" />Guardar
             </button>
           </div>
         </div>
@@ -609,7 +610,7 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
     <div className="diagram-wrapper">
       <div className="diagram-header">
         <h5 className="mb-0">
-          <i className="fas fa-project-diagram me-2"></i>
+          <Icon name="project-diagram" size={16} className="me-2" />
           Diagrama del Proceso
         </h5>
         <div className="legend">
@@ -649,7 +650,7 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
               ))
             ) : (
               <div className="no-data-message">
-                <i className="fas fa-info-circle me-2"></i>
+                <Icon name="info-circle" size={16} className="me-2" />
                 No hay eventos para mostrar en el diagrama
               </div>
             )}

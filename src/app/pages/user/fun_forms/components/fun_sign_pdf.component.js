@@ -6,6 +6,7 @@ import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArr
 import { formsParser1, getJSON, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../components/jsons/vars';
 import FunService from '../../../../services/fun.service';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersion }) {
@@ -152,7 +153,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>No. Radicación</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-hashtag"></i>
+                                    <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={currentItem.id_public} id="sign_pdf_1" />
                             </div>
@@ -161,7 +162,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>No. Resolución</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-hashtag"></i>
+                                    <Icon name="hashtag" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={res_id} id="sign_pdf_12" />
                             </div>
@@ -170,7 +171,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Tipo de Solicitud</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-check-square"></i>
+                                    <Icon name="check-square" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={formsParser1(_GET_CHILD_1())} id="sign_pdf_2" />
                             </div>
@@ -182,7 +183,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Solicitante</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-user"></i>
+                                    <Icon name="user" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={_GET_CHILD_51_BYROLE('PROPIETARIO')} id="sign_pdf_3" />
                             </div>
@@ -192,7 +193,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Dirección</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-home"></i>
+                                    <Icon name="home" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={_GET_CHILD_2().item_211} id="sign_pdf_4" />
                                 <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("sign_pdf_4", _GET_CHILD_2())}>DIRECCIÓN COMPLETA</button>
@@ -207,7 +208,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Uso</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-list-ul"></i>
+                                    <Icon name="list-ul" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={_FUN_6_PARSER(_GET_CHILD_1().usos, true)} id="sign_pdf_8" />
                             </div>
@@ -216,7 +217,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Fecha de Radicación</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-calendar-alt"></i>
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
                                 <input type="date" className="form-control" defaultValue={_GET_SIGN()[1]} id="sign_pdf_6" />
                             </div>
@@ -225,7 +226,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Fecha de Licencia</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-calendar-alt"></i>
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
                                 <input type="date" className="form-control" defaultValue={res_expiration_date} id="sign_pdf_lic" />
                             </div>
@@ -235,7 +236,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Vigencia</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="far fa-calendar-alt"></i>
+                                    <Icon name="calendar-alt" size={16} />
                                 </span>
                                 <input type="date" className="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-1" />
                                 <input type="date" className="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-2" />
@@ -249,7 +250,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Altura</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-ruler-vertical"></i>
+                                    <Icon name="ruler-vertical" size={16} />
                                 </span>
                                 <input type="text" className="form-control" id="sign_pdf_5" />
                             </div>
@@ -258,7 +259,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Área</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-cube"></i>
+                                    <Icon name="cube" size={16} />
                                 </span>
                                 <input type="number" step={0.01} min="0" className="form-control" id="sign_pdf_14" />
                             </div>
@@ -267,7 +268,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label># Estacionamientos</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-car-side"></i>
+                                    <Icon name="car-side" size={16} />
                                 </span>
                                 <input type="number" step={1} min="0" className="form-control" id="sign_pdf_parking" />
                             </div>
@@ -276,7 +277,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label># Unidades otro uso</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-home"></i>
+                                    <Icon name="home" size={16} />
                                 </span>
                                 <input type="number" step={1} min="0" className="form-control" id="sign_pdf_otheruse" />
                             </div>
@@ -290,7 +291,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Tamaño</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-ruler-combined"></i>
+                                    <Icon name="ruler-combined" size={16} />
                                 </span>
                                 <select className='form-select' id="sign_pdf_7" >
                                     <option value="1">1m x 70cm</option>
@@ -303,7 +304,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Color de Fondo</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-palette"></i>
+                                    <Icon name="palette" size={16} />
                                 </span>
                                 <select className="form-control form-select" id="sign_pdf_9">
                                     <option value={'white'}>Fondo Blanco</option>
@@ -316,7 +317,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                             <label>Tipo de valla</label>
                             <div className="input-group mb-3">
                                 <span className="input-group-text bg-info text-white">
-                                    <i className="fas fa-palette"></i>
+                                    <Icon name="palette" size={16} />
                                 </span>
                                 <select className="form-control form-select" id="sign_pdf_type">
                                     <option value={'1'}>Valla de radicación</option>
@@ -342,7 +343,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                     <div className="row">
                         <div className="Col-12">
                             <div className="text-center py-4 mt-3">
-                                <button className="btn btn-danger"><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                <button className="btn btn-danger"><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                             </div>
                         </div>
                     </div>

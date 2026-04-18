@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
+import { Icon } from '@/components/icon';
 
 
 const MySwal = withReactContent(Swal);
@@ -59,7 +60,7 @@ export const PQRS_SEND_DATE = (props) => {
                 <label>Fecha envio respuesta</label>
                 <div className="input-group my-1">
                     <span className="input-group-text bg-info text-white">
-                        <i className="fas fa-calendar-alt"></i>
+                        <Icon name="calendar-alt" size={16} />
                     </span>
                     <input type='date' className="form-control mb-" rows="3" id="pqrs_visto_worker_1" defaultValue={validations ?? dayjs().format('YYYY-MM-DD')} onBlur={crearteReply} required></input>
                 </div>

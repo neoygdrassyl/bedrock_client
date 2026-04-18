@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 
 export const ControlBar = ({ timeTravel, onClose }) => {
   const { systemDate, onDateChange, onDateShift, onDateReset } = timeTravel;
@@ -8,7 +9,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
     <div className="control-bar">
       <div className="bar-inner">
         <div className="time-travel-controls">
-          {/* <span className="control-label"><i className="fas fa-magic me-2"></i>Emulador</span> */}
+          {/* <span className="control-label"><Icon name="magic" size={16} className="me-2" />Emulador</span> */}
           
           <button 
             type="button" 
@@ -16,7 +17,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
             title="Retroceder 5 días"
             onClick={() => onDateShift(-5)}
           >
-            <i className="fas fa-chevron-left me-1"></i>-5d
+            <Icon name="chevron-left" size={16} className="me-1" />-5d
           </button>
 
           <button 
@@ -25,7 +26,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
             title="Retroceder 1 días"
             onClick={() => onDateShift(-1)}
           >
-            <i className="fas fa-chevron-left me-1"></i>-1d
+            <Icon name="chevron-left" size={16} className="me-1" />-1d
           </button>
           
           <input 
@@ -41,7 +42,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
             title="Avanzar 1 días"
             onClick={() => onDateShift(1)}
           >
-            <i className="fas fa-chevron-right me-1"></i>+1d
+            <Icon name="chevron-right" size={16} className="me-1" />+1d
           </button>
           
           <button 
@@ -50,7 +51,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
             title="Avanzar 5 días"
             onClick={() => onDateShift(5)}
           >
-            +5d<i className="fas fa-chevron-right ms-1"></i>
+            +5d<Icon name="chevron-right" size={16} className="ms-1" />
           </button>
           
           <button 
@@ -60,7 +61,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
             onClick={onDateReset}
             disabled={isToday}
           >
-            <i className="fas fa-undo me-1"></i> Hoy
+            <Icon name="undo" size={16} className="me-1" /> Hoy
           </button>
         </div>
         <div className="actions">
@@ -71,14 +72,14 @@ export const ControlBar = ({ timeTravel, onClose }) => {
                   onClick={onClose}
                   title="Ocultar barra de tiempo"
               >
-                  <i className="fas fa-times"></i>
+                  <Icon name="times" size={16} />
               </button>
             )}
         </div>
       </div>
        {!isToday && (
         <div className="time-travel-banner">
-          <i className="fas fa-exclamation-triangle me-2"></i>
+          <Icon name="exclamation-triangle" size={16} className="me-2" />
           Estás viendo el expediente a fecha de <strong>{dayjs(systemDate).format('DD MMMM YYYY')}</strong>. Los cálculos reflejan esta fecha.
         </div>
       )}

@@ -6,6 +6,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -325,10 +326,10 @@ export default function EXP_CLOCKS(props) {
   let get_clockExistIcon = (state, icon = "") => {
     var _CHILD = _GET_CLOCK_STATE(state);
     if (_CHILD && icon !== "empty") {
-      if (_CHILD.date_start || _CHILD.name === "RADICACIÓN") return <i className="far fa-check-circle text-success"></i>
-      return <i className="far fa-dot-circle text-warning"></i>
+      if (_CHILD.date_start || _CHILD.name === "RADICACIÓN") return <Icon name="check-circle" size={16} className="text-success" />
+      return <Icon name="dot-circle" size={16} className="text-warning" />
     }
-    return <i className="far fa-dot-circle"></i>
+    return <Icon name="dot-circle" size={16} />
   }
 
   let get_newestDate = (states) => {
@@ -492,19 +493,19 @@ export default function EXP_CLOCKS(props) {
           <div className="actions d-flex gap-2 flex-wrap align-items-center">
             {!isDesisted && canAddSusp && (
               <button type="button" className="btn btn-warning btn-sm" onClick={() => addTimeControl('suspension')}>
-                <i className="fas fa-pause me-2"></i>
+                <Icon name="pause" size={16} className="me-2" />
                 Añadir Suspensión
               </button>
             )}
             {!isDesisted && canAddExt && (
               <button type="button" className="btn btn-info btn-sm" onClick={() => addTimeControl('extension')}>
-                <i className="fas fa-clock me-2"></i>
+                <Icon name="clock" size={16} className="me-2" />
                 Prórroga por Complejidad
               </button>
             )}
             {!isFull && (
               <button type="button" className="btn btn-sm btn-light ms-1 exp-full-btn" title="Pantalla completa" onClick={() => setIsFull(true)}>
-                <i className="fas fa-expand"></i>
+                <Icon name="expand" size={16} />
               </button>
             )}
           </div>
@@ -513,7 +514,7 @@ export default function EXP_CLOCKS(props) {
           <div className="control-meta ms-auto small text-end">
             {isDesisted ? (
               <div className="text-danger">
-                <i className="fas fa-ban me-1"></i>
+                <Icon name="ban" size={16} className="me-1" />
                 Proceso desistido
                 <button type="button" className="btn btn-link btn-sm p-0 ms-2 align-baseline" onClick={showDesistModal}>
                   Ver motivo
@@ -525,27 +526,27 @@ export default function EXP_CLOCKS(props) {
                 <div className="status-chips d-flex justify-content-end flex-wrap gap-2 mb-1">
                   {finalized && (
                     <span className="badge bg-success">
-                      <i className="fas fa-check-circle me-1"></i> Finalizado
+                      <Icon name="check-circle" size={16} className="me-1" /> Finalizado
                     </span>
                   )}
                   {!finalized && curDetails?.notStarted && (
                     <span className="badge bg-secondary">
-                      <i className="fas fa-circle me-1"></i> No iniciado
+                      <Icon name="circle" size={16} className="me-1" /> No iniciado
                     </span>
                   )}
                   {!finalized && !curDetails?.notStarted && curDetails?.paused && (
                     <span className="badge bg-warning text-dark">
-                      <i className="fas fa-pause me-1"></i> Pausado
+                      <Icon name="pause" size={16} className="me-1" /> Pausado
                     </span>
                   )}
                   {!finalized && !curDetails?.notStarted && !curDetails?.paused && curDetails && curDetails.remaining < 0 && (
                     <span className="badge bg-danger">
-                      <i className="fas fa-exclamation-circle me-1"></i> Vencido
+                      <Icon name="exclamation-circle" size={16} className="me-1" /> Vencido
                     </span>
                   )}
                   {!finalized && !curDetails?.notStarted && !curDetails?.paused && curDetails && curDetails.remaining >= 0 && (
                     <span className="badge bg-primary">
-                      <i className="fas fa-hourglass-half me-1"></i> En curso
+                      <Icon name="hourglass-half" size={16} className="me-1" /> En curso
                     </span>
                   )}
                 </div>
@@ -553,12 +554,12 @@ export default function EXP_CLOCKS(props) {
                 {/* Línea de curaduría */}
                 {finalized ? (
                   <div className="text-success">
-                    <i className="fas fa-check-circle me-1"></i>
+                    <Icon name="check-circle" size={16} className="me-1" />
                     Curaduría: Finalizado
                   </div>
                 ) : curDetails?.notStarted ? (
                   <div className="text-muted">
-                    <i className="fas fa-circle me-1"></i>
+                    <Icon name="circle" size={16} className="me-1" />
                     Curaduría: No iniciado
                     <button
                       type="button"
@@ -588,13 +589,13 @@ export default function EXP_CLOCKS(props) {
                 <div className="d-flex justify-content-end flex-wrap gap-2 mt-1">
                   {_GET_TOTAL_SUSPENSION_DAYS() > 0 && (
                     <span className="badge bg-warning text-dark">
-                      <i className="fas fa-pause me-1"></i>
+                      <Icon name="pause" size={16} className="me-1" />
                       Suspensiones: {_GET_TOTAL_SUSPENSION_DAYS()}/10
                     </span>
                   )}
                   {extension.exists && (
                     <span className="badge bg-info text-dark">
-                      <i className="fas fa-clock me-1"></i>
+                      <Icon name="clock" size={16} className="me-1" />
                       Prórroga: {extension.days} d
                     </span>
                   )}
@@ -654,7 +655,7 @@ export default function EXP_CLOCKS(props) {
           <div className="row g-3">
             <div className="col-12">
               <div className="alert alert-info">
-                <i className="fas fa-info-circle me-2"></i>
+                <Icon name="info-circle" size={16} className="me-2" />
                 Días disponibles para suspensión: <strong>${availableDays}</strong>
               </div>
             </div>
@@ -714,7 +715,7 @@ export default function EXP_CLOCKS(props) {
           <div className="row g-3">
             <div className="col-12">
               <div className="alert alert-info">
-                <i className="fas fa-clock me-2"></i>
+                <Icon name="clock" size={16} className="me-2" />
                 La prórroga por complejidad otorga <strong>22 días hábiles</strong> adicionales
               </div>
             </div>
@@ -790,7 +791,7 @@ export default function EXP_CLOCKS(props) {
             <div className="d-flex align-items-center justify-content-between mb-2">
               <h6 className="m-0">Reloj del Proceso</h6>
               <button className="btn btn-sm btn-light" onClick={() => setIsFull(false)}>
-                <i className="fas fa-compress"></i> Cerrar
+                <Icon name="compress" size={16} /> Cerrar
               </button>
             </div>
             <ControlBar />
@@ -1065,7 +1066,7 @@ export default function EXP_CLOCKS(props) {
                         title="Ver información de suspensión"
                         onClick={() => showSuspensionInfo(value.suspensionInfo.data, value.suspensionInfo.type)}
                       >
-                        <i className="fas fa-question"></i>
+                        <Icon name="question" size={16} />
                       </button>
                     )}
                   </div>

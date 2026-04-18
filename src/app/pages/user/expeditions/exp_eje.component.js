@@ -14,6 +14,7 @@ import { cities, domains_number, infoCud, zonesTable } from '../../../components
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -461,12 +462,12 @@ export default function EXP_EJEC(props) {
             <hr />
             <div className="row text-center">
                 <div className="col">
-                    <button type="button" className="btn btn-success my-3" onClick={() => save_eje()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                    <button type="button" className="btn btn-success my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
                 </div>
                 <div className="col">
                     {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
                         <button type="button" className="btn btn-primary btn my-3" onClick={() => pd_eje(true)}>
-                            <i className="fas fa-edit me-2" />
+                            <Icon name="edit" size={16} className="me-2" />
                             Editar PDF
                         </button>
                     )}

@@ -6,6 +6,7 @@ import DataTable from 'react-data-table-component';
 
 import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
@@ -84,7 +85,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pediódico:
                         <a target="_blank"
                             href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i className="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
                         <br />
                     </>);
                 }
@@ -92,7 +93,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Radio:
                         <a target="_blank"
                             href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i className="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
                         <br />
                     </>);
                 }
@@ -100,7 +101,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pagina Web:
                         <a target="_blank"
                             href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i className="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
                         <br />
                     </>);
                 }
@@ -108,7 +109,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Físico:
                         <a target="_blank"
                             href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <i className="fas fa-cloud-download-alt" style={{ "color": "Crimson" }}></i></a>
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
                     </>);
                 }
             }
@@ -199,9 +200,9 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     minWidth: '120px',
                     cell: row => <>
                         <span title="Modificar Item"><button type="button" className="btn btn-secondary btn-sm m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                            <i className="far fa-edit fa-2x"></i></button></span>
+                            <Icon name="edit" size={16} /></button></span>
                         <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_3(row.id)}>
-                            <i className="far fa-trash-alt fa-2x"></i></button></span>
+                            <Icon name="trash-alt" size={16} /></button></span>
                     </>
                 },
             ]
@@ -222,7 +223,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label >3.1 Dirección del Predio</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_31" />
                         </div>
@@ -231,7 +232,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label>3.2 Dirección de correspondencia</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_32" />
                         </div>
@@ -242,7 +243,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label >3.3 ¿Se declaró parte? Nombre</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_33a" />
                         </div>
@@ -251,7 +252,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label>3.3 ¿Se declaró parte? No. de CUB</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_33b" />
                         </div>
@@ -266,7 +267,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label >3.1 Dirección del Predio</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_31_edit" />
                         </div>
@@ -275,7 +276,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label>3.2 Dirección de correspondencia</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-map-marked-alt"></i>
+                                <Icon name="map-marked-alt" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_32_edit" />
                         </div>
@@ -286,7 +287,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label >3.3 ¿Se declaró parte? Nombre</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_33a_edit" />
                         </div>
@@ -295,7 +296,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         <label>3.3 ¿Se declaró parte? No. Radicación</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_33b_edit" />
                         </div>
@@ -475,7 +476,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             {_COMPONENT_NEW_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3"><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
+                                    <button className="btn btn-success my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
                                 </div>
                             </div>
                         </form>
@@ -488,7 +489,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             {_COMPONENT_EDIT_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
                                 </div>
                             </div>
                         </form>

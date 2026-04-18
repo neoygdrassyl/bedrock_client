@@ -1654,7 +1654,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 >
 
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-file-alt"></i> DETALLES DE LA SOLICITUD - No. Radicación : {state.currentPublic} </label>
+                        <label><Icon name="file-alt" size={16} /> DETALLES DE LA SOLICITUD - No. Radicación : {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle()} />
                     </div>
                     {modalHeader}
@@ -1669,7 +1669,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     />
 
                     <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><i className="fas fa-times-circle"></i> CERRAR </button>
+                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
                     </div>
                 </Modal>
 
@@ -1679,7 +1679,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-check-square"></i> LISTA DE CHECKEO : No. Radicación :  {state.currentPublic}</label>
+                        <label><Icon name="check-square" size={16} /> LISTA DE CHECKEO : No. Radicación :  {state.currentPublic}</label>
                         <button type="button" className="btn-close" onClick={() => toggle_c()} />
                     </div>
                     {modalHeader}
@@ -1704,7 +1704,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-file-signature"></i> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {state.currentPublic} </label>
+                        <label><Icon name="file-signature" size={16} /> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_n()} />
                     </div>
                     {modalHeader}
@@ -1728,7 +1728,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {state.currentPublic} </label>
+                        <label><Icon name="archive" size={16} /> GESTIÓN DOCUMENTAL - No. Radicación :  {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_d()} />
                     </div>
                     {modalHeader}
@@ -1751,7 +1751,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-sign"></i> AVISOS A VECINOS - No. Radicación :  {state.currentPublic} </label>
+                        <label><Icon name="sign" size={16} /> AVISOS A VECINOS - No. Radicación :  {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_alert()} />
                     </div>
                     {modalHeader}
@@ -1775,7 +1775,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-clock"></i> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {state.currentPublic} </label>
+                        <label><Icon name="clock" size={16} /> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_clock()} />
                     </div>
                     {modalHeader}
@@ -1798,7 +1798,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-building"></i> INFORME ARQUITECTÓNICO - No. Radicación :  {state.currentPublic} </label>
+                        <label><Icon name="building" size={16} /> INFORME ARQUITECTÓNICO - No. Radicación :  {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordArc()} />
                     </div>
                     {modalHeader}
@@ -1823,7 +1823,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-balance-scale"></i> INFORME JURIDICO - No. Radicación :  {state.currentPublic} </label>
+                        <label><Icon name="balance-scale" size={16} /> INFORME JURIDICO - No. Radicación :  {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordLaw()} />
                     </div>
                     {modalHeader}
@@ -1847,7 +1847,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-pencil-ruler"></i> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {state.currentPublic} </label>
+                        <label><Icon name="pencil-ruler" size={16} /> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordPH()} />
                     </div>
                     {modalHeader}
@@ -1872,7 +1872,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-cogs"></i> INFORME ESTRUCTURAL - No. Radicación :  {state.currentPublic} </label>
+                        <label><Icon name="cogs" size={16} /> INFORME ESTRUCTURAL - No. Radicación :  {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordEng()} />
                     </div>
                     {modalHeader}
@@ -1896,7 +1896,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="fas fa-file-contract"></i>ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {state.currentPublic} </label>
+                        <label><Icon name="file-contract" size={16} />ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_recordReview()} />
                     </div>
                     {modalHeader}
@@ -1919,7 +1919,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-file-alt"></i> EXPEDICIÓN DE LA LICENCIA:  {state.currentPublic} </label>
+                        <label><Icon name="file-alt" size={16} /> EXPEDICIÓN DE LA LICENCIA:  {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => toggle_exp()} />
                     </div>
                     {modalHeader}
@@ -1942,7 +1942,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
                     <div className="my-4 d-flex justify-content-between">
-                        <label><i className="far fa-file-alt"></i> ASIFNACIÓN DE PROFESIONALES:  {state.currentPublic} </label>
+                        <label><Icon name="file-alt" size={16} /> ASIFNACIÓN DE PROFESIONALES:  {state.currentPublic} </label>
                         <button type="button" className="btn-close" onClick={() => setState({ modal_asign_prof: false })} />
                     </div>
 

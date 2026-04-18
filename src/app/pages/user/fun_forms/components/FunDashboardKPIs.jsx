@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Icon } from '@/components/icon';
 
 // ── Tarjetas simples ─────────────────────────────────────────────────────────
 const SIMPLE_KPIS = [
@@ -158,7 +159,7 @@ function EstudioKPICard({ kpis, loading, activeFilterKey, onFilterChange }) {
         <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           En Estudio
         </CardTitle>
-        <i className="fas fa-microscope text-indigo-600 text-base" aria-hidden="true" />
+        <Icon name="search" size={16} className="text-indigo-600" aria-hidden="true" />
       </CardHeader>
       <CardContent>
         <div className="text-3xl font-bold text-indigo-600">
@@ -224,7 +225,7 @@ function DesistidosKPICard({ kpis, loading, activeFilterKey, onFilterChange }) {
         <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           Desistidos
         </CardTitle>
-        <i className="fas fa-times-circle text-rose-600 text-base" aria-hidden="true" />
+        <Icon name="times-circle" size={16} className="text-rose-600" aria-hidden="true" />
       </CardHeader>
       <CardContent>
         <div className="text-3xl font-bold text-rose-600">

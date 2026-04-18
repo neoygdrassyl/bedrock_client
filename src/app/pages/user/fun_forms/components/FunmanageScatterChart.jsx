@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Icon } from '@/components/icon';
 import {
   ScatterChart,
   Scatter,
@@ -74,7 +75,7 @@ function ScatterTooltip({ active, payload }) {
     >
       {/* Radicado */}
       <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: '#1e293b' }}>
-        <i className="fas fa-file-alt me-1" style={{ color: '#64748b' }}></i>
+        <Icon name="file-alt" size={16} style={{ color: '#64748b' }} />
         {d.radicado ?? '—'}
       </p>
 
@@ -123,7 +124,7 @@ function ScatterTooltip({ active, payload }) {
       {/* Responsable */}
       {d.responsable && (
         <p style={{ margin: '5px 0 0', fontSize: 11, color: '#94a3b8' }}>
-          <i className="fas fa-user me-1"></i>{d.responsable}
+          <Icon name="user" size={16} className="me-1" />{d.responsable}
         </p>
       )}
     </div>
@@ -202,7 +203,7 @@ export function FunmanageScatterChart({ data, loading }) {
         className="text-center text-muted py-4"
         data-testid="scatter-chart-empty"
       >
-        <i className="fas fa-chart-bar me-2"></i>
+        <Icon name="chart-bar" size={16} className="me-2" />
         Sin datos para los filtros aplicados.
       </div>
     );

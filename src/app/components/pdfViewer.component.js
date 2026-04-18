@@ -3,6 +3,7 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import { PDFDocument } from 'pdf-lib';
 import { useState, useEffect } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
+import { Icon } from '@/components/icon';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url
@@ -90,8 +91,8 @@ function PDF_VIEWER({ url, apipath }) {
             <div className="row py-3">
                 <div className="col-6 text-start">
                     <label className="pb-3">Pagina {pageNumber} de {numPages}</label>
-                    <i className="fas fa-chevron-circle-left fa-2x mx-2" style={_GET_STYLE('left')} onClick={() => prevPage()} ></i>
-                    <i className="fas fa-chevron-circle-right fa-2x mx-2" style={_GET_STYLE('right')} onClick={() => nextPage()} ></i>
+                    <Icon name="chevron-left" size={24} className="mx-2 cursor-pointer" style={_GET_STYLE('left')} onClick={() => prevPage()} />
+                    <Icon name="chevron-right" size={24} className="mx-2 cursor-pointer" style={_GET_STYLE('right')} onClick={() => nextPage()} />
                 </div>
                 <div className="col-6 text-end">
                     <form id="form_pdf_viewer_to_page" onSubmit={toPage}>
@@ -103,7 +104,7 @@ function PDF_VIEWER({ url, apipath }) {
                             <input type="number" step="1" min="1" id="pdf_viewer_page_to" className="form-control" defaultValue="1" />
                         </div>
                         <div className="col-1 text-start ms-0 ps-0">
-                            <i className="fas fa-caret-square-right fa-2x ms-0 ps-0" onClick={() => toPage()} style={{ color: "DeepSkyBlue" }}></i>
+                            <Icon name="chevron-right" size={24} className="ms-0 ps-0 cursor-pointer" onClick={() => toPage()} style={{ color: "DeepSkyBlue" }} />
                         </div>
                     </div>
                     </form>

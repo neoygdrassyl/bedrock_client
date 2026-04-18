@@ -6,6 +6,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 export default function FUN_CLOCK_EVENTS(props) {
@@ -39,7 +40,7 @@ export default function FUN_CLOCK_EVENTS(props) {
             name: <label className="text-center">ACCIÓN</label>,
             maxWidth: '90px',
             omit: !(window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 2),
-            cell: row => <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => deleteEvent(row.id)}><i className="far fa-trash-alt"></i></button></span>
+            cell: row => <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => deleteEvent(row.id)}><Icon name="trash-alt" size={16} /></button></span>
         },
     ]
     var [filter, setFilter] = useState('');
@@ -155,7 +156,7 @@ export default function FUN_CLOCK_EVENTS(props) {
 
                 </div>
                 <div className="col-1">
-                    <button type="button" className="btn btn-success btn-sm rounded-pill p-2 m-2 mt-4" onClick={() => createEvent(true)}><i className="fas fa-plus"></i></button>
+                    <button type="button" className="btn btn-success btn-sm rounded-pill p-2 m-2 mt-4" onClick={() => createEvent(true)}><Icon name="plus" size={16} /></button>
                 </div>
             </div>
         </>
@@ -283,21 +284,21 @@ export default function FUN_CLOCK_EVENTS(props) {
     }
 
     return <>
-        <button type="button" className={`btn btn-sm rounded-pill ${!newEvent ? "btn-outline-success" : "btn-success"}`} onClick={() => setNewEvent(!newEvent)}><i className="fas fa-plus-circle"></i> NUEVO</button>
+        <button type="button" className={`btn btn-sm rounded-pill ${!newEvent ? "btn-outline-success" : "btn-success"}`} onClick={() => setNewEvent(!newEvent)}><Icon name="plus-circle" size={16} /> NUEVO</button>
         {newEvent ? _COMPONENET_NEW() : ''}
 
         <DATATABLE
             title={<>
                 <div className='row'>
-                    <div className='col'><i className="fas fa-clipboard-list"></i> {'EVENTOS LICENCIAS'}</div>
+                    <div className='col'><Icon name="clipboard-list" size={16} /> {'EVENTOS LICENCIAS'}</div>
                     <div className='col'>
 
                         <div className="input-group input-group-sm">
-                            <span className="input-group-text"><i className="fas fa-search"></i></span>
+                            <span className="input-group-text"><Icon name="search" size={16} /></span>
                             <input type="text" className="form-control" placeholder={'Buscar...'} id={'DATA_TABLE_EVENTS'} onKeyPress={(e) => { if (e.key === 'Enter') search_data() }} />
                             {filter
-                                ? <button className="btn btn-danger" onClick={() => search_clean()}><i className="fas fa-times"></i></button>
-                                : <button className="btn btn-primary" onClick={() => search_data()}><i className="fas fa-angle-double-right"></i> BUSCAR</button>}
+                                ? <button className="btn btn-danger" onClick={() => search_clean()}><Icon name="times" size={16} /></button>
+                                : <button className="btn btn-primary" onClick={() => search_data()}><Icon name="angle-double-right" size={16} /> BUSCAR</button>}
                         </div>
                     </div>
                 </ div>

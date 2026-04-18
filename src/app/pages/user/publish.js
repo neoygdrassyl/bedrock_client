@@ -294,13 +294,13 @@ function Publish({ translation, swaMsg, breadCrums }) {
         button: true,
         minWidth: '170px',
         cell: row => <>
-          <button className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => { toggleManage(); setEdit(row); }}><i className="fas fa-edit"></i></button>
+          <button className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => { toggleManage(); setEdit(row); }}><Icon name="edit" size={16} /></button>
           <div className='px-1'>
-            <button className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => handleDelete(row)}><i className="fas fa-trash"></i></button>
+            <button className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => handleDelete(row)}><Icon name="trash" size={16} /></button>
           </div>
           <div className='px-0'></div>
           <a className="btn btn-sm btn-danger px-1" target="_blank"
-            href={import.meta.env.VITE_API_URL + '/files/publish/' + _PARSE_URL(row.type) + '/publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path} ><i className="fas fa-cloud-download-alt"></i> Descargar</a></>
+            href={import.meta.env.VITE_API_URL + '/files/publish/' + _PARSE_URL(row.type) + '/publish_' + _PARSE_URL(row.type) + '_' + row.pdf_path} ><Icon name="cloud-download-alt" size={16} /> Descargar</a></>
         ,
       },
     ]
@@ -492,7 +492,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
         return (
           <div className="input-group mb-2">
             <span className="input-group-text bg-info text-white">
-              <i className="fas fa-search"></i>
+              <Icon name="search" size={16} />
             </span>
             <input type='text' className='form-control' placeholder='Busqueda...' onChange={(e) => setFilterStates(prev => ({ ...prev, [ID]: e.target.value }))} />
           </div>
@@ -529,7 +529,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
     let COLLAPSIBLE_JSX = (title, data, ID) => {
       return <>
         <Collapsible trigger={<><label className="mx-2"> {title} ({data.length})</label>
-          <button className="btn btn-primary btn-sm"><i className="fas fa-plus"></i> Ver Lista</button></>}>
+          <button className="btn btn-primary btn-sm"><Icon name="plus" size={16} /> Ver Lista</button></>}>
           {LIISTS(data, ID)}
         </Collapsible>
       </>
@@ -545,14 +545,14 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   <label>Identificador público</label><br />
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white">
-                      <i className="fas fa-file-signature"></i>
+                      <Icon name="file-signature" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="ID Documento" required id="publish_1" />
                   </div>
                   <label>Tipo de documento</label><br />
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white" id="type-pqrs">
-                      <i className="fas fa-id-card"></i>
+                      <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" id="publish_2" required onChange={(e) => handleChange(e)}>
                       <option value="lu">Licencias urbanísticas</option>
@@ -568,7 +568,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   <label>Estado documento</label><br />
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white" id="type-pqrs">
-                      <i className="fas fa-id-card"></i>
+                      <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" id="publish_4" >
                       {Selector()}
@@ -577,7 +577,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   <label>Fecha</label><br />
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white">
-                      <i className="fas fa-file-signature"></i>
+                      <Icon name="file-signature" size={16} />
                     </span>
                     <input type="date" className="form-control" required id="publish_date" />
                   </div>
@@ -585,13 +585,13 @@ function Publish({ translation, swaMsg, breadCrums }) {
                 <div className="col-md-6">
                   <label>Documento a subir</label><br />
                   <div className="input-group my-2">
-                    <label className="input-group-text bg-info  text-white" htmlFor="file"><i className="fas fa-paperclip"></i></label>
+                    <label className="input-group-text bg-info  text-white" htmlFor="file"><Icon name="paperclip" size={16} /></label>
                     <input type="file" className="form-control" id="file" accept="application/pdf" required />
                   </div>
                   <label>Tipo de actuación</label>
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white" id="type-pqrs">
-                      <i className="fas fa-id-card"></i>
+                      <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" required id="publish_3">
                       <option>Otros</option>
@@ -619,7 +619,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   <label>Modalidad y/o detalle</label>
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white">
-                      <i className="fas fa-file-signature"></i>
+                      <Icon name="file-signature" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Detalles de la publicacion..." id="publish_5" />
                   </div>
@@ -649,14 +649,14 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   <label>Id publico</label><br />
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white">
-                      <i className="fas fa-file-signature"></i>
+                      <Icon name="file-signature" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="ID Documento" defaultValue={_ITEM.id_publico} required id="edit_id" disabled />
                   </div>
                   <label>Tipo de documento</label><br />
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white" id="type-pqrs">
-                      <i className="fas fa-id-card"></i>
+                      <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" id="type_edit" defaultValue={_ITEM.type} required onChange={(e) => handleChange(e)}>
                       <option disabled >Tipo de Documento</option>
@@ -673,7 +673,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   <label>Estado documento</label><br />
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white" id="type-pqrs">
-                      <i className="fas fa-id-card"></i>
+                      <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" id="estate_edit" defaultValue={_ITEM.subtype} >
                       <option value={'neg'}>Negada</option>
@@ -689,13 +689,13 @@ function Publish({ translation, swaMsg, breadCrums }) {
                 <div className="col-md-6">
                   <label>Fecha</label><br />
                   <div className="input-group my-2">
-                    <label className="input-group-text bg-info  text-white" htmlFor="date"><i className="fas fa-paperclip"></i></label>
+                    <label className="input-group-text bg-info  text-white" htmlFor="date"><Icon name="paperclip" size={16} /></label>
                     <input type="date" className="form-control" id="date_edit" defaultValue={_ITEM.date} required />
                   </div>
                   <label>Tipo de actuacion</label>
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white" id="type-pqrs">
-                      <i className="fas fa-id-card"></i>
+                      <Icon name="id-card" size={16} />
                     </span>
                     <select className="form-select" defaultValue={_ITEM.detail} required id="detail_edit">
                       <option>Otros</option>
@@ -723,7 +723,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
                   <label>Modalidad y/o detalle</label>
                   <div className="input-group mb-3">
                     <span className="input-group-text bg-info text-white">
-                      <i className="fas fa-file-signature"></i>
+                      <Icon name="file-signature" size={16} />
                     </span>
                     <input type="text" className="form-control" defaultValue={_ITEM.subdetail}  id="sub_edit" />
                   </div>
@@ -774,7 +774,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
           {Edit_components()}
 
           <div className="text-end py-4 mt-3">
-            <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><i className="fas fa-times-circle"></i> CERRAR </button>
+            <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><Icon name="times-circle" size={16} /> CERRAR </button>
           </div>
         </Modal>
       </div>

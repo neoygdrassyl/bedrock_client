@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import { dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 import FunService from '../../../../services/fun.service';
+import { Icon } from '@/components/icon';
 
 const _fun_0_state = {
     '1': 'RADICACIÓN',
@@ -229,23 +230,23 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
             if (regexChecker_isPh(item, true)) return <button
                     onClick={() => openModal(item, 'record_ph')}
                     className="px-2 btn-sm btn-warning btn"
-                > <i className="fas fa-pencil-ruler fa-2x" ></i>
+                > <Icon name="pencil-ruler" size={16} />
                 </button>
 
             if (type == 'law') return <button
                     onClick={() => openModal(item, 'record_law')}
                     className="px-2 btn-sm btn-warning btn"
-                > <i className="fas fa-balance-scale fa-2x" ></i>
+                > <Icon name="balance-scale" size={16} />
                 </button>
             if (type == 'arc') return <button
                     onClick={() => openModal(item, 'record_arc')}
                     className="px-2 btn-sm btn-warning btn"
-                > <i className="far fa-building fa-2x" ></i>
+                > <Icon name="building" size={16} />
                 </button>
             if (type == 'eng') return <button
                     onClick={() => openModal(item, 'record_eng')}
                     className="px-2 btn-sm btn-warning btn"
-                > <i className="fas fa-cogs fa-2x" ></i>
+                > <Icon name="cogs" size={16} />
                 </button>
             return '';
         }
@@ -268,7 +269,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                                 size="sm"
                                 onClick={() => setLicList(!licList)}
                                 className="px-2"
-                            > <i className="fas fa-info-circle fa-2x"></i>
+                            > <Icon name="info-circle" size={16} />
                             </button></span>
                     </div>
                 </div>
@@ -357,7 +358,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                         <button
                                 onClick={() => openModal(row, 'general')}
                                 className="px-2 btn-sm btn-info btn"
-                            > <i className="far fa-folder-open fa-2x" ></i>
+                            > <Icon name="folder-open" size={16} />
                             </button>
                         {get_reportBtn(row)}
                     </>,
@@ -397,7 +398,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
             ))
             vrItem = [...vrItem].sort((a, b) => new Date(b.screated) - new Date(a.screated));
             return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: 400 }}
-                btnChildren={<i className="fas fa-file-import fa-2x"></i>}
+                btnChildren={<Icon name="file-import" size={16} />}
                 btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
                 <MDBPopoverHeader>Ventanilla Única</MDBPopoverHeader>
                 <MDBPopoverBody>{vrItem.map(value => listVR(value))}</MDBPopoverBody>

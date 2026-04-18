@@ -2,6 +2,7 @@ import React, { useMemo, useState, useRef, useLayoutEffect } from 'react';
 import dayjs from 'dayjs';
 import { sumarDiasHabiles, calcularDiasHabiles } from '../../hooks/useClocksManager';
 import { calculateScheduledLimitForDisplay } from '../../utils/scheduleUtils';
+import { Icon } from '@/components/icon';
 
 const FloatingTooltip = ({ visible, x, y, content }) => {
   if (!visible || !content) return null;
@@ -477,7 +478,7 @@ export const GanttChart = ({
   }, [scaleFactor, ganttData.intervalDays, compactMode]);
 
   if (!radDate || ganttData.phases.length === 0) {
-    return ( <div className="gantt-empty"> <i className="fas fa-calendar-times" /> <p>No hay datos disponibles para el diagrama</p> </div> );
+    return ( <div className="gantt-empty"> <Icon name="calendar-times" size={16} /> <p>No hay datos disponibles para el diagrama</p> </div> );
   }
 
   // --- RENDERIZADO DE MARCADORES (PUNTOS) ---
@@ -685,7 +686,7 @@ export const GanttChart = ({
             {/* Aviso visual de corte */}
             {ganttData.renderWarning && (
                 <div className="gantt-limit-warning" style={{ left: `${(ganttData.maxDays - 5) * scaleFactor}px`, position: 'absolute', top: 0 }}>
-                    <i className="fas fa-exclamation-triangle text-warning"></i>
+                    <Icon name="exclamation-triangle" size={16} className="text-warning" />
                 </div>
             )}
           </div>
@@ -697,14 +698,14 @@ export const GanttChart = ({
              onClick={() => setShowMilestones(!showMilestones)}
              title={showMilestones ? "Ocultar Hitos" : "Ver Hitos de Finalización"}
           >
-             <i className="fas fa-flag-checkered"></i>
+             <Icon name="flag-checkered" size={16} />
           </button>
         )}
       </div>
 
       {ganttData.renderWarning && !compactMode && (
           <div className="alert alert-warning py-1 px-2 mb-1 mt-1 small text-center" style={{fontSize: '0.75rem'}}>
-              <i className="fas fa-info-circle me-1"></i>
+              <Icon name="info-circle" size={16} className="me-1" />
               La visualización se ha limitado a los primeros {SAFE_RENDER_LIMIT} días hábiles para optimizar el rendimiento.
           </div>
       )}

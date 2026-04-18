@@ -15,6 +15,7 @@ import { getJSONFull, _MANAGE_IDS } from '../../../../components/customClasses/t
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
+import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -246,7 +247,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <label>Profesional</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="record_ph_worker_arc_1"
                                 defaultValue={currentRecord.worker_arc_name ? currentRecord.worker_arc_name : window.user.name + " " + window.user.surname} />
@@ -256,7 +257,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <label>Fecha de la revisón</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="record_ph_worker_arc_2" required
                                 defaultValue={currentRecord.date_arc_review ? currentRecord.date_arc_review : dayjs().format('YYYY-MM-DD')} />
@@ -266,7 +267,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <label>Aprobado</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="far fa-check-square"></i>
+                                <Icon name="check-square" size={16} />
                             </span>
                             <select className="form-control" id="recprd_ph_final_check" defaultValue={currentRecord.check} >
                                 <option value="0" className="text-danger">NO</option>
@@ -430,7 +431,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <label>Fecha entrega</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-calendar-alt"></i>
+                                <Icon name="calendar-alt" size={16} />
                             </span>
                             <input type="date" className="form-control" id="ph_not_det_1"
                                 defaultValue={_VALUES[0]} onBlur={() => save_not_data()} />
@@ -440,7 +441,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <label>Persona que recibe</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-user"></i>
+                                <Icon name="user" size={16} />
                             </span>
                             <input type="text" className="form-control" id="ph_not_det_2"
                                 defaultValue={_VALUES[1]} onBlur={() => save_not_data()} />
@@ -450,7 +451,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <label>Documento que recibe</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-id-card"></i>
+                                <Icon name="id-card" size={16} />
                             </span>
                             <input type="text" className="form-control" id="ph_not_det_3"
                                 defaultValue={_VALUES[2]} onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e); save_not_data(); }} />
@@ -467,7 +468,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <label>Entrada</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_01_ph"
                                 defaultValue={currentItem.id_public} />
@@ -477,7 +478,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <label>Salida</label>
                         <div className="input-group mb-1">
                             <span className="input-group-text bg-info text-white">
-                                <i className="fas fa-hashtag"></i>
+                                <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_02_ph"
                                 defaultValue={currentRecord.id_public} />
@@ -600,13 +601,13 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
+                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
                     </div>
                     <div className="col">
-                        <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()} ><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                     </div>
                     <div className="col">
-                        <button type="button" className="btn btn-danger my-3" onClick={() => CREATE_PDF_CHECK()} ><i className="far fa-file-pdf"></i> GENERAR CHECKEO </button>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => CREATE_PDF_CHECK()} ><Icon name="file-pdf" size={16} /> GENERAR CHECKEO </button>
                     </div>
                 </div>
             </>
@@ -1546,17 +1547,17 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             {currentItem.state > -5
                                 ? <>
                                     <div className="col">
-                                        <button type="button" className="btn btn-danger my-3" onClick={() => review()}><i className="far fa-check-square"></i> REALIZAR REVISIÓN </button>
+                                        <button type="button" className="btn btn-danger my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </button>
                                     </div>
 
                                     {!_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <button type="button" className="btn btn-primary my-3" onClick={() => close()} ><i className="far fa-file-archive"></i> CERRAR</button>
+                                            <button type="button" className="btn btn-primary my-3" onClick={() => close()} ><Icon name="file-archive" size={16} /> CERRAR</button>
                                         </div>
                                         : ""}
                                     {_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <button type="button" className="btn btn-primary my-3" onClick={() => archive()} ><i className="far fa-file-archive"></i> ARCHIVAR</button>
+                                            <button type="button" className="btn btn-primary my-3" onClick={() => archive()} ><Icon name="file-archive" size={16} /> ARCHIVAR</button>
                                         </div>
                                         : ""}
                                 </>
@@ -1573,10 +1574,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         {_COMPONENTN_NOT()}
                         <div className="row text-center">
                             <div className="col">
-                                <button className="btn btn-success my-3"><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
+                                <button className="btn btn-success my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
                             </div>
                             <div className="col">
-                                <button type="button" className="btn btn-danger my-3" onClick={() => pdfnot_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                <button type="button" className="btn btn-danger my-3" onClick={() => pdfnot_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                             </div>
                         </div>
                     </form>
