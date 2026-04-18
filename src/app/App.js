@@ -23,12 +23,6 @@ import { AppShell } from './layouts/AppShell';
 import { Toaster } from '@/components/ui/sonner';
 import { getRouteRedirects } from './layouts/navigation-config';
 
-// Legacy styled-components (font scales) — kept during migration
-import { StyleSheetManager, ThemeProvider as SCThemeProvider } from 'styled-components';
-import isPropValid from '@emotion/is-prop-valid';
-import { fontZise3 } from './components/font';
-import { GlobalStyles } from './components/global';
-
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/legacy-bridge.css';
@@ -132,9 +126,6 @@ export default function App() {
     <ProvideAuth>
       <ThemeProvider defaultTheme="system" storageKey="dovela-theme">
         <Router>
-          <StyleSheetManager shouldForwardProp={(prop) => isPropValid(prop)}>
-            <SCThemeProvider theme={fontZise3}>
-              <GlobalStyles />
               <Toaster position="bottom-right" richColors closeButton />
 
               <Suspense fallback={<LoadingFallback />}>
@@ -227,8 +218,6 @@ export default function App() {
                 </RoutesWithBoundary>
               </Suspense>
 
-            </SCThemeProvider>
-          </StyleSheetManager>
         </Router>
       </ThemeProvider>
     </ProvideAuth>

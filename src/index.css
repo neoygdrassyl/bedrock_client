@@ -98,6 +98,78 @@ button:where(:not(.btn):not([class*="btn-"]):not(.Collapsible__trigger)) {
   background: transparent;
 }
 
+/* ── Legacy Global Styles (migrated from styled-components global.js) ──
+   These classes are used by ~50 legacy components. They reference
+   Bootstrap CSS variables for dark/light mode compatibility.
+   Remove individual rules as modules get fully migrated. ─────────── */
+
+/* Class aliases */
+.container-primary {
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.container-secondary {
+  background: var(--bs-primary);
+  color: #fff;
+  font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.app-text-primary { color: var(--bs-body-color); }
+.app-text-secondary { color: var(--bs-secondary-color); }
+.bg-card {
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.375rem;
+  font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.bg-card-2 {
+  background: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.375rem;
+  font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.bg-dd { background: var(--bs-tertiary-bg); }
+
+/* Collapsible components */
+.Collapsible { background: var(--bs-primary); color: #fff; }
+.Collapsible__contentInner {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
+}
+.Collapsible__trigger { color: #fff; }
+
+/* Navigation button */
+.btn-nav {
+  color: #fff;
+  border-color: var(--bs-border-color);
+  background-color: var(--bs-primary);
+}
+.btn-nav:hover {
+  color: var(--bs-body-color);
+  border-color: var(--bs-primary);
+}
+.btn-nav:focus {
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+}
+
+/* Font scales (hardcoded from fontZise3 — default scale) */
+p { font-size: 16px; }
+.app-p { font-size: 19px; }
+h1 { font-size: 32px; }
+h2 { font-size: 24px; }
+h3 { font-size: 19px; }
+h4 { font-size: 16px; }
+h5 { font-size: 14px; }
+h6 { font-size: 12px; }
+
 /* ── Legacy Bridge ──────────────────────────────────────────────────
    Overrides Bootstrap component colors inside .legacy-bridge to align
    with the design token palette. Uses :where() for zero-specificity
