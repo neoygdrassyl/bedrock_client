@@ -261,13 +261,12 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
     expect(screen.getByText('GESTIÓN DE SOLICITUDES')).toBeInTheDocument();
   });
 
-  test('2. Breadcrumb muestra navegación Inicio > Dashboard > Gestión', async () => {
+  test('2. Page header muestra título y subtítulo', async () => {
     await act(async () => {
       renderFunManage();
     });
-    expect(screen.getByText('Inicio')).toBeInTheDocument();
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Gestión')).toBeInTheDocument();
+    expect(screen.getByText('Gestión de Licencias')).toBeInTheDocument();
+    expect(screen.getByText(/Detalle y administración/i)).toBeInTheDocument();
   });
 
   test('3. Los 3 tabs están presentes: PROCESOS DIARIOS, ENTRADA DE DOCUMENTOS, CARGA PROFESIONAL', async () => {
