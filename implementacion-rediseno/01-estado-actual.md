@@ -88,6 +88,14 @@
 20. **FontAwesome CDN eliminado** — cero dependencias de FA en runtime
 21. **Navigation config expandido** — `Gestion nueva` agregado como hijo de Licencias en el context panel
 
+### Limpieza estructural (Fase 2.5+)
+
+22. **styled-components eliminado completamente** — GlobalStyles migrado a `src/index.css`, font scales hardcodeados (solo se usaba `fontZise3`), StyleSheetManager/SCThemeProvider removidos de App.js, paquete desinstalado. Build paso de ~34s a ~26s.
+23. **SweetAlert2 CSS theme** (`src/app/styles/swal-theme.css`) — tema CSS que alinea ~2330 llamadas Swal en ~100 archivos con los design tokens sin tocar JavaScript. Popup, botones, iconos, inputs y dark mode con tokens.
+24. **App.css limpiado** — eliminadas reglas muertas (`.bg-image`, `ReactModal__*` overrides, `.Collapsible` base duplicado). Reducido de 251 a 189 lineas.
+25. **Archivos muertos eliminados** — `global.js` (styled-components GlobalStyles), `font.js` (escalas de fuente, ya no importado)
+26. **Paquetes desinstalados** — `react-modal`, `react-data-table-component`, `styled-components`, `@emotion/is-prop-valid` (bridges no los importan, solo docs los referencian)
+
 ## Que falta (resumen)
 
 | Area | Estado |
@@ -96,11 +104,11 @@
 | Paginas de modulos legacy (FUN, PQRS, etc.) | Intactas con estilo viejo Bootstrap, **envueltas en LegacyPageWrapper para reducir choque visual** |
 | Tablas legacy (react-data-table-component) | **MIGRADO — 83 archivos usan DataTableBridge** |
 | Modales legacy (react-modal) | **MIGRADO — 30 archivos usan LegacyModal** |
-| Alertas (SweetAlert2) | ~100 archivos, ~2330 lineas sin migrar (Fase 6) |
+| Alertas (SweetAlert2) | **CSS THEME APLICADO — dialogs visualmente alineados con tokens. Migracion JS completa en Fase 6** |
 | Iconos (FontAwesome CDN) | **MIGRADO — 220+ archivos usan Lucide Icon bridge, CDN eliminado** |
 | Dashboard | **PULIDO — saludo dinamico, fecha en español, secciones con divisores, cards stat-ready** |
 | Forms | Todos manuales, sin sistema unificado |
-| Styled-components restantes | global.js + componentes puntuales |
+| Styled-components restantes | **ELIMINADO — global.js/font.js borrados, paquete desinstalado, bundle reducido** |
 | Bootstrap como dependencia | Grid/utilidades aun necesarias |
 | MDB wrappers | 24 archivos usan wrappers locales (no MDB directo) — limpios |
 
@@ -121,3 +129,11 @@ Estas clases siguen usandose en componentes activos:
 
 - `react-modal` — ya no se usa (LegacyModal no depende de clases react-modal)
 - `ReactModal__*` — overrides de react-modal eliminados
+- `bg-image` — imagen de fondo no usada por ningun componente
+- `.Collapsible` base — duplicado con index.css (migrado de styled-components)
+
+### Paquetes eliminados en esta fase
+
+- `styled-components` + `@emotion/is-prop-valid` — estilos migrados a CSS puro
+- `react-modal` — reemplazado por LegacyModal bridge
+- `react-data-table-component` — reemplazado por DataTable bridge
