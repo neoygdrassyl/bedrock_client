@@ -61,27 +61,27 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
             let _LIST = fun6;
             const columns = [
                 {
-                    name: <label className="text-center">DESCRIPCIÓN</label>,
+                    name: 'Descripción',
                     selector: row => row.description,
                     sortable: true,
                     filterable: true,
-                    cell: row => <label>{row.description}</label>
+                    cell: row => <span className="text-sm">{row.description}</span>
                 },
                 {
-                    name: <label>CÓDIGO</label>,
+                    name: 'Código',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     maxWidth: '50px',
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm font-mono">{row.id_public}</span>
                 },
                 {
-                    name: <label>FOLIOS</label>,
+                    name: 'Folios',
                     selector: row => row.pages,
                     sortable: true,
                     filterable: true,
                     maxWidth: '40px',
-                    cell: row => <label>{row.pages}</label>
+                    cell: row => <span className="text-sm font-mono">{row.pages}</span>
                 },
                 {
                     name: <label>FECHA RADICACIÓN</label>,
@@ -89,7 +89,7 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',
-                    cell: row => <label>{row.date}</label>
+                    cell: row => <span className="text-xs font-mono tabular-nums">{row.date}</span>
                 },
                 {
                     name: <label>ACCIÓN</label>,

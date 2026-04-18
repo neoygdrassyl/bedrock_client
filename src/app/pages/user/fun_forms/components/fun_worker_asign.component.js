@@ -287,7 +287,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
             list.filter(item => item.state <= 50).map(value => { newList.push(value) })
             const columns = [
                 {
-                    name: <label className="text-center"># RADICACION</label>,
+                    name: '# Radicación',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
@@ -296,7 +296,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     cell: row => <label>{row.id_public}</label>
                 },
                 {
-                    name: <label className="text-center">REV</label>,
+                    name: 'Rev',
                     selector: row => get_obj(row).process,
                     sortable: true,
                     filterable: true,
@@ -304,7 +304,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     cell: row => <label>{get_obj(row).process}</label>
                 },
                 {
-                    name: <label className="text-center">FECHA ASIGNACION</label>,
+                    name: 'Fecha Asignación',
                     selector: row => get_obj(row).date_asign,
                     sortable: true,
                     filterable: true,
@@ -312,7 +312,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     cell: row => <label>{get_obj(row).date_asign}</label>
                 },
                 {
-                    name: <label className="text-center">FECHA LIMITE</label>,
+                    name: 'Fecha Límite',
                     selector: row => get_obj(row).max_date,
                     sortable: true,
                     filterable: true,
@@ -320,7 +320,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     cell: row => <label>{get_obj(row).max_date}</label>
                 },
                 {
-                    name: <label className="text-center">EST</label>,
+                    name: 'Est',
                     selector: row => row.state,
                     sortable: true,
                     filterable: true,
@@ -330,7 +330,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     cell: row => <label>{get_state_label(row)}</label>
                 },
                 {
-                    name: <label className="text-center">CT</label>,
+                    name: 'CT',
                     selector: row => row.type ?? 0,
                     sortable: true,
                     filterable: true,
@@ -340,7 +340,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     cell: row => <label>{_fun_0_type[row.type ?? 0]}</label>
                 },
                 {
-                    name: <label className="text-center">ULTIMO VR</label>,
+                    name: 'Último VR',
                     center: true,
                     selector: row => get_lastVRTime(row),
                     sortable: true,
@@ -349,7 +349,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     cell: row => <label> {get_lastVR(row)}</label>,
                 },
                 {
-                    name: <label className="text-center">ACCIÓN</label>,
+                    name: 'Acción',
                     button: true,
                     center: true,
                     minWidth: '200px',

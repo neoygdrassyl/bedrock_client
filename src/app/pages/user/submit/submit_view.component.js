@@ -56,64 +56,64 @@ function SUBMIT_SINGLE_VIEW({ translation, swaMsg, globals, id_related, setVRLis
 
     const columns = [
         {
-            name: <label className="text-center">VR</label>,
+            name: 'VR',
             selector: row => row.id_public,
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => <label>{row.id_public}</label>
+            cell: row => <span className="text-sm font-medium font-mono">{row.id_public}</span>
         },
         {
-            name: <label className="text-center">FECHA</label>,
+            name: 'Fecha',
             selector: row => row.date,
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => <label>{row.date}</label>
+            cell: row => <span className="text-xs font-mono tabular-nums">{row.date}</span>
         },
         {
-            name: <label className="text-center">HORA</label>,
+            name: 'Hora',
             selector: row => row.time,
             sortable: true,
             filterable: true,
             center: true,
             minWidth: '60px',
-            cell: row => <label>{(row.time)}</label>
+            cell: row => <span className="text-xs font-mono tabular-nums">{row.time}</span>
         },
         {
-            name: <label className="text-center">DOCUMENTO</label>,
+            name: 'Documento',
             selector: row => row.name,
             sortable: true,
             filterable: true,
             minWidth: '400px',
-            cell: row => <label>{(row.name)}</label>
+            cell: row => <span className="text-sm">{row.name}</span>
         },
         {
-            name: <label className="text-center">NOMEN.</label>,
+            name: 'Nomen.',
             selector: row => row.category,
             sortable: true,
             filterable: true,
             center: true,
             minWidth: '60px',
-            cell: row => <label>{(row.category)}</label>
+            cell: row => <span className="text-sm font-mono">{row.category}</span>
         },
         {
-            name: <label className="text-center">CODIGO</label>,
+            name: 'Código',
             selector: row => row.code,
             sortable: true,
             filterable: true,
             center: true,
             minWidth: '60px',
-            cell: row => <label>{(row.code)}</label>
+            cell: row => <span className="text-sm font-mono">{row.code}</span>
         },
         {
-            name: <label className="text-center">FOLIOS</label>,
+            name: 'Folios',
             selector: row => row.page,
             sortable: true,
             filterable: true,
             center: true,
             minWidth: '60px',
-            cell: row => <label>{(row.page)}</label>
+            cell: row => <span className="text-sm font-mono">{row.page}</span>
         },
     ]
 

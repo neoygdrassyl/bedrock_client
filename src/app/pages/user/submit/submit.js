@@ -86,40 +86,40 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
 
     const columns = [
             {
-                name: <label className="text-center">Nr. RADICACIÓN</label>,
+                name: 'Nr. Radicación',
                 selector: row => row.id_public,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.id_public}</label>
+                cell: row => <span className="text-sm font-medium font-mono">{row.id_public}</span>
             },
             {
-                name: <label className="text-center">Nr. Licencia / Solicitud</label>,
+                name: 'Nr. Licencia / Solicitud',
                 selector: row => row.id_related,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.id_related}</label>
+                cell: row => <span className="text-sm font-medium font-mono">{row.id_related}</span>
             },
             {
-                name: <label className="text-center">TIPO</label>,
+                name: 'Tipo',
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
                 minWidth: '300px',
                 center: true,
-                cell: row => <label>{row.type}</label>
+                cell: row => <span className="text-sm">{row.type}</span>
             },
             {
-                name: <label className="text-center">FECHA RADICACIÓN</label>,
+                name: 'Fecha Radicación',
                 selector: row => row.date + ' - ' + row.time,
                 sortable: true,
                 filterable: true,
                 center: true,
-                cell: row => <label>{row.date} - {row.time}</label>
+                cell: row => <span className="text-xs font-mono tabular-nums">{row.date} - {row.time}</span>
             },
             {
-                name: <label className="text-center">DOCUMENTO</label>,
+                name: 'Documento',
                 selector: row => row.sub_doc,
                 sortable: true,
                 filterable: true,

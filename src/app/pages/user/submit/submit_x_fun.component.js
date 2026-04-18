@@ -341,7 +341,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
         let _COMPONENT_LIST_DOCS_CHECK = (simple) => {
             const columns = [
                 {
-                    name: <label className="text-center"># RADICACION</label>,
+                    name: '# Radicación',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
@@ -356,7 +356,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     }
                 },
                 {
-                    name: <label className="text-center">DOCUMENTOS PARA LYDF</label>,
+                    name: 'Docs LYDF',
                     center: true,
                     minWidth: '100px',
                     maxWidth: '100px',
@@ -366,7 +366,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     }
                 },
                 {
-                    name: <label className="text-center">MODALIDAD</label>,
+                    name: 'Modalidad',
                     selector: row => formsParser1(row),
                     sortable: true,
                     filterable: true,
@@ -374,7 +374,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     cell: row => <label className>{formsParser1(row)}</label>
                 },
                 {
-                    name: <label className="text-center">FECHA LIMITE</label>,
+                    name: 'Fecha Límite',
                     selector: row => dateParser_finalDate(row.clocks_date, 30),
                     sortable: true,
                     filterable: true,
@@ -385,7 +385,7 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     cell: row => <label className>{dateParser_finalDate(row.clocks_date, 30)}</label>
                 },
                 {
-                    name: <label className="text-center">TIEMPO RESTANTE</label>,
+                    name: 'Tiempo Restante',
                     selector: row => dateParser_timeLeft(row.clocks_date, 30),
                     sortable: true,
                     filterable: true,
@@ -396,11 +396,11 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     cell: row => {
                         let timeLeft = dateParser_timeLeft(row.clocks_date, 30);
                         let timeOver = timeLeft < 0;
-                        return <label><label className={timeOver ? 'text-danger fw-bold' : ''}>{timeLeft}</label> /30</label>
+                        return <span className="text-sm font-mono"><span className={timeOver ? 'text-destructive font-bold' : ''}>{timeLeft}</span> /30</span>
                     }
                 },
                 {
-                    name: <label className="text-center">ACCIÓN</label>,
+                    name: 'Acción',
                     button: true,
                     center: true,
                     minWidth: '200px',
@@ -445,16 +445,16 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
         let _COMPONENT_SUBMIT_LIST = () => {
             const columns = [
                 {
-                    name: <label className="text-center"># RADICACION</label>,
+                    name: '# Radicación',
                     selector: row => row.id_public,
                     sortable: true,
                     filterable: true,
                     center: true,
                     minWidth: '140px',
-                    cell: row => <label>{row.id_public}</label>
+                    cell: row => <span className="text-sm font-medium font-mono">{row.id_public}</span>
                 },
                 {
-                    name: <label className="text-center">ESTADO</label>,
+                    name: 'Estado',
                     selector: row => row.state,
                     sortable: true,
                     filterable: true,
@@ -463,22 +463,22 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     cell: row => <label className={_fun_0_state_COLOR[row.state] ?? 'fw-bold'}>{_fun_0_state[row.state] ?? ''}</label>
                 },
                 {
-                    name: <label className="text-center">ULTIMO VR</label>,
+                    name: 'Último VR',
                     center: true,
                     selector: row => get_lastVRTime(row),
                     sortable: true,
                     filterable: true,
                     minWidth: '100px',
-                    cell: row => <label> {get_lastVR(row)}</label>,
+                    cell: row => <span className="text-sm font-mono">{get_lastVR(row)}</span>,
                 },
                 {
                     name: '',
                     minWidth: '50px',
                     maxWidth: '50px',
-                    cell: row => <label>  {bluePrintBaget(row)}</label>,
+                    cell: row => <span>{bluePrintBaget(row)}</span>,
                 },
                 {
-                    name: <label className="text-center">ACCIÓN</label>,
+                    name: 'Acción',
                     button: true,
                     center: true,
                     minWidth: '200px',
