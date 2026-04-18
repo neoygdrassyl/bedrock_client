@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBCard, MDBCardBody } from '../../../components/ui';
+
 import DataTable from 'react-data-table-component';
 import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
@@ -212,7 +212,6 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
                     icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} />
                 : ""}</>)
-
 
             return <>{_COMPONENT}</>
         }
@@ -833,8 +832,6 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                             value={_CHILD_VARS.item_c2} />
                     </div>
                 </div>
-
-
 
                 <legend className="my-2 px-3 text-uppercase bg-light" id="fung_c2"><h4 className="mt-2">C.2 CONDICIÓN DE LA RADICACIÓN</h4></legend>
                 <div className="row  mb-3">

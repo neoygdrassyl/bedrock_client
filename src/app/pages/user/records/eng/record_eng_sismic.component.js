@@ -1,4 +1,4 @@
-import { MDBBtn, MDBDropdown, MDBDropdownItem, MDBDropdownLink, MDBDropdownMenu, MDBDropdownToggle, MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBTooltip } from '../../../../components/ui';
+import { MDBPopover, MDBPopoverBody, MDBPopoverHeader } from '../../../../components/ui';
 import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
@@ -266,7 +266,6 @@ function RECORD_ENG_SISMIC(props) {
             _TOTALES.f_y += cvi * Number(get_d236()) * 0.3;
         }
 
-
         return _TOTALES;
     }
 
@@ -372,7 +371,6 @@ function RECORD_ENG_SISMIC(props) {
                     });
                 });
         }
-
 
     }
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version, requestUpdateRecord } = props;
@@ -595,7 +593,6 @@ function RECORD_ENG_SISMIC(props) {
             formData.set('id_public', 'elastic_sismi');
             save_step('elastic_sismi', false, formData);
         }
-
 
         let popBtn = (row) => {
             return <>
@@ -1396,7 +1393,6 @@ function RECORD_ENG_SISMIC(props) {
                 values.push(values_2[i].value)
             }
             formData.set('value', values.join(';'));
-
 
             formData.set('version', currentVersionR);
             formData.set('recordEngId', currentRecord.id);

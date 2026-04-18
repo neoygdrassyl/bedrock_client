@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import FUNService from '../../../../services/fun.service'
-import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+
 import Collapsible from '../../../../components/Collapsible';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -311,8 +311,8 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                                 <label className="app-p lead fw-normal text-uppercase" id="fund_12">1.2 DOCUMENTOS DE VENTANILLA ÚNICA</label>
                             </div>
                             <div className='col text-end'>
-                                <MDBBtn outline color='success' size="sm" onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
-                                <i className="fas fa-file-csv"></i> DESCARGAR CSV</MDBBtn>
+                                <button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
+                                <i className="fas fa-file-csv"></i> DESCARGAR CSV</button>
                             </div>
                         </div>
 
@@ -339,9 +339,9 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                             <div className="col text-end m-3">
 
                                 {attachs > 0
-                                    ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                    ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                                     : ""}
-                                <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
                             </div>
                         </div>
 

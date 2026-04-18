@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
@@ -396,7 +396,7 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                             </div>
                             : ""}
                         <div className="col  text-center">
-                            <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                            <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                         </div>
                     </div>
 

@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import { useEffect, useState } from 'react';
 import HTMLDatalist from '../../../components/HTMLDatalist';
 import ReactModal from 'react-modal';
@@ -9,7 +9,6 @@ import { formsParser1, getJSON, getJSONFull, _GET_SERIE_COD, _GET_SUBSERIE_COD }
 import SERVICE_ARCHIVE from '../../../services/archive.service';
 import FUN_6_UPLOAD from '../fun_forms/components/fun_6_upload.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
-
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -58,7 +57,6 @@ export default function ARCHIVE_X_FUN(props) {
     useEffect(() => {
         if (load == 0) loadLists();
     }, [load]);
-
 
     // ***************************  DATA CONVERTER *********************** //
     function process_dataList(inputText, dataList, _scope) {
@@ -167,7 +165,7 @@ export default function ARCHIVE_X_FUN(props) {
                     </div>
                     <div className='row my-2'>
                         <div className='col text-end'>
-                            <MDBBtn size='sm' color='primary' onClick={() => addxList()}><i className="fas fa-plus-circle"></i> AÑADIR ITEM</MDBBtn>
+                            <button type="button" className="btn btn-primary btn-sm" onClick={() => addxList()}><i className="fas fa-plus-circle"></i> AÑADIR ITEM</button>
                         </div>
                     </div>
                 </>
@@ -207,7 +205,7 @@ export default function ARCHIVE_X_FUN(props) {
             </div>
             <div className='row my-2'>
                 <div className='col text-end'>
-                    <MDBBtn size='sm' color='primary' onClick={() => UpdateXList(row)}><i className="far fa-edit"></i> ACTUALIZAR ITEM</MDBBtn>
+                    <button type="button" className="btn btn-primary btn-sm" onClick={() => UpdateXList(row)}><i className="far fa-edit"></i> ACTUALIZAR ITEM</button>
                 </div>
             </div>
         </>
@@ -240,16 +238,9 @@ export default function ARCHIVE_X_FUN(props) {
                         <label>Folios: <label className='fw-bold'>{it.pages}</label></label>
                     </div>
                     <div className='col-2 border text-center'>
-                        <MDBTooltip title='Administrar documentos item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='primary' size='sm' className='px-1 py-1' onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><i className="fas fa-cloud-upload-alt"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Actualizar item de esta caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='secondary' size='sm' className='px-1 py-1' onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><i className="far fa-edit"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar item de esta caja' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                            <MDBBtn color='danger' size='sm' className='px-1 py-1' onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><i className="far fa-trash-alt"></i></MDBBtn>
-                        </MDBTooltip>
-
+                        <span title="Administrar documentos item"><button type="button" className="btn btn-primary btn-sm px-1 py-1" onClick={() => { setAnex(licItem); setModal_d(!modal_d) }}><i className="fas fa-cloud-upload-alt"></i></button></span>
+                        <span title="Actualizar item de esta caja"><button type="button" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => edit[i] ? setEdit({ [i]: null }) : setEdit({ [i]: it })}><i className="far fa-edit"></i></button></span>
+                        <span title="Eliminar item de esta caja"><button type="button" className="btn btn-danger btn-sm px-1 py-1" onClick={() => delete_x(id, currentItem.id, currentItem.folder)}><i className="far fa-trash-alt"></i></button></span>
 
                     </div>
                 </div>
@@ -264,7 +255,6 @@ export default function ARCHIVE_X_FUN(props) {
         </>
     }
     // ***************************  DATATABLES *********************** //
-
 
     // ***************************  APIS *********************** //
     function loadLists() {
@@ -374,7 +364,6 @@ export default function ARCHIVE_X_FUN(props) {
 
         formData.set('json', json);
 
-
         SERVICE_ARCHIVE.update_x(FunId, currentItem.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
@@ -478,7 +467,7 @@ export default function ARCHIVE_X_FUN(props) {
             >
                 <div className="my-4 d-flex justify-content-between">
                     <label><i className="fas fa-archive"></i> GESTIÓN DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal_d(!modal_d)}></MDBBtn>
+                    <button type="button" className="btn-close" onClick={() => setModal_d(!modal_d)} />
                 </div>
                 <hr />
 
@@ -509,9 +498,9 @@ export default function ARCHIVE_X_FUN(props) {
 
                 <hr />
                 <div className="text-end">
-                    <MDBBtn color='info' size='sm' onClick={() => setModal_d(!modal_d)}>
+                    <button type="button" className="btn btn-info btn-sm" onClick={() => setModal_d(!modal_d)}>
                         <label ><i className="fas fa-times-circle"></i> CERRAR</label>
-                    </MDBBtn>
+                    </button>
                 </div>
             </ReactModal>
         </>

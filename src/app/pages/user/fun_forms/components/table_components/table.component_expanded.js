@@ -9,8 +9,6 @@ import RECORD_PH_SERVICE from '../../../../../services/record_ph.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh } from '../../../../../components/customClasses/typeParse';
-import { MDBBtn } from '../../../../../components/ui';
-
 
 const MySwal = withReactContent(Swal);
 import dayjs from 'dayjs';
@@ -299,11 +297,9 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
         var asigns = clocks_asign.date_start ? clocks_asign.date_start.split(';') : [_TABLE_GET_ASIGN_DATE(loadItem, state)];
         var informs = clocks_inform.date_start ? clocks_inform.date_start.split(';') : [];
 
-
         if (state == 11) defaultRevew = regexChecker_isPh(row, true) ? row.ph_review_law : row.jur_review;
         if (state == 13) defaultRevew = regexChecker_isPh(row, true) ? row.ph_review : row.arc_review;
         if (state == 12) defaultRevew = !regexChecker_isPh(row, true) ? [row.eng_review, row.eng_review_2] : false;
-
 
         var clocks_process = ['Acta Observaciones',]
         if (row.rec_review == 0) clocks_process = ['Acta Observaciones', 'Revision Técnica 1', 'Revision Técnica 2', 'Revision de Correcciones',]
@@ -350,8 +346,8 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                         </div>
                         : inforDate}</h6></div>
                     <div className='col-1 border'>
-                        <MDBBtn floating tag='a' size='sm' className='me-1' color='secondary' outline={editDate[index + '_' + state]}
-                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><i className="far fa-edit"></i></MDBBtn>
+                        <button type="button" className={`btn btn-sm me-1 ${!editDate[index + '_' + state] ? "btn-outline-secondary" : "btn-secondary"}`}
+                            onClick={() => setEditsDates({ [index + '_' + state]: !editDate[index + '_' + state] })}><i className="far fa-edit"></i></button>
                     </div>
                 </div>
             })}
@@ -400,7 +396,6 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
 
                 </div>
             </div>
-
 
         </>
     }
@@ -505,10 +500,8 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                 }</h6></div>
             </div>
 
-
         </>
     }
-
 
     let REVIEW_LAW = () => {
 
@@ -581,7 +574,6 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
                 });
             });
     }
-
 
     let getCurrentItem = (id) => {
         FUN_SERVICE.loadMacroSingle(date_start, date_end, id)
@@ -672,7 +664,6 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     let save_clock = (state, date) => {
         var _CLOCK = _GET_CLOCK_STATE_VERSION(state, 100);
 
-
         if (!prof(state)) return MySwal.fire({
             title: 'NO SE PUEDE ASIGNAR',
             text: 'Para asignar esta solicitud se debe asignar a un profesional primero',
@@ -733,7 +724,6 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
         });
 
     }
-
 
     let manage_clock = (useMySwal, findOne, formDataClock, version = 100, reloadPage = true) => {
         var _CHILD = _GET_CLOCK_STATE_VERSION(findOne, version);

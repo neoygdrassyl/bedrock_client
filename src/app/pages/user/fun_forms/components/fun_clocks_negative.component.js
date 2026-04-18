@@ -7,7 +7,7 @@ import withReactContent from 'sweetalert2-react-content'
 import FUN_SERVICE from "../../../../services/fun.service"
 import FUN_CLOCKS_EMAILS from './fun_clocks_email.component';
 import { dateParser_finalDate, dateParser_timePassed } from '../../../../components/customClasses/typeParse';
-import { MDBBtn, MDBTabs, MDBTabsContent, MDBTabsItem, MDBTabsLink, MDBTabsPane, MDBTooltip } from '../../../../components/ui';
+import { MDBTabsContent, MDBTabsPane } from '../../../../components/ui';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
@@ -1002,38 +1002,38 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     : ""
                 }
 
-                <MDBTabs fill className='mb-3'>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-101')} active={fillActive == '-101'}>
+                <nav className="nav nav-tabs">
+                    
+                        <button type="button" className={`nav-link ${fillActive == '-101' ? "active" : ""}`} onClick={() => handleFillClick('-101')}>
                             <label className="upper-case">INCOMPLETO</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-102')} active={fillActive == '-102'}>
+                        </button>
+                    
+                    
+                        <button type="button" className={`nav-link ${fillActive == '-102' ? "active" : ""}`} onClick={() => handleFillClick('-102')}>
                             <label className="upper-case">FALTA VALLA INFORMATIVA</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-103')} active={fillActive == '-103'}>
+                        </button>
+                    
+                    
+                        <button type="button" className={`nav-link ${fillActive == '-103' ? "active" : ""}`} onClick={() => handleFillClick('-103')}>
                             <label className="upper-case">NO CUMPLE ACTA CORRECIONES</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-104')} active={fillActive == '-104'}>
+                        </button>
+                    
+                    
+                        <button type="button" className={`nav-link ${fillActive == '-104' ? "active" : ""}`} onClick={() => handleFillClick('-104')}>
                             <label className="upper-case">NO PAGA EXPENSAS</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                        <MDBTabsLink onClick={() => handleFillClick('-105')} active={fillActive == '-105'}>
+                        </button>
+                    
+                    
+                        <button type="button" className={`nav-link ${fillActive == '-105' ? "active" : ""}`} onClick={() => handleFillClick('-105')}>
                             <label className="upper-case">VOLUNTARIO</label>
-                        </MDBTabsLink>
-                    </MDBTabsItem>
-                    <MDBTabsItem>
-                    <MDBTabsLink onClick={() => handleFillClick('-106')} active={fillActive == '-106'}>
+                        </button>
+                    
+                    
+                    <button type="button" className={`nav-link ${fillActive == '-106' ? "active" : ""}`} onClick={() => handleFillClick('-106')}>
                         <label className="upper-case">NEGADA</label>
-                    </MDBTabsLink>
-                </MDBTabsItem>
-                </MDBTabs>
+                    </button>
+                
+                </nav>
 
                 <MDBTabsContent>
                     <MDBTabsPane show={fillActive == '-101'}>

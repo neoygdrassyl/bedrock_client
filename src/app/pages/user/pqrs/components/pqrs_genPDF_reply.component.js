@@ -1,10 +1,9 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { dateParser } from '../../../../components/customClasses/typeParse'
 import { cities } from '../../../../components/jsons/vars';
-
 
 import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);

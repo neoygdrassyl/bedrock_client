@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import DATATABLE from 'react-data-table-component';
@@ -39,9 +39,7 @@ export default function FUN_CLOCK_EVENTS(props) {
             name: <label className="text-center">ACCIÓN</label>,
             maxWidth: '90px',
             omit: !(window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 2),
-            cell: row => <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                <MDBBtn className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => deleteEvent(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
-            </MDBTooltip>
+            cell: row => <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => deleteEvent(row.id)}><i className="far fa-trash-alt"></i></button></span>
         },
     ]
     var [filter, setFilter] = useState('');
@@ -57,7 +55,6 @@ export default function FUN_CLOCK_EVENTS(props) {
         }
         if (currentItem.fun_clocks) loadData()
     }, [load, currentItem]);
-
 
     // ***************************  DATA GETTERS *********************** //
     let _GET_CHILD_CLOCK = () => {
@@ -158,7 +155,7 @@ export default function FUN_CLOCK_EVENTS(props) {
 
                 </div>
                 <div className="col-1">
-                    <MDBBtn rounded color="success" sise="sm" className='p-2 m-2 mt-4' onClick={() => createEvent(true)}><i className="fas fa-plus"></i></MDBBtn>
+                    <button type="button" className="btn btn-success btn-sm rounded-pill p-2 m-2 mt-4" onClick={() => createEvent(true)}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </>
@@ -286,7 +283,7 @@ export default function FUN_CLOCK_EVENTS(props) {
     }
 
     return <>
-        <MDBBtn rounded outline={!newEvent} color="success" sise="sm" onClick={() => setNewEvent(!newEvent)}><i className="fas fa-plus-circle"></i> NUEVO</MDBBtn>
+        <button type="button" className={`btn btn-sm rounded-pill ${!newEvent ? "btn-outline-success" : "btn-success"}`} onClick={() => setNewEvent(!newEvent)}><i className="fas fa-plus-circle"></i> NUEVO</button>
         {newEvent ? _COMPONENET_NEW() : ''}
 
         <DATATABLE

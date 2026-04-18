@@ -1,4 +1,4 @@
-import { MDBCard, MDBCardBody, MDBTooltip } from '../../../../components/ui';
+
 
 function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
     const isAdmin = window.user.name_short === "Luis Parra"
@@ -52,8 +52,8 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
             {currentItem
                 ? <div className="btn-nav_module-pqr">
                     <div className="">
-                        <MDBCard className="container-primary m-1" border='dark' >
-                            <MDBCardBody className="p-1">
+                        <div className="rounded-lg border bg-card p-4 container-primary m-1">
+                            <div>
                                 <div className="m-1 text-center">
 
                                     <div className="row mx-2 mb-1">
@@ -72,8 +72,6 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                             <button className="btn btn-info m-0 p-2 shadow-none" onClick={() => NAVIGATION(currentItem, "general", FROM)}>
                                                 <i className="far fa-eye fa-2x fa-2x" ></i> <label className="fs-6 align-top">DETALLES</label></button>
                                         </div>}
-
-
 
                                     {currentItem.status == 1
                                         ? <>
@@ -105,10 +103,9 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                         </>
                                         : ""}
 
-
                                 </div>
-                            </MDBCardBody>
-                        </MDBCard>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 : ""} </>

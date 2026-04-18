@@ -5,7 +5,7 @@ import { addDecimalPoints, formsParser1, getJSONFull, regexChecker_isOA_2, _ADDR
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoCud, nomens } from '../../../components/jsons/vars';
-import { MDBBtn, MDBCollapse } from '../../../components/ui';
+import { MDBCollapse } from '../../../components/ui';
 import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import dayjs from 'dayjs';
@@ -15,7 +15,6 @@ import EXP_RES_2 from './exp_res_2.component';
 import EXP_EJEC from './exp_eje.component';
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
-
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const MySwal = withReactContent(Swal);
@@ -64,7 +63,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
         retrieveItem();
     }, []);
         // DATA GETTERS
-
 
         let _GET_EXPEDITION_JSON = (field) => {
             let json = currentRecord[field];
@@ -361,7 +359,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         </div>
                     </div>
 
-
                 </div>
 
                 <div className="row">
@@ -432,7 +429,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         </div>
                     </>)
                 }
-
 
             }
 
@@ -617,7 +613,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         </div>
                     </>)
                 }
-
 
             }
 
@@ -1123,7 +1118,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                     : ""}
 
-
                 <div className="row">
                     <div className="col">
                         <label className="mt-1">Total (Letras)</label>
@@ -1156,7 +1150,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formatData.set('desc', 'Citacion Notificación Resolución');
             let date = document.getElementById('exodfb_date_doc').value;
             formatData.set('date', date);
-
 
             if (idCUBxVr) {
                 CubXVrDataService.updateCubVr(idCUBxVr, formatData)
@@ -1242,7 +1235,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         </div>
                     </>)
                 }
-
 
             }
 
@@ -1418,7 +1410,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </>)
                 }
 
-
             }
 
             return <>
@@ -1436,8 +1427,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         </div>
                     </div>
                 </div>
-
-
 
                 <div className="row">
                     <div className="col">
@@ -1578,7 +1567,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 </div>
             </>
         }
-
 
         let _COMPOENEN_DOC_FINAL_NOT = () => {
             var _CHILD_53 = _GET_CHILD_53();
@@ -1794,7 +1782,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </div>
                 </div>
 
-
                 <div className="row mb-2">
                     <div className="col">
                         <label>Alineción firma curador</label>
@@ -1806,7 +1793,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             </select>
                         </div>
                     </div>
-
 
                     <div className="col">
                         <label>Logo</label>
@@ -1894,10 +1880,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <hr />
                 <div className="row text-center">
                     <div className="col">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => save_eje()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </MDBBtn>
+                        <button type="button" className="btn btn-success my-3" onClick={() => save_eje()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                     </div>
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => pd_eje()}><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => pd_eje()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                     </div>
                 </div>
             </>
@@ -2466,8 +2452,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             reso.vig.vp = document.getElementById('expedition_eje_vig').value;
             reso.vig.n = document.getElementById('expedition_eje_vign').value;
 
-
-
             let values = []
             let values_html = document.getElementsByName('eje_pdf_arts_cb');
             for (let i = 0; i < values_html.length; i++) {
@@ -2531,7 +2515,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 values.push(html.checked ? 1 : 0);
             }
             formData.set('arts_cb', values.join(','));
-
 
             formData.set('curaduria', infoCud.job);
             formData.set('ciudad', infoCud.city);
@@ -2623,11 +2606,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     <label className="app-p lead fw-normal">PAGOS</label>
                 </legend>
 
-
-                <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_21"
+                <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_21"
                     onClick={() => setShowCollapse_expedition_21(!showCollapse_expedition_21)}>
                     <label className="app-p lead fw-normal text-info">Acto de tramite de licencia</label>
-                </MDBBtn>
+                </button>
                 <MDBCollapse show={showCollapse_expedition_21}>
                     <fieldset className="p-3">
                         <form id="form_expedition_1" onSubmit={pdf_gen_1}>
@@ -2643,10 +2625,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 {_GLOBAL_ID === 'cp1' ?
                     <>
-                        <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_27"
+                        <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_27"
                             onClick={() => setShowCollapse_expedition_27(!showCollapse_expedition_27)}>
                             <label className="app-p lead fw-normal text-info">Liquidación de Expensas</label>
-                        </MDBBtn>
+                        </button>
                         <MDBCollapse show={showCollapse_expedition_27}>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_7}>
@@ -2662,12 +2644,11 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </>
                     : ''}
 
-
                 {!conOA() && _GLOBAL_ID === 'cb1' || _GLOBAL_ID === 'fl2' ? <>
-                    <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_22"
+                    <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_22"
                         onClick={() => setShowCollapse_expedition_22(!showCollapse_expedition_22)}>
                         <label className="app-p lead fw-normal text-info">Liquidacion de Expensas</label>
-                    </MDBBtn>
+                    </button>
                     <MDBCollapse show={showCollapse_expedition_22}>
                         <fieldset className="p-3">
                             <form id="form_expedition_2" onSubmit={pdf_gen_2}>
@@ -2683,10 +2664,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 </> : null}
 
                 {!conOA() && _GLOBAL_ID === 'cb1' ? <>
-                    <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_23"
+                    <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_23"
                         onClick={() => setShowCollapse_expedition_23(!showCollapse_expedition_23)}>
                         <label className="app-p lead fw-normal text-info">Impuestos Municipales</label>
-                    </MDBBtn>
+                    </button>
                     <MDBCollapse show={showCollapse_expedition_23}>
 
                         <fieldset className="p-3">
@@ -2702,11 +2683,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </MDBCollapse>
                 </> : null}
 
-
-                <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_24"
+                <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_24"
                     onClick={() => setShowCollapse_expedition_24(!showCollapse_expedition_24)}>
                     <label className="app-p lead fw-normal text-info">Estampilla PRO-UIS</label>
-                </MDBBtn>
+                </button>
                 <MDBCollapse show={showCollapse_expedition_24}>
                     <fieldset className="p-3">
                         <form id="form_expedition_4" onSubmit={pdf_gen_4}>
@@ -2722,10 +2702,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 {_GET_CHILD_2().item_267 > 2 && _GLOBAL_ID === 'cb1'
                     ? <>
-                        <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_25"
+                        <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_25"
                             onClick={() => setShowCollapse_expedition_25(!showCollapse_expedition_25)}>
                             <label className="app-p lead fw-normal text-info">Deberes Urbanisticos - Estrato: {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</label>
-                        </MDBBtn>
+                        </button>
                         <MDBCollapse show={showCollapse_expedition_25}>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_5}>
@@ -2739,17 +2719,15 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             </fieldset>
                         </MDBCollapse>
 
-
-
                     </>
                     : ""}
 
                 {_GLOBAL_ID === 'cp1' || _GLOBAL_ID === 'fl2' ?
                     <>
-                        <MDBBtn tag='a' outline color='info' className={'my-2 px-3 text-uppercase bg-light btn-block'} id="nav_expedition_26"
+                        <button type="button" className="btn btn-outline-info my-2 px-3 text-uppercase bg-light btn-block" id="nav_expedition_26"
                             onClick={() => setShowCollapse_expedition_26(!showCollapse_expedition_26)}>
                             <label className="app-p lead fw-normal text-info">Impuesto Delineación Urbana</label>
-                        </MDBBtn>
+                        </button>
                         <MDBCollapse show={showCollapse_expedition_26}>
                             <fieldset className="p-3">
                                 <form id="form_expedition_4" onSubmit={pdf_gen_6}>
@@ -2764,7 +2742,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         </MDBCollapse>
                     </>
                     : ''}
-
 
                 <legend className="my-2 px-3 text-uppercase Collapsible text-center" id="nav_expedition_26">
                     <label className="app-p lead fw-normal">DOCUMENTOS</label>
@@ -2783,7 +2760,6 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     />
                 </Collapsible>
 
-
                 <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">CITACIÓN PARA NOTIFICACIÓN</label></>}>
                     <form id="form_expedition_4" onSubmit={save_exp_doc_final_not}>
                         {_COMPOENEN_DOC_FINAL_NOT()}
@@ -2792,7 +2768,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 <button className="btn btn-success my-3"><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                             </div>
                             <div className="col">
-                                <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen_final_not()}><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                                <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen_final_not()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                             </div>
                         </div>
                     </form>

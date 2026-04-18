@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MDBBtn } from '../../../../components/ui';
+
 import DataTable from 'react-data-table-component';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
@@ -58,7 +58,7 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
                     minWidth: '150px',
                     cell: row => <>
                         <VIZUALIZER url={row.name} apipath={row.path.includes('input') ? '/files/pqrsa/' : '/files/pqrs/'} />
-                        {add ? <MDBBtn className="btn btn-sm btn-danger mx-1 p-2" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn> : ''}
+                        {add ? <button type="button" className="btn btn-sm btn-danger mx-1 p-2" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></button> : ''}
                     </>,
                 },
             ]
@@ -99,11 +99,11 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
             return <div>
                 <p className="lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO</p>
                 <div className="text-end m-3">
-                    {attachs > 0 ? <MDBBtn className="btn btn-sm btn-success" onClick={() => addAttachsClose()}><i className="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </MDBBtn> : ""}
+                    {attachs > 0 ? <button type="button" className="btn btn-sm btn-success" onClick={() => addAttachsClose()}><i className="fas fa-paperclip"></i> ANEXAR {attachs} DOCUMENTOS </button> : ""}
                     {attachs > 0
-                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                        ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                         : ""}
-                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
                 </div>
                 {_COMPONENT}
 
@@ -134,7 +134,6 @@ function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add
                 array_form.push(array_html[i].value)
             }
             formData.set('files_class', array_form.join());
-
 
             MySwal.fire({
                 title: swaMsg.title_wait,

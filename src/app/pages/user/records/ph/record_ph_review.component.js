@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import FUN_SERVICE from "../../../../services/fun.service"
-import { MDBBtn } from '../../../../components/ui';
+
 import FUNService from '../../../../services/fun.service';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
@@ -67,7 +67,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
         handleArchCheck(pdfDoc, page, chekcs, _detail, 0, 1)
 
-
         let _city = _headers.city;
         let _number = _headers.number;
         let pageCount = pdfDoc.getPageCount();
@@ -94,7 +93,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
         var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'CHECKEO INFORME ARQUITECTÓNICO ' + id_public + '.pdf');
         MySwal.close();
-
 
     }
 
@@ -605,10 +603,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <button className="btn btn-success my-3" ><i className="far fa-file-alt"></i> GUARDAR CAMBIOS </button>
                     </div>
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => pdf_gen()} ><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()} ><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                     </div>
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => CREATE_PDF_CHECK()} ><i className="far fa-file-pdf"></i> GENERAR CHECKEO </MDBBtn>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => CREATE_PDF_CHECK()} ><i className="far fa-file-pdf"></i> GENERAR CHECKEO </button>
                     </div>
                 </div>
             </>
@@ -939,8 +937,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             });
                         });
 
-
-
                 }
             });
         }
@@ -997,8 +993,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             });
                         });
 
-
-
                 }
             });
         }
@@ -1011,7 +1005,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
             if (details) _RESUME.push(`- Observaciones: \n${details}`)
             if (_RESUME) _RESUME = _RESUME.join('\n\n')
-
 
             if (_GLOBAL_ID === 'cb1') {
                 checks = _GET_STEP_TYPE('phcl', 'check');
@@ -1033,7 +1026,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
                 partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
                 if (has_note) _RESUME += '\n'
-
 
                 partialChecks = _GET_STEP_TYPE('rar_2', 'check', 'record_arc_steps'); // Características del predio
                 checks.push(partialChecks[1]); // 4
@@ -1074,7 +1066,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
                 if (has_note) _RESUME += '\n'
 
-
                 partialChecks = _GET_STEP_TYPE('rar_5', 'check', 'record_arc_steps'); // Cortes
                 checks.push(partialChecks[1]); // 16
                 checks.push(partialChecks[2]); // 17
@@ -1101,7 +1092,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
                 if (has_note) _RESUME += '\n'
 
-
                 partialChecks = _GET_STEP_TYPE('rar_7', 'check', 'record_arc_steps');
                 checks.push(partialChecks[1]); // 24
 
@@ -1111,8 +1101,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
                 partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
                 if (has_note) _RESUME += '\n'
-
-
 
                 partialChecks = _GET_STEP_TYPE('rar_8', 'check', 'record_arc_steps');
                 checks.push(partialChecks[1]); // 25
@@ -1124,8 +1112,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
                 if (has_note) _RESUME += '\n'
 
-
-
                 partialChecks = _GET_STEP_TYPE('rar_5', 'check', 'record_arc_steps');
                 checks.push(partialChecks[7]); // 26
 
@@ -1135,8 +1121,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 if (has_note && partialValue[0] != 'false') _RESUME += `${partialValue[0]}:\n`
                 partialNotes.map((n, i) => { if (i > 0 && n) _RESUME += `- ${partialValue[i]} : ${partialNotes[i]} \n` })
                 if (has_note) _RESUME += '\n'
-
-
 
                 partialChecks = _GET_STEP_TYPE('rar_0', 'check', 'record_arc_steps');
                 checks.push(partialChecks[1]); // 27
@@ -1291,7 +1275,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
             formData.set('id_public', 'phnd');
 
             save_step('phnd', false, formData);
-
 
             if (document.getElementById('review_ph_detail_area')) {
                 formData = new FormData();
@@ -1553,7 +1536,6 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         {_GLOBAL_ID == 'cp1' ? _COMPONENT_DETAILS_5() : ''}
                         {_COMPONENT_DETAILS_2()}
 
-
                         <label className="app-p lead fw-bold my-2">3.2 CONFIGURACION RESOLUCIÓN</label>
                         {_COMPONENT_CONFIG()}
 
@@ -1564,25 +1546,23 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             {currentItem.state > -5
                                 ? <>
                                     <div className="col">
-                                        <MDBBtn className="btn btn-danger my-3" onClick={() => review()}><i className="far fa-check-square"></i> REALIZAR REVISIÓN </MDBBtn>
+                                        <button type="button" className="btn btn-danger my-3" onClick={() => review()}><i className="far fa-check-square"></i> REALIZAR REVISIÓN </button>
                                     </div>
 
                                     {!_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <MDBBtn className="btn btn-primary my-3" onClick={() => close()} ><i className="far fa-file-archive"></i> CERRAR</MDBBtn>
+                                            <button type="button" className="btn btn-primary my-3" onClick={() => close()} ><i className="far fa-file-archive"></i> CERRAR</button>
                                         </div>
                                         : ""}
                                     {_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <MDBBtn className="btn btn-primary my-3" onClick={() => archive()} ><i className="far fa-file-archive"></i> ARCHIVAR</MDBBtn>
+                                            <button type="button" className="btn btn-primary my-3" onClick={() => archive()} ><i className="far fa-file-archive"></i> ARCHIVAR</button>
                                         </div>
                                         : ""}
                                 </>
                                 : <label className="app-p lead fw-normal text-uppercase text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIMIENTO,
                                     NO SE PUEDE REALIZAR REVISIONES HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
                         </div>
-
-
 
                     </div>
                 </form>
@@ -1596,7 +1576,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <button className="btn btn-success my-3"><i className="far fa-share-square"></i> GUARDAR CAMBIOS </button>
                             </div>
                             <div className="col">
-                                <MDBBtn className="btn btn-danger my-3" onClick={() => pdfnot_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                                <button type="button" className="btn btn-danger my-3" onClick={() => pdfnot_gen()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                             </div>
                         </div>
                     </form>

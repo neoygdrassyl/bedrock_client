@@ -8,7 +8,7 @@ import SubmitService from '../../../services/submit.service';
 // LISTS
 import Fun6DocList from '../../../components/jsons/fun6DocsList.json'
 import { Lists } from '../../../components/jsons/lists_submit'
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import DataTable from 'react-data-table-component';
 import DOCS_LIST from '../fun_forms/components/docs_list.component';
 
@@ -145,7 +145,6 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                 </>)
             }
 
-
             return <>{_COMPONENT}</>
         }
 
@@ -250,8 +249,8 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         <label className="fw-bold">Listas Totales: {currentItem.sub_lists.length}</label>
                     </div>
                     <div className="text-end col-6">
-                        <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => setIsNew(true)}>
-                            <i className="fas fa-plus-circle"></i> NUEVA LISTA </MDBBtn>
+                        <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => setIsNew(true)}>
+                            <i className="fas fa-plus-circle"></i> NUEVA LISTA </button>
                     </div>
                 </div>
             </>
@@ -274,12 +273,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     wrap: false,
                     minWidth: '100px',
                     cell: row => <>
-                        <MDBTooltip title='Guardar Cambios' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <button onClick={() => save_list(row.id)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
-                                <i className="far fa-save fa-2x" ></i></button></MDBTooltip>
-                        <MDBTooltip title='Eliminar' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <button onClick={() => delete_list(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                                <i className="far fa-trash-alt fa-2x"></i></button></MDBTooltip>
+                        <button title="Guardar Cambios" onClick={() => save_list(row.id)} className="btn btn-sm btn-secondary m-0 p-2 shadow-none">
+                                <i className="far fa-save fa-2x" ></i></button>
+                        <button title="Eliminar" onClick={() => delete_list(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
+                                <i className="far fa-trash-alt fa-2x"></i></button>
                     </>,
                 },
             ]
@@ -312,10 +309,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         </select>
                     </div>
                     <div className="text-end col-6 my-3">
-                        <MDBBtn className="btn btn-info my-3 me-2" onClick={() => setIsNew(false)}>
-                            <i className="fas fa-times-circle"></i>  CANCELAR </MDBBtn>
-                        <MDBBtn className="btn btn-success my-3" onClick={() => new_list()}>
-                            <i className="far fa-edit"></i> GUARDAR LISTA </MDBBtn>
+                        <button type="button" className="btn btn-info my-3 me-2" onClick={() => setIsNew(false)}>
+                            <i className="fas fa-times-circle"></i>  CANCELAR </button>
+                        <button type="button" className="btn btn-success my-3" onClick={() => new_list()}>
+                            <i className="far fa-edit"></i> GUARDAR LISTA </button>
                     </div>
                 </div></>)
 
@@ -352,7 +349,6 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
         let _COMPONENT_EXTRA_LIST = () => {
             let _COMPONENT = [];
 
-
             _COMPONENT.push(<>
                 <div className="row text-center border border-secondary py-2 bg-secondary text-white">
                     <div className="col-2">
@@ -373,7 +369,6 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     </div>
                 </div>
             </>)
-
 
             for (var i = 0; i < extra_items; i++) {
                 _COMPONENT.push(<>
@@ -415,7 +410,6 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
 
             }
 
-
             _COMPONENT.push(<>
                 <div className="row text-center border border-secondary py-2 text-white">
                     <div className="col-6">
@@ -423,16 +417,14 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                     </div>
                     <div className="col-6 text-end">
                         {extra_items > 0
-                            ? <MDBBtn className="btn btn-sm btn-secondary my-3 me-1" onClick={() => setExtraItems(extra_items - 1)}>
-                                <i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                            ? <button type="button" className="btn btn-sm btn-secondary my-3 me-1" onClick={() => setExtraItems(extra_items - 1)}>
+                                <i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                             : ""}
-                        <MDBBtn className="btn btn-sm btn-secondary my-3" onClick={() => setExtraItems(extra_items + 1)}>
-                            <i className="fas fa-plus-circle"></i> AÑADIR ITEM </MDBBtn>
+                        <button type="button" className="btn btn-sm btn-secondary my-3" onClick={() => setExtraItems(extra_items + 1)}>
+                            <i className="fas fa-plus-circle"></i> AÑADIR ITEM </button>
                     </div>
                 </div>
             </>)
-
-
 
             return <>{_COMPONENT}</>
         }

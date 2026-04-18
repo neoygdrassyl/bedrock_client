@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge } from '../../../../components/ui';
 import { dateParser_yearsPassed } from '../../../../components/customClasses/typeParse';
 const MySwal = withReactContent(Swal);
 
@@ -95,8 +94,8 @@ function RECORD_LAW_PROFESIONALS(props) {
         let _PROFESIONAL_JSX = (_role) => {
             return <>
                 <label> {_FIND_PROFESIOANL(_role)
-                    ? <MDBBadge color='success'>DILIGENCIADO</MDBBadge>
-                    : <MDBBadge color='danger'>SIN DILIGENCIAR</MDBBadge>} <label className="">{_role}</label> - Experiencia: {_CECK_EXPERIENCE(_role)}</label>
+                    ? <span className="badge bg-success">DILIGENCIADO</span>
+                    : <span className="badge bg-danger">SIN DILIGENCIAR</span>} <label className="">{_role}</label> - Experiencia: {_CECK_EXPERIENCE(_role)}</label>
             </>
         }
 

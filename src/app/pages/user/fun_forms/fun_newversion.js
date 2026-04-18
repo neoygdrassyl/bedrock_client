@@ -1,9 +1,8 @@
 import Swal from 'sweetalert2'
-import { MDBBtn } from '../../../components/ui';
+
 import withReactContent from 'sweetalert2-react-content'
 import FUNService from '../../../services/fun.service'
 import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'
-
 
 const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVersion, toCreate, aim, requestUpdate }) => {
     var formData = new FormData();
@@ -834,7 +833,6 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                 showConfirmButton: false,
             });
 
-
             switch (aim) {
                 case "NT":
                     formData.set('new_type', true);
@@ -848,7 +846,6 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                 default:
                     break;
             }
-
 
         }
 
@@ -882,11 +879,10 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                 </> : ""}
             <div className="row mb-3 text-center">
                 <div className="col-12">
-                    <MDBBtn className="btn btn-warning btn-lg my-3" onClick={() => manage_version()} ><i className="far fa-file-alt"></i> ACTUALIZAR VERSION</MDBBtn>
+                    <button type="button" className="btn btn-warning btn-lg my-3" onClick={() => manage_version()}><i className="far fa-file-alt"></i> ACTUALIZAR VERSION</button>
                 </div>
             </div>
         </>);
 };
-
 
 export default FUN_NEWVERSION;

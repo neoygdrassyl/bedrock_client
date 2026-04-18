@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBBadge, MDBTooltip } from '../../../../components/ui';
+
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
 import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
 import './fun_moduleNav_enhanced.css';
@@ -162,20 +162,18 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                                         {currentItem.state !== undefined && (
                                             <div className="fun-nav-info-item mt-2">
                                                 <small className="text-muted">Estado:</small>
-                                                <MDBBadge 
-                                                    color={
+                                                <span className={`badge bg-${
                                                         currentItem.state >= 100 ? 'success' :
                                                         currentItem.state >= 50 ? 'info' :
                                                         currentItem.state >= 5 ? 'warning' :
                                                         currentItem.state < 0 ? 'danger' : 'secondary'
-                                                    }
-                                                    className="d-block mt-1"
+                                                    } d-block mt-1`}
                                                 >
                                                     {currentItem.state >= 100 ? 'ARCHIVADO' :
                                                      currentItem.state >= 50 ? 'EXPEDICIÓN' :
                                                      currentItem.state >= 5 ? 'EVALUACIÓN' :
                                                      currentItem.state < 0 ? 'INCOMPLETO' : 'RADICACIÓN'}
-                                                </MDBBadge>
+                                                </span>
                                             </div>
                                         )}
                                     </div>
@@ -215,9 +213,9 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                                                 <span className="fun-nav-label">
                                                     {item.label}
                                                     {item.badge && (
-                                                        <MDBBadge color="primary" className="ms-2">
+                                                        <span className="badge bg-primary ms-2">
                                                             {item.badge}
-                                                        </MDBBadge>
+                                                        </span>
                                                     )}
                                                 </span>
                                             )}

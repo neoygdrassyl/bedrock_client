@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip, MDBTypography, MDBPopover, MDBPopoverBody, MDBPopoverHeader, } from '../../../../components/ui';
+import { MDBPopover, MDBPopoverBody, MDBPopoverHeader,  } from '../../../../components/ui';
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
@@ -226,34 +226,27 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
     }, []);
 
         let get_reportBtn = item => {
-            if (regexChecker_isPh(item, true)) return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button
+            if (regexChecker_isPh(item, true)) return <button
                     onClick={() => openModal(item, 'record_ph')}
                     className="px-2 btn-sm btn-warning btn"
                 > <i className="fas fa-pencil-ruler fa-2x" ></i>
-                </button> </MDBTooltip>
+                </button>
 
-            if (type == 'law') return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button
+            if (type == 'law') return <button
                     onClick={() => openModal(item, 'record_law')}
                     className="px-2 btn-sm btn-warning btn"
                 > <i className="fas fa-balance-scale fa-2x" ></i>
                 </button>
-            </MDBTooltip>
-            if (type == 'arc') return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button
+            if (type == 'arc') return <button
                     onClick={() => openModal(item, 'record_arc')}
                     className="px-2 btn-sm btn-warning btn"
                 > <i className="far fa-building fa-2x" ></i>
                 </button>
-            </MDBTooltip>
-            if (type == 'eng') return <MDBTooltip title='Ver Informe' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                <button
+            if (type == 'eng') return <button
                     onClick={() => openModal(item, 'record_eng')}
                     className="px-2 btn-sm btn-warning btn"
                 > <i className="fas fa-cogs fa-2x" ></i>
                 </button>
-            </MDBTooltip>
             return '';
         }
         let get_state_label = row => {
@@ -264,25 +257,21 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
         }
 
         let reviewNull = () => {
-            return <MDBTypography note noteColor='danger'>
+            return <div className="alert alert-danger">
                 <div className="row">
                     <div className="col-10">
                         <label className="fw-bold">SOLICITUDES SIN REVISAR: {currentItems.filter(item => item.state <= 50).length} (INFORME {type == 'law' ? 'JURIDICO' : type == 'eng' ? 'ESTRUCTURAL' : type == 'arc' ? 'ARQUITECTONICO' : ''})</label>
                     </div>
                     <div className="col text-end">
-                        <MDBTooltip title='Detalles' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1" className="">
-                            <MDBBtn
+                        <span title="Detalles"><button type="button" className="btn"
                                 color="info"
                                 size="sm"
                                 onClick={() => setLicList(!licList)}
                                 className="px-2"
                             > <i className="fas fa-info-circle fa-2x"></i>
-                            </MDBBtn>
-                        </MDBTooltip>
+                            </button></span>
                     </div>
                 </div>
-
-
 
                 {licList && (
                     <ul className="list-group mx-2">
@@ -290,7 +279,7 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     </ul>
                 )}
 
-            </MDBTypography>
+            </div>
         }
         let listMap = (list) => {
             let newList = [];
@@ -365,13 +354,11 @@ function FUN_WORKER_ASIGN({ translation, globals, type, openModal }) {
                     minWidth: '200px',
                     cell: row => <>
                         {listItemPopOver(row)}
-                        <MDBTooltip title='Informacion Solicitud' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                            <button
+                        <button
                                 onClick={() => openModal(row, 'general')}
                                 className="px-2 btn-sm btn-info btn"
                             > <i className="far fa-folder-open fa-2x" ></i>
                             </button>
-                        </MDBTooltip>
                         {get_reportBtn(row)}
                     </>,
                 },

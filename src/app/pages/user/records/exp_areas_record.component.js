@@ -1,4 +1,4 @@
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
@@ -6,13 +6,11 @@ import withReactContent from 'sweetalert2-react-content'
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import EXP_CALC from '../expeditions/exp_calc.component';
 
-
 const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_AREAS_RECORD(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion } = props;
-
 
     const [currentRecord, setRecord] = useState(null);
     const [currentVersionR, setRecordV] = useState(null);
@@ -24,7 +22,6 @@ export default function EXP_AREAS_RECORD(props) {
         if (load == false) get_exp_record();
         if (edit != false) _SET_EDIT_DATA(edit);
     }, [load, edit]);
-
 
     // DATA GETTERS
     function _GET_CHILD_AREAS() {
@@ -141,12 +138,8 @@ export default function EXP_AREAS_RECORD(props) {
                 button: true,
                 maxWidth: '50px',
                 cell: row => <>
-                    <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                        <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit"></i></MDBBtn>
-                    </MDBTooltip>
-                    <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                        <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
-                    </MDBTooltip>
+                    <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEdit(row)}><i className="far fa-edit"></i></button></span>
+                    <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></button></span>
                 </>
             },
         ]
@@ -231,7 +224,6 @@ export default function EXP_AREAS_RECORD(props) {
         if (desc) formData.set('desc', desc);
         let units = document.getElementById("expedition_area_5").value;
         if (units) formData.set('units', units);
-
 
         MySwal.fire({
             title: swaMsg.title_wait,
@@ -380,7 +372,7 @@ export default function EXP_AREAS_RECORD(props) {
                     </div>
                     <div className='row'>
                         <div className='col'>
-                            <MDBBtn onClick={() => new_expedition()}>CREAR CUADRO DE AREAS</MDBBtn>
+                            <button type="button" className="btn btn-primary" onClick={() => new_expedition()}>CREAR CUADRO DE AREAS</button>
                         </div>
                     </div>
 

@@ -4,7 +4,7 @@ import PQRS_Service from '../../../services/pqrs_main.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import USERS_Service from '../../../services/users.service'
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import { dateParser, dateParser_finalDate } from '../../../components/customClasses/typeParse'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import PQRS_EMAILS from './components/pqrs_emails.component';
@@ -57,7 +57,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
     useEffect(() => {
         if (!load) loadData()
     }, [currentItem]);
-
 
     const config = (edit) => {
         return {
@@ -212,7 +211,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
 
     }
 
-
     let _WORKERS_COMPONENT = () => {
         let _array_workers_names = _GET_USERS_ARRAY();
         return <>
@@ -318,14 +316,10 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <MDBTooltip title='Desasignar Profesional' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
+                    <button title="Desasignar Profesional" className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
                             <i className="fas fa-user-minus"></i></button>
-                    </MDBTooltip>
-                    <MDBTooltip title='Enviar Correo' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setCurrentItemAsign(row)}>
+                    <button title="Enviar Correo" className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setCurrentItemAsign(row)}>
                             <i className="far fa-paper-plane"></i></button>
-                    </MDBTooltip>
                 </>,
             },
         ]
@@ -345,7 +339,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         />
         return _COMPONENT;
     }
-
 
     function _SEEN_COMPOENTN() {
         var _LIST = [];
@@ -389,10 +382,8 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <MDBTooltip title='Confirmar visto bueno' wrapperProps={{ center: true, color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 me-1" className="">
-                        <button hidden={window.user.id != row.worker_id} onClick={() => setViewform(row)} className="btn btn-info btn-sm mx-0 px-2 shadow-none">
+                    <button title="Confirmar visto bueno" hidden={window.user.id != row.worker_id} onClick={() => setViewform(row)} className="btn btn-info btn-sm mx-0 px-2 shadow-none">
                             <i className="fas fa-check-square"></i></button>
-                    </MDBTooltip>
                 </>,
             },
         ];
@@ -442,7 +433,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return _COMPONENT;
     }
 
-
     let _GEN_CONFIRM_PDF_COMPONENT = () => {
         return <>
             <div className="border border-success p-2">
@@ -474,7 +464,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <tbody>
                         <tr>
                             <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                            <td><MDBBtn className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i className="fas fa-cloud-download-alt fa-2x"></i></MDBBtn></td>
+                            <td><button type="button" className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><i className="fas fa-cloud-download-alt fa-2x"></i></button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -594,7 +584,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         })
     }
 
-
     let request_dpfConfirmation = () => {
         formData = new FormData();
         var array = [];
@@ -639,7 +628,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 });
             });
     }
-
 
     let informalReplyPQRS = (u, worker_id) => {
 
@@ -793,8 +781,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 formData.set('id_reply', currentItem.id_reply);
                 formData.set('time_id', currentItem.pqrs_time.id);
 
-
-
                 let files = document.getElementsByName("files_close");
 
                 formData.set('attachs_length', stateadd2);
@@ -874,7 +860,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 minWidth: '150px',
                 cell: row => <>
                     <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><i className="fas fa-cloud-download-alt fa-2x"></i></a>
-                    <MDBBtn className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
+                    <button type="button" className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><i className="far fa-trash-alt fa-2x"></i></button>
                 </>,
             },
         ]
@@ -893,7 +879,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         />
         return <>{_COMPONENT}</>;
     }
-
 
     let _ATTACHS_COMPONENT2 = () => {
         var _COMPONENT = [];
@@ -916,13 +901,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return <div>{_COMPONENT}</div>;
     }
 
-
-
     // ** DATA CONVERTERS ** //
     // TRANSFORM AND PROCESS DATA
     function compareData() { }
-
-
 
     // ** JSX ELEMENTS ** //
     // SMALL OR SINGLE JSX ELEMENTS
@@ -930,7 +911,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
         return <>
         </>
     }
-
 
     // ** JSX COMPONENTS ** //
     // BIG OR COMPOSED JSX ELEMENTS
@@ -950,7 +930,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
             {currentItem != null ? <>
                 {load ? <>
 
-
                     <fieldset className="p-3 border border-info mb-2">
                         <h2 className=" px-4 app-p lead fw-normal text-uppercase"><b>1.DOCUMENTOS SOPORTE INGRESO <i className="fas fa-folder"></i></b></h2>
                         <PQRS_EDIT_ATTACH
@@ -960,8 +939,6 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                         />
 
                     </fieldset>
-
-
 
                     <fieldset className="p-3 border border-info mb-2">
                         <div>
@@ -1114,14 +1091,10 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             </> : ""}
                     </fieldset>
 
-
-
-
                     {/* DE LA VARIABLE currentItem.pqrs_workers, realizar un map por cada elemento del array, y geerar un formulario.
                       A cada formulario asociar el Jd del worker
                       Si el Id del worker coincide con el Id del winow.user.Id, hablitar ese form, de lo contrario, desabilitar el form
                     */}
-
 
                     <fieldset className="p-3 border border-info mb-2">
 
@@ -1177,9 +1150,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
                                         <div className="text-end m-3" >
                                             {stateadd > 0
-                                                ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                                                 : ""}
-                                            <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                                            <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
 
@@ -1281,9 +1254,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             <p className="app-p lead text-end fw-bold text-uppercase">ANEXAR DOCUMENTO DE CIERRE</p>
                             <div className="text-end m-3">
                                 {stateadd2 > 0
-                                    ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach2()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                    ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach2()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                                     : ""}
-                                <MDBBtn className="btn btn-sm btn-secondary" onClick={() => addAttach2()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach2()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
                             </div>
                             {_ATTACHS_COMPONENT2()}
 

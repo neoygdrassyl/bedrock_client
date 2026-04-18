@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBBtn } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -201,9 +201,9 @@ function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentI
                                 <label className="app-p lead text-start fw-bold text-uppercase">ANEXAR DOCUMENTO</label>
                                 <div className="text-end m-3">
                                     {attachs > 0
-                                        ? <MDBBtn className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                        ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </button>
                                         : ""}
-                                    <MDBBtn className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                                    <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button>
                                 </div>
                                 {_ATTACHS_COMPONENT()}
 

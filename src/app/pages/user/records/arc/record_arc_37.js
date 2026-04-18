@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import { useState } from 'react';
 import DataTable from 'react-data-table-component';
 import Swal from 'sweetalert2'
@@ -241,7 +241,6 @@ export default function RECORD_ARC_37(props) {
         let nunPartA = Number(A[1]) ?? Infinity;
         let nunPartB = Number(B[1]) ?? Infinity;
 
-
         if (strPartA < strPartB) { return -1; }
         if (strPartA > strPartB) { return 1; }
 
@@ -265,7 +264,7 @@ export default function RECORD_ARC_37(props) {
         return <>
             <div className='row border'>
                 <div className='col my-1'>
-                    <MDBBtn rounded outline size='sm' className='me-1' onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO GRUPO</MDBBtn>
+                    <button type="button" className="btn btn-outline-primary btn-sm rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO GRUPO</button>
                 </div>
             </div>
 
@@ -349,7 +348,7 @@ export default function RECORD_ARC_37(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <MDBBtn color="danger" rounded outline size='sm' className='px-2' onClick={() => del_grp_37(data.id)}> <i className="fas fa-minus text-danger"></i></MDBBtn>
+                                <button type="button" className="btn btn-outline-danger btn-sm rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <i className="fas fa-minus text-danger"></i></button>
                             }
                         </div>
                     </div>
@@ -382,7 +381,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <MDBBtn color="success" rounded outline size='sm' className='px-2' onClick={() => add_grp_37(data.id)}> <i className="fas fa-plus text-success"></i></MDBBtn> : ''}
+                            <button type="button" className="btn btn-outline-success btn-sm rounded-pill px-2" onClick={() => add_grp_37(data.id)}> <i className="fas fa-plus text-success"></i></button> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -425,7 +424,7 @@ export default function RECORD_ARC_37(props) {
             <div className='row my-2'>
                 <div className='col-1'></div>
                 <div className='col text-center'>
-                    <MDBBtn size='sm' color='success' onClick={() => import_37()}><i className="fas fa-file-upload"></i> IMPORTAR</MDBBtn>
+                    <button type="button" className="btn btn-success btn-sm" onClick={() => import_37()}><i className="fas fa-file-upload"></i> IMPORTAR</button>
                 </div>
             </div>
         </>
@@ -601,8 +600,8 @@ export default function RECORD_ARC_37(props) {
                 center: true,
                 minWidth: '110px',
                 cell: row => <>
-                    <MDBBtn className="btn btn-secondary btn-sm px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><i className="far fa-edit"></i></MDBBtn>
-                    <MDBBtn className="btn btn-danger btn-sm px-2" onClick={() => delete_37(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
+                    <button type="button" className="btn btn-secondary btn-sm px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><i className="far fa-edit"></i></button>
+                    <button type="button" className="btn btn-danger btn-sm px-2" onClick={() => delete_37(row.id)}><i className="far fa-trash-alt"></i></button>
                 </>,
             },
         ]
@@ -1035,8 +1034,6 @@ export default function RECORD_ARC_37(props) {
 
         })
 
-
-
     }
     let del_grp_37 = (id, ind, useSwal) => {
         var formData = new FormData();
@@ -1243,7 +1240,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                 </div>
                 <div className='col text-end'>
-                    <MDBBtn size='sm' outline={!newImport} onClick={() => setImport(!newImport)}><i className="fas fa-table"></i> IMPORTAR DE CUADRO DE AREAS</MDBBtn>
+                    <button type="button" className={`btn btn-sm ${!newImport ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setImport(!newImport)}><i className="fas fa-table"></i> IMPORTAR DE CUADRO DE AREAS</button>
                 </div>
             </div>
 

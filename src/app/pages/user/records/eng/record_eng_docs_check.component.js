@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge, MDBTooltip } from '../../../../components/ui';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import CodesJson from '../../../../components/jsons/fun6DocsList.json';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
@@ -37,29 +36,25 @@ function RECORD_ENG_DOCS_CHECK(props) {
 
             _COMPONENT.push(<>{_array[0] > 0
                 ?
-                <MDBTooltip title='CEDULA DE CIUDADANIA' tag='a' >
-                    <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                        icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} /> </MDBTooltip>
+                <span title="CEDULA DE CIUDADANIA"><VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
+                        icon={'far fa-id-card fa-2x me-1'} color={'DeepSkyBlue'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[1] > 0
                 ?
-                <MDBTooltip title='MATRICULA' tag='a' >
-                    <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                        icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} /> </MDBTooltip>
+                <span title="MATRICULA"><VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
+                        icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
                 ?
-                <MDBTooltip title='FICHA COPNIA' tag='a' >
-                    <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                        icon={'fas fa-book fa-2x me-1'} color={'GoldenRod'} /> </MDBTooltip>
+                <span title="FICHA COPNIA"><VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
+                        icon={'fas fa-book fa-2x me-1'} color={'GoldenRod'} /></span>
                 : ""}</>)
 
             _COMPONENT.push(<>{_array[2] > 0
-                ? <MDBTooltip title='HOJA DE VIDA Y CERTIFICADOS' tag='a' >
-                    <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                        icon={'fas fa-file-invoice fa-2x me-1'} color={'LimeGreen'} /> </MDBTooltip>
+                ? <span title="HOJA DE VIDA Y CERTIFICADOS"><VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
+                        icon={'fas fa-file-invoice fa-2x me-1'} color={'LimeGreen'} /></span>
                 : ""}</>)
 
             return <>{_COMPONENT}</>
@@ -103,7 +98,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
                         <li className="list-group-item">
                             <div className="row">
                                 <div className="col">
-                                    <label><MDBBadge color='success'>ANEXADO</MDBBadge> {object.description} </label>
+                                    <label><span className="badge bg-success">ANEXADO</span> {object.description} </label>
                                 </div>
                                 <div className="col-1">
                                     <VIZUALIZER url={object.path + "/" + object.filename} apipath={'/files/'} />
@@ -119,11 +114,10 @@ function RECORD_ENG_DOCS_CHECK(props) {
                 } else {
                     _COMPONENT.push(<>
                         <li className="list-group-item">
-                            <MDBBadge color='danger'>SIN ANEXAR</MDBBadge> {CodesJson[_codes[i]]}
+                            <span className="badge bg-danger">SIN ANEXAR</span> {CodesJson[_codes[i]]}
                         </li>
                     </>)
                 }
-
 
             }
             return <>{_COMPONENT}</>

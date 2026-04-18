@@ -6,7 +6,7 @@ import withReactContent from 'sweetalert2-react-content'
 import dayjs from 'dayjs';
 import { infoCud } from '../../../components/jsons/vars';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import { MDBBtn } from '../../../components/ui';
+
 import RecordReviewService from '../../../services/record_review.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
@@ -285,7 +285,6 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                     });
                 });
 
-
         }
 
         let save_doc = (e) => {
@@ -473,7 +472,7 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                         </div>
                         : ''}
                     <div className="col">
-                        <MDBBtn className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</MDBBtn>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => gen_confirmDoc()}><i className="far fa-file-pdf"></i> GENERAR DOCUMENTO</button>
                     </div>
                 </div>
             </form>

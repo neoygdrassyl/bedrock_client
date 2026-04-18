@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
-import { MDBBtn, MDBCard, MDBCardBody } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import dayjs from 'dayjs';
@@ -351,7 +351,6 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
                     </div>
 
-
                     <div className="row mb-3">
                         <div className="col-6">
                             <label>2.2.2 Relacionar documento: Carta</label>
@@ -498,7 +497,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
                     <div className="row text-center">
                         <div className="col-12">
-                            <MDBBtn className="btn btn-warning btn-lg my-3" onClick={() => alertAddress()}><i className="far fa-check-square"></i> CONFIRMAR</MDBBtn>
+                            <button type="button" className="btn btn-warning btn-lg my-3" onClick={() => alertAddress()}><i className="far fa-check-square"></i> CONFIRMAR</button>
                         </div>
                     </div>
                 </form>
@@ -797,7 +796,6 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
             let id = _SET_CHILD_3()[child_i].id;
 
-
             let id6_cub = document.getElementById("alert_id6_cub").value;
             formData.set('id6_cub', id6_cub);
 
@@ -807,7 +805,6 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             formData.set('prev_id', prev_id);
 
             createVRxCUB_relation(new_id)
-
 
             let alerted = document.getElementById("alert_date_confirm").value;
             if (alerted) formData.set('alerted', alerted);
@@ -956,7 +953,6 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                             _FUN_6={_SET_CHILD_6()}
                         />
 
-
                         <div className="form-check my-3 px-5">
                             <input className="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => setNewNeighbour(!new_neighbour)} />
                             <p className="form-check-label text-start" >Añadir nuevos vecinos a esta solicitud.</p>
@@ -1005,7 +1001,6 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                         <label className="app-p lead fw-normal text-uppercase my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>
                         {_CONFIRM_COMPONENT()}
 
-
                     </fieldset>
 
                     {pqrsxfun.length
@@ -1045,8 +1040,8 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 const NAV_FUNA = () => {
     return (
         <div className="btn-navpqrs">
-            <MDBCard className="container-primary" border='dark'>
-                <MDBCardBody className="p-1">
+            <div className="rounded-lg border bg-card p-4 container-primary">
+                <div>
                     <legend className="px-3 pt-2 text-uppercase bg-light text-center">
                         <h6>Menu de Navegacion</h6>
                     </legend>
@@ -1075,8 +1070,8 @@ const NAV_FUNA = () => {
                         </legend>
                     </a>
 
-                </MDBCardBody>
-            </MDBCard>
+                </div>
+            </div>
         </div>
     );
 }

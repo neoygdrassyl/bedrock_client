@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -59,7 +59,6 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
     }
     
    
-
 
     const _GET_EMAIL_BODY = (_body) => {
         let _email_body = "";
@@ -159,7 +158,6 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
         }
         document.getElementById('pqrs_email_2').value = _email_body;
     }
-
 
         // DATA GETTERS 
         let _GET_CONTACTS = () => {
@@ -441,9 +439,9 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                                         <div className="text-end m-3">
                                             <p className="lead text-end fw-bold text-uppercase">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <MDBBtn className="btn btn-secondary btn-sm mx-3" onClick={() => minusAttachEmail()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                                                ? <button type="button" className="btn btn-secondary btn-sm mx-3" onClick={() => minusAttachEmail()}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                                                 : ""}
-                                            <MDBBtn className="btn btn-secondary btn-sm" onClick={() => addAttachEmail()}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                                            <button type="button" className="btn btn-secondary btn-sm" onClick={() => addAttachEmail()}><i className="fas fa-plus-circle"></i> AÑADIR </button>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>

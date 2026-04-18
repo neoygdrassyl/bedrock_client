@@ -3,7 +3,7 @@ import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import VIZUALIZER from '../../../components/vizualizer.component';
 
 const MySwal = withReactContent(Swal);
@@ -96,7 +96,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
                     icon={'far fa-id-badge fa-2x me-1'} color={'DarkOrchid'} />
                 : ""}</>)
-
 
             return <>{_COMPONENT}</>
         }
@@ -496,8 +495,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            {/* FIX: button anidado - replaced MDBBtn with span */}
+                        <span title="Modificar Item">{/* FIX: button anidado - replaced MDBBtn with span */}
                             <span 
                                 role="button" 
                                 tabIndex={0} 
@@ -506,10 +504,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setEdit(row); }}
                                 style={{cursor: 'pointer'}}>
                                 <i className="far fa-edit fa-2x"></i>
-                            </span>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            {/* FIX: button anidado - replaced MDBBtn with span */}
+                            </span></span>
+                        <span title="Eliminar Item">{/* FIX: button anidado - replaced MDBBtn with span */}
                             <span 
                                 role="button" 
                                 tabIndex={0} 
@@ -518,8 +514,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') delete_51(row.id); }}
                                 style={{cursor: 'pointer'}}>
                                 <i className="far fa-trash-alt fa-2x"></i>
-                            </span>
-                        </MDBTooltip>
+                            </span></span>
 
                     </>
                 },

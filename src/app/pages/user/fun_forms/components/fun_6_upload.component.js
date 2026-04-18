@@ -1,4 +1,4 @@
-import { MDBBtn } from '../../../../components/ui';
+
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
@@ -6,7 +6,6 @@ import withReactContent from 'sweetalert2-react-content'
 import FunService from '../../../../services/fun.service';
 import DOCS_LIST from './docs_list.component';
 import FUN6DATALIST from './fun_6_datalist';
-
 
 const MySwal = withReactContent(Swal);
 
@@ -68,7 +67,6 @@ export default function FUN_6_UPLOAD(props) {
     }
 
     // ***************************  DATATABLES *********************** //
-
 
     // ***************************  APIS *********************** //
     let addDocument = (e) => {
@@ -162,9 +160,9 @@ export default function FUN_6_UPLOAD(props) {
                 <div className="col text-end m-2">
 
                     {attachs > 0
-                        ? <MDBBtn className="btn btn-sm btn-secondary mx-3" onClick={() => setAttachs(attachs - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </MDBBtn>
+                        ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => setAttachs(attachs - 1)}><i className="fas fa-minus-circle"></i> REMOVER ULTIMO </button>
                         : ""}
-                    <MDBBtn className="btn btn-sm btn-secondary" onClick={() => setAttachs(attachs + 1)}><i className="fas fa-plus-circle"></i> AÑADIR </MDBBtn>
+                    <button type="button" className="btn btn-sm btn-secondary" onClick={() => setAttachs(attachs + 1)}><i className="fas fa-plus-circle"></i> AÑADIR </button>
                 </div>
             </div>
 

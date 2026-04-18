@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBCard, MDBCardBody } from '../../../components/ui';
-import { MDBTypography } from '../../../components/ui';
 
 // FUN FAMILY
 import FUNN1 from './fun_n_1'
@@ -109,7 +107,6 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                             currentVersion={currentVersion}
                             requestUpdate={requestUpdate} />
 
-
                         <FUNN2
                             translation={translation}
                             swaMsg={swaMsg}
@@ -133,7 +130,6 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                             currentItem={currentItem}
                             currentVersion={currentVersion}
                             requestUpdate={requestUpdate} />
-
 
                         <legend className="my-2 px-3 text-uppercase Collapsible">
                             <label>5 Titulares y profesionales responsables </label>
@@ -192,7 +188,6 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                             requestUpdate={requestUpdate} />
                         : ''}
 
-
                     <fieldset className="p-3">
                         <legend className="my-2 px-3 text-uppercase bg-danger" id="fun_pdf">
                             <label className="app-p lead fw-normal text-uppercase text-light">DESCARGAR PDF</label>
@@ -215,8 +210,8 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
 // const NAV_FUNN = () => {
 //     return (
 //         <div className="btn-navpqrs">
-//             <MDBCard className="container-primary" border='dark'>
-//                 <MDBCardBody className="p-1">
+//             <div className="rounded-lg border bg-card p-4 container-primary">
+//                 <div>
 
 //                     <legend className="px-3 pt-2 text-uppercase bg-light text-center">
 //                         <h6>Menu de Navegación</h6>
@@ -275,8 +270,8 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
 //                             <h6>DESCARGAR PDF</h6>
 //                         </legend>
 //                     </a>
-//                 </MDBCardBody>
-//             </MDBCard>
+//                 </div>
+//             </div>
 //         </div>
 //     );
 // }

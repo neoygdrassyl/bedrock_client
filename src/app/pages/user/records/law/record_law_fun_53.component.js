@@ -5,7 +5,7 @@ import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
 import Modal from 'react-modal';
-import { MDBBtn } from '../../../../components/ui';
+
 import FUNN53 from '../../fun_forms/fun_n_53'
 
 export default function RECORD_LAW_FUN_53(props) {
@@ -283,7 +283,7 @@ export default function RECORD_LAW_FUN_53(props) {
             >
                 <div className="my-4 d-flex justify-content-between">
                     <label className="fw-bold align-middle"> <i className="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal(!modal)}></MDBBtn>
+                    <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
                 </div>
 
                 <FUNN53
@@ -293,7 +293,6 @@ export default function RECORD_LAW_FUN_53(props) {
                     currentItem={currentItem}
                     currentVersion={currentVersion}
                     requestUpdate={props.requestUpdate} />
-
 
             </Modal>
         </>
@@ -318,8 +317,6 @@ export default function RECORD_LAW_FUN_53(props) {
             checks.push(element.value)
         }
         formData.set('check', checks.join(';'));
-
-
 
         formData.set('version', currentVersionR);
         formData.set('recordLawId', currentRecord.id);
@@ -400,7 +397,6 @@ export default function RECORD_LAW_FUN_53(props) {
                 });
         }
     }
-
 
     return (
         <div className='mt-4'>

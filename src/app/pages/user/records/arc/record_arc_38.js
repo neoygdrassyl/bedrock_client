@@ -7,7 +7,7 @@ import FUN_SERVICE from '../../../../services/fun.service'
 import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../components/jsons/vars';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import { MDBBtn, MDBTypography } from '../../../../components/ui';
+
 import { handleArchCheck } from '../../../../components/customClasses/pdfCheckHandler';
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
@@ -89,7 +89,6 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
 
         handleArchCheck(pdfDoc, page, chekcs, _detail, 0, 1, model)
 
-
         let _city = _headers.city;
         if (_date && _GLOBAL_ID === 'cb1') _city = _headers.city + ", radicado el " + _date;
         let _number = _headers.number;
@@ -131,7 +130,6 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
         fileDownload(pdfBytes, 'CHECKEO INFORME ARQUITECTÓNICO ' + id_public + '.pdf');
         MySwal.close();
     };
-
 
         // DATA GETERS
         let _GET_CHILD_1 = () => {
@@ -400,10 +398,10 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
             const ALLOW_REVIEW = _ALLOW_REVIEW();
 
             return <>
-                {!ALLOW_REVIEW ? <MDBTypography note noteColor='danger'>
+                {!ALLOW_REVIEW ? <div className="alert alert-danger">
                     <h3 className="text-justify text-dark">ADVERTENCIA</h3>
                     NO ES POSIBLE EVALUAR EL INFORME COMO "SI ES VIABLE" POR QUE HAY DOCUMENTOS QUE NO CUMPLEN, PARA PODER EVALUAR COMO "SI ES VIABLE" LOS DOCUMENTOS EN EL PUNTO 3.1 DEBEN ESTAR DECLARAROS COMO "CUMPLE" EN SU EVALUACIÓN
-                </MDBTypography> : ''}
+                </div> : ''}
                 <div className="row border bg-info py-1 text-white fw-bold">
                     <div className="col">
                         <label>REVISION</label>
@@ -464,12 +462,12 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                                 }
                             </div>
                             <div className="col-1">
-                                {allowReview ? <MDBBtn floating tag='a' size='sm' color='secondary' outline={rewState['REW' + i]}
-                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></MDBBtn>
+                                {allowReview ? <button type="button" className={`btn btn-sm ${!rewState['REW' + i] ? "btn-outline-secondary" : "btn-secondary"}`}
+                                    onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><i className="far fa-edit"></i></button>
                                     : ''}
                                 {rewState['REW' + i]
-                                    ? <MDBBtn floating tag='a' size='sm' color='success' className='ms-1'
-                                        onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></MDBBtn>
+                                    ? <button type="button" className="btn btn-success btn-sm ms-1"
+                                        onClick={() => review_r(isPrimal, i, iasing)}><i className="fas fa-check"></i></button>
                                     : ""
                                 }
                                 {true ?

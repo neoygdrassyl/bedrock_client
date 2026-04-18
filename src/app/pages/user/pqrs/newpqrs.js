@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MDBBtn } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -90,7 +90,6 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         </div>
                         <label className='m-0'>Número de documento: </label>
                         <div className="input-group my-1">
-
 
                             <span className="input-group-text bg-info text-white">
                                 <i className="far fa-id-card"></i>
@@ -217,7 +216,6 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
             let time_time = document.getElementById("pqrs_time_time").value;
             formData.set('time_time', time_time);
 
-
             // GET DATA OF SOLICITORS
             formData.set('solicitors_length', solicitors);
             array_html = document.getElementsByName("pqrs_sol_1");
@@ -251,8 +249,6 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
             formData.set('solicitor_type_id', array_form);
             array_form = [];
             array_html = [];
-
-
 
             // GET DATA OF CONTACTS
             formData.set('contacts_length', contacts);
@@ -458,10 +454,10 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <div className="text-end m-3">
 
                             {(solicitors && contacts)  > 1
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => (minusSolicitor(), minusContact())}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => (minusSolicitor(), minusContact())}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </button>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => (addSolicitor(), addContact())}
-                            ><i className="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => (addSolicitor(), addContact())}
+                            ><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button>
                         </div>
                         {_SOLICITORS_COMPONENT()}
                         <hr className="my-3" />
@@ -469,9 +465,9 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <label className="app-p lead text-start fw-bold text-uppercase">1.2 DATOS PARA NOTIFICACIÓN</label>
                         <div className="text-end m-3">
                             {/* {contacts > 1
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => minusContact()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusContact()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </button>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => addContact()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn> */}
+                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => addContact()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button> */}
                         </div>
                         {_CONTACTS_COMPONENT()}
                         <hr className="my-3" />
@@ -539,8 +535,6 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                                     <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
                                 </div>
                             </div>
-
-
 
                         </div>
 
@@ -616,7 +610,6 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             </div>
                         </div>
 
-
                         <div className="row">
                             <div className="col-lg-6 col-md-6">
                                 <label>Termino legal de respuesta </label>
@@ -641,9 +634,9 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <label className="app-p lead text-start fw-bold text-uppercase">1.5 DOCUMENTOS ANEXOS</label>
                         <div className="text-end m-3">
                             {attachs > 0
-                                ? <MDBBtn className="btn btn-xs btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </MDBBtn>
+                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusAttach()}><i className="fas fa-minus-circle"></i> REMOVER ÚLTIMO </button>
                                 : ""}
-                            <MDBBtn className="btn btn-xs btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </MDBBtn>
+                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => addAttach()}><i className="fas fa-plus-circle"></i> AÑADIR OTRO </button>
                         </div>
                         {_ATTACHS_COMPONENT()}
                         <hr className="my-3" />

@@ -2,7 +2,6 @@ import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import { MDBBtn } from '../../../components/ui';
 
 const MySwal = withReactContent(Swal);
 const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
@@ -42,7 +41,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 {
                     name: <label>ACCIÓN</label>,
                     button: true,
-                    cell: row => <MDBBtn className="btn btn-sm btn-danger" onClick={() => delete_4(row.id)}><i className="far fa-trash-alt fa-2x"></i></MDBBtn>
+                    cell: row => <button type="button" className="btn btn-sm btn-danger" onClick={() => delete_4(row.id)}><i className="far fa-trash-alt fa-2x"></i></button>
                 },
             ]
             return <DataTable
@@ -199,7 +198,7 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <MDBBtn className="btn btn-success my-3" onClick={() => new_4()}><i className="far fa-file-alt"></i> AÑADIR ITEM </MDBBtn>
+                        <button type="button" className="btn btn-success my-3" onClick={() => new_4()}><i className="far fa-file-alt"></i> AÑADIR ITEM </button>
                     </div>
                 </div>
                 {_CHILD_4_LIST()}

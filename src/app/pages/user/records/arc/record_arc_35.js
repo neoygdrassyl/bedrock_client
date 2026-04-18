@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -60,7 +60,6 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
             }
         }
     }, [editLocation]);
-
 
         // DATA GETERS
         let _GET_CHILD_2 = () => {
@@ -509,12 +508,8 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     minWidth: '110px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditParking(row)}><i className="far fa-edit "></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_parking(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditParking(row)}><i className="far fa-edit "></i></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_parking(row.id)}><i className="far fa-trash-alt"></i></button></span>
                     </>,
                 },
             ]
@@ -778,12 +773,8 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditLocation(row)}><i className="far fa-edit"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                            <MDBBtn className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_location(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditLocation(row)}><i className="far fa-edit"></i></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_location(row.id)}><i className="far fa-trash-alt"></i></button></span>
                     </>,
                 },
             ]
@@ -1545,7 +1536,6 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
         }
         return (
             <div className="record_arc_32 container">
-
 
                 <h3 className="py-3" >3.5.1 Cupos en Sitio</h3>
                 {_COMPONENT_0()}

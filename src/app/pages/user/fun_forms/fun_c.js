@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
-import { MDBBtn, MDBCard, MDBCardBody, MDBTypography } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DCO_LIS from '../../../components/jsons/fun6DocsList.json'
@@ -531,7 +531,6 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
 
         // COMPONENT JSX
 
-
         // FUNCTIONS AND WORKING ENGINES
         var formData = new FormData();
         var formDataclock = new FormData();
@@ -547,8 +546,6 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             formData.set('worker', worker);
             let reciever_date = document.getElementById("c_32").value;
             if (reciever_date) formData.set('reciever_date', reciever_date);
-
-
 
             //  THESE ARE RADIOS
             let value = null;
@@ -674,7 +671,6 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             }
         }
 
-
         let save_review = (condition) => {
             if (currentItem.state >= -1 && currentItem.state <= 5) {
                 formData = new FormData();
@@ -722,7 +718,6 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         });
                     }
                 });
-
 
         }
 
@@ -832,8 +827,6 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
 
         }
 
-
-
         return (
             <div>
                 {currentItem != null ? <>
@@ -847,7 +840,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                                 <button className="btn btn-success btn-sm"><i className="far fa-share-square"></i> GUARDAR CAMBIOS</button>
                             </div>
                             <div className="col">
-                                <MDBBtn className="btn btn-primary btn-sm" onClick={() => _SET_MISSING_FUN_R()}><i className="fas fa-tasks"></i> CARGAR FALTANTES</MDBBtn>
+                                <button type="button" className="btn btn-primary btn-sm" onClick={() => _SET_MISSING_FUN_R()}><i className="fas fa-tasks"></i> CARGAR FALTANTES</button>
                             </div>
                         </div>
 
@@ -942,8 +935,8 @@ const NAV_FUNC = (state) => {
     return (
         <div className="btn-navpqrs ">
             <div className="fung_nav">
-                <MDBCard className="container-primary" border='dark'>
-                    <MDBCardBody className="p-1">
+                <div className="rounded-lg border bg-card p-4 container-primary">
+                    <div>
                         <legend className="px-3 pt-2 text-uppercase bg-light text-center">
                             <h6>Menu de Navegacion</h6>
                         </legend>
@@ -989,8 +982,8 @@ const NAV_FUNC = (state) => {
                                 <h6>DESCARGAR PDF</h6>
                             </legend>
                         </a>
-                    </MDBCardBody>
-                </MDBCard>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -3,7 +3,7 @@ import FUNService from '../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
 
@@ -198,14 +198,10 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                        <MDBBtn className="btn btn-secondary btn-sm m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                            <i className="far fa-edit fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
-                        <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 mb-1 ms-1">
-                        <MDBBtn className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_3(row.id)}>
-                            <i className="far fa-trash-alt fa-2x"></i></MDBBtn>
-                        </MDBTooltip>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary btn-sm m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
+                            <i className="far fa-edit fa-2x"></i></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_3(row.id)}>
+                            <i className="far fa-trash-alt fa-2x"></i></button></span>
                     </>
                 },
             ]

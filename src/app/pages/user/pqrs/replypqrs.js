@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBTypography } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -116,10 +116,9 @@ function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, 
                         {currentItem.pqrs_workers.length == _REPLIES_COUNTER_COMPONENT()
                             ? <>
 
-
                                 <hr />
                                 <div className="text-start lead fw-bold m-3">
-                                    <MDBTypography note noteColor={currentItem.pqrs_workers.length == _REPLIES_COUNTER_COMPONENT() ? 'success' : 'danger'}> NUMERO DE RESPUESTA(S) {_REPLIES_COUNTER_COMPONENT()} DE {currentItem.pqrs_workers.length} TOTAL(ES)</MDBTypography>
+                                    <div> NUMERO DE RESPUESTA(S) {_REPLIES_COUNTER_COMPONENT()} DE {currentItem.pqrs_workers.length} TOTAL(ES)</div>
 
                                 </div>
                                 <div className="text-center lead fw-bold m-3">
@@ -144,7 +143,6 @@ function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, 
                                     closeModal={closeModa}
                                     hardReset
                                 />
-
 
                             </> : <label className="app-p fw-bold text-danger text-center">SE DEBEN DE DAR TODAS LAS RESPUESTAS DE LOS PROFESIONALES PARA PODER RESPONDER AL SOLICITANTE</label>}
                     </> : <fieldset className="p-3" id="fung_0">

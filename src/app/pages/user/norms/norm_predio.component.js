@@ -2,7 +2,7 @@ import { Suspense, useEffect, useState, } from 'react';
 import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import DataTable from 'react-data-table-component';
 import BICS from "../../../components/jsons/BICS.json"
 
@@ -281,12 +281,8 @@ export default function NORM_PREDIOS(props) {
             center: true,
             minWidth: '80px',
             cell: row => row.noactions ? null : <>
-                <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 me-1">
-                    <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i className="far fa-edit"></i></MDBBtn>
-                </MDBTooltip>
-                <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                    <MDBBtn className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></MDBBtn>
-                </MDBTooltip>
+                <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><i className="far fa-edit"></i></button></span>
+                <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><i className="far fa-trash-alt"></i></button></span>
             </>,
         },
     ]

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MDBBtn, MDBCard, MDBCardBody, MDBRow, MDBCol } from '../../../../components/ui';
+
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import FUNService from '../../../../services/fun.service';
@@ -216,8 +216,8 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
     const selectedCount = ALL_OPTION_KEYS.filter(key => options[key]).length;
 
     return (
-        <MDBCard className="bg-card mb-3">
-            <MDBCardBody>
+        <div className="rounded-lg border bg-card p-4 bg-card mb-3">
+            <div>
                 <h4 className="text-center mb-3">
                     <i className="fas fa-copy me-2"></i>
                     DUPLICAR PROYECTO
@@ -261,9 +261,9 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                     </div>
 
                     {/* Option groups */}
-                    <MDBRow>
+                    <div className="row">
                         {OPTION_GROUPS.map((group) => (
-                            <MDBCol md="6" lg="4" key={group.label} className="mb-3">
+                            <div className="col-md-6">
                                 <div className="border rounded p-2 h-100">
                                     <h6 className="fw-bold mb-2">
                                         <i className={`${group.icon} me-1`}></i> {group.label}
@@ -287,13 +287,13 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                                         </div>
                                     ))}
                                 </div>
-                            </MDBCol>
+                            </div>
                         ))}
-                    </MDBRow>
+                    </div>
 
                     {/* Submit button */}
                     <div className="text-center mt-3">
-                        <MDBBtn
+                        <button type="button"
                             color="primary"
                             type="submit"
                             disabled={isSubmitting}
@@ -310,11 +310,11 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                                     Duplicar proyecto
                                 </>
                             )}
-                        </MDBBtn>
+                        </button>
                     </div>
                 </form>
-            </MDBCardBody>
-        </MDBCard>
+            </div>
+        </div>
     );
 }
 

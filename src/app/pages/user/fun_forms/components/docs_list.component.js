@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { MDBBtn, MDBTooltip } from '../../../../components/ui';
+
 import DataTable from 'react-data-table-component';
 import Modal from 'react-modal';
 import ListJson from '../../../../components/jsons/fun6DocsList.json';
 import './fun_modal_shared.css';
-
-
 
 function DOCS_LIST({ idRef, text, setValues }) {
         const [modalSearchList, setModalSearchList] = useState(false);
@@ -61,9 +59,8 @@ function DOCS_LIST({ idRef, text, setValues }) {
             {
                 name: 'ACCION',
                 button: true,
-                cell: row => <MDBTooltip title='Copiar informacion' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0">
-                    <button className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => _COPY_INFO(row)}>
-                        <i className="far fa-copy fa-2x"></i></button></MDBTooltip>,
+                cell: row => <button title="Copiar informacion" className="btn btn-sm btn-info m-0 p-2 shadow-none" onClick={() => _COPY_INFO(row)}>
+                        <i className="far fa-copy fa-2x"></i></button>,
             }
         ]
         const docsData = _GET_DOCS_DATA();
@@ -77,7 +74,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
         }
         return (
             <div>
-                <MDBBtn className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i className="fas fa-th-list"></i> {text}</MDBBtn>
+                <button type="button" className="btn btn-info shadow-none" id={idRef} onClick={(e) => toggle(e.target.id)}><i className="fas fa-th-list"></i> {text}</button>
                 <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={modalSearchList}
                     style={customStylesForModal}
@@ -86,7 +83,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
 
                     <div className="my-4 d-flex justify-content-between">
                         <label><i className="fas fa-th-list"></i> CODIGOS TIPOLOGIA DOCUMENTAL</label>
-                        <MDBBtn className='btn-close' color='none' onClick={toggle}></MDBBtn>
+                        <button type="button" className="btn-close" onClick={toggle} />
                     </div>
                     <DataTable
                         striped
@@ -100,7 +97,7 @@ function DOCS_LIST({ idRef, text, setValues }) {
                         noDataComponent="No hay datos"
                     />
                     <div className="text-end py-4 mt-3">
-                        <MDBBtn className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><i className="fas fa-times-circle"></i> CERRAR</MDBBtn>
+                        <button type="button" className="btn btn-lg btn-info" onClick={() => setModalSearchList(false)}><i className="fas fa-times-circle"></i> CERRAR</button>
                     </div>
                 </Modal>
 

@@ -1,7 +1,4 @@
 import { useState, useEffect } from 'react';
-import {
-  MDBTypography, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBBreadcrumb, MDBBreadcrumbItem
-} from '../../components/ui';
 import DataTable from 'react-data-table-component';
 import { Link } from "react-router-dom";
 import Collapsible from '../../components/Collapsible';
@@ -554,15 +551,17 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
     return (
       <div className="Liquidator">
         <div className="col-12 d-flex justify-content-start p-0">
-          <MDBBreadcrumb className="mb-0 p-0 ms-0">
-            <MDBBreadcrumbItem>
-              <Link to={'/home'}><i class="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
-            </MDBBreadcrumbItem>
-            <MDBBreadcrumbItem>
-              <Link to={'/dashboard'}><i class="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
-            </MDBBreadcrumbItem>
-            <MDBBreadcrumbItem active><i class="fas fa-calculator"></i>  <label className="text-uppercase">{breadCrums.bc_u11}</label></MDBBreadcrumbItem>
-          </MDBBreadcrumb>
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb mb-0 p-0 ms-0">
+              <li className="breadcrumb-item">
+                <Link to={'/home'}><i className="fas fa-home"></i> <label className="text-uppercase">{breadCrums.bc_01}</label></Link>
+              </li>
+              <li className="breadcrumb-item">
+                <Link to={'/dashboard'}><i className="far fa-bookmark"></i> <label className="text-uppercase">{breadCrums.bc_u1}</label></Link>
+              </li>
+              <li className="breadcrumb-item active"><i className="fas fa-calculator"></i>  <label className="text-uppercase">{breadCrums.bc_u11}</label></li>
+            </ol>
+          </nav>
         </div>
 
         <div className="row py-4 d-flex justify-content-center">
@@ -585,18 +584,18 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
               : ''}
 
 
-            {hideInfo ? '' : <MDBTypography note style={{ backgroundColor: '#EDEDED' }}>
+            {hideInfo ? '' : <div className="alert alert-light" style={{ backgroundColor: '#EDEDED' }}>
               <h3 className="text-justify text-dark" id='title2'>NOTA: Apreciado usuario, tenga en cuenta antes de usar esta herramienta: {<Button_navigation Iddown={'title3'} Idup={'title'} />}</h3>
               {_note_1}
-            </MDBTypography>}
+            </div>}
 
             <div className='row border border-dark bg-info py-2 text-center text-light app-p'>
               <div className='col' id='title3'> MODELO N°1: LICENCIAS QUE AUTORIZAN OBRAS {<Button_navigation Iddown={'title4'} Idup={'title2'} />}</div>
             </div>
-            <MDBCard className="bg-card my-3">
-              <MDBCardBody>
-                <MDBRow>
-                  <MDBCol md="6">
+            <div className="card bg-card my-3">
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-6">
                     <h3 className="text-center">{translation.subTitle_1}</h3>
                     <hr />
                     <form onSubmit={handleSubmit} id="app-form">
@@ -689,8 +688,8 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                       </div>
 
                     </form>
-                  </MDBCol>
-                  <MDBCol md="6">
+                  </div>
+                  <div className="col-md-6">
                     <h3 className="text-center" >{translation.subTitle_2}</h3>
                     <hr />
                     <table class="table">
@@ -723,10 +722,10 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                         </tr>
                       </tbody>
                     </table>
-                  </MDBCol>
-                </MDBRow>
-              </MDBCardBody>
-            </MDBCard>
+                  </div>
+                </div>
+              </div>
+            </div>
             <h2 class="text-uppercase text-center my-3" id='title4'>Tabla de Liquidacion  {<Button_navigation Iddown={'title5'} Idup={'title3'} />}</h2>
             {table.length > 0
               ? <>
@@ -736,7 +735,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                 </div>
               </>
               : <div className="text-center">No hay datos en la tabla</div>}
-            {hideInfo ? '' : <MDBTypography notestyle={{ backgroundColor: '#EDEDED' }}>
+            {hideInfo ? '' : <div className="alert alert-light" style={{ backgroundColor: '#EDEDED' }}>
               <h4 className="text-justify text-dark">NOTA: Para conocer el costo de las licencias de Urbanización , Subdivisión y Parcelación por favor acérquese a la Curaduría Urbana Uno de Bucaramanga o envié una
                 solicitud a través de los siguientes canales:</h4>
               <Collapsible trigger={<><button className="btn btn-light btn-sm my-2">VER NOTAS</button></>}>
@@ -751,7 +750,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                 {_note_2}
               </Collapsible>
 
-            </MDBTypography>}
+            </div>}
 
             <div className='row border border-dark bg-info py-2 text-center text-light app-p my-3'>
               <div className='col' id='title5'>MODELO N° 2 LICENCIAS QUE NO AUTORIZA OBRAS  {<Button_navigation Iddown={null} Idup={'title4'} />}</div>

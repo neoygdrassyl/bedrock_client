@@ -6,7 +6,7 @@ import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_2
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
 import Modal from 'react-modal';
-import { MDBBtn } from '../../../../components/ui';
+
 import FUNService from '../../../../services/fun.service';
 import dayjs from 'dayjs';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;;
@@ -396,11 +396,8 @@ export default function RECORD_LAW_FUN_52(props) {
                         </div>
                     </div>
 
-
                 </>
             })}
-
-
 
         </>
     }
@@ -450,10 +447,9 @@ export default function RECORD_LAW_FUN_52(props) {
             >
                 <div className="my-4 d-flex justify-content-between">
                     <label className="fw-bold align-middle"> <i className="far fa-edit" style={{ fontSize: '150%' }}></i>ACTUALIZACIÓN RÁPIDA</label>
-                    <MDBBtn className='btn-close' color='none' onClick={() => setModal({ [item.id]: false })}></MDBBtn>
+                    <button type="button" className="btn-close" onClick={() => setModal({ [item.id]: false })} />
                 </div>
                 {_EDIT_COMPONENT(item)}
-
 
             </Modal>
         </>
@@ -730,7 +726,6 @@ export default function RECORD_LAW_FUN_52(props) {
         }
         formData.set('value', values.join(';'));
 
-
         formData.set('version', currentVersionR);
         formData.set('recordLawId', currentRecord.id);
         formData.set('id_public', 'f52');
@@ -892,8 +887,6 @@ export default function RECORD_LAW_FUN_52(props) {
                 });
             });
     }
-
-
 
     return (
         <div className='mt-4'>

@@ -50,7 +50,6 @@ import { nomens } from '../../components/jsons/vars';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
 
-
 // JSONS
 import dayjs from 'dayjs';
 const MySwal = withReactContent(Swal);
@@ -252,7 +251,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     }
                 }
             }
-
 
         }
         setState({
@@ -1350,7 +1348,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             let csvContent = "data:text/csv;charset=utf-8,"
                 + rows.map(e => e.join(";")).join("\n");
 
-
             var encodedUri = encodeURI(csvContent);
             const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
 
@@ -1686,7 +1683,6 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         <button type="button" className="btn-close" onClick={() => toggle_c()} />
                     </div>
                     {modalHeader}
-
 
                     <FUNC translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}

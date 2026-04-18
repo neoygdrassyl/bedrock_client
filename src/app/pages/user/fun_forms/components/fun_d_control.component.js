@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { MDBBtn } from '../../../../components/ui';
+
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -157,7 +157,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                                     <button className="btn btn-success my-3" ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
                                 </div>
                                 <div className="col">
-                                    <MDBBtn className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i className="far fa-file-pdf"></i> GENERAR PDF </MDBBtn>
+                                    <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i className="far fa-file-pdf"></i> GENERAR PDF </button>
                                 </div>
                             </div>
                             <ul className="list-group mx-2">

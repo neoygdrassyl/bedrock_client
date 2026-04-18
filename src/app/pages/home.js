@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import { MDBBtn, MDBInput, MDBRow, MDBCol, MDBTypography, MDBBadge, MDBInputGroup, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBDropdownLink, MDBInputGroupElement } from '../components/ui';
 import { Link } from "react-router-dom";
 // Carousel IMGS
 import NEW_ING from '../img/news1.jpg'
@@ -316,33 +315,21 @@ function Home({ translation, history }) {
                 <h5 class=" fw-normal">Ingrese el ID del proceso o el número de cédula para conocer el estado del proceso</h5>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                   <div style={{ width: '33rem' }}>
-                    <MDBInputGroup className='mb-3'>
-                      <MDBDropdown>
-                        <MDBDropdownToggle style={{ backgroundColor: '#107ABC' }}>TIPO DE PROCESO</MDBDropdownToggle>
-                        <MDBDropdownMenu>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = '68001-1-aa-0000'}>LICENCIA</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = 'OAaa-0000'}>OTRA ACTUACIÓN</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = 'VRaa-0000'}>PETICIÓN PQRS</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = 'VRaa-0000'}>NUMERO DE VENTANILLA ÚNICA (VR)</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = 'Naa-0000'}>NOMENCLATURA</MDBDropdownLink>
-                          </MDBDropdownItem>
-                          <MDBDropdownItem>
-                            <MDBDropdownLink onClick={() => inputSearchRef.current.value = ''}>BUSCAR POR CEDULA</MDBDropdownLink>
-                          </MDBDropdownItem>
-                        </MDBDropdownMenu>
-                      </MDBDropdown>
-                      <MDBInputGroupElement type='text' label='ID del proceso' inputRef={inputSearchRef} />
-                      <MDBBtn style={{ backgroundColor: '#107ABC' }} onClick={() => _CHECK_STATUS()}>BUSCAR</MDBBtn>
-                    </MDBInputGroup>
+                    <div className="input-group mb-3">
+                      <div className="dropdown">
+                        <button type="button" className="btn dropdown-toggle" style={{ backgroundColor: '#107ABC', color: 'white' }} data-bs-toggle="dropdown">TIPO DE PROCESO</button>
+                        <ul className="dropdown-menu">
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = '68001-1-aa-0000'}>LICENCIA</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = 'OAaa-0000'}>OTRA ACTUACIÓN</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = 'VRaa-0000'}>PETICIÓN PQRS</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = 'VRaa-0000'}>NUMERO DE VENTANILLA ÚNICA (VR)</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = 'Naa-0000'}>NOMENCLATURA</button></li>
+                          <li><button type="button" className="dropdown-item" onClick={() => inputSearchRef.current.value = ''}>BUSCAR POR CEDULA</button></li>
+                        </ul>
+                      </div>
+                      <input type="text" className="form-control" placeholder="ID del proceso" ref={inputSearchRef} />
+                      <button type="button" className="btn" style={{ backgroundColor: '#107ABC', color: 'white' }} onClick={() => _CHECK_STATUS()}>BUSCAR</button>
+                    </div>
                   </div>
                 </div>
                 <p class=""><h5>aa = los dos últimos dígitos del año del proceso, 0000 = consecutivo del proceso</h5></p>
@@ -370,93 +357,93 @@ function Home({ translation, history }) {
                 </div>
               </div>
               {/*
-              <MDBRow className="mt-5">
-                <MDBCol md="4">
+              <div className="row mt-5">
+                <div className="col-md-4">
                   <i class="far fa-list-alt fa-4x"></i>
                   <h3 className="display-6 fw-bold">Listado de Publicaciones</h3>
                   <p className="lead">Encuentre todas las publicaciones expedidas por la Curaduría</p>
-                  <Link to={'/administrative'}><MDBBtn color='secondary'>
+                  <Link to={'/administrative'}><button type="button" className="btn btn-secondary">
                     <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Ver Listado</h4>
-                  </MDBBtn></Link>
-                </MDBCol>
-                <MDBCol md="4">
+                  </button></Link>
+                </div>
+                <div className="col-md-4">
                   <i className="fas fa-file-invoice fa-4x"></i>
                   <h3 className="display-6 fw-bold">Radicación de Licencias</h3>
                   <p className="lead">Inicie aquí su proceso para radicar una Licencia</p>
-                  <Link to={'/file'}><MDBBtn color='info'>
+                  <Link to={'/file'}><button type="button" className="btn btn-info">
                     <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Radicar</h4>
-                  </MDBBtn></Link>
-                </MDBCol>
-                <MDBCol md="4">
+                  </button></Link>
+                </div>
+                <div className="col-md-4">
                   <i class="fas fa-calculator fa-4x"></i>
                   <h3 className="display-6 fw-bold">Calculadora de liquidación</h3>
                   <p className="lead">Determine un valor posible de su liquidación aquí</p>
-                  <Link to={'/liquidator'}><MDBBtn color='success'>
+                  <Link to={'/liquidator'}><button type="button" className="btn btn-success">
                     <h4 className="pt-2"><i class="fas fa-chevron-right"></i> Calculadora</h4>
-                  </MDBBtn>
+                  </button>
                   </Link>
-                </MDBCol>
-              </MDBRow> */}
+                </div>
+              </div> */}
             </div>
 
             {/*  <h2 className="mt-5">Ultimas Noticias</h2>
             <hr />
-            <MDBRow className="d-flex justify-content-center">
-              <MDBCol md="10">
+            <div className="row d-flex justify-content-center">
+              <div className="col-md-10">
 
                 <div id="news_4">
                   <p className="display-6 lead fw-bold">¡AVISO IMPORTANTE PRÓRROGA DE LAS LICENCIAS Y REVALIDACIONES!</p>
-                  <MDBRow>
-                    <MDBCol md="12">
+                  <div className="row">
+                    <div className="col-md-12">
                       <p className="app-p lead text-justify">El Decreto 1783 De 2021 que modificó el Decreto 1077 de 2015 en el artículo 2.2.6.1.2.4.1. contempla (…) La solicitud de prórroga de una licencia urbanística deberá radicarse con la documentación completa a más tardar treinta (30) días hábiles antes del vencimiento de la respectiva licencia. La solicitud deberá acompañarse de la manifestación bajo la gravedad del juramento de la iniciación de obra por parte del urbanizador o constructor responsable.</p>
                       <p className="app-p lead text-justify">La prórroga de la revalidación se debe solicitar a más tardar treinta (30) días hábiles antes de su vencimiento y su expedición procede con la sola presentación de la solicitud por parte del interesado. Las solicitudes de prórroga de licencias urbanísticas y de prórroga de sus revalidaciones cuyo término de vigencia inicial se venza dentro de los tres meses (3) meses siguientes a la modificación del presente artículo, podrán presentarse cumpliendo con los términos establecidos en las normas vigentes antes de esta modificación (...)</p>
                       <p className="app-p lead text-justify">POR LO ANTERIOR Y EN VIRTUD DE QUE EL DECRETO ESTÁ VIGENTE DESDE EL 20 DE DICIEMBRE DE 2022: <b>SI SU LICENCIA O REVALIDACIÓN VENCE EL 21 DE MARZO DE 2022 O FECHA SIGUIENTE Y VA A RADICAR SOLICITUD DE PRÓRROGA, ESTA DEBE HACERSE DE FORMA COMPLETA 30 DÍAS HÁBILES ANTES DEL VENCIMIENTO, ES DECIR POR CITAR UN EJEMPLO, SI VENCE EL 21 DE MARZO DE 2022 DEBE RADICAR A MÁS TARDAR EL 07 DE FEBRERO DE 2022.LO ANTERIOR SÓLO APLICA PARA AQUELLAS LICENCIAS QUE PUEDEN SER PRORROGABLES</b>.</p>
-                    </MDBCol>
-                  </MDBRow>
+                    </div>
+                  </div>
                 </div>
 
                 <div id="news_3">
                   <p className="display-6 lead fw-bold">Ya disponible, certificación para profesionales que actúan ante la Curaduría</p>
-                  <MDBRow>
-                    <MDBCol md="4">
+                  <div className="row">
+                    <div className="col-md-4">
                       <img src={NEW_3_ING} class="d-block w-100 mt-2" alt="..." />
-                    </MDBCol>
-                    <MDBCol md="8">
+                    </div>
+                    <div className="col-md-8">
                       <p className="app-p lead text-justify">La Curaduria Urbana N°1 de Bucaramanga ofrece a los profesionales que figuran en las actuaciones
                         urbanísticas, la certificación de participación y responsabilidad en la calidad profesional en la que haya actuado
                         en los proyectos de licenciamiento. Para generar el certificado, asi como para verificar el expedidor dar <Link to={'/certificacion'}>click aqui</Link>.</p>
-                    </MDBCol>
-                  </MDBRow>
+                    </div>
+                  </div>
                 </div>
                 <div id="news_1">
                   <p className="display-6 lead fw-bold ">Curaduría Inclusiva - Ley 982 de 2005</p>
-                  <MDBRow>
-                    <MDBCol md="8">
+                  <div className="row">
+                    <div className="col-md-8">
                       <p className="app-p lead text-justify">La Curaduria N° 1 de Bucaramanga usa la ayuda de las TIC para ofrecer un mejor servicio a quienes lo necesiten. Gracias al Ministerio de Tecnologías de la Información y las Comunicaciones- MINTIC en alianza con la Federación Nacional de Sordos de Colombia- FENASCOL, apoyándose en la tecnología ofrece servicios de forma gratuita mediante una aplicación de dispositivos móviles, de igual modo el ConVerTIC es el proyecto de inclusión del Ministerio TIC con el fin de promover la inclusión social, educativa, laboral y cultural a través de uso de las tecnologías para las personas ciegas o con baja visión. Conoce mas sobre estas alternativas
                         <Link to={'/inclusivity'}> dando click aqui</Link>. </p>
-                    </MDBCol>
-                    <MDBCol md="4">
+                    </div>
+                    <div className="col-md-4">
                       <img src={NEW_2_ING} class="d-block w-100 mt-2" alt="..." />
-                    </MDBCol>
-                  </MDBRow>
+                    </div>
+                  </div>
                 </div>
 
                 <div id="news_2">
                   <p className="display-6 lead fw-bold">Nuestro Nuevo Punto de Atención</p>
-                  <MDBRow>
-                    <MDBCol md="4">
+                  <div className="row">
+                    <div className="col-md-4">
                       <img src={NEW_ING} class="d-block w-100 mt-2" alt="..." />
-                    </MDBCol>
-                    <MDBCol md="8">
+                    </div>
+                    <div className="col-md-8">
                       <p className="app-p lead text-justify">Ya se encuentra en funcionamiento nuestro nuevo punto de atención. Nuestra nueva ubicación se encuentra en la Calle 36 # 31-39 Centro Empresarial Chicamocha - Local 101, con parqueadero público en el Centro Empresarial Chicamocha. Nuestro horario de atención permanece sin cambios, de Lunes a Viernes de 07:00 am a 12:30 pm y 1:00 pm  a 5:00 pm.</p>
-                    </MDBCol>
-                  </MDBRow>
+                    </div>
+                  </div>
                 </div>
 
 
 
-              </MDBCol>
-            </MDBRow>
+              </div>
+            </div>
             */}
           </div>
         </div>
@@ -476,7 +463,7 @@ function Home({ translation, history }) {
         >
           <div className="my-4 d-flex justify-content-between">
             {modalMessage.title}
-            <MDBBtn className='btn-close' color='none' onClick={() => setModal(false)}></MDBBtn>
+            <button type="button" className="btn-close" onClick={() => setModal(false)} />
           </div>
 
           <div className='border p-2'>
@@ -484,9 +471,9 @@ function Home({ translation, history }) {
           </div>
 
           <div className="text-end py-4 mt-3">
-            <MDBBtn color='info' size='sm' onClick={() => setModal(false)}>
+            <button type="button" className="btn btn-info btn-sm" onClick={() => setModal(false)}>
               <h4 className="pt-2"><i class="fas fa-times-circle"></i> CERRAR</h4>
-            </MDBBtn>
+            </button>
           </div>
 
         </Modal> */}

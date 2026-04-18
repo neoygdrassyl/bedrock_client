@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import FUNService from '../../../services/fun.service'
-import { MDBBtn, MDBTooltip } from '../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from 'react-data-table-component';
@@ -10,7 +10,6 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import DOCS_LIST from './components/docs_list.component';
 import FUN_6_HISTORY from './components/fun_6_history.component';
 import submitService from '../../../services/submit.service';
-
 
 const MySwal = withReactContent(Swal);
 function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, readOnly, title, VREdit, parentLoad, updateParentLoad }) {
@@ -167,18 +166,13 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                         {readOnly ? '' :
                             window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
                                 <>
-                                    <MDBTooltip title='Modificar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 ms-1">
-                                        <MDBBtn className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => set_edit_6(row)}>
-                                            <i className="far fa-edit" style={{ fontSize: '150%' }}></i></MDBBtn>
-                                    </MDBTooltip>
-                                    <MDBTooltip title='Eliminar Item' wrapperProps={{ color: false, shadow: false }} wrapperClass="m-0 p-0 ms-1">
-                                        <MDBBtn className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => delete_6(row.id)}>
-                                            <i className="far fa-trash-alt" style={{ fontSize: '150%' }}></i></MDBBtn>
-                                    </MDBTooltip>
+                                    <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => set_edit_6(row)}>
+                                            <i className="far fa-edit" style={{ fontSize: '150%' }}></i></button></span>
+                                    <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => delete_6(row.id)}>
+                                            <i className="far fa-trash-alt" style={{ fontSize: '150%' }}></i></button></span>
                                 </>
                                 : ''
                         }
-
 
                     </>
                 },

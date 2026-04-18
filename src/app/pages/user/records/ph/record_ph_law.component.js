@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import { MDBBadge } from '../../../../components/ui';
 import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
@@ -43,10 +42,10 @@ function RECORD_PH_LAW(props) {
             return <>{_COMPONENT}</>
         }
         let _GET_VALUE_BADGE = (_value) => {
-            if (_value == -1) return <MDBBadge color='dark'>SIN DEFINIR</MDBBadge>
-            if (_value == 0) return <MDBBadge color='danger'>NO APORTO</MDBBadge>
-            if (_value == 1) return <MDBBadge color='success'>APORTO</MDBBadge>
-            if (_value == 2) return <MDBBadge color='warning'>NO APLICA</MDBBadge>
+            if (_value == -1) return <span className="badge bg-dark">SIN DEFINIR</span>
+            if (_value == 0) return <span className="badge bg-danger">NO APORTO</span>
+            if (_value == 1) return <span className="badge bg-success">APORTO</span>
+            if (_value == 2) return <span className="badge bg-warning">NO APLICA</span>
         }
         let _GET_SELECT_COLOR_VALUE = (_VALUE) => {
             if (!_VALUE) {

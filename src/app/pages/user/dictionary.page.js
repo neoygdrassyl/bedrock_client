@@ -64,7 +64,6 @@ export default function DICTIONARY(props) {
         if (load == 0) loadLists();
     }, [load]);
 
-
     // ***************************  DATA CONVERTER *********************** //
     function _GET_STATE_STR(state) {
         if (state < '-1') return <label className='text-danger'>DESISTIDO (Ejecución)</label>
@@ -312,7 +311,6 @@ export default function DICTIONARY(props) {
         );
     };
 
-
     let _COMPONENT_LIST_A = () => {
         let _SERIES = SERIES
         if (infoCud.codeDictionary){
@@ -462,10 +460,8 @@ export default function DICTIONARY(props) {
                 highlightOnHover
                 dense
 
-
                 progressPending={LIST_H.length == 0}
                 progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
-
 
                 defaultSortFieldId={1}
             />
@@ -588,7 +584,6 @@ export default function DICTIONARY(props) {
                     </div>
                 </div>
             </div>
-
 
             <MDBTabsContent>
                 <MDBTabsPane show={tab == 'A'}>
@@ -718,7 +713,6 @@ export default function DICTIONARY(props) {
         let csvContent = "data:text/csv;charset=utf-8,"
             + rows.map(e => e.join(";")).join("\n");
 
-
         var encodedUri = encodeURI(csvContent);
         const fixedEncodedURI = encodedUri.replaceAll('#', '%23').replaceAll('°', 'r');
 
@@ -729,7 +723,6 @@ export default function DICTIONARY(props) {
 
         link.click();
     }
-
 
     return (
         <>

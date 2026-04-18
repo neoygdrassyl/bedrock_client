@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import FUNService from '../../../../services/fun.service'
-import { MDBBtn } from '../../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import JsonDocList from '../../../../components/jsons/fun6DocsList.json'
@@ -116,8 +116,6 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
             }
         }
     }, [currentVersion]);
-
-
 
         var formData = new FormData();
 
@@ -693,7 +691,7 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
                     ''
                     : <div className="row text-center">
                         <div className="col-12">
-                            <MDBBtn className="btn btn-success my-3" onClick={() => setCheckList()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS</MDBBtn>
+                            <button type="button" className="btn btn-success my-3" onClick={() => setCheckList()}><i className="far fa-share-square"></i> GUARDAR CAMBIOS</button>
                         </div>
                     </div>}
 

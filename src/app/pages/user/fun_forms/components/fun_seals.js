@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MDBBtn } from '../../../../components/ui';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { dateParser, formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
@@ -368,12 +368,12 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <MDBBtn className="btn btn-warning" onClick={() => generate_pdf(1)}><i className="far fa-file"></i> GENERAR ORIGINAL </MDBBtn>
+                                <button type="button" className="btn btn-warning" onClick={() => generate_pdf(1)}><i className="far fa-file"></i> GENERAR ORIGINAL </button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <MDBBtn className="btn btn-warning" onClick={() => generate_pdf(0)}><i className="far fa-file"></i> GENERAR TITULAR </MDBBtn>
+                                <button type="button" className="btn btn-warning" onClick={() => generate_pdf(0)}><i className="far fa-file"></i> GENERAR TITULAR </button>
                             </div>
                         </div>
                     </div>
@@ -381,6 +381,5 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
             </div>
         );
 }
-
 
 export default FUN_SEAL;

@@ -1,4 +1,4 @@
-import { MDBBtn, MDBIcon } from '../../../../../components/ui';
+
 import dayjs from 'dayjs';
 import { useEffect, useState, memo } from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
@@ -57,7 +57,6 @@ function FUN_CHART_TIME(props) {
     var [varIndexC, setVaiC] = useState(Array(5).fill(0)); // Coefficient of variation 
     var [rangeC, setRangeC] = useState(Array(5).fill(0)); // Range 
 
-
     // ------------------ STUDY TIME --------------------- // 
     //var [build2, setBuild2] = useState(Array(11).fill(0));
     var [data2, setData2] = useState([]);
@@ -87,7 +86,6 @@ function FUN_CHART_TIME(props) {
     var [varIndexC2, setVaiC2] = useState(Array(5).fill(0)); // Coefficient of variation 
     var [rangeC2, setRangeC2] = useState(Array(5).fill(0)); // Range 
 
-
     useEffect(() => {
         if (load == 0) loadData();
         if (load == 1 && data.length == 0) { curateData(); curateData2(); }
@@ -95,7 +93,6 @@ function FUN_CHART_TIME(props) {
     }, [load, filterD, filterId, date_1, date_2]);
 
     // ***************************  DATA GETTERS *********************** //
-
 
     // *************************  DATA CONVERTERS ********************** //
     let _ADD_MARK = (_new_mark, _newData) => {
@@ -110,7 +107,6 @@ function FUN_CHART_TIME(props) {
         marks.push(_new_mark);
         return marks;
     }
-
 
     function curateData() {
         let newData = [];
@@ -230,7 +226,6 @@ function FUN_CHART_TIME(props) {
             return newValuesA;
         })
 
-
         newMedC = valuesC.map(_values => {
             let newMed;
             if (_values.length % 2 == 0) {
@@ -313,8 +308,6 @@ function FUN_CHART_TIME(props) {
         let newMedC = Array(5).fill(0);
         let newVarianceC = Array(5).fill(0);
 
-
-
         items.map(row => {
             if (!regexChecker_isOA(row)) {
                 newTotal++;
@@ -330,7 +323,6 @@ function FUN_CHART_TIME(props) {
                 let _x = time_process > 200 ? 200 : time_process;
                 if (_x < filterD[0]) return;
                 if (_x > filterD[1]) return;
-
 
                 // ----------------------- TIMES ------------------
 
@@ -355,7 +347,6 @@ function FUN_CHART_TIME(props) {
                 }, newData);
             }
         })
-
 
         //setBuild2(newBuild)
         //setDataTy2(newTypes);
@@ -387,7 +378,6 @@ function FUN_CHART_TIME(props) {
             newValuesA = [...newValuesA].sort((a, b) => a - b);
             return newValuesA;
         })
-
 
         newMedC = valuesC.map(_values => {
             let newMed;
@@ -493,12 +483,12 @@ function FUN_CHART_TIME(props) {
                 </div>
 
                 <div className='col-2 text-center'>
-                    <MDBBtn rounded outline onClick={() => {
+                    <button type="button" className="btn btn-outline-primary rounded-pill" onClick={() => {
                         SetFilterId([document.getElementById("ids_1").value, document.getElementById("ids_2").value]);
                         SetFilterD([document.getElementById("d_1").value, document.getElementById("d_2").value]);
                         SetDate_1(document.getElementById("date_1").value);
                         SetDate_2(document.getElementById("date_2").value);
-                    }}>FILTRAR</MDBBtn>
+                    }}>FILTRAR</button>
                 </div>
 
             </div>
@@ -657,8 +647,8 @@ function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className='row text-center my-1'>
-                <div className='col fw-bold'> VALIDOS: {valid}  <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeValid1} onClick={() => setSeeValid1(!seeValid1)} >
-                    <MDBIcon fas icon='eye' /></MDBBtn></div>
+                <div className='col fw-bold'> VALIDOS: {valid}  <button type="button" className={`btn btn-sm ${!!seeValid1 ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setSeeValid1(!seeValid1)} >
+                    <i className="fas fa-eye"></i></button></div>
             </div>
             {seeValid1 ?
                 <div className='row text-center my-1'>
@@ -676,8 +666,8 @@ function FUN_CHART_TIME(props) {
             {datano.length > 0 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div className='fw-bold'> NO VALIDOS: {datano.length} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeNotValid1} onClick={() => setNotValid1(!seeNotValid1)} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></div>
+                        <div className='fw-bold'> NO VALIDOS: {datano.length} <button type="button" className="btn btn-primary btn-sm" outline={!seeNotValid1} onClick={() => setNotValid1(!seeNotValid1)} >
+                            <i className="fas fa-eye"></i></button></div>
                         {seeNotValid1 ?
                             <div className="d-flex flex-wrap">
                                 {(Array.isArray(datano) ? datano : []).map(value => <div className="input-group-prepend border border-primary">
@@ -877,8 +867,8 @@ function FUN_CHART_TIME(props) {
                 </div>
             </div>
             <div className='row text-center my-1'>
-                <div className='col fw-bold'> VALIDOS: {valid2} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeValid2} onClick={() => setSeeValid2(!seeValid2)} >
-                    <MDBIcon fas icon='eye' /></MDBBtn></div>
+                <div className='col fw-bold'> VALIDOS: {valid2} <button type="button" className="btn btn-primary btn-sm" outline={!seeValid2} onClick={() => setSeeValid2(!seeValid2)} >
+                    <i className="fas fa-eye"></i></button></div>
             </div>
             {seeValid2 ?
                 <div className='row text-center my-1'>
@@ -896,8 +886,8 @@ function FUN_CHART_TIME(props) {
             {datano2.length > 0 ?
                 <div className='row text-center my-1'>
                     <div className='col'>
-                        <div className='fw-bold'> NO VALIDOS: {datano2.length} <MDBBtn floating tag='a' color='primary' size='sm' outline={!seeNotValid2} onClick={() => setNotValid2(!seeNotValid2)} >
-                            <MDBIcon fas icon='eye' /></MDBBtn></div>
+                        <div className='fw-bold'> NO VALIDOS: {datano2.length} <button type="button" className="btn btn-primary btn-sm" outline={!seeNotValid2} onClick={() => setNotValid2(!seeNotValid2)} >
+                            <i className="fas fa-eye"></i></button></div>
                         {seeNotValid2 ?
                             <div className="d-flex flex-wrap">
                                 {(Array.isArray(datano2) ? datano2 : []).map(value => <div className="input-group-prepend border border-primary">
