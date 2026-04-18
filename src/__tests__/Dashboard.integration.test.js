@@ -6,19 +6,9 @@ import { MemoryRouter } from 'react-router-dom';
 import './helpers/mockExternals';
 import { defaultProps, setWindowUser, clearWindowUser } from './helpers/renderHelpers';
 
-// Mock child components that Dashboard depends on
-vi.mock('../app/components/dashBoardCards/dashBoardCard.js', () => ({
-  DashBoardCard: ({ title, image, link }) => (
-    <div data-testid={`dashboard-card-${link.replace('/', '')}`}>
-      <h3>{title}</h3>
-      <i className={image} />
-    </div>
-  ),
-}));
-
-vi.mock('../app/components/title', () => ({
-  __esModule: true,
-  default: () => <div data-testid='title-mock' />,
+// Mock the Icon component (used by new dashboard cards)
+vi.mock('@/components/icon', () => ({
+  Icon: ({ name, size }) => <span data-testid={`icon-${name}`} />,
 }));
 
 // _GLOBAL_ID se captura al cargar el módulo. Fijamos antes del import dinámico.
@@ -52,22 +42,22 @@ describe('Dashboard — Integración del panel principal', () => {
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
-    expect(screen.getByText('Operacion y Gestion')).toBeInTheDocument();
+    expect(screen.getByText('Operación y Gestión')).toBeInTheDocument();
 
     // Verificar que al menos 9 cards de módulos de trabajo están visibles
-    const workCards = [
-      'dashboard-card-mail',
-      'dashboard-card-appointments',
-      'dashboard-card-submit',
-      'dashboard-card-publish',
-      'dashboard-card-pqrsadmin',
-      'dashboard-card-nomenclature',
-      'dashboard-card-archive',
-      'dashboard-card-fun',
-      'dashboard-card-funmanage',
+    const expectedTitles = [
+      'Buzón de Mensajes',
+      'Calendario de Citas',
+      'Ventanilla Única',
+      'Publicaciones',
+      'Peticiones PQRS',
+      'Nomenclaturas',
+      'Archivo',
+      'Radicar Licencias',
+      'Gestionar Licencias',
     ];
-    const renderedCards = workCards.filter(
-      (id) => screen.queryByTestId(id) !== null
+    const renderedCards = expectedTitles.filter(
+      (title) => screen.queryByText(title) !== null
     );
     expect(renderedCards.length).toBeGreaterThanOrEqual(9);
   });
@@ -78,14 +68,14 @@ describe('Dashboard — Integración del panel principal', () => {
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
-    expect(screen.getByText('Utilidades y Documentacion')).toBeInTheDocument();
+    expect(screen.getByText('Utilidades y Documentación')).toBeInTheDocument();
 
     // Cards de utilidades presentes
-    expect(screen.getByTestId('dashboard-card-osha')).toBeInTheDocument();
-    expect(screen.getByTestId('dashboard-card-calculator')).toBeInTheDocument();
-    expect(screen.getByTestId('dashboard-card-dictionary')).toBeInTheDocument();
-    expect(screen.getByTestId('dashboard-card-guide_user')).toBeInTheDocument();
-    expect(screen.getByTestId('dashboard-card-profesionals')).toBeInTheDocument();
+    expect(screen.getByText('Documentos')).toBeInTheDocument();
+    expect(screen.getByText('Calculadora de Expensas')).toBeInTheDocument();
+    expect(screen.getByText('Consecutivos')).toBeInTheDocument();
+    expect(screen.getByText('Manual de Usuario')).toBeInTheDocument();
+    expect(screen.getByText('Base de Datos Profesionales')).toBeInTheDocument();
   });
 
   it('oculta cards condicionales (Normas/Uso Suelo) cuando GLOBAL_ID != cb1', () => {
@@ -96,19 +86,8 @@ describe('Dashboard — Integración del panel principal', () => {
       </MemoryRouter>
     );
 
-    expect(screen.queryByTestId('dashboard-card-norms')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('dashboard-card-zone_use')).not.toBeInTheDocument();
-  });
-
-  it('usa breadcrumbs con textos de props', () => {
-    render(
-      <MemoryRouter>
-        <Dashboard {...defaultProps} breadCrums={{ bc_01: 'Home', bc_u1: 'Panel' }} />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('Panel')).toBeInTheDocument();
+    expect(screen.queryByText('Normas Urbanas')).not.toBeInTheDocument();
+    expect(screen.queryByText('Uso de Suelo')).not.toBeInTheDocument();
   });
 
   it('muestra card de historial de profesionales', () => {
@@ -117,21 +96,30 @@ describe('Dashboard — Integración del panel principal', () => {
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
-    expect(screen.getByTestId('dashboard-card-certs')).toBeInTheDocument();
+    expect(screen.getByText('Historial de Profesionales')).toBeInTheDocument();
   });
 
-  it('renderiza links correctos en cards de módulos', () => {
-    render(
+  it('renderiza links correctos a nuevas rutas en español', () => {
+    const { container } = render(
       <MemoryRouter>
         <Dashboard {...defaultProps} />
       </MemoryRouter>
     );
 
-    // Cards de trabajo
-    expect(screen.getByTestId('dashboard-card-mail')).toBeInTheDocument();
-    expect(screen.getByTestId('dashboard-card-appointments')).toBeInTheDocument();
-    expect(screen.getByTestId('dashboard-card-submit')).toBeInTheDocument();
-    expect(screen.getByTestId('dashboard-card-publish')).toBeInTheDocument();
-    expect(screen.getByTestId('dashboard-card-pqrsadmin')).toBeInTheDocument();
+    const links = container.querySelectorAll('a[href]');
+    const hrefs = Array.from(links).map((a) => a.getAttribute('href'));
+
+    // Work module links (new Spanish routes)
+    expect(hrefs).toContain('/mensajes');
+    expect(hrefs).toContain('/calendario');
+    expect(hrefs).toContain('/ventanilla');
+    expect(hrefs).toContain('/publicaciones');
+    expect(hrefs).toContain('/peticiones');
+    expect(hrefs).toContain('/licencias');
+
+    // Utility module links
+    expect(hrefs).toContain('/documentos');
+    expect(hrefs).toContain('/calculadora');
+    expect(hrefs).toContain('/consecutivos');
   });
 });
