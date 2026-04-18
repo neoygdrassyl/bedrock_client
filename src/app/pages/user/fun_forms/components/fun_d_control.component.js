@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import Icon from '@/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -154,10 +155,10 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                         <form id="form_manage_ph_gen" onSubmit={save_fun_r}>
                             <div className="row mb-3 text-center">
                                 <div className="col">
-                                    <button className="btn btn-success my-3" ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                                    <button className="btn btn-success my-3" ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
                                 </div>
                                 <div className="col">
-                                    <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()} ><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                                    <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                                 </div>
                             </div>
                             <ul className="list-group mx-2">

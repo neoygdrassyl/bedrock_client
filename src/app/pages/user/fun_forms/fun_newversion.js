@@ -1,5 +1,6 @@
 import Swal from 'sweetalert2'
 
+import Icon from '@/components/icon';
 import withReactContent from 'sweetalert2-react-content'
 import FUNService from '../../../services/fun.service'
 import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'
@@ -320,7 +321,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                 </div>
                 <div className="input-group my-3">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-question-circle"></i>
+                        <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otras Actuaciones, ¿Cual?"
                         defaultValue={_CHILD_VARS.item_2 != 'A' && _CHILD_VARS.item_2 != 'B' && _CHILD_VARS.item_2 != 'C'
@@ -513,7 +514,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                 </div>
                 <div className="input-group my-3">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-question-circle"></i>
+                        <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                         id="f_16_o" defaultValue={_otherValue} />
@@ -660,7 +661,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                 </div>
                 <div className="input-group my-3">
                     <span className="input-group-text bg-info text-white">
-                        <i className="far fa-question-circle"></i>
+                        <Icon name="question-circle" size={16} />
                     </span>
                     <input type="text" className="form-control" placeholder="Otro clima, ¿Cual?" id="f_102_o"
                         defaultValue={_CHILD_VARS.item_102 != 'A' && _CHILD_VARS.item_102 != 'B' && _CHILD_VARS.item_102 != 'C'
@@ -879,7 +880,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                 </> : ""}
             <div className="row mb-3 text-center">
                 <div className="col-12">
-                    <button type="button" className="btn btn-warning btn-lg my-3" onClick={() => manage_version()}><i className="far fa-file-alt"></i> ACTUALIZAR VERSION</button>
+                    <button type="button" className="btn btn-warning btn-lg my-3" onClick={() => manage_version()}><Icon name="file-alt" size={16} /> ACTUALIZAR VERSION</button>
                 </div>
             </div>
         </>);

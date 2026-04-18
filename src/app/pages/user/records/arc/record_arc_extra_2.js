@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2'
+import Icon from '@/components/icon';
 import withReactContent from 'sweetalert2-react-content'
 
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
@@ -212,7 +213,7 @@ function RECORD_ARC_EXTRA_2({ translation, swaMsg, globals, currentItem, current
                 {_COMPONENT_3()}
                 <div className="text-center">
                     <button className="btn btn-success my-3" onClick={() => save_ra_35u()}>
-                        <i className="far fa-share-square"></i> GUARDAR INFORMACIÓN
+                        <Icon name="share-square" size={16} /> GUARDAR INFORMACIÓN
                     </button>
                 </div>
             </div >

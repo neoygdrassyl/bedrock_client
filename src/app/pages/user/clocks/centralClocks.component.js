@@ -865,7 +865,7 @@ export default function EXP_CLOCKS(props) {
             onClick={() => toggleSection(value.title)}
           >
             <div className="d-flex align-items-center">
-              <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} me-1 text-muted`}></i>
+              <Icon name={isCollapsed ? 'chevron-right' : 'chevron-down'} size={16} className="me-1 text-muted" />
               <span className={titleClassName}>{value.title}</span>
             </div>
 

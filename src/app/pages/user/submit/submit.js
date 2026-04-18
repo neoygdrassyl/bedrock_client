@@ -126,8 +126,8 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 center: true,
                 minWidth: '60px',
                 cell: row => <label>{row.sub_doc
-                    ? <i className="text-success fas fa-check fa-2x"></i>
-                    : <i className="text-danger fas fa-times fa-2x"></i>}</label>
+                    ? <Icon name="check" size={24} className="text-success" />
+                    : <Icon name="times" size={24} className="text-danger" />}</label>
             },
             {
                 name: <label>ACCIÓN</label>,

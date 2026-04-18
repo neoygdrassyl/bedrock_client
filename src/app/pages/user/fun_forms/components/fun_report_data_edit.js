@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import Icon from '@/components/icon';
 import { dateParser, dateParser_finalDate, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -355,7 +356,7 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
                     <div className="row text-center">
                         <div className="col-12">
                             <button className="btn btn-success my-3">
-                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </div>

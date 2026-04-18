@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+import Icon from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import DataTable from '@/components/data-table-bridge';
@@ -508,8 +509,8 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     minWidth: '110px',
                     cell: row => <>
-                        <span title="Modificar Item"><button type="button" className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditParking(row)}><i className="far fa-edit "></i></button></span>
-                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_parking(row.id)}><i className="far fa-trash-alt"></i></button></span>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditParking(row)}><Icon name="edit" size={16} /></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_parking(row.id)}><Icon name="trash-alt" size={16} /></button></span>
                     </>,
                 },
             ]
@@ -773,8 +774,8 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <span title="Modificar Item"><button type="button" className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditLocation(row)}><i className="far fa-edit"></i></button></span>
-                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_location(row.id)}><i className="far fa-trash-alt"></i></button></span>
+                        <span title="Modificar Item"><button type="button" className="btn btn-secondary btn-sm m-0 px-2 shadow-none" onClick={() => setEditLocation(row)}><Icon name="edit" size={16} /></button></span>
+                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 px-2 shadow-none" onClick={() => delete_35_location(row.id)}><Icon name="trash-alt" size={16} /></button></span>
                     </>,
                 },
             ]
@@ -1552,7 +1553,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_1('')}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i className="far fa-share-square"></i> AÑADIR PARQUEADERO
+                                <Icon name="share-square" size={16} /> AÑADIR PARQUEADERO
                             </button>
                         </div>
                     </form>
@@ -1564,7 +1565,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_1('_edit')}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </form>
@@ -1583,7 +1584,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_2()}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i className="far fa-share-square"></i> AÑADIR LOCALIZACION
+                                <Icon name="share-square" size={16} /> AÑADIR LOCALIZACION
                             </button>
                         </div>
                     </form>
@@ -1595,7 +1596,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_2_EDIT()}
                         <div className="text-center">
                             <button className="btn btn-success my-3">
-                                <i className="far fa-share-square"></i> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
                             </button>
                         </div>
                     </form>

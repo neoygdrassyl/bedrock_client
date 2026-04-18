@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import Icon from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -941,7 +942,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <button className="btn btn-danger my-3" onClick={() => getPdfForm()}><i className="far fa-file-pdf"></i> DESCARGAR FORMULARIO</button>
+                        <button className="btn btn-danger my-3" onClick={() => getPdfForm()}><Icon name="file-pdf" size={16} /> DESCARGAR FORMULARIO</button>
                     </div>
                 </div>
             </div>

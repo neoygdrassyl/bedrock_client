@@ -263,12 +263,12 @@ function SUBMIT_ANEX({ translation, swaMsg, globals, currentItem, refreshList: p
                 <br />
                 {_GET_DOC().id
                     ? <>
-                        <i className="text-success fas fa-check"></i> <label>Documento Anexado {_GET_DOC().id
+                        <Icon name="check" size={16} className="text-success" /> <label>Documento Anexado {_GET_DOC().id
                             ? <VIZUALIZER url={_GET_CURATED_URL()} apipath={'/files/submit/'} />
                             : ""}</label>
                     </>
                     : <>
-                    <label><i className="text-danger fas fa-times"></i> No hay documento anexo</label>
+                    <label><Icon name="times" size={16} className="text-danger" /> No hay documento anexo</label>
                     </>}
 
                 <form id="form_submit_anex" onSubmit={addDocument} enctype="multipart/form-data">

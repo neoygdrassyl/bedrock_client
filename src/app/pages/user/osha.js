@@ -109,15 +109,15 @@ function OSHA({ translation, swaMsg }) {
         let _GET_EXT_ICON = (_ext) => {
             switch (_ext) {
                 case "docx":
-                    return <><i className="far fa-file-word fa-2x" style={{ "color": "DodgerBlue" }}></i></>
+                    return <><Icon name="file-word" size={24} /></>
                 case "doc":
-                    return <><i className="far fa-file-word fa-2x" style={{ "color": "DeepSkyBlue" }}></i></>
+                    return <><Icon name="file-word" size={24} /></>
                 case "xls":
-                    return <><i className="far fa-file-excel fa-2x" style={{ "color": "ForestGreen" }}></i></>
+                    return <><Icon name="file-excel" size={24} /></>
                 case "xlsx":
-                    return <><i className="far fa-file-excel fa-2x" style={{ "color": "DarkGreen" }}></i></>
+                    return <><Icon name="file-excel" size={24} /></>
                 case "pdf":
-                    return <><i className="far fa-file-pdf fa-2x" style={{ "color": "Crimson" }}></i></>
+                    return <><Icon name="file-pdf" size={24} /></>
                 default:
                     return "";
             }

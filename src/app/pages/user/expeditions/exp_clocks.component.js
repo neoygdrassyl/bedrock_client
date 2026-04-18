@@ -571,7 +571,7 @@ export default function EXP_CLOCKS(props) {
                   </div>
                 ) : curDetails ? (
                   <div className={curDetails.paused ? 'text-warning' : (curDetails.remaining < 0 ? 'text-danger' : 'text-primary')}>
-                    <i className={`me-1 ${curDetails.paused ? 'fas fa-pause' : 'fas fa-hourglass-half'}`}></i>
+                    <Icon name={curDetails.paused ? 'pause' : 'hourglass-half'} size={16} className="me-1" />
                     Curaduría: {curDetails.paused ? 'Pausado' : `${curDetails.remaining} días restantes`}
                     <button
                       type="button"

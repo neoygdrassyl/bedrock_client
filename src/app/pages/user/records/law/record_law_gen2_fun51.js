@@ -1,4 +1,5 @@
 import DataTable from '@/components/data-table-bridge';
+import Icon from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import FUN_Service from '../../../../services/fun.service'
@@ -228,8 +229,8 @@ function RECORD_LAW_GEN_2_FUN51(props) {
                 {_COMPONENT_6_FUN_51()}
                 <div className="border p-2 m-2">
                     <label className="me-2">LEYENDA:</label>
-                    <label className="me-2"><i className="far fa-id-card fa-2x" style={{color: "DeepSkyBlue"}}></i> : Documento de Identidad,</label>
-                    <label className="me-2"><i className="far fa-id-badge fa-2x" style={{color: 'DarkOrchid'}}></i>: Certificado de Existencia y Representación Legal</label>
+                    <label className="me-2"><Icon name="id-card" size={24} style={{ color: 'DeepSkyBlue' }} /> : Documento de Identidad,</label>
+                    <label className="me-2"><Icon name="id-badge" size={24} style={{ color: 'DarkOrchid' }} />: Certificado de Existencia y Representación Legal</label>
                 </div>
             </div >
         );

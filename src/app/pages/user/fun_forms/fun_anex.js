@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import Icon from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../components/customClasses/funCustomArrays';
@@ -98,7 +99,7 @@ export default function FUN_ANEX(props) {
                 <div className='col-6'>
                     <div className="input-group">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-question-circle"></i>
+                            <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a1" defaultValue={VAR[6] || ''} />
@@ -206,7 +207,7 @@ export default function FUN_ANEX(props) {
                 <div className="form-check">
                     <div className="input-group">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-question-circle"></i>
+                            <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a211" defaultValue={VAR[5] ?? ''} />
@@ -264,7 +265,7 @@ export default function FUN_ANEX(props) {
                 <div className="form-check">
                     <div className="input-group">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-question-circle"></i>
+                            <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a212" defaultValue={VAR[5] || ''} />
@@ -322,7 +323,7 @@ export default function FUN_ANEX(props) {
                 <div className="form-check">
                     <div className="input-group">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-question-circle"></i>
+                            <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a22" defaultValue={VAR[5] ?? ''} />
@@ -380,7 +381,7 @@ export default function FUN_ANEX(props) {
                 <div className="form-check">
                     <div className="input-group">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-question-circle"></i>
+                            <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a23" defaultValue={VAR[5] ?? ''} />
@@ -438,7 +439,7 @@ export default function FUN_ANEX(props) {
                 <div className="form-check">
                     <div className="input-group">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-question-circle"></i>
+                            <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a24" defaultValue={VAR[5] ?? ''} />
@@ -540,7 +541,7 @@ export default function FUN_ANEX(props) {
                 <div className="form-check">
                     <div className="input-group">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-question-circle"></i>
+                            <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a26" defaultValue={VAR[5] ?? ''} />
@@ -609,7 +610,7 @@ export default function FUN_ANEX(props) {
                 <div className="form-check">
                     <div className="input-group">
                         <span className="input-group-text bg-info text-white">
-                            <i className="far fa-question-circle"></i>
+                            <Icon name="question-circle" size={16} />
                         </span>
                         <input type="text" className="form-control" placeholder="Otro, ¿Cual?"
                             name="fun_1_a27" defaultValue={VAR[6] ?? ''} />
@@ -884,7 +885,7 @@ export default function FUN_ANEX(props) {
             <div className="row mb-3 text-center">
                 <hr />
                 <div className="col">
-                    <button type="button" className="btn btn-success my-3" onClick={() => manage_a()}><i className="far fa-file-alt"></i> ACTUALIZAR </button>
+                    <button type="button" className="btn btn-success my-3" onClick={() => manage_a()}><Icon name="file-alt" size={16} /> ACTUALIZAR </button>
                 </div>
             </div>
         </fieldset>

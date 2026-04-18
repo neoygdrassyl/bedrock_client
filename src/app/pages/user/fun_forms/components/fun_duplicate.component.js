@@ -256,7 +256,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                             onClick={toggleAll}
                             disabled={isSubmitting}
                         >
-                            <i className={`fas ${allSelected ? 'fa-times' : 'fa-check-double'} me-1`}></i>
+                            <Icon name={allSelected ? 'times' : 'check-double'} size={16} className="me-1" />
                             {allSelected ? 'Deseleccionar todo' : 'Seleccionar todo'}
                         </button>
                     </div>

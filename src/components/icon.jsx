@@ -23,3 +23,5 @@ export function Icon({ name, size = 16, className, ...rest }) {
 
   return <LucideComponent size={size} className={className} {...rest} />;
 }
+
+export default Icon;

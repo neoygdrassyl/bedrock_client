@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Icon from '@/components/icon';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
@@ -780,7 +781,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                     {_COMPONENT_GENERAL()}
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3"><i className="far fa-check-square"></i> GUARDAR CAMBIOS </button>
+                            <button className="btn btn-success my-3"><Icon name="check-square" size={16} /> GUARDAR CAMBIOS </button>
                         </div>
                     </div>
                 </form>

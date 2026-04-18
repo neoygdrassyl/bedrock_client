@@ -1,5 +1,6 @@
 
 import FUN_SERVICE from '../../../../services/fun.service';
+import Icon from '@/components/icon';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../components/customClasses/typeParse';
@@ -430,10 +431,10 @@ export default function FUN_D_CONTROL_2(props) {
             <div className="row my-2">
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <button type="button" className="btn btn-success my-3" onClick={() => save_fun_r()} ><i className="far fa-edit"></i> GUARDAR CAMBIOS </button>
+                        <button type="button" className="btn btn-success my-3" onClick={() => save_fun_r()} ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
                     </div>
                     <div className="col">
-                        <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()}><i className="far fa-file-pdf"></i> GENERAR PDF </button>
+                        <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
                     </div>
                 </div>
             </div>

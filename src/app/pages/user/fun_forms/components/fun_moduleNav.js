@@ -144,7 +144,7 @@ function FUN_MODULE_NAV({ translation, currentItem, currentVersion, FROM, NAVIGA
                             onClick={toggleSidebar}
                             aria-label={isCollapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'}
                         >
-                            <i className={`fas ${isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'}`}></i>
+                            <Icon name={isCollapsed ? 'chevron-right' : 'chevron-left'} size={16} />
                         </button>
 
                         {/* Header con información fija */}

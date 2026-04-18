@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import Icon from '@/components/icon';
 import FUNService from '../../../../services/fun.service'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -531,7 +532,7 @@ function FUN_0_RECIPE(props) {
                     {_COMPONENT_PAYMENT()}
                     {_COMPONENT_DESC()}
                     <div className="col-12 text-center">
-                        <button className="btn btn-success btn-lg my-3" id="btn-review"><i className="far fa-share-square"></i> GUARDAR CAMBIOS</button>
+                        <button className="btn btn-success btn-lg my-3" id="btn-review"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</button>
                     </div>
                 </form>
 

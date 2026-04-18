@@ -211,7 +211,7 @@ export default function Navbar1(props) {
                 aria-label="Abrir/Cerrar menú lateral"
                 title={sidebarExpanded ? t('Cerrar menú') : t('Abrir menú')}
               >
-                <i className={`fas ${sidebarExpanded ? 'fa-times' : 'fa-bars'}`} />
+                <Icon name={sidebarExpanded ? 'times' : 'bars'} size={16} />
               </div>
             )}
 

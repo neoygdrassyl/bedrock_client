@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useState, useCallback } from 'react';
+import Icon from '@/components/icon';
 import Norms_Service from "../../../services/norm.service"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -467,7 +468,7 @@ export default function NORM_RESUME(props) {
                 <h3 className="text-uppercase pb-2">5. RESUMEN DE INFORMACIÓN:</h3>
                 {RESUME}
                 <div className='row text-center'>
-                    <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-danger my-1" type='submit'><i className="far fa-file-pdf"></i> GENERAR PDF </button></div>
+                    <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-danger my-1" type='submit'><Icon name="file-pdf" size={16} /> GENERAR PDF </button></div>
                 </div>
                 <hr />
             </Suspense>

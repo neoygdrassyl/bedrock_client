@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
+import Icon from '@/components/icon';
 export const ToolsMenu = ({ onAction, canAddSuspension, canAddExtension, isDesisted }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
@@ -51,7 +52,7 @@ export const ToolsMenu = ({ onAction, canAddSuspension, canAddExtension, isDesis
                 </div>
             )}
             <button className="tools-fab" onClick={() => setIsOpen(!isOpen)} title="Herramientas">
-                <i className={`fas ${isOpen ? 'fa-times' : 'fa-toolbox'}`}></i>
+                <Icon name={isOpen ? 'times' : 'toolbox'} size={16} />
             </button>
         </div>
     );
