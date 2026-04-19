@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { addDecimalPoints, formsParser1 } from '../../../components/customClasses/typeParse';
 import UsersService from '../../../services/users.service';
 import dayjs from 'dayjs';
@@ -185,7 +186,7 @@ export default function CERTIFICATE_WORKER(props) {
                                         <input type="text" className="form-control" id="id_number" onChange={(e) => setNumber(e.target.value)}/>
                                     </div>
                                     <div className="text-center mb-2">
-                                        <button type="submit" className="btn btn-info ">{translation.str_btn3}</button>
+                                        <Button type="submit" size="sm">{translation.str_btn3}</Button>
                                     </div>
                                 </form>
                             </div>

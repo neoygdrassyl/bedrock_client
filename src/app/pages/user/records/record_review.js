@@ -1045,7 +1045,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         <div className="input-group">
                             <input type="text" className="form-control" id="rev_cub"
                                 defaultValue={cubSelected || currentRecord.id_public || ""} />
-                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col-4" >

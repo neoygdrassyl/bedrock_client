@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import { Link } from 'react-router-dom';
 import DataTable from '@/components/data-table-bridge';
@@ -284,7 +285,7 @@ export default function ZONE_USE(props) {
 
 
                 <div className="text-end py-2">
-                    <button type="button" className="btn btn-info btn-sm" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> Cerrar</button>
+                    <Button variant="outline" size="sm" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> Cerrar</Button>
                 </div>
             </Modal>
         </>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { addDecimalPoints, formsParser1, getJSONFull, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
@@ -376,7 +377,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_1_6"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                 </div>
@@ -460,7 +461,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_2_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -657,7 +658,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_3_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -842,7 +843,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_4_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -982,7 +983,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_5_8"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -1260,7 +1261,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_6_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -1440,7 +1441,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_7_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <button className='btn btn-info' type='button' onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></button>
+                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -1585,7 +1586,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="exodfb_cub3_exp"
                                 defaultValue={currentRecord.cub3 || cubSelected || ""} />
-                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</Button>
                         </div>
                     </div>
                     <div className="col" >

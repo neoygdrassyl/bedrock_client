@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
@@ -285,7 +286,7 @@ export const PQRS_SET_REPLY1 = (props) => {
                             </span>
                             <input type="text" className="form-control" defaultValue={currentItem.id_reply}
                                 id="pqrs_master_idreply" require />
-                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                            <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
                         </div>
                     </div>
 

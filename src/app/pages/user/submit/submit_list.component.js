@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
 
@@ -306,8 +307,8 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         </select>
                     </div>
                     <div className="text-end col-6 my-3">
-                        <button type="button" className="btn btn-info my-3 me-2" onClick={() => setIsNew(false)}>
-                            <Icon name="times-circle" size={16} />  CANCELAR </button>
+                        <Button variant="outline" size="sm" className="my-3 me-2" onClick={() => setIsNew(false)}>
+                            <Icon name="times-circle" size={16} />  CANCELAR </Button>
                         <button type="button" className="btn btn-success my-3" onClick={() => new_list()}>
                             <Icon name="edit" size={16} /> GUARDAR LISTA </button>
                     </div>

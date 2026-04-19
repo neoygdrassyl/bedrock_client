@@ -1,4 +1,5 @@
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 
 function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
     const isAdmin = window.user.name_short === "Luis Parra"
@@ -57,9 +58,9 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                 <div className="m-1 text-center">
 
                                     <div className="row mx-2 mb-1">
-                                        <button type="button" onClick={() => NAVIGATION(currentItem, "close", FROM)} className="btn btn-info m-0 p-2 shadow-none">
+                                        <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => NAVIGATION(currentItem, "close", FROM)}>
                                             <Icon name="times-circle" size={16} /> <label className="fs-6 align-top">CERRAR</label>
-                                        </button>
+                                        </Button>
                                     </div>
 
                                     {FROM == "general"
@@ -69,8 +70,8 @@ function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
                                                 <Icon name="eye" size={16} /> <label className="fs-6 align-top">DETALLES</label></button>
                                         </div>
                                         : <div className="row mx-2 mb-1">
-                                            <button className="btn btn-info m-0 p-2 shadow-none" onClick={() => NAVIGATION(currentItem, "general", FROM)}>
-                                                <Icon name="eye" size={16} /> <label className="fs-6 align-top">DETALLES</label></button>
+                                            <Button size="sm" className="w-full justify-start" onClick={() => NAVIGATION(currentItem, "general", FROM)}>
+                                                <Icon name="eye" size={16} /> <label className="fs-6 align-top">DETALLES</label></Button>
                                         </div>}
 
                                     {currentItem.status == 1

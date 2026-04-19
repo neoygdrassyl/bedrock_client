@@ -1,4 +1,5 @@
 import profesionalsService from '../../../services/profesionals.service';
+import { Button } from '@/components/ui/button';
 import { Link } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import React, { useRef } from 'react';
@@ -57,7 +58,7 @@ export default function PROFESIONALS_EMAIL(props) {
                                 />
                             </div>
                             <div className="text-center my-2">
-                                <button type="submit" className="btn btn-info ">ENVIAR</button>
+                                <Button type="submit" size="sm">ENVIAR</Button>
                             </div>
                         </form>
                     </div>

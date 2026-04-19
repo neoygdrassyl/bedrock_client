@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
@@ -338,7 +339,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                                     <div className="input-group">
                                         <input type="text" className="form-control" id="expedition_2"
                                             defaultValue={currentRecord.cub1 || cubSelected1 || ""} />
-                                        <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</button>
+                                        <Button size="sm" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</Button>
                                     </div>
                                 </div>
                                 <div className="col-3" >
@@ -487,7 +488,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                                         <div className="input-group">
                                             <input type="text" className="form-control" id="expedition_11"
                                                 defaultValue={currentRecord.cub2 || cubSelected2 || ""} />
-                                            <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</button>
+                                            <Button size="sm" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</Button>
                                         </div>
                                     </div>
                                     <div className="col" >

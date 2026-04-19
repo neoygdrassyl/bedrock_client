@@ -115,7 +115,7 @@ export const PQRS_ID_CONFIRM = (props) => {
                 </span>
                 <input type="text" className="form-control" defaultValue={currentItem.id_confirm}
                     id="pqrs_master_id_confirm" require />
-                <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                <Button size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
             </div>
             <div className="d-flex justify-content-center">
                 <Button type="button" size="sm" className="shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
