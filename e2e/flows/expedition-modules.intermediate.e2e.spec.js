@@ -163,7 +163,7 @@ test.describe('E2E: Flujo Intermedio Expedition', () => {
     await expect(popoverMenu).toBeVisible();
 
     // Entrar al modulo de Expedicion desde el proyecto.
-    await popoverMenu.locator('button', { hasText: /Expedici/i }).click();
+    await popoverMenu.locator('[role="menuitem"]', { hasText: /Expedici/i }).click();
 
     // Esperar a que el modal de expedition aparezca.
     await expect(authenticatedPage.locator('.ReactModal__Content:visible').first())

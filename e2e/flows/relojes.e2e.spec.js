@@ -92,7 +92,7 @@ test.describe('E2E: Relojes Legales', () => {
     await firstAction.click();
 
     // Verify "Tiempos" option is in the popover
-    const tiemposOption = authenticatedPage.locator('.fun-action-menu button', { hasText: /Tiempos/i });
+    const tiemposOption = authenticatedPage.locator('.fun-action-menu [role="menuitem"]', { hasText: /Tiempos/i });
     await expect(tiemposOption).toBeVisible();
   });
 
@@ -116,7 +116,7 @@ test.describe('E2E: Relojes Legales', () => {
     const firstAction = authenticatedPage.locator('.fun-action-toggle:visible').first();
     await firstAction.click();
 
-    const tiemposOption = authenticatedPage.locator('.fun-action-menu button', { hasText: /Tiempos/i });
+    const tiemposOption = authenticatedPage.locator('.fun-action-menu [role="menuitem"]', { hasText: /Tiempos/i });
     await tiemposOption.click();
 
     // Wait for the modal to open with proper polling
@@ -150,7 +150,7 @@ test.describe('E2E: Relojes Legales', () => {
     // Open clock modal
     const firstAction = authenticatedPage.locator('.fun-action-toggle:visible').first();
     await firstAction.click();
-    const tiemposOption = authenticatedPage.locator('.fun-action-menu button', { hasText: /Tiempos/i });
+    const tiemposOption = authenticatedPage.locator('.fun-action-menu [role="menuitem"]', { hasText: /Tiempos/i });
     await tiemposOption.click();
     
     // Wait for the modal to open
@@ -190,7 +190,7 @@ test.describe('E2E: Relojes Legales', () => {
     // Open clock modal
     const firstAction = authenticatedPage.locator('.fun-action-toggle:visible').first();
     await firstAction.click();
-    const tiemposOption = authenticatedPage.locator('.fun-action-menu button', { hasText: /Tiempos/i });
+    const tiemposOption = authenticatedPage.locator('.fun-action-menu [role="menuitem"]', { hasText: /Tiempos/i });
     await tiemposOption.click();
     
     // Wait for the modal to open
@@ -237,7 +237,7 @@ test.describe('E2E: Relojes Legales', () => {
     const firstAction = authenticatedPage.locator('.fun-action-toggle:visible').first();
     await firstAction.click();
 
-    const detallesOption = authenticatedPage.locator('.fun-action-menu button', { hasText: /Detalles/i });
+    const detallesOption = authenticatedPage.locator('.fun-action-menu [role="menuitem"]', { hasText: /Detalles/i });
     await detallesOption.click();
 
     // Wait for the modal and its content to load

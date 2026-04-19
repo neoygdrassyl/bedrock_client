@@ -148,6 +148,26 @@ export default defineConfig({
 
   // Pre-bundle optimization — handle JSX in .js for node_modules too
   optimizeDeps: {
+    include: [
+      'rsuite',
+      '@tanstack/react-table',
+      'react-pdf',
+      'pdf-lib',
+      'markdown-to-jsx',
+      'next-themes',
+      'sonner',
+      'clsx',
+      'tailwind-merge',
+      'class-variance-authority',
+      '@radix-ui/react-scroll-area',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-slot',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-avatar',
+      '@radix-ui/react-separator',
+      'axios',
+      'js-sha256',
+    ],
     esbuildOptions: {
       loader: { '.js': 'jsx' },
       plugins: [

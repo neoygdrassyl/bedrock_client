@@ -4,7 +4,6 @@ import UsersService from '../../../services/users.service';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import dayjs from 'dayjs';
-import { Item } from '../../../components/ui';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/icon';
 

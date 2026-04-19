@@ -48,7 +48,7 @@ export function LegacyModal({
 
   return (
     <div
-      className="fixed inset-0 z-50"
+      className="ReactModal__Overlay fixed inset-0 z-50"
       role="dialog"
       aria-modal="true"
       aria-label={contentLabel}
@@ -56,14 +56,14 @@ export function LegacyModal({
     >
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in-0 duration-200"
+        className="absolute inset-0 z-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in-0 duration-200"
         style={overlayStyle}
         onClick={shouldCloseOnOverlayClick ? onRequestClose : undefined}
       />
       {/* Content */}
       <div
         className={cn(
-          'absolute bg-background border border-border rounded-lg shadow-xl overflow-auto animate-in fade-in-0 zoom-in-95 duration-200',
+          'ReactModal__Content absolute z-10 bg-background border border-border rounded-lg shadow-xl overflow-auto animate-in fade-in-0 zoom-in-95 duration-200',
           className,
         )}
         style={{

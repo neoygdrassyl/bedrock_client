@@ -28,7 +28,7 @@ export class ArchivePage {
     // --- Search form ---
     this.searchSelect = page.locator('#search_param');
     this.searchInput = page.locator('#search_text');
-    this.searchButton = page.locator('button', { hasText: /BUSCAR/i });
+    this.searchButton = page.locator('#search_text').locator('xpath=following-sibling::button[1]');
 
     // --- DataTable ---
     this.dataTable = page.locator('.rdt_Table');
