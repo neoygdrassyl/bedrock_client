@@ -625,6 +625,17 @@
   color: hsl(var(--card-foreground));
 }
 
+.dark #main-content :where(.list-group-item.active) {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.dark #main-content :where(.list-group-item-action:hover) {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
 .dark #main-content :where(.pagination .page-link) {
   background-color: hsl(var(--card));
   border-color: hsl(var(--border));
