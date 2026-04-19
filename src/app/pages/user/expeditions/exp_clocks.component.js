@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 
 const MySwal = withReactContent(Swal);
-import { swalLoading, swalSuccess, swalError } from '../../../utils/swalAdapter';
+import { swalLoading, swalSuccess, swalError, swalInfo } from '../../../utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function EXP_CLOCKS(props) {
@@ -407,7 +407,7 @@ export default function EXP_CLOCKS(props) {
         </tr>`;
       }).join('');
 
-      MySwal.fire({
+      swalInfo({
         title: 'Detalle de desistimiento',
         html: `
           <div className="text-start">
@@ -428,7 +428,6 @@ export default function EXP_CLOCKS(props) {
           </div>
         `,
         icon: 'info',
-        confirmButtonText: 'Cerrar',
         width: 680,
       });
     };
@@ -456,7 +455,7 @@ export default function EXP_CLOCKS(props) {
       const remainingClass = curDetails.remaining < 0 ? 'text-danger' : 'text-success';
       const fromText = FROM_LABEL[curDetails.from] || curDetails.from || '-';
 
-      MySwal.fire({
+      swalInfo({
         title: 'Detalle de Curaduría',
         html: `
           <div className="text-start">
@@ -482,7 +481,6 @@ export default function EXP_CLOCKS(props) {
           </div>
         `,
         icon: 'info',
-        confirmButtonText: 'Cerrar',
         width: 640,
       });
     };
@@ -612,7 +610,7 @@ export default function EXP_CLOCKS(props) {
   // *************** FUNCIÓN PARA MOSTRAR INFORMACIÓN DE SUSPENSIÓN ****************** //
   const showSuspensionInfo = (suspensionData, type) => {
     const typeText = type === 'pre' ? 'Antes del Acta' : 'Después del Acta';
-    MySwal.fire({
+    swalInfo({
       title: `Suspensión ${typeText}`,
       html: `
         <div className="text-start">
@@ -624,7 +622,6 @@ export default function EXP_CLOCKS(props) {
         </div>
       `,
       icon: 'info',
-      confirmButtonText: 'Cerrar'
     });
   };
 
