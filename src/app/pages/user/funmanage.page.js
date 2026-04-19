@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
 import { Link } from "react-router-dom";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { swalLoading, swalError, swalClose } from '@/app/utils/swalAdapter';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
 // SERVICES
@@ -38,7 +37,6 @@ import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-const MySwal = withReactContent(Swal);
 
 function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
     const [error, setError] = useState(null);
@@ -114,23 +112,19 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
             });
     }
     const retrievSingle = (id) => {
-        MySwal.fire({
+        swalLoading({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
         });
         FUNService.get(id)
             .then(response => {
-                MySwal.close()
+                swalClose()
                 toggle_d(response.data);
             })
             .catch(e => {
-                MySwal.fire({
+                swalError({
                     title: swaMsg.generic_eror_title,
                     text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
                 });
                 console.log(e);
             });
@@ -140,7 +134,7 @@ function FUN_MANAGE({ translation, swaMsg, globals, breadCrums, urlParams }) {
             .then(response => {
                 setList_search(response.data);
                 setIsLoadedSearch(false);
-                MySwal.close();
+                swalClose();
             })
             .catch(e => {
                 console.log(e);
