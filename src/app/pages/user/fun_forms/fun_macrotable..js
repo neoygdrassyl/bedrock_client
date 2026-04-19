@@ -13,6 +13,8 @@ import {
     _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER, _FUN_101_PARSER, _FUN_102_PARSER, _FUN_24_PARSER, _FUN_25_PARSER
 } from '../../../components/customClasses/funCustomArrays'
 import { Icon } from '@/components/icon';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import USER_SERVICE from '../../../services/users.service';
@@ -2783,24 +2785,53 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                 {_COMPONENT_CHARTS()}
                 {_COMPONENT_FILTER()}
 
-                <nav className="nav nav-tabs">
-                    
-                        <button type="button" className={`nav-link ${state.fillActive === '1' ? "active" : ""}`} onClick={() => handleFillClick('1')}>
-                            <span className="text-xs font-medium uppercase tracking-wide">General ({state.data_macro_filter.length})</span>
-                        </button>
-                    
-                    
-                        <button type="button" className={`nav-link ${state.fillActive === '2' ? "active" : ""}`} onClick={() => handleFillClick('2')}>
-                            <span className="text-xs font-medium uppercase tracking-wide">Otras Actuaciones ({state.data_oa.length})</span>
-                        </button>
-                    
-                    
-                        <button type="button" className={`nav-link ${state.fillActive === '-1' ? "active" : ""}`} onClick={() => handleFillClick('-1')}>
-                            <span className="text-xs font-medium uppercase tracking-wide text-destructive">Desistimientos ({state.data_negative.length})</span>
-                        </button>
-                    
-
-                </nav>
+                <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                    <button
+                        role="tab"
+                        aria-selected={state.fillActive === '1'}
+                        onClick={() => handleFillClick('1')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            state.fillActive === '1'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="LayoutList" size={14} />
+                        General
+                        <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{state.data_macro_filter.length}</Badge>
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={state.fillActive === '2'}
+                        onClick={() => handleFillClick('2')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            state.fillActive === '2'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="FileStack" size={14} />
+                        Otras Actuaciones
+                        <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{state.data_oa.length}</Badge>
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={state.fillActive === '-1'}
+                        onClick={() => handleFillClick('-1')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            state.fillActive === '-1'
+                                ? 'border-b-destructive text-destructive'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="XCircle" size={14} />
+                        Desistimientos
+                        <Badge variant="destructive" className="ml-1 text-[10px] px-1.5 py-0">{state.data_negative.length}</Badge>
+                    </button>
+                </div>
 
                 <div>
 

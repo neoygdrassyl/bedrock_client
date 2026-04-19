@@ -10,6 +10,7 @@ import { dateParser_finalDate, dateParser_timePassed } from '../../../../compone
 import { TabPane } from '@/components/ui/tab-pane';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
+import { cn } from '@/lib/utils';
 
 const MySwal = withReactContent(Swal);
 
@@ -1003,38 +1004,92 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     : ""
                 }
 
-                <nav className="nav nav-tabs">
-                    
-                        <button type="button" className={`nav-link ${fillActive == '-101' ? "active" : ""}`} onClick={() => handleFillClick('-101')}>
-                            <label className="upper-case">INCOMPLETO</label>
-                        </button>
-                    
-                    
-                        <button type="button" className={`nav-link ${fillActive == '-102' ? "active" : ""}`} onClick={() => handleFillClick('-102')}>
-                            <label className="upper-case">FALTA VALLA INFORMATIVA</label>
-                        </button>
-                    
-                    
-                        <button type="button" className={`nav-link ${fillActive == '-103' ? "active" : ""}`} onClick={() => handleFillClick('-103')}>
-                            <label className="upper-case">NO CUMPLE ACTA CORRECIONES</label>
-                        </button>
-                    
-                    
-                        <button type="button" className={`nav-link ${fillActive == '-104' ? "active" : ""}`} onClick={() => handleFillClick('-104')}>
-                            <label className="upper-case">NO PAGA EXPENSAS</label>
-                        </button>
-                    
-                    
-                        <button type="button" className={`nav-link ${fillActive == '-105' ? "active" : ""}`} onClick={() => handleFillClick('-105')}>
-                            <label className="upper-case">VOLUNTARIO</label>
-                        </button>
-                    
-                    
-                    <button type="button" className={`nav-link ${fillActive == '-106' ? "active" : ""}`} onClick={() => handleFillClick('-106')}>
-                        <label className="upper-case">NEGADA</label>
+                <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-101'}
+                        onClick={() => handleFillClick('-101')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-101'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="FileX" size={13} />
+                        Incompleto
                     </button>
-                
-                </nav>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-102'}
+                        onClick={() => handleFillClick('-102')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-102'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="Construction" size={13} />
+                        Falta Valla Informativa
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-103'}
+                        onClick={() => handleFillClick('-103')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-103'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="ClipboardX" size={13} />
+                        No Cumple Acta Correcciones
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-104'}
+                        onClick={() => handleFillClick('-104')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-104'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="CreditCard" size={13} />
+                        No Paga Expensas
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-105'}
+                        onClick={() => handleFillClick('-105')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-105'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="HandHelping" size={13} />
+                        Voluntario
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={fillActive == '-106'}
+                        onClick={() => handleFillClick('-106')}
+                        className={cn(
+                            'flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                            fillActive == '-106'
+                                ? 'border-b-primary text-primary'
+                                : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                        )}
+                    >
+                        <Icon name="Ban" size={13} />
+                        Negada
+                    </button>
+                </div>
 
                 <div>
                     <TabPane show={fillActive == '-101'}>
