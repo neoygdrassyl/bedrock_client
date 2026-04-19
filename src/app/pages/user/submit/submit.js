@@ -122,50 +122,27 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                 filterable: true,
                 center: true,
                 minWidth: '60px',
-                cell: row => <label>{row.sub_doc
-                    ? <Icon name="check" size={24} className="text-success" />
-                    : <Icon name="times" size={24} className="text-danger" />}</label>
+                cell: row => <span>{row.sub_doc
+                    ? <Icon name="Check" size={16} className="text-success" />
+                    : <Icon name="X" size={16} className="text-danger" />}</span>
             },
             {
-                name: 'ACCIÓN',
+                name: 'Acción',
                 button: true,
                 minWidth: '100px',
-                cell: row => <>
-                    
-                        <button onClick={() => toggle(row)} className="btn btn-sm btn-info m-0 p-2 shadow-none">
-                            <Icon name="folder-open" size={16} /></button>
-                    
-                        <button onClick={() => delete_submit(row.id)} className="btn btn-sm btn-danger  m-0 p-2 shadow-none">
-                            <Icon name="trash-alt" size={16} /></button>                </>,
+                cell: row => <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toggle(row)} title="Abrir">
+                        <Icon name="FolderOpen" size={14} />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => delete_submit(row.id)} title="Eliminar">
+                        <Icon name="Trash2" size={14} />
+                    </Button>
+                </div>,
             },
         ]
 
         // CUSTOM STYLES FOR THE MODAL
-        const customStyles = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                zIndex: 1050,
-            },
-            content: {
-                position: 'absolute',
-                top: '40px',
-                left: '5%',
-                right: '5%',
-                bottom: '40px',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                marginRight: 'auto',
-            }
-        };
+        const customStyles = {};
         // CREATES A NEW LICENCE
         let delete_submit = (id) => {
             swalConfirm({ title: "ELIMINAR ESTE ITEM", text: "¿Esta seguro de eliminar de forma permanente este item?", icon: 'question', confirmButtonText: "ELIMINAR" }).then(SweetAlertResult => {
@@ -293,111 +270,107 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     <p className="text-sm text-muted-foreground mt-1">Gestión de entradas y radicados</p>
                 </div>
 
-                <div className="row d-flex justify-content-center">
-                    <div className="col-10">
-                        <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
-
-                        <div className="row">
-                            <div className="col-4">
-                                <div className="text-center py-4 mt-3">
-                                    <button className="btn btn-success" onClick={() => toggle_new()} styes={{ zIndex: -1 }} l><Icon name="plus-circle" size={16} /> NUEVA ENTRADA </button>
-                                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="flex items-center justify-center">
+                        <Button onClick={() => toggle_new()}>
+                            <Icon name="PlusCircle" size={14} /> Nueva Entrada
+                        </Button>
+                    </div>
+                    <Card>
+                        <CardHeader className="py-2.5 px-3">
+                            <CardTitle className="text-sm text-center">Consultar</CardTitle>
+                        </CardHeader>
+                        <CardContent className="px-3 pb-3">
+                            <div className="input-group mb-2">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="Info" size={13} />
+                                </span>
+                                <select className="form-select" id="submit_search_0" required>
+                                    <option value="1">Número de radicado VR</option>
+                                    <option value="2">Número de Licencia / Solicitud</option>
+                                    <option value="3">Propietario</option>
+                                    <option value="4">Persona que Entrega</option>
+                                    <option value="5">C.C Persona que Entrega</option>
+                                </select>
                             </div>
-                            <div className="col-4">
-                                <Card className="mb-3">
-                                    <CardContent>
-                                        <CardTitle className="text-center">Consultar</CardTitle>
-                                        <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
-                                                <Icon name="info-circle" size={16} />
-                                            </span>
-                                            <select className="form-select" id="submit_search_0" required>
-                                                <option value="1">Número de radicado VR</option>
-                                                <option value="2">Número de Licencia / Solicitud</option>
-                                                <option value="3">Propietario</option>
-                                                <option value="4">Persona que Entrega</option>
-                                                <option value="5">C.C Persona que Entrega</option>
-                                            </select>
-                                        </div>
-                                        <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
-                                                <Icon name="comment-dots" size={16} />
-                                            </span>
-                                            <input type="text" className="form-control" id="submit_search_1" placeholder="Buscar..." />
-                                        </div>
-                                        <div className="text-center py-2">
-                                            <button type="button" className="btn btn-secondary shadow-none" onClick={() => search()}><Icon name="search-plus" size={16} /> CONSULTAR </button>
-                                        </div>
-                                    </CardContent></Card>
-                                
+                            <div className="input-group mb-2">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="MessageCircle" size={13} />
+                                </span>
+                                <input type="text" className="form-control" id="submit_search_1" placeholder="Buscar..." />
                             </div>
-                            <div className="col-4">
-                                <Card className="mb-3">
-                                    <CardContent>
-                                        <CardTitle className="text-center">Documento CSV</CardTitle>
-                                        <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
-                                                <Icon name="hashtag" size={16} />
-                                            </span>
-                                            <input type="text" className="form-control" id="csv_limit_1" placeholder="Limite inferior"
-                                                defaultValue={`VR${dayjs().format('YY')}-0001`} />
-                                        </div>
-                                        <div className="input-group mb-3">
-                                            <span className="input-group-text bg-info text-white">
-                                                <Icon name="hashtag" size={16} />
-                                            </span>
-                                            <input type="text" className="form-control" id="csv_limit_2" placeholder="Limite superior"
-                                                defaultValue={`VR${dayjs().format('YY')}-9999`} />
-                                        </div>
-                                        <div className="text-center py-2">
-                                            <button type="button" className="btn btn-success shadow-none" onClick={() => generateCVS()}><Icon name="table" size={16} /> GENERAR CSV </button>
-                                        </div>
-                                    </CardContent></Card>
-                                
-                            </div>
-                        </div>
-
-                    </div >
-                    <div className="row d-flex justify-content-center">
-                        <div className="col-12">
-                            <h2 className="text-uppercase text-center pb-2">Lista de entradas</h2>
                             <div className="text-center">
-                                {isLoaded ? (
-                                    <DataTable
-                                        paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                        noDataComponent={<h4 className="fw-bold">NO HAY INFORMACION</h4>}
-                                        striped="true"
-                                        columns={columns}
-                                        data={list}
-                                        highlightOnHover
-                                        pagination
-                                        paginationPerPage={20}
-                                        paginationRowsPerPageOptions={[20, 50, 100]}
-                                        className="data-table-component"
-                                        noHeader
-
-                                        dense
-                                        defaultSortFieldId={1}
-                                        defaultSortAsc={false}
-                                    />
-                                ) : (
-                                    <div className="text-center">
-                                        <h4 className="fw-bold">CARGANDO INFORMACIÓN...</h4>
-                                    </div>)}
+                                <Button variant="secondary" size="sm" onClick={() => search()}>
+                                    <Icon name="SearchCheck" size={13} /> Consultar
+                                </Button>
                             </div>
-
-                        </div >
-                    </div >
-                </div >
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="py-2.5 px-3">
+                            <CardTitle className="text-sm text-center">Documento CSV</CardTitle>
+                        </CardHeader>
+                        <CardContent className="px-3 pb-3">
+                            <div className="input-group mb-2">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="Hash" size={13} />
+                                </span>
+                                <input type="text" className="form-control" id="csv_limit_1" placeholder="Limite inferior"
+                                    defaultValue={`VR${dayjs().format('YY')}-0001`} />
+                            </div>
+                            <div className="input-group mb-2">
+                                <span className="input-group-text bg-primary text-primary-foreground">
+                                    <Icon name="Hash" size={13} />
+                                </span>
+                                <input type="text" className="form-control" id="csv_limit_2" placeholder="Limite superior"
+                                    defaultValue={`VR${dayjs().format('YY')}-9999`} />
+                            </div>
+                            <div className="text-center">
+                                <Button variant="default" size="sm" onClick={() => generateCVS()}>
+                                    <Icon name="Table" size={13} /> Generar CSV
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+                <div>
+                    <h3 className="text-sm font-semibold text-center mb-2">Lista de entradas</h3>
+                    {isLoaded ? (
+                        <DataTable
+                            paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                            noDataComponent="No hay información"
+                            striped="true"
+                            columns={columns}
+                            data={list}
+                            highlightOnHover
+                            pagination
+                            paginationPerPage={20}
+                            paginationRowsPerPageOptions={[20, 50, 100]}
+                            className="data-table-component"
+                            noHeader
+                            dense
+                            defaultSortFieldId={1}
+                            defaultSortAsc={false}
+                        />
+                    ) : (
+                        <div className="p-8 text-center text-muted-foreground text-sm">Cargando información...</div>
+                    )}
+                </div>
 
                 <Modal contentLabel="VIEW/EDIT"
                     isOpen={modal}
-                    style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3><Icon name="edit" size={16} /> ACTUALIZAR ENTRADA: {currentIdPublic} </h3>
-                        <button type="button" className="btn-close" onClick={toggle} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="Pencil" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Actualizar Entrada: {currentIdPublic}</h2>
+                        </div>
+                        <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     <SUBTMIT_MANAGE
                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -405,27 +378,36 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                         closeModal={toggle_new}
                         currentId={currentId}
                         edit />
-
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggle()}>
+                            <Icon name="X" size={14} /> Cerrar
+                        </Button>
                     </div>
                 </Modal>
 
                 <Modal contentLabel="NEW VIEW"
                     isOpen={newModal}
-                    style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3><Icon name="plus-circle" size={16} /> NUEVA ENTRADA </h3>
-                        <button type="button" className="btn-close" onClick={() => toggle_new()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="PlusCircle" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Nueva Entrada</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_new()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     <SUBTMIT_MANAGE
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         refreshList={refreshList}
                         closeModal={toggle_new} />
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle_new()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggle_new()}>
+                            <Icon name="X" size={14} /> Cerrar
+                        </Button>
                     </div>
                 </Modal>
 

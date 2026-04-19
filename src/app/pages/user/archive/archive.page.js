@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Icon } from '@/components/icon';
 import { useEffect, useState } from 'react';
-const TagGroup = ({ children }) => <span className="d-flex flex-wrap gap-1">{children}</span>;
+const TagGroup = ({ children }) => <span className="flex flex-wrap gap-1">{children}</span>;
 const Tag = ({ color, children }) => (
-  <span className="badge" style={{ backgroundColor: color === 'blue' ? 'var(--dvl-info)' : 'var(--dvl-primary-500)', fontSize: 'var(--dvl-text-xs)' }}>
+  <Badge variant={color === 'blue' ? 'secondary' : 'default'} className="text-[0.6875rem]">
     {children}
-  </span>
+  </Badge>
 );
 
 import { LegacyModal as Modal } from '@/components/legacy-modal';
@@ -22,58 +23,8 @@ import { nomens } from '../../../components/jsons/vars';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-const customStylesForModal = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        zIndex: 2,
-    },
-    content: {
-        position: 'absolute',
-        top: '10%',
-        left: '28%',
-        right: '28%',
-        bottom: '10%',
-        border: '1px solid #ccc',
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        borderRadius: '4px',
-        outline: 'none',
-        padding: '20px',
-        marginRight: 'auto',
-
-    }
-};
-const customStylesForModal2 = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        zIndex: 2,
-    },
-    content: {
-        position: 'absolute',
-        top: '10%',
-        left: '28%',
-        right: '28%',
-        bottom: '%',
-        border: '1px solid #ccc',
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        borderRadius: '4px',
-        outline: 'none',
-        padding: '20px',
-        marginRight: 'auto',
-
-    }
-};
+const customStylesForModal = {};
+const customStylesForModal2 = {};
 const pptsLink = "https://curaduria1bucaramanga.com/public_docs/OTHERS/ARCHIVISTICA.pptx"
 export default function ARCHIVE(props) {
     const { translation, swaMsg, globals, breadCrums } = props;
@@ -219,11 +170,17 @@ export default function ARCHIVE(props) {
             center: true,
             omit: window.user.roleId != 1 && window.user.roleId != 3,
             maxWidth: '120px',
-            cell: row => <>
-                <button type="button" title="Modificar Items en caja" className="btn btn-primary btn-sm px-1 py-1" onClick={() => { setItem(row); setModalAdd(!modalAdd) }}><Icon name="file-import" size={16} /></button>
-                <button type="button" title="Modificar caja" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => { setItem(row); setModale(!modal) }}><Icon name="edit" size={16} /></button>
-                <button type="button" title="Eliminar caja" className="btn btn-danger btn-sm px-1 py-1" onClick={() => { delete_arch(row.id); }}><Icon name="trash-alt" size={16} /></button>
-            </>,
+            cell: row => <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className="h-7 w-7" title="Modificar Items" onClick={() => { setItem(row); setModalAdd(!modalAdd) }}>
+                    <Icon name="FileInput" size={14} />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-7 w-7" title="Modificar caja" onClick={() => { setItem(row); setModale(!modal) }}>
+                    <Icon name="Pencil" size={14} />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" title="Eliminar caja" onClick={() => { delete_arch(row.id); }}>
+                    <Icon name="Trash2" size={14} />
+                </Button>
+            </div>,
         },
     ]
 
@@ -232,28 +189,29 @@ export default function ARCHIVE(props) {
         return <>
             {[..._x].sort((p, n) => Number(p.folder) - Number(n.folder)).map(it => {
                 let json = getJSONFull(it.json);
-                return <div className='row border'>
-                    <div className='col'>
-                        <Icon name="hashtag" size={16} /> <label className='fw-bold'>{json.id_public}</label>
+                return <div key={it.id} className='grid grid-cols-12 gap-2 items-center py-1.5 px-2 border-b border-border/40 text-sm'>
+                    <div className='col-span-3'>
+                        <Icon name="Hash" size={13} /> <span className='font-semibold'>{json.id_public}</span>
                     </div>
-                    <div className='col-2'>
-                        <Icon name="file-signature" size={16} /> Resolución <label className='fw-bold'>{json.exp_id}</label>
+                    <div className='col-span-2'>
+                        <Icon name="FileSignature" size={13} /> Res. <span className='font-semibold'>{json.exp_id}</span>
                     </div>
-                    <div className='col-2'>
-                        <Icon name="folder" size={16} /> Carpeta: <label className='fw-bold'>{it.folder}</label>
+                    <div className='col-span-2'>
+                        <Icon name="Folder" size={13} /> Carpeta: <span className='font-semibold'>{it.folder}</span>
                     </div>
-                    <div className='col-2'>
-                        <Icon name="file-alt" size={16} /> Folios: <label className='fw-bold'>{it.pages}</label>
+                    <div className='col-span-2'>
+                        <Icon name="FileText" size={13} /> Folios: <span className='font-semibold'>{it.pages}</span>
                     </div>
-                    <div className='col'>
-                        <h5><Icon name="calendar-alt" size={16} /> Fechas: <label className='fw-bold'>{(json.clocks_start).slice(-8)} - {(json.clocks_end).slice(-8)}</label></h5>
+                    <div className='col-span-2 text-xs tabular-nums'>
+                        <Icon name="Calendar" size={13} /> {(json.clocks_start).slice(-8)} — {(json.clocks_end).slice(-8)}
                     </div>
-                    <div className='col-1'>
-                        <button type="button" title="Ver documentos item" className="btn btn-info btn-sm px-1 py-1" onClick={() => { setAnex(json); setModal_d(!modal_d) }}><Icon name="folder-open" size={16} /></button>
+                    <div className='col-span-1 text-right'>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" title="Ver documentos" onClick={() => { setAnex(json); setModal_d(!modal_d) }}>
+                            <Icon name="FolderOpen" size={14} />
+                        </Button>
                     </div>
                 </div>
             })}
-
         </>
     };
 
@@ -330,20 +288,19 @@ export default function ARCHIVE(props) {
 
             <Modal contentLabel="NEW BOX"
                 isOpen={modal}
-                style={customStylesForModal2}
                 ariaHideApp={false}
             >
-                <div className="my-2 d-flex justify-content-between ">
-                    <div className='row'>
-                        <div className="input-group">
-                            <label className=''><Icon name="folder-open" size={16} /> NUEVA CAJA DE ARCHIVO</label>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="FolderPlus" size={14} className="text-primary" />
                         </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Nueva Caja de Archivo</h2>
                     </div>
-
-
-                    <button type="button" className="btn-close" onClick={() => setModal(!modal)} />
+                    <button type="button" onClick={() => setModal(!modal)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
-                <hr className='bg-success' style={{ height: '4px' }} />
 
                 <ARCHIVE_MANAGE
                     translation={translation}
@@ -353,29 +310,26 @@ export default function ARCHIVE(props) {
                     CLOSE={() => { setModal(!modal); loadLists() }}
                 />
 
-                <hr className='bg-success' style={{ height: '4px' }} />
-
-                <div className="text-end py-2">
-                    <Button variant="secondary" size="sm" onClick={() => setModal(!modal)}><Icon name="XCircle" size={14} /> Cerrar</Button>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModal(!modal)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
 
             <Modal contentLabel="EDIT BOX"
                 isOpen={modale}
-                style={customStylesForModal2}
                 ariaHideApp={false}
             >
-                <div className="my-2 d-flex justify-content-between">
-                    <div className='row'>
-                        <div className="input-group">
-                            <label className=''><Icon name="folder-open" size={16} /> EDITAR CAJA: {currentItem ? currentItem.box : ''}</label>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="FolderOpen" size={14} className="text-primary" />
                         </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Editar Caja: {currentItem ? currentItem.box : ''}</h2>
                     </div>
-
-
-                    <button type="button" className="btn-close" onClick={() => setModale(!modale)} />
+                    <button type="button" onClick={() => setModale(!modale)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
-                <hr className='bg-secondary' style={{ height: '4px' }} />
 
                 <ARCHIVE_MANAGE
                     translation={translation}
@@ -385,29 +339,26 @@ export default function ARCHIVE(props) {
                     CLOSE={() => { setModale(!modale); loadLists() }}
                 />
 
-                <hr className='bg-secondary' style={{ height: '4px' }} />
-                <div className="text-end py-2">
-                    <Button variant="secondary" size="sm" onClick={() => setModale(!modale)}><Icon name="XCircle" size={14} /> Cerrar</Button>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModale(!modale)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
 
             <Modal contentLabel="ADD TO BOX"
                 isOpen={modalAdd}
-                style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <div className="my-2 d-flex justify-content-between ">
-                    <div className='row'>
-                        <div className="input-group">
-                            <label className=''><Icon name="archive" size={16} /> MODIFICAR ITEMS DE CAJA: {currentItem ? currentItem.box : ''}</label>
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="Archive" size={14} className="text-primary" />
                         </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Modificar Items: {currentItem ? currentItem.box : ''}</h2>
                     </div>
-
-
-                    <button type="button" className="btn-close" onClick={() => setModalAdd(!modalAdd)} />
+                    <button type="button" onClick={() => setModalAdd(!modalAdd)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
-                <hr className='bg-primary' style={{ height: '4px' }} />
-
 
                 <ARCHIVE_X_FUN
                     translation={translation}
@@ -417,23 +368,26 @@ export default function ARCHIVE(props) {
                     UPDATE={() => { loadLists() }}
                 />
 
-                <hr className='bg-primary' style={{ height: '4px' }} />
-
-                <div className="text-end py-2">
-                    <Button variant="secondary" size="sm" onClick={() => setModalAdd(!modalAdd)}><Icon name="XCircle" size={14} /> Cerrar</Button>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModalAdd(!modalAdd)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
 
             <Modal contentLabel="FUN DOC CONTROL"
                 isOpen={modal_d}
-                style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <div className="my-4 d-flex justify-content-between">
-                    <label><Icon name="archive" size={16} /> VISTA DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
-                    <button type="button" className="btn-close" onClick={() => setModal_d(!modal_d)} />
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="FileText" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Vista Documental — Rad. {anex.id_public}</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal_d(!modal_d)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
-                <hr className='bg-info' style={{ height: '4px' }} />
 
                 <FUN_6_VIEW
                     translation={translation}
@@ -445,9 +399,8 @@ export default function ARCHIVE(props) {
                     title={'Documentos giditalizados'}
                     readOnly
                 />
-                <hr className='bg-info' style={{ height: '4px' }} />
-                <div className="text-end">
-                    <Button variant="secondary" size="sm" onClick={() => setModal_d(!modal_d)}><Icon name="XCircle" size={14} /> Cerrar</Button>
+                <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                    <Button variant="outline" size="sm" onClick={() => setModal_d(!modal_d)}><Icon name="X" size={14} /> Cerrar</Button>
                 </div>
             </Modal>
         </div>

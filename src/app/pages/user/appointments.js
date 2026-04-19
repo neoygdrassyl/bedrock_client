@@ -145,32 +145,7 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 ,
             },
         ]
-        const customStyles = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.75)'
-            },
-            content: {
-                position: 'absolute',
-                top: '40px',
-                left: '20%',
-                right: 'auto',
-                bottom: '40px',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                marginRight: '20%',
-                width: '1000px',
-
-            }, zIndex: '4'
-        };
+        const customStyles = {};
 
         let app_edit = (e) => {
             e.preventDefault();
@@ -305,10 +280,12 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                         <CardTitle className="text-base"><Icon name="Archive" size={16} className="inline mr-2" />Citas pasadas</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Collapsible trigger={<><label className="m-2"> </label>
-                            <button className="btn btn-warning btn-sm my-2"><Icon name="plus" size={16} /> Ver Lista</button></>}>
+                        <Collapsible trigger={
+                            <Button variant="outline" size="sm">
+                                <Icon name="ChevronDown" size={14} /> Ver Lista
+                            </Button>
+                        }>
                             {isLoaded ? (
-                                <>
                                 <DataTable
                                     paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
                                     noDataComponent="No hay citas pasadas"
@@ -323,14 +300,14 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                                     defaultSortFieldId={1}
                                     defaultSortAsc={false}
                                     title={
-                                        <div className="d-flex justify-content-between">
-                                            <div><h5>CITAS PASADAS</h5></div>
-                                            <div><Button variant="outline" size="sm" onClick={() => { generateCVS(items_3, 'CITAS') }}
-                                            ><Icon name="FileSpreadsheet" size={14} /> Descargar CSV</Button></div>
+                                        <div className="flex items-center justify-between w-full">
+                                            <h3 className="text-sm font-semibold">Citas Pasadas</h3>
+                                            <Button variant="outline" size="sm" onClick={() => { generateCVS(items_3, 'CITAS') }}>
+                                                <Icon name="FileSpreadsheet" size={14} /> Descargar CSV
+                                            </Button>
                                         </div>
                                     }
                                 />
-                                </>
                             ) : (
                                 <div className="p-8 text-center text-muted-foreground text-sm">Cargando...</div>
                             )}
@@ -342,9 +319,16 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 {modal && (
                     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={toggle}>
                         <Card className="w-full max-w-4xl max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
-                            <div className="flex items-center justify-between p-4 border-b border-border">
-                                <h2 className="text-lg font-semibold"><Icon name="Calendar" size={18} className="inline mr-2" />Detalles de la Cita {currentItem ? currentItem.id : ''}</h2>
-                                <button type="button" className="btn-close" onClick={toggle} />
+                            <div className="flex items-center justify-between py-2.5 px-4 border-b border-border/60">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                        <Icon name="Calendar" size={14} className="text-primary" />
+                                    </div>
+                                    <h2 className="text-sm font-semibold tracking-tight">Detalles de la Cita {currentItem ? currentItem.id : ''}</h2>
+                                </div>
+                                <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                    <Icon name="X" size={16} className="text-muted-foreground" />
+                                </button>
                             </div>
                             <CardContent className="p-4">
                                 <div className="row">
@@ -438,12 +422,18 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                 {/* Edit Modal (react-modal) */}
                 <Modal contentLabel="GENERAL VIEW FUN"
                     isOpen={modal_edit}
-                    style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="Pencil" size={16} className="inline mr-2" />Actualizar la Cita {currentItem ? currentItem.id : ''}</label>
-                        <button type="button" className="btn-close" onClick={toggle_edit} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="Pencil" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Actualizar Cita {currentItem ? currentItem.id : ''}</h2>
+                        </div>
+                        <button type="button" onClick={toggle_edit} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
                     <form id="appointment_edit" onSubmit={app_edit}>
                         <div className="row">
@@ -554,9 +544,9 @@ function Appointments({ translation, globals, breadCrums, swaMsg }) {
                             </div>
                         </div>
 
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-secondary me-1"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
-                            <Button variant="secondary" size="lg" onClick={() => toggle_edit()}><Icon name="XCircle" size={16} /> Cerrar</Button>
+                        <div className="flex justify-end gap-2 py-3 mt-3 border-t border-border/60">
+                            <Button type="submit" size="sm"><Icon name="Save" size={14} /> Guardar Cambios</Button>
+                            <Button variant="outline" size="sm" onClick={() => toggle_edit()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </form>
                 </Modal>

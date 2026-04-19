@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
+import { Button } from '@/components/ui/button';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
 import DataTable from '@/components/data-table-bridge';
@@ -14,21 +15,6 @@ import PQRSASIGN from './asignpqrs'
 import PQRSINFORMAL from './infomalpqrs'
 import PQRSREPLY from './replypqrs'
 import PQRSLOCK from './lockpqrs'
-
-// IMGS
-// STEP BY STEP IMAGES
-import IMG_ASIGN from '../../../img/pqrs/asignarIconosbarra-01.png'
-import IMG_WORKER from '../../../img/pqrs/respuestaproIconosbarra-01.png'
-import IMG_REPLY from '../../../img/pqrs/respuestaoficioIconosbarra-01.png'
-import IMG_LOCK from '../../../img/pqrs/cerrarIconosbarra-01.png'
-import IMG_ARCHIVE from '../../../img/pqrs/archivarIconosbarra-01.png'
-// ICON IMGS
-import IMG_ASIGN_ICON from '../../../img/pqrs/asignarIconos-01.png'
-import IMG_WORKER_ICON from '../../../img/pqrs/respuestaproIconos-01.png'
-import IMG_REPLY_ICON from '../../../img/pqrs/respuestaoficioIconos-01.png'
-import IMG_LOCK_ICON from '../../../img/pqrs/cerrarIconos-01.png'
-import IMG_ARCHIVE_ICON from '../../../img/pqrs/archivarIconos-01.png'
-import IMG_SEARCH_ICON from '../../../img/pqrs/Buscaricono-01.png'
 
 // COMPONENTS
 import PQRS_EDIT from './pqrs_edit';
@@ -721,56 +707,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
             },
         ]
         // CUSTOM STYLES FOR THE MODAL
-        const customStyles = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                zIndex: 1050
-            },
-            content: {
-                position: 'absolute',
-                top: '40px',
-                left: '15%',
-                right: '5%',
-                bottom: '40px',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                marginRight: 'auto',
-            }
-        };
-        const customStylesForModalMacro = {
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                zIndex: 1050,
-            },
-            content: {
-                position: 'absolute',
-                top: '0px',
-                left: '0px',
-                right: '0px',
-                bottom: '0px',
-                border: '1px solid #ccc',
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                borderRadius: '4px',
-                outline: 'none',
-                padding: '20px',
-                width: 'auto',
-            }
-        };
+        const customStyles = {};
+        const customStylesForModalMacro = {};
         //NAVIGATION
         const handleFillClick = (state) => {
             if (state === fillActive) {
@@ -839,105 +777,94 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     {pending.length > 0 ? PENDING_COMPONENT() : ''}
 
                     <div className="col-lg-11 col-md-12">
-                        <h1 className="text-center my-4">GESTIÓN DE PQRS Y SOLICITUDES</h1>
-                        <hr />
-                        <div className="row">
-                            <h2 className="text-uppercase text-center pb-2">ACCIONES</h2>
-                            <div className="col-md-4">
-                                <div className="rounded-lg border bg-card p-4 bg-card mb-3">
-                                    <div>
-                                        <h4 className="text-center font-semibold mb-3">GENERAR PQRS</h4>
-                                        <p className="app-text-primary text-justify"> Permite la digitalización de una solicitud PQRS</p>
-                                        <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-lg btn-success" onClick={() => toggle()}><Icon name="folder-plus" size={16} /> NUEVA SOLICITUD </button>
-                                        </div>
-                                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                            <div className="rounded-lg border bg-card p-4">
+                                <h4 className="text-sm font-semibold text-center mb-2">Generar PQRS</h4>
+                                <p className="text-xs text-muted-foreground text-center mb-3">Digitalización de una solicitud PQRS</p>
+                                <div className="text-center">
+                                    <Button onClick={() => toggle()}>
+                                        <Icon name="FolderPlus" size={14} /> Nueva Solicitud
+                                    </Button>
                                 </div>
                             </div>
-                            <div className="col-md-4">
-                                <div className="rounded-lg border bg-card p-4 bg-card mb-3">
-                                    <div>
-                                        <h4 className="text-center font-semibold mb-3">CONSULTAR PQRS</h4>
-                                        <form onSubmit={search} id="app-form">
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <Icon name="info-circle" size={16} />
-                                                </span>
-                                                <select className="form-select" id="search_0" required>
-                                                    <option value="1">Consecutivo de Entrada</option>
-                                                    <option value="2">Consecutivo de Salida</option>
-                                                    <option value="3">Numero de radicación de Licencia</option>
-                                                    <option value="4">Nombre de Peticionario</option>
-                                                    <option value="5">Numero de Documento (C.C, NIT)</option>
-                                                    <option value="6">Profesional Asignado</option>
-                                                </select>
-                                            </div>
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <Icon name="comment-dots" size={16} />
-                                                </span>
-                                                <input type="text" className="form-control" id="search_1" />
-                                            </div>
-                                            <div className="text-center py-4 mt-3">
-                                                <button className="btn btn-lg btn-secondary"><Icon name="search-plus" size={16} /> CONSULTAR </button>
-                                            </div>
-                                        </form>
+                            <div className="rounded-lg border bg-card p-4">
+                                <h4 className="text-sm font-semibold text-center mb-2">Consultar PQRS</h4>
+                                <form onSubmit={search} id="app-form">
+                                    <div className="input-group mb-2">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="Info" size={13} />
+                                        </span>
+                                        <select className="form-select" id="search_0" required>
+                                            <option value="1">Consecutivo de Entrada</option>
+                                            <option value="2">Consecutivo de Salida</option>
+                                            <option value="3">Numero de radicación de Licencia</option>
+                                            <option value="4">Nombre de Peticionario</option>
+                                            <option value="5">Numero de Documento (C.C, NIT)</option>
+                                            <option value="6">Profesional Asignado</option>
+                                        </select>
                                     </div>
-                                </div>
+                                    <div className="input-group mb-2">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="MessageCircle" size={13} />
+                                        </span>
+                                        <input type="text" className="form-control" id="search_1" placeholder="Buscar..." />
+                                    </div>
+                                    <div className="text-center">
+                                        <Button variant="secondary" size="sm" type="submit">
+                                            <Icon name="SearchCheck" size={13} /> Consultar
+                                        </Button>
+                                    </div>
+                                </form>
                             </div>
-                            <div className="col-md-4">
-                                <div className="rounded-lg border bg-card p-4 bg-card mb-3">
-                                    <div>
-                                        <h4 className="text-center font-semibold mb-3">MACRO TABLA</h4>
-                                        <form onSubmit={loadMacro} id="fun_form_macro_table_pqrs">
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <Icon name="calendar-alt" size={16} />
-                                                </span>
-                                                <input type="date" className="form-control" id="load_macro_date_1" required
-                                                    defaultValue={dayjs().subtract(6, 'months').format('YYYY-MM-DD')} />
-                                            </div>
-                                            <div className="input-group mb-3">
-                                                <span className="input-group-text bg-info text-white">
-                                                    <Icon name="calendar-alt" size={16} />
-                                                </span>
-                                                <input type="date" className="form-control" id="load_macro_date_2" required
-                                                    defaultValue={dayjs().format('YYYY-MM-DD')} />
-                                            </div>
-                                            <div className="text-center py-4 mt-3">
-                                                <button className="btn btn-lg btn-danger"><Icon name="th" size={16} /> CARGAR </button>
-                                            </div>
-                                        </form>
+                            <div className="rounded-lg border bg-card p-4">
+                                <h4 className="text-sm font-semibold text-center mb-2">Macro Tabla</h4>
+                                <form onSubmit={loadMacro} id="fun_form_macro_table_pqrs">
+                                    <div className="input-group mb-2">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="Calendar" size={13} />
+                                        </span>
+                                        <input type="date" className="form-control" id="load_macro_date_1" required
+                                            defaultValue={dayjs().subtract(6, 'months').format('YYYY-MM-DD')} />
                                     </div>
-                                </div>
+                                    <div className="input-group mb-2">
+                                        <span className="input-group-text bg-primary text-primary-foreground">
+                                            <Icon name="Calendar" size={13} />
+                                        </span>
+                                        <input type="date" className="form-control" id="load_macro_date_2" required
+                                            defaultValue={dayjs().format('YYYY-MM-DD')} />
+                                    </div>
+                                    <div className="text-center">
+                                        <Button variant="destructive" size="sm" type="submit">
+                                            <Icon name="Table" size={13} /> Cargar
+                                        </Button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
 
-                    <div className="row d-flex justify-content-center">
-                        <div className="col-11">
-                            {isloadedSearch ? (<>
-                                <h2 className="text-uppercase text-center pb-2">RESULTADO DE LA BUSQUEDA <img src={IMG_SEARCH_ICON} className="" height="75px" alt="..." /></h2>
-
-                                <DataTable
-                                    title="TABLA DE BÚSQUEDA"
-                                    paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                                    noDataComponent="No hay mensajes"
-                                    striped="true"
-                                    columns={columnsSearch}
-                                    data={itemsSearch}
-                                    highlightOnHover
-                                    pagination
-                                    paginationPerPage={20}
-                                    paginationRowsPerPageOptions={[20, 50, 100]}
-                                    className="data-table-component"
-                                    Header
-                                    onRowClicked={(e) => setSelectedRow(e.id)}
-                                    conditionalRowStyles={rowSelectedStyle}
-                                /></>
-                            ) : ""}
+                    {isloadedSearch && (
+                        <div className="mb-4">
+                            <h3 className="text-sm font-semibold text-center mb-2">
+                                <Icon name="Search" size={14} className="inline mr-1" /> Resultado de la Búsqueda
+                            </h3>
+                            <DataTable
+                                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                                noDataComponent="No hay mensajes"
+                                striped="true"
+                                columns={columnsSearch}
+                                data={itemsSearch}
+                                highlightOnHover
+                                pagination
+                                paginationPerPage={20}
+                                paginationRowsPerPageOptions={[20, 50, 100]}
+                                className="data-table-component"
+                                noHeader
+                                onRowClicked={(e) => setSelectedRow(e.id)}
+                                conditionalRowStyles={rowSelectedStyle}
+                            />
                         </div>
-                    </div>
+                    )}
 
                     <div className="flex border-b border-border overflow-x-auto" role="tablist">
                         <button
@@ -1038,37 +965,45 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
 
                     <Modal contentLabel="GENERAR SOLCITUD PQRS"
                         isOpen={modalNew}
-                        style={customStyles}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h2>CREAR NUEVA PETICIÓN</h2>
-
-                            <div className='btn-close' color='none' onClick={() => toggle()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="FolderPlus" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Crear Nueva Petición</h2>
+                            </div>
+                            <button type="button" onClick={() => toggle()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSNEW
                             translation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             translation_form={translation_form}
                             refreshRequested={refreshRequested} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggle()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="INFORMACION PQRS"
                         isOpen={modalInfo}
-                        style={customStyles}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>INFORMACION PQRS - {currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => toggleInfo()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Info" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Información PQRS — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleInfo()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSINFO
                             ranslation={translation}
                             swaMsg={swaMsg}
@@ -1076,22 +1011,26 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             translation_form={translation_form}
                             currentId={currentId}
                             NAVIGATION={navigation} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => toggleInfo()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleInfo()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="ASIGNAR PROFESIONALES PQRS"
                         isOpen={modalAsign}
-                        style={customStyles}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>ASIGNAR PROFESIONALES -  {currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => toggleAsign()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="UserPlus" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Asignar Profesionales — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleAsign()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSASIGN
                             ranslation={translation}
                             swaMsg={swaMsg}
@@ -1100,22 +1039,26 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             currentId={currentId}
                             refreshList={refreshList}
                             NAVIGATION={navigation} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => toggleAsign()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleAsign()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="RESPUESTA PROFESIONAL PQRS"
                         isOpen={modalInformal}
-                        style={customStyles}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>RESPUESTA PROFESIONAL -  {currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => toggleInformal()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="MessageSquare" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Respuesta Profesional — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleInformal()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSINFORMAL
                             ranslation={translation}
                             swaMsg={swaMsg}
@@ -1126,22 +1069,26 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             currentItemAsign={currentItemAsign}
                             NAVIGATION={navigation}
                             closeModal={() => toggleInformal()} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => toggleInformal()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleInformal()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="RESPONDER PETICION PQRS"
                         isOpen={modalReply}
-                        style={customStyles}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>RESPONDER A PETICIÓN -  {currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => toggleReply()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Reply" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Responder Petición — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleReply()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSREPLY
                             ranslation={translation}
                             swaMsg={swaMsg}
@@ -1151,22 +1098,26 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             refreshList={refreshList}
                             NAVIGATION={navigation}
                             closeModal={() => toggleReply()} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => toggleReply()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleReply()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="CERRAR PQRS"
                         isOpen={modalLock}
-                        style={customStyles}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>CERRAR PETICIÓN -  {currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => toggleLock()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Lock" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Cerrar Petición — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleLock()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRSLOCK
                             ranslation={translation}
                             swaMsg={swaMsg}
@@ -1175,22 +1126,26 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             currentId={currentId}
                             refreshList={refreshList}
                             NAVIGATION={navigation} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => toggleLock()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleLock()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="EDIT PQRS"
                         isOpen={modalEdit}
-                        style={customStyles}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>MODIFICAR PETICIÓN -  {currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => toggleEdit()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Pencil" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Modificar Petición — {currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleEdit()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRS_EDIT
                             ranslation={translation}
                             swaMsg={swaMsg}
@@ -1199,21 +1154,25 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             currentId={currentId}
                             refreshList={refreshList}
                             NAVIGATION={navigation} />
-                        <hr />
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => toggleEdit()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleEdit()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
                     <Modal contentLabel="MANAGE PQRS"
                         isOpen={modalManage}
-                        style={customStyles}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>GESTIONAR PETICIÓN -  {currentIdGlobal || currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => toggleManage()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Settings" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Gestionar Petición — {currentIdGlobal || currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleManage()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         <PQRS_MANAGE_COMPONENT
                             translation={translation}
                             swaMsg={swaMsg}
@@ -1225,21 +1184,25 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             translation_form={translation_form}
                             retrievePublish={retrievePublish}
                         />
-
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleManage()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
                     <Modal contentLabel="EDIT PQRS"
                         isOpen={modalEditable}
-                        style={customStyles}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <h3>EDITAR PETICIÓN -  {currentIdGlobal || currentIdPublic}</h3>
-                            <div className='btn-close' color='none' onClick={() => toggleEditable()}></div>
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="FileEdit" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Editar Petición — {currentIdGlobal || currentIdPublic}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggleEditable()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
-                        <hr />
                         {editMaster == true ?
                             <PQRS_MANAGE_COMPONENT
                                 translation={translation}
@@ -1260,19 +1223,25 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                                 currentId={currentId}
                             />
                         }
-                        <div className="text-end py-4 mt-3">
-                            <button className="btn btn-lg btn-info" onClick={() => toggleEditable()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                        <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                            <Button variant="outline" size="sm" onClick={() => toggleEditable()}><Icon name="X" size={14} /> Cerrar</Button>
                         </div>
                     </Modal>
 
                     <Modal contentLabel="MACRO TABLE"
                         isOpen={modal_macro}
-                        style={customStylesForModalMacro}
                         ariaHideApp={false}
                     >
-                        <div className="my-4 d-flex justify-content-between">
-                            <label><Icon name="th" size={16} /> Macro tabla de seguimiento: Desde {dateParser(date_start)} hasta {dateParser(date_end)}</label>
-                            <button type="button" className="btn-close" onClick={() => toggle_macro()} />
+                        <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                    <Icon name="Table" size={14} className="text-primary" />
+                                </div>
+                                <h2 className="text-sm font-semibold tracking-tight">Macro Tabla: {dateParser(date_start)} — {dateParser(date_end)}</h2>
+                            </div>
+                            <button type="button" onClick={() => toggle_macro()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                                <Icon name="X" size={16} className="text-muted-foreground" />
+                            </button>
                         </div>
 
                         <PQRS_MACROTABLE translation={translation} swaMsg={swaMsg} globals={globals}
