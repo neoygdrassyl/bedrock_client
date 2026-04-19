@@ -15,6 +15,7 @@ export function LegacyModal({
   style,
   contentLabel,
   className,
+  overlayClassName,
   children,
   // Ignored props from react-modal API
   ariaHideApp,       // eslint-disable-line no-unused-vars
@@ -47,7 +48,7 @@ export function LegacyModal({
 
   return (
     <div
-      className="ReactModal__Overlay fixed inset-0 z-50"
+      className={cn('ReactModal__Overlay fixed inset-0 z-50', overlayClassName)}
       role="dialog"
       aria-modal="true"
       aria-label={contentLabel}
