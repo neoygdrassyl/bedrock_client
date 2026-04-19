@@ -626,9 +626,37 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
     // --- RENDER ---
         const { currentItemAsignProf, currentVersion, currentId, isLoaded, list_started, list_incomplete, list_search, worker_list } = state;
 
-        const modalHeader = <div className="my-3 d-flex justify-content-between">
-            <label>ULTIMA VERSIÓN :{state.currentLastVersion}</label>
-        </div>
+        const modalHeader = null; // Legacy variable — replaced by FunModalHeader below
+
+        const FunModalHeader = ({ icon, title, onClose }) => (
+            <div className="flex items-center justify-between py-3 mb-3 border-b border-border">
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+                        <Icon name={icon} size={16} className="text-primary" />
+                    </div>
+                    <div>
+                        <h2 className="text-base font-semibold">{title}</h2>
+                        <p className="text-xs text-muted-foreground">Radicación: {state.currentPublic} — Última versión: {state.currentLastVersion}</p>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="rounded-lg p-1.5 hover:bg-muted transition-colors"
+                    aria-label="Cerrar"
+                >
+                    <Icon name="X" size={18} className="text-muted-foreground" />
+                </button>
+            </div>
+        );
+
+        const ModalFooter = ({ onClose }) => (
+            <div className="flex justify-end py-4 mt-3 border-t border-border">
+                <Button variant="outline" size="lg" onClick={onClose}>
+                    <Icon name="X" size={16} /> Cerrar
+                </Button>
+            </div>
+        );
         let _GET_MISSING_CONTEXT = (state) => {
             if (state == '-1') return <Badge variant="secondary" className="text-[10px]">INCOMPLETO</Badge>
             if (state == '-101') return <Badge variant="destructive" className="text-[10px]">DESIST. INCOMPLETO</Badge>
@@ -1659,11 +1687,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     ariaHideApp={false}
                 >
 
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-alt" size={16} /> DETALLES DE LA SOLICITUD - No. Radicación : {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="FileText" title="Detalles de la Solicitud" onClose={toggle} />
 
                     <FUNG
                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1674,9 +1698,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         onDuplicateSuccess={handleDuplicateSuccess}
                     />
 
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
-                    </div>
+                    <ModalFooter onClose={toggle} />
                 </Modal>
 
                 <Modal contentLabel="FUN CHECKEO"
@@ -1684,11 +1706,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="check-square" size={16} /> LISTA DE CHECKEO : No. Radicación :  {state.currentPublic}</label>
-                        <button type="button" className="btn-close" onClick={() => toggle_c()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="CheckSquare" title="Lista de Checkeo" onClose={toggle_c} />
 
                     <FUNC translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1699,9 +1717,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_c}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_c} />
                 </Modal>
 
                 <Modal contentLabel="FUN NEW/UPDATE"
@@ -1709,11 +1725,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-signature" size={16} /> ACTUALIZACIÓN DE SOLICITUD - No. Radicación : {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_n()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="FileSignature" title="Actualización de Solicitud" onClose={toggle_n} />
 
                     <FUNN translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1723,9 +1735,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_n}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_n} />
                 </Modal>
 
                 <Modal contentLabel="FUN DOC CONTROL"
@@ -1733,11 +1743,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="archive" size={16} /> GESTIÓN DOCUMENTAL - No. Radicación :  {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_d()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Archive" title="Gestión Documental" onClose={toggle_d} />
 
                     <FUND translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1746,9 +1752,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_d}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_d} />
                 </Modal>
 
                 <Modal contentLabel="FUN ALERTA A VECINOS"
@@ -1756,11 +1760,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="sign" size={16} /> AVISOS A VECINOS - No. Radicación :  {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_alert()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Bell" title="Avisos a Vecinos" onClose={toggle_alert} />
 
                     <ChartErrorBoundary><FUN_ALERT translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1770,9 +1770,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} /></ChartErrorBoundary>
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_alert}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_alert} />
                 </Modal>
 
                 <Modal contentLabel="FUN CLOCK"
@@ -1780,11 +1778,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="clock" size={16} /> CONTROL DE TIEMPO DE PROCESO - No. Radicación : {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_clock()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Clock" title="Control de Tiempo de Proceso" onClose={toggle_clock} />
 
                     <FUNCLOCK translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1793,9 +1787,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_clock}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_clock} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS ARCHITECTURE"
@@ -1803,11 +1795,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="building" size={16} /> INFORME ARQUITECTÓNICO - No. Radicación :  {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordArc()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Building2" title="Informe Arquitectónico" onClose={toggle_recordArc} />
 
                     <RECORD_ARC translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1818,9 +1806,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_recordArc}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_recordArc} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS LAW"
@@ -1828,11 +1814,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="balance-scale" size={16} /> INFORME JURIDICO - No. Radicación :  {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordLaw()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Scale" title="Informe Jurídico" onClose={toggle_recordLaw} />
 
                     <RECORD_LAW translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1842,9 +1824,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_recordLaw}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_recordLaw} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS PH"
@@ -1852,11 +1832,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="pencil-ruler" size={16} /> INFORME PROPIEDAD HORIZONTAL - No. Radicación :  {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordPH()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="PencilRuler" title="Informe Propiedad Horizontal" onClose={toggle_recordPH} />
 
                     <RECORD_PH translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1867,9 +1843,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_recordPH}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_recordPH} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS ENG"
@@ -1877,11 +1851,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="cogs" size={16} /> INFORME ESTRUCTURAL - No. Radicación :  {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordEng()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="Cog" title="Informe Estructural" onClose={toggle_recordEng} />
 
                     <RECORD_ENG translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1891,9 +1861,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         NAVIGATION={navigation}
                         NAVIGATION_VERSION={navigation_version} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_recordEng}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_recordEng} />
                 </Modal>
 
                 <Modal contentLabel="RECORDS REVIEW"
@@ -1901,11 +1869,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-contract" size={16} />ACTA DE OBSERVACIONES / CORRECCIONES - No. Radicación :  {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_recordReview()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="FileCheck" title="Acta de Observaciones / Correcciones" onClose={toggle_recordReview} />
 
                     <RECORD_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1914,9 +1878,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         closeModal={toggle_recordReview}
                         NAVIGATION={navigation} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_recordReview}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_recordReview} />
                 </Modal>
 
                 <Modal contentLabel="EXPEDITION"
@@ -1924,11 +1886,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-alt" size={16} /> EXPEDICIÓN DE LA LICENCIA:  {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => toggle_exp()} />
-                    </div>
-                    {modalHeader}
+                    <FunModalHeader icon="FileOutput" title="Expedición de la Licencia" onClose={toggle_exp} />
 
                     <EXPEDITION translation={translation} swaMsg={swaMsg} globals={globals}
                         currentId={currentId}
@@ -1937,9 +1895,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         closeModal={toggle_exp}
                         NAVIGATION={navigation} />
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={toggle_exp}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={toggle_exp} />
                 </Modal>
 
                 <Modal contentLabel="ASIGN PROFS"
@@ -1947,10 +1903,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     style={customStylesForModal()}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-alt" size={16} /> ASIFNACIÓN DE PROFESIONALES:  {state.currentPublic} </label>
-                        <button type="button" className="btn-close" onClick={() => setState({ modal_asign_prof: false })} />
-                    </div>
+                    <FunModalHeader icon="Users" title="Asignación de Profesionales" onClose={() => setState({ modal_asign_prof: false })} />
 
                     {currentItemAsignProf?.length ? <TABLE_COMPONENT_EXPANDED currentItem={{ ...currentItemAsignProf[0], rec_review: currentItemAsignProf[0].rec_review, rec_review_2: currentItemAsignProf[0].rec_rev_2 }}
                         requestUpdate={null}
@@ -1960,9 +1913,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                         dataL={currentItemAsignProf}
                     /> : "Loading..."}
 
-                    <div className="text-end py-4 mt-3">
-                        <Button variant="secondary" size="lg" onClick={() => setState({ modal_asign_prof: false })}><Icon name="XCircle" size={16} /> Cerrar</Button>
-                    </div>
+                    <ModalFooter onClose={() => setState({ modal_asign_prof: false })} />
                 </Modal>
 
             </div >
