@@ -685,7 +685,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                       </div>
 
                       <div className="text-center py-4 mt-3">
-                        <button className="btn btn-lg btn-info">{translation.form_btn}</button>
+                        <Button size="sm">{translation.form_btn}</Button>
                       </div>
 
                     </form>
@@ -732,7 +732,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
               ? <>
                 {_TABLE_INFO()}
                 <div className="text-center py-4 mt-3">
-                  <button className="btn btn-lg btn-secondary" onClick={() => setTable([])}>REINICIAR TABLA</button>
+                  <Button variant="outline" size="sm" onClick={() => setTable([])}>Reiniciar tabla</Button>
                 </div>
               </>
               : <div className="text-center">No hay datos en la tabla</div>}

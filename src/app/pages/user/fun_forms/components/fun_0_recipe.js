@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import FUNService from '../../../../services/fun.service'
 import VIZUALIZER from '../../../../components/vizualizer.component';
@@ -429,7 +430,7 @@ function FUN_0_RECIPE(props) {
                     {_COMPONENT_PAYMENT()}
                     {_COMPONENT_DESC()}
                     <div className="col-12 text-center">
-                        <button className="btn btn-success btn-lg my-3" id="btn-review"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</button>
+                        <Button size="sm" className="my-3" id="btn-review"><Icon name="share-square" size={14} /> Guardar cambios</Button>
                     </div>
                 </form>
 

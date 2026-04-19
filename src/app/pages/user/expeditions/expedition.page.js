@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
@@ -256,7 +257,7 @@ function EXPEDITION(props) {
                             </> : <>
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <button className="btn btn-info btn-lg" onClick={() => new_expedition()}> GENERAR EXPEDICION EN BLANCO</button>
+                                        <Button size="sm" onClick={() => new_expedition()}>GENERAR EXPEDICION EN BLANCO</Button>
                                     </div>
                                 </fieldset>
                             </>}

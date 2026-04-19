@@ -19,6 +19,7 @@ import Collapsible from '../../../components/Collapsible';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, refreshList: propRefreshList, NAVIGATION }) {
     const [attachs, setAttachs] = useState(0);
@@ -423,22 +424,22 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                                         <p className="app-p lead text-end fw-bold">ANEXAR DOCUMENTO DE CIERRE</p>
                                         <div className="text-end m-3">
                                             {attachs > 0
-                                                ? <button type="button" className="btn btn-lg btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
+                                                ? <Button type="button" variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={14} /> Remover último</Button>
                                                 : ""}
-                                            <button type="button" className="btn btn-lg btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
+                                            <Button type="button" variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={14} /> Añadir</Button>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
                                         {
                                             /**
                                              * 
                                              *    <div className="text-center m-3">
-                                            {attachs > 0 ? <button type="button" className="btn btn-lg btn-warning my-2" onClick={() => addAttachsClose()}><Icon name="paperclip" size={16} /> ANEXAR {attachs} DOCUMENTOS </button> : ""}
+                                            {attachs > 0 ? <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-2" onClick={() => addAttachsClose()}><Icon name="paperclip" size={14} /> Anexar {attachs} documentos</Button> : ""}
                                         </div>
                                              */
                                         }
                                         <hr />
                                         <div className="text-center m-3">
-                                            <button className="btn btn-lg btn-success" ><Icon name="lock" size={16} /> CERRAR PETICIÓN</button>
+                                            <Button size="sm"><Icon name="lock" size={14} /> Cerrar petición</Button>
                                         </div>
 
                                     </form> </>

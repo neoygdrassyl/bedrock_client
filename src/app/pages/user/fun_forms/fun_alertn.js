@@ -17,6 +17,7 @@ import { _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 
@@ -486,7 +487,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
                     <div className="row text-center">
                         <div className="col-12">
-                            <button type="button" className="btn btn-warning btn-lg my-3" onClick={() => alertAddress()}><Icon name="check-square" size={16} /> CONFIRMAR</button>
+                            <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => alertAddress()}><Icon name="check-square" size={14} /> Confirmar</Button>
                         </div>
                     </div>
                 </form>
@@ -826,7 +827,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
                             <div className="row text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-warning btn-lg my-3" id="btn-review" ><Icon name="file-alt" size={16} /> ANEXAR AVISO</button>
+                                    <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" id="btn-review"><Icon name="file-alt" size={14} /> Anexar aviso</Button>
                                 </div>
                             </div>
                         </form>

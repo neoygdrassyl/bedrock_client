@@ -3,6 +3,7 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import CubXVrDataService from '../../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 
 export const PQRS_ID_CONFIRM = (props) => {
@@ -117,9 +118,9 @@ export const PQRS_ID_CONFIRM = (props) => {
                 <button type="button" className="btn btn-info shadow-none" onClick={() => _GET_LAST_ID()}>GENERAR</button>
             </div>
             <div className="d-flex justify-content-center">
-                <button type="button" className="btn btn-success btn-lg shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
-                    GUARDAR
-                </button>
+                <Button type="button" size="sm" className="shadow-none mt-5" onClick={() => UPDATE_PQRS()}>
+                    Guardar
+                </Button>
             </div>
         </div>
 

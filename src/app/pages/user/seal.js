@@ -376,7 +376,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                             required onChange={(e) => formData.set('folders', e.target.value)} />
                                     </div>
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-info"><Icon name="file-import" size={16} /> CREAR </button>
+                                        <Button size="sm"><Icon name="file-import" size={14} /> Crear</Button>
                                     </div>
                                 </form>
                             </CardContent>
@@ -404,7 +404,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                                         <input type="text" className="form-control" id="search_1" required />
                                     </div>
                                     <div className="text-center py-4 mt-3">
-                                        <button className="btn btn-lg btn-secondary"><Icon name="search-plus" size={16} /> CONSULTAR </button>
+                                        <Button variant="outline" size="sm"><Icon name="search-plus" size={14} /> Consultar</Button>
                                     </div>
                                 </form>
                             </CardContent>

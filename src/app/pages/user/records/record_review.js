@@ -20,6 +20,7 @@ import PQRS_Service from '../../../services/pqrs_main.service';
 import SubmitService from '../../../services/submit.service';
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -1797,7 +1798,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <button className="btn btn-info btn-lg" onClick={() => new_record_review()}> GENERAR ACTA EN BLANCO</button>
+                                        <Button size="sm" onClick={() => new_record_review()}><Icon name="FilePlus" size={14} /> Generar acta en blanco</Button>
                                     </div>
                                 </fieldset>
 

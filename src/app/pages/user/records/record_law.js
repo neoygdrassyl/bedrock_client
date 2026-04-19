@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/icon';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import submitService from '../../../services/submit.service';
@@ -451,7 +453,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
 
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <button className="btn btn-info btn-lg" onClick={() => new_record_law()}> GENERAR INFORME EN BLANCO</button>
+                                        <Button size="sm" onClick={() => new_record_law()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
                                     </div>
                                 </fieldset>
 

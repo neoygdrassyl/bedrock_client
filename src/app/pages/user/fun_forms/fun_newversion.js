@@ -1,5 +1,6 @@
 
 import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FUNService from '../../../services/fun.service'
 import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'
@@ -841,7 +842,7 @@ const FUN_NEWVERSION = ({ translation, swaMsg, globals, currentItem, currentVers
                 </> : ""}
             <div className="row mb-3 text-center">
                 <div className="col-12">
-                    <button type="button" className="btn btn-warning btn-lg my-3" onClick={() => manage_version()}><Icon name="file-alt" size={16} /> ACTUALIZAR VERSION</button>
+                    <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => manage_version()}><Icon name="file-alt" size={14} /> Actualizar versión</Button>
                 </div>
             </div>
         </>);
