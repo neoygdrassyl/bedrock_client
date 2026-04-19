@@ -54,15 +54,15 @@ export function LegacyModal({
       aria-label={contentLabel}
       {...rest}
     >
-      {/* Overlay — always token-based, ignores legacy inline overlay styles */}
+      {/* Overlay */}
       <div
-        className="absolute inset-0 z-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm animate-in fade-in-0 duration-200"
+        className="absolute inset-0 z-0 bg-black/50 dark:bg-black/70 backdrop-blur-[2px] animate-in fade-in-0 duration-200"
         onClick={shouldCloseOnOverlayClick ? onRequestClose : undefined}
       />
       {/* Content */}
       <div
         className={cn(
-          'ReactModal__Content absolute z-10 bg-background border border-border rounded-lg shadow-xl overflow-auto animate-in fade-in-0 zoom-in-95 duration-200',
+          'ReactModal__Content absolute z-10 bg-background border border-border rounded-[var(--radius)] shadow-lg overflow-auto animate-in fade-in-0 zoom-in-95 duration-200',
           className,
         )}
         style={{
@@ -70,7 +70,7 @@ export function LegacyModal({
           left: '5%',
           right: '5%',
           bottom: '2%',
-          padding: '1.5rem',
+          padding: '1rem 1.25rem',
           maxWidth: '1400px',
           margin: '0 auto',
           ...contentStyle,

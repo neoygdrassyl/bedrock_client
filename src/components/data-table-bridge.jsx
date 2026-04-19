@@ -201,22 +201,22 @@ export function DataTableBridge({
 
       <div
         className={cn(
-          'rdt_Table rounded-md border border-border overflow-auto',
+          'rdt_Table rounded-[var(--radius)] border border-border overflow-auto',
           fixedHeader && 'overflow-y-auto'
         )}
         style={fixedHeader ? { maxHeight: fixedHeaderScrollHeight || '400px' } : undefined}
       >
         <Table>
           {!noTableHead && (
-            <TableHeader className="rdt_TableHead bg-muted/50 sticky top-0 z-10">
+            <TableHeader className="rdt_TableHead bg-muted/40 sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="rdt_TableHeadRow">
+                <TableRow key={headerGroup.id} className="rdt_TableHeadRow border-b-border/60">
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
                       className={cn(
                         cellPadding,
-                        'font-semibold text-muted-foreground',
+                        'font-semibold text-[0.6875rem] uppercase tracking-wide text-muted-foreground',
                         header.column.getCanSort() && 'cursor-pointer select-none hover:text-foreground transition-colors'
                       )}
                       style={header.column.columnDef.size ? { width: header.column.columnDef.size } : undefined}
@@ -259,10 +259,10 @@ export function DataTableBridge({
                   <TableRow
                     key={row.id}
                     className={cn(
-                      'rdt_TableRow',
+                      'rdt_TableRow transition-colors',
                       onRowClicked && 'cursor-pointer',
-                      highlightOnHover && 'hover:bg-muted/50',
-                      striped && rowIdx % 2 === 1 && 'bg-muted/30',
+                      highlightOnHover && 'hover:bg-muted/40',
+                      striped && rowIdx % 2 === 1 && 'bg-muted/20',
                       getRowClassName(row.original),
                     )}
                     style={getRowStyle(row.original)}
@@ -284,7 +284,7 @@ export function DataTableBridge({
                     <Fragment key={row.id}>
                       {rowContent}
                       <TableRow>
-                        <TableCell colSpan={tanstackColumns.length} className="p-0 bg-muted/20">
+                        <TableCell colSpan={tanstackColumns.length} className="p-0 bg-muted/10 border-l-2 border-l-primary/30">
                           <ExpandableComponent data={row.original} />
                         </TableCell>
                       </TableRow>

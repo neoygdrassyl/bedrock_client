@@ -619,31 +619,31 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
         const modalHeader = null; // Legacy variable — replaced by FunModalHeader below
 
         const FunModalHeader = ({ icon, title, onClose }) => (
-            <div className="flex items-center justify-between py-3 mb-3 border-b border-border">
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
-                        <Icon name={icon} size={16} className="text-primary" />
+            <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                <div className="flex items-center gap-2.5">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                        <Icon name={icon} size={14} className="text-primary" />
                     </div>
                     <div>
-                        <h2 className="text-base font-semibold">{title}</h2>
-                        <p className="text-xs text-muted-foreground">Radicación: {state.currentPublic} — Última versión: {state.currentLastVersion}</p>
+                        <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
+                        <p className="text-[0.6875rem] text-muted-foreground">Rad. {state.currentPublic} — v{state.currentLastVersion}</p>
                     </div>
                 </div>
                 <button
                     type="button"
                     onClick={onClose}
-                    className="rounded-lg p-1.5 hover:bg-muted transition-colors"
+                    className="rounded-md p-1 hover:bg-muted transition-colors"
                     aria-label="Cerrar"
                 >
-                    <Icon name="X" size={18} className="text-muted-foreground" />
+                    <Icon name="X" size={16} className="text-muted-foreground" />
                 </button>
             </div>
         );
 
         const ModalFooter = ({ onClose }) => (
-            <div className="flex justify-end py-4 mt-3 border-t border-border">
-                <Button variant="outline" size="lg" onClick={onClose}>
-                    <Icon name="X" size={16} /> Cerrar
+            <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                <Button variant="outline" size="sm" onClick={onClose}>
+                    <Icon name="X" size={14} /> Cerrar
                 </Button>
             </div>
         );
