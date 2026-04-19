@@ -169,16 +169,22 @@
 | Area | Estado |
 |---|---|
 | Brecha visual del shell | **COMPLETADO — IconRail hover glow, ContextPanel con grupos/badges, HeaderBar con search/bell/breadcrumb, Footer VS Code-style con conectividad** |
+| Visual polish v1 (shell+dash+login) | **COMPLETADO — shell compactado (h-11 header, h-[22px] footer, w-9/h-9 rail buttons), dashboard max-w-6xl + Badge counts, login gradient profundo + h-9 inputs, legacy bridge +116 lineas, font scale reducida** |
+| Regression fixes | **COMPLETADO — 7 regresiones corregidas: lazy route imports, Vite optimizeDeps, DataTable bridge rdt_* classes, LegacyModal z-index, FUN heading/action menu/search empty state. 7 tests de regresion agregados.** |
 | Paginas de modulos legacy (FUN, PQRS, etc.) | **FUN migrado (badges, columns, row tokens). PQRS migrado (3 archivos principales + macrotable). Submit, Expeditions, Archive, Dictionary, Zone Use migrados. Records/Norms: headers y cells limpios en bulk.** |
 | Tablas legacy (react-data-table-component) | **MIGRADO — 83 archivos usan DataTableBridge** |
 | Modales legacy (react-modal) | **MIGRADO — 30 archivos usan LegacyModal** |
 | Alertas (SweetAlert2) | **CSS THEME APLICADO — dialogs visualmente alineados con tokens. Migracion JS completa en Fase 6** |
 | Iconos (FontAwesome CDN) | **MIGRADO — 220+ archivos usan Lucide Icon bridge, CDN eliminado** |
-| Dashboard | **COMPLETO — saludo dinamico, fecha, secciones, cards con conteos en vivo (5 APIs)** |
+| Dashboard | **COMPLETO — saludo dinamico, fecha, secciones, cards con conteos en vivo (5 APIs), max-w-6xl, Badge counts** |
+| Login | **COMPLETO — split-screen rediseñado, gradient profundo, inputs h-9 con focus ring, mobile-responsive** |
+| Legacy bridge CSS | **EXPANDIDO — 600+ lineas: typography density, table density, form controls, links, badges, rdt_* tables, dark mode completo** |
+| Font scale global | **REDUCIDA — h1:22px h2:18px h3:15px p:14px (antes h1:32px h2:24px)** |
 | Forms | Todos manuales, sin sistema unificado |
 | Styled-components restantes | **ELIMINADO — global.js/font.js borrados, paquete desinstalado, bundle reducido** |
 | Bootstrap como dependencia | Grid/utilidades aun necesarias |
 | MDB wrappers | 24 archivos usan wrappers locales (no MDB directo) — limpios |
+| E2E selectors | **ALINEADOS — 5 archivos E2E actualizados para DOM del rediseño. 31 E2E pass, 4 skipped** |
 
 ## Clases CSS legacy que NO se pueden eliminar aun
 
