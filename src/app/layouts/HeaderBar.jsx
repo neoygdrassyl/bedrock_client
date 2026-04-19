@@ -59,7 +59,7 @@ export function HeaderBar({ user, onLogout, sidebarCollapsed, onToggleSidebar })
     : '?';
 
   return (
-    <header className="flex items-center h-11 px-2.5 border-b border-border/60 bg-card/50 backdrop-blur-sm gap-1.5">
+    <header className="flex items-center h-11 px-2.5 border-b border-border/60 bg-card/50 backdrop-blur-sm gap-1.5 select-none">
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger asChild>
