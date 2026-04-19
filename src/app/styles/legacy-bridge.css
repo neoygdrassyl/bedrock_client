@@ -604,9 +604,14 @@
 }
 
 .dark #main-content :where(.input-group-text) {
-  background-color: hsl(var(--secondary));
-  border-color: hsl(var(--input));
-  color: hsl(var(--muted-foreground));
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--border));
+  color: hsl(var(--primary-foreground));
+}
+
+.dark #main-content :where(.input-group .form-control,
+                             .input-group .form-select) {
+  border-color: hsl(var(--border));
 }
 
 .dark #main-content :where(.form-check-input) {
@@ -951,10 +956,12 @@
   border-color: hsl(var(--ring));
   box-shadow: 0 0 0 2px hsl(var(--ring) / 0.15);
 }
-.dark #main-content :where(.input-group-text) {
-  background-color: hsl(var(--muted) / 0.3);
-  border-color: hsl(var(--border));
+/* ── Input-group focus-within glow ────────────────────────────── */
+#main-content :where(.input-group:focus-within) {
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+  border-radius: var(--radius);
 }
+
 .dark #main-content :where(.table) {
   --bs-table-bg: transparent;
 }
