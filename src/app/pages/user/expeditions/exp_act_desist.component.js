@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import Icon from '@/components/icon';
 import SubmitService from '../../../services/submit.service';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import Collapsible from '../../../components/Collapsible';
 
 
@@ -16,8 +14,8 @@ import { cities, domains_number, infoCud, zonesTable } from '../../../components
 import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
-const MySwal = withReactContent(Swal);
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_ACT_DESIST(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
@@ -290,14 +288,7 @@ const restoreDocs = useCallback(() => {
   const sortIcon = (active, dir) => <Icon name={!active ? "sort" : dir === "asc" ? "sort-up" : "sort-down"} size={14} className="ms-1" />;
 
   const confirmRestore = (msg, action) => {
-    MySwal.fire({
-      title: msg.title,
-      text: msg.text,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: msg.confirm,
-      cancelButtonText: "Cancelar",
-    }).then((res) => {
+    swalConfirm({ title: msg.title, text: msg.text, icon: 'warning', confirmButtonText: msg.confirm }).then((res) => {
       if (res.isConfirmed) action();
     });
   };
@@ -437,12 +428,7 @@ const restoreDocs = useCallback(() => {
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: "ERROR AL CARGAR",
-                    text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente.",
-                    icon: 'error',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente." });
             });
 
     }
@@ -1553,12 +1539,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
         formData.set('record_eje', document.getElementById('exp_pdf_reso_record_version').value);
         formData.set('id', currentItem.id);
         
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         EXPEDITION_SERVICE.gen_doc_res(formData)
             .then(response => {
@@ -1571,25 +1552,15 @@ let _COMPONENT_DOC_RES_PDF = () => {
                             internal_documents: documents,
                         };
                         setResDocData(data); 
-                        MySwal.close();
+                        swalClose();
                     }
                 } else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
 
     }
@@ -1928,50 +1899,24 @@ let _COMPONENT_DOC_RES_PDF = () => {
         manage_exp();
     }
     let manage_exp = () => {
-        MySwal.fire({
-            title: swaMsg.title_wait,
-            text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
-        });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         EXPEDITION_SERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    MySwal.fire({
-                        title: swaMsg.publish_success_title,
-                        text: swaMsg.publish_success_text,
-                        footer: swaMsg.text_footer,
-                        icon: 'success',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
 
                     props.requestUpdateRecord(currentItem.id);
                     props.requestUpdate(currentItem.id);
                 } else if (response.data === 'ERROR_DUPLICATE') {
-                    MySwal.fire({
-                        title: "ERROR DE DUPLICACION",
-                        text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo CUB de este formulario ya existe, debe de elegir un consecutivo nuevo" });
                 }
                 else {
-                    MySwal.fire({
-                        title: swaMsg.generic_eror_title,
-                        text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
-                    });
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
-                MySwal.fire({
-                    title: swaMsg.generic_eror_title,
-                    text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
-                });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }
     return (

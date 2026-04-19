@@ -5,10 +5,7 @@ import { ExecEngineTemp } from "../../../utils/ExecEngineTemp";
 import { TemplateEngine } from "../../../utils/TemplateEngine";
 import JoditEditor from "jodit-pro-react";
 import { saveAs } from "file-saver";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-const MySwal = withReactContent(Swal);
-
+import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 export default function EXP_RES_2(props) {
   const { data, swaMsg, currentItem, currentModel} = props;
 
@@ -101,12 +98,7 @@ export default function EXP_RES_2(props) {
 
   const handleDownloadPDFv2 = async () => {
     try {
-      MySwal.fire({
-        title: "Se está generando el PDF",
-        text: swaMsg.text_wait,
-        icon: 'info',
-        showConfirmButton: false,
-      });
+      swalLoading({ title: "Se está generando el PDF", text: swaMsg.text_wait });
 
       const editorHTML = editor.current?.value;
 
@@ -124,14 +116,9 @@ export default function EXP_RES_2(props) {
       const blob = await response.blob();
       saveAs(blob, nameFile + " " + currentItem.id_public + ".pdf");
 
-      MySwal.close();
+      swalClose();
     } catch (err) {
-      MySwal.fire({
-        title: swaMsg.generic_eror_title,
-        text: swaMsg.generic_error_text,
-        icon: 'warning',
-        confirmButtonText: swaMsg.text_btn,
-      });
+      swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
       console.error("Error descargando PDF v2:", err);
     }
   };
