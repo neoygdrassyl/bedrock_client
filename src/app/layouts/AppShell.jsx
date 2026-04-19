@@ -76,7 +76,7 @@ export function AppShell({ user, onLogout, children }) {
   );
 
   const logo = (
-    <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-white/10">
+    <div className="w-7 h-7 rounded-md overflow-hidden flex items-center justify-center bg-white/10">
       <img
         src={infoCud.icon}
         alt={infoCud.name}
@@ -110,7 +110,7 @@ export function AppShell({ user, onLogout, children }) {
         />
 
         <ScrollArea className="flex-1">
-          <main id="main-content" className="p-6">
+          <main id="main-content" className="p-4 md:p-5">
             <LegacyPageWrapper>
               {children}
             </LegacyPageWrapper>
