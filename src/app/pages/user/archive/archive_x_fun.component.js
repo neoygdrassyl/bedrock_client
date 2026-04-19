@@ -411,9 +411,16 @@ export default function ARCHIVE_X_FUN(props) {
                 style={customStylesForModal}
                 ariaHideApp={false}
             >
-                <div className="my-4 d-flex justify-content-between">
-                    <label><Icon name="archive" size={16} /> GESTIÓN DOCUMENTAL - No. Radicación :  {anex.id_public} </label>
-                    <button type="button" className="btn-close" onClick={() => setModal_d(!modal_d)} />
+                <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                            <Icon name="archive" size={14} className="text-primary" />
+                        </div>
+                        <h2 className="text-sm font-semibold tracking-tight">Gestión documental — Rad. {anex.id_public}</h2>
+                    </div>
+                    <button type="button" onClick={() => setModal_d(!modal_d)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                        <Icon name="X" size={16} className="text-muted-foreground" />
+                    </button>
                 </div>
                 <hr />
 

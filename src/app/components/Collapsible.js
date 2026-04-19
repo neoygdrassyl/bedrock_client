@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 /**
- * Drop-in replacement for react-collapsible.
+ * Drop-in replacement for react-collapsible with smooth CSS animation.
+ * Uses CSS grid row transition for natural height animation without JS measurement.
  * Supports: trigger, className, openedClassName, lazyRender, open, children.
  */
 export default function Collapsible({
@@ -13,6 +14,13 @@ export default function Collapsible({
     lazyRender = false,
 }) {
     const [isOpen, setIsOpen] = useState(open);
+    const [hasRendered, setHasRendered] = useState(open);
+
+    useEffect(() => {
+        if (isOpen) setHasRendered(true);
+    }, [isOpen]);
+
+    const shouldRender = lazyRender ? hasRendered : true;
 
     return (
         <div className={isOpen ? (openedClassName || className) : className}>
@@ -24,11 +32,14 @@ export default function Collapsible({
             >
                 {trigger}
             </div>
-            {(!lazyRender || isOpen) && (
-                <div style={{ display: isOpen ? 'block' : 'none' }}>
-                    {children}
+            <div
+                className="collapsible-grid-wrapper"
+                data-open={isOpen}
+            >
+                <div className="collapsible-grid-inner">
+                    {shouldRender && children}
                 </div>
-            )}
+            </div>
         </div>
     );
 }

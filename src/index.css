@@ -138,7 +138,7 @@ button:where(:not(.btn):not([class*="btn-"]):not(.Collapsible__trigger)) {
 }
 .bg-dd { background: hsl(var(--muted) / 0.3); }
 
-/* Collapsible components (Enhanced v6) */
+/* Collapsible components (Enhanced v6 + v9 animation) */
 .Collapsible {
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
@@ -161,6 +161,19 @@ button:where(:not(.btn):not([class*="btn-"]):not(.Collapsible__trigger)) {
 }
 .Collapsible__trigger:hover {
   opacity: 0.9;
+}
+
+/* Smooth open/close animation via CSS grid trick */
+.collapsible-grid-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease-out;
+}
+.collapsible-grid-wrapper[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.collapsible-grid-inner {
+  overflow: hidden;
 }
 
 /* Navigation button */

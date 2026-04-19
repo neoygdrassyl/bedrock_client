@@ -304,31 +304,7 @@ function Publish({ translation, swaMsg, breadCrums }) {
       },
     ]
 
-    const customStyles = {
-      overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
-        zIndex: 2
-      },
-      content: {
-        position: 'absolute',
-        top: '40px',
-        left: '15%',
-        right: '15%',
-        bottom: '40px',
-        border: '1px solid #ccc',
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        borderRadius: '4px',
-        outline: 'none',
-        padding: '20px',
-        marginRight: 'auto',
-      }
-    };
+    const customStyles = {};
 
     var formData = new FormData();
 
@@ -714,9 +690,16 @@ function Publish({ translation, swaMsg, breadCrums }) {
           style={customStyles}
           ariaHideApp={false}
         >
-          <div className="my-4 d-flex justify-content-between">
-            <h3>MODIFICAR PETICION</h3>
-            <button type="button" className='btn-close' onClick={() => { toggleManage() }} />
+          <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+            <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                    <Icon name="Pencil" size={14} className="text-primary" />
+                </div>
+                <h2 className="text-sm font-semibold tracking-tight">Modificar petición</h2>
+            </div>
+            <button type="button" onClick={() => { toggleManage() }} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                <Icon name="X" size={16} className="text-muted-foreground" />
+            </button>
           </div>
           <hr />
           {Edit_components()}

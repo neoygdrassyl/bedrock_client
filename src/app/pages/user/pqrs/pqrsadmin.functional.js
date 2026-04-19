@@ -42,6 +42,7 @@ import { ACESS_EDIT } from './access_edit';
 import dayjs from 'dayjs';
 import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
 import { Icon } from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
@@ -727,56 +728,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
         },
     ]
     // CUSTOM STYLES FOR THE MODAL
-    const customStyles = {
-        overlay: {
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(255, 255, 255, 0.75)',
-            zIndex: 1050
-        },
-        content: {
-            position: 'absolute',
-            top: '40px',
-            left: '15%',
-            right: '5%',
-            bottom: '40px',
-            border: '1px solid #ccc',
-            overflow: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            borderRadius: '4px',
-            outline: 'none',
-            padding: '20px',
-            marginRight: 'auto',
-        }
-    };
-    const customStylesForModalMacro = {
-        overlay: {
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(255, 255, 255, 0.75)',
-            zIndex: 1050,
-        },
-        content: {
-            position: 'absolute',
-            top: '0px',
-            left: '0px',
-            right: '0px',
-            bottom: '0px',
-            border: '1px solid #ccc',
-            overflow: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            borderRadius: '4px',
-            outline: 'none',
-            padding: '20px',
-            width: 'auto',
-        }
-    };
+    const customStyles = {};
+    const customStylesForModalMacro = {};
     //NAVIGATION
     const handleFillClick = (state) => {
         if (state === fillActive) {
@@ -1045,12 +998,17 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h2>CREAR NUEVA PETICIÓN</h2>
-
-                        <div className='btn-close' color='none' onClick={() => toggle()}></div>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="FilePlus" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Crear nueva petición</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <hr />
                     <PQRSNEW
                         translation={translation}
                         swaMsg={swaMsg}
@@ -1058,8 +1016,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         translation_form={translation_form}
                         refreshRequested={refreshRequested} />
                     <hr />
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggle()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggle()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1068,11 +1026,17 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3>INFORMACION PQRS - {currentIdPublic}</h3>
-                        <div className='btn-close' color='none' onClick={() => toggleInfo()}></div>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="Info" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Información PQRS — {currentIdPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggleInfo()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <hr />
                     <PQRSINFO
                         ranslation={translation}
                         swaMsg={swaMsg}
@@ -1081,8 +1045,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         currentId={currentId}
                         NAVIGATION={navigation} />
                     <hr />
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleInfo()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggleInfo()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1091,11 +1055,17 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3>ASIGNAR PROFESIONALES -  {currentIdPublic}</h3>
-                        <div className='btn-close' color='none' onClick={() => toggleAsign()}></div>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="UserPlus" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Asignar profesionales — {currentIdPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggleAsign()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <hr />
                     <PQRSASIGN
                         ranslation={translation}
                         swaMsg={swaMsg}
@@ -1105,8 +1075,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         refreshList={refreshList}
                         NAVIGATION={navigation} />
                     <hr />
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleAsign()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggleAsign()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1115,11 +1085,17 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3>RESPUESTA PROFESIONAL -  {currentIdPublic}</h3>
-                        <div className='btn-close' color='none' onClick={() => toggleInformal()}></div>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="MessageSquare" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Respuesta profesional — {currentIdPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggleInformal()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <hr />
                     <PQRSINFORMAL
                         ranslation={translation}
                         swaMsg={swaMsg}
@@ -1131,8 +1107,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation}
                         closeModal={() => toggleInformal()} />
                     <hr />
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleInformal()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggleInformal()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1141,11 +1117,17 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3>RESPONDER A PETICIÓN -  {currentIdPublic}</h3>
-                        <div className='btn-close' color='none' onClick={() => toggleReply()}></div>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="Reply" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Responder a petición — {currentIdPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggleReply()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <hr />
                     <PQRSREPLY
                         ranslation={translation}
                         swaMsg={swaMsg}
@@ -1156,8 +1138,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         NAVIGATION={navigation}
                         closeModal={() => toggleReply()} />
                     <hr />
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleReply()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggleReply()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1166,11 +1148,17 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3>CERRAR PETICIÓN -  {currentIdPublic}</h3>
-                        <div className='btn-close' color='none' onClick={() => toggleLock()}></div>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="Lock" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Cerrar petición — {currentIdPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggleLock()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <hr />
                     <PQRSLOCK
                         ranslation={translation}
                         swaMsg={swaMsg}
@@ -1180,8 +1168,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         refreshList={refreshList}
                         NAVIGATION={navigation} />
                     <hr />
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleLock()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggleLock()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1190,11 +1178,17 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3>MODIFICAR PETICIÓN -  {currentIdPublic}</h3>
-                        <div className='btn-close' color='none' onClick={() => toggleEdit()}></div>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="Pencil" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Modificar petición — {currentIdPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggleEdit()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <hr />
                     <PQRS_EDIT
                         ranslation={translation}
                         swaMsg={swaMsg}
@@ -1204,8 +1198,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         refreshList={refreshList}
                         NAVIGATION={navigation} />
                     <hr />
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleEdit()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggleEdit()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
                 <Modal contentLabel="MANAGE PQRS"
@@ -1213,11 +1207,17 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3>GESTIONAR PETICIÓN -  {currentIdGlobal || currentIdPublic}</h3>
-                        <div className='btn-close' color='none' onClick={() => toggleManage()}></div>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="Settings" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Gestionar petición — {currentIdGlobal || currentIdPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggleManage()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <hr />
                     <PQRS_MANAGE_COMPONENT
                         translation={translation}
                         swaMsg={swaMsg}
@@ -1230,8 +1230,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         retrievePublish={retrievePublish}
                     />
 
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleManage()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggleManage()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
                 <Modal contentLabel="EDIT PQRS"
@@ -1239,11 +1239,17 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStyles}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <h3>EDITAR PETICIÓN -  {currentIdGlobal || currentIdPublic}</h3>
-                        <div className='btn-close' color='none' onClick={() => toggleEditable()}></div>
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="Edit" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Editar petición — {currentIdGlobal || currentIdPublic}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggleEditable()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
-                    <hr />
                     {editMaster == true ?
                         <PQRS_MANAGE_COMPONENT
                             translation={translation}
@@ -1264,8 +1270,8 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                             currentId={currentId}
                         />
                     }
-                    <div className="text-end py-4 mt-3">
-                        <button className="btn btn-lg btn-info" onClick={() => toggleEditable()}><Icon name="times-circle" size={16} /> CERRAR </button>
+                    <div className="flex justify-end py-3 mt-3 border-t border-border/60">
+                        <Button variant="outline" size="sm" onClick={() => toggleEditable()}><Icon name="X" size={14} /> Cerrar</Button>
                     </div>
                 </Modal>
 
@@ -1274,9 +1280,16 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                     style={customStylesForModalMacro}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="th" size={16} /> Macro tabla de seguimiento: Desde {dateParser(date_start)} hasta {dateParser(date_end)}</label>
-                        <button type="button" className="btn-close" onClick={() => toggle_macro()} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="th" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Macro tabla de seguimiento — Desde {dateParser(date_start)} hasta {dateParser(date_end)}</h2>
+                        </div>
+                        <button type="button" onClick={() => toggle_macro()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
 
                     <PQRS_MACROTABLE translation={translation} swaMsg={swaMsg} globals={globals}

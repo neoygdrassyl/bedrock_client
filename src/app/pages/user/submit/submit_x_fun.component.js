@@ -562,9 +562,16 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                     style={customStylesForModal}
                     ariaHideApp={false}
                 >
-                    <div className="my-4 d-flex justify-content-between">
-                        <label><Icon name="file-alt" size={16} /> ASIFNACIÓN DE PROFESIONALES:  {selectedItem ? selectedItem.id_public : ''} </label>
-                        <button type="button" className="btn-close" onClick={() => setModal(false)} />
+                    <div className="flex items-center justify-between py-2.5 mb-3 border-b border-border/60">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+                                <Icon name="file-alt" size={14} className="text-primary" />
+                            </div>
+                            <h2 className="text-sm font-semibold tracking-tight">Asignación de profesionales — {selectedItem ? selectedItem.id_public : ''}</h2>
+                        </div>
+                        <button type="button" onClick={() => setModal(false)} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
+                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        </button>
                     </div>
 
                     {selectedItem ?

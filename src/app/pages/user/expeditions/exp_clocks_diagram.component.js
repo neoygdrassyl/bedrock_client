@@ -403,7 +403,9 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
               <Icon name="clock" size={16} className="me-2" />
               {selectedNode.name}
             </h5>
-            <button className="btn-close btn-close-white" onClick={handleClose}></button>
+            <button onClick={handleClose} className="rounded-md p-1 hover:bg-white/20 transition-colors" aria-label="Cerrar">
+              <Icon name="X" size={16} className="text-white" />
+            </button>
           </div>
           
           <div className="modal-body">
