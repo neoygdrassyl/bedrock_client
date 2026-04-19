@@ -1,4 +1,5 @@
-import { MDBPopover, MDBPopoverBody, MDBPopoverHeader } from '../../../components/ui';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 import dayjs from 'dayjs';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
@@ -260,12 +261,17 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                 }
             ))
             vrItem.sort((a, b) => new Date(b.screated) - new Date(a.screated));
-            return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: '600px', minWidth: '600px' }}
-                btnChildren={<Icon name="file-import" size={16} />}
-                btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
-                <MDBPopoverHeader>Ventanilla Única</MDBPopoverHeader>
-                <MDBPopoverBody>{vrItem.map(value => listVR(value))}</MDBPopoverBody>
-            </MDBPopover>
+            return <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="px-2 mb-1 me-1 h-7">
+                        <Icon name="FileInput" size={14} />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent side="left" className="w-[600px] max-h-80 overflow-y-auto">
+                    <h4 className="text-sm font-semibold mb-2">Ventanilla Única</h4>
+                    <div className="space-y-1">{vrItem.map(value => listVR(value))}</div>
+                </PopoverContent>
+            </Popover>
         }
 
         let listIncPopOver = (row) => {
@@ -288,11 +294,14 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                 if (checked[i] === '1') inChecked.push(code)
             })
 
-            return <MDBPopover placement='left' dismiss poperStyle={{ height: 'auto', width: '800px', minWidth: '800px' }}
-                btnChildren={<Icon name="file-import" size={16} />}
-                btnClassName={'px-2 btn-sm btn-info btn mb-1 me-1'}>
-                <MDBPopoverHeader>Documentos aportados</MDBPopoverHeader>
-                <MDBPopoverBody>
+            return <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="px-2 mb-1 me-1 h-7">
+                        <Icon name="FileInput" size={14} />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent side="left" className="w-[800px] max-h-96 overflow-y-auto">
+                    <h4 className="text-sm font-semibold mb-2">Documentos aportados</h4>
 
                     <ul>
                         {toSubmit.map(code => {
@@ -304,8 +313,9 @@ function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSub
                                 <label> <label className='fw-bold'>{code}</label> - {Codes[code]}  {inChecked.includes(code) ? <Icon name="check-square" size={16} className="text-dark" /> : ''} {submited.includes(code) ? <Icon name="file-import" size={16} className="text-dark" /> : ''}</label>
                             </li>
                         })}
-                    </ul></MDBPopoverBody>
-            </MDBPopover>
+                    </ul>
+                </PopoverContent>
+            </Popover>
         }
 
         function processCodes(row) {
