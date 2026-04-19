@@ -947,18 +947,38 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                         </div>
                     </div>
 
-                    <nav className="nav nav-tabs">
-                        
-                            <button type="button" className={`nav-link ${fillActive === '1' ? "active" : ""}`} onClick={() => handleFillClick('1')}>
-                                <span className="text-xs font-medium uppercase tracking-wide">Peticiones Activas ({items.length})</span>
-                            </button>
-                        
-                        
-                            <button type="button" className={`nav-link ${fillActive === '10' ? "active" : ""}`} onClick={() => handleFillClick('10')}>
-                                <span className="text-xs font-medium uppercase tracking-wide">Archivo ({itemsClose.length})</span>
-                            </button>
-                        
-                    </nav>
+                    <div className="flex border-b border-border overflow-x-auto" role="tablist">
+                        <button
+                            role="tab"
+                            aria-selected={fillActive === '1'}
+                            onClick={() => handleFillClick('1')}
+                            className={cn(
+                                'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                fillActive === '1'
+                                    ? 'border-b-primary text-primary'
+                                    : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                            )}
+                        >
+                            <Icon name="MessageSquare" size={14} />
+                            Peticiones Activas
+                            <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{items.length}</Badge>
+                        </button>
+                        <button
+                            role="tab"
+                            aria-selected={fillActive === '10'}
+                            onClick={() => handleFillClick('10')}
+                            className={cn(
+                                'flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-0 bg-transparent',
+                                fillActive === '10'
+                                    ? 'border-b-primary text-primary'
+                                    : 'border-b-transparent text-muted-foreground hover:text-foreground hover:border-b-border'
+                            )}
+                        >
+                            <Icon name="Archive" size={14} />
+                            Archivo
+                            <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{itemsClose.length}</Badge>
+                        </button>
+                    </div>
 
                     <div>
                         <TabPane show={fillActive === '1'}>
