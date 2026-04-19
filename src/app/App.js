@@ -1,4 +1,3 @@
-import './App.css';
 import React, { useContext, createContext, useState, Suspense, lazy } from 'react';
 import {
   BrowserRouter as Router,
@@ -23,8 +22,8 @@ import { AppShell } from './layouts/AppShell';
 import { Toaster } from '@/components/ui/sonner';
 import { getRouteRedirects } from './layouts/navigation-config';
 
-import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// CSS: loaded after Bootstrap (imported in index.js) so our overrides win
+import './App.css';
 import './styles/legacy-bridge.css';
 import './styles/swal-theme.css';
 
