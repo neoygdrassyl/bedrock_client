@@ -3,7 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { Spreadsheet } from "react-spreadsheet";
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { MDBCollapse } from '../../../../components/ui';
+import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import TagInput from '../../../../components/TagInput';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
@@ -891,7 +891,7 @@ export default function RECORD_ARC_AREAS(props) {
 
         ]
         return <>
-            <MDBCollapse show={openConfig}>
+            <UiCollapsible open={openConfig}><CollapsibleContent>
                 <div className='row border p-2'>
                     <div className='row mb-1'>
                         <div className='col'>
@@ -1002,7 +1002,7 @@ export default function RECORD_ARC_AREAS(props) {
                         </div>
                     </div>
                 </div>
-            </MDBCollapse>
+            </CollapsibleContent></UiCollapsible>
 
         </>
     }

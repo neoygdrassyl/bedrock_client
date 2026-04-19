@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { MDBCollapse } from '../../../../components/ui';
+import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import TagInput from '../../../../components/TagInput';
 import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
@@ -1111,7 +1111,7 @@ export default function RECORD_ARC_AREAS_2(props) {
         ]
         const json34 = _GET_STEP_TYPE_JSON('s34');
         return <>
-            <MDBCollapse show={openConfig}>
+            <UiCollapsible open={openConfig}><CollapsibleContent>
                 <div className='row border p-2'>
                     <div className='row mb-1'>
                         <div className='col'>
@@ -1236,7 +1236,7 @@ export default function RECORD_ARC_AREAS_2(props) {
                         </div>
                     </div>
                 </div>
-            </MDBCollapse>
+            </CollapsibleContent></UiCollapsible>
 
         </>
     }

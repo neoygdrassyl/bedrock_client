@@ -1,5 +1,5 @@
 import { Component, useState } from 'react';
-import { MDBCollapse } from '../../../../components/ui';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 import './fun_modal_shared.css';
 import { Icon } from '@/components/icon';
@@ -300,7 +300,8 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
                                 onClick={(prevState) => setCollapsables({ ...prevState, [parent.title]: !collapsables[parent.title] })}>
                                 <label className="app-p lead fw-normal text-muted" >{i + 1}. {parent.title}</label>
                             </button>
-                            <MDBCollapse show={collapsables[parent.title]}>
+                            <Collapsible open={collapsables[parent.title]}>
+                            <CollapsibleContent>
                                 {parent.children.map(child => {
                                     if (child.badge) return <>{
                                         child.filter ? <li className="list-group-item">
@@ -314,7 +315,8 @@ export default function FUN_MACROTABLE_FILTERLIST(props) {
                                         : ''}
                                         {child.ex ? EX(child) : ''}</>
                                 })}
-                            </MDBCollapse>
+                            </CollapsibleContent>
+                            </Collapsible>
                         </ul>
                     </>
                 })}
