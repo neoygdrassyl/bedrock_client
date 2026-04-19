@@ -70,10 +70,10 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                                <Icon name="edit" size={16} /></button></span>
-                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-2 shadow-none" onClick={() => delete_6_h(row.id)}>
-                                <Icon name="trash-alt" size={16} /></button></span>
+                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}>
+                                <Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_6_h(row.id)}>
+                                <Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
@@ -230,7 +230,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                     <span 
                         role="button" 
                         tabIndex={0} 
-                        className="btn shadow-none p-1" 
+                        className="inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-muted p-1" 
                         onClick={() => toggle(true)}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggle(true); }}
                         style={{cursor: 'pointer'}}>
@@ -267,7 +267,7 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                     </div>
                                 </div>
                             </form>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 import { dateParser, formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
 import sealService from '../../../../services/seal.service';
@@ -320,17 +321,17 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                     <div className="row">
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <button className="btn btn-success"><Icon name="file-import" size={16} /> GUARDAR CAMBIOS </button>
+                                <Button size="sm"><Icon name="file-import" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <button type="button" className="btn btn-warning" onClick={() => generate_pdf(1)}><Icon name="file" size={16} /> GENERAR ORIGINAL </button>
+                                <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(1)}><Icon name="file" size={16} /> GENERAR ORIGINAL </Button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <button type="button" className="btn btn-warning" onClick={() => generate_pdf(0)}><Icon name="file" size={16} /> GENERAR TITULAR </button>
+                                <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(0)}><Icon name="file" size={16} /> GENERAR TITULAR </Button>
                             </div>
                         </div>
                     </div>

@@ -1,4 +1,5 @@
 import PQRS_SERVICES from '../../../../services/pqrs_main.service';
+import { Button } from '@/components/ui/button';
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
@@ -84,7 +85,7 @@ export const SEEN_COMPONENT_FORM = (props) => {
             </div>
         </div>
         <div className='text-center'>
-            <button type="button" className="btn btn-sm btn-success" onClick={update}>Confirmar <Icon name="check" size={16} /></button>
+            <Button size="sm" onClick={update}>Confirmar <Icon name="check" size={16} /></Button>
         </div>
 
 

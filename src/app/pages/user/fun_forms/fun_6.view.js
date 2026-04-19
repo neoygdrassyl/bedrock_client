@@ -161,10 +161,10 @@ function FUN_6_VIEW({ translation, swaMsg, globals, currentItem, currentId, read
                         {readOnly ? '' :
                             window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
                                 <>
-                                    <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => set_edit_6(row)}>
-                                            <Icon name="edit" size={16} style={{ fontSize: '150%' }} /></button></span>
-                                    <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm  m-0 p-1 shadow-none" onClick={() => delete_6(row.id)}>
-                                            <Icon name="trash-alt" size={16} style={{ fontSize: '150%' }} /></button></span>
+                                    <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => set_edit_6(row)}>
+                                            <Icon name="edit" size={16} style={{ fontSize: '150%' }} /></Button></span>
+                                    <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_6(row.id)}>
+                                            <Icon name="trash-alt" size={16} style={{ fontSize: '150%' }} /></Button></span>
                                 </>
                                 : ''
                         }

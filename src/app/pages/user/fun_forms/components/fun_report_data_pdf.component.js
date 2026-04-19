@@ -1,4 +1,5 @@
 import { formsParser1 } from '../../../../components/customClasses/typeParse';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service'
 import { cities, infoCud } from '../../../../components/jsons/vars';
@@ -611,14 +612,14 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
 
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3">
+                            <Button size="sm" className="my-3">
                                 <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                            </button>
+                            </Button>
                         </div>
                         <div className="col">
-                            <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()}>
+                            <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()}>
                                 <Icon name="file-pdf" size={16} /> GENERAR PDF
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </form>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import VIZUALIZER from '../../../../components/vizualizer.component';
@@ -129,9 +130,8 @@ export default function FUN_MACROTABLE_CLOCKS(props) {
         {
             name: 'INFO',
             button: true,
-            cell: row => <button title="Informacion solicitud" className="btn btn-sm btn-info m-0 p-1 shadow-none"
-                    onClick={() => props.NAVIGATION_GEN(row)}>
-                    <Icon name="folder-open" size={16} /></button>
+            cell: row => <Button size="sm" className="m-0 p-1" title="Informacion solicitud" onClick={() => props.NAVIGATION_GEN(row)}>
+                    <Icon name="folder-open" size={16} /></Button>
         },
         {
             name: 'ACTUACION',

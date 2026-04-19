@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { swalInfo, swalError } from '../../../../utils/swalAdapter';
 import dayjs from 'dayjs';
 import { GanttPreview } from './gantt/GanttPreview';
@@ -687,40 +688,30 @@ export const SidebarInfo = ({ manager, onActivePhaseChange, activePhaseId, onExp
           </h6>
 
           <div className="d-flex align-items-center">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary border-0 text-muted"
-              onClick={showDebug}
+            <Button variant="outline" size="sm" className="border-0 text-muted" onClick={showDebug}
               title="Ver diagnóstico"
-              style={{ padding: '0 6px' }}
-            >
+              style={{ padding: '0 6px' }}>
               <Icon name="bug" size={16} />
-            </button>
+            </Button>
 
             <div className="phase-nav ms-1">
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-primary"
-                onClick={() => handlePhaseChange(-1)}
+              <Button variant="outline" size="sm" onClick={() => handlePhaseChange(-1)}
                 disabled={currentPhaseIndex === 0}
                 title="Fase anterior"
               >
                 <Icon name="chevron-left" size={16} />
-              </button>
+              </Button>
 
               <span className="phase-indicator">
                 {currentPhaseIndex + 1}/{processPhases.length}
               </span>
 
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-primary"
-                onClick={() => handlePhaseChange(1)}
+              <Button variant="outline" size="sm" onClick={() => handlePhaseChange(1)}
                 disabled={currentPhaseIndex === processPhases.length - 1}
                 title="Fase siguiente"
               >
                 <Icon name="chevron-right" size={16} />
-              </button>
+              </Button>
             </div>
           </div>
         </div>

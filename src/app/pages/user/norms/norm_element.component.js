@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useState, } from 'react';
+import { Button } from '@/components/ui/button';
 import Norms_Service from "../../../services/norm.service"
 import DataTable from '@/components/data-table-bridge';
 import PERFILES from "../../../components/jsons/PERFILES.json"
@@ -164,8 +165,8 @@ export default function NORM_ELEMENT(props) {
             center: true,
             minWidth: '80px',
             cell: row => <>
-                <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-1 shadow-none" onClick={() => setEditItem(editItem ? false : row)}><Icon name="edit" size={16} /></button></span>
-                <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-1 shadow-none" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></button></span>
+                <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => setEditItem(editItem ? false : row)}><Icon name="edit" size={16} /></Button></span>
+                <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
             </>,
         },
     ]
@@ -228,7 +229,7 @@ export default function NORM_ELEMENT(props) {
                 {_COMPONENT_MANAGE("")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><Icon name="plus-circle" size={16} /> AÑADIR ITEM </button>
+                        <Button size="sm"><Icon name="plus-circle" size={16} /> AÑADIR ITEM </Button>
                     </div>
                 </div>
             </form>
@@ -242,7 +243,7 @@ export default function NORM_ELEMENT(props) {
                 {_COMPONENT_MANAGE("_edit")}
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success btn-sm" ><Icon name="edit" size={16} /> ACTUALIZAR ITEM </button>
+                        <Button size="sm"><Icon name="edit" size={16} /> ACTUALIZAR ITEM </Button>
                     </div>
                 </div>
             </form>

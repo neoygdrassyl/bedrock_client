@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service';
 import { formsParser1_exlucde2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
@@ -213,9 +214,8 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyPress={(e) => { if (e.key === 'Enter') FILTER() }} />
                         <div className="input-group-append">
-                            {search ? <button className="btn btn-danger" type="button"
-                                onClick={() => { setSearch(''); document.getElementById('search_bar').value = ''; FILTER() }}>X</button> : null}
-                            <button className="btn btn-primary" type="button" onClick={() => FILTER()}>BUSCAR</button>
+                            {search ? <Button variant="destructive" size="sm" onClick={() => { setSearch(''); document.getElementById('search_bar').value = ''; FILTER() }}>X</Button> : null}
+                            <Button size="sm" onClick={() => FILTER()}>BUSCAR</Button>
                         </div>
                     </div>
 

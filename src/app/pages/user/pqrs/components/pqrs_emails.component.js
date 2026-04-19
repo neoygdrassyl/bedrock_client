@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import USERS_Service from '../../../../services/users.service';
@@ -194,7 +195,7 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                             </span>
                             <input type="text" className="form-control" id="pqrs_email_1"
                                 defaultValue={_EMAILS} required />
-                            <button type="submit" className="btn btn-warning shadow-none" disabled>ENVIAR CORREO</button>
+                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" type="submit" disabled>ENVIAR CORREO</Button>
                         </div>
                     </div>
                     <div className="col-6">
@@ -365,9 +366,9 @@ function PQRS_EMAILS({ translation, swaMsg, globals, currentItem, attachs, email
                                         <div className="text-end m-3">
                                             <p className="lead text-end fw-bold">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <button type="button" className="btn btn-secondary btn-sm mx-3" onClick={() => minusAttachEmail()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
+                                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttachEmail()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                                 : ""}
-                                            <button type="button" className="btn btn-secondary btn-sm" onClick={() => addAttachEmail()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
+                                            <Button variant="outline" size="sm" onClick={() => addAttachEmail()}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>

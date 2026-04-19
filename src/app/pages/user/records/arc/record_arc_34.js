@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 import DataTable from '@/components/data-table-bridge';
 
@@ -436,7 +437,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     minWidth: '100px',
                     cell: row => <>
-                        <button type="button" className="btn btn-danger btn-sm" onClick={() => delete_34_gen(row.id)}><Icon name="trash-alt" size={16} /></button>
+                        <Button variant="destructive" size="sm" onClick={() => delete_34_gen(row.id)}><Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]
@@ -2132,9 +2133,9 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     ? <form id="form_ra_34_gen" onSubmit={new_ra_34_gen}>
                         {_COMPONENT_1()}
                         <div className="text-center">
-                            <button className="btn btn-success my-3">
+                            <Button size="sm" className="my-3">
                                 <Icon name="share-square" size={16} /> AÑADIR NORMA
-                            </button>
+                            </Button>
                         </div>
                     </form>
                     : ""}

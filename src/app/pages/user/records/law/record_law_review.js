@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service'
 import FUN_SERVICE from '../../../../services/fun.service'
 
@@ -348,8 +349,7 @@ function RECORD_LAW_EVALUATION(props) {
                                     onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></button>
                                     : ''}
                                 {dynState['REW' + i]
-                                    ? <button type="button" className="btn btn-success btn-sm ms-1"
-                                        onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></button>
+                                    ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>
                                     : ""
                                 }
                                 {true ?

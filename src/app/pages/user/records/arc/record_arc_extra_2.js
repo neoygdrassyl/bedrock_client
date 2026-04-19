@@ -1,4 +1,5 @@
 import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import FUN_REPORT_DATA from '../../fun_forms/components/fun_report_data';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
@@ -171,9 +172,9 @@ function RECORD_ARC_EXTRA_2({ translation, swaMsg, globals, currentItem, current
                 {_COMPONENT_2()}
                 {_COMPONENT_3()}
                 <div className="text-center">
-                    <button className="btn btn-success my-3" onClick={() => save_ra_35u()}>
+                    <Button size="sm" className="my-3" onClick={() => save_ra_35u()}>
                         <Icon name="share-square" size={16} /> GUARDAR INFORMACIÓN
-                    </button>
+                    </Button>
                 </div>
             </div >
         );

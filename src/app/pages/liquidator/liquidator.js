@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 import { Link } from "react-router-dom";
 import Collapsible from '../../components/Collapsible';
@@ -325,7 +326,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
           id: "",
           cell: row => <> {row.id == 0 || row.id == _LIST.length - 1 || _LIST.length < 4
             ? ""
-            : <button className="btn btn-sm btn-danger mx-1 p-1" onClick={() => _DELETE_ROW(row.id)}><i class="far fa-times-circle fa-2x"></i></button>}
+            : <Button variant="destructive" size="sm" className="mx-1 p-1" onClick={() => _DELETE_ROW(row.id)}><i class="far fa-times-circle fa-2x"></i></Button>}
           </>,
         },
       ]
@@ -739,15 +740,15 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
             {hideInfo ? '' : <div className="alert alert-light" style={{ backgroundColor: '#EDEDED' }}>
               <h4 className="text-justify text-dark">NOTA: Para conocer el costo de las licencias de Urbanización , Subdivisión y Parcelación por favor acérquese a la Curaduría Urbana Uno de Bucaramanga o envié una
                 solicitud a través de los siguientes canales:</h4>
-              <Collapsible trigger={<><button className="btn btn-light btn-sm my-2">VER NOTAS</button></>}>
+              <Collapsible trigger={<><Button variant="ghost" size="sm" className="my-2">VER NOTAS</Button></>}>
                 {_note_3}
               </Collapsible>
               <h4 className="text-justify text-dark">NOTAS SOBRE EL VALOR DE LAS EXPENSAS</h4>
-              <Collapsible trigger={<><button className="btn btn-light btn-sm my-2">VER NOTAS</button></>}>
+              <Collapsible trigger={<><Button variant="ghost" size="sm" className="my-2">VER NOTAS</Button></>}>
                 {_note_4}
               </Collapsible>
               <h4 className="text-justify text-dark">NOTAS SOBRE EXPENSAS Y FORMAS DE LIQUIDAR</h4>
-              <Collapsible trigger={<><button className="btn btn-light btn-sm my-2">VER NOTAS</button></>}>
+              <Collapsible trigger={<><Button variant="ghost" size="sm" className="my-2">VER NOTAS</Button></>}>
                 {_note_2}
               </Collapsible>
 

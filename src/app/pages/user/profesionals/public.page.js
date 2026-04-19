@@ -1,4 +1,5 @@
 import profesionalsService from '../../../services/profesionals.service';
+import { Button } from '@/components/ui/button';
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -246,7 +247,7 @@ export default function PROFESIONALS_PUBLIC(props) {
                         <div className='col'></div>
                     </div>
                     <div className="text-center py-4 mt-3">
-                        <button type="submit" className="btn btn-primary ">ENVIAR</button>
+                        <Button size="sm" type="submit">ENVIAR</Button>
                     </div>
                 </form>
             </div>

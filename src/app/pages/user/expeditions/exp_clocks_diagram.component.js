@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { swalLoading, swalSuccess, swalError } from '../../../utils/swalAdapter';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
@@ -520,10 +521,10 @@ export default function EXP_CLOCKS_DIAGRAM(props) {
           </div>
 
           <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={handleClose}>Cancelar</button>
-            <button className="btn btn-primary" onClick={handleSave}>
+            <Button variant="outline" size="sm" onClick={handleClose}>Cancelar</Button>
+            <Button size="sm" onClick={handleSave}>
               <Icon name="save" size={16} className="me-2" />Guardar
-            </button>
+            </Button>
           </div>
         </div>
       </div>

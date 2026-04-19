@@ -1,4 +1,5 @@
 import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -128,9 +129,9 @@ function RECORD_ARC_EXTRA_1({ translation, swaMsg, globals, currentItem, current
                 <p className="text-justify">Los actos de reconocimiento de edificación existen además de lo reglamentado por el Decreto 1077 de 2015 y en particular por el artículo 2.2.6.4.1.2 que determina las situaciones en que este no procede; que para el caso de edificio objeto de esta actuación urbanística no se tipifican. En efecto consultado el POT y en particular la ficha normativa donde encuentra el inmueble se encuentra que:</p>
                 {_COMPONENT()}
                 <div className="text-center">
-                    <button className="btn btn-success my-3" onClick={() => save_ra_34u()}>
+                    <Button size="sm" className="my-3" onClick={() => save_ra_34u()}>
                         <Icon name="share-square" size={16} /> GUARDAR INFORMACIÓN
-                    </button>
+                    </Button>
                 </div>
             </div >
         );

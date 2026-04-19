@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useState, } from 'react';
+import { Button } from '@/components/ui/button';
 import Norms_Service from "../../../services/norm.service"
 import { NORM_GEN_DATA } from './norm.vars'
 import dayjs from 'dayjs';
@@ -513,7 +514,7 @@ export default function NORM_GENERAL(props) {
             </div>
 
             <div className="text-center my-2">
-                <button className="btn btn-sm btn-success my-1" type='submit'><Icon name="edit" size={16} /> ACTUALIZAR </button>
+                <Button size="sm" className="my-1" type='submit'><Icon name="edit" size={16} /> ACTUALIZAR </Button>
             </div>
 
         </form>

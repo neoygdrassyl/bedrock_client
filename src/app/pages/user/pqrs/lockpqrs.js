@@ -119,7 +119,7 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                     minWidth: '150px',
                     cell: row => <>
                         <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><Icon name="cloud-download-alt" size={16} /></a>
-                        <button type="button" className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></button>
+                        <Button variant="destructive" size="sm" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]

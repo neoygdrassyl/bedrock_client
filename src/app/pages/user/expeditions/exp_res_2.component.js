@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+import { Button } from '@/components/ui/button';
 import { ResoEngineTemplate } from "../../../utils/ResoEngineTemplate";
 import { ActDesistEngineTemp } from "../../../utils/ActDesistEngineTemp";
 import { ExecEngineTemp } from "../../../utils/ExecEngineTemp";
@@ -132,9 +133,9 @@ export default function EXP_RES_2(props) {
         onChange={setContent}
       />
       <div className="mt-3 text-center">
-        <button className="btn btn-danger" onClick={handleDownloadPDFv2}>
+        <Button variant="destructive" size="sm" onClick={handleDownloadPDFv2}>
           Descargar PDF 🧾
-        </button>
+        </Button>
       </div>
 
       {htmlSizeKB && (

@@ -201,7 +201,7 @@ describe('PQRS — Integración profunda inicial', () => {
     // Act
     const row = screen.getByTestId('row-1');
     const actionButtons = within(row).getAllByRole('button');
-    fireEvent.click(actionButtons.find((btn) => btn.className.includes('btn-success')) || actionButtons[0]);
+    fireEvent.click(actionButtons.find((btn) => btn.title === 'Gestionar peticion' || btn.className.includes('btn-success')) || actionButtons[0]);
 
     fireEvent.click(await screen.findByTestId('manage-open-reply'));
     fireEvent.click(await screen.findByTestId('pqrs-reply-action'));
@@ -220,7 +220,7 @@ describe('PQRS — Integración profunda inicial', () => {
     // Act
     const row = screen.getByTestId('row-1');
     const actionButtons = within(row).getAllByRole('button');
-    fireEvent.click(actionButtons.find((btn) => btn.className.includes('btn-success')) || actionButtons[0]);
+    fireEvent.click(actionButtons.find((btn) => btn.title === 'Gestionar peticion' || btn.className.includes('btn-success')) || actionButtons[0]);
 
     fireEvent.click(await screen.findByTestId('manage-open-lock'));
     fireEvent.click(await screen.findByTestId('pqrs-lock-action'));

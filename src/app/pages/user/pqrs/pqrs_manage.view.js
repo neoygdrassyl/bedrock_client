@@ -306,10 +306,10 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 button: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <button title="Desasignar Profesional" className="btn btn-danger btn-sm mx-0 px-2 shadow-none" onClick={() => removeAsign(row.id)}>
-                            <Icon name="user-minus" size={16} /></button>
-                    <button title="Enviar Correo" className="btn btn-warning btn-sm mx-0 px-2 shadow-none" onClick={() => setCurrentItemAsign(row)}>
-                            <Icon name="paper-plane" size={16} /></button>
+                    <Button variant="destructive" size="sm" className="mx-0 px-2" title="Desasignar Profesional" onClick={() => removeAsign(row.id)}>
+                            <Icon name="user-minus" size={16} /></Button>
+                    <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 mx-0 px-2" title="Enviar Correo" onClick={() => setCurrentItemAsign(row)}>
+                            <Icon name="paper-plane" size={16} /></Button>
                 </>,
             },
         ]
@@ -454,7 +454,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                     <tbody>
                         <tr>
                             <th><label className="app-p">Generar y descargar documento de confirmación.</label></th>
-                            <td><button type="button" className="btn btn-sm btn-danger" onClick={() => request_dpfConfirmation()}><Icon name="cloud-download-alt" size={16} /></button></td>
+                            <td><Button variant="destructive" size="sm" onClick={() => request_dpfConfirmation()}><Icon name="cloud-download-alt" size={16} /></Button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -735,7 +735,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                 minWidth: '150px',
                 cell: row => <>
                     <a className="btn btn-sm btn-danger mx-1" target="_blank" href={import.meta.env.VITE_API_URL + '/files/pqrs/' + row.name}><Icon name="cloud-download-alt" size={16} /></a>
-                    <button type="button" className="btn btn-sm btn-danger" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></button>
+                    <Button variant="destructive" size="sm" onClick={() => deteleAttach(row.id)}><Icon name="trash-alt" size={16} /></Button>
                 </>,
             },
         ]
@@ -1025,9 +1025,9 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                         <label className="app-p lead text-start fw-bold">ANEXAR DOCUMENTO</label>
                                         <div className="text-end m-3" >
                                             {stateadd > 0
-                                                ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
+                                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                                 : ""}
-                                            <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button>
+                                            <Button variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </Button>
                                         </div>
                                         {_ATTACHS_COMPONENT()}
 
@@ -1045,7 +1045,7 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                                             </div>
                                         </div>
                                         <div className="text-center py-4 mt-3">
-                                            <button className="btn btn-sm btn-success" onClick={() => informalReplyPQRS(i, value.id)}><Icon name="reply" size={16} /> RESPONDER </button>
+                                            <Button size="sm" onClick={() => informalReplyPQRS(i, value.id)}><Icon name="reply" size={16} /> RESPONDER </Button>
 
                                         </div>
                                         <hr></hr>
@@ -1129,15 +1129,15 @@ export default function PQRS_MANAGE_COMPONENT(props) {
                             <p className="app-p lead text-end fw-bold">ANEXAR DOCUMENTO DE CIERRE</p>
                             <div className="text-end m-3">
                                 {stateadd2 > 0
-                                    ? <button type="button" className="btn btn-sm btn-secondary mx-3" onClick={() => minusAttach2()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
+                                    ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttach2()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                     : ""}
-                                <button type="button" className="btn btn-sm btn-secondary" onClick={() => addAttach2()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
+                                <Button variant="outline" size="sm" onClick={() => addAttach2()}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                             </div>
                             {_ATTACHS_COMPONENT2()}
 
                             <hr />
                             <div className="text-center m-3">
-                                <button className="btn btn-sm btn-success" ><Icon name="lock" size={16} /> CERRAR PETICIÓN</button>
+                                <Button size="sm"><Icon name="lock" size={16} /> CERRAR PETICIÓN</Button>
                             </div>
 
                         </form>

@@ -585,13 +585,13 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
+                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                     <div className="col">
-                        <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                     </div>
                     <div className="col">
-                        <button type="button" className="btn btn-danger my-3" onClick={() => CREATE_PDF_CHECK()} ><Icon name="file-pdf" size={16} /> GENERAR CHECKEO </button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => CREATE_PDF_CHECK()} ><Icon name="file-pdf" size={16} /> GENERAR CHECKEO </Button>
                     </div>
                 </div>
             </>
@@ -1314,17 +1314,17 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             {currentItem.state > -5
                                 ? <>
                                     <div className="col">
-                                        <button type="button" className="btn btn-danger my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </button>
+                                        <Button variant="destructive" size="sm" className="my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
                                     </div>
 
                                     {!_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <button type="button" className="btn btn-primary my-3" onClick={() => close()} ><Icon name="file-archive" size={16} /> CERRAR</button>
+                                            <Button size="sm" className="my-3" onClick={() => close()} ><Icon name="file-archive" size={16} /> CERRAR</Button>
                                         </div>
                                         : ""}
                                     {_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <button type="button" className="btn btn-primary my-3" onClick={() => archive()} ><Icon name="file-archive" size={16} /> ARCHIVAR</button>
+                                            <Button size="sm" className="my-3" onClick={() => archive()} ><Icon name="file-archive" size={16} /> ARCHIVAR</Button>
                                         </div>
                                         : ""}
                                 </>
@@ -1341,10 +1341,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         {_COMPONENTN_NOT()}
                         <div className="row text-center">
                             <div className="col">
-                                <button className="btn btn-success my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
+                                <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                             <div className="col">
-                                <button type="button" className="btn btn-danger my-3" onClick={() => pdfnot_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
+                                <Button variant="destructive" size="sm" className="my-3" onClick={() => pdfnot_gen()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                             </div>
                         </div>
                     </form>

@@ -143,7 +143,7 @@ parentRetrieveItem(currentItem.id);
                     <label>Respuesta de Oficio (Máximo 4000 Caracteres)</label>
                     <textarea className="form-control mb-3" rows="5" maxlength="4096" id="pqrs_info_reply" defaultValue={currentItem.pqrs_info ? currentItem.pqrs_info.reply : ''}></textarea>
                     <div className="text-center m-3">
-                        <button className="btn btn-sm btn-success my-2" ><Icon name="edit" size={16} /> GUARDAR RESPUESTA </button>
+                        <Button size="sm" className="my-2"><Icon name="edit" size={16} /> GUARDAR RESPUESTA </Button>
                     </div>
                 </form>
             </div>

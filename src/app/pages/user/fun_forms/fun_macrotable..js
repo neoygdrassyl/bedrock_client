@@ -2414,7 +2414,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                             <label>{`Numero de Solicitudes Filtradas: ${state.data_macro_filter.length}`} </label>
                         </div>
                         <div className="input-group-prepend">
-                            <button className="btn btn-secondary" onClick={() => _FILTER_LIST([])}><Icon name="window-close" size={16} /> LIMPIAR FILTROS</button>
+                            <Button variant="outline" size="sm" onClick={() => _FILTER_LIST([])}><Icon name="window-close" size={16} /> LIMPIAR FILTROS</Button>
                         </div>
                         <FUN_MACROTABLE_FILTERLIST idRef={'btn-filter'} setValues={(newTags) => _UPDATE_FILTERS(newTags)} text={'LISTA DE FILTROS'} />
                         <div className="input-group-prepend">
@@ -2877,8 +2877,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 title={
                                     <div className="d-flex justify-content-between">
                                         <div><h5>LICENCIAS URBANISTICAS</h5></div>
-                                        <div><button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVS(state.data_macro_filter) }}
-                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</button></div>
+                                        <div><Button variant="outline" size="sm" onClick={() => { generateCVS(state.data_macro_filter) }}
+                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</Button></div>
                                     </div>
                                 }
                                 dense
@@ -2921,8 +2921,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                 title={
                                     <div className="d-flex justify-content-between">
                                         <div><h5>OTRAS ACTUACIONES</h5></div>
-                                        <div><button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVS(state.data_oa, "OTRAS ACTUACIONES") }}
-                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</button></div>
+                                        <div><Button variant="outline" size="sm" onClick={() => { generateCVS(state.data_oa, "OTRAS ACTUACIONES") }}
+                                        ><Icon name="file-csv" size={16} /> DESCARGAR CSV</Button></div>
                                     </div>
                                 }
                                 progressPending={!load}
@@ -2973,8 +2973,8 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
                                     title={
                                         <div className="d-flex justify-content-between">
                                             <div><h5>DESISTIDOS / DESISTENDO</h5></div>
-                                            <div><button type="button" className="btn btn-outline-success btn-sm" onClick={() => { generateCVSNegative(state.data_negative, "DESISTIDOS") }}
-                                            ><Icon name="file-csv" size={16} /> DESCARGAR CSV</button></div>
+                                            <div><Button variant="outline" size="sm" onClick={() => { generateCVSNegative(state.data_negative, "DESISTIDOS") }}
+                                            ><Icon name="file-csv" size={16} /> DESCARGAR CSV</Button></div>
                                         </div>
                                     }
                                     dense

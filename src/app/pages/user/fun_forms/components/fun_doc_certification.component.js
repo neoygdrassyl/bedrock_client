@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 import SERVICE_CERTIFICATIONS from '../../../../services/certifications.service';
 import DataTable from '@/components/data-table-bridge';
@@ -241,8 +242,8 @@ export default function FUN_CERTIFICATION(props) {
             name: 'Acción',
             center: true,
             maxWidth: '80px',
-            cell: row => <button type="button" className="btn btn-primary" onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
-            color="danger" size="sm" className='m-0 p-1 px-2'><Icon name="file-download" size={16} /></button>
+            cell: row => <Button size="sm" onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
+            color="danger" size="sm" className='m-0 p-1 px-2'><Icon name="file-download" size={16} /></Button>
 
         },
     ]
@@ -447,7 +448,7 @@ export default function FUN_CERTIFICATION(props) {
                 <div className='border p-2'>
                     {_COMPONENT_NEW()}
                     <div className='text-center my-2'>
-                        <button type="button" className="btn btn-success btn-sm rounded-pill" onClick={() => createCert()}><Icon name="plus" size={16} /> CREAR</button>
+                        <Button size="sm" className="rounded-pill" onClick={() => createCert()}><Icon name="plus" size={16} /> CREAR</Button>
                     </div>
                 </div>
             </> : ''}

@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import FUN_SERVICE from '../../../../services/fun.service'
 import { PDFDocument, StandardFonts } from 'pdf-lib';
@@ -472,8 +473,7 @@ function RECORD_ENG_REVIEW(props) {
                                         onClick={() => setRewStates(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></button>
                                         : ''}
                                     {rewStates['REW' + i]
-                                        ? <button type="button" className="btn btn-success btn-sm ms-1"
-                                            onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></button>
+                                        ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>
                                         : ""
                                     }
                                     {true ?
@@ -772,10 +772,10 @@ function RECORD_ENG_REVIEW(props) {
                     </div>
                     <div className="row mb-3 text-center">
                         <div className="col">
-                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</button>
+                            <Button variant="destructive" size="sm" className="me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</Button>
                         </div>
                         <div className="col">
-                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</button>
+                            <Button variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</Button>
                         </div>
                     </div>
                 </div>

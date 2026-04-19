@@ -3151,7 +3151,7 @@ export default function EXP_RES(props) {
             {canSave ?
                 <div className="row text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
+                        <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                 </div>
                 : ''}
@@ -3319,13 +3319,13 @@ export default function EXP_RES(props) {
             <div className="row text-center">
                 <div className="col d-flex justify-content-center">
                     <div className="d-flex gap-3"> {/* Espaciado entre botones */}
-                        <button type="button" className="btn btn-danger my-3" onClick={() => pdf_gen_res()}>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_res()}>
                             <Icon name="file-pdf" size={16} /> GENERAR PDF
-                        </button>
+                        </Button>
                         {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
-                            <button type="button" className="btn btn-secondary my-3" onClick={() => pdf_gen_res(true)}>
+                            <Button variant="outline" size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
                                 <Icon name="edit" size={16} /> EDITAR PDF
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </div>

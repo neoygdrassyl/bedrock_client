@@ -140,14 +140,12 @@ function FunManageNewPage({ translation, globals, swaMsg, breadCrums }) {
       <div className="row mb-3 d-flex justify-content-center">
         <div className="col-lg-11 col-md-12">
           <div className="d-flex justify-content-end my-3">
-            <button
-              className="btn btn-outline-primary btn-sm"
-              onClick={() => window.open('/legal-flow-guide', '_blank')}
+            <Button variant="outline" size="sm" onClick={() => window.open('/legal-flow-guide', '_blank')}
               title="Abrir guía del flujo jurídico en nueva ventana"
             >
               <Icon name="project-diagram" size={16} className="me-1" />
               Ver Guía Legal
-            </button>
+            </Button>
           </div>
         </div>
 

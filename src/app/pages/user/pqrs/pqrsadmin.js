@@ -589,10 +589,10 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 center: true,
                 minWidth: '150px',
                 cell: row => <>
-                    <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></button>
+                    <Button size="sm" className="m-0 px-2" title="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ? <>
-                            <button title="Gestionar peticion" className="btn btn-success btn-sm m-0 px-2 shadow-none" onClick={() => toggleManage(row)}><Icon name="cog" size={16} /></button>
+                            <Button size="sm" className="m-0 px-2" title="Gestionar peticion" onClick={() => toggleManage(row)}><Icon name="cog" size={16} /></Button>
                         </> : ""}
                 </>,
             },
@@ -651,7 +651,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 minWidth: '150px',
                 center: true,
                 cell: row => <>
-                    <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></button>
+                    <Button size="sm" className="m-0 px-2" title="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>
                     {window.user.roleId == 1 || window.user.roleId == 5 || window.user.roleId == 3 || window.user.roleId == 2
                         ?
                         <PQRS_ACTION_REVIEW translation={translation} swaMsg={swaMsg} globals={globals}
@@ -702,7 +702,7 @@ function PQRSADMIN({ translation, translation_form, swaMsg, globals, breadCrums 
                 name: 'ACCIÓN',
                 button: true,
                 minWidth: '150px',
-                cell: row => <button title="Informacion General" className="btn btn-sm btn-info m-0 px-2 shadow-none" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></button>,
+                cell: row => <Button size="sm" className="m-0 px-2" title="Informacion General" onClick={() => toggleInfo(row)}><Icon name="eye" size={16} /></Button>,
 
             },
         ]

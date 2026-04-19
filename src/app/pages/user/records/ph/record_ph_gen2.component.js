@@ -1,4 +1,5 @@
 import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -211,7 +212,7 @@ function RECORD_PH_GEN_2(props) {
                         {_COMPONENT_DETAILS_1()}
                         <div className="row mb-3 text-center">
                             <div className="col-12">
-                                <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
+                                <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                         </div>
                     </div>

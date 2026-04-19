@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import HTMLDatalist from '../../../../components/HTMLDatalist';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import VIZUALIZER from '../../../../components/vizualizer.component';
@@ -431,7 +432,7 @@ export default function RECORD_LAW_FUN_52(props) {
     }
     let _EDIT_BTN = (item) => {
         return <>
-            <button className='btn btn-sm btn-light m-0 p-1 shadow-none' onClick={() => setModal({ [item.id]: true })}><Icon name="edit" size={16} style={{ fontSize: '150%' }} /></button>
+            <Button variant="ghost" size="sm" className="m-0 p-1" onClick={() => setModal({ [item.id]: true })}><Icon name="edit" size={16} style={{ fontSize: '150%' }} /></Button>
 
             <Modal contentLabel="EDIT FUN 52"
                 isOpen={modal[item.id]}
@@ -698,9 +699,9 @@ export default function RECORD_LAW_FUN_52(props) {
                 </div>
 
                 <div className="text-center">
-                    <button className="btn btn-success my-3" onClick={() => edit_52(item)}>
+                    <Button size="sm" className="my-3" onClick={() => edit_52(item)}>
                         <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                    </button>
+                    </Button>
                 </div>
             </fieldset>
         </>

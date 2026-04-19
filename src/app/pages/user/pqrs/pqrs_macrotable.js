@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 
 import PQRS_Main from '../../../services/pqrs_main.service'
@@ -105,9 +106,8 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
             {
                 name: 'Acción',
                 button: true,
-                cell: row => <> <button title="Informacion solicitud" className="btn btn-sm btn-info m-0 p-2 shadow-none"
-                        onClick={() => NAVIGATION_GEN(row)}>
-                        <Icon name="eye" size={16} /></button>
+                cell: row => <> <Button size="sm" className="m-0 p-2" title="Informacion solicitud" onClick={() => NAVIGATION_GEN(row)}>
+                        <Icon name="eye" size={16} /></Button>
                 </>,
                 excell: false,
             },

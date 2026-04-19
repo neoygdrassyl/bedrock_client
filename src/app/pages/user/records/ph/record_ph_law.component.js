@@ -1,4 +1,5 @@
 import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
@@ -250,7 +251,7 @@ function RECORD_PH_LAW(props) {
                     <div className="row mb-3 text-center">
 
                         <div className="col">
-                            <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
+                            <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                         </div>
                     </div>
                 </form>

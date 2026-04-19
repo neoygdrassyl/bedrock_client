@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service'
 
@@ -317,9 +318,9 @@ function RECORD_LAW_GEN2_11(props) {
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEdit(row)}>
-                                <Icon name="edit" size={16} /></button></span>
-                        <span title="Eliminar Item"><button type="button" className="btn btn-danger btn-sm m-0 p-2 shadow-none" onClick={() => delete_gen(row.id)}><Icon name="trash-alt" size={16} /></button></span>
+                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}>
+                                <Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_gen(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
 
                     </>
                 },
@@ -692,8 +693,8 @@ function RECORD_LAW_GEN2_11(props) {
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <span title="Modificar Item"><button type="button" className="btn btn-secondary m-0 p-2 shadow-none" onClick={() => setEditTax(row)}><Icon name="edit" size={16} /></button></span>
-                        <span title="Eliminar Item"><button type="button" className="btn btn-danger m-0 p-2 shadow-none" onClick={() => delete_tax(row.id)}><Icon name="trash-alt" size={16} /></button></span>
+                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEditTax(row)}><Icon name="edit" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_tax(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
@@ -1358,7 +1359,7 @@ function RECORD_LAW_GEN2_11(props) {
                             {_COMPONENT_NEW_LIBERTY()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
                         </form>
@@ -1372,7 +1373,7 @@ function RECORD_LAW_GEN2_11(props) {
                             {_COMPONENT_EDIT_LIBERTY()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                             </div>
                         </form>
@@ -1394,7 +1395,7 @@ function RECORD_LAW_GEN2_11(props) {
                             {_COMPONENT_NEW_TAX()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
                         </form>
@@ -1408,7 +1409,7 @@ function RECORD_LAW_GEN2_11(props) {
                             {_COMPONENT_EDIT_TAX()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                 </div>
                             </div>
                         </form>

@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
@@ -187,8 +188,8 @@ export default function RECORD_ARC_36_TABLE(props) {
             center: true,
             minWidth: '110px',
             cell: row => <>
-                <button type="button" className="btn btn-secondary btn-sm px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><Icon name="edit" size={16} /></button>
-                <button type="button" className="btn btn-danger btn-sm px-2" onClick={() => delete_36_info(row.id)}><Icon name="trash-alt" size={16} /></button>
+                <Button variant="outline" size="sm" className="px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><Icon name="edit" size={16} /></Button>
+                <Button variant="destructive" size="sm" className="px-2" onClick={() => delete_36_info(row.id)}><Icon name="trash-alt" size={16} /></Button>
             </>,
         },
     ]
@@ -198,7 +199,7 @@ export default function RECORD_ARC_36_TABLE(props) {
         return <>
             <div className='row border'>
                 <div className='col my-1'>
-                    <button type="button" className="btn btn-outline-primary btn-sm rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO PERFIL</button>
+                    <Button variant="outline" size="sm" className="rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO PERFIL</Button>
                 </div>
             </div>
 
@@ -308,7 +309,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <button type="button" className="btn btn-outline-danger btn-sm rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <Icon name="minus" size={16} className="text-danger" /></button>
+                                <Button variant="outline" size="sm" className="text-destructive border-destructive rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <Icon name="minus" size={16} className="text-danger" /></Button>
                             }
                         </div>
                     </div>
@@ -349,7 +350,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <button type="button" className="btn btn-outline-success btn-sm rounded-pill px-2" onClick={() => add_perfil(data.id)}> <Icon name="plus" size={16} className="text-success" /></button> : ''}
+                            <Button variant="outline" size="sm" className="rounded-pill px-2" onClick={() => add_perfil(data.id)}> <Icon name="plus" size={16} className="text-success" /></Button> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -700,9 +701,9 @@ export default function RECORD_ARC_36_TABLE(props) {
                 ? <form id="form_ra_36_info" onSubmit={new_ra_36_info}>
                     {_COMPONENT_1('')}
                     <div className="text-center">
-                        <button className="btn btn-success btn-sm my-2">
+                        <Button size="sm" className="my-2">
                             <Icon name="share-square" size={16} /> AÑADIR ELEMENTOS
-                        </button>
+                        </Button>
                     </div>
                 </form>
                 : ""}
@@ -712,9 +713,9 @@ export default function RECORD_ARC_36_TABLE(props) {
                     <h4 className="fw-bold text-center py-2">Actualizar Elemento</h4>
                     {_COMPONENT_1('_edit')}
                     <div className="text-center">
-                        <button className="btn btn-success btn-sm  my-2">
+                        <Button size="sm" className="my-2">
                             <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                        </button>
+                        </Button>
                     </div>
                 </form>
                 : ""}

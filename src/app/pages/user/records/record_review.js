@@ -1027,10 +1027,10 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
                 <div className="row my-3 text-center">
                     <div className="col">
-                        <button className="btn btn-danger me-1 btn-sm" onClick={() => creae_pdf()}> <Icon name="file-pdf" size={16} /> DESCARGAR ACTA</button>
+                        <Button variant="destructive" size="sm" className="me-1" onClick={() => creae_pdf()}> <Icon name="file-pdf" size={16} /> DESCARGAR ACTA</Button>
                     </div>
                     <div className="col text-center">
-                        <button className="btn btn-danger btn-sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="file-pdf" size={16} /> DESCARGAR CHEKEO</button>
+                        <Button variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="file-pdf" size={16} /> DESCARGAR CHEKEO</Button>
                     </div>
                 </div>
             </>
@@ -1718,7 +1718,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         {currentItem.state > -5
                                             ? <>
                                                 <div className="col">
-                                                    <button type="button" className="btn btn-danger my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </button>
+                                                    <Button variant="destructive" size="sm" className="my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
                                                 </div>
                                             </>
                                             : <label className="app-p lead fw-normal text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
@@ -1735,7 +1735,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         {currentRecord.check == 0
                                             ? <>
                                                 <div className="col text-center">
-                                                    <button type="button" className="btn btn-secondary my-3" onClick={() => new_version()}><Icon name="plus-circle" size={16} /> NUEVA REVISION</button>
+                                                    <Button variant="outline" size="sm" className="my-3" onClick={() => new_version()}><Icon name="plus-circle" size={16} /> NUEVA REVISION</Button>
                                                 </div>
                                                 <div className="col">
                                                     <label>Genera una nueva version de esta solicitud, guardando la información anterior.</label>
@@ -1778,7 +1778,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                                     <div className="row">
                                                         <div className="col text-center">
 
-                                                            <button className="btn btn-danger my-3"><Icon name="check-square" size={16} /> PROSEGUIR A EXPEDICIÓN </button>
+                                                            <Button variant="destructive" size="sm" className="my-3"><Icon name="check-square" size={16} /> PROSEGUIR A EXPEDICIÓN </Button>
                                                         </div>
                                                     </div>
                                                 </form>

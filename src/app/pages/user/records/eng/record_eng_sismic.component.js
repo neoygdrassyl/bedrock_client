@@ -575,7 +575,7 @@ function RECORD_ENG_SISMIC(props) {
         let popBtn = (row) => {
             return <>
                 {qedit[row.id]
-                    ? <button type="button" onClick={() => manage_edit_item(row.id)} className="btn btn-sm btn-success">Guardar</button>
+ ? <Button size="sm" onClick={() => manage_edit_item(row.id)} >Guardar</Button>
                     : <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
@@ -1368,7 +1368,7 @@ function RECORD_ENG_SISMIC(props) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> AÑADIR ITEM </button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                     </div>
                                 </div>
                             </form>
@@ -1387,7 +1387,7 @@ function RECORD_ENG_SISMIC(props) {
                                 {_COMPONENT_MANAGE('_edit')}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <button className="btn btn-success my-3" ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
                                     </div>
                                 </div>
                             </form>

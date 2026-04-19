@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
 
 import DCO_LIS from '../../../components/jsons/fun6DocsList.json'
@@ -741,10 +742,10 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         {_SET_CHILD_C_C()}
                         <div className="row text-center my-2">
                             <div className="col">
-                                <button className="btn btn-success btn-sm"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</button>
+                                <Button size="sm"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</Button>
                             </div>
                             <div className="col">
-                                <button type="button" className="btn btn-primary btn-sm" onClick={() => _SET_MISSING_FUN_R()}><Icon name="tasks" size={16} /> CARGAR FALTANTES</button>
+                                <Button size="sm" onClick={() => _SET_MISSING_FUN_R()}><Icon name="tasks" size={16} /> CARGAR FALTANTES</Button>
                             </div>
                         </div>
 

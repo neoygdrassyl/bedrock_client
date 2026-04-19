@@ -423,10 +423,10 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <div className="text-end m-3">
 
                             {(solicitors && contacts)  > 1
-                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => (minusSolicitor(), minusContact())}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
+                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => (minusSolicitor(), minusContact())}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </Button>
                                 : ""}
-                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => (addSolicitor(), addContact())}
-                            ><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button>
+                            <Button variant="outline" size="sm" onClick={() => (addSolicitor(), addContact())}
+                            ><Icon name="plus-circle" size={16} /> AÑADIR OTRO </Button>
                         </div>
                         {_SOLICITORS_COMPONENT()}
                         <hr className="my-3" />
@@ -434,9 +434,9 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <label className="app-p lead text-start fw-bold">1.2 DATOS PARA NOTIFICACIÓN</label>
                         <div className="text-end m-3">
                             {/* {contacts > 1
-                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusContact()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
+                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusContact()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </Button>
                                 : ""}
-                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => addContact()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button> */}
+                            <Button variant="outline" size="sm" onClick={() => addContact()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </Button> */}
                         </div>
                         {_CONTACTS_COMPONENT()}
                         <hr className="my-3" />
@@ -603,9 +603,9 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                         <label className="app-p lead text-start fw-bold">1.5 DOCUMENTOS ANEXOS</label>
                         <div className="text-end m-3">
                             {attachs > 0
-                                ? <button type="button" className="btn btn-xs btn-secondary mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </button>
+                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => minusAttach()}><Icon name="minus-circle" size={16} /> REMOVER ÚLTIMO </Button>
                                 : ""}
-                            <button type="button" className="btn btn-xs btn-secondary" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </button>
+                            <Button variant="outline" size="sm" onClick={() => addAttach()}><Icon name="plus-circle" size={16} /> AÑADIR OTRO </Button>
                         </div>
                         {_ATTACHS_COMPONENT()}
                         <hr className="my-3" />
@@ -629,7 +629,7 @@ function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshReques
                             </div>
                         </div>
                         <div className="text-center py-4 mt-3">
-                            <button className="btn btn-xs btn-success"><Icon name="folder-plus" size={16} /> GENERAR </button>
+                            <Button size="sm"><Icon name="folder-plus" size={16} /> GENERAR </Button>
                         </div>
                     </div>
                 </form>

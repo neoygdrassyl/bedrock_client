@@ -490,8 +490,8 @@ function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshLi
                         <div className="row mb-3 text-center">
                             <div className="col-12">
                                 {currentItem
-                                    ? <button className="btn btn-success my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
-                                    : <button className="btn btn-success my-3"><Icon name="plus-circle" size={16} /> CREAR </button>}
+                                    ? <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                                    : <Button size="sm" className="my-3"><Icon name="plus-circle" size={16} /> CREAR </Button>}
 
                             </div>
                         </div>

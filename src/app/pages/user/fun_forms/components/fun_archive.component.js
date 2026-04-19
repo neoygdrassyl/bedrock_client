@@ -1,5 +1,6 @@
 
 import Icon from '@/components/icon';
+import { Button } from '@/components/ui/button';
 import { _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import FUN_SERVICE from '../../../../services/fun.service'
@@ -339,11 +340,11 @@ function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion
                     <div className="row">
                         {isEdit
                             ? <div className="col  text-center">
-                                <button className="btn btn-success my-3" ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </button>
+                                <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
                             </div>
                             : ""}
                         <div className="col  text-center">
-                            <button type="button" className="btn btn-danger my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </button>
+                            <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                         </div>
                     </div>
 

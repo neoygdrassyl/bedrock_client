@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 import { useState, useEffect, useCallback } from 'react';
 
@@ -386,7 +387,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     </div>
                     <div className="row">
                         <div className="col text-center my-2">
-                            <button className="btn btn-danger" ><Icon name="times-circle" size={16} /> ABRIR PROCESO </button>
+                            <Button variant="destructive" size="sm"><Icon name="times-circle" size={16} /> ABRIR PROCESO </Button>
                         </div>
                     </div>
                 </form>
@@ -485,12 +486,12 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
 
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <button className="btn btn-success my-3" onClick={() => save_clock(data)}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
+                        <Button size="sm" className="my-3" onClick={() => save_clock(data)}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                     </div>
                     {data.end && data.id ?
                        !_GET_CLOCK_STATE_VERSION(200, data.version) ?
                         <div className="col">
-                            <button className="btn btn-primary my-3" onClick={() => update_fun_0_atFinalProcess(true, data.version)}><Icon name="angle-double-right" size={16} /> SALVAR PROCESO </button>
+                            <Button size="sm" className="my-3" onClick={() => update_fun_0_atFinalProcess(true, data.version)}><Icon name="angle-double-right" size={16} /> SALVAR PROCESO </Button>
                             <p>El proceso continua su curso normal</p>
                         </div>
                         : ''
@@ -501,7 +502,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                             {!_GET_CLOCK_STATE_VERSION(200, data.version)
                                 ?
                                 <div className="col">
-                                    <button className="btn btn-danger my-3" onClick={() => close(data.version)}><Icon name="times" size={16} /> CERRAR PROCESO </button>
+                                    <Button variant="destructive" size="sm" className="my-3" onClick={() => close(data.version)}><Icon name="times" size={16} /> CERRAR PROCESO </Button>
                                     <p>El proceso NO fue subsanado y se finaliza</p>
                                 </div>
                                 : ''
@@ -510,7 +511,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                             {_GET_CLOCK_STATE_VERSION(200, data.version)
                                 ?
                                 <div className="col">
-                                    <button className="btn btn-danger my-3" onClick={() => archive(data.version)}><Icon name="times" size={16} /> ARCHIVAR PROCESO </button>
+                                    <Button variant="destructive" size="sm" className="my-3" onClick={() => archive(data.version)}><Icon name="times" size={16} /> ARCHIVAR PROCESO </Button>
                                     <p>El proceso NO fue subsanado y se archiva (no se podrá editar)</p>
                                 </div>
                                 : ''

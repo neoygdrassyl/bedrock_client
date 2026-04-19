@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import SubmitService from '../../../services/submit.service';
 import Collapsible from '../../../components/Collapsible';
@@ -575,9 +576,7 @@ const restoreDocs = useCallback(() => {
                                     </span>
                                     </button>
 
-                                    <button type="button"
-                                    className="btn btn-outline-warning btn-sm d-inline-flex align-items-center gap-2 me-2"
-                                    onClick={(e) => {
+                                    <Button variant="outline" size="sm" className="d-inline-flex align-items-center gap-2 me-2" onClick={(e) => {
                                         e.stopPropagation();
                                         confirmRestore(
                                         {
@@ -592,11 +591,9 @@ const restoreDocs = useCallback(() => {
                                     >
                                     <Icon name="undo" size={16} />
                                     <span className="d-none d-sm-inline">Restaurar</span>
-                                    </button>
+                                    </Button>
 
-                                    <button type="button"
-                                    className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
-                                    onClick={(e) => {
+                                    <Button size="sm" className="d-inline-flex align-items-center gap-2" onClick={(e) => {
                                         e.stopPropagation();
                                         const uid = `new_${Date.now()}`;
                                         setListDocuments((prev) => [
@@ -619,7 +616,7 @@ const restoreDocs = useCallback(() => {
                                     >
                                     <Icon name="plus" size={16} />
                                     <span className="d-none d-sm-inline">Agregar</span>
-                                    </button>
+                                    </Button>
                                 </>
                                 ) : null}
                                 <i
@@ -877,9 +874,7 @@ const restoreDocs = useCallback(() => {
                                         </span>
                                     </button>
 
-                                    <button type="button"
-                                        className="btn btn-outline-warning btn-sm d-inline-flex align-items-center gap-2 me-2"
-                                        onClick={(e) => {
+                                    <Button variant="outline" size="sm" className="d-inline-flex align-items-center gap-2 me-2" onClick={(e) => {
                                         e.stopPropagation();
                                         confirmRestore(
                                             {
@@ -894,16 +889,13 @@ const restoreDocs = useCallback(() => {
                                     >
                                         <Icon name="undo" size={16} />
                                         <span className="d-none d-sm-inline">Restaurar</span>
-                                    </button>
+                                    </Button>
 
-                                    <button type="button"
-                                        className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
-                                        onClick={addNewDoc}
-                                        title="Agregar documento"
-                                    >
+                                    <Button size="sm" className="d-inline-flex align-items-center gap-2" onClick={addNewDoc}
+                                        title="Agregar documento">
                                         <Icon name="plus" size={16} />
                                         <span className="d-none d-sm-inline">Agregar</span>
-                                    </button>
+                                    </Button>
                                     </>
                                 ) : null}
 
@@ -1096,7 +1088,7 @@ const restoreDocs = useCallback(() => {
                 { canSave ?
                     <div className="row text-center">
                         <div className="col">
-                            <button className="btn btn-success my-3" onClick={save_exp_res}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
+                            <Button size="sm" className="my-3" onClick={save_exp_res}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                         </div>
                     </div>
                     : ''}
@@ -1233,14 +1225,14 @@ let _COMPONENT_DOC_RES_PDF = () => {
     <hr />
     <div className="row text-center">
         <div className="col">
-            <button type="button" className="btn btn-success my-3" onClick={save_exp_res}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </button>
+            <Button size="sm" className="my-3" onClick={save_exp_res}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
         </div>
         <div className="col">
             {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
-                <button type="button" className="btn btn-primary my-3" onClick={() => pdf_gen_res(true)}>
+                <Button size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
                     <Icon name="edit" size={16} className="me-2" />
                     Editar PDF
-                </button>
+                </Button>
             )}
         </div>
     </div>

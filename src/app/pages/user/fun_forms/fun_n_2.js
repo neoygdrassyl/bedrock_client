@@ -1,4 +1,5 @@
 import FUNService from '../../../services/fun.service'
+import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
@@ -364,10 +365,10 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 {_CHILD_2_COMPONENT()}
                 <div className="row mb-3 text-center">
                     <div className="col-6">
-                        <button type="button" className="btn btn-success my-3" onClick={() => new_2()}><Icon name="file-alt" size={16} /> ACTUALIZAR </button>
+                        <Button size="sm" className="my-3" onClick={() => new_2()}><Icon name="file-alt" size={16} /> ACTUALIZAR </Button>
                     </div>
                     <div className="col-6">
-                            <button type="button" className="btn btn-warning my-3" onClick={() => _RESET_FORM_2()}><Icon name="eraser" size={16} /> LIMPIAR (2.4 y 2.5) </button>
+                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => _RESET_FORM_2()}><Icon name="eraser" size={16} /> LIMPIAR (2.4 y 2.5) </Button>
                         </div>
                 </div>
             </fieldset>

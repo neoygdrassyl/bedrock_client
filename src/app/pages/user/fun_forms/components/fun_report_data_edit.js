@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import { dateParser, dateParser_finalDate, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
 import FUN_SERVICE from '../../../../services/fun.service'
@@ -301,9 +302,9 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
                     {_COMPONENT()}
                     <div className="row text-center">
                         <div className="col-12">
-                            <button className="btn btn-success my-3">
+                            <Button size="sm" className="my-3">
                                 <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </form>

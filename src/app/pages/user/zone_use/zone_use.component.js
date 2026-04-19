@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useState, } from 'react';
+import { Button } from '@/components/ui/button';
 import Zone_Use_Service from "../../../services/zone_use.service"
 import { SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
 import UU from "../../../components/jsons/UU.json"
@@ -417,8 +418,8 @@ export default function ZONE_USE_COMPONENT(props) {
 
 
                     <div className='row text-center'>
-                        <div className='col'><button onClick={() => save()} className="btn btn-sm btn-success my-1" type='submit'><Icon name="save" size={16} /> GUARDAR </button></div>
-                        <div className='col'><button onClick={() => gen_pdf()} className="btn btn-sm btn-danger my-1" type='submit'><Icon name="file-pdf" size={16} /> GENERAR PDF </button></div>
+ <div className='col'><Button size="sm" className="my-1" onClick={() => save()} type='submit'><Icon name="save" size={16} /> GUARDAR </Button></div>
+ <div className='col'><Button variant="destructive" size="sm" className="my-1" onClick={() => gen_pdf()} type='submit'><Icon name="file-pdf" size={16} /> GENERAR PDF </Button></div>
                     </div>
                     <hr />
                 </Suspense>

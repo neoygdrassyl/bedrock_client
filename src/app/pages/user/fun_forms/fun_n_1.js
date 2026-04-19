@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
@@ -810,10 +811,10 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-6">
-                        <button type="button" className="btn btn-success my-3" onClick={() => new_1()}><Icon name="file-alt" size={16} /> ACTUALIZAR </button>
+                        <Button size="sm" className="my-3" onClick={() => new_1()}><Icon name="file-alt" size={16} /> ACTUALIZAR </Button>
                     </div>
                     <div className="col-6">
-                        <button type="button" className="btn btn-warning my-3" onClick={() => _RESET_FORM_1()}><Icon name="eraser" size={16} /> LIMPIAR </button>
+                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => _RESET_FORM_1()}><Icon name="eraser" size={16} /> LIMPIAR </Button>
                     </div>
                 </div>
             </fieldset>

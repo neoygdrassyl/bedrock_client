@@ -1,4 +1,5 @@
 import FUNService from '../../../services/fun.service'
+import { Button } from '@/components/ui/button';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
@@ -387,7 +388,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     {_CHILD_53_COMPONENT()}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <button className="btn btn-success my-3"><Icon name="file-alt" size={16} /> ACTUALIZAR ITEM </button>
+                            <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> ACTUALIZAR ITEM </Button>
                         </div>
                     </div>
                 </form>

@@ -118,9 +118,9 @@ export default function PROFESIONALS(props) {
       center: true,
       omit: window.user.id != 1 && window.user.roleId != 3 || window.user.roleId != 2,
       cell: row => <>
-        <button type="button" title="Modificar Profesional" className="btn btn-secondary btn-sm px-1 py-1" onClick={() => { setId(row.id); setModal(true) }}><Icon name="edit" size={16} /></button>
+        <Button variant="outline" size="sm" className="px-1 py-1" title="Modificar Profesional" onClick={() => { setId(row.id); setModal(true) }}><Icon name="edit" size={16} /></Button>
         {window.user.id == 1 || window.user.roleId == 3 || window.user.roleId == 2?
-          <button type="button" title="Eliminar Profesional" className="btn btn-danger btn-sm px-1 py-1" onClick={() => { eliminate(row.id); }}><Icon name="trash-alt" size={16} /></button>
+          <Button variant="destructive" size="sm" className="px-1 py-1" title="Eliminar Profesional" onClick={() => { eliminate(row.id); }}><Icon name="trash-alt" size={16} /></Button>
           : null}
       </>,
     },
@@ -182,15 +182,15 @@ export default function PROFESIONALS(props) {
     return <>
       <div className='row'>
         <div className='col-3'>
-          { window.user.id == 1 || window.user.roleId == 3 ? <button type="button" className="btn btn-success" onClick={() => { setId(false); setModal(!modal) }}><Icon name="plus-circle" size={16} /> Nuevo Profesional</button> : null }
+          { window.user.id == 1 || window.user.roleId == 3 ? <Button size="sm" onClick={() => { setId(false); setModal(!modal) }}><Icon name="plus-circle" size={16} /> Nuevo Profesional</Button> : null }
         </div>
         <div className='col'>
           <div className="row">
             <div className='col px-0'>
               <div className="input-group row">
-                <button type="button" className="btn btn-primary col-2" onClick={() => search()}><Icon name="search" size={16} /> Buscar</button>
+                <Button size="sm" className="col-2" onClick={() => search()}><Icon name="search" size={16} /> Buscar</Button>
                 <input type="text" className="form-control col" id="search_text" placeholder="Buscar..." onKeyPress={(e) => e.key === 'Enter' ? search() : ''}></input>
-                {clearBtn ? <button type="button" className="btn btn-danger col-1" onClick={() => clear()}><Icon name="times" size={16} /></button> : ''}
+                {clearBtn ? <Button variant="destructive" size="sm" className="col-1" onClick={() => clear()}><Icon name="times" size={16} /></Button> : ''}
               </div>
             </div>
           </div>

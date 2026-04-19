@@ -116,7 +116,7 @@ function Seals({ translation, swaMsg, breadCrums }) {
                 button: true,
                 minWidth: '100px',
                 cell: row =>
-                    <button className="btn btn-danger btn-sm" onClick={() => setItem(row)}><Icon name="file-alt" size={16} /> Ver</button>
+                    <Button variant="destructive" size="sm" onClick={() => setItem(row)}><Icon name="file-alt" size={16} /> Ver</Button>
                 ,
             },
         ]

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import dayjs from 'dayjs';
 import Spreadsheet from "react-spreadsheet";
 import FUNService from '../../../../services/fun.service';
@@ -1922,8 +1923,8 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS CONTRALORIA - <button type="button" className="btn btn-outline-success btn-sm" onClick={() => generateCVS(header_1, dataContraloria, 'CONTRALORIA')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className={`btn btn-sm ${!!preview['pre_0'] ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setPre({ ['pre_0']: !preview['pre_0'] })} >
+                    <label className='fw-bold'>DATOS CONTRALORIA - <Button variant="outline" size="sm" onClick={() => generateCVS(header_1, dataContraloria, 'CONTRALORIA')}>
+                        <Icon name="download" size={16} /></Button> <button type="button" className={`btn btn-sm ${!!preview['pre_0'] ? "btn-outline-primary" : "btn-primary"}`} onClick={() => setPre({ ['pre_0']: !preview['pre_0'] })} >
                             <Icon name="eye" size={16} /></button></label>
                 </div>
             </div>
@@ -1933,9 +1934,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS CONTRAELORIA DEPARTAMENTAL - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_9, dataContraloria2, 'CONTRALORIA DEPARTAMENTAL')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_8']} onClick={() => setPre({ ['pre_8']: !preview['pre_8'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>DATOS CONTRAELORIA DEPARTAMENTAL - <Button size="sm" onClick={() => generateCVS(header_9, dataContraloria2, 'CONTRALORIA DEPARTAMENTAL')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_8']} onClick={() => setPre({ ['pre_8']: !preview['pre_8'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_8'] ? <div className='row container-sh'>
@@ -1944,9 +1945,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS CAMACOL - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_2, dataCamacol, 'CAMACOL')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_1']} onClick={() => setPre({ ['pre_1']: !preview['pre_1'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>DATOS CAMACOL - <Button size="sm" onClick={() => generateCVS(header_2, dataCamacol, 'CAMACOL')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_1']} onClick={() => setPre({ ['pre_1']: !preview['pre_1'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_1'] ? <div className='row container-sh'>
@@ -1955,9 +1956,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS DANE - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_3, dataDane, 'DANE')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_2']} onClick={() => setPre({ ['pre_2']: !preview['pre_2'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>DATOS DANE - <Button size="sm" onClick={() => generateCVS(header_3, dataDane, 'DANE')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_2']} onClick={() => setPre({ ['pre_2']: !preview['pre_2'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_2'] ? <div className='row container-sh'>
@@ -1966,9 +1967,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS PLANEACION - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_4, dataPlaneacion, 'PLANEACION')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_3']} onClick={() => setPre({ ['pre_3']: !preview['pre_3'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>DATOS PLANEACION - <Button size="sm" onClick={() => generateCVS(header_4, dataPlaneacion, 'PLANEACION')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_3']} onClick={() => setPre({ ['pre_3']: !preview['pre_3'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_3'] ? <div className='row container-sh'>
@@ -1977,9 +1978,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS MINISTERIO DE VIVIENDA - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_5, dataMinisterio, 'MINISTERIO DE VIVIENDA')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_4']} onClick={() => setPre({ ['pre_4']: !preview['pre_4'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>DATOS MINISTERIO DE VIVIENDA - <Button size="sm" onClick={() => generateCVS(header_5, dataMinisterio, 'MINISTERIO DE VIVIENDA')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_4']} onClick={() => setPre({ ['pre_4']: !preview['pre_4'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_4'] ? <div className='row container-sh'>
@@ -1988,9 +1989,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS EXPENSAS - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_6, dataMoney, 'EXPENSAS')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_5']} onClick={() => setPre({ ['pre_5']: !preview['pre_5'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>DATOS EXPENSAS - <Button size="sm" onClick={() => generateCVS(header_6, dataMoney, 'EXPENSAS')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_5']} onClick={() => setPre({ ['pre_5']: !preview['pre_5'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_5'] ? <div className='row container-sh'>
@@ -1999,9 +2000,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>DATOS CDMB - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_7, dataCMDB, 'CDMB')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_6']} onClick={() => setPre({ ['pre_6']: !preview['pre_6'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>DATOS CDMB - <Button size="sm" onClick={() => generateCVS(header_7, dataCMDB, 'CDMB')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_6']} onClick={() => setPre({ ['pre_6']: !preview['pre_6'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_6'] ? <div className='row container-sh'>
@@ -2012,9 +2013,9 @@ export default function FUN_REPORT_GEN(props) {
                 ? <>
                     <div className='row my-2'>
                         <div className='col'>
-                            <label className='fw-bold'>DATOS PLANEACION 2 - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_8, dataPlaneacion2, 'PLEANEACION 2')}>
-                                <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_7']} onClick={() => setPre({ ['pre_7']: !preview['pre_7'] })} >
-                                    <Icon name="eye" size={16} /></button></label>
+                            <label className='fw-bold'>DATOS PLANEACION 2 - <Button size="sm" onClick={() => generateCVS(header_8, dataPlaneacion2, 'PLEANEACION 2')}>
+                                <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_7']} onClick={() => setPre({ ['pre_7']: !preview['pre_7'] })} >
+                                    <Icon name="eye" size={16} /></Button></label>
                         </div>
                     </div>
                     {preview['pre_7'] ? <div className='row container-sh'>
@@ -2025,9 +2026,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>OBSERVATORIO IGAC - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_11, dataIgac, 'Observatorio IGAC')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_11']} onClick={() => setPre({ ['pre_11']: !preview['pre_11'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>OBSERVATORIO IGAC - <Button size="sm" onClick={() => generateCVS(header_11, dataIgac, 'Observatorio IGAC')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_11']} onClick={() => setPre({ ['pre_11']: !preview['pre_11'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_11'] ? <div className='row container-sh'>
@@ -2036,9 +2037,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>SUPERINTENDENCIA DE NOTARIADO Y REGISTRO - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_12, dataNotaria, 'Superintendencia de Notariado y Registro')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_12']} onClick={() => setPre({ ['pre_12']: !preview['pre_12'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>SUPERINTENDENCIA DE NOTARIADO Y REGISTRO - <Button size="sm" onClick={() => generateCVS(header_12, dataNotaria, 'Superintendencia de Notariado y Registro')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_12']} onClick={() => setPre({ ['pre_12']: !preview['pre_12'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_12'] ? <div className='row container-sh'>
@@ -2047,9 +2048,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>AUDITORES CONTRA DEPARTAMENTAL - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_13, dataAuditoria, 'Auditores Contra departamental')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_13']} onClick={() => setPre({ ['pre_13']: !preview['pre_13'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>AUDITORES CONTRA DEPARTAMENTAL - <Button size="sm" onClick={() => generateCVS(header_13, dataAuditoria, 'Auditores Contra departamental')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_13']} onClick={() => setPre({ ['pre_13']: !preview['pre_13'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_13'] ? <div className='row container-sh'>
@@ -2058,9 +2059,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018) - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_14, dataFDPM, 'INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018)')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_14']} onClick={() => setPre({ ['pre_14']: !preview['pre_14'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018) - <Button size="sm" onClick={() => generateCVS(header_14, dataFDPM, 'INFORME LICENCIAS EXP. CURAD. URB. (F-DPM-1220-238,37-018)')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_14']} onClick={() => setPre({ ['pre_14']: !preview['pre_14'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_14'] ? <div className='row container-sh'>
@@ -2069,9 +2070,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>INFORME SUPERINTENDENCIA - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_15, dataSuperInt, 'INFORME SUPERINTENDENCIA')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_15']} onClick={() => setPre({ ['pre_15']: !preview['pre_15'] })} >
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>INFORME SUPERINTENDENCIA - <Button size="sm" onClick={() => generateCVS(header_15, dataSuperInt, 'INFORME SUPERINTENDENCIA')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_15']} onClick={() => setPre({ ['pre_15']: !preview['pre_15'] })} >
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_15'] ? <div className='row container-sh'>
@@ -2080,9 +2081,9 @@ export default function FUN_REPORT_GEN(props) {
 
             <div className='row my-2'>
                 <div className='col'>
-                    <label className='fw-bold'>RESUMEN - <button type="button" className="btn btn-success btn-sm" onClick={() => generateCVS(header_10, dataResume, 'Resumen')}>
-                        <Icon name="download" size={16} /></button> <button type="button" className="btn btn-primary btn-sm" outline={!preview['pre_9']} onClick={() => setPre({ ['pre_9']: !preview['pre_9'] })}>
-                            <Icon name="eye" size={16} /></button></label>
+                    <label className='fw-bold'>RESUMEN - <Button size="sm" onClick={() => generateCVS(header_10, dataResume, 'Resumen')}>
+                        <Icon name="download" size={16} /></Button> <Button size="sm" outline={!preview['pre_9']} onClick={() => setPre({ ['pre_9']: !preview['pre_9'] })}>
+                            <Icon name="eye" size={16} /></Button></label>
                 </div>
             </div>
             {preview['pre_9'] ? <div className='row container-sh'>

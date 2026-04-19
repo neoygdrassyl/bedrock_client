@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import FUN_SERVICE from '../../../../services/fun.service'
 import dayjs from 'dayjs';
@@ -453,8 +454,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                                     onClick={() => setRewState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></button>
                                     : ''}
                                 {rewState['REW' + i]
-                                    ? <button type="button" className="btn btn-success btn-sm ms-1"
-                                        onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></button>
+                                    ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>
                                     : ""
                                 }
                                 {true ?
@@ -587,10 +587,10 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                     </div>
                     <div className="row mb-3 text-center">
                         <div className="col">
-                            <button className="btn btn-danger me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</button>
+                            <Button variant="destructive" size="sm" className="me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</Button>
                         </div>
                         <div className="col">
-                            <button className="btn btn-danger" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</button>
+                            <Button variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</Button>
                         </div>
                     </div>
                 </div>

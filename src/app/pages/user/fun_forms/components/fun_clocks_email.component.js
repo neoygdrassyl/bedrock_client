@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
 import FUN_SERVICE from '../../../../services/fun.service'
 import USERS_Service from '../../../../services/users.service';
@@ -271,7 +272,7 @@ function FUN_CLOCKS_EMAILS(props) {
                             </span>
                             <input type="text" className="form-control" id="fun_email_1"
                                 defaultValue={_EMAILS} required />
-                            <button type="submit" className="btn btn-warning shadow-none">ENVIAR CORREO</button>
+                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" type="submit">ENVIAR CORREO</Button>
                         </div>
                     </div>
                     <div className="col-6">
@@ -388,9 +389,9 @@ function FUN_CLOCKS_EMAILS(props) {
                                         <div className="text-end m-3">
                                             <p className="lead text-end fw-bold">Anexar Documento</p>
                                             {attachsForEmails > 0
-                                                ? <button type="button" className="btn btn-secondary mx-3" onClick={() => this.minusAttachEmail()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </button>
+                                                ? <Button variant="outline" size="sm" className="mx-3" onClick={() => this.minusAttachEmail()}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO </Button>
                                                 : ""}
-                                            <button type="button" className="btn btn-secondary" onClick={() => this.addAttachEmail()}><Icon name="plus-circle" size={16} /> AÑADIR </button>
+                                            <Button variant="outline" size="sm" onClick={() => this.addAttachEmail()}><Icon name="plus-circle" size={16} /> AÑADIR </Button>
                                             {_ATTACHSFOREMAIL_COMPONENT()}
                                         </div>
                                     </>

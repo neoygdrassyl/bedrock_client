@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import DataTable from '@/components/data-table-bridge';
 import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
@@ -263,7 +264,7 @@ export default function RECORD_ARC_37(props) {
         return <>
             <div className='row border'>
                 <div className='col my-1'>
-                    <button type="button" className="btn btn-outline-primary btn-sm rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO GRUPO</button>
+                    <Button variant="outline" size="sm" className="rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO GRUPO</Button>
                 </div>
             </div>
 
@@ -347,7 +348,7 @@ export default function RECORD_ARC_37(props) {
                         </div>
                         <div className='col-1'>
                             {newRow[data.id] || subItems.length == 1 ? '' :
-                                <button type="button" className="btn btn-outline-danger btn-sm rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <Icon name="minus" size={16} className="text-danger" /></button>
+                                <Button variant="outline" size="sm" className="text-destructive border-destructive rounded-pill px-2" onClick={() => del_grp_37(data.id)}> <Icon name="minus" size={16} className="text-danger" /></Button>
                             }
                         </div>
                     </div>
@@ -380,7 +381,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className='col-1'>
                         {newRow[data.id] ?
-                            <button type="button" className="btn btn-outline-success btn-sm rounded-pill px-2" onClick={() => add_grp_37(data.id)}> <Icon name="plus" size={16} className="text-success" /></button> : ''}
+                            <Button variant="outline" size="sm" className="rounded-pill px-2" onClick={() => add_grp_37(data.id)}> <Icon name="plus" size={16} className="text-success" /></Button> : ''}
                     </div>
                 </div> : ''}
         </>
@@ -423,7 +424,7 @@ export default function RECORD_ARC_37(props) {
             <div className='row my-2'>
                 <div className='col-1'></div>
                 <div className='col text-center'>
-                    <button type="button" className="btn btn-success btn-sm" onClick={() => import_37()}><Icon name="file-upload" size={16} /> IMPORTAR</button>
+                    <Button size="sm" onClick={() => import_37()}><Icon name="file-upload" size={16} /> IMPORTAR</Button>
                 </div>
             </div>
         </>
@@ -599,8 +600,8 @@ export default function RECORD_ARC_37(props) {
                 center: true,
                 minWidth: '110px',
                 cell: row => <>
-                    <button type="button" className="btn btn-secondary btn-sm px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><Icon name="edit" size={16} /></button>
-                    <button type="button" className="btn btn-danger btn-sm px-2" onClick={() => delete_37(row.id)}><Icon name="trash-alt" size={16} /></button>
+                    <Button variant="outline" size="sm" className="px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><Icon name="edit" size={16} /></Button>
+                    <Button variant="destructive" size="sm" className="px-2" onClick={() => delete_37(row.id)}><Icon name="trash-alt" size={16} /></Button>
                 </>,
             },
         ]
@@ -1087,9 +1088,9 @@ export default function RECORD_ARC_37(props) {
                 ? <form id="form_ra_37" onSubmit={new_ra_37}>
                     {_COMPONENT_37('', false)}
                     <div className="text-center">
-                        <button className="btn btn-success btn-sm my-2">
+                        <Button size="sm" className="my-2">
                             <Icon name="share-square" size={16} /> AÑADIR ELEMENTOS
-                        </button>
+                        </Button>
                     </div>
                 </form>
                 : ""}
@@ -1100,9 +1101,9 @@ export default function RECORD_ARC_37(props) {
                     <h4 className="fw-bold text-center py-2">Actualizar Elemento</h4>
                     {_COMPONENT_37('_edit', edit37)}
                     <div className="text-center">
-                        <button className="btn btn-success btn-sm  my-2">
+                        <Button size="sm" className="my-2">
                             <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
-                        </button>
+                        </Button>
                     </div>
                 </form>
                 : ""}
