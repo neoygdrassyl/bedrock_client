@@ -1,8 +1,7 @@
 import ChartErrorBoundary from '../../components/ChartErrorBoundary';
 import { useReducer, useEffect, useRef } from 'react';
 import { TabPane } from '@/components/ui/tab-pane';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import { swalLoading, swalSuccess, swalError, swalClose } from '@/app/utils/swalAdapter';
 import DataTable from '@/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/components/legacy-modal';
 
@@ -52,7 +51,6 @@ import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/ta
 
 // JSONS
 import dayjs from 'dayjs';
-const MySwal = withReactContent(Swal);
 
 function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
     const [state, setState] = useReducer(
@@ -155,47 +153,39 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             });
     }
     function retrievSingle(id) {
-        MySwal.fire({
+        swalLoading({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
         });
         FUNService.get(id)
             .then(response => {
-                MySwal.close()
+                swalClose()
 
                 toggle_d(response.data);
             })
             .catch(e => {
-                MySwal.fire({
+                swalError({
                     title: swaMsg.generic_eror_title,
                     text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
                 });
                 console.log(e);
             });
     }
     function retrieveMacroSingle(id) {
-        MySwal.fire({
+        swalLoading({
             title: swaMsg.title_wait,
             text: swaMsg.text_wait,
-            icon: 'info',
-            showConfirmButton: false,
         });
         FUNService.loadMacroSingle(null, null, id)
             .then(response => {
                 if (response.data.length) setState({ currentItemAsignProf: response.data, modal_asign_prof: true })
                 else setState({ currentItemAsignProf: null, modal_asign_prof: null })
-                MySwal.close();
+                swalClose();
             })
             .catch(e => {
-                  MySwal.fire({
+                swalError({
                     title: swaMsg.generic_eror_title,
                     text: swaMsg.generic_error_text,
-                    icon: 'warning',
-                    confirmButtonText: swaMsg.text_btn,
                 });
                 console.log(e);
             });
@@ -209,7 +199,7 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                     isLoadedSearch: false,
                 });
                 //asignList(response.data);
-                MySwal.close();
+                swalClose();
             })
             .catch(e => {
                 console.log(e);
@@ -1153,11 +1143,9 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
+                    swalError({
                         title: "ERROR AL CARGAR",
                         text: "No ha sido posible cargar el consecutivo, intentelo nuevamnte.",
-                        icon: 'error',
-                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
 
@@ -1279,48 +1267,38 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             let id_public = document.getElementById("f_02").value;
             formData.set('id_public', id_public);
 
-            MySwal.fire({
+            swalLoading({
                 title: swaMsg.title_wait,
                 text: swaMsg.text_wait,
-                icon: 'info',
-                showConfirmButton: false,
             });
             FUNService.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        MySwal.fire({
+                        swalSuccess({
                             title: swaMsg.publish_success_title,
                             text: swaMsg.publish_success_text,
                             footer: swaMsg.text_footer,
-                            icon: 'success',
-                            confirmButtonText: swaMsg.text_btn,
                         });
                         refreshList();
                     }
                     else if (response.data === 'ERROR_DUPLICATE') {
-                        MySwal.fire({
+                        swalError({
                             title: "ERROR DE DUPLICACION",
                             text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo",
-                            icon: 'error',
-                            confirmButtonText: swaMsg.text_btn,
                         });
                     }
                     else {
-                        MySwal.fire({
+                        swalError({
                             title: swaMsg.generic_eror_title,
                             text: swaMsg.generic_error_text,
-                            icon: 'warning',
-                            confirmButtonText: swaMsg.text_btn,
                         });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    MySwal.fire({
+                    swalError({
                         title: swaMsg.generic_eror_title,
                         text: swaMsg.generic_error_text,
-                        icon: 'warning',
-                        confirmButtonText: swaMsg.text_btn,
                     });
                 });
         };
@@ -1330,11 +1308,9 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             let field = document.getElementById("search_0").value;
             let string = document.getElementById("search_1").value;
             if (string) {
-                MySwal.fire({
+                swalLoading({
                     title: swaMsg.title_wait,
                     text: swaMsg.text_wait,
-                    icon: 'info',
-                    showConfirmButton: false,
                 });
                 retrieveSearch(field, string);
             } else {
