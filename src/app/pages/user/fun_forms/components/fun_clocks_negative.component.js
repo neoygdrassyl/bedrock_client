@@ -9,7 +9,7 @@ import { TabPane } from '@/components/ui/tab-pane';
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 
 function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMsg }) {
@@ -817,13 +817,11 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 });
         }
         let close = (version) => {
-            MySwal.fire({
+            swalConfirm({
                 title: "CERRA SOLICITUD",
                 text: "¿Esta seguro de archivar esta Solicitud? \nSI SE PODRÁ modificar mas adelante.",
                 icon: 'question',
                 confirmButtonText: "CERRAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
 
@@ -852,13 +850,11 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             });
         }
         let archive = (version) => {
-            MySwal.fire({
+            swalConfirm({
                 title: "ARCHIVAR SOLICITUD",
                 text: "¿Esta seguro de archivar esta Solicitud? \nNO SE PODRÁ modificar de ninguna forma.",
                 icon: 'question',
                 confirmButtonText: "ARCHIVAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
 

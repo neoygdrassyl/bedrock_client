@@ -10,7 +10,7 @@ import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regex
 
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function TABLE_COMPONENT_EXPANDED(props) {
     const { currentItem, swaMsg, worker_list, lenghtL, dataL, date_start, date_end } = props;
@@ -648,13 +648,11 @@ export default function TABLE_COMPONENT_EXPANDED(props) {
     }
 
     let delete_asgin = (index, clocks, state, reviews) => {
-        MySwal.fire({
+        swalConfirm({
             title: "ELIMINAR ESTE ITEM",
             text: "¿Esta seguro de eliminar de forma permanente este item?",
             icon: 'question',
             confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
         }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
                 let oldClocks = clocks;

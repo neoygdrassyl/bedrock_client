@@ -1,7 +1,7 @@
 import FUNService from '../../../services/fun.service'
 import DataTable from '@/components/data-table-bridge';
 import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
 
@@ -87,13 +87,11 @@ const FUNN4 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 });
         }
         let delete_4 = (id) => {
-            MySwal.fire({
+            swalConfirm({
                 title: "ELIMINAR ESTE ITEM",
                 text: "¿Esta seguro de eliminar de forma permanente este item?",
                 icon: 'question',
                 confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });

@@ -5,7 +5,7 @@ import DATATABLE from '@/components/data-table-bridge';
 import FUN_SERVICE from '../../../../services/fun.service';
 import USER_SERVICE from '../../../../services/users.service'
 import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 export default function FUN_CLOCK_EVENTS(props) {
     const { swaMsg, translation, globals, currentItem, currentVersion } = props;
@@ -211,13 +211,11 @@ export default function FUN_CLOCK_EVENTS(props) {
     }
 
     function deleteEvent(id, useMySwal) {
-        MySwal.fire({
+        swalConfirm({
             title: "ELIMINAR ESTE ITEM",
             text: "¿Esta seguro de eliminar de forma permanente este item?",
             icon: 'question',
             confirmButtonText: "ELIMINAR",
-            showCancelButton: true,
-            cancelButtonText: "CANCELAR"
         }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
                 if (useMySwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });

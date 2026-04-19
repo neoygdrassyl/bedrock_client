@@ -6,7 +6,7 @@ import FUN_SERVICE from '../../../../services/fun.service'
 import DataTable from '@/components/data-table-bridge';
 import './fun_modal_shared.css';
 import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 
 function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
         const [modal, setModal] = useState(false);
@@ -223,13 +223,11 @@ function FUN_6_HISTORY({ translation, swaMsg, globals, fun6 }) {
         }
         let delete_6_h = (id) => {
             formData = new FormData();
-            MySwal.fire({
+            swalConfirm({
                 title: "ELIMINAR ESTE ITEM",
                 text: "¿Esta seguro de eliminar de forma permanente este item?",
                 icon: 'question',
                 confirmButtonText: "ELIMINAR",
-                showCancelButton: true,
-                cancelButtonText: "CANCELAR"
             }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
                     swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
