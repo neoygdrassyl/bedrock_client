@@ -36,30 +36,61 @@
 /* ── Buttons ─────────────────────────────────────────────────────── */
 #main-content :where(.btn) {
   border-radius: 0.375rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  line-height: 1.4;
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+#main-content :where(.btn-sm) {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+}
+#main-content :where(.btn-lg) {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
 }
 
 #main-content :where(.btn-primary) {
   background-color: hsl(var(--primary));
   border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
 #main-content :where(.btn-primary:hover),
 #main-content :where(.btn-primary:focus) {
   background-color: hsl(var(--primary) / 0.9);
   border-color: hsl(var(--primary) / 0.9);
-  box-shadow: 0 0 0 0.2rem hsl(var(--primary) / 0.25);
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+}
+
+#main-content :where(.btn-secondary) {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+#main-content :where(.btn-secondary:hover) {
+  background-color: hsl(var(--muted) / 0.8);
 }
 
 #main-content :where(.btn-success) {
   background-color: hsl(var(--accent));
   border-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+#main-content :where(.btn-success:hover) {
+  background-color: hsl(var(--accent) / 0.9);
+  box-shadow: 0 0 0 2px hsl(var(--accent) / 0.2);
 }
 
 #main-content :where(.btn-danger) {
   background-color: hsl(var(--destructive));
   border-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+#main-content :where(.btn-danger:hover) {
+  background-color: hsl(var(--destructive) / 0.9);
+  box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.2);
 }
 
 #main-content :where(.btn-warning) {
@@ -67,10 +98,29 @@
   border-color: hsl(var(--warning));
   color: hsl(var(--warning-foreground));
 }
+#main-content :where(.btn-warning:hover) {
+  background-color: hsl(var(--warning) / 0.9);
+}
+
+#main-content :where(.btn-info) {
+  background-color: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.2);
+  color: hsl(var(--primary));
+}
+#main-content :where(.btn-info:hover) {
+  background-color: hsl(var(--primary) / 0.15);
+}
+
+#main-content :where(.btn-light) {
+  background-color: hsl(var(--muted) / 0.5);
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
 
 #main-content :where(.btn-outline-primary) {
   color: hsl(var(--primary));
   border-color: hsl(var(--primary));
+  background: transparent;
 }
 #main-content :where(.btn-outline-primary:hover) {
   background-color: hsl(var(--primary));
@@ -81,6 +131,46 @@
 #main-content :where(.btn-outline-secondary) {
   color: hsl(var(--muted-foreground));
   border-color: hsl(var(--border));
+  background: transparent;
+}
+#main-content :where(.btn-outline-secondary:hover) {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+#main-content :where(.btn-outline-success) {
+  color: hsl(var(--accent));
+  border-color: hsl(var(--accent));
+  background: transparent;
+}
+#main-content :where(.btn-outline-success:hover) {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+#main-content :where(.btn-outline-danger) {
+  color: hsl(var(--destructive));
+  border-color: hsl(var(--destructive));
+  background: transparent;
+}
+#main-content :where(.btn-outline-danger:hover) {
+  background-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+
+#main-content :where(.btn-outline-warning) {
+  color: hsl(var(--warning));
+  border-color: hsl(var(--warning));
+  background: transparent;
+}
+
+#main-content :where(.btn-close) {
+  filter: none;
+  opacity: 0.5;
+  background-size: 0.75rem;
+}
+.dark #main-content :where(.btn-close) {
+  filter: invert(1);
 }
 
 /* ── Cards ───────────────────────────────────────────────────────── */
@@ -89,15 +179,24 @@
   border: 1px solid hsl(var(--border));
   border-radius: 0.5rem;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  overflow: hidden;
 }
-
 #main-content :where(.card-header) {
-  background-color: hsl(var(--muted));
-  border-bottom-color: hsl(var(--border));
+  background-color: hsl(var(--muted) / 0.3);
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
 }
-
 #main-content :where(.card-body) {
   color: hsl(var(--card-foreground));
+  padding: 0.875rem;
+}
+#main-content :where(.card-footer) {
+  background-color: hsl(var(--muted) / 0.15);
+  border-top: 1px solid hsl(var(--border));
+  padding: 0.5rem 0.875rem;
+  font-size: 0.75rem;
 }
 
 /* ── Tables ──────────────────────────────────────────────────────── */
@@ -221,20 +320,45 @@
 }
 
 /* ── Navs & Tabs ─────────────────────────────────────────────────── */
-#main-content :where(.nav-tabs .nav-link) {
-  font-size: 0.875rem;
-  color: hsl(var(--muted-foreground));
-  border-color: transparent;
+#main-content :where(.nav-tabs) {
+  border-bottom: 1px solid hsl(var(--border));
+  gap: 0;
 }
-
+#main-content :where(.nav-tabs .nav-link) {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: -1px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
 #main-content :where(.nav-tabs .nav-link.active) {
   color: hsl(var(--primary));
   border-bottom-color: hsl(var(--primary));
   background-color: transparent;
+  font-weight: 600;
+}
+#main-content :where(.nav-tabs .nav-link:hover:not(.active)) {
+  border-bottom-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+  background-color: transparent;
 }
 
-#main-content :where(.nav-tabs .nav-link:hover:not(.active)) {
-  border-color: transparent;
+#main-content :where(.nav-pills .nav-link) {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  border-radius: 0.375rem;
+  padding: 0.35rem 0.75rem;
+}
+#main-content :where(.nav-pills .nav-link.active) {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+#main-content :where(.nav-pills .nav-link:hover:not(.active)) {
+  background-color: hsl(var(--muted));
   color: hsl(var(--foreground));
 }
 
@@ -643,4 +767,63 @@
 #main-content :where(.rdt_Pagination) {
   font-size: 0.75rem;
   min-height: 40px;
+}
+
+/* ── Global polish ─────────────────────────────────────────────────── */
+
+/* Smooth scroll for main content area */
+#main-content {
+  scroll-behavior: smooth;
+}
+
+/* Text selection color */
+#main-content ::selection {
+  background: hsl(var(--primary) / 0.15);
+  color: hsl(var(--foreground));
+}
+
+/* Focus ring consistency for all interactive elements */
+#main-content :where(:focus-visible) {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling for content area */
+#main-content :where(*) {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+/* Tooltip override for Bootstrap tooltips */
+.tooltip {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 0.6875rem;
+}
+.tooltip-inner {
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+.tooltip .tooltip-arrow::before {
+  border-top-color: hsl(var(--border));
+}
+
+/* Dark mode: stronger active states for buttons */
+.dark #main-content :where(.btn-primary:hover) {
+  background-color: hsl(var(--primary) / 0.85);
+}
+.dark #main-content :where(.btn-outline-primary) {
+  border-color: hsl(var(--primary) / 0.5);
+}
+.dark #main-content :where(.nav-tabs) {
+  border-bottom-color: hsl(var(--border));
+}
+.dark #main-content :where(.card) {
+  box-shadow: none;
+}
+.dark #main-content :where(.card-header) {
+  background-color: hsl(var(--muted) / 0.2);
 }
